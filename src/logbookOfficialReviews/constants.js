@@ -12,4 +12,5 @@ export const LOGBOOK_OFFICIAL_REVIEWER_DROPDOWN_ORDER = Object.freeze([
   '로컬하루',
   '느린산책',
   '가족나들이',
+  '문턱없이',
 ]);

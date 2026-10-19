@@ -7,6 +7,7 @@ import {
   buildWorldEventYoutubeSearchQuery,
   getWorldEventHubAttractions,
   getWorldEventYoutubeVideos,
+  worldEventYoutubeVideoDisplayTitle,
 } from '../../utils/worldEventMedia';
 import { fetchWorldEventVideos } from '../../utils/fetchWorldEventVideos';
 import {
@@ -26,10 +27,8 @@ export default function EventDetailMediaSection({ event, locale = 'ko' }) {
   const naverHref = locale === 'ko' ? naverWebSearchUrl(searchQuery) : '';
   const youtubeSearchQuery = buildWorldEventYoutubeSearchQuery(event, locale);
   const youtubeSearchHref = youtubeWebSearchUrl(youtubeSearchQuery, locale);
-  const staticYoutubeVideos = useMemo(
-    () => getWorldEventYoutubeVideos(event, locale),
-    [event, locale],
-  );
+  const youtubeVideoFallback = t('worldEventDetail.media.youtubeVideoFallback');
+  const staticYoutubeVideos = useMemo(() => getWorldEventYoutubeVideos(event), [event]);
   const { hub, attractions } = getWorldEventHubAttractions(event, { locale });
 
   const [videos, setVideos] = useState(staticYoutubeVideos);
@@ -109,18 +108,22 @@ export default function EventDetailMediaSection({ event, locale = 'ko' }) {
           ) : null}
           <div className="mt-3 max-h-[min(28rem,52dvh)] overflow-y-auto overscroll-contain pr-0.5 [-ms-overflow-style:auto] [scrollbar-width:thin]">
             <div className="grid gap-3 sm:grid-cols-2">
-            {videos.map((video) => (
+            {videos.map((video) => {
+              const videoLabel = worldEventYoutubeVideoDisplayTitle(video, youtubeVideoFallback);
+              const decodedLabel = decodeHtmlEntities(videoLabel);
+              return (
               <a
                 key={video.id}
                 href={`https://www.youtube.com/watch?v=${video.id}`}
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label={decodedLabel}
                 className="group overflow-hidden rounded-xl border border-stone-100 bg-stone-50 hover:border-amber-300 hover:bg-amber-50/40"
               >
                 <div className="relative aspect-video overflow-hidden bg-stone-200">
                   <img
                     src={`https://img.youtube.com/vi/${video.id}/mqdefault.jpg`}
-                    alt=""
+                    alt={decodedLabel}
                     className="h-full w-full object-cover transition-transform group-hover:scale-[1.02]"
                     loading="lazy"
                     decoding="async"
@@ -132,10 +135,11 @@ export default function EventDetailMediaSection({ event, locale = 'ko' }) {
                   </span>
                 </div>
                 <p className="px-3 py-2 text-xs font-bold leading-snug text-stone-800">
-                  {decodeHtmlEntities(video.title || '')}
+                  {decodedLabel}
                 </p>
               </a>
-            ))}
+            );
+            })}
             </div>
           </div>
           {youtubeSearchHref ? (

@@ -1,0 +1,126 @@
+{
+  "mainLiveRiskCount": 269,
+  "venice": {
+    "slug": "venice",
+    "name": "베니스",
+    "country": "이탈리아 / Italy",
+    "coords": "45.4408,12.3155",
+    "explicitOverseas": true,
+    "mainWouldTourApi": true,
+    "branchWouldTourApi": false,
+    "hangulName": true,
+    "blockReason": "country"
+  },
+  "sample": [
+    {
+      "slug": "cairo",
+      "name": "카이로",
+      "country": "이집트 / Egypt",
+      "coords": "30.0444,31.2357",
+      "explicitOverseas": true,
+      "mainWouldTourApi": true,
+      "branchWouldTourApi": false,
+      "hangulName": true,
+      "blockReason": "country"
+    },
+    {
+      "slug": "venice",
+      "name": "베니스",
+      "country": "이탈리아 / Italy",
+      "coords": "45.4408,12.3155",
+      "explicitOverseas": true,
+      "mainWouldTourApi": true,
+      "branchWouldTourApi": false,
+      "hangulName": true,
+      "blockReason": "country"
+    },
+    {
+      "slug": "paris",
+      "name": "파리",
+      "country": "프랑스 / France",
+      "coords": "48.8566,2.3522",
+      "explicitOverseas": true,
+      "mainWouldTourApi": true,
+      "branchWouldTourApi": false,
+      "hangulName": true,
+      "blockReason": "country"
+    },
+    {
+      "slug": "london",
+      "name": "런던",
+      "country": "영국 / UK",
+      "coords": "51.5,-0.12",
+      "explicitOverseas": true,
+      "mainWouldTourApi": true,
+      "branchWouldTourApi": false,
+      "hangulName": true,
+      "blockReason": "country"
+    },
+    {
+      "slug": "dubai",
+      "name": "두바이",
+      "country": "아랍에미리트 / UAE",
+      "coords": "25.2048,55.2707",
+      "explicitOverseas": true,
+      "mainWouldTourApi": true,
+      "branchWouldTourApi": false,
+      "hangulName": true,
+      "blockReason": "country"
+    },
+    {
+      "slug": "bangkok",
+      "name": "방콕",
+      "country": "태국 / Thailand",
+      "coords": "13.7563,100.5018",
+      "explicitOverseas": true,
+      "mainWouldTourApi": true,
+      "branchWouldTourApi": false,
+      "hangulName": true,
+      "blockReason": "country"
+    },
+    {
+      "slug": "tokyo",
+      "name": "도쿄",
+      "country": "일본 / Japan",
+      "coords": "35.67,139.76",
+      "explicitOverseas": true,
+      "mainWouldTourApi": true,
+      "branchWouldTourApi": false,
+      "hangulName": true,
+      "blockReason": "country"
+    },
+    {
+      "slug": "sydney",
+      "name": "시드니",
+      "country": "호주 / Australia",
+      "coords": "-33.86,151.2",
+      "explicitOverseas": true,
+      "mainWouldTourApi": true,
+      "branchWouldTourApi": false,
+      "hangulName": true,
+      "blockReason": "country"
+    },
+    {
+      "slug": "rio-de-janeiro",
+      "name": "리우데자네이루",
+      "country": "브라질 / Brazil",
+      "coords": "-22.9,-43.17",
+      "explicitOverseas": true,
+      "mainWouldTourApi": true,
+      "branchWouldTourApi": false,
+      "hangulName": true,
+      "blockReason": "country"
+    },
+    {
+      "slug": "new-york",
+      "name": "뉴욕",
+      "country": "미국 / USA",
+      "coords": "40.71,-74",
+      "explicitOverseas": true,
+      "mainWouldTourApi": true,
+      "branchWouldTourApi": false,
+      "hangulName": true,
+      "blockReason": "country"
+    }
+  ]
+}

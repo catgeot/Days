@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { resolveFooterBlock } from '../data/footerData';
 import ReleaseNotesList from '../../../shared/components/ReleaseNotesList';
 import MapboxCreditsPanel from '../../../shared/components/MapboxCreditsPanel';
+import FooterLegalText from './FooterLegalText';
 
 const FooterModal = ({ isOpen, onClose, initialTab = 'about' }) => {
   const { t, i18n } = useTranslation();
@@ -102,9 +103,7 @@ const FooterModal = ({ isOpen, onClose, initialTab = 'about' }) => {
           ) : activeTab === 'credits' ? (
             <MapboxCreditsPanel />
           ) : (
-            <div className="text-gray-300 text-sm leading-relaxed whitespace-pre-wrap font-light">
-              {contentBlock?.content}
-            </div>
+            <FooterLegalText text={contentBlock?.content} />
           )}
 
           {activeTab === 'contact' && (

@@ -42,13 +42,7 @@
  * }} WorldEventMooniChip
  */
 
-/**
- * @typedef {{
- *   id: string,
- *   titleKo?: string,
- *   titleEn?: string,
- * }} WorldEventYoutubeVideo
- */
+/** @typedef {{ id: string }} WorldEventYoutubeVideo */
 
 /**
  * @typedef {{
@@ -530,13 +524,17 @@ export function normalizeWorldEventOverride(raw, ctx = {}) {
       if (!/^[A-Za-z0-9_-]{11}$/.test(videoId)) {
         throw new Error(`[world-events] ${id}: youtubeVideos[${videoIndex}].id must be 11-char YouTube id`);
       }
-      /** @type {WorldEventYoutubeVideo} */
-      const normalizedVideo = { id: videoId };
-      const titleKo = video.titleKo != null ? String(video.titleKo).trim() : undefined;
-      const titleEn = video.titleEn != null ? String(video.titleEn).trim() : undefined;
-      if (titleKo) normalizedVideo.titleKo = titleKo;
-      if (titleEn) normalizedVideo.titleEn = titleEn;
-      return normalizedVideo;
+      if (video.titleKo != null && String(video.titleKo).trim()) {
+        throw new Error(
+          `[world-events] ${id}: youtubeVideos[${videoIndex}] must not include titleKo (YouTube policy — id only)`,
+        );
+      }
+      if (video.titleEn != null && String(video.titleEn).trim()) {
+        throw new Error(
+          `[world-events] ${id}: youtubeVideos[${videoIndex}] must not include titleEn (YouTube policy — id only)`,
+        );
+      }
+      return { id: videoId };
     });
     if (!youtubeVideos.length) {
       throw new Error(`[world-events] ${id}: youtubeVideos must not be empty when set`);
