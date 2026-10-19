@@ -159,11 +159,11 @@ export async function returnFromNearbyOfficialPopupKeepNearby(page, context, nea
   const official = nearbyModal.locator('[data-theme-spot-official-home]');
   await expect(official).toBeVisible({ timeout: 15_000 });
   const popupPromise = context.waitForEvent('page', { timeout: 30_000 });
-  await official.click();
+  await official.click({ timeout: 15_000 });
   const popup = await popupPromise;
   await popup.waitForLoadState('domcontentloaded', { timeout: 20_000 }).catch(() => {});
   if (!popup.isClosed()) {
-    await popup.close({ runBeforeUnload: true }).catch(() => {});
+    await popup.close({ runBeforeUnload: true, timeout: 8_000 }).catch(() => {});
     await popup.waitForEvent('close', { timeout: 8_000 }).catch(() => {});
   }
   await page.bringToFront();
@@ -567,8 +567,8 @@ export async function probeControlPressShot(
       await locator.click({ timeout: 15_000 });
       const popup = context ? await popupPromise : null;
       if (popup) {
-        await popup.waitForLoadState('domcontentloaded').catch(() => {});
-        await popup.close().catch(() => {});
+        await popup.waitForLoadState('domcontentloaded', { timeout: 15_000 }).catch(() => {});
+        await popup.close({ timeout: 8_000 }).catch(() => {});
         await page.bringToFront();
         await dispatchPersistedReturn(page);
       } else if (page.url() !== urlBefore) {

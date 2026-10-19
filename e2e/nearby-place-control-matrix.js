@@ -173,7 +173,8 @@ async function probePressInner(
     const popup = context ? await popupP : null;
     if (popup) {
       await popup.waitForLoadState('domcontentloaded', { timeout: 15_000 }).catch(() => {});
-      await popup.close().catch(() => {});
+      await popup.close({ timeout: 8_000 }).catch(() => {});
+      await popup.waitForEvent('close', { timeout: 5_000 }).catch(() => {});
       await recoverAfterOutbound(page, context, ensureModal);
     } else if (page.url() !== urlBefore) {
       await page.goBack({ waitUntil: 'commit', timeout: 8_000 }).catch(() => {});
@@ -306,6 +307,7 @@ export async function probeNearbyPlaceControlMatrix(
       await page.keyboard.press('Escape').catch(() => {});
       await dismissNearbyLightbox(page);
     }
+    active = await ensure();
     const base = `${shotPhase}-${shotKey(control)}`;
     const row = await probePress(
       page,
