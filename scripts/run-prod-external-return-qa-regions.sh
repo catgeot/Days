@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
+set -o pipefail
 cd "$(dirname "$0")/.."
 export SMOKE_SITE_URL="${SMOKE_SITE_URL:-http://127.0.0.1:4173/}"
 unset MOONI_TOURAPI_STUB_ONLY

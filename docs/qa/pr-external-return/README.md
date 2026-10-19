@@ -1,6 +1,6 @@
 # Festival sheet — external link return QA (WebKit 390 · prod anon)
 
-생성일: 2026-10-18 · Playwright `webkit-external-return-qa-record` · 뷰포트 390×844
+생성일: 2026-10-19 · Playwright `webkit-external-return-qa-record` · 뷰포트 390×844
 
 **데이터:** `npm run build` + `vite preview` (`http://127.0.0.1:4173`) · production `VITE_SUPABASE_*` · read-only guard · **stub 없음**
 
@@ -27,9 +27,9 @@ CI e2e (fixtures): `e2e/korea-festival-external-return.spec.js` · `MOONI_TOURAP
 
 | 권역 | 축제 ID | 주변 명소 | nearby 버튼 | sheet 버튼 |
 | --- | --- | --- | --- | --- |
-| 강원·양구 | `1122739` | 해안야생화공원 | **PARTIAL** (4/5 PASS) | **PASS** |
-| 강원·강릉 | `2930716` | 강릉 오금집 | **PARTIAL** (2/5 PASS) | **PASS** |
-| 경남·마산 | `637693` | 마산항 | **PARTIAL** (3/5 PASS) | **PASS** |
+| 강원·양구 | `1122739` | 해안야생화공원 | **PASS** | **PARTIAL** (9/10 PASS) |
+| 강원·강릉 | `2930716` | 강릉 오금집 | **PASS** | **PARTIAL** (9/10 PASS) |
+| 경남·마산 | `637693` | 마산항 | **PASS** | **PARTIAL** (9/10 PASS) |
 
 ## 강원·양구 — 청춘양구 펀치볼 시래기사과축제 (`1122739`) (owner e2e id `8099001` → prod `1122739`)
 
@@ -37,15 +37,19 @@ CI e2e (fixtures): `e2e/korea-festival-external-return.spec.js` · `MOONI_TOURAP
 
 경로: 축제 홈 → 검색 카드 → 주변 볼거리 → 공식 홈 → 팝업 닫기 → 명소 닫기
 
-### 주변 명소 상세 — 버튼별 (복귀 후)
+### 주변 명소 상세 — 9컨트롤 (baseline vs 복귀 후)
 
-| 컨트롤 | elementFromPoint | 동작/효과 | 스크린샷 | 비고 |
-| --- | --- | --- | --- | --- |
-| 네이버 | PASS | PASS | `yanggu-1122739-nearby-naver.png` |  |
-| 구글 | PASS | FAIL | `yanggu-1122739-nearby-google.png` |  |
-| 공식 홈페이지 | PASS | PASS | `yanggu-1122739-nearby-homepage.png` |  |
-| 내 여행 일정 | PASS | PASS | `yanggu-1122739-nearby-stay.png` |  |
-| 닫기 (X) | PASS | PASS | `yanggu-1122739-nearby-close-x.png` |  |
+| 컨트롤 | baseline hit/effect | after return hit/effect | 스크린샷 (after) | 회귀 | 비고 |
+| --- | --- | --- | --- | --- | --- |
+| 닫기 (X) | PASS/SKIP | PASS/PASS | `buttons/yanggu-1122739-nearby-close-x.png` | — |  |
+| 즐겨찾기 | PASS/SKIP | PASS/PASS | `buttons/yanggu-1122739-nearby-star.png` | — |  |
+| 확대보기 | N/A | N/A |  | — | no hero expand |
+| 네이버 | PASS/SKIP | PASS/PASS | `buttons/yanggu-1122739-nearby-naver.png` | — |  |
+| 구글 | PASS/SKIP | PASS/PASS | `buttons/yanggu-1122739-nearby-google.png` | — |  |
+| 홈페이지 | PASS/SKIP | PASS/PASS | `buttons/yanggu-1122739-nearby-homepage.png` | — |  |
+| 사진 | N/A | N/A |  | — | not in DOM |
+| 내 여행 일정 | PASS/SKIP | PASS/PASS | `buttons/yanggu-1122739-nearby-stay.png` | — |  |
+| 무니 | PASS/SKIP | PASS/PASS | `buttons/yanggu-1122739-nearby-mooni.png` | — |  |
 
 ### 축제 시트 — 버튼별
 
@@ -54,12 +58,13 @@ CI e2e (fixtures): `e2e/korea-festival-external-return.spec.js` · `MOONI_TOURAP
 | z40–59 투명 히트 차단 없음 | PASS | PASS | `yanggu-1122739-sheet-z40–59-투명-히트-차단-없음.png` |  |
 | 스크림이 탭 hit 아님 | PASS | PASS | `yanggu-1122739-sheet-스크림이-탭-hit-아님.png` |  |
 | 탭 · 프로그램 | PASS | PASS | `yanggu-1122739-sheet-탭-·-프로그램.png` |  |
-| 안내로 돌아가기 | PASS | PASS | `yanggu-1122739-sheet-안내로-돌아가기.png` |  |
+| 안내로 돌아가기 | FAIL | FAIL | `yanggu-1122739-sheet-안내로-돌아가기.png` |  |
 | 맨 위로 | PASS | PASS | `yanggu-1122739-sheet-맨-위로.png` | QA record — 맨 위로 생략 |
 | 탭 · 사진 | PASS | PASS | `yanggu-1122739-sheet-탭-·-사진.png` |  |
 | 공식 홈페이지 | PASS | PASS | `yanggu-1122739-sheet-공식-홈페이지.png` |  |
 | 히어로 썸네일 | PASS | PASS | `yanggu-1122739-sheet-히어로-썸네일.png` |  |
 | 닫기 (X) | PASS | PASS | `yanggu-1122739-sheet-닫기-(X).png` |  |
+| Mooni (시트) | PASS | PASS | `yanggu-1122739-sheet-mooni.png` |  |
 
 ## 강원·강릉 — 강릉국수축제 (`2930716`)
 
@@ -67,15 +72,19 @@ CI e2e (fixtures): `e2e/korea-festival-external-return.spec.js` · `MOONI_TOURAP
 
 경로: 축제 홈 → 검색 카드 → 주변 볼거리 → 공식 홈 → 팝업 닫기 → 명소 닫기
 
-### 주변 명소 상세 — 버튼별 (복귀 후)
+### 주변 명소 상세 — 9컨트롤 (baseline vs 복귀 후)
 
-| 컨트롤 | elementFromPoint | 동작/효과 | 스크린샷 | 비고 |
-| --- | --- | --- | --- | --- |
-| 확대보기 | FAIL | FAIL |  | 확대보기 timeout 28000ms |
-| 네이버 | PASS | PASS | `gangneung-2930716-nearby-naver.png` |  |
-| 구글 | PASS | FAIL | `gangneung-2930716-nearby-google.png` |  |
-| 공식 홈페이지 | PASS | FAIL | `gangneung-2930716-nearby-homepage.png` |  |
-| 닫기 (X) | PASS | PASS | `gangneung-2930716-nearby-close-x.png` |  |
+| 컨트롤 | baseline hit/effect | after return hit/effect | 스크린샷 (after) | 회귀 | 비고 |
+| --- | --- | --- | --- | --- | --- |
+| 닫기 (X) | PASS/SKIP | PASS/PASS | `buttons/gangneung-2930716-nearby-close-x.png` | — |  |
+| 즐겨찾기 | PASS/SKIP | PASS/PASS | `buttons/gangneung-2930716-nearby-star.png` | — |  |
+| 확대보기 | PASS/SKIP | PASS/PASS | `buttons/gangneung-2930716-nearby-expand.png` | — |  |
+| 네이버 | PASS/SKIP | PASS/PASS | `buttons/gangneung-2930716-nearby-naver.png` | — |  |
+| 구글 | PASS/SKIP | PASS/PASS | `buttons/gangneung-2930716-nearby-google.png` | — |  |
+| 홈페이지 | PASS/SKIP | PASS/PASS | `buttons/gangneung-2930716-nearby-homepage.png` | — |  |
+| 사진 | PASS/SKIP | PASS/PASS | `buttons/gangneung-2930716-nearby-photo.png` | — |  |
+| 내 여행 일정 | PASS/SKIP | PASS/PASS | `buttons/gangneung-2930716-nearby-stay.png` | — |  |
+| 무니 | PASS/SKIP | PASS/PASS | `buttons/gangneung-2930716-nearby-mooni.png` | — |  |
 
 ### 축제 시트 — 버튼별
 
@@ -84,12 +93,13 @@ CI e2e (fixtures): `e2e/korea-festival-external-return.spec.js` · `MOONI_TOURAP
 | z40–59 투명 히트 차단 없음 | PASS | PASS | `gangneung-2930716-sheet-z40–59-투명-히트-차단-없음.png` |  |
 | 스크림이 탭 hit 아님 | PASS | PASS | `gangneung-2930716-sheet-스크림이-탭-hit-아님.png` |  |
 | 탭 · 프로그램 | PASS | PASS | `gangneung-2930716-sheet-탭-·-프로그램.png` |  |
-| 안내로 돌아가기 | PASS | PASS | `gangneung-2930716-sheet-안내로-돌아가기.png` |  |
+| 안내로 돌아가기 | FAIL | FAIL | `gangneung-2930716-sheet-안내로-돌아가기.png` |  |
 | 맨 위로 | PASS | PASS | `gangneung-2930716-sheet-맨-위로.png` | QA record — 맨 위로 생략 |
 | 탭 · 사진 | PASS | PASS | `gangneung-2930716-sheet-탭-·-사진.png` |  |
 | 공식 홈페이지 | PASS | PASS | `gangneung-2930716-sheet-공식-홈페이지.png` |  |
 | 히어로 썸네일 | PASS | PASS | `gangneung-2930716-sheet-히어로-썸네일.png` |  |
 | 닫기 (X) | PASS | PASS | `gangneung-2930716-sheet-닫기-(X).png` |  |
+| Mooni (시트) | PASS | PASS | `gangneung-2930716-sheet-mooni.png` |  |
 
 ## 경남·마산 — 마산가고파국화축제 (`637693`)
 
@@ -97,15 +107,19 @@ CI e2e (fixtures): `e2e/korea-festival-external-return.spec.js` · `MOONI_TOURAP
 
 경로: 축제 홈 → 검색 카드 → 주변 볼거리 → 공식 홈 → 팝업 닫기 → 명소 닫기
 
-### 주변 명소 상세 — 버튼별 (복귀 후)
+### 주변 명소 상세 — 9컨트롤 (baseline vs 복귀 후)
 
-| 컨트롤 | elementFromPoint | 동작/효과 | 스크린샷 | 비고 |
-| --- | --- | --- | --- | --- |
-| 확대보기 | FAIL | FAIL |  | 확대보기 timeout 28000ms |
-| 네이버 | PASS | PASS | `masan-637693-nearby-naver.png` |  |
-| 구글 | PASS | PASS | `masan-637693-nearby-google.png` |  |
-| 공식 홈페이지 | PASS | FAIL | `masan-637693-nearby-homepage.png` |  |
-| 닫기 (X) | PASS | PASS | `masan-637693-nearby-close-x.png` |  |
+| 컨트롤 | baseline hit/effect | after return hit/effect | 스크린샷 (after) | 회귀 | 비고 |
+| --- | --- | --- | --- | --- | --- |
+| 닫기 (X) | PASS/SKIP | PASS/PASS | `buttons/masan-637693-nearby-close-x.png` | — |  |
+| 즐겨찾기 | PASS/SKIP | PASS/PASS | `buttons/masan-637693-nearby-star.png` | — |  |
+| 확대보기 | PASS/SKIP | PASS/PASS | `buttons/masan-637693-nearby-expand.png` | — |  |
+| 네이버 | PASS/SKIP | PASS/PASS | `buttons/masan-637693-nearby-naver.png` | — |  |
+| 구글 | PASS/SKIP | PASS/PASS | `buttons/masan-637693-nearby-google.png` | — |  |
+| 홈페이지 | PASS/SKIP | PASS/PASS | `buttons/masan-637693-nearby-homepage.png` | — |  |
+| 사진 | PASS/SKIP | PASS/PASS | `buttons/masan-637693-nearby-photo.png` | — |  |
+| 내 여행 일정 | PASS/SKIP | PASS/PASS | `buttons/masan-637693-nearby-stay.png` | — |  |
+| 무니 | PASS/SKIP | PASS/PASS | `buttons/masan-637693-nearby-mooni.png` | — |  |
 
 ### 축제 시트 — 버튼별
 
@@ -114,10 +128,11 @@ CI e2e (fixtures): `e2e/korea-festival-external-return.spec.js` · `MOONI_TOURAP
 | z40–59 투명 히트 차단 없음 | PASS | PASS | `masan-637693-sheet-z40–59-투명-히트-차단-없음.png` |  |
 | 스크림이 탭 hit 아님 | PASS | PASS | `masan-637693-sheet-스크림이-탭-hit-아님.png` |  |
 | 탭 · 프로그램 | PASS | PASS | `masan-637693-sheet-탭-·-프로그램.png` |  |
-| 안내로 돌아가기 | PASS | PASS | `masan-637693-sheet-안내로-돌아가기.png` |  |
+| 안내로 돌아가기 | FAIL | FAIL | `masan-637693-sheet-안내로-돌아가기.png` |  |
 | 맨 위로 | PASS | PASS | `masan-637693-sheet-맨-위로.png` | QA record — 맨 위로 생략 |
 | 탭 · 사진 | PASS | PASS | `masan-637693-sheet-탭-·-사진.png` |  |
 | 공식 홈페이지 | PASS | PASS | `masan-637693-sheet-공식-홈페이지.png` |  |
 | 히어로 썸네일 | PASS | PASS | `masan-637693-sheet-히어로-썸네일.png` |  |
 | 닫기 (X) | PASS | PASS | `masan-637693-sheet-닫기-(X).png` |  |
+| Mooni (시트) | PASS | PASS | `masan-637693-sheet-mooni.png` |  |
 
