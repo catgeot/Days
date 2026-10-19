@@ -2,9 +2,13 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import {
   BLOCKED_VIDEO_IDS,
+  BLOCK_PATTERN_PROBE_CASES,
   filterBlockedPlaceVideos,
   shouldBlockPlaceVideo,
+  snippetLooksLikeShorts,
 } from '../../supabase/functions/_shared/videoBlocklist.mjs';
+
+const PROBE_ID_PREFIX = 'pattern-probe-';
 
 test('blocked video IDs are removed', () => {
   for (const id of BLOCKED_VIDEO_IDS) {
@@ -17,21 +21,35 @@ test('blocked video IDs are removed', () => {
   assert.deepEqual(list.map((v) => v.id), ['keep123']);
 });
 
-test('horror and accident title patterns are blocked', () => {
-  assert.equal(
-    shouldBlockPlaceVideo({
-      id: 'x',
-      title: '발리 축제 #horror #ghost #shorts',
-    }),
-    true,
-  );
-  assert.equal(
-    shouldBlockPlaceVideo({
-      id: 'y',
-      title: '얼마전 발리에서 생긴 사망사고 현장 심약자주의',
-    }),
-    true,
-  );
+test('each title pattern blocks a dedicated probe (no blocked id, no cross-pattern tags)', () => {
+  const qaTitles = [
+    '얼마전 발리에서 생긴 사망사고 현장',
+    '#발리사고 #사망',
+    '귀신 #공포',
+    '#괴담 모음',
+  ];
+  for (const title of qaTitles) {
+    assert.equal(
+      shouldBlockPlaceVideo({ id: `${PROBE_ID_PREFIX}qa`, title }),
+      true,
+      title,
+    );
+  }
+
+  for (const { key, title } of BLOCK_PATTERN_PROBE_CASES) {
+    assert.equal(
+      shouldBlockPlaceVideo({ id: `${PROBE_ID_PREFIX}${key}`, title }),
+      true,
+      `pattern ${key}: ${title}`,
+    );
+  }
+  assert.equal(BLOCK_PATTERN_PROBE_CASES.length, 17);
+});
+
+test('shorts tag detection matches #shorts and #short', () => {
+  assert.equal(snippetLooksLikeShorts({ title: 'clip #shorts travel' }), true);
+  assert.equal(snippetLooksLikeShorts({ title: 'clip #short clip' }), true);
+  assert.equal(snippetLooksLikeShorts({ title: 'short story' }), false);
 });
 
 test('false positives from QA scan are kept', () => {

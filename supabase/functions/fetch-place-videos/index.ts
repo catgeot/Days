@@ -38,6 +38,8 @@ const LIMIT_IP_PER_MINUTE = 6;
 const LIMIT_PLACE_NEW_PER_DAY = 2;
 const LIMIT_PAGE_IP_PLACE = 3;
 const LIMIT_PAGE_PLACE = 30;
+/** Festival: one extra search.list (+100 units) when medium + filters yield fewer than this. */
+const FESTIVAL_MIN_USABLE_VIDEOS = 6;
 
 const PREVIEW_ORIGIN_RE = /^https:\/\/days-git-[a-z0-9-]+-catgeots-projects\.vercel\.app$/;
 const FORBIDDEN_QUERY_RES = [
@@ -719,7 +721,10 @@ serve(async (req) => {
     return json(req, { success: false, error: "youtube_not_configured" }, 500);
   }
 
-  const fetchSearch = async (q: string, token?: string): Promise<YtSearch> => {
+  const fetchSearch = async (
+    q: string,
+    opts?: { pageToken?: string; videoDurationMedium?: boolean },
+  ): Promise<YtSearch> => {
     await chargeSearchUnits();
     const p = new URLSearchParams({
       part: "snippet",
@@ -733,8 +738,8 @@ serve(async (req) => {
       safeSearch: "strict",
       key: youtubeApiKey,
     });
-    if (mode === "festival") p.set("videoDuration", "medium");
-    if (token) p.set("pageToken", token);
+    if (mode === "festival" && opts?.videoDurationMedium) p.set("videoDuration", "medium");
+    if (opts?.pageToken) p.set("pageToken", opts.pageToken);
     let res: Response;
     try {
       res = await fetch(`${BASE_URL}/search?${p.toString()}`);
@@ -765,20 +770,67 @@ serve(async (req) => {
     if (error) logFail(placeId, "place_videos_write_failed", null);
   };
 
+  const tagBase = mode === "festival" ? ["#축제", "#festival"] : ["#여행", "#vlog"];
+
+  const mapSnippetItems = (items: YtItem[]) =>
+    (items || [])
+      .filter((item) => mode !== "festival" || !snippetLooksLikeShorts(item?.snippet))
+      .map((item) => ({
+        id: item?.id?.videoId,
+        title: decodeHtmlEntities(item?.snippet?.title || ""),
+        location_keyword: query,
+        channelTitle: item?.snippet?.channelTitle || null,
+        publishedAt: item?.snippet?.publishedAt || null,
+        ai_context: {
+          summary: item?.snippet?.description || "영상 설명이 없습니다.",
+          tags: [`#${query}`, ...tagBase],
+          best_moment: { time: "00:00", desc: "자동 생성된 영상" },
+          timeline: [],
+        },
+      }))
+      .filter((v) => Boolean(v.id));
+
+  const usableVideoCount = (items: YtItem[]) =>
+    filterBlockedPlaceVideos(mapSnippetItems(items)).length;
+
   let data: YtSearch;
+  let searchItems: YtItem[] = [];
   let paginationSource: "primary" | "fallback" | null = null;
   try {
     if (pageToken) {
       const useFallback = body.paginationSource === "fallback";
       const q = useFallback ? fallbackQ : primaryQ;
-      data = await fetchSearch(q, pageToken);
+      data = await fetchSearch(q, {
+        pageToken,
+        videoDurationMedium: mode === "festival",
+      });
+      searchItems = data.items || [];
       paginationSource = useFallback ? "fallback" : "primary";
     } else {
-      data = await fetchSearch(primaryQ);
+      data = await fetchSearch(primaryQ, { videoDurationMedium: mode === "festival" });
       paginationSource = "primary";
-      if (!data.items || data.items.length === 0) {
-        data = await fetchSearch(fallbackQ);
+      searchItems = data.items || [];
+
+      if (mode === "festival" && usableVideoCount(searchItems) < FESTIVAL_MIN_USABLE_VIDEOS) {
+        const wide = await fetchSearch(primaryQ, {});
+        const seen = new Set(
+          searchItems
+            .map((item) => item.id?.videoId)
+            .filter((id): id is string => Boolean(id)),
+        );
+        for (const item of wide.items || []) {
+          const vid = item.id?.videoId;
+          if (vid && !seen.has(vid)) {
+            seen.add(vid);
+            searchItems.push(item);
+          }
+        }
+      }
+
+      if (!searchItems.length) {
+        data = await fetchSearch(fallbackQ, { videoDurationMedium: mode === "festival" });
         paginationSource = "fallback";
+        searchItems = data.items || [];
       }
     }
   } catch (error) {
@@ -800,7 +852,6 @@ serve(async (req) => {
     return json(req, { success: false, error: yt.reason }, status);
   }
 
-  const tagBase = mode === "festival" ? ["#축제", "#festival"] : ["#여행", "#vlog"];
   const excludeSet = new Set<string>();
   // Forged excludes on the first search must not empty the cached row (72h negative cache).
   if (skipUpsert && Array.isArray(body.excludeVideoIds)) {
@@ -809,25 +860,7 @@ serve(async (req) => {
     }
   }
 
-  const mapSnippetItems = (items: YtItem[]) =>
-    (items || [])
-      .filter((item) => mode !== "festival" || !snippetLooksLikeShorts(item?.snippet))
-      .map((item) => ({
-        id: item?.id?.videoId,
-        title: decodeHtmlEntities(item?.snippet?.title || ""),
-        location_keyword: query,
-        channelTitle: item?.snippet?.channelTitle || null,
-        publishedAt: item?.snippet?.publishedAt || null,
-        ai_context: {
-          summary: item?.snippet?.description || "영상 설명이 없습니다.",
-          tags: [`#${query}`, ...tagBase],
-          best_moment: { time: "00:00", desc: "자동 생성된 영상" },
-          timeline: [],
-        },
-      }))
-      .filter((v) => Boolean(v.id));
-
-  let collected = filterBlockedPlaceVideos(mapSnippetItems(data.items || []));
+  let collected = filterBlockedPlaceVideos(mapSnippetItems(searchItems));
   if (excludeSet.size > 0) {
     collected = collected.filter((v) => v.id && !excludeSet.has(v.id));
   }

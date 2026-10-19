@@ -31,7 +31,7 @@ const state: {
   rpcError: boolean;
   forceLimited: boolean;
   festivalError: boolean;
-  yt: "three" | "empty" | "quota" | "boom" | "blocklist";
+  yt: "three" | "empty" | "quota" | "boom" | "blocklist" | "festival-thin" | "festival-thick";
   proxyBody: { ok?: boolean; items: unknown };
   proxyStatus: number;
 } = {
@@ -44,6 +44,7 @@ const state: {
 };
 let ytCalls = 0;
 let lastYtUrl = "";
+let ytUrlLog: string[] = [];
 let listScans = 0;
 let proxyCalls = 0;
 
@@ -71,6 +72,7 @@ globalThis.fetch = (input: Request | URL | string, init?: RequestInit) => {
   }
   ytCalls += 1;
   lastYtUrl = url;
+  ytUrlLog.push(url);
   if (state.yt === "boom") return Promise.reject(new Error("network down"));
   if (state.yt === "quota") {
     return Promise.resolve(new Response(JSON.stringify({
@@ -79,6 +81,24 @@ globalThis.fetch = (input: Request | URL | string, init?: RequestInit) => {
   }
   if (state.yt === "empty") {
     return Promise.resolve(new Response(JSON.stringify({ items: [] }), { status: 200 }));
+  }
+  if (state.yt === "festival-thin") {
+    if (url.includes("videoDuration=medium")) {
+      return Promise.resolve(new Response(JSON.stringify({
+        items: [ytItem("thin1"), ytItem("thin2")],
+      }), { status: 200 }));
+    }
+    return Promise.resolve(new Response(JSON.stringify({
+      items: [ytItem("wide1"), ytItem("wide2"), ytItem("wide3"), ytItem("wide4"), ytItem("wide5")],
+    }), { status: 200 }));
+  }
+  if (state.yt === "festival-thick") {
+    return Promise.resolve(new Response(JSON.stringify({
+      items: [
+        ytItem("t1"), ytItem("t2"), ytItem("t3"), ytItem("t4"),
+        ytItem("t5"), ytItem("t6"), ytItem("t7"), ytItem("t8"),
+      ],
+    }), { status: 200 }));
   }
   if (state.yt === "blocklist") {
     return Promise.resolve(new Response(JSON.stringify({
@@ -216,6 +236,7 @@ function reset() {
   state.proxyStatus = 200;
   ytCalls = 0;
   lastYtUrl = "";
+  ytUrlLog = [];
   listScans = 0;
   proxyCalls = 0;
   Deno.env.delete("FETCH_PLACE_VIDEOS_IP_DAILY_UNITS");
@@ -1142,8 +1163,9 @@ Deno.test("cached row serves videos without blocklisted IDs", async () => {
   assertEquals(ytCalls, 0);
 });
 
-Deno.test("festival search adds travel suffix and medium duration", async () => {
+Deno.test("festival search adds travel suffix and medium duration on first call", async () => {
   reset();
+  state.yt = "festival-thick";
   festivals.push({
     cache_key: "detail:ko:42",
     payload: {
@@ -1154,10 +1176,52 @@ Deno.test("festival search adds travel suffix and medium duration", async () => 
   });
   const res = await post({ placeId: "festival:42" });
   assertEquals(res.status, 200);
-  const q = youtubeQuery();
+  const q = new URL(ytUrlLog[0]).searchParams.get("q") ?? "";
   assert(q.includes("여행"), q);
-  assert(lastYtUrl.includes("safeSearch=strict"), lastYtUrl);
-  assert(lastYtUrl.includes("videoDuration=medium"), lastYtUrl);
+  assert(ytUrlLog[0].includes("safeSearch=strict"), ytUrlLog[0]);
+  assert(ytUrlLog[0].includes("videoDuration=medium"), ytUrlLog[0]);
+  assertEquals(ytCalls, 1);
+});
+
+Deno.test("festival runs a second search without videoDuration when medium yields fewer than 6 usable", async () => {
+  reset();
+  state.yt = "festival-thin";
+  festivals.push({
+    cache_key: "detail:ko:43",
+    payload: {
+      intro: null,
+      common: { title: "소규모 축제", contentid: "43", eventstartdate: "20260301" },
+      info: [],
+    },
+  });
+  const res = await post({ placeId: "festival:43" });
+  assertEquals(res.status, 200);
+  const body = await res.json();
+  assertEquals(ytCalls, 2);
+  assert(ytUrlLog[0].includes("videoDuration=medium"), ytUrlLog[0]);
+  assert(!ytUrlLog[1].includes("videoDuration="), ytUrlLog[1]);
+  const ids = body.videos.map((v: { id?: string }) => v.id);
+  assert(ids.includes("thin1"), ids.join(","));
+  assert(ids.includes("wide1"), ids.join(","));
+  assertEquals(body.videos.length, 5);
+});
+
+Deno.test("festival does not widen search when medium already yields 6 or more usable videos", async () => {
+  reset();
+  state.yt = "festival-thick";
+  festivals.push({
+    cache_key: "detail:ko:44",
+    payload: {
+      intro: null,
+      common: { title: "대형 축제", contentid: "44", eventstartdate: "20260301" },
+      info: [],
+    },
+  });
+  const res = await post({ placeId: "festival:44" });
+  assertEquals(res.status, 200);
+  const body = await res.json();
+  assertEquals(ytCalls, 1);
+  assertEquals(body.videos.length, 5);
 });
 
 Deno.test("an entity-wrapped word is kept when tags are stripped", async () => {
