@@ -87,7 +87,8 @@ export function showStaleBundleFallback(doc = typeof document !== 'undefined' ? 
     'position:fixed;inset:0;z-index:2147483646;display:flex;align-items:center;justify-content:center;padding:24px;background:#0f172a;color:#f8fafc;font-family:system-ui,-apple-system,sans-serif;text-align:center;';
   panel.innerHTML = `
     <div style="max-width:320px;">
-      <p style="margin:0 0 12px;font-size:15px;line-height:1.5;">새 버전이 배포되었습니다. 페이지를 불러오지 못했습니다.</p>
+      <p style="margin:0 0 8px;font-size:17px;font-weight:600;line-height:1.4;">사이트가 업데이트됐어요</p>
+      <p style="margin:0 0 16px;font-size:15px;line-height:1.5;opacity:0.92;">새로고침하면 이어서 볼 수 있어요.</p>
       <button type="button" id="gateo-stale-bundle-fallback-btn" style="margin:0;padding:10px 18px;border:0;border-radius:999px;background:#38bdf8;color:#0f172a;font-size:15px;font-weight:600;cursor:pointer;">새로고침</button>
     </div>
   `;
