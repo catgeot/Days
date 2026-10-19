@@ -173,8 +173,7 @@ test.describe('PR external return — prod QA record WebKit 390', () => {
       }
       await dispatchPersistedReturn(page);
       if (!(await sheetDialog.isVisible().catch(() => false))) {
-        await page.goto('/korea/', { waitUntil: 'domcontentloaded', timeout: 60_000 });
-        await dismissLocHint(page);
+        await dismissLocHint(page).catch(() => {});
         sheetDialog = await openFestivalSheet(page, festival.id, OPEN_TIMEOUT_MS);
       }
       await expect(sheetDialog).toBeVisible({ timeout: 60_000 });
