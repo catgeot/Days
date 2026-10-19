@@ -32,4 +32,9 @@ test('work log and mobile widget log stay off production hosts', () => {
   assert.match(work, /previewDebugChromeAllowed\(/);
   assert.match(panel, /if \(!enabled\) return null/);
   assert.match(work, /if \(!visible\) return null/);
+
+  const app = readFileSync(join(root, 'src/App.jsx'), 'utf8');
+  assert.match(app, /isPreviewDebugChromeBundled/);
+  assert.match(app, /lazy\(\(\) => import\('\.\/shared\/cloudPreview\/PreviewDebugChrome\.jsx'\)/);
+  assert.doesNotMatch(app, /from '\.\/shared\/cloudPreview\/CloudPreviewWorkLog\.jsx'/);
 });
