@@ -304,7 +304,6 @@ export async function probeNearbyPlaceControlMatrix(
 
   async function run(control, locator, effectCheck, extraShot) {
     if (phase === 'after') {
-      await page.keyboard.press('Escape').catch(() => {});
       await dismissNearbyLightbox(page);
     }
     active = await ensure();

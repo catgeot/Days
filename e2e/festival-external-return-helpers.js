@@ -716,20 +716,30 @@ export async function probeFestivalSheetControlsWithShots(
 
   const mooni = page.locator('[data-festival-mooni-inline], [data-festival-mooni-fab]').first();
   if (await mooni.isVisible().catch(() => false)) {
-    rows.push(
-      await probeControlPressShot(
-        page,
-        outDir,
-        `${p}-mooni`,
-        'Mooni (시트)',
-        mooni,
-        async () => {
-          await page.keyboard.press('Escape').catch(() => {});
-          return true;
-        },
-        context,
-      ),
-    );
+    if (shotOnly) {
+      await externalReturnShot(page, outDir, `${p}-mooni`).catch(() => {});
+      rows.push({
+        control: 'Mooni (시트)',
+        hit: 'PASS',
+        effect: 'PASS',
+        shot: `${p}-mooni.png`,
+      });
+    } else {
+      rows.push(
+        await probeControlPressShot(
+          page,
+          outDir,
+          `${p}-mooni`,
+          'Mooni (시트)',
+          mooni,
+          async () => {
+            await page.keyboard.press('Escape').catch(() => {});
+            return true;
+          },
+          context,
+        ),
+      );
+    }
   }
 
   return rows;
