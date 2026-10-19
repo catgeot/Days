@@ -5,9 +5,25 @@
 const VISITKOREA_HOSTS = ['tong.visitkorea.or.kr', 'cdn.visitkorea.or.kr'];
 
 function isVisitKoreaHost(hostname) {
+  const h = String(hostname || '').toLowerCase();
   return VISITKOREA_HOSTS.some(
-    (host) => hostname === host || hostname.endsWith(`.${host}`),
+    (host) => h === host || h.endsWith(`.${host}`),
   );
+}
+
+/**
+ * VisitKorea hotlink — no-referrer often blocks CDN; stock keeps no-referrer.
+ * @param {string | null | undefined} url
+ * @returns {'no-referrer' | undefined}
+ */
+export function resolveGalleryTileReferrerPolicy(url) {
+  try {
+    const host = new URL(String(url || '').trim()).hostname;
+    if (isVisitKoreaHost(host)) return undefined;
+  } catch {
+    /* invalid url */
+  }
+  return 'no-referrer';
 }
 
 /**

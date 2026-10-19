@@ -209,6 +209,7 @@ function needsPexelsBackfill(images, thumbnailOnly) {
   if (thumbnailOnly) return false;
   if (!Array.isArray(images) || images.length === 0) return false;
   if (galleryRemainingSlots(images) <= 0) return false;
+  if (isTourApiDominantGallery(images)) return false;
   return !galleryHasPexels(images);
 }
 

@@ -23,6 +23,7 @@ import PlaceScenicGateway from '../common/PlaceScenicGateway';
 import { useLocale } from '../../../i18n/LocaleProvider';
 import { useGalleryLongPress } from '../common/galleryLongPress';
 import { GALLERY_REPORT_REASONS } from '../../../shared/api/placeGalleryPersist';
+import { resolveGalleryTileReferrerPolicy } from '../../../utils/listImageUrl';
 
 const REPORT_REASON_I18N = {
   irrelevant: 'place.gallery.manageReasonIrrelevant',
@@ -51,7 +52,6 @@ const TILE_LOAD_HANG_MS = 6_000;
 const GalleryGridTile = React.memo(function GalleryGridTile({
   img,
   index,
-  eager = false,
   onOpen,
   onManage,
   enableLongPress = false,
@@ -59,6 +59,7 @@ const GalleryGridTile = React.memo(function GalleryGridTile({
   onPainted,
 }) {
   const [loaded, setLoaded] = useState(false);
+  const [broken, setBroken] = useState(false);
   const paintedRef = useRef(false);
   const imgElRef = useRef(null);
   const imgPropRef = useRef(img);
@@ -84,6 +85,8 @@ const GalleryGridTile = React.memo(function GalleryGridTile({
   }, [markPainted]);
 
   const settleBroken = useCallback(() => {
+    setBroken(true);
+    setLoaded(true);
     markPainted();
     onBrokenRef.current?.(imgPropRef.current);
   }, [markPainted]);
@@ -92,6 +95,7 @@ const GalleryGridTile = React.memo(function GalleryGridTile({
   // 목록 드롭은 onError·(hang 후)확정 깨짐만 — lazy 미시작 complete/0폭 오탐 금지.
   useEffect(() => {
     setLoaded(false);
+    setBroken(false);
     paintedRef.current = false;
     if (!src) {
       settleBroken();
@@ -157,25 +161,33 @@ const GalleryGridTile = React.memo(function GalleryGridTile({
         WebkitTouchCallout: enableLongPress ? 'none' : undefined,
       }}
     >
-      {!loaded && (
+      {!loaded && !broken && (
         <div
           className={`absolute inset-0 animate-pulse bg-gradient-to-br from-white/[0.12] via-white/[0.05] to-transparent ${hasAspect ? '' : 'min-h-[140px]'}`}
           aria-hidden
         />
+      )}
+      {broken && (
+        <div
+          className={`absolute inset-0 flex flex-col items-center justify-center gap-2 bg-white/[0.04] text-white/45 ${hasAspect ? '' : 'min-h-[140px]'}`}
+          aria-hidden
+        >
+          <ImageIcon size={28} strokeWidth={1.5} className="opacity-70" />
+        </div>
       )}
       <img
         ref={imgElRef}
         src={src}
         className={`w-full object-cover ${
           hasAspect ? 'h-full absolute inset-0' : 'h-auto relative'
-        }`}
+        } ${broken ? 'hidden' : ''}`}
         alt={`place-img-${index}`}
-        loading={eager ? 'eager' : 'lazy'}
+        loading="eager"
         decoding="async"
-        referrerPolicy="no-referrer"
+        referrerPolicy={resolveGalleryTileReferrerPolicy(src)}
         draggable={false}
         style={{
-          opacity: loaded ? 1 : 0,
+          opacity: loaded && !broken ? 1 : 0,
           ...(enableLongPress ? { WebkitTouchCallout: 'none' } : {}),
         }}
         width={img.width || undefined}
@@ -392,10 +404,14 @@ const PlaceGalleryView = React.memo(({
       paintTarget > 0 &&
       paintedCount < paintTarget,
   );
-  const showLoadingChrome = Boolean(
-    showInitialSkeleton || (isPaintPending && !hasImages),
+  const showLoadingChrome = Boolean(showInitialSkeleton || isPaintPending);
+  const showRefreshButton = Boolean(
+    hasImages &&
+      handleRefresh &&
+      !showInitialSkeleton &&
+      !galleryAtMax &&
+      galleryVisuallyReady,
   );
-  const showRefreshButton = Boolean(hasImages && handleRefresh && !showInitialSkeleton && !galleryAtMax);
   const gallerySourcesAttribution = useMemo(
     () =>
       formatGalleryDisplaySourcesAttribution(images, locale, {
@@ -466,16 +482,6 @@ const PlaceGalleryView = React.memo(({
       setGalleryVisuallyReady(true);
     }
   }, [paintedCount, paintTarget]);
-
-  /** decode/onLoad 누락 시 스피너·버튼 숨김이 고착되지 않게 (타일 hang 6s보다 짧게) */
-  useEffect(() => {
-    if (!isPaintPending || paintTarget <= 0) return undefined;
-    const t = window.setTimeout(() => {
-      setPaintedCount((n) => Math.max(n, paintTarget));
-      setGalleryVisuallyReady(true);
-    }, 3500);
-    return () => window.clearTimeout(t);
-  }, [isPaintPending, paintTarget, galleryPlaceKey]);
 
   const onTilePainted = useCallback(() => {
     setPaintedCount((n) => n + 1);
@@ -1185,7 +1191,6 @@ const PlaceGalleryView = React.memo(({
                       key={img.id || i}
                       img={img}
                       index={i}
-                      eager={i < 4}
                       onPainted={onTilePainted}
                       onOpen={() => {
                         suppressOpenClickRef.current = true;
