@@ -1,9 +1,9 @@
 const METADATA_TTL_MS = 30 * 24 * 60 * 60 * 1000;
 
 export function isMetadataExpired(lastUpdated, now = Date.now()) {
-  if (!lastUpdated) return true;
+  if (!lastUpdated) return false;
   const t = Date.parse(lastUpdated);
-  if (!Number.isFinite(t)) return true;
+  if (!Number.isFinite(t)) return false;
   return now - t > METADATA_TTL_MS;
 }
 

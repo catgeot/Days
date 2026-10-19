@@ -53,9 +53,9 @@ export function staleCutoffIso(nowMs = Date.now(), cutoffDays = STALE_DAYS) {
 }
 
 export function isMetadataExpired(lastUpdated, nowMs = Date.now()) {
-  if (!lastUpdated) return true;
+  if (!lastUpdated) return false;
   const t = Date.parse(lastUpdated);
-  if (!Number.isFinite(t)) return true;
+  if (!Number.isFinite(t)) return false;
   return nowMs - t > METADATA_TTL_MS;
 }
 
