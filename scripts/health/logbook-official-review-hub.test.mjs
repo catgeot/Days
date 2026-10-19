@@ -10,6 +10,7 @@ import {
   fetchEditorialReviewIndex,
   sortPersonaLabelsForDropdown,
 } from '../../src/logbookOfficialReviews/editorialReviewIndex.js';
+import { normalizePersonaLabel } from '../../src/utils/placeReviewEditorial.js';
 import {
   isGateoReviewDeeplinkEnabled,
   isLogbookOfficialReviewHubEnabled,
@@ -24,14 +25,21 @@ test('reviewer dropdown order includes 가족나들이', () => {
   assert.ok(LOGBOOK_OFFICIAL_REVIEWER_DROPDOWN_ORDER.includes('가족나들이'));
 });
 
+test('normalizePersonaLabel strips GATEO reviewer prefix', () => {
+  assert.equal(normalizePersonaLabel('야경렌즈'), '야경렌즈');
+  assert.equal(normalizePersonaLabel('GATEO 리뷰어 · 문턱없이'), '문턱없이');
+  assert.equal(normalizePersonaLabel('GATEO 리뷰어·로컬하루'), '로컬하루');
+});
+
 test('sortPersonaLabelsForDropdown — known order, 이틀컷 after constants', () => {
   const sorted = sortPersonaLabelsForDropdown([
     '이틀컷',
     '야경렌즈',
     '가족나들이',
     '미식갑니다',
+    'GATEO 리뷰어 · 문턱없이',
   ]);
-  assert.deepEqual(sorted, ['미식갑니다', '야경렌즈', '가족나들이', '이틀컷']);
+  assert.deepEqual(sorted, ['미식갑니다', '야경렌즈', '가족나들이', '문턱없이', '이틀컷']);
 });
 
 test('countPersonaLabels aggregates', () => {
@@ -72,6 +80,7 @@ test('fetchEditorialReviewIndex uses is_editorial filter', async () => {
   const rows = await fetchEditorialReviewIndex(mockClient, { limit: 10 });
   assert.equal(rows.length, 1);
   assert.ok(calls.some((c) => c[0] === 'eq' && c[1] === 'is_editorial' && c[2] === true));
+  assert.ok(calls.some((c) => c[0] === 'eq' && c[1] === 'is_public' && c[2] === true));
 });
 
 test('feature flags default off', () => {

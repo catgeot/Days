@@ -7,8 +7,10 @@ import SEO from '../../components/SEO';
 import AICurationCard from './components/AICurationCard';
 import CalendarCard from './components/CalendarCard';
 import RecentList from './components/RecentList';
+import LogbookOfficialReviewHubCard from './components/LogbookOfficialReviewHubCard';
 import { useDashboardData } from './hooks/useDashboardData';
 import { reportMatchesLogbookPlace } from '../../utils/logbookReadingMeta';
+import { isGateoLogbookReviewHubEnabled } from '../../shared/gateoFeatureFlags';
 
 const Dashboard = () => {
   const { t } = useTranslation();
@@ -179,6 +181,8 @@ const Dashboard = () => {
             )}
           </div>
         )}
+
+        {isPublicMode && isGateoLogbookReviewHubEnabled() ? <LogbookOfficialReviewHubCard /> : null}
 
         <RecentList reports={reports || []} loading={loading} isPublicMode={isPublicMode} />
 
