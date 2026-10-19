@@ -318,16 +318,8 @@ export const WORLD_EVENT_OVERRIDES = [
       },
     ],
     youtubeVideos: [
-      {
-        id: 'B5GN30_FRWU',
-        titleKo: '뮌헨·옥토버페스트 가이드',
-        titleEn: 'Munich & Oktoberfest guide',
-      },
-      {
-        id: 'wHr51Uh9a0E',
-        titleKo: '옥토버페스트 현장',
-        titleEn: 'Inside Oktoberfest',
-      },
+      { id: 'B5GN30_FRWU' },
+      { id: 'wHr51Uh9a0E' },
     ],
     actionChips: [
       {
@@ -517,16 +509,8 @@ export const WORLD_EVENT_OVERRIDES = [
       },
     ],
     youtubeVideos: [
-      {
-        id: '_YXE3yAUrvA',
-        titleKo: '에든버러 프린지·올드타운 가이드',
-        titleEn: 'Edinburgh Fringe Old Town guide',
-      },
-      {
-        id: '6jxgY3vCAjw',
-        titleKo: '프린지 방문 전 알아둘 것',
-        titleEn: 'Before you go to the Fringe',
-      },
+      { id: '_YXE3yAUrvA' },
+      { id: '6jxgY3vCAjw' },
     ],
     actionChips: [
       {
@@ -1330,16 +1314,8 @@ export const WORLD_EVENT_OVERRIDES = [
       },
     ],
     youtubeVideos: [
-      {
-        id: 'AJhPk93ksso',
-        titleKo: '갈룽안 축제 영상',
-        titleEn: 'Galungan festival film',
-      },
-      {
-        id: '8ix-YkhHl_E',
-        titleKo: '발리 갈룽안·우붓 체험',
-        titleEn: 'Galungan in Ubud',
-      },
+      { id: 'AJhPk93ksso' },
+      { id: '8ix-YkhHl_E' },
     ],
     youtubeSearchQueryKo: '발리 갈룽안 축제',
     youtubeSearchQueryEn: 'Bali Galungan festival',

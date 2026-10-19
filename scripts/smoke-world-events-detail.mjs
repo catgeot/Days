@@ -18,6 +18,7 @@ import {
   buildWorldEventHeroGalleryQueries,
   buildWorldEventYoutubeSearchQuery,
   getWorldEventHubAttractions,
+  getWorldEventYoutubeVideos,
 } from '../src/utils/worldEventMedia.js';
 import {
   isRejectedGalleryFillerImage,
@@ -524,6 +525,19 @@ assert.match(sydneyTram?.searchQueryKo || '', /교통 패스/, 'sydney tram tran
 const bali = getWorldEventById('bali-galungan-season-2026');
 assert.ok(bali.heroImage, 'bali heroImage');
 assert.ok(Array.isArray(bali.youtubeVideos) && bali.youtubeVideos.length >= 2, 'bali youtubeVideos');
+for (const pilot of [munich, edinburgh, bali]) {
+  for (const video of pilot.youtubeVideos) {
+    assert.equal(video.titleKo, undefined, `${pilot.id} youtubeVideos titleKo stripped`);
+    assert.equal(video.titleEn, undefined, `${pilot.id} youtubeVideos titleEn stripped`);
+    assert.match(String(video.id || ''), /^[A-Za-z0-9_-]{11}$/, `${pilot.id} youtube id shape`);
+  }
+}
+const pilotStaticTitles = getWorldEventYoutubeVideos(bali);
+assert.equal(pilotStaticTitles.length, bali.youtubeVideos.length, 'static youtube seed count');
+assert.ok(
+  pilotStaticTitles.every((video) => !String(video.title || '').trim()),
+  'static youtube seed has no titles',
+);
 assert.ok(Array.isArray(bali.actionChips) && bali.actionChips.length >= 3, 'bali actionChips');
 assert.ok(Array.isArray(bali.mooniChips) && bali.mooniChips.length >= 3, 'bali mooniChips');
 assert.equal(bali.hubId, 'bali', 'bali hubId for attraction bridge');

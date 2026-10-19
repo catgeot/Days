@@ -215,17 +215,23 @@ export function buildWorldEventYoutubeSearchQuery(event, locale = 'ko') {
 }
 
 /**
- * @param {import('./worldEvents').WorldEvent | null | undefined} event
- * @param {string} [locale]
+ * @param {{ title?: string } | null | undefined} video
+ * @param {string} fallbackLabel
  */
-export function getWorldEventYoutubeVideos(event, locale = 'ko') {
+export function worldEventYoutubeVideoDisplayTitle(video, fallbackLabel) {
+  const title = String(video?.title || '').trim();
+  return title || String(fallbackLabel || '').trim() || '';
+}
+
+/**
+ * Static seed — video IDs only; titles come from fetchWorldEventVideos / place_videos.
+ * @param {import('./worldEvents').WorldEvent | null | undefined} event
+ */
+export function getWorldEventYoutubeVideos(event) {
   if (!event?.youtubeVideos?.length) return [];
   return event.youtubeVideos.map((video) => ({
     id: video.id,
-    title:
-      locale === 'en' && video.titleEn
-        ? video.titleEn
-        : video.titleKo || video.titleEn || video.id,
+    title: '',
   }));
 }
 

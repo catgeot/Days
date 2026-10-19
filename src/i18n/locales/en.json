@@ -2150,6 +2150,7 @@
       "googleSearch": "Google search",
       "naverSearch": "Naver search",
       "youtubeTitle": "Related videos",
+      "youtubeVideoFallback": "YouTube video",
       "youtubeLoading": "Loading videos…",
       "youtubeLoadMore": "Show {{count}} more videos",
       "youtubeSearch": "Search more on YouTube",
