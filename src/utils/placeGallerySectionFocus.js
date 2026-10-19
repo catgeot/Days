@@ -57,10 +57,21 @@ export function queuePlaceGallerySectionAfterReview(placeKey, section) {
  * @param {unknown} placeKey
  * @returns {string | null}
  */
-export function consumePlaceGallerySectionAfterReview(placeKey) {
+export function peekPlaceGallerySectionAfterReview(placeKey) {
   const key = String(placeKey || '').trim();
   if (!key) return null;
   const section = afterReviewByPlaceKey.get(key);
+  return VALID.has(section) ? section : null;
+}
+
+/**
+ * @param {unknown} placeKey
+ * @returns {string | null}
+ */
+export function consumePlaceGallerySectionAfterReview(placeKey) {
+  const key = String(placeKey || '').trim();
+  if (!key) return null;
+  const section = peekPlaceGallerySectionAfterReview(key);
   if (!section) return null;
   afterReviewByPlaceKey.delete(key);
   return section;
@@ -74,7 +85,7 @@ export function consumePlaceGallerySectionAfterReview(placeKey) {
 export function resolvePlaceGallerySectionAutoOpen(placeKey, locationLike) {
   const fromLocation = parsePlaceGallerySectionFromLocation(locationLike);
   if (fromLocation) return fromLocation;
-  return consumePlaceGallerySectionAfterReview(placeKey);
+  return peekPlaceGallerySectionAfterReview(placeKey);
 }
 
 /**

@@ -836,6 +836,7 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null }) => {
           onSuccess={() => {
             setIsModalOpen(false);
             refetch();
+            window.dispatchEvent(new Event('place-visit-stories-refresh'));
             if (!editingReview) {
               queuePlaceGallerySectionAfterReview(placeSlug, PLACE_GALLERY_SECTION.STORIES);
             }

@@ -26,7 +26,9 @@ import {
 import { buildPlacePath } from '../../../utils/placePlannerPath';
 import {
   PLACE_GALLERY_SECTION,
-  resolvePlaceGallerySectionAutoOpen,
+  consumePlaceGallerySectionAfterReview,
+  parsePlaceGallerySectionFromLocation,
+  peekPlaceGallerySectionAfterReview,
   scrollPlaceGallerySectionIntoView,
 } from '../../../utils/placeGallerySectionFocus.js';
 import { getPlaceStableKey } from '../../../utils/travelSpotResolve.js';
@@ -44,12 +46,18 @@ function usePlaceGallerySectionOpen(sectionId, placeKey) {
   useEffect(() => {
     const key = String(placeKey || '').trim();
     if (!key) return;
-    const target = resolvePlaceGallerySectionAutoOpen(key, {
+    const locationLike = {
       hash: routeLocation.hash,
       search: routeLocation.search,
-    });
+    };
+    const fromUrl = parsePlaceGallerySectionFromLocation(locationLike);
+    const fromReview = peekPlaceGallerySectionAfterReview(key);
+    const target = fromUrl ?? fromReview;
     if (target !== sectionId) return;
     setOpen(true);
+    if (!fromUrl && fromReview === sectionId) {
+      consumePlaceGallerySectionAfterReview(key);
+    }
     if (!autoOpenedRef.current) {
       autoOpenedRef.current = true;
       requestAnimationFrame(() => scrollPlaceGallerySectionIntoView(sectionId));
@@ -57,6 +65,7 @@ function usePlaceGallerySectionOpen(sectionId, placeKey) {
   }, [
     placeKey,
     sectionId,
+    routeLocation.pathname,
     routeLocation.hash,
     routeLocation.search,
   ]);

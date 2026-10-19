@@ -9,6 +9,7 @@ import {
   parsePlaceGallerySectionFromHash,
   parsePlaceGallerySectionFromSearch,
   queuePlaceGallerySectionAfterReview,
+  peekPlaceGallerySectionAfterReview,
   resolvePlaceGallerySectionAutoOpen,
 } from '../../src/utils/placeGallerySectionFocus.js';
 
@@ -28,7 +29,9 @@ test('review flash is in-memory and consumed once', () => {
     resolvePlaceGallerySectionAutoOpen('cairo', { hash: '', search: '' }),
     PLACE_GALLERY_SECTION.STORIES,
   );
-  assert.equal(consumePlaceGallerySectionAfterReview('cairo'), null);
+  assert.equal(peekPlaceGallerySectionAfterReview('cairo'), PLACE_GALLERY_SECTION.STORIES);
+  assert.equal(consumePlaceGallerySectionAfterReview('cairo'), PLACE_GALLERY_SECTION.STORIES);
+  assert.equal(peekPlaceGallerySectionAfterReview('cairo'), null);
   assert.equal(
     resolvePlaceGallerySectionAutoOpen('cairo', { hash: '', search: '' }),
     null,
@@ -39,6 +42,7 @@ test('gallery sections default collapsed with anchors and toggle chip', () => {
   const factsUi = readFileSync(join(root, 'src/components/PlaceCard/common/PlaceVerifiedFacts.jsx'), 'utf8');
   assert.match(factsUi, /usePlaceGallerySectionOpen\(PLACE_GALLERY_SECTION\.FACTS/);
   assert.match(factsUi, /usePlaceGallerySectionOpen\(PLACE_GALLERY_SECTION\.STORIES/);
+  assert.match(factsUi, /routeLocation\.pathname/);
   assert.match(factsUi, /id=\{PLACE_GALLERY_SECTION\.FACTS\}/);
   assert.match(factsUi, /id=\{PLACE_GALLERY_SECTION\.STORIES\}/);
   assert.equal(factsUi.includes('useState(true)'), false);
@@ -50,4 +54,10 @@ test('gallery sections default collapsed with anchors and toggle chip', () => {
 test('reviews tab queues stories expand after new review', () => {
   const reviewsTab = readFileSync(join(root, 'src/components/PlaceCard/tabs/ReviewsTab.jsx'), 'utf8');
   assert.match(reviewsTab, /queuePlaceGallerySectionAfterReview\(placeSlug, PLACE_GALLERY_SECTION\.STORIES\)/);
+  assert.match(reviewsTab, /place-visit-stories-refresh/);
+  const visitStoriesHook = readFileSync(
+    join(root, 'src/components/PlaceCard/hooks/useVisitStories.js'),
+    'utf8',
+  );
+  assert.match(visitStoriesHook, /place-visit-stories-refresh/);
 });

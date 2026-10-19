@@ -22,8 +22,15 @@ export function useVisitStories(location) {
   const { blogs, isLoading: blogsLoading } = useRelatedBlogs(placeName);
   const [reviews, setReviews] = useState([]);
   const [reviewsLoading, setReviewsLoading] = useState(false);
+  const [reviewsRefreshToken, setReviewsRefreshToken] = useState(0);
 
   const slug = reviewPlaceSlug(location);
+
+  useEffect(() => {
+    const onRefresh = () => setReviewsRefreshToken((value) => value + 1);
+    window.addEventListener('place-visit-stories-refresh', onRefresh);
+    return () => window.removeEventListener('place-visit-stories-refresh', onRefresh);
+  }, []);
 
   useEffect(() => {
     if (!enabled || !slug) {
@@ -56,7 +63,7 @@ export function useVisitStories(location) {
     return () => {
       cancelled = true;
     };
-  }, [enabled, slug]);
+  }, [enabled, slug, reviewsRefreshToken]);
 
   const stories = useMemo(() => {
     if (!enabled) return [];
