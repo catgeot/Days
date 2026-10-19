@@ -330,7 +330,11 @@ export async function probeNearbyPlaceControlMatrix(
 
   // Close last — probe interactive controls first
   if (await loc.star.isVisible().catch(() => false)) {
-    await run('즐겨찾기', loc.star, async () => (await loc.star.isVisible().catch(() => false)));
+    await run(
+      '즐겨찾기',
+      loc.star,
+      async () => (await (await ensure()).isVisible().catch(() => false)),
+    );
   } else byControl.set('즐겨찾기', absentRow('즐겨찾기'));
 
   if (await loc.expand.isVisible().catch(() => false)) {
