@@ -276,9 +276,20 @@ Base: ${BASE}
 
 Sheet open reads **\`place_videos\` only** (\`fetchFestivalVideosCacheOnly\`); **\`fetch-place-videos\` / YouTube runs only when the user opens the 영상 tab** (cache miss or stale). Cached rows do not add YouTube quota on open. Empty \`videos:[]\` older than **7 days** → cache miss (tab stays for fresh search).
 
-## Stale empty cache / cron
+## Stale empty cache (this PR — client only)
 
-Client: \`isStaleEmptyPlaceVideoCache\` in \`placeVideoCache.js\` (7d). Server: \`refresh-place-videos\` edge loads stale rows via \`staleCutoffIso\` (weekly pg_cron draft in \`20261018180000_place_videos_weekly_refresh_cron.sql\`) including \`emptyPlace\` rows.
+\`isStaleEmptyPlaceVideoCache\` in \`placeVideoCache.js\` (7d) → \`fetchFestivalVideosCacheOnly\` treats old \`videos:[]\` as cache miss. **No DB migrations or Edge changes in this PR** (no-flag client scope).
+
+### Follow-up proposal (ops approval — not in this branch)
+
+- Weekly \`refresh-place-videos\` cron (draft migration \`20261018180000_place_videos_weekly_refresh_cron.sql\` on \`main\` from #516) to refresh stale \`place_videos\` rows including \`emptyPlace\`.
+- Edge already has \`staleCutoffIso\` / \`emptyPlace\` handling in \`supabase/functions/refresh-place-videos\` on \`main\`; wire cron + \`REFRESH_VIDEOS_APPLY\` separately when approved.
+
+## Region back — r2 vs now
+
+- **390px:** Chip row was **not** hidden (\`md:hidden\` only from 768px up). r2 after-back looked unchanged because capture clicked \`subRow.getByRole('button').first()\` (often the city chip, not \`‹ … 전체\`), not a missing handler.
+- **1280px (list-only):** Same row was **hidden** (\`md:hidden\`), so back was not visible/clickable until layout fix (\`lg:hidden\` only when map-split side flap is shown).
+- **Now:** \`[data-festival-region-back]\` + asserts; **390 after-back** shows province-wide meta (e.g. \`강원도 ·N건 ·시·군별\`, no city chip pressed).
 
 ## Tab bar stability (ms until tab label signature stable, 390px)
 
