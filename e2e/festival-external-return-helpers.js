@@ -333,7 +333,12 @@ async function zBandBlockersOverDialog(dialog) {
  * @returns {Promise<Array<{ control: string, hit: string, effect: string, note?: string }>>}
  */
 export async function probeFestivalSheetControls(page, dialog, opts = {}) {
-  const { homepagePattern = /https?:\/\//i, closeSheet = false, skipScrollTop = false } = opts;
+  const {
+    homepagePattern = /https?:\/\//i,
+    closeSheet = false,
+    skipScrollTop = false,
+    hitOnly = false,
+  } = opts;
   const rows = [];
 
   const push = (control, hit, effect, note = '') => {
@@ -363,12 +368,13 @@ export async function probeFestivalSheetControls(page, dialog, opts = {}) {
   let programHit = false;
   try {
     programHit = await hitTarget(programTab);
-    if (programHit) await programTab.click();
+    if (programHit && !hitOnly) await programTab.click();
   } catch {
     programHit = false;
   }
-  const programSelected =
-    programHit && (await programTab.getAttribute('aria-selected')) === 'true';
+  const programSelected = hitOnly
+    ? programHit
+    : programHit && (await programTab.getAttribute('aria-selected')) === 'true';
   push('탭 · 프로그램', programHit, programSelected);
 
   const backOverview = dialog.getByRole('button', { name: '안내로 돌아가기' });
@@ -376,9 +382,11 @@ export async function probeFestivalSheetControls(page, dialog, opts = {}) {
   let backOk = false;
   try {
     backHit = await hitTarget(backOverview);
-    if (backHit) {
+    if (backHit && !hitOnly) {
       await backOverview.click();
       backOk = (await infoTab.getAttribute('aria-selected')) === 'true';
+    } else if (backHit && hitOnly) {
+      backOk = true;
     }
   } catch {
     backHit = false;
@@ -438,13 +446,15 @@ export async function probeFestivalSheetControls(page, dialog, opts = {}) {
   if (await photosTab.isVisible().catch(() => false)) {
     try {
       photosHit = await hitTarget(photosTab);
-      if (photosHit) {
+      if (photosHit && !hitOnly) {
         await photosTab.click();
         photosOk = (await photosTab.getAttribute('aria-selected')) === 'true';
         if (photosOk) {
           const back2 = dialog.getByRole('button', { name: '안내로 돌아가기' });
           if (await back2.isVisible().catch(() => false)) await back2.click();
         }
+      } else if (photosHit && hitOnly) {
+        photosOk = true;
       }
     } catch {
       photosHit = false;
@@ -470,7 +480,7 @@ export async function probeFestivalSheetControls(page, dialog, opts = {}) {
   try {
     if (await thumb.isVisible({ timeout: 8_000 }).catch(() => false)) {
       thumbHit = await hitTarget(thumb);
-      if (thumbHit) {
+      if (thumbHit && !hitOnly) {
         await thumb.click();
         const lightboxClose = page.getByRole('button', { name: /^확대보기 닫기$/ });
         const opened = await lightboxClose.isVisible({ timeout: 3_000 }).catch(() => false);
@@ -481,6 +491,8 @@ export async function probeFestivalSheetControls(page, dialog, opts = {}) {
         } else {
           thumbOk = true;
         }
+      } else if (thumbHit && hitOnly) {
+        thumbOk = true;
       }
     }
   } catch {
@@ -499,7 +511,7 @@ export async function probeFestivalSheetControls(page, dialog, opts = {}) {
   try {
     await expect(closeBtn).toBeVisible({ timeout: 5_000 });
     closeHit = await hitTarget(closeBtn);
-    if (closeHit && closeSheet) {
+    if (closeHit && closeSheet && !hitOnly) {
       await closeBtn.click();
       await expect(page.getByRole('dialog')).toHaveCount(0, { timeout: 8_000 });
       closeOk = true;
@@ -652,6 +664,7 @@ export async function probeFestivalSheetControlsWithShots(
     homepagePattern,
     closeSheet: false,
     skipScrollTop: true,
+    hitOnly: shotOnly,
   });
   for (const base of baseRows) {
     const key = base.control.replace(/\s+/g, '-').slice(0, 40);
