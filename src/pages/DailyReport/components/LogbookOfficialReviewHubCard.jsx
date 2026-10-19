@@ -10,6 +10,7 @@ import {
 } from '../../../utils/placeReviewEditorial';
 import {
   getCollapsedPreviewText,
+  getGalleryImageEntries,
   resolveReviewThumbnailSrc,
 } from '../../../utils/placeReviewContentBlocks.js';
 import { stripReviewInlineMarkdown } from '../../../utils/reviewInlineMarkdown.js';
@@ -29,15 +30,51 @@ function editorialReviewListPreview(review) {
 
 function editorialReviewThumbSrc(review) {
   const images = review?.images;
-  if (!Array.isArray(images) || !images.length) return null;
-  return resolveReviewThumbnailSrc(images[0], { width: 160, height: 160 });
+  if (!Array.isArray(images) || images.length === 0) return null;
+  const candidates = [...images];
+  for (const { img } of getGalleryImageEntries(images, review?.content_blocks)) {
+    if (!candidates.includes(img)) candidates.push(img);
+  }
+  for (const img of candidates) {
+    const src = resolveReviewThumbnailSrc(img, { width: 160, height: 160 });
+    if (src) return src;
+  }
+  return null;
+}
+
+function HubReviewListThumbnail({ src }) {
+  const [loadState, setLoadState] = useState('pending');
+
+  if (!src || loadState === 'fail') return null;
+
+  if (loadState !== 'ok') {
+    return (
+      <img
+        src={src}
+        alt=""
+        aria-hidden
+        className="hidden size-0 overflow-hidden opacity-0 pointer-events-none"
+        decoding="async"
+        onLoad={() => setLoadState('ok')}
+        onError={() => setLoadState('fail')}
+      />
+    );
+  }
+
+  return (
+    <img
+      src={src}
+      alt=""
+      className="h-14 w-14 shrink-0 rounded-lg object-cover"
+      decoding="async"
+    />
+  );
 }
 
 const LogbookOfficialReviewHubCard = () => {
   const panelId = useId();
   const [expanded, setExpanded] = useState(false);
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
-  const [brokenThumbIds, setBrokenThumbIds] = useState(() => new Set());
   const { enabled, rows, isLoading, loadFailed, totalCount } = useLogbookOfficialReviewHub();
 
   const visibleRows = useMemo(() => rows.slice(0, visibleCount), [rows, visibleCount]);
@@ -84,8 +121,7 @@ const LogbookOfficialReviewHubCard = () => {
             {visibleRows.map((review) => {
               const slug = String(review.place_slug || '').trim();
               const href = slug ? `/place/${slug}/reviews` : '#';
-              const thumb =
-                !brokenThumbIds.has(review.id) ? editorialReviewThumbSrc(review) : null;
+              const thumbSrc = editorialReviewThumbSrc(review);
               const preview = editorialReviewListPreview(review);
               const placeName = String(review.place_name || '').trim();
               const dateLabel = formatLogbookDisplayDate(review.created_at);
@@ -94,29 +130,13 @@ const LogbookOfficialReviewHubCard = () => {
                 <li key={review.id}>
                   <Link
                     to={href}
-                    className="flex gap-3 py-3 px-1 rounded-lg hover:bg-gray-50 transition-colors"
+                    className={`flex py-3 px-1 rounded-lg hover:bg-gray-50 transition-colors${thumbSrc ? ' gap-3' : ''}`}
                     data-testid="logbook-official-review-hub-item"
                     data-hub-place-slug={slug || undefined}
                     data-review-id={review.id}
+                    data-hub-has-thumb={thumbSrc ? 'true' : 'false'}
                   >
-                    {thumb ? (
-                      <img
-                        src={thumb}
-                        alt=""
-                        className="h-14 w-14 shrink-0 rounded-lg object-cover bg-gray-100"
-                        loading="eager"
-                        decoding="async"
-                        fetchPriority="low"
-                        onError={() => {
-                          setBrokenThumbIds((prev) => {
-                            if (prev.has(review.id)) return prev;
-                            const next = new Set(prev);
-                            next.add(review.id);
-                            return next;
-                          });
-                        }}
-                      />
-                    ) : null}
+                    {thumbSrc ? <HubReviewListThumbnail key={thumbSrc} src={thumbSrc} /> : null}
                     <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mb-1">
                         <span className="inline-flex items-center rounded-full bg-indigo-50 px-2 py-0.5 text-[10px] font-bold text-indigo-700">
