@@ -38,6 +38,12 @@ test('festival detail bottom close returns sub-tabs to the overview', () => {
   assert.match(sheet, /scrollFestivalOverviewToTop/);
   assert.match(sheet, /festivalSheetOverviewScroll/);
   assert.match(sheet, /data-festival-sheet-content/);
+  assert.match(sheet, /hasVideoTab &&/);
+  assert.match(sheet, /videosLoadSettled/);
+  assert.match(sheet, /videosKnownEmptyFromCache/);
+  assert.match(sheet, /videosUserEmptyOnTab/);
+  assert.match(sheet, /videosNotFound/);
+  assert.match(sheet, /fetchFestivalVideosCacheOnly/);
   assert.match(
     button,
     /activeTab === TAB_INFO\s*\?\s*t\('korea\.common\.close'\)\s*:\s*t\('korea\.festival\.detail\.backToOverview'\)/,
@@ -48,4 +54,6 @@ test('festival detail bottom close returns sub-tabs to the overview', () => {
   assert.equal(en.korea.festival.detail.backToOverview, 'Back to overview');
   assert.equal(ko.korea.common.close, '닫기');
   assert.equal(en.korea.common.close, 'Close');
+  assert.equal(ko.korea.festival.detail.tabReading, '영상');
+  assert.equal(en.korea.festival.detail.tabReading, 'Videos');
 });

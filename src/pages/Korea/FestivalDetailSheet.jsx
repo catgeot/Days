@@ -27,7 +27,12 @@ import {
   localizedHubLabel,
   localizedScenicMajorRegion,
 } from '../../i18n/koreaRegionLabels';
-import { fetchFestivalVideos, FESTIVAL_VIDEOS_MAX, FESTIVAL_VIDEOS_PAGE } from '../../utils/fetchFestivalVideos';
+import {
+  fetchFestivalVideos,
+  fetchFestivalVideosCacheOnly,
+  FESTIVAL_VIDEOS_MAX,
+  FESTIVAL_VIDEOS_PAGE,
+} from '../../utils/fetchFestivalVideos';
 import { decodeHtmlEntities } from '../../utils/decodeHtmlEntities';
 import { fetchNearbyTourAttractions } from '../../utils/fetchNearbyTourAttractions';
 import { readNearbyAttractionCache } from './lib/nearbyAttractionCache';
@@ -631,7 +636,12 @@ export default function FestivalDetailSheet({
   const [videos, setVideos] = useState([]);
   const [videosLoading, setVideosLoading] = useState(false);
   const [videosError, setVideosError] = useState('');
-  const [videosLoadedFor, setVideosLoadedFor] = useState('');
+  const [videosCacheCheckedFor, setVideosCacheCheckedFor] = useState('');
+  const [videosFullFetchFor, setVideosFullFetchFor] = useState('');
+  const [videosLoadSettled, setVideosLoadSettled] = useState(false);
+  const [videosKnownEmptyFromCache, setVideosKnownEmptyFromCache] = useState(false);
+  const [videosUserEmptyOnTab, setVideosUserEmptyOnTab] = useState(false);
+  const [videosInvokeFailed, setVideosInvokeFailed] = useState(false);
   const [videosExpanded, setVideosExpanded] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [mooniOpen, setMooniOpen] = useState(false);
@@ -1002,7 +1012,12 @@ export default function FestivalDetailSheet({
       setVideos([]);
       setVideosLoading(false);
       setVideosError('');
-      setVideosLoadedFor('');
+      setVideosCacheCheckedFor('');
+      setVideosFullFetchFor('');
+      setVideosLoadSettled(false);
+      setVideosKnownEmptyFromCache(false);
+      setVideosUserEmptyOnTab(false);
+      setVideosInvokeFailed(false);
       setVideosExpanded(false);
       setNearbySpots([]);
       setNearbyStatus('idle');
@@ -1030,7 +1045,12 @@ export default function FestivalDetailSheet({
     setVideos([]);
     setVideosLoading(false);
     setVideosError('');
-    setVideosLoadedFor('');
+    setVideosCacheCheckedFor('');
+    setVideosFullFetchFor('');
+    setVideosLoadSettled(false);
+    setVideosKnownEmptyFromCache(false);
+    setVideosUserEmptyOnTab(false);
+    setVideosInvokeFailed(false);
     setVideosExpanded(false);
     setSelectedNearby(null);
     setSelectedScenic(null);
@@ -1750,6 +1770,13 @@ export default function FestivalDetailSheet({
   }
   if (imageUrls.length > 1) photoLatchRef.current.on = true;
   const hasPhotoTab = imageUrls.length > 1 || photoLatchRef.current.on;
+  const hasVideoTab =
+    videosUserEmptyOnTab ||
+    videosInvokeFailed ||
+    videos.length > 0 ||
+    videosLoading ||
+    !videosLoadSettled ||
+    !videosKnownEmptyFromCache;
   const showTabs = true;
   const nearbyPending = nearbyStatus === 'loading' || nearbyStatus === 'idle';
 
@@ -1758,43 +1785,93 @@ export default function FestivalDetailSheet({
       setActiveTab(TAB_INFO);
     } else if (activeTab === TAB_PHOTOS && !hasPhotoTab) {
       setActiveTab(TAB_INFO);
+    } else if (activeTab === TAB_READING && !hasVideoTab) {
+      setActiveTab(TAB_INFO);
     }
-  }, [activeTab, hasProgramTab, hasPhotoTab]);
+  }, [activeTab, hasProgramTab, hasPhotoTab, hasVideoTab]);
+
+  const festivalVideoQuery = useMemo(() => {
+    const ymd = String(item?.eventStartDate || intro?.eventStartDate || '');
+    const year = /^\d{8}$/.test(ymd) ? ymd.slice(0, 4) : '';
+    const searchTitle = festivalSearchQuery(item?.title || '');
+    return {
+      year,
+      title: searchTitle || String(item?.title || ''),
+    };
+  }, [item?.title, item?.eventStartDate, intro?.eventStartDate]);
 
   useEffect(() => {
-    if (activeTab !== TAB_READING || !item?.contentId || !item?.title) return;
+    if (!item?.contentId || !item?.title) return;
     const id = String(item.contentId);
-    if (videosLoadedFor === id) return;
+    if (videosCacheCheckedFor === id) return;
 
     let cancelled = false;
     setVideosLoading(true);
     setVideosError('');
-
-    const ymd = String(item.eventStartDate || intro?.eventStartDate || '');
-    const year = /^\d{8}$/.test(ymd) ? ymd.slice(0, 4) : '';
-    const searchTitle = festivalSearchQuery(item.title);
+    setVideosLoadSettled(false);
 
     (async () => {
-      const result = await fetchFestivalVideos({
-        contentId: id,
-        title: searchTitle || String(item.title),
-        year,
-      });
+      const result = await fetchFestivalVideosCacheOnly({ contentId: id });
       if (cancelled) return;
-      setVideosLoadedFor(id);
-      setVideosLoading(false);
+      setVideosCacheCheckedFor(id);
       setVideosExpanded(false);
-      if (!result.ok) {
+      if (result.cacheMiss) {
         setVideos([]);
-        setVideosError(t('korea.festival.detail.videosNotFound'));
+        setVideosKnownEmptyFromCache(false);
+        setVideosLoading(false);
         return;
       }
       const list = Array.isArray(result.videos)
         ? result.videos.slice(0, FESTIVAL_VIDEOS_MAX)
         : [];
       setVideos(list);
-      if (!list.length) {
-        setVideosError(t('korea.festival.detail.videosNotFound'));
+      setVideosKnownEmptyFromCache(Boolean(result.knownEmpty));
+      setVideosLoading(false);
+      setVideosLoadSettled(true);
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [item?.contentId, item?.title, videosCacheCheckedFor, t]);
+
+  useEffect(() => {
+    if (activeTab !== TAB_READING || !item?.contentId || !item?.title) return;
+    const id = String(item.contentId);
+    if (videosFullFetchFor === id) return;
+    if (videos.length > 0 && videosLoadSettled) return;
+
+    let cancelled = false;
+    setVideosLoading(true);
+    setVideosError('');
+
+    (async () => {
+      const result = await fetchFestivalVideos({
+        contentId: id,
+        title: festivalVideoQuery.title,
+        year: festivalVideoQuery.year,
+      });
+      if (cancelled) return;
+      setVideosFullFetchFor(id);
+      setVideosLoading(false);
+      setVideosExpanded(false);
+      setVideosLoadSettled(true);
+      if (!result.ok) {
+        setVideos([]);
+        setVideosInvokeFailed(true);
+        setVideosError(t('korea.festival.detail.videosLoadFailed'));
+        return;
+      }
+      setVideosInvokeFailed(false);
+      const list = Array.isArray(result.videos)
+        ? result.videos.slice(0, FESTIVAL_VIDEOS_MAX)
+        : [];
+      setVideos(list);
+      if (list.length === 0) {
+        setVideosUserEmptyOnTab(true);
+      } else {
+        setVideosUserEmptyOnTab(false);
+        setVideosKnownEmptyFromCache(false);
       }
     })();
 
@@ -1805,11 +1882,25 @@ export default function FestivalDetailSheet({
     activeTab,
     item?.contentId,
     item?.title,
-    item?.eventStartDate,
-    intro?.eventStartDate,
-    videosLoadedFor,
+    videosFullFetchFor,
+    videos.length,
+    videosLoadSettled,
+    festivalVideoQuery.title,
+    festivalVideoQuery.year,
     t,
   ]);
+
+  const retryFestivalVideos = useCallback(() => {
+    if (!item?.contentId) return;
+    setVideosFullFetchFor('');
+    setVideosInvokeFailed(false);
+    setVideosUserEmptyOnTab(false);
+    setVideosError('');
+    setVideosLoadSettled(false);
+    if (activeTab !== TAB_READING) {
+      setActiveTab(TAB_READING);
+    }
+  }, [item?.contentId, activeTab]);
 
   useEffect(() => {
     const el = sheetScrollRef.current;
@@ -2259,12 +2350,14 @@ export default function FestivalDetailSheet({
                   {t('korea.festival.detail.tabPhotos')}
                 </TabChip>
               )}
-              <TabChip
-                selected={activeTab === TAB_READING}
-                onClick={() => selectTab(TAB_READING)}
-              >
-                {t('korea.festival.detail.tabReading')}
-              </TabChip>
+              {hasVideoTab && (
+                <TabChip
+                  selected={activeTab === TAB_READING}
+                  onClick={() => selectTab(TAB_READING)}
+                >
+                  {t('korea.festival.detail.tabReading')}
+                </TabChip>
+              )}
             </div>
           )}
 
@@ -2880,8 +2973,27 @@ export default function FestivalDetailSheet({
                   </div>
                 )}
                 {!videosLoading && videosError && videos.length === 0 && (
-                  <p className="text-xs text-stone-500">{videosError}</p>
+                  <div className="space-y-2 py-1">
+                    <p className="text-xs text-stone-500">{videosError}</p>
+                    {videosInvokeFailed && (
+                      <button
+                        type="button"
+                        onClick={retryFestivalVideos}
+                        className="rounded-xl border border-stone-200 bg-stone-50 px-3 py-2 text-xs font-bold text-stone-800 hover:bg-stone-100"
+                      >
+                        {t('korea.common.retry')}
+                      </button>
+                    )}
+                  </div>
                 )}
+                {!videosLoading &&
+                  !videosError &&
+                  videos.length === 0 &&
+                  videosUserEmptyOnTab && (
+                    <p className="text-sm text-stone-500 py-2">
+                      {t('korea.festival.detail.videosNotFound')}
+                    </p>
+                  )}
                 {!videosLoading && videos.length > 0 && (
                   <>
                     <ul className="space-y-2">

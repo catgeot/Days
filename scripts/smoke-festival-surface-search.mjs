@@ -22,7 +22,7 @@ const sheet = readFileSync(
   'utf8',
 );
 const page = readFileSync(join(root, 'src/pages/Korea/index.jsx'), 'utf8');
-const readingAt = sheet.indexOf('activeTab === TAB_READING');
+const readingAt = sheet.indexOf('{!detailLoading && activeTab === TAB_READING');
 const outboundAt = sheet.indexOf('OutboundSearchButtons');
 const naverKeyAt = sheet.indexOf('korea.festival.detail.naverSearch');
 const googleKeyAt = sheet.indexOf('korea.festival.detail.googleSearch');

@@ -17,7 +17,7 @@ const FESTIVALS = [
 const SUB_TABS = [
   { pattern: /프로그램/, key: 'program' },
   { pattern: /^사진/, key: 'photos' },
-  { pattern: /읽을거리/, key: 'reading' },
+  { pattern: /영상/, key: 'reading' },
 ];
 
 async function clipShot(page, name) {
