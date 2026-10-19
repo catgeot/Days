@@ -18,6 +18,10 @@ import { stripReviewInlineMarkdown } from '../../../utils/reviewInlineMarkdown.j
 export const LOGBOOK_OFFICIAL_REVIEW_HUB_PAGE_SIZE = 10;
 const LIST_PREVIEW_MAX = 120;
 
+/** Keeps hub inside the logbook main column when sidebar + max-w-7xl would exceed the viewport. */
+const HUB_CARD_LAYOUT_CLASS =
+  'mb-6 w-full min-w-0 max-w-full box-border md:max-w-[min(80rem,calc(100vw-16rem-3rem))] overflow-x-hidden rounded-2xl border border-gray-200 bg-white shadow-sm';
+
 function editorialReviewListPreview(review) {
   const titled = placeReviewVisitStoryDisplayTitle(review, LIST_PREVIEW_MAX);
   if (titled) return titled;
@@ -71,6 +75,64 @@ function HubReviewListThumbnail({ src }) {
   );
 }
 
+function HubTitleRow({
+  panelId,
+  expanded,
+  totalCount,
+  onToggle,
+  headerRound,
+  asToggle = true,
+}) {
+  const rowClass = `flex w-full min-w-0 items-center gap-2 px-4 py-3.5 text-left ${headerRound}`;
+  const inner = (
+    <>
+      <Sparkles size={18} className="shrink-0 text-indigo-500" aria-hidden />
+      <span className="min-w-0 flex-1 truncate text-sm font-bold text-gray-900">
+        {LOGBOOK_OFFICIAL_REVIEW_CARD_TITLE}
+      </span>
+      {typeof totalCount === 'number' ? (
+        <span
+          className="shrink-0 whitespace-nowrap tabular-nums text-xs font-semibold text-gray-600"
+          data-testid="logbook-official-review-hub-count"
+        >
+          {totalCount}편
+        </span>
+      ) : null}
+      <span
+        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-indigo-50 text-indigo-600 ring-1 ring-indigo-100"
+        aria-hidden
+      >
+        <ChevronDown
+          size={22}
+          strokeWidth={2.5}
+          className={`transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`}
+        />
+      </span>
+    </>
+  );
+
+  if (!asToggle) {
+    return (
+      <div className={rowClass} data-testid="logbook-official-review-hub-title-row">
+        {inner}
+      </div>
+    );
+  }
+
+  return (
+    <button
+      type="button"
+      className={`${rowClass} transition-colors hover:bg-gray-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500`}
+      aria-expanded={expanded}
+      aria-controls={panelId}
+      data-testid="logbook-official-review-hub-toggle"
+      onClick={onToggle}
+    >
+      {inner}
+    </button>
+  );
+}
+
 const LogbookOfficialReviewHubCard = () => {
   const panelId = useId();
   const [expanded, setExpanded] = useState(false);
@@ -86,20 +148,23 @@ const LogbookOfficialReviewHubCard = () => {
   if (loadFailed) {
     return (
       <section
-        className="mb-6 overflow-visible rounded-2xl border border-gray-200 bg-white px-4 py-3.5 shadow-sm"
+        className={HUB_CARD_LAYOUT_CLASS}
         aria-label={LOGBOOK_OFFICIAL_REVIEW_CARD_TITLE}
         data-testid="logbook-official-review-hub"
         data-hub-state="load-failed"
       >
-        <p className="text-sm text-gray-600">리뷰를 불러오지 못했어요</p>
-        <button
-          type="button"
-          className="mt-2 text-sm font-semibold text-indigo-600 hover:text-indigo-800"
-          data-testid="logbook-official-review-hub-retry"
-          onClick={retry}
-        >
-          다시 시도
-        </button>
+        <HubTitleRow panelId={panelId} expanded={false} asToggle={false} headerRound="rounded-t-2xl" />
+        <div className="border-t border-gray-100 px-4 pb-3.5 pt-2">
+          <p className="text-sm text-gray-600">리뷰를 불러오지 못했어요</p>
+          <button
+            type="button"
+            className="mt-2 text-sm font-semibold text-indigo-600 hover:text-indigo-800"
+            data-testid="logbook-official-review-hub-retry"
+            onClick={retry}
+          >
+            다시 시도
+          </button>
+        </div>
       </section>
     );
   }
@@ -117,40 +182,18 @@ const LogbookOfficialReviewHubCard = () => {
 
   return (
     <section
-      className="mb-6 overflow-visible rounded-2xl border border-gray-200 bg-white shadow-sm"
+      className={HUB_CARD_LAYOUT_CLASS}
       aria-label={LOGBOOK_OFFICIAL_REVIEW_CARD_TITLE}
       data-testid="logbook-official-review-hub"
       data-hub-state="ready"
     >
-      <button
-        type="button"
-        className={`flex w-full min-w-0 items-center gap-2 px-4 py-3.5 text-left transition-colors hover:bg-gray-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 ${headerRound}`}
-        aria-expanded={expanded}
-        aria-controls={panelId}
-        data-testid="logbook-official-review-hub-toggle"
-        onClick={() => setExpanded((open) => !open)}
-      >
-        <Sparkles size={18} className="shrink-0 text-indigo-500" aria-hidden />
-        <span className="min-w-0 flex-1 truncate text-sm font-bold text-gray-900">
-          {LOGBOOK_OFFICIAL_REVIEW_CARD_TITLE}
-        </span>
-        <span
-          className="shrink-0 whitespace-nowrap tabular-nums text-xs font-semibold text-gray-600"
-          data-testid="logbook-official-review-hub-count"
-        >
-          {totalCount}편
-        </span>
-        <span
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-indigo-50 text-indigo-600 ring-1 ring-indigo-100"
-          aria-hidden
-        >
-          <ChevronDown
-            size={22}
-            strokeWidth={2.5}
-            className={`transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`}
-          />
-        </span>
-      </button>
+      <HubTitleRow
+        panelId={panelId}
+        expanded={expanded}
+        totalCount={totalCount}
+        headerRound={headerRound}
+        onToggle={() => setExpanded((open) => !open)}
+      />
 
       {expanded ? (
         <div

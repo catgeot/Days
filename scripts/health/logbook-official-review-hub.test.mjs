@@ -124,6 +124,8 @@ test('hub card shows loadFailed retry UI (not blank)', () => {
   assert.match(src, /리뷰를 불러오지 못했어요/);
   assert.match(src, /logbook-official-review-hub-retry/);
   assert.match(src, /data-hub-state="load-failed"/);
+  assert.match(src, /LOGBOOK_OFFICIAL_REVIEW_CARD_TITLE/);
+  assert.match(src, /md:max-w-\[min\(80rem,calc\(100vw-16rem-3rem\)\)\]/);
 });
 
 test('이틀컷 persona badge uses DB label (no rename to 문턱없이)', () => {
