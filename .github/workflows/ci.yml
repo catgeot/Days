@@ -149,6 +149,51 @@ jobs:
           fi
           SMOKE_SITE_URL=http://127.0.0.1:5173 npx playwright test e2e/korea-festival-external-return.spec.js --project=webkit-festival-external-return --reporter=line
 
+  place-travelogue-card-e2e:
+    name: Place travelogue card E2E (WebKit 390, fixtures)
+    runs-on: ubuntu-latest
+    needs: lint-and-build
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build with travelogue card flag
+        env:
+          VITE_GATEO_PLACE_TRAVELOGUE_CARD: '1'
+          VITE_SUPABASE_URL: https://example.supabase.co
+          VITE_SUPABASE_ANON_KEY: e2e-anon-placeholder
+        run: npm run build
+
+      - name: Playwright WebKit — place-travelogue-card
+        env:
+          DEV_SSL: '0'
+        run: |
+          npx playwright install --with-deps webkit
+          npx vite preview --host 127.0.0.1 --port 5173 --strictPort > /tmp/vite-travelogue.log 2>&1 &
+          ready=0
+          for _ in $(seq 1 90); do
+            if curl -sf -o /dev/null http://127.0.0.1:5173/; then
+              ready=1
+              break
+            fi
+            sleep 2
+          done
+          if [ "$ready" != 1 ]; then
+            cat /tmp/vite-travelogue.log
+            exit 1
+          fi
+          SMOKE_SITE_URL=http://127.0.0.1:5173 npx playwright test e2e/place-travelogue-card.spec.js --project=webkit-place-travelogue-card --reporter=line
+
   # YouTube 탭 세션(더 보기). 프로덕션 일일 헬스(e2e-health)에서는 제외.
   e2e-youtube-session:
     runs-on: ubuntu-latest

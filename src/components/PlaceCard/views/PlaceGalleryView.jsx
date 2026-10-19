@@ -18,6 +18,7 @@ import { splitPlaceOverview } from '../common/placeOverviewText';
 import PlaceOverviewProse from '../common/PlaceOverviewProse';
 import PlaceWorldEventsSection from '../common/PlaceWorldEventsSection';
 import PlaceVerifiedFacts, { PlaceVisitStories } from '../common/PlaceVerifiedFacts';
+import PlaceEditorialTravelogueCard from '../common/PlaceEditorialTravelogueCard';
 import PlaceScenicGateway from '../common/PlaceScenicGateway';
 import { useLocale } from '../../../i18n/LocaleProvider';
 import { useGalleryLongPress } from '../common/galleryLongPress';
@@ -1148,6 +1149,7 @@ const PlaceGalleryView = React.memo(({
 
             <PlaceVerifiedFacts location={location} />
             <PlaceVisitStories location={location} />
+            <PlaceEditorialTravelogueCard location={location} />
 
             <PlaceScenicGateway
               location={location}

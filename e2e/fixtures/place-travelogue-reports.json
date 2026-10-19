@@ -1,0 +1,16 @@
+[
+  {
+    "id": 901,
+    "title": "E2E 방콕 GATEO 기행문",
+    "dek": "픽스처 데크 — 방콕 에디토리얼 카드 노출 확인",
+    "date": "2026-10-01",
+    "location": "방콕",
+    "images": [{ "url": "https://images.unsplash.com/photo-e2e-bangkok?w=400" }],
+    "created_at": "2026-10-01T00:00:00Z",
+    "user_id": null,
+    "is_editorial": true,
+    "slug": "e2e-bangkok-travelogue",
+    "status": "published",
+    "place_slug": "bangkok"
+  }
+]
