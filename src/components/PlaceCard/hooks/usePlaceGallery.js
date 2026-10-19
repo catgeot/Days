@@ -25,6 +25,7 @@ import {
   withoutDroppedGalleryImages,
 } from '../../../shared/api/placeGalleryPersist';
 import { buildPlaceDbIdCandidates, getPlaceStableKey, getPlaceStatsId } from '../../../utils/travelSpotResolve';
+import { isPlaceGalleryPhotoCreditEnabled } from '../../../utils/placeGalleryPhotoCreditFlag';
 import {
   resolveTourApiPlace,
   shouldUseTourApiGalleryForPlace,
@@ -1569,5 +1570,6 @@ export const usePlaceGallery = (locationSource, options = {}) => {
     refreshCooldownSec: GALLERY_REFRESH_COOLDOWN_MS / 1000,
     galleryMaxImages: GALLERY_MAX_IMAGES,
     galleryAtMax: images.length >= GALLERY_MAX_IMAGES,
+    photoCreditEnabled: isPlaceGalleryPhotoCreditEnabled(),
   };
 };
