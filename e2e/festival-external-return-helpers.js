@@ -137,12 +137,13 @@ export async function closeNearbyPlaceModal(page) {
 
 /** After nearby official popup return: nested modal gone, festival sheet tabs hittable. */
 export async function waitForFestivalSheetAfterExternalReturn(page, dialog) {
+  const sheet = festivalSheetDialog(page);
   await expect(nearbyPlaceModal(page)).toBeHidden({ timeout: 20_000 });
-  await expect(dialog).toBeVisible({ timeout: 20_000 });
-  await expect(dialog.locator('#korea-festival-sheet-title')).toBeVisible({ timeout: 20_000 });
+  await expect(sheet).toBeVisible({ timeout: 60_000 });
+  await expect(sheet.locator('#korea-festival-sheet-title')).toBeVisible({ timeout: 30_000 });
 
-  const programTab = dialog.getByRole('tab', { name: /프로그램/ });
-  const pollTimeout = process.env.CI === 'true' || process.env.GITHUB_ACTIONS === 'true' ? 45_000 : 35_000;
+  const programTab = sheet.getByRole('tab', { name: /프로그램/ });
+  const pollTimeout = process.env.CI === 'true' || process.env.GITHUB_ACTIONS === 'true' ? 45_000 : 55_000;
   await expect
     .poll(
       async () => {

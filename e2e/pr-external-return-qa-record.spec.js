@@ -176,6 +176,7 @@ test.describe('PR external return — prod QA record WebKit 390', () => {
         await dismissLocHint(page).catch(() => {});
         sheetDialog = await openFestivalSheet(page, festival.id, OPEN_TIMEOUT_MS);
       }
+      sheetDialog = festivalSheetDialog(page);
       await expect(sheetDialog).toBeVisible({ timeout: 60_000 });
       await waitForFestivalSheetAfterExternalReturn(page, sheetDialog);
       await externalReturnShot(page, OUT, `${festival.slug}-03-after-back-twice`);
