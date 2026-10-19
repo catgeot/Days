@@ -44,11 +44,11 @@ import ForgotPassword from './shared/Auth/ForgotPassWord';
 import UpdatePassword from './shared/Auth/UpdatePassword';
 import AccountProfile from './shared/Auth/AccountProfile';
 import GalleryAdminPage from './pages/Admin/GalleryAdminPage';
-import CloudPreviewWorkLog from './shared/cloudPreview/CloudPreviewWorkLog.jsx';
-import SeaExploreDebugPanel from './shared/cloudPreview/SeaExploreDebugPanel.jsx';
-import CurationHandoffDebugPanel from './shared/cloudPreview/CurationHandoffDebugPanel.jsx';
-import FlightDebugPanel from './shared/cloudPreview/FlightDebugPanel.jsx';
+import { isPreviewDebugChromeBundled } from './shared/cloudPreview/isPreviewDebugChromeBundled.js';
 import TravelAgencyVisitCapture from './components/travelAgencies/TravelAgencyVisitCapture.jsx';
+const PreviewDebugChrome = isPreviewDebugChromeBundled
+  ? lazy(() => import('./shared/cloudPreview/PreviewDebugChrome.jsx'))
+  : null;
 import { LocaleProvider } from './i18n/LocaleProvider';
 import AppHistoryRecorder from './shared/navigation/AppHistoryRecorder';
 import { installPersistedBlankPageReload } from './shared/lib/persistedBlankPageReload.js';
@@ -99,10 +99,11 @@ function App() {
         <AppHistoryRecorder />
         <ReportProvider>
           <Analytics />
-          <CloudPreviewWorkLog />
-          <SeaExploreDebugPanel />
-          <CurationHandoffDebugPanel />
-          <FlightDebugPanel />
+          {PreviewDebugChrome ? (
+            <Suspense fallback={null}>
+              <PreviewDebugChrome />
+            </Suspense>
+          ) : null}
           <TravelAgencyVisitCapture />
           <Routes>
             <Route element={<MainLayout />}>
