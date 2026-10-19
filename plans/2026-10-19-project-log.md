@@ -14,3 +14,5 @@
 
 - 브랜치 `cursor/korea-gallery-stock-relevance-f0f1` · draft [#525](https://github.com/catgeot/Days/pull/525) · tip `0fd6ae43` — Tour 타일 페인트(VisitKorea referrer·eager load)·로딩 크롬 `isPaintPending`·Tour-dominant Pexels skip · R3 WebKit 캡처(`e2e/korea-gallery-r3-capture.spec.js`, artifacts `korea-gallery-r3/`).
 - QA: home→place→`/gallery` · 한반도섬/양구/청주/두타연 r2 initial **전타일 painted** · reentry pexels **0** (국내).
+
+- PR #525 r3b: tip `b36ba9fb` — WebKit decode/opacity tile fix; r3b per-cell audit; artifacts `korea-gallery-r3b/`.
