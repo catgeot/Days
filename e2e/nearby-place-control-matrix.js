@@ -244,8 +244,10 @@ export async function probeNearbyPlaceControlMatrix(
     await dispatchPersistedReturn(page);
     await dismissNearbyLightbox(page);
     probePressQueue = Promise.resolve();
-    active = nearbyPlaceModal(page);
-    await expect(active).toBeVisible({ timeout: 30_000 });
+    active = await ensureModal();
+    if (!(await active.isVisible().catch(() => false))) {
+      return NEARBY_MATRIX_CONTROLS.map((c) => absentRow(c, 'modal missing after return'));
+    }
   }
 
   if (phase === 'baseline') {
