@@ -322,8 +322,10 @@ export async function probeNearbyPlaceControlMatrix(
       await externalReturnShot(page, outDir, `${base}-effect`).catch(() => {});
     }
     byControl.set(control, row);
-    active = await ensure();
-    await scrollModalTop(active);
+    if (control !== '닫기 (X)') {
+      active = await ensure();
+      await scrollModalTop(active);
+    }
   }
 
   // Close last — probe interactive controls first
