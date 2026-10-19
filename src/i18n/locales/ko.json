@@ -1504,6 +1504,8 @@
         "youtubeFallback": "YouTube 영상",
         "videosMore": "동영상 더보기",
         "officialSite": "공식 홈페이지",
+        "officialSiteHttp": "공식 홈페이지 (보안 연결 미지원)",
+        "officialSiteHttpNotice": "이 사이트는 보안 연결(HTTPS)을 지원하지 않아 브라우저 경고가 뜨는 수 있어요.",
         "accessTitle": "가는 법",
         "accessLoading": "열차·버스 시각 불러오는 중…",
         "accessUnavailable": "지금은 열차·버스 시각을 불러오지 못했어요.",

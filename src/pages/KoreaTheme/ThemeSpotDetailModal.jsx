@@ -44,6 +44,11 @@ import { resolveListImageUrl } from '../../utils/listImageUrl';
 import { useLightboxPinchTransform } from '../../components/PlaceCard/common/useLightboxPinchTransform';
 import { resetIosZoomAfterInput } from '../../shared/lib/mobileViewport';
 import { fetchTourApiAttractionDetail } from '../../utils/fetchTourApiAttractionDetail';
+
+const THEME_SPOT_MODAL_SAFE_PAD =
+  'p-2.5 pt-[max(0.625rem,env(safe-area-inset-top))] pb-[max(0.625rem,env(safe-area-inset-bottom))] pl-[max(0.625rem,env(safe-area-inset-left))] pr-[max(0.625rem,env(safe-area-inset-right))] md:items-center md:p-5';
+const THEME_SPOT_MODAL_SCRIM =
+  'absolute inset-0 pointer-events-auto cursor-default border-0 bg-stone-900/40 backdrop-blur-[2px]';
 import { fetchNearbyTourAttractions } from '../../utils/fetchNearbyTourAttractions';
 import {
   groupNearbySpotsWithLocalScenic,
@@ -78,6 +83,11 @@ import { getMrtAccommodationSearchUrl } from '../../utils/affiliate';
 import { buildMrtTnaSearchMoreUrl } from '../../utils/fetchMrtTnas';
 import { resolveTourAreaForHub } from '../Home/lib/koreaSigunguByHub';
 import { koreanApiTextProps } from '../../i18n/koreanApiText';
+import { openExternalHomepageFromAnchorClick } from '../Korea/lib/festivalHomepageProtocol.js';
+import {
+  clearThemeSpotChromePointerBlockers,
+  nudgeFestivalSheetScrollAndRepaint,
+} from '../Korea/lib/festivalSheetInteractionRestore.js';
 import { useLocale } from '../../i18n/LocaleProvider';
 import {
   formatScenicSpotPlaceLabel,
@@ -871,6 +881,7 @@ function toCultureModalSpot(spot) {
  *   favorited?: boolean,
  *   onToggleFavorite?: (spot: Record<string, unknown>) => void,
  *   mooniFab?: boolean,
+ *   onOfficialHomeNavigate?: () => void,
  * }} props
  */
 export default function ThemeSpotDetailModal({
@@ -882,6 +893,7 @@ export default function ThemeSpotDetailModal({
   favorited = false,
   onToggleFavorite,
   mooniFab = false,
+  onOfficialHomeNavigate,
 }) {
   useTrustBarOverlayLockEffect(Boolean(spot));
   const { t } = useTranslation();
@@ -891,6 +903,7 @@ export default function ThemeSpotDetailModal({
   const [showScrollTop, setShowScrollTop] = useState(false);
   const navigate = useNavigate();
   const scrollRef = useRef(null);
+  const dialogRef = useRef(null);
   const [detail, setDetail] = useState(null);
   const [detailLoading, setDetailLoading] = useState(false);
   const [detailError, setDetailError] = useState('');
@@ -980,6 +993,53 @@ export default function ThemeSpotDetailModal({
   const nestedChildZ = overlayElevated ? 'z-[60]' : 'z-[55]';
   const lightboxZ = overlayElevated ? 'z-[65]' : 'z-[60]';
 
+  const restoreThemeSpotInteraction = useCallback(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+    nudgeFestivalSheetScrollAndRepaint(dialog);
+    clearThemeSpotChromePointerBlockers(dialog);
+    if (typeof document !== 'undefined' && document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!spot) return undefined;
+
+    const onPageShow = (event) => {
+      if (event.persisted) restoreThemeSpotInteraction();
+    };
+    const onVisibility = () => {
+      if (document.visibilityState === 'visible') restoreThemeSpotInteraction();
+    };
+    const onFocus = () => {
+      restoreThemeSpotInteraction();
+      window.requestAnimationFrame(() => restoreThemeSpotInteraction());
+    };
+
+    window.addEventListener('pageshow', onPageShow);
+    document.addEventListener('visibilitychange', onVisibility);
+    window.addEventListener('focus', onFocus);
+    restoreThemeSpotInteraction();
+
+    return () => {
+      window.removeEventListener('pageshow', onPageShow);
+      document.removeEventListener('visibilitychange', onVisibility);
+      window.removeEventListener('focus', onFocus);
+    };
+  }, [spot, restoreThemeSpotInteraction]);
+
+  const handleOfficialHomeClick = useCallback(
+    (event) => {
+      openExternalHomepageFromAnchorClick(event, () => {
+        onOfficialHomeNavigate?.();
+        restoreThemeSpotInteraction();
+        window.setTimeout(() => restoreThemeSpotInteraction(), 120);
+      });
+    },
+    [onOfficialHomeNavigate, restoreThemeSpotInteraction],
+  );
+
   const imageUrls = useMemo(() => {
     const heroUrl = toHttps(detail?.imageUrl || spot?.imageUrl || spot?.firstImage);
     const gallerySource =
@@ -1013,7 +1073,8 @@ export default function ThemeSpotDetailModal({
     setLightboxOpen(false);
     resetLightboxPinch();
     resetIosZoomAfterInput();
-  }, [resetLightboxPinch]);
+    restoreThemeSpotInteraction();
+  }, [resetLightboxPinch, restoreThemeSpotInteraction]);
 
   const openLightboxAt = useCallback(
     (index) => {
@@ -1587,8 +1648,8 @@ export default function ThemeSpotDetailModal({
   );
 
   const homepage = useMemo(
-    () => normalizeHomepage(detail?.homepage),
-    [detail?.homepage],
+    () => normalizeHomepage(detail?.homepage || spot?.homepage),
+    [detail?.homepage, spot?.homepage],
   );
 
   const address = useMemo(() => {
@@ -1801,17 +1862,22 @@ export default function ThemeSpotDetailModal({
         />
       ) : null}
     <div
-      className={`fixed inset-0 ${overlayZClass} flex items-stretch justify-center bg-stone-900/40 backdrop-blur-[2px] p-2.5 pt-[max(0.625rem,env(safe-area-inset-top))] pb-[max(0.625rem,env(safe-area-inset-bottom))] pl-[max(0.625rem,env(safe-area-inset-left))] pr-[max(0.625rem,env(safe-area-inset-right))] md:items-center md:p-5`}
-      onClick={(e) => {
-        e.stopPropagation();
-        if (mooniOpen || videosOpen || lightboxOpen) return;
-        onClose();
-      }}
+      className={`fixed inset-0 ${overlayZClass} flex items-stretch justify-center pointer-events-none ${THEME_SPOT_MODAL_SAFE_PAD}`}
       role="presentation"
     >
+      <button
+        type="button"
+        data-theme-spot-modal-scrim=""
+        className={THEME_SPOT_MODAL_SCRIM}
+        aria-label={t('korea.common.close')}
+        onClick={() => {
+          if (mooniOpen || videosOpen || lightboxOpen) return;
+          onClose();
+        }}
+      />
       <div
-        className="relative flex h-full w-full max-w-lg flex-col overflow-hidden rounded-2xl border border-stone-200 bg-white text-stone-900 shadow-2xl md:h-auto md:max-h-[min(90dvh,52rem)] md:max-w-2xl md:rounded-3xl lg:max-w-3xl"
-        onClick={(e) => e.stopPropagation()}
+        ref={dialogRef}
+        className="relative z-10 pointer-events-auto flex h-full w-full max-w-lg flex-col overflow-hidden rounded-2xl border border-stone-200 bg-white text-stone-900 shadow-2xl md:h-auto md:max-h-[min(90dvh,52rem)] md:max-w-2xl md:rounded-3xl lg:max-w-3xl"
         role="dialog"
         aria-modal="true"
         aria-labelledby="korea-theme-spot-modal-title"
@@ -1957,6 +2023,24 @@ export default function ThemeSpotDetailModal({
               </p>
             ) : null}
 
+            {!detailLoading && normalizeHomepage(spot?.homepage) && !homepage ? (
+              <dl className="min-w-0 space-y-4">
+                <DetailRow label={t('korea.theme.spotDetail.labelHomepage')}>
+                  <a
+                    href={normalizeHomepage(spot.homepage)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    data-theme-spot-official-home=""
+                    onClick={handleOfficialHomeClick}
+                    className="inline-flex max-w-full min-w-0 items-center gap-1 font-semibold text-amber-900 underline-offset-2 hover:underline break-keep break-words"
+                  >
+                    {homepageDisplayLabel(normalizeHomepage(spot.homepage), t)}
+                    <ExternalLink size={13} aria-hidden="true" />
+                  </a>
+                </DetailRow>
+              </dl>
+            ) : null}
+
             {!detailLoading && hasContentId && detailError ? (
               <p className="text-xs text-stone-500 break-keep">{detailError}</p>
             ) : null}
@@ -1970,9 +2054,9 @@ export default function ThemeSpotDetailModal({
               </p>
             ) : null}
 
-            {!detailLoading && detail ? (
+            {!detailLoading && (detail || homepage) ? (
               <dl className="min-w-0 space-y-4">
-                {overview ? (
+                {detail && overview ? (
                   <DetailRow
                     label={t('korea.theme.spotDetail.labelOverview')}
                     prose
@@ -1988,7 +2072,7 @@ export default function ThemeSpotDetailModal({
                     googleHref={googleSearchUrl}
                   />
                 ) : null}
-                {Array.isArray(detail.heritageMeta)
+                {detail && Array.isArray(detail.heritageMeta)
                   ? detail.heritageMeta.map((row) => (
                       <DetailRow
                         key={row.labelKey}
@@ -2025,6 +2109,10 @@ export default function ThemeSpotDetailModal({
                       target="_blank"
                       rel="noopener noreferrer"
                       title={homepage}
+                      data-theme-spot-official-home=""
+                      onClick={(event) =>
+                        handleOfficialHomeClick(event)
+                      }
                       className="inline-flex max-w-full min-w-0 items-center gap-1 font-semibold text-amber-900 underline-offset-2 hover:underline break-keep break-words"
                     >
                       {homepageDisplayLabel(homepage, t)}
@@ -2694,16 +2782,18 @@ export default function ThemeSpotDetailModal({
 
       {videosOpen ? (
         <div
-          className={`fixed inset-0 ${nestedChildZ} flex items-stretch justify-center bg-stone-900/40 backdrop-blur-[2px] p-2.5 pt-[max(0.625rem,env(safe-area-inset-top))] pb-[max(0.625rem,env(safe-area-inset-bottom))] pl-[max(0.625rem,env(safe-area-inset-left))] pr-[max(0.625rem,env(safe-area-inset-right))] md:items-center md:p-5`}
-          onClick={(e) => {
-            e.stopPropagation();
-            setVideosOpen(false);
-          }}
+          className={`fixed inset-0 ${nestedChildZ} flex items-stretch justify-center pointer-events-none ${THEME_SPOT_MODAL_SAFE_PAD}`}
           role="presentation"
         >
+          <button
+            type="button"
+            data-theme-spot-modal-scrim=""
+            className={THEME_SPOT_MODAL_SCRIM}
+            aria-label={t('korea.common.close')}
+            onClick={() => setVideosOpen(false)}
+          />
           <div
-            className="relative flex h-full w-full max-w-lg flex-col overflow-hidden rounded-2xl border border-stone-200 bg-white text-stone-900 shadow-2xl md:h-auto md:max-h-[min(90dvh,40rem)] md:rounded-3xl"
-            onClick={(e) => e.stopPropagation()}
+            className="relative z-10 pointer-events-auto flex h-full w-full max-w-lg flex-col overflow-hidden rounded-2xl border border-stone-200 bg-white text-stone-900 shadow-2xl md:h-auto md:max-h-[min(90dvh,40rem)] md:rounded-3xl"
             role="dialog"
             aria-modal="true"
             aria-labelledby="korea-theme-spot-videos-title"

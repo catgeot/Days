@@ -1,0 +1,1148 @@
+{
+  "yanggu-haean-owner-repro": {
+    "newTabAttrs": "yanggu-haean-official-link-new-tab-attrs.png",
+    "newTabSheet": "yanggu-haean-official-opens-new-tab-sheet-stays.png",
+    "sameTabVisit": "yanggu-haean-same-tab-http-visit.png",
+    "afterBack": "yanggu-haean-after-back-from-http-warning-path.png",
+    "recovery": "yanggu-haean-after-persisted-recovery.png"
+  },
+  "yanggu-1122739": {
+    "nearbyMerged": [
+      {
+        "control": "닫기 (X)",
+        "baseline": {
+          "control": "닫기 (X)",
+          "hit": "PASS",
+          "effect": "SKIP",
+          "shot": "yanggu-1122739-nearby-baseline-close-x.png",
+          "note": "baseline — hit only"
+        },
+        "after": {
+          "control": "닫기 (X)",
+          "hit": "PASS",
+          "effect": "PASS",
+          "shot": "yanggu-1122739-nearby-close-x.png",
+          "note": ""
+        },
+        "regression": false,
+        "preExisting": false,
+        "note": ""
+      },
+      {
+        "control": "즐겨찾기",
+        "baseline": {
+          "control": "즐겨찾기",
+          "hit": "PASS",
+          "effect": "SKIP",
+          "shot": "yanggu-1122739-nearby-baseline-star.png",
+          "note": "baseline — hit only"
+        },
+        "after": {
+          "control": "즐겨찾기",
+          "hit": "PASS",
+          "effect": "PASS",
+          "shot": "yanggu-1122739-nearby-star.png",
+          "note": ""
+        },
+        "regression": false,
+        "preExisting": false,
+        "note": ""
+      },
+      {
+        "control": "확대보기",
+        "baseline": {
+          "control": "확대보기",
+          "hit": "N/A",
+          "effect": "N/A",
+          "shot": "",
+          "note": "not in DOM",
+          "absent": true
+        },
+        "after": {
+          "control": "확대보기",
+          "hit": "N/A",
+          "effect": "N/A",
+          "shot": "",
+          "note": "no hero expand",
+          "absent": true
+        },
+        "regression": false,
+        "preExisting": false,
+        "note": "no hero expand"
+      },
+      {
+        "control": "네이버",
+        "baseline": {
+          "control": "네이버",
+          "hit": "PASS",
+          "effect": "SKIP",
+          "shot": "yanggu-1122739-nearby-baseline-naver.png",
+          "note": "baseline — hit only"
+        },
+        "after": {
+          "control": "네이버",
+          "hit": "PASS",
+          "effect": "PASS",
+          "shot": "yanggu-1122739-nearby-naver.png",
+          "note": ""
+        },
+        "regression": false,
+        "preExisting": false,
+        "note": ""
+      },
+      {
+        "control": "구글",
+        "baseline": {
+          "control": "구글",
+          "hit": "PASS",
+          "effect": "SKIP",
+          "shot": "yanggu-1122739-nearby-baseline-google.png",
+          "note": "baseline — hit only"
+        },
+        "after": {
+          "control": "구글",
+          "hit": "PASS",
+          "effect": "PASS",
+          "shot": "yanggu-1122739-nearby-google.png",
+          "note": ""
+        },
+        "regression": false,
+        "preExisting": false,
+        "note": ""
+      },
+      {
+        "control": "홈페이지",
+        "baseline": {
+          "control": "홈페이지",
+          "hit": "PASS",
+          "effect": "SKIP",
+          "shot": "yanggu-1122739-nearby-baseline-homepage.png",
+          "note": "baseline — hit only"
+        },
+        "after": {
+          "control": "홈페이지",
+          "hit": "PASS",
+          "effect": "PASS",
+          "shot": "yanggu-1122739-nearby-homepage.png",
+          "note": ""
+        },
+        "regression": false,
+        "preExisting": false,
+        "note": ""
+      },
+      {
+        "control": "사진",
+        "baseline": {
+          "control": "사진",
+          "hit": "N/A",
+          "effect": "N/A",
+          "shot": "",
+          "note": "not in DOM",
+          "absent": true
+        },
+        "after": {
+          "control": "사진",
+          "hit": "N/A",
+          "effect": "N/A",
+          "shot": "",
+          "note": "not in DOM",
+          "absent": true
+        },
+        "regression": false,
+        "preExisting": false,
+        "note": "not in DOM"
+      },
+      {
+        "control": "내 여행 일정",
+        "baseline": {
+          "control": "내 여행 일정",
+          "hit": "PASS",
+          "effect": "SKIP",
+          "shot": "yanggu-1122739-nearby-baseline-stay.png",
+          "note": "baseline — hit only"
+        },
+        "after": {
+          "control": "내 여행 일정",
+          "hit": "PASS",
+          "effect": "PASS",
+          "shot": "yanggu-1122739-nearby-stay.png",
+          "note": ""
+        },
+        "regression": false,
+        "preExisting": false,
+        "note": ""
+      },
+      {
+        "control": "무니",
+        "baseline": {
+          "control": "무니",
+          "hit": "PASS",
+          "effect": "SKIP",
+          "shot": "yanggu-1122739-nearby-baseline-mooni.png",
+          "note": "baseline — hit only"
+        },
+        "after": {
+          "control": "무니",
+          "hit": "PASS",
+          "effect": "PASS",
+          "shot": "yanggu-1122739-nearby-mooni.png",
+          "note": ""
+        },
+        "regression": false,
+        "preExisting": false,
+        "note": ""
+      }
+    ],
+    "nearbyBaseline": [
+      {
+        "control": "닫기 (X)",
+        "hit": "PASS",
+        "effect": "SKIP",
+        "shot": "yanggu-1122739-nearby-baseline-close-x.png",
+        "note": "baseline — hit only"
+      },
+      {
+        "control": "즐겨찾기",
+        "hit": "PASS",
+        "effect": "SKIP",
+        "shot": "yanggu-1122739-nearby-baseline-star.png",
+        "note": "baseline — hit only"
+      },
+      {
+        "control": "확대보기",
+        "hit": "N/A",
+        "effect": "N/A",
+        "shot": "",
+        "note": "not in DOM",
+        "absent": true
+      },
+      {
+        "control": "네이버",
+        "hit": "PASS",
+        "effect": "SKIP",
+        "shot": "yanggu-1122739-nearby-baseline-naver.png",
+        "note": "baseline — hit only"
+      },
+      {
+        "control": "구글",
+        "hit": "PASS",
+        "effect": "SKIP",
+        "shot": "yanggu-1122739-nearby-baseline-google.png",
+        "note": "baseline — hit only"
+      },
+      {
+        "control": "홈페이지",
+        "hit": "PASS",
+        "effect": "SKIP",
+        "shot": "yanggu-1122739-nearby-baseline-homepage.png",
+        "note": "baseline — hit only"
+      },
+      {
+        "control": "사진",
+        "hit": "N/A",
+        "effect": "N/A",
+        "shot": "",
+        "note": "not in DOM",
+        "absent": true
+      },
+      {
+        "control": "내 여행 일정",
+        "hit": "PASS",
+        "effect": "SKIP",
+        "shot": "yanggu-1122739-nearby-baseline-stay.png",
+        "note": "baseline — hit only"
+      },
+      {
+        "control": "무니",
+        "hit": "PASS",
+        "effect": "SKIP",
+        "shot": "yanggu-1122739-nearby-baseline-mooni.png",
+        "note": "baseline — hit only"
+      }
+    ],
+    "nearbyAfter": [
+      {
+        "control": "닫기 (X)",
+        "hit": "PASS",
+        "effect": "PASS",
+        "shot": "yanggu-1122739-nearby-close-x.png",
+        "note": ""
+      },
+      {
+        "control": "즐겨찾기",
+        "hit": "PASS",
+        "effect": "PASS",
+        "shot": "yanggu-1122739-nearby-star.png",
+        "note": ""
+      },
+      {
+        "control": "확대보기",
+        "hit": "N/A",
+        "effect": "N/A",
+        "shot": "",
+        "note": "no hero expand",
+        "absent": true
+      },
+      {
+        "control": "네이버",
+        "hit": "PASS",
+        "effect": "PASS",
+        "shot": "yanggu-1122739-nearby-naver.png",
+        "note": ""
+      },
+      {
+        "control": "구글",
+        "hit": "PASS",
+        "effect": "PASS",
+        "shot": "yanggu-1122739-nearby-google.png",
+        "note": ""
+      },
+      {
+        "control": "홈페이지",
+        "hit": "PASS",
+        "effect": "PASS",
+        "shot": "yanggu-1122739-nearby-homepage.png",
+        "note": ""
+      },
+      {
+        "control": "사진",
+        "hit": "N/A",
+        "effect": "N/A",
+        "shot": "",
+        "note": "not in DOM",
+        "absent": true
+      },
+      {
+        "control": "내 여행 일정",
+        "hit": "PASS",
+        "effect": "PASS",
+        "shot": "yanggu-1122739-nearby-stay.png",
+        "note": ""
+      },
+      {
+        "control": "무니",
+        "hit": "PASS",
+        "effect": "PASS",
+        "shot": "yanggu-1122739-nearby-mooni.png",
+        "note": ""
+      }
+    ],
+    "sheet": [
+      {
+        "control": "z40–59 투명 히트 차단 없음",
+        "hit": "PASS",
+        "effect": "PASS",
+        "shot": "yanggu-1122739-sheet-z40–59-투명-히트-차단-없음.png"
+      },
+      {
+        "control": "스크림이 탭 hit 아님",
+        "hit": "PASS",
+        "effect": "PASS",
+        "shot": "yanggu-1122739-sheet-스크림이-탭-hit-아님.png"
+      },
+      {
+        "control": "탭 · 프로그램",
+        "hit": "PASS",
+        "effect": "PASS",
+        "shot": "yanggu-1122739-sheet-탭-·-프로그램.png"
+      },
+      {
+        "control": "안내로 돌아가기",
+        "hit": "FAIL",
+        "effect": "FAIL",
+        "shot": "yanggu-1122739-sheet-안내로-돌아가기.png"
+      },
+      {
+        "control": "맨 위로",
+        "hit": "PASS",
+        "effect": "PASS",
+        "note": "QA record — 맨 위로 생략",
+        "shot": "yanggu-1122739-sheet-맨-위로.png"
+      },
+      {
+        "control": "탭 · 사진",
+        "hit": "PASS",
+        "effect": "PASS",
+        "shot": "yanggu-1122739-sheet-탭-·-사진.png"
+      },
+      {
+        "control": "공식 홈페이지",
+        "hit": "PASS",
+        "effect": "PASS",
+        "shot": "yanggu-1122739-sheet-공식-홈페이지.png"
+      },
+      {
+        "control": "히어로 썸네일",
+        "hit": "PASS",
+        "effect": "PASS",
+        "shot": "yanggu-1122739-sheet-히어로-썸네일.png"
+      },
+      {
+        "control": "닫기 (X)",
+        "hit": "PASS",
+        "effect": "PASS",
+        "shot": "yanggu-1122739-sheet-닫기-(X).png"
+      },
+      {
+        "control": "Mooni (시트)",
+        "hit": "PASS",
+        "effect": "PASS",
+        "shot": "yanggu-1122739-sheet-mooni.png"
+      }
+    ]
+  },
+  "gangneung-2930716": {
+    "nearbyMerged": [
+      {
+        "control": "닫기 (X)",
+        "baseline": {
+          "control": "닫기 (X)",
+          "hit": "PASS",
+          "effect": "SKIP",
+          "shot": "gangneung-2930716-nearby-baseline-close-x.png",
+          "note": "baseline — hit only"
+        },
+        "after": {
+          "control": "닫기 (X)",
+          "hit": "PASS",
+          "effect": "PASS",
+          "shot": "gangneung-2930716-nearby-close-x.png",
+          "note": ""
+        },
+        "regression": false,
+        "preExisting": false,
+        "note": ""
+      },
+      {
+        "control": "즐겨찾기",
+        "baseline": {
+          "control": "즐겨찾기",
+          "hit": "PASS",
+          "effect": "SKIP",
+          "shot": "gangneung-2930716-nearby-baseline-star.png",
+          "note": "baseline — hit only"
+        },
+        "after": {
+          "control": "즐겨찾기",
+          "hit": "PASS",
+          "effect": "PASS",
+          "shot": "gangneung-2930716-nearby-star.png",
+          "note": ""
+        },
+        "regression": false,
+        "preExisting": false,
+        "note": ""
+      },
+      {
+        "control": "확대보기",
+        "baseline": {
+          "control": "확대보기",
+          "hit": "PASS",
+          "effect": "SKIP",
+          "shot": "gangneung-2930716-nearby-baseline-expand.png",
+          "note": "baseline — hit only"
+        },
+        "after": {
+          "control": "확대보기",
+          "hit": "PASS",
+          "effect": "PASS",
+          "shot": "gangneung-2930716-nearby-expand.png",
+          "note": ""
+        },
+        "regression": false,
+        "preExisting": false,
+        "note": ""
+      },
+      {
+        "control": "네이버",
+        "baseline": {
+          "control": "네이버",
+          "hit": "PASS",
+          "effect": "SKIP",
+          "shot": "gangneung-2930716-nearby-baseline-naver.png",
+          "note": "baseline — hit only"
+        },
+        "after": {
+          "control": "네이버",
+          "hit": "PASS",
+          "effect": "PASS",
+          "shot": "gangneung-2930716-nearby-naver.png",
+          "note": ""
+        },
+        "regression": false,
+        "preExisting": false,
+        "note": ""
+      },
+      {
+        "control": "구글",
+        "baseline": {
+          "control": "구글",
+          "hit": "PASS",
+          "effect": "SKIP",
+          "shot": "gangneung-2930716-nearby-baseline-google.png",
+          "note": "baseline — hit only"
+        },
+        "after": {
+          "control": "구글",
+          "hit": "PASS",
+          "effect": "PASS",
+          "shot": "gangneung-2930716-nearby-google.png",
+          "note": ""
+        },
+        "regression": false,
+        "preExisting": false,
+        "note": ""
+      },
+      {
+        "control": "홈페이지",
+        "baseline": {
+          "control": "홈페이지",
+          "hit": "PASS",
+          "effect": "SKIP",
+          "shot": "gangneung-2930716-nearby-baseline-homepage.png",
+          "note": "baseline — hit only"
+        },
+        "after": {
+          "control": "홈페이지",
+          "hit": "PASS",
+          "effect": "PASS",
+          "shot": "gangneung-2930716-nearby-homepage.png",
+          "note": ""
+        },
+        "regression": false,
+        "preExisting": false,
+        "note": ""
+      },
+      {
+        "control": "사진",
+        "baseline": {
+          "control": "사진",
+          "hit": "PASS",
+          "effect": "SKIP",
+          "shot": "gangneung-2930716-nearby-baseline-photo.png",
+          "note": "baseline — hit only"
+        },
+        "after": {
+          "control": "사진",
+          "hit": "PASS",
+          "effect": "PASS",
+          "shot": "gangneung-2930716-nearby-photo.png",
+          "note": ""
+        },
+        "regression": false,
+        "preExisting": false,
+        "note": ""
+      },
+      {
+        "control": "내 여행 일정",
+        "baseline": {
+          "control": "내 여행 일정",
+          "hit": "PASS",
+          "effect": "SKIP",
+          "shot": "gangneung-2930716-nearby-baseline-stay.png",
+          "note": "baseline — hit only"
+        },
+        "after": {
+          "control": "내 여행 일정",
+          "hit": "PASS",
+          "effect": "PASS",
+          "shot": "gangneung-2930716-nearby-stay.png",
+          "note": ""
+        },
+        "regression": false,
+        "preExisting": false,
+        "note": ""
+      },
+      {
+        "control": "무니",
+        "baseline": {
+          "control": "무니",
+          "hit": "PASS",
+          "effect": "SKIP",
+          "shot": "gangneung-2930716-nearby-baseline-mooni.png",
+          "note": "baseline — hit only"
+        },
+        "after": {
+          "control": "무니",
+          "hit": "PASS",
+          "effect": "PASS",
+          "shot": "gangneung-2930716-nearby-mooni.png",
+          "note": ""
+        },
+        "regression": false,
+        "preExisting": false,
+        "note": ""
+      }
+    ],
+    "nearbyBaseline": [
+      {
+        "control": "닫기 (X)",
+        "hit": "PASS",
+        "effect": "SKIP",
+        "shot": "gangneung-2930716-nearby-baseline-close-x.png",
+        "note": "baseline — hit only"
+      },
+      {
+        "control": "즐겨찾기",
+        "hit": "PASS",
+        "effect": "SKIP",
+        "shot": "gangneung-2930716-nearby-baseline-star.png",
+        "note": "baseline — hit only"
+      },
+      {
+        "control": "확대보기",
+        "hit": "PASS",
+        "effect": "SKIP",
+        "shot": "gangneung-2930716-nearby-baseline-expand.png",
+        "note": "baseline — hit only"
+      },
+      {
+        "control": "네이버",
+        "hit": "PASS",
+        "effect": "SKIP",
+        "shot": "gangneung-2930716-nearby-baseline-naver.png",
+        "note": "baseline — hit only"
+      },
+      {
+        "control": "구글",
+        "hit": "PASS",
+        "effect": "SKIP",
+        "shot": "gangneung-2930716-nearby-baseline-google.png",
+        "note": "baseline — hit only"
+      },
+      {
+        "control": "홈페이지",
+        "hit": "PASS",
+        "effect": "SKIP",
+        "shot": "gangneung-2930716-nearby-baseline-homepage.png",
+        "note": "baseline — hit only"
+      },
+      {
+        "control": "사진",
+        "hit": "PASS",
+        "effect": "SKIP",
+        "shot": "gangneung-2930716-nearby-baseline-photo.png",
+        "note": "baseline — hit only"
+      },
+      {
+        "control": "내 여행 일정",
+        "hit": "PASS",
+        "effect": "SKIP",
+        "shot": "gangneung-2930716-nearby-baseline-stay.png",
+        "note": "baseline — hit only"
+      },
+      {
+        "control": "무니",
+        "hit": "PASS",
+        "effect": "SKIP",
+        "shot": "gangneung-2930716-nearby-baseline-mooni.png",
+        "note": "baseline — hit only"
+      }
+    ],
+    "nearbyAfter": [
+      {
+        "control": "닫기 (X)",
+        "hit": "PASS",
+        "effect": "PASS",
+        "shot": "gangneung-2930716-nearby-close-x.png",
+        "note": ""
+      },
+      {
+        "control": "즐겨찾기",
+        "hit": "PASS",
+        "effect": "PASS",
+        "shot": "gangneung-2930716-nearby-star.png",
+        "note": ""
+      },
+      {
+        "control": "확대보기",
+        "hit": "PASS",
+        "effect": "PASS",
+        "shot": "gangneung-2930716-nearby-expand.png",
+        "note": ""
+      },
+      {
+        "control": "네이버",
+        "hit": "PASS",
+        "effect": "PASS",
+        "shot": "gangneung-2930716-nearby-naver.png",
+        "note": ""
+      },
+      {
+        "control": "구글",
+        "hit": "PASS",
+        "effect": "PASS",
+        "shot": "gangneung-2930716-nearby-google.png",
+        "note": ""
+      },
+      {
+        "control": "홈페이지",
+        "hit": "PASS",
+        "effect": "PASS",
+        "shot": "gangneung-2930716-nearby-homepage.png",
+        "note": ""
+      },
+      {
+        "control": "사진",
+        "hit": "PASS",
+        "effect": "PASS",
+        "shot": "gangneung-2930716-nearby-photo.png",
+        "note": ""
+      },
+      {
+        "control": "내 여행 일정",
+        "hit": "PASS",
+        "effect": "PASS",
+        "shot": "gangneung-2930716-nearby-stay.png",
+        "note": ""
+      },
+      {
+        "control": "무니",
+        "hit": "PASS",
+        "effect": "PASS",
+        "shot": "gangneung-2930716-nearby-mooni.png",
+        "note": ""
+      }
+    ],
+    "sheet": [
+      {
+        "control": "z40–59 투명 히트 차단 없음",
+        "hit": "PASS",
+        "effect": "PASS",
+        "shot": "gangneung-2930716-sheet-z40–59-투명-히트-차단-없음.png"
+      },
+      {
+        "control": "스크림이 탭 hit 아님",
+        "hit": "PASS",
+        "effect": "PASS",
+        "shot": "gangneung-2930716-sheet-스크림이-탭-hit-아님.png"
+      },
+      {
+        "control": "탭 · 프로그램",
+        "hit": "PASS",
+        "effect": "PASS",
+        "shot": "gangneung-2930716-sheet-탭-·-프로그램.png"
+      },
+      {
+        "control": "안내로 돌아가기",
+        "hit": "FAIL",
+        "effect": "FAIL",
+        "shot": "gangneung-2930716-sheet-안내로-돌아가기.png"
+      },
+      {
+        "control": "맨 위로",
+        "hit": "PASS",
+        "effect": "PASS",
+        "note": "QA record — 맨 위로 생략",
+        "shot": "gangneung-2930716-sheet-맨-위로.png"
+      },
+      {
+        "control": "탭 · 사진",
+        "hit": "PASS",
+        "effect": "PASS",
+        "shot": "gangneung-2930716-sheet-탭-·-사진.png"
+      },
+      {
+        "control": "공식 홈페이지",
+        "hit": "PASS",
+        "effect": "PASS",
+        "shot": "gangneung-2930716-sheet-공식-홈페이지.png"
+      },
+      {
+        "control": "히어로 썸네일",
+        "hit": "PASS",
+        "effect": "PASS",
+        "shot": "gangneung-2930716-sheet-히어로-썸네일.png"
+      },
+      {
+        "control": "닫기 (X)",
+        "hit": "PASS",
+        "effect": "PASS",
+        "shot": "gangneung-2930716-sheet-닫기-(X).png"
+      },
+      {
+        "control": "Mooni (시트)",
+        "hit": "PASS",
+        "effect": "PASS",
+        "shot": "gangneung-2930716-sheet-mooni.png"
+      }
+    ]
+  },
+  "masan-637693": {
+    "nearbyMerged": [
+      {
+        "control": "닫기 (X)",
+        "baseline": {
+          "control": "닫기 (X)",
+          "hit": "PASS",
+          "effect": "SKIP",
+          "shot": "masan-637693-nearby-baseline-close-x.png",
+          "note": "baseline — hit only"
+        },
+        "after": {
+          "control": "닫기 (X)",
+          "hit": "PASS",
+          "effect": "PASS",
+          "shot": "masan-637693-nearby-close-x.png",
+          "note": ""
+        },
+        "regression": false,
+        "preExisting": false,
+        "note": ""
+      },
+      {
+        "control": "즐겨찾기",
+        "baseline": {
+          "control": "즐겨찾기",
+          "hit": "PASS",
+          "effect": "SKIP",
+          "shot": "masan-637693-nearby-baseline-star.png",
+          "note": "baseline — hit only"
+        },
+        "after": {
+          "control": "즐겨찾기",
+          "hit": "PASS",
+          "effect": "PASS",
+          "shot": "masan-637693-nearby-star.png",
+          "note": ""
+        },
+        "regression": false,
+        "preExisting": false,
+        "note": ""
+      },
+      {
+        "control": "확대보기",
+        "baseline": {
+          "control": "확대보기",
+          "hit": "PASS",
+          "effect": "SKIP",
+          "shot": "masan-637693-nearby-baseline-expand.png",
+          "note": "baseline — hit only"
+        },
+        "after": {
+          "control": "확대보기",
+          "hit": "PASS",
+          "effect": "PASS",
+          "shot": "masan-637693-nearby-expand.png",
+          "note": ""
+        },
+        "regression": false,
+        "preExisting": false,
+        "note": ""
+      },
+      {
+        "control": "네이버",
+        "baseline": {
+          "control": "네이버",
+          "hit": "PASS",
+          "effect": "SKIP",
+          "shot": "masan-637693-nearby-baseline-naver.png",
+          "note": "baseline — hit only"
+        },
+        "after": {
+          "control": "네이버",
+          "hit": "PASS",
+          "effect": "PASS",
+          "shot": "masan-637693-nearby-naver.png",
+          "note": ""
+        },
+        "regression": false,
+        "preExisting": false,
+        "note": ""
+      },
+      {
+        "control": "구글",
+        "baseline": {
+          "control": "구글",
+          "hit": "PASS",
+          "effect": "SKIP",
+          "shot": "masan-637693-nearby-baseline-google.png",
+          "note": "baseline — hit only"
+        },
+        "after": {
+          "control": "구글",
+          "hit": "PASS",
+          "effect": "PASS",
+          "shot": "masan-637693-nearby-google.png",
+          "note": ""
+        },
+        "regression": false,
+        "preExisting": false,
+        "note": ""
+      },
+      {
+        "control": "홈페이지",
+        "baseline": {
+          "control": "홈페이지",
+          "hit": "PASS",
+          "effect": "SKIP",
+          "shot": "masan-637693-nearby-baseline-homepage.png",
+          "note": "baseline — hit only"
+        },
+        "after": {
+          "control": "홈페이지",
+          "hit": "PASS",
+          "effect": "PASS",
+          "shot": "masan-637693-nearby-homepage.png",
+          "note": ""
+        },
+        "regression": false,
+        "preExisting": false,
+        "note": ""
+      },
+      {
+        "control": "사진",
+        "baseline": {
+          "control": "사진",
+          "hit": "PASS",
+          "effect": "SKIP",
+          "shot": "masan-637693-nearby-baseline-photo.png",
+          "note": "baseline — hit only"
+        },
+        "after": {
+          "control": "사진",
+          "hit": "PASS",
+          "effect": "PASS",
+          "shot": "masan-637693-nearby-photo.png",
+          "note": ""
+        },
+        "regression": false,
+        "preExisting": false,
+        "note": ""
+      },
+      {
+        "control": "내 여행 일정",
+        "baseline": {
+          "control": "내 여행 일정",
+          "hit": "PASS",
+          "effect": "SKIP",
+          "shot": "masan-637693-nearby-baseline-stay.png",
+          "note": "baseline — hit only"
+        },
+        "after": {
+          "control": "내 여행 일정",
+          "hit": "PASS",
+          "effect": "PASS",
+          "shot": "masan-637693-nearby-stay.png",
+          "note": ""
+        },
+        "regression": false,
+        "preExisting": false,
+        "note": ""
+      },
+      {
+        "control": "무니",
+        "baseline": {
+          "control": "무니",
+          "hit": "PASS",
+          "effect": "SKIP",
+          "shot": "masan-637693-nearby-baseline-mooni.png",
+          "note": "baseline — hit only"
+        },
+        "after": {
+          "control": "무니",
+          "hit": "PASS",
+          "effect": "PASS",
+          "shot": "masan-637693-nearby-mooni.png",
+          "note": ""
+        },
+        "regression": false,
+        "preExisting": false,
+        "note": ""
+      }
+    ],
+    "nearbyBaseline": [
+      {
+        "control": "닫기 (X)",
+        "hit": "PASS",
+        "effect": "SKIP",
+        "shot": "masan-637693-nearby-baseline-close-x.png",
+        "note": "baseline — hit only"
+      },
+      {
+        "control": "즐겨찾기",
+        "hit": "PASS",
+        "effect": "SKIP",
+        "shot": "masan-637693-nearby-baseline-star.png",
+        "note": "baseline — hit only"
+      },
+      {
+        "control": "확대보기",
+        "hit": "PASS",
+        "effect": "SKIP",
+        "shot": "masan-637693-nearby-baseline-expand.png",
+        "note": "baseline — hit only"
+      },
+      {
+        "control": "네이버",
+        "hit": "PASS",
+        "effect": "SKIP",
+        "shot": "masan-637693-nearby-baseline-naver.png",
+        "note": "baseline — hit only"
+      },
+      {
+        "control": "구글",
+        "hit": "PASS",
+        "effect": "SKIP",
+        "shot": "masan-637693-nearby-baseline-google.png",
+        "note": "baseline — hit only"
+      },
+      {
+        "control": "홈페이지",
+        "hit": "PASS",
+        "effect": "SKIP",
+        "shot": "masan-637693-nearby-baseline-homepage.png",
+        "note": "baseline — hit only"
+      },
+      {
+        "control": "사진",
+        "hit": "PASS",
+        "effect": "SKIP",
+        "shot": "masan-637693-nearby-baseline-photo.png",
+        "note": "baseline — hit only"
+      },
+      {
+        "control": "내 여행 일정",
+        "hit": "PASS",
+        "effect": "SKIP",
+        "shot": "masan-637693-nearby-baseline-stay.png",
+        "note": "baseline — hit only"
+      },
+      {
+        "control": "무니",
+        "hit": "PASS",
+        "effect": "SKIP",
+        "shot": "masan-637693-nearby-baseline-mooni.png",
+        "note": "baseline — hit only"
+      }
+    ],
+    "nearbyAfter": [
+      {
+        "control": "닫기 (X)",
+        "hit": "PASS",
+        "effect": "PASS",
+        "shot": "masan-637693-nearby-close-x.png",
+        "note": ""
+      },
+      {
+        "control": "즐겨찾기",
+        "hit": "PASS",
+        "effect": "PASS",
+        "shot": "masan-637693-nearby-star.png",
+        "note": ""
+      },
+      {
+        "control": "확대보기",
+        "hit": "PASS",
+        "effect": "PASS",
+        "shot": "masan-637693-nearby-expand.png",
+        "note": ""
+      },
+      {
+        "control": "네이버",
+        "hit": "PASS",
+        "effect": "PASS",
+        "shot": "masan-637693-nearby-naver.png",
+        "note": ""
+      },
+      {
+        "control": "구글",
+        "hit": "PASS",
+        "effect": "PASS",
+        "shot": "masan-637693-nearby-google.png",
+        "note": ""
+      },
+      {
+        "control": "홈페이지",
+        "hit": "PASS",
+        "effect": "PASS",
+        "shot": "masan-637693-nearby-homepage.png",
+        "note": ""
+      },
+      {
+        "control": "사진",
+        "hit": "PASS",
+        "effect": "PASS",
+        "shot": "masan-637693-nearby-photo.png",
+        "note": ""
+      },
+      {
+        "control": "내 여행 일정",
+        "hit": "PASS",
+        "effect": "PASS",
+        "shot": "masan-637693-nearby-stay.png",
+        "note": ""
+      },
+      {
+        "control": "무니",
+        "hit": "PASS",
+        "effect": "PASS",
+        "shot": "masan-637693-nearby-mooni.png",
+        "note": ""
+      }
+    ],
+    "sheet": [
+      {
+        "control": "z40–59 투명 히트 차단 없음",
+        "hit": "PASS",
+        "effect": "PASS",
+        "shot": "masan-637693-sheet-z40–59-투명-히트-차단-없음.png"
+      },
+      {
+        "control": "스크림이 탭 hit 아님",
+        "hit": "PASS",
+        "effect": "PASS",
+        "shot": "masan-637693-sheet-스크림이-탭-hit-아님.png"
+      },
+      {
+        "control": "탭 · 프로그램",
+        "hit": "PASS",
+        "effect": "PASS",
+        "shot": "masan-637693-sheet-탭-·-프로그램.png"
+      },
+      {
+        "control": "안내로 돌아가기",
+        "hit": "FAIL",
+        "effect": "FAIL",
+        "shot": "masan-637693-sheet-안내로-돌아가기.png"
+      },
+      {
+        "control": "맨 위로",
+        "hit": "PASS",
+        "effect": "PASS",
+        "note": "QA record — 맨 위로 생략",
+        "shot": "masan-637693-sheet-맨-위로.png"
+      },
+      {
+        "control": "탭 · 사진",
+        "hit": "PASS",
+        "effect": "PASS",
+        "shot": "masan-637693-sheet-탭-·-사진.png"
+      },
+      {
+        "control": "공식 홈페이지",
+        "hit": "PASS",
+        "effect": "PASS",
+        "shot": "masan-637693-sheet-공식-홈페이지.png"
+      },
+      {
+        "control": "히어로 썸네일",
+        "hit": "PASS",
+        "effect": "PASS",
+        "shot": "masan-637693-sheet-히어로-썸네일.png"
+      },
+      {
+        "control": "닫기 (X)",
+        "hit": "PASS",
+        "effect": "PASS",
+        "shot": "masan-637693-sheet-닫기-(X).png"
+      },
+      {
+        "control": "Mooni (시트)",
+        "hit": "PASS",
+        "effect": "PASS",
+        "shot": "masan-637693-sheet-mooni.png"
+      }
+    ]
+  }
+}

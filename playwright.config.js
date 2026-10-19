@@ -133,6 +133,26 @@ export default defineConfig({
       },
     },
     {
+      name: 'webkit-festival-external-return',
+      testMatch: /korea-festival-external-return\.spec\.js/,
+      use: {
+        ...devices['iPhone 13'],
+        viewport: { width: 390, height: 844 },
+        deviceScaleFactor: 1,
+        ignoreHTTPSErrors: true,
+      },
+    },
+    {
+      name: 'webkit-external-return-qa-record',
+      testMatch: /pr-external-return-qa-record\.spec\.js/,
+      use: {
+        ...devices['iPhone 13'],
+        viewport: { width: 390, height: 844 },
+        deviceScaleFactor: 1,
+        ignoreHTTPSErrors: true,
+      },
+    },
+    {
       name: 'webkit-festival-back-qa-capture',
       testMatch: /pr-festival-back-blank-qa-capture\.spec\.js/,
       use: {

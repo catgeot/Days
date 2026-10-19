@@ -40,6 +40,7 @@ export function tourApiProxyCacheKey(body = {}) {
     CACHE_PREFIX,
     body.action || '',
     body.locale || '',
+    String(body.contentId ?? body.contentid ?? ''),
     body.contentTypeId || '',
     mapX,
     mapY,

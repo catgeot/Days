@@ -51,6 +51,12 @@ import FlightDebugPanel from './shared/cloudPreview/FlightDebugPanel.jsx';
 import TravelAgencyVisitCapture from './components/travelAgencies/TravelAgencyVisitCapture.jsx';
 import { LocaleProvider } from './i18n/LocaleProvider';
 import AppHistoryRecorder from './shared/navigation/AppHistoryRecorder';
+import { installPersistedBlankPageReload } from './shared/lib/persistedBlankPageReload.js';
+
+function PersistedBlankPageReload() {
+  useEffect(() => installPersistedBlankPageReload(), []);
+  return null;
+}
 
 function RouteTracker() {
   const location = useLocation();
@@ -89,6 +95,7 @@ function App() {
       <BrowserRouter>
         <LocaleProvider>
         <RouteTracker />
+        <PersistedBlankPageReload />
         <AppHistoryRecorder />
         <ReportProvider>
           <Analytics />

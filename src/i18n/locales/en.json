@@ -1741,6 +1741,8 @@
         "youtubeFallback": "YouTube video",
         "videosMore": "Load more videos",
         "officialSite": "Official website",
+        "officialSiteHttp": "Official website (no secure connection)",
+        "officialSiteHttpNotice": "This site does not support HTTPS, so your browser may show a security warning.",
         "accessTitle": "How to get there",
         "accessLoading": "Loading train and bus times…",
         "accessUnavailable": "Train and bus times could not be loaded.",

@@ -1,0 +1,155 @@
+import {
+  resetIosZoomAfterInput,
+  scheduleRecalibrateFixedChromeHits,
+} from '../../../shared/lib/mobileViewport.js';
+import { consumeFestivalSheetExternalReturn } from './festivalHomepageProtocol.js';
+
+const Z_MIN = 40;
+const Z_MAX = 59;
+
+function parsedZIndex(el) {
+  if (!(el instanceof HTMLElement)) return null;
+  const raw = window.getComputedStyle(el).zIndex;
+  if (raw === 'auto') return null;
+  const n = Number.parseInt(raw, 10);
+  return Number.isFinite(n) ? n : null;
+}
+
+function isInZBand(el) {
+  const z = parsedZIndex(el);
+  if (z == null) return false;
+  return z >= Z_MIN && z <= Z_MAX;
+}
+
+function clearBlockerAtPoint(x, y, dialogEl) {
+  if (typeof document === 'undefined') return;
+  if (x < 0 || y < 0 || x > window.innerWidth || y > window.innerHeight) return;
+  const hit = document.elementFromPoint(x, y);
+  if (!hit) return;
+  if (dialogEl && dialogEl.contains(hit)) return;
+
+  let el = hit instanceof HTMLElement ? hit : hit.parentElement;
+  while (el && el !== document.body) {
+    const style = window.getComputedStyle(el);
+    const fixedLike =
+      style.position === 'fixed' || style.position === 'sticky' || style.position === 'absolute';
+    if (fixedLike && isInZBand(el) && !el.closest('[role="dialog"]')) {
+      if (
+        !el.hasAttribute('data-festival-sheet-preserve-hit') &&
+        !el.hasAttribute('data-festival-sheet-scrim') &&
+        !el.hasAttribute('data-theme-spot-modal-scrim')
+      ) {
+        el.style.pointerEvents = 'none';
+        el.setAttribute('data-festival-sheet-blocker-cleared', '');
+      }
+      break;
+    }
+    el = el.parentElement;
+  }
+}
+
+/**
+ * Safari bfcache 복귀 후 sheet 위 fixed z40–59 레이어가 히트를 가로채는 경우를 끈다.
+ * @param {HTMLElement} dialogEl
+ */
+export function clearFestivalSheetPointerBlockers(dialogEl) {
+  if (typeof document === 'undefined' || !dialogEl) return;
+
+  const rect = dialogEl.getBoundingClientRect();
+  const probes = [
+    [0.5, 0.22],
+    [0.5, 0.38],
+    [0.5, 0.55],
+    [0.25, 0.35],
+    [0.75, 0.35],
+  ];
+
+  for (const [rx, ry] of probes) {
+    clearBlockerAtPoint(rect.left + rect.width * rx, rect.top + rect.height * ry, dialogEl);
+  }
+}
+
+/** Theme spot modal + fixed Mooni FAB (outside dialog box). */
+export function clearThemeSpotChromePointerBlockers(dialogEl) {
+  clearFestivalSheetPointerBlockers(dialogEl);
+  if (typeof window === 'undefined') return;
+  const fabProbes = [
+    [0.9, 0.62],
+    [0.9, 0.72],
+    [0.9, 0.82],
+    [0.9, 0.9],
+  ];
+  for (const [rx, ry] of fabProbes) {
+    clearBlockerAtPoint(window.innerWidth * rx, window.innerHeight * ry, dialogEl);
+  }
+}
+
+/** @param {HTMLElement | null | undefined} sheetEl */
+export function nudgeFestivalSheetScrollAndRepaint(sheetEl) {
+  if (!sheetEl || typeof window === 'undefined') return;
+
+  const prevTop = sheetEl.scrollTop;
+  sheetEl.scrollTop = prevTop > 0 ? prevTop - 1 : prevTop + 1;
+  sheetEl.scrollTop = prevTop;
+
+  const prevTransform = sheetEl.style.transform;
+  sheetEl.style.transform = 'translateZ(0)';
+  window.requestAnimationFrame(() => {
+    sheetEl.style.transform = prevTransform;
+    window.dispatchEvent(new Event('resize'));
+    scheduleRecalibrateFixedChromeHits();
+  });
+}
+
+/**
+ * @param {{
+ *   contentId: string,
+ *   sheetScrollRef: import('react').RefObject<HTMLElement | null>,
+ *   onResetUi: () => void,
+ *   forceFull?: boolean,
+ * }} opts
+ */
+function themeSpotDetailModalOpen() {
+  if (typeof document === 'undefined') return false;
+  return Boolean(
+    document.querySelector('[aria-labelledby="korea-theme-spot-modal-title"]'),
+  );
+}
+
+export function runFestivalSheetInteractionRestore(opts) {
+  const { contentId, sheetScrollRef, onResetUi, forceFull = false } = opts;
+  const fromSession = consumeFestivalSheetExternalReturn(contentId);
+  const full = forceFull || fromSession;
+
+  const sheet = sheetScrollRef.current;
+  const nestedSpotOpen = themeSpotDetailModalOpen();
+
+  if (full) {
+    if (!nestedSpotOpen) {
+      onResetUi();
+    } else {
+      resetIosZoomAfterInput();
+      if (typeof document !== 'undefined' && document.activeElement instanceof HTMLElement) {
+        document.activeElement.blur();
+      }
+      if (sheet) clearThemeSpotChromePointerBlockers(sheet);
+    }
+    if (typeof document !== 'undefined') {
+      if (!nestedSpotOpen && document.body.style.overflow === 'hidden') {
+        document.body.style.overflow = '';
+      }
+    }
+  }
+
+  if (!sheet) return;
+
+  nudgeFestivalSheetScrollAndRepaint(sheet);
+  clearFestivalSheetPointerBlockers(sheet);
+
+  if (full) {
+    window.requestAnimationFrame(() => {
+      nudgeFestivalSheetScrollAndRepaint(sheet);
+      clearFestivalSheetPointerBlockers(sheet);
+    });
+  }
+}

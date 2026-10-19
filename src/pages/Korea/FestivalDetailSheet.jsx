@@ -139,6 +139,17 @@ import {
 } from './manualFestivalEntries';
 import { formatFestivalDetailDateRange } from './festivalDateFilter.js';
 import { scrollFestivalOverviewToTop } from './festivalSheetOverviewScroll.js';
+import {
+  isHttpOnlyHomepage,
+  markFestivalSheetExternalReturn,
+} from './lib/festivalHomepageProtocol.js';
+import { useFestivalSheetInteractionRestore } from './useFestivalSheetInteractionRestore.js';
+import { runFestivalSheetInteractionRestore } from './lib/festivalSheetInteractionRestore.js';
+
+const FESTIVAL_SHEET_OVERLAY_WRAP =
+  'fixed inset-0 z-40 flex items-end md:items-stretch justify-center p-0 md:py-2 md:px-3 lg:px-4 pointer-events-none';
+const FESTIVAL_SHEET_SCRIM =
+  'absolute inset-0 pointer-events-auto cursor-default border-0 bg-stone-900/30 backdrop-blur-sm';
 
 const SCENIC_PATH = '/korea/theme/scenic';
 const COURSES_PATH = '/korea/theme/courses';
@@ -529,14 +540,16 @@ function toScenicModalSpot(spot, locale = 'ko') {
 
 function FestivalDetailPending({ label, onClose }) {
   return (
-    <div
-      className="fixed inset-0 z-40 flex items-end md:items-stretch justify-center bg-stone-900/30 backdrop-blur-sm p-0 md:py-2 md:px-3 lg:px-4"
-      onClick={onClose}
-      role="presentation"
-    >
+    <div className={FESTIVAL_SHEET_OVERLAY_WRAP} role="presentation">
+      <button
+        type="button"
+        data-festival-sheet-scrim=""
+        className={FESTIVAL_SHEET_SCRIM}
+        aria-label={label}
+        onClick={onClose}
+      />
       <div
-        className="relative flex w-full max-w-lg md:max-w-6xl xl:max-w-7xl max-h-[100dvh] md:my-0 md:h-full md:max-h-none flex-col overflow-hidden rounded-t-3xl md:rounded-3xl border border-stone-200 bg-white text-stone-900 shadow-2xl"
-        onClick={(e) => e.stopPropagation()}
+        className="relative z-10 pointer-events-auto flex w-full max-w-lg md:max-w-6xl xl:max-w-7xl max-h-[100dvh] md:my-0 md:h-full md:max-h-none flex-col overflow-hidden rounded-t-3xl md:rounded-3xl border border-stone-200 bg-white text-stone-900 shadow-2xl"
         role="dialog"
         aria-modal="true"
         aria-busy="true"
@@ -1217,6 +1230,42 @@ export default function FestivalDetailSheet({
     resetIosZoomAfterInput();
   }, [resetLightboxPinch]);
 
+  const resetFestivalSheetOverlayUi = useCallback(() => {
+    setLightboxOpen(false);
+    resetLightboxPinch();
+    setMooniOpen(false);
+    mooniWasOpenRef.current = false;
+    setSelectedNearby(null);
+    setSelectedScenic(null);
+    setSelectedCourse(null);
+    setCourseDetail(null);
+    setCourseDetailLoading(false);
+  }, [resetLightboxPinch]);
+
+  useFestivalSheetInteractionRestore({
+    enabled: Boolean(item?.contentId),
+    contentId: String(item?.contentId || ''),
+    sheetScrollRef,
+    onResetUi: resetFestivalSheetOverlayUi,
+  });
+
+  const hadNestedSpotRef = useRef(false);
+  useEffect(() => {
+    const nestedOpen = Boolean(selectedNearby || selectedScenic || selectedCourse);
+    if (nestedOpen) {
+      hadNestedSpotRef.current = true;
+      return;
+    }
+    if (!hadNestedSpotRef.current || !item?.contentId) return;
+    hadNestedSpotRef.current = false;
+    runFestivalSheetInteractionRestore({
+      contentId: String(item.contentId),
+      sheetScrollRef,
+      onResetUi: resetFestivalSheetOverlayUi,
+      forceFull: false,
+    });
+  }, [selectedNearby, selectedScenic, selectedCourse, item?.contentId, resetFestivalSheetOverlayUi]);
+
   const openLightbox = useCallback(() => {
     if (!imageUrls[activeImage] && !imageUrls[0]) return;
     setLightboxOpen(true);
@@ -1896,18 +1945,20 @@ export default function FestivalDetailSheet({
           title={t('korea.common.close')}
         />
       ) : null}
-    <div
-      className="fixed inset-0 z-40 flex items-end md:items-stretch justify-center bg-stone-900/30 backdrop-blur-sm p-0 md:py-2 md:px-3 lg:px-4"
-      onClick={() => {
-        if (mooniOpen || lightboxOpen) return;
-        onClose();
-      }}
-      role="presentation"
-    >
+    <div className={FESTIVAL_SHEET_OVERLAY_WRAP} role="presentation">
+      <button
+        type="button"
+        data-festival-sheet-scrim=""
+        className={FESTIVAL_SHEET_SCRIM}
+        aria-label={t('korea.common.close')}
+        onClick={() => {
+          if (mooniOpen || lightboxOpen) return;
+          onClose();
+        }}
+      />
       <div
         ref={sheetScrollRef}
-        className="relative flex w-full max-w-lg md:max-w-6xl xl:max-w-7xl max-h-[100dvh] md:my-0 md:h-full md:max-h-none flex-col md:flex-row overflow-y-auto overscroll-contain md:overflow-hidden rounded-t-3xl md:rounded-3xl border border-stone-200 bg-white text-stone-900 shadow-2xl custom-scrollbar"
-        onClick={(e) => e.stopPropagation()}
+        className="relative z-10 pointer-events-auto flex w-full max-w-lg md:max-w-6xl xl:max-w-7xl max-h-[100dvh] md:my-0 md:h-full md:max-h-none flex-col md:flex-row overflow-y-auto overscroll-contain md:overflow-hidden rounded-t-3xl md:rounded-3xl border border-stone-200 bg-white text-stone-900 shadow-2xl custom-scrollbar"
         role="dialog"
         aria-modal="true"
         aria-labelledby="korea-festival-sheet-title"
@@ -2061,7 +2112,21 @@ export default function FestivalDetailSheet({
             placeText={summaryFields.placeText}
             homepage={homepage}
             hideOfficialHomepage={hideOfficialHomepage}
-            officialLabel={t('korea.festival.detail.officialSite')}
+            officialLabel={
+              isHttpOnlyHomepage(homepage)
+                ? t('korea.festival.detail.officialSiteHttp')
+                : t('korea.festival.detail.officialSite')
+            }
+            officialHttpNotice={
+              isHttpOnlyHomepage(homepage)
+                ? t('korea.festival.detail.officialSiteHttpNotice')
+                : null
+            }
+            onOfficialHomeClick={() => {
+              if (item?.contentId) {
+                markFestivalSheetExternalReturn(String(item.contentId));
+              }
+            }}
               footnote={
               item.detailAsOf?.fromDetailDeepLink ? (
                 <FestivalDetailAsOfLine
@@ -2888,6 +2953,11 @@ export default function FestivalDetailSheet({
           favorited={scenicFavoriteIds.has(scenicSpotFavoriteKey(selectedNearby))}
           onToggleFavorite={handleScenicSpotFavorite}
           mooniFab
+          onOfficialHomeNavigate={() => {
+            if (item?.contentId) {
+              markFestivalSheetExternalReturn(String(item.contentId));
+            }
+          }}
           onClose={() => setSelectedNearby(null)}
         />
       )}
@@ -2901,6 +2971,11 @@ export default function FestivalDetailSheet({
           favorited={scenicFavoriteIds.has(scenicSpotFavoriteKey(selectedScenic))}
           onToggleFavorite={handleScenicSpotFavorite}
           mooniFab
+          onOfficialHomeNavigate={() => {
+            if (item?.contentId) {
+              markFestivalSheetExternalReturn(String(item.contentId));
+            }
+          }}
           onClose={() => setSelectedScenic(null)}
         />
       )}
