@@ -12,6 +12,7 @@ import { webkit } from 'playwright';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = process.env.STALE_BUNDLE_R2_OUT || '/opt/cursor/artifacts/stale-bundle-recovery/r2';
+const WORK = join(root, '.cache/stale-bundle-r2');
 const PREVIEW_URL = (process.env.PREVIEW_URL || '').replace(/\/$/, '');
 const PORT = Number(process.env.STALE_BUNDLE_R2_PORT || 4182);
 
@@ -75,7 +76,8 @@ async function clipShot(page, fileName) {
 
 async function archiveDist(label) {
   const distDir = join(root, 'dist');
-  const archive = join(OUT, `_dist-${label}`);
+  await mkdir(WORK, { recursive: true });
+  const archive = join(WORK, `_dist-${label}`);
   await rm(archive, { recursive: true, force: true });
   await cp(distDir, archive, { recursive: true });
   return {
@@ -91,14 +93,18 @@ async function ensureBuildA() {
 }
 
 async function ensureBuildB() {
-  const entryPath = join(root, 'src/boot/staleBundleRecoveryEntry.js');
-  const original = await readFile(entryPath, 'utf8');
-  const marker = '\n// r2-build-b-marker\n';
-  if (!original.includes('r2-build-b-marker')) {
-    await writeFile(entryPath, `${original}${marker}`);
-  }
+  const recoveryPath = join(root, 'src/shared/lib/staleBundleRecovery.js');
+  const original = await readFile(recoveryPath, 'utf8');
+  const needle = 'export const STALE_BUNDLE_RELOAD_COOLDOWN_MS = 30_000;';
+  const tagged = needle.replace(
+    ';',
+    `;\nexport const STALE_BUNDLE_R2_BUILD_B_TAG = ${Date.now()};\n`,
+  );
+  await writeFile(recoveryPath, original.includes('STALE_BUNDLE_R2_BUILD_B_TAG')
+    ? original
+    : original.replace(needle, tagged));
   execSync('npm run build', { cwd: root, stdio: 'inherit' });
-  await writeFile(entryPath, original.replace(marker, ''));
+  await writeFile(recoveryPath, original);
   return archiveDist('B');
 }
 
@@ -122,26 +128,18 @@ async function runLazyChunkSwap(viewport, buildA, buildB) {
 
   activeDist = buildB.dir;
 
-  const koreaLink = page.locator('a[href="/korea"]').first();
-  if (await koreaLink.count()) {
-    await koreaLink.click();
-  } else {
-    await page.evaluate(() => {
-      const a = document.createElement('a');
-      a.href = '/korea';
-      a.style.display = 'none';
-      document.body.appendChild(a);
-      a.click();
-    });
-  }
+  await page.evaluate(() => {
+    window.history.pushState({}, '', '/place/cairo?lang=ko');
+    window.dispatchEvent(new PopStateEvent('popstate'));
+  });
 
-  await page.waitForURL(/\/korea/, { timeout: 90_000 }).catch(() => {});
+  await page.waitForURL(/\/place\/cairo/, { timeout: 90_000 }).catch(() => {});
   await page.waitForTimeout(6000);
 
   const appMounted = await page
-    .locator('main, [data-korea-festival-hub], h1')
+    .locator('[data-place-gallery-scroll]')
     .first()
-    .isVisible()
+    .isAttached()
     .catch(() => false);
   await clipShot(page, `lazy-swap-${viewport.width}-after.png`);
 
@@ -236,12 +234,11 @@ async function resolvePreviewUrl() {
   if (PREVIEW_URL) return PREVIEW_URL;
   const candidates = [
     'https://days-git-cursor-stale-bundle-recovery-544f-catgeots-projects.vercel.app',
-    'https://days-catgeots-projects.vercel.app',
   ];
   for (const url of candidates) {
     try {
-      const code = execSync(`curl -s -o /dev/null -w "%{http_code}" -L "${url}/"`, { encoding: 'utf8' }).trim();
-      if (code === '200') return url;
+      const code = execSync(`curl -s -o /dev/null -w "%{http_code}" "${url}/"`, { encoding: 'utf8' }).trim();
+      if (code === '200' || code === '308') return url;
     } catch {
       /* next */
     }
