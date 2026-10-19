@@ -84,20 +84,38 @@ async function waitTilesPaintBudget(page, budgetMs = 10_000) {
 
 async function auditGrid(page) {
   return page.evaluate(() => {
-    const tiles = [...document.querySelectorAll('.columns-2 > div')];
-    const rows = tiles.map((tile) => {
-      const img = tile.querySelector('img[alt^="place-img"]');
-      const pulse = tile.querySelector('.animate-pulse');
-      const nw = img?.naturalWidth ?? 0;
-      const src = img?.currentSrc || img?.src || '';
-      const painted = nw > 0;
-      const imgHidden = img ? getComputedStyle(img).display === 'none' : false;
-      const broken = Boolean(
-        imgHidden || (img?.complete && nw === 0 && src.length > 0),
-      );
-      const empty = !painted && !broken && Boolean(pulse);
-      return { painted, broken, empty, src };
-    });
+    const column = document.querySelector('.columns-2');
+    if (!column) return { painted: 0, broken: 0, empty: 0, rows: [] };
+    const scroller = document.querySelector('.custom-scrollbar-blue');
+    const scrollerRect = scroller?.getBoundingClientRect();
+    const viewTop = scrollerRect?.top ?? 0;
+    const viewBottom = scrollerRect?.bottom ?? window.innerHeight;
+    const tiles = [...column.children].filter((n) => n instanceof HTMLElement);
+    const rows = tiles
+      .map((tile) => {
+        const rect = tile.getBoundingClientRect();
+        const visible =
+          rect.width > 4 &&
+          rect.height > 4 &&
+          rect.bottom > viewTop + 2 &&
+          rect.top < viewBottom - 2;
+        if (!visible) return null;
+        const img = tile.querySelector('img[alt^="place-img"]');
+        const nw = img?.naturalWidth ?? 0;
+        const src = (img?.currentSrc || img?.src || '').trim();
+        const style = img ? getComputedStyle(img) : null;
+        const opacity = style ? Number(style.opacity) : 0;
+        const painted = nw > 0 && opacity > 0.05;
+        const imgHidden = img ? style.display === 'none' : false;
+        const broken = Boolean(
+          imgHidden || (img && img.complete && nw === 0 && src.length > 0),
+        );
+        const empty = Boolean(
+          !painted && !broken && (!img || nw === 0 || opacity <= 0.05),
+        );
+        return { painted, broken, empty, src };
+      })
+      .filter(Boolean);
     return {
       painted: rows.filter((r) => r.painted).length,
       broken: rows.filter((r) => r.broken).length,

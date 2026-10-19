@@ -117,25 +117,34 @@ const GalleryGridTile = React.memo(function GalleryGridTile({
     const syncFromElement = () => {
       const el = imgElRef.current;
       if (!el || paintedRef.current) return;
-      // 성공 decode만 즉시 반영. complete+0폭은 lazy/미시작일 수 있어 드롭하지 않음.
+      // WebKit: naturalWidth>0인데 complete/onLoad가 늦을 수 있음 — opacity 0 고착 방지.
+      if (el.naturalWidth > 0) {
+        settleLoaded();
+        return;
+      }
+      // complete+0폭은 lazy/미시작일 수 있어 드롭하지 않음.
       if (el.complete && el.naturalWidth > 0) settleLoaded();
     };
 
     const raf = window.requestAnimationFrame(syncFromElement);
+    const el = imgElRef.current;
+    if (el?.decode) {
+      void el
+        .decode()
+        .then(() => {
+          if (el.naturalWidth > 0) settleLoaded();
+        })
+        .catch(() => {});
+    }
     const hangTimer = window.setTimeout(() => {
       if (paintedRef.current) return;
       const el = imgElRef.current;
-      if (el?.complete && el.naturalWidth > 0) {
+      if (el?.naturalWidth > 0) {
         settleLoaded();
         return;
       }
-      // 화면에 있는데 6초 뒤에도 decode가 없으면 빈 칸으로 남기지 않고 빼서 재배치한다.
-      const rect = el?.getBoundingClientRect();
-      const inView = Boolean(
-        rect && rect.width > 0 && rect.bottom > 0 && rect.top < window.innerHeight,
-      );
-      if (inView) settleBroken();
-      else markPainted();
+      // 6초 후에도 decode 없으면 빈 칸/회색 타일 대신 제거(재배치).
+      settleBroken();
     }, TILE_LOAD_HANG_MS);
 
     return () => {
