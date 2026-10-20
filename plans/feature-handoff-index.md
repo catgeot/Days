@@ -14,18 +14,18 @@
 
 ## 활성 목록
 
-### 축제 확대보기 iOS
+### 축제 확대보기 세로 중앙
 
 | | |
 |--|--|
-| **상태** | **#1 라이트박스 탭·스와이프** · tip `0dcaab21` · draft PR [#530](https://github.com/catgeot/Days/pull/530) · **병합 금지** |
-| **브랜치** | `cursor/festival-lightbox-ios-e9da` |
+| **상태** | **#2 세로 중앙·뒤로가기** · 코드 `d7e08231` · 증거 `bd6f913f` · draft PR [#531](https://github.com/catgeot/Days/pull/531) · **병합 금지** · #530 병합됨 `23b3ac3b` |
+| **브랜치** | `cursor/lightbox-center-aaff` |
 | **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
 | **일지** | [`2026-10-20-project-log.md`](./2026-10-20-project-log.md) |
-| **Preview** | WebKit 390 before/after `docs/qa/festival-lightbox-ios/` |
-| **금지** | PR 병합 · 코드를 `origin/main`에 push · feature에 `plans/**` 커밋 |
+| **Preview** | 실데이터 `gateo-ops/qa/lightbox-center-2026-10-20/d7e082316377a1333f5a401136a31cd0befb0c23/` |
+| **금지** | PR 병합 · 코드를 `origin/main`에 push · feature에 `plans/**` 커밋 · 플래그 |
 | **VERIFY** | `SMOKE_SITE_URL=http://127.0.0.1:5173/ npx playwright test e2e/festival-lightbox-ios.spec.js --project=webkit-festival-lightbox-ios` |
-| **남은 일** | 사람이 draft #530과 `gateo-ops/qa/lightbox-530-2026-10-20/1113cb3d907224f7bb60b0aa91ad4748394b2df0/` 만 본다. 다음 에이전트 작업 없음 |
+| **남은 일** | 사람이 draft #531만 본다. 390에서 사진·화살표 세로 중앙, 1280에서 화살표는 사진 밖. 라이트박스에서 뒤로가면 상세가 남고, 한 번 더 뒤로가면 목록. |
 
 **다음 제시어 없음**.
 
