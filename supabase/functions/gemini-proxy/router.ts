@@ -147,12 +147,18 @@ export async function handleGeminiProxy(req: Request, deps: ProxyDeps = {}): Pro
     return jsonResponse(413, { success: false, error: "too_large" }, origin, originAllowed);
   }
 
+  const presentedHealth = req.headers.get("x-gateo-health");
   const healthTokenOk = taskName === "health_ping" && await healthTokenMatches(
-    req.headers.get("x-gateo-health"),
+    presentedHealth,
     env.GEMINI_HEALTH_TOKEN,
   );
   if (taskName === "health_ping" && !env.GEMINI_HEALTH_TOKEN?.trim()) {
     console.error(JSON.stringify({ fn: "gemini-proxy", error: "missing_health_token" }));
+  }
+  // Present header that does not match is an auth failure. Do not fall through to Origin or log the value.
+  if (taskName === "health_ping" && presentedHealth !== null && !healthTokenOk) {
+    logLine({ task: taskName, status: 401, error: "health_token_invalid", ms: Date.now() - started, legacy: isLegacy });
+    return jsonResponse(401, { success: false, error: "health_token_invalid" }, origin, false);
   }
 
   if (!healthTokenOk && !originAllowed) {

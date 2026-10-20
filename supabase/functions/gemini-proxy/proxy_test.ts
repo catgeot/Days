@@ -169,18 +169,11 @@ Deno.test("health_ping with a valid token skips the daily budget and usage stats
   assertEquals(logged.some((row) => row.health === true && row.task === "health_ping" && row.status === 200), true);
 });
 
-Deno.test("health_ping without a valid token is a normal origin-checked request", async () => {
+Deno.test("health_ping without a health header is a normal origin-checked request", async () => {
   const { fetchImpl, calls } = routedFetch(() => geminiOk("pong"));
   const missing = await post({ task: "health_ping" }, {}, fetchImpl);
   assertEquals(missing.status, 403);
   assertEquals((await missing.json()).error, "origin_not_allowed");
-
-  const wrong = await post({ task: "health_ping" }, {
-    "x-gateo-health": "nope",
-    Origin: "https://evil.example",
-  }, fetchImpl);
-  assertEquals(wrong.status, 403);
-  assertEquals((await wrong.json()).error, "origin_not_allowed");
   assertEquals(geminiCalls(calls).length, 0);
   assertEquals(admitCalls(calls).length, 0);
 
@@ -193,6 +186,29 @@ Deno.test("health_ping without a valid token is a normal origin-checked request"
   assertEquals(reserveCalls(calls).length, 1);
   const reserved = JSON.parse(String(reserveCalls(calls)[0].init?.body));
   assertEquals(reserved.p_token_budget, 1_500_000);
+});
+
+Deno.test("health_ping with a present but invalid token returns 401", async () => {
+  const { fetchImpl, calls } = routedFetch(() => geminiOk("pong"));
+  const logs = captureLogs();
+  const presented = "nope";
+  try {
+    for (const origin of ["https://evil.example", ORIGIN]) {
+      const res = await post({ task: "health_ping" }, {
+        "x-gateo-health": presented,
+        Origin: origin,
+      }, fetchImpl);
+      assertEquals(res.status, 401);
+      assertEquals(await res.json(), { success: false, error: "health_token_invalid" });
+    }
+  } finally {
+    logs.restore();
+  }
+  const dumped = logs.lines.join("\n");
+  assert(!dumped.includes(presented));
+  assert(!dumped.includes(HEALTH_TOKEN));
+  assertEquals(geminiCalls(calls).length, 0);
+  assertEquals(admitCalls(calls).length, 0);
 });
 
 Deno.test("health_ping cap is enforced without calling Gemini", async () => {
