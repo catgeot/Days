@@ -3303,7 +3303,7 @@ export default function FestivalDetailSheet({
                   aria-label={t('korea.festival.detail.lightboxClose')}
                   className="relative z-30 flex h-11 w-11 min-h-11 min-w-11 touch-manipulation pointer-events-auto items-center justify-center rounded-full border-2 border-white bg-stone-950 text-white shadow-[0_2px_14px_rgba(0,0,0,0.72)]"
                 >
-                  <X size={22} strokeWidth={2.5} aria-hidden="true" />
+                  <X size={22} strokeWidth={2.5} className="pointer-events-none" aria-hidden="true" />
                 </button>
               </div>
 
@@ -3344,7 +3344,7 @@ export default function FestivalDetailSheet({
                       aria-label={t('korea.festival.detail.lightboxPrev')}
                       className="absolute left-0 top-1/2 z-20 flex h-11 w-11 min-h-11 min-w-11 -translate-y-1/2 touch-manipulation pointer-events-auto items-center justify-center rounded-full border border-white/20 bg-stone-900/55 text-white hover:bg-stone-900/75 md:left-2"
                     >
-                      <ChevronLeft size={22} aria-hidden="true" />
+                      <ChevronLeft size={22} className="pointer-events-none" aria-hidden="true" />
                     </button>
                     <button
                       type="button"
@@ -3352,7 +3352,7 @@ export default function FestivalDetailSheet({
                       aria-label={t('korea.festival.detail.lightboxNext')}
                       className="absolute right-0 top-1/2 z-20 flex h-11 w-11 min-h-11 min-w-11 -translate-y-1/2 touch-manipulation pointer-events-auto items-center justify-center rounded-full border border-white/20 bg-stone-900/55 text-white hover:bg-stone-900/75 md:right-2"
                     >
-                      <ChevronRight size={22} aria-hidden="true" />
+                      <ChevronRight size={22} className="pointer-events-none" aria-hidden="true" />
                     </button>
                   </>
                 )}
