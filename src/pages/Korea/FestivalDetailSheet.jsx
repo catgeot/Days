@@ -3277,7 +3277,7 @@ export default function FestivalDetailSheet({
             style={{
               touchAction: 'none',
               overscrollBehavior: 'none',
-              backgroundColor: 'rgba(0,0,0,0.92)',
+              backgroundColor: '#000',
             }}
             onClick={(e) => {
               e.stopPropagation();
@@ -3286,7 +3286,13 @@ export default function FestivalDetailSheet({
             role="presentation"
           >
             <div
-              className="relative flex h-full w-full max-w-6xl flex-col"
+              aria-hidden="true"
+              data-festival-lightbox-scrim=""
+              className="absolute inset-0"
+              style={{ backgroundColor: '#000' }}
+            />
+            <div
+              className="relative z-10 flex h-full w-full max-w-6xl flex-col"
               onClick={(e) => e.stopPropagation()}
               role="dialog"
               aria-modal="true"
