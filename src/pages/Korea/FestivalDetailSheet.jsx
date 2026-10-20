@@ -163,6 +163,7 @@ const FESTIVAL_RETURN = '/korea';
 const SCENIC_LIST_LIMIT = 8;
 const PHOTO_SWIPE_THRESHOLD_PX = 48;
 const PHOTO_SWIPE_DIRECTION_RATIO = 1.25;
+const LIGHTBOX_TAP_SLOP_PX = 18;
 const lightboxTouchHandled = new WeakMap();
 
 function historyStateRecord() {
@@ -178,6 +179,20 @@ function pushLightboxHistoryEntry() {
 
 function historyEntryIsLightbox() {
   return historyStateRecord()?.gateoLightbox === true;
+}
+
+/** object-contain box. The swipe layer covers the letterbox, so a click never reaches the root scrim. */
+function lightboxTapOutsidePaintedPhoto(swipeEl, x, y) {
+  const img = swipeEl?.querySelector?.('img');
+  if (!img?.naturalWidth || !img.naturalHeight) return false;
+  const box = img.getBoundingClientRect();
+  if (box.width < 1 || box.height < 1) return false;
+  const fit = Math.min(box.width / img.naturalWidth, box.height / img.naturalHeight);
+  const paintedW = img.naturalWidth * fit;
+  const paintedH = img.naturalHeight * fit;
+  const left = box.left + (box.width - paintedW) / 2;
+  const top = box.top + (box.height - paintedH) / 2;
+  return x < left || x > left + paintedW || y < top || y > top + paintedH;
 }
 
 function festivalImage(item) {
@@ -1525,8 +1540,12 @@ export default function FestivalDetailSheet({
     if (!start || isLightboxZoomed()) return;
     const t = e.changedTouches?.[0];
     if (!t) return;
-    consumeHorizontalSwipe(start, t.clientX, t.clientY);
-  }, [consumeHorizontalSwipe, isLightboxZoomed, onPinchTouchEnd]);
+    if (consumeHorizontalSwipe(start, t.clientX, t.clientY)) return;
+    if (Math.hypot(t.clientX - start.x, t.clientY - start.y) > LIGHTBOX_TAP_SLOP_PX) return;
+    if (lightboxTapOutsidePaintedPhoto(e.currentTarget, t.clientX, t.clientY)) {
+      closeLightbox();
+    }
+  }, [closeLightbox, consumeHorizontalSwipe, isLightboxZoomed, onPinchTouchEnd]);
 
   const onLightboxTouchCancel = useCallback(() => {
     onPinchTouchCancel();

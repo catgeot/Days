@@ -329,3 +329,160 @@ test.describe('festival lightbox iOS touch — WebKit 390', () => {
     expect(edges.prevH).toBeGreaterThanOrEqual(44);
   });
 });
+
+const REAL_OUT = process.env.LIGHTBOX_QA_OUT || '/tmp/lightbox-center-qa';
+const COFFEE_ID = '825295';
+
+async function shotReal(page, name) {
+  await mkdir(REAL_OUT, { recursive: true });
+  await page.evaluate(() => {
+    document.querySelectorAll('body *').forEach((el) => {
+      if ((el.textContent || '').trim() === '모바일 위젯 로그') {
+        const host = el.closest('div.fixed');
+        if (host) host.style.visibility = 'hidden';
+      }
+    });
+  });
+  await page.screenshot({
+    path: `${REAL_OUT}/${name}.png`,
+    clip: { x: 0, y: 0, width: VIEWPORT.width, height: VIEWPORT.height },
+  });
+}
+
+async function openKoreaList(page) {
+  await page.goto('/korea/', { waitUntil: 'domcontentloaded' });
+  await dismissLocHint(page);
+  await expect(page.locator('[data-festival-id]').first()).toBeVisible({ timeout: 90_000 });
+}
+
+async function gangwonChip(page) {
+  return page.getByRole('button', { name: /^강원/ }).first();
+}
+
+async function openCoffeeFromGangwon(page) {
+  await openKoreaList(page);
+  const chip = await gangwonChip(page);
+  await chip.scrollIntoViewIfNeeded();
+  await chip.tap();
+  await expect(page.getByRole('button', { name: /^강원/, pressed: true }).first()).toBeVisible();
+  const card = page.locator(`[data-festival-id="${COFFEE_ID}"]`);
+  await expect(card).toBeVisible({ timeout: 45_000 });
+  await card.scrollIntoViewIfNeeded();
+  await card.tap();
+  const sheet = page.getByRole('dialog').filter({ has: page.locator('#korea-festival-sheet-title') });
+  await expect(sheet).toBeVisible({ timeout: 60_000 });
+  await expect(sheet.locator('#korea-festival-sheet-title')).toContainText('강릉커피축제');
+  await expect(page).toHaveURL(new RegExp(`festival=${COFFEE_ID}`));
+  return sheet;
+}
+
+async function expandCoffeePhoto(page, sheet) {
+  await sheet.getByRole('button', { name: /사진 확대보기/ }).tap();
+  const lightbox = page.getByRole('dialog', { name: '사진 확대보기' });
+  await expect(lightbox).toBeVisible();
+  await expect.poll(async () => lightbox.locator('img').first().evaluate((img) => (
+    img.complete && img.naturalWidth > 10 ? img.naturalWidth : 0
+  ))).toBeGreaterThan(10);
+  await expect(lightbox.getByRole('button', { name: '다음 사진' })).toBeVisible({ timeout: 25_000 });
+  return lightbox;
+}
+
+async function backdropPoint(lightbox) {
+  return lightbox.evaluate((root) => {
+    const img = root.querySelector('img');
+    const box = img.getBoundingClientRect();
+    const fit = Math.min(box.width / img.naturalWidth, box.height / img.naturalHeight);
+    const paintedH = img.naturalHeight * fit;
+    const paintedTop = box.top + (box.height - paintedH) / 2;
+    const paintedBottom = paintedTop + paintedH;
+    const rootBox = root.getBoundingClientRect();
+    let y = paintedBottom + 36;
+    if (y > rootBox.bottom - 28) y = Math.max(rootBox.top + 28, paintedTop - 36);
+    return { x: box.left + box.width / 2, y };
+  });
+}
+
+test.describe('festival lightbox real TourAPI — WebKit 390', () => {
+  test.describe.configure({ timeout: 180_000 });
+
+  test('강원 chip card: back closes the lightbox, then returns to the 강원 list', async ({ page }) => {
+    await openKoreaList(page);
+    await shotReal(page, '01-list');
+
+    const chip = await gangwonChip(page);
+    await chip.scrollIntoViewIfNeeded();
+    await chip.tap();
+    await expect(page.getByRole('button', { name: /^강원/, pressed: true }).first()).toBeVisible();
+    await expect(page.locator(`[data-festival-id="${COFFEE_ID}"]`)).toBeVisible({ timeout: 45_000 });
+    await shotReal(page, '02-gangwon');
+
+    const card = page.locator(`[data-festival-id="${COFFEE_ID}"]`);
+    await card.scrollIntoViewIfNeeded();
+    await card.tap();
+    const sheet = page.getByRole('dialog').filter({ has: page.locator('#korea-festival-sheet-title') });
+    await expect(sheet).toBeVisible({ timeout: 60_000 });
+    await expect(sheet.locator('#korea-festival-sheet-title')).toContainText('강릉커피축제');
+    await expect(page).toHaveURL(new RegExp(`festival=${COFFEE_ID}`));
+    await shotReal(page, '03-sheet');
+
+    const lightbox = await expandCoffeePhoto(page, sheet);
+    await shotReal(page, '04-lightbox');
+
+    await page.goBack({ waitUntil: 'commit' });
+    await expect(lightbox).toBeHidden();
+    await expect(sheet).toBeVisible();
+    await expect(page).toHaveURL(new RegExp(`festival=${COFFEE_ID}`));
+    await shotReal(page, '05-back-detail');
+
+    await page.goBack({ waitUntil: 'commit' });
+    await expect(page).not.toHaveURL(/[?&]festival=/);
+    await expect(sheet).toBeHidden();
+    await expect(page.getByRole('button', { name: /^강원/, pressed: true }).first()).toBeVisible();
+    await expect(page.locator(`[data-festival-id="${COFFEE_ID}"]`)).toBeVisible();
+    await shotReal(page, '06-back-list');
+  });
+
+  test('Esc then one back returns to the list', async ({ page }) => {
+    const sheet = await openCoffeeFromGangwon(page);
+    const lightbox = await expandCoffeePhoto(page, sheet);
+    await page.keyboard.press('Escape');
+    await expect(lightbox).toBeHidden();
+    await expect(sheet).toBeVisible();
+    await expect(page).toHaveURL(new RegExp(`festival=${COFFEE_ID}`));
+    await page.goBack({ waitUntil: 'commit' });
+    await expect(page).not.toHaveURL(/[?&]festival=/);
+    await expect(sheet).toBeHidden();
+    await expect(page.locator(`[data-festival-id="${COFFEE_ID}"]`)).toBeVisible();
+  });
+
+  test('backdrop tap then one back returns to the list', async ({ page }) => {
+    const sheet = await openCoffeeFromGangwon(page);
+    const lightbox = await expandCoffeePhoto(page, sheet);
+    const point = await backdropPoint(lightbox);
+    await page.touchscreen.tap(point.x, point.y);
+    await expect(lightbox).toBeHidden();
+    await expect(sheet).toBeVisible();
+    await expect(page).toHaveURL(new RegExp(`festival=${COFFEE_ID}`));
+    await page.goBack({ waitUntil: 'commit' });
+    await expect(page).not.toHaveURL(/[?&]festival=/);
+    await expect(sheet).toBeHidden();
+    await expect(page.locator(`[data-festival-id="${COFFEE_ID}"]`)).toBeVisible();
+  });
+
+  test('three next taps then one back closes the lightbox only', async ({ page }) => {
+    const sheet = await openCoffeeFromGangwon(page);
+    const lightbox = await expandCoffeePhoto(page, sheet);
+    const index = lightbox.locator('[data-festival-lightbox-index]');
+    await expect(index).toHaveAttribute('data-festival-lightbox-index', '0');
+    const next = lightbox.getByRole('button', { name: '다음 사진' });
+    for (let step = 1; step <= 3; step += 1) {
+      await next.tap();
+      await expect(index).toHaveAttribute('data-festival-lightbox-index', String(step));
+    }
+    await page.goBack({ waitUntil: 'commit' });
+    await expect(lightbox).toBeHidden();
+    await expect(sheet).toBeVisible();
+    await expect(page).toHaveURL(new RegExp(`festival=${COFFEE_ID}`));
+    await expect(sheet.locator('#korea-festival-sheet-title')).toContainText('강릉커피축제');
+  });
+});
