@@ -165,6 +165,21 @@ const PHOTO_SWIPE_THRESHOLD_PX = 48;
 const PHOTO_SWIPE_DIRECTION_RATIO = 1.25;
 const lightboxTouchHandled = new WeakMap();
 
+function historyStateRecord() {
+  const state = window.history.state;
+  return state && typeof state === 'object' ? state : null;
+}
+
+/** Same URL as the open sheet. React Router reads idx/key/usr off history.state. */
+function pushLightboxHistoryEntry() {
+  const prev = historyStateRecord();
+  window.history.pushState({ ...(prev || {}), gateoLightbox: true }, '');
+}
+
+function historyEntryIsLightbox() {
+  return historyStateRecord()?.gateoLightbox === true;
+}
+
 function festivalImage(item) {
   return item?.firstimage || item?.imageUrl || item?.firstimage2 || '';
 }
@@ -708,6 +723,9 @@ export default function FestivalDetailSheet({
   const lightboxSwipeStartRef = useRef(null);
   const lightboxRootRef = useRef(null);
   const lightboxTouchRef = useRef(null);
+  const lightboxHistoryPushedRef = useRef(false);
+  const ignoreLightboxPopRef = useRef(false);
+  const closeLightboxFromPopRef = useRef(() => {});
   const suppressHeroTapRef = useRef(false);
   const tabListRef = useRef(null);
   const overviewScrollPendingRef = useRef(false);
@@ -1248,11 +1266,27 @@ export default function FestivalDetailSheet({
     onPinchTouchCancel,
   } = useLightboxPinchTransform(activeImage);
 
+  const consumeLightboxHistory = useCallback(() => {
+    if (!lightboxHistoryPushedRef.current || typeof window === 'undefined') return;
+    lightboxHistoryPushedRef.current = false;
+    if (!historyEntryIsLightbox()) return;
+    ignoreLightboxPopRef.current = true;
+    window.history.back();
+  }, []);
+
   const closeLightbox = useCallback(() => {
     setLightboxOpen(false);
     resetLightboxPinch();
     resetIosZoomAfterInput();
-  }, [resetLightboxPinch]);
+    consumeLightboxHistory();
+  }, [consumeLightboxHistory, resetLightboxPinch]);
+
+  closeLightboxFromPopRef.current = () => {
+    lightboxHistoryPushedRef.current = false;
+    setLightboxOpen(false);
+    resetLightboxPinch();
+    resetIosZoomAfterInput();
+  };
 
   const lightboxControlProps = useCallback((fn) => ({
     onPointerDown: (event) => {
@@ -1356,21 +1390,34 @@ export default function FestivalDetailSheet({
 
   useEffect(() => {
     if (!lightboxOpen || typeof window === 'undefined') return undefined;
-    const savedUrl = window.location.href;
-    const savedState = window.history.state;
-    // iOS swipe-back is a history pop. Capture runs before React Router's
-    // bubble listener so the festival URL is restored in the same turn.
+    // iOS edge-swipe is a real history pop. A same-URL step sits above the
+    // festival sheet entry so that pop closes the lightbox and leaves ?festival=.
+    try {
+      pushLightboxHistoryEntry();
+      lightboxHistoryPushedRef.current = true;
+    } catch {
+      lightboxHistoryPushedRef.current = false;
+    }
     const onPop = (event) => {
-      event.stopImmediatePropagation();
-      const saved = new URL(savedUrl);
-      const savedPath = `${saved.pathname}${saved.search}${saved.hash}`;
-      const here = `${window.location.pathname}${window.location.search}${window.location.hash}`;
-      if (here !== savedPath) {
-        window.history.pushState(savedState, '', savedPath);
+      if (ignoreLightboxPopRef.current) {
+        ignoreLightboxPopRef.current = false;
+        event.stopImmediatePropagation();
+        return;
       }
+      event.stopImmediatePropagation();
+      closeLightboxFromPopRef.current();
     };
     window.addEventListener('popstate', onPop, true);
-    return () => window.removeEventListener('popstate', onPop, true);
+    return () => {
+      if (lightboxHistoryPushedRef.current && historyEntryIsLightbox()) {
+        lightboxHistoryPushedRef.current = false;
+        ignoreLightboxPopRef.current = true;
+        window.history.back();
+      } else {
+        lightboxHistoryPushedRef.current = false;
+      }
+      window.removeEventListener('popstate', onPop, true);
+    };
   }, [lightboxOpen]);
 
   useEffect(() => {
@@ -3333,7 +3380,7 @@ export default function FestivalDetailSheet({
                     draggable={false}
                     loading="eager"
                     style={lightboxTransformStyle}
-                    className="max-h-full max-w-full object-contain select-none pointer-events-none"
+                    className="pointer-events-none absolute inset-0 h-full w-full object-contain object-center select-none"
                     fallback={
                       <div
                         className="flex h-48 w-full items-center justify-center"

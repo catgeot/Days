@@ -188,11 +188,44 @@ test.describe('festival lightbox iOS touch — WebKit 390', () => {
     await expect(index).not.toHaveAttribute('data-festival-lightbox-index', '0');
     await expect(page).toHaveURL(detailUrl);
 
-    await page.evaluate(() => {
-      window.history.back();
+    const placed = await lightbox.evaluate((root) => {
+      const img = root.querySelector('img');
+      const stage = root.querySelector('[data-festival-lightbox-swipe]');
+      const prev = root.querySelector('button[aria-label="이전 사진"]');
+      const next = root.querySelector('button[aria-label="다음 사진"]');
+      const imgBox = img.getBoundingClientRect();
+      const stageBox = stage.getBoundingClientRect();
+      const prevBox = prev.getBoundingClientRect();
+      const nextBox = next.getBoundingClientRect();
+      const fit = Math.min(imgBox.width / img.naturalWidth, imgBox.height / img.naturalHeight);
+      const paintedH = img.naturalHeight * fit;
+      const paintedMid = imgBox.top + (imgBox.height - paintedH) / 2 + paintedH / 2;
+      const style = getComputedStyle(img);
+      return {
+        objectFit: style.objectFit,
+        objectPosition: style.objectPosition,
+        stageMid: stageBox.top + stageBox.height / 2,
+        paintedMid,
+        prevMid: prevBox.top + prevBox.height / 2,
+        nextMid: nextBox.top + nextBox.height / 2,
+        prevW: prevBox.width,
+        prevH: prevBox.height,
+        nextW: nextBox.width,
+        nextH: nextBox.height,
+        paintedH,
+        stageH: stageBox.height,
+      };
     });
-    await expect(page).toHaveURL(detailUrl);
-    await expect(lightbox).toBeVisible();
+    expect(placed.objectFit).toBe('contain');
+    expect(placed.objectPosition).toMatch(/center|50%/);
+    expect(placed.paintedH).toBeLessThan(placed.stageH - 80);
+    expect(Math.abs(placed.paintedMid - placed.stageMid)).toBeLessThan(3);
+    expect(Math.abs(placed.prevMid - placed.paintedMid)).toBeLessThan(3);
+    expect(Math.abs(placed.nextMid - placed.paintedMid)).toBeLessThan(3);
+    expect(placed.prevW).toBeGreaterThanOrEqual(44);
+    expect(placed.prevH).toBeGreaterThanOrEqual(44);
+    expect(placed.nextW).toBeGreaterThanOrEqual(44);
+    expect(placed.nextH).toBeGreaterThanOrEqual(44);
 
     const stripBox = await scroller.boundingBox();
     expect(stripBox).toBeTruthy();
@@ -211,5 +244,88 @@ test.describe('festival lightbox iOS touch — WebKit 390', () => {
     await expect(lightbox).toBeHidden();
     await expect(page).toHaveURL(detailUrl);
     await expect(scroller).toHaveAttribute('data-festival-hero-thumbs-locked', 'false');
+  });
+
+  test('back closes the lightbox on 825295 and the next back returns to the list', async ({ page }) => {
+    const id = '825295';
+    await page.goto('/korea/', { waitUntil: 'domcontentloaded' });
+    await dismissLocHint(page);
+    await page.goto(`/korea/?festival=${id}`, { waitUntil: 'domcontentloaded' });
+
+    const sheet = page.getByRole('dialog').filter({ has: page.locator('#korea-festival-sheet-title') });
+    await expect(sheet).toBeVisible({ timeout: 60_000 });
+    await expect(sheet.locator('#korea-festival-sheet-title')).toContainText('강릉커피축제');
+    await expect(sheet.locator('[data-festival-hero-thumbs-scroller]')).toBeVisible({ timeout: 30_000 });
+
+    await sheet.getByRole('button', { name: /사진 확대보기/ }).click();
+    const lightbox = page.getByRole('dialog', { name: '사진 확대보기' });
+    await expect(lightbox).toBeVisible();
+    await expect.poll(async () => lightbox.locator('img').first().evaluate((img) => (
+      img.complete && img.naturalWidth > 10 ? img.naturalWidth : 0
+    ))).toBeGreaterThan(10);
+
+    await page.goBack({ waitUntil: 'commit' });
+    await expect(lightbox).toBeHidden();
+    await expect(page).toHaveURL(new RegExp(`festival=${id}`));
+    await expect(sheet).toBeVisible();
+
+    await page.goBack({ waitUntil: 'commit' });
+    await expect(page).not.toHaveURL(/[?&]festival=/);
+    await expect(sheet).toBeHidden();
+  });
+
+  test('X drops the lightbox history step so the next back returns to the list', async ({ page }) => {
+    const id = '825295';
+    await page.goto('/korea/', { waitUntil: 'domcontentloaded' });
+    await dismissLocHint(page);
+    await page.goto(`/korea/?festival=${id}`, { waitUntil: 'domcontentloaded' });
+
+    const sheet = page.getByRole('dialog').filter({ has: page.locator('#korea-festival-sheet-title') });
+    await expect(sheet).toBeVisible({ timeout: 60_000 });
+    await sheet.getByRole('button', { name: /사진 확대보기/ }).click();
+    const lightbox = page.getByRole('dialog', { name: '사진 확대보기' });
+    await expect(lightbox).toBeVisible();
+
+    await lightbox.getByRole('button', { name: '확대보기 닫기' }).click();
+    await expect(lightbox).toBeHidden();
+    await expect(page).toHaveURL(new RegExp(`festival=${id}`));
+
+    await page.goBack({ waitUntil: 'commit' });
+    await expect(page).not.toHaveURL(/[?&]festival=/);
+    await expect(sheet).toBeHidden();
+  });
+
+  test('1280 arrows sit outside the centered photo', async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 844 });
+    await page.goto('/korea/', { waitUntil: 'domcontentloaded' });
+    await dismissLocHint(page);
+    await page.goto(`/korea/?festival=${FESTIVAL_ID}`, { waitUntil: 'domcontentloaded' });
+
+    const sheet = page.getByRole('dialog').filter({ has: page.locator('#korea-festival-sheet-title') });
+    await expect(sheet).toBeVisible({ timeout: 60_000 });
+    await sheet.getByRole('button', { name: /사진 확대보기/ }).click();
+    const lightbox = page.getByRole('dialog', { name: '사진 확대보기' });
+    await expect(lightbox).toBeVisible();
+    await expect.poll(async () => lightbox.locator('img').first().evaluate((img) => (
+      img.complete && img.naturalWidth > 10 ? img.naturalWidth : 0
+    ))).toBeGreaterThan(10);
+
+    const edges = await lightbox.evaluate((root) => {
+      const stage = root.querySelector('[data-festival-lightbox-swipe]').getBoundingClientRect();
+      const prev = root.querySelector('button[aria-label="이전 사진"]').getBoundingClientRect();
+      const next = root.querySelector('button[aria-label="다음 사진"]').getBoundingClientRect();
+      return {
+        prevRight: prev.right,
+        nextLeft: next.left,
+        stageLeft: stage.left,
+        stageRight: stage.right,
+        prevW: prev.width,
+        prevH: prev.height,
+      };
+    });
+    expect(edges.prevRight).toBeLessThanOrEqual(edges.stageLeft + 1);
+    expect(edges.nextLeft).toBeGreaterThanOrEqual(edges.stageRight - 1);
+    expect(edges.prevW).toBeGreaterThanOrEqual(44);
+    expect(edges.prevH).toBeGreaterThanOrEqual(44);
   });
 });

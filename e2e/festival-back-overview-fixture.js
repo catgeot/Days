@@ -53,6 +53,16 @@ export const BACK_OVERVIEW_FESTIVAL_ROWS = [
     venue: '강릉 월화거리 일원',
   },
   {
+    id: '825295',
+    title: '강릉커피축제',
+    addr1: '강원특별자치도 강릉시',
+    mapx: '128.8760500000',
+    mapy: '37.7518500000',
+    eventStartDate: '20261023',
+    eventEndDate: '20261108',
+    venue: '강릉 커피거리 일원',
+  },
+  {
     id: '1998564',
     title: '궁중문화축전',
     addr1: '서울특별시 종로구 사직로 161',
