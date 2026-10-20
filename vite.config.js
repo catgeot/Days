@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react';
 import basicSsl from '@vitejs/plugin-basic-ssl';
 import { writeFileSync } from 'fs';
 import { execSync } from 'child_process';
+import { resolve } from 'path';
 
 import { TRAVEL_SPOTS } from './src/pages/Home/data/travelSpots.js';
 
@@ -135,6 +136,10 @@ export default defineConfig({
       },
     },
     rollupOptions: {
+      input: {
+        index: resolve(__dirname, 'index.html'),
+        staleBundleRecovery: resolve(__dirname, 'src/boot/staleBundleRecoveryEntry.js'),
+      },
       output: {
         // 🚨 [강화] 수동으로 이름표를 붙여주는 대신, 패키지 이름에 따라 자동으로 쪼개주는 함수 적용
         manualChunks(id) {
