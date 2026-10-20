@@ -66,6 +66,7 @@ export function FestivalHeroThumbStrip({
   urls,
   detailLoading = false,
   activeIndex = 0,
+  locked = false,
   onSelect,
   onOpen,
   resolveSrc = (url) => url,
@@ -114,10 +115,15 @@ export function FestivalHeroThumbStrip({
       ? createElement(
           'div',
           {
-            className:
-              'flex gap-2 overflow-x-auto px-4 md:px-4 py-2.5 md:py-3 border-b border-stone-100 md:border-b-0 md:border-t md:border-stone-200/80 bg-white md:bg-stone-50 custom-scrollbar',
+            className: [
+              'flex gap-2 px-4 md:px-4 py-2.5 md:py-3 border-b border-stone-100 md:border-b-0 md:border-t md:border-stone-200/80 bg-white md:bg-stone-50 custom-scrollbar',
+              locked ? 'overflow-x-hidden pointer-events-none' : 'overflow-x-auto',
+            ].join(' '),
+            style: locked ? { touchAction: 'none' } : undefined,
             role: 'listbox',
             'aria-label': photosAria,
+            'data-festival-hero-thumbs-scroller': '',
+            'data-festival-hero-thumbs-locked': locked ? 'true' : 'false',
           },
           loadedUrls.map((url) => {
             const index = list.indexOf(url);

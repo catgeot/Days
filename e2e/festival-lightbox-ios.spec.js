@@ -1,0 +1,215 @@
+import zlib from 'node:zlib';
+import { mkdir } from 'node:fs/promises';
+import { test, expect } from './fixtures.js';
+import { installFestivalBackOverviewFixtures } from './festival-back-overview-fixture.js';
+import { dismissLocHint } from './mooni-festival-chip-helpers.js';
+
+const VIEWPORT = { width: 390, height: 844 };
+const OUT = '/opt/cursor/artifacts';
+const FESTIVAL_ID = '638576';
+
+function solidPng(width, height, r, g, b) {
+  const raw = Buffer.alloc((width * 3 + 1) * height);
+  for (let y = 0; y < height; y += 1) {
+    const row = y * (width * 3 + 1);
+    raw[row] = 0;
+    for (let x = 0; x < width; x += 1) {
+      const i = row + 1 + x * 3;
+      raw[i] = r;
+      raw[i + 1] = g;
+      raw[i + 2] = b;
+    }
+  }
+  const idat = zlib.deflateSync(raw);
+  const chunk = (type, data) => {
+    const len = Buffer.alloc(4);
+    len.writeUInt32BE(data.length, 0);
+    const body = Buffer.concat([Buffer.from(type), data]);
+    const crc = Buffer.alloc(4);
+    crc.writeUInt32BE(zlib.crc32(body), 0);
+    return Buffer.concat([len, body, crc]);
+  };
+  const ihdr = Buffer.alloc(13);
+  ihdr.writeUInt32BE(width, 0);
+  ihdr.writeUInt32BE(height, 4);
+  ihdr[8] = 8;
+  ihdr[9] = 2;
+  return Buffer.concat([
+    Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]),
+    chunk('IHDR', ihdr),
+    chunk('IDAT', idat),
+    chunk('IEND', Buffer.alloc(0)),
+  ]);
+}
+
+const BRIGHT_PNG = solidPng(900, 600, 255, 214, 92);
+
+async function shot(page, name) {
+  await mkdir(OUT, { recursive: true });
+  await page.screenshot({
+    path: `${OUT}/${name}.png`,
+    clip: { x: 0, y: 0, width: VIEWPORT.width, height: VIEWPORT.height },
+  });
+}
+
+async function tapCenter(page, locator) {
+  const box = await locator.boundingBox();
+  expect(box, 'control has a box').toBeTruthy();
+  expect(box.width).toBeGreaterThanOrEqual(44);
+  expect(box.height).toBeGreaterThanOrEqual(44);
+  const x = box.x + box.width / 2;
+  const y = box.y + box.height / 2;
+  const label = await page.evaluate(({ x: px, y: py }) => {
+    const el = document.elementFromPoint(px, py);
+    const button = el?.closest?.('button');
+    return button?.getAttribute('aria-label') || el?.tagName || '';
+  }, { x, y });
+  await page.touchscreen.tap(x, y);
+  return label;
+}
+
+async function dispatchTouch(page, { targetSelector, x, y, type, active }) {
+  await page.evaluate(({ targetSelector: selector, x: clientX, y: clientY, type: eventType, active: keepActive }) => {
+    const target = selector
+      ? document.querySelector(selector)
+      : document.elementFromPoint(clientX, clientY);
+    if (!target) throw new Error('missing touch target');
+    const touch = document.createTouch(window, target, 1, clientX, clientY, clientX, clientY);
+    const empty = document.createTouchList();
+    const list = document.createTouchList(touch);
+    const event = document.createEvent('Event');
+    event.initEvent(eventType, true, true);
+    Object.defineProperties(event, {
+      touches: { value: keepActive ? list : empty },
+      targetTouches: { value: keepActive ? list : empty },
+      changedTouches: { value: list },
+    });
+    target.dispatchEvent(event);
+  }, { targetSelector, x, y, type, active });
+}
+
+async function swipeRight(page, locator) {
+  const box = await locator.boundingBox();
+  expect(box).toBeTruthy();
+  const y = box.y + Math.min(box.height / 2, 180);
+  const startX = box.x + box.width * 0.28;
+  const endX = startX + 140;
+  await dispatchTouch(page, {
+    targetSelector: '[data-festival-lightbox-swipe]',
+    x: startX,
+    y,
+    type: 'touchstart',
+    active: true,
+  });
+  await dispatchTouch(page, {
+    targetSelector: '[data-festival-lightbox-swipe]',
+    x: startX + 80,
+    y,
+    type: 'touchmove',
+    active: true,
+  });
+  await dispatchTouch(page, {
+    targetSelector: '[data-festival-lightbox-swipe]',
+    x: endX,
+    y,
+    type: 'touchend',
+    active: false,
+  });
+}
+
+test.describe('festival lightbox iOS touch — WebKit 390', () => {
+  test.describe.configure({ timeout: 120_000 });
+
+  test.beforeEach(async ({ context }) => {
+    await installFestivalBackOverviewFixtures(context);
+    await context.route(/e2e-static\.gateo\.test/i, async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'image/png',
+        body: BRIGHT_PNG,
+      });
+    });
+  });
+
+  test('taps change the photo, swipe stays on the page, filmstrip does not scroll', async ({ page }) => {
+    await page.goto('/korea/', { waitUntil: 'domcontentloaded' });
+    await dismissLocHint(page);
+    await page.goto(`/korea/?festival=${FESTIVAL_ID}`, { waitUntil: 'domcontentloaded' });
+
+    const sheet = page.getByRole('dialog').filter({ has: page.locator('#korea-festival-sheet-title') });
+    await expect(sheet).toBeVisible({ timeout: 60_000 });
+    const scroller = sheet.locator('[data-festival-hero-thumbs-scroller]');
+    await expect(scroller).toBeVisible({ timeout: 30_000 });
+    await scroller.evaluate((el) => {
+      el.scrollLeft = 96;
+    });
+
+    await sheet.getByRole('button', { name: /사진 확대보기/ }).click();
+    const lightbox = page.getByRole('dialog', { name: '사진 확대보기' });
+    await expect(lightbox).toBeVisible();
+    const index = lightbox.locator('[data-festival-lightbox-index]');
+    await expect(index).toHaveAttribute('data-festival-lightbox-index', '0');
+    await expect.poll(async () => lightbox.locator('img').first().evaluate((img) => (
+      img.complete && img.naturalWidth > 10 ? img.naturalWidth : 0
+    ))).toBeGreaterThan(10);
+    await shot(page, 'festival-lightbox-ios-after');
+
+    const detailUrl = page.url();
+    expect(detailUrl).toContain(`festival=${FESTIVAL_ID}`);
+
+    await expect(scroller).toHaveAttribute('data-festival-hero-thumbs-locked', 'true');
+    const lockedScroll = await scroller.evaluate((el) => ({
+      left: el.scrollLeft,
+      overflowX: getComputedStyle(el).overflowX,
+      pointerEvents: getComputedStyle(el).pointerEvents,
+    }));
+    expect(lockedScroll.overflowX).toBe('hidden');
+    expect(lockedScroll.pointerEvents).toBe('none');
+
+    const stripHitIsLightbox = await scroller.evaluate((el) => {
+      const rect = el.getBoundingClientRect();
+      const hit = document.elementFromPoint(rect.left + 24, rect.top + rect.height / 2);
+      return Boolean(hit?.closest?.('[data-festival-lightbox]'));
+    });
+    expect(stripHitIsLightbox).toBe(true);
+
+    const close = lightbox.getByRole('button', { name: '확대보기 닫기' });
+    const next = lightbox.getByRole('button', { name: '다음 사진' });
+    const prev = lightbox.getByRole('button', { name: '이전 사진' });
+    const closeBg = await close.evaluate((el) => getComputedStyle(el).backgroundColor);
+    expect(closeBg).toBe('rgb(12, 10, 9)');
+
+    expect(await tapCenter(page, next)).toBe('다음 사진');
+    await expect(index).toHaveAttribute('data-festival-lightbox-index', '1');
+    expect(await tapCenter(page, prev)).toBe('이전 사진');
+    await expect(index).toHaveAttribute('data-festival-lightbox-index', '0');
+
+    await swipeRight(page, lightbox);
+    await expect(index).not.toHaveAttribute('data-festival-lightbox-index', '0');
+    await expect(page).toHaveURL(detailUrl);
+
+    await page.evaluate(() => {
+      window.history.back();
+    });
+    await expect(page).toHaveURL(detailUrl);
+    await expect(lightbox).toBeVisible();
+
+    const stripBox = await scroller.boundingBox();
+    expect(stripBox).toBeTruthy();
+    const stripY = stripBox.y + stripBox.height / 2;
+    const stripStartX = stripBox.x + stripBox.width - 30;
+    const stripEndX = stripBox.x + 20;
+    await dispatchTouch(page, { x: stripStartX, y: stripY, type: 'touchstart', active: true });
+    await dispatchTouch(page, { x: stripEndX, y: stripY, type: 'touchmove', active: true });
+    await dispatchTouch(page, { x: stripEndX, y: stripY, type: 'touchend', active: false });
+    await scroller.evaluate((el) => {
+      el.scrollLeft += 180;
+    });
+    await expect.poll(async () => scroller.evaluate((el) => el.scrollLeft)).toBe(lockedScroll.left);
+
+    expect(await tapCenter(page, close)).toBe('확대보기 닫기');
+    await expect(lightbox).toBeHidden();
+    await expect(page).toHaveURL(detailUrl);
+    await expect(scroller).toHaveAttribute('data-festival-hero-thumbs-locked', 'false');
+  });
+});

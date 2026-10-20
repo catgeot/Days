@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -162,6 +163,7 @@ const FESTIVAL_RETURN = '/korea';
 const SCENIC_LIST_LIMIT = 8;
 const PHOTO_SWIPE_THRESHOLD_PX = 48;
 const PHOTO_SWIPE_DIRECTION_RATIO = 1.25;
+const lightboxTouchHandled = new WeakMap();
 
 function festivalImage(item) {
   return item?.firstimage || item?.imageUrl || item?.firstimage2 || '';
@@ -704,6 +706,8 @@ export default function FestivalDetailSheet({
   const sheetScrollRef = useRef(null);
   const heroSwipeStartRef = useRef(null);
   const lightboxSwipeStartRef = useRef(null);
+  const lightboxRootRef = useRef(null);
+  const lightboxTouchRef = useRef(null);
   const suppressHeroTapRef = useRef(false);
   const tabListRef = useRef(null);
   const overviewScrollPendingRef = useRef(false);
@@ -1249,6 +1253,136 @@ export default function FestivalDetailSheet({
     resetLightboxPinch();
     resetIosZoomAfterInput();
   }, [resetLightboxPinch]);
+
+  const lightboxControlProps = useCallback((fn) => ({
+    onPointerDown: (event) => {
+      event.stopPropagation();
+    },
+    onMouseDown: (event) => {
+      event.stopPropagation();
+    },
+    onTouchStart: (event) => {
+      event.stopPropagation();
+      const touch = event.touches?.[0];
+      lightboxTouchRef.current = touch ? { x: touch.clientX, y: touch.clientY } : null;
+    },
+    onTouchEnd: (event) => {
+      event.stopPropagation();
+      if (event.cancelable) event.preventDefault();
+      const touch = event.changedTouches?.[0];
+      const origin = lightboxTouchRef.current;
+      lightboxTouchRef.current = null;
+      if (touch && origin && Math.hypot(touch.clientX - origin.x, touch.clientY - origin.y) > 18) {
+        return;
+      }
+      if (event.currentTarget) lightboxTouchHandled.set(event.currentTarget, true);
+      fn();
+    },
+    onClick: (event) => {
+      event.stopPropagation();
+      event.preventDefault();
+      if (event.currentTarget && lightboxTouchHandled.get(event.currentTarget)) {
+        lightboxTouchHandled.set(event.currentTarget, false);
+        return;
+      }
+      fn();
+    },
+  }), []);
+
+  useEffect(() => {
+    if (!lightboxOpen || typeof document === 'undefined') return undefined;
+    const sheet = sheetScrollRef.current;
+    const body = document.body;
+    const html = document.documentElement;
+    const scrollY = window.scrollY || 0;
+    const sheetTop = sheet?.scrollTop || 0;
+    const prev = {
+      bodyPosition: body.style.position,
+      bodyTop: body.style.top,
+      bodyLeft: body.style.left,
+      bodyRight: body.style.right,
+      bodyWidth: body.style.width,
+      bodyOverflow: body.style.overflow,
+      bodyTouchAction: body.style.touchAction,
+      htmlOverflow: html.style.overflow,
+      htmlOverscroll: html.style.overscrollBehavior,
+      sheetOverflow: sheet?.style.overflow || '',
+      sheetTouchAction: sheet?.style.touchAction || '',
+    };
+    body.style.position = 'fixed';
+    body.style.top = `-${scrollY}px`;
+    body.style.left = '0';
+    body.style.right = '0';
+    body.style.width = '100%';
+    body.style.overflow = 'hidden';
+    body.style.touchAction = 'none';
+    html.style.overflow = 'hidden';
+    html.style.overscrollBehavior = 'none';
+    if (sheet) {
+      sheet.style.overflow = 'hidden';
+      sheet.style.touchAction = 'none';
+    }
+    const scrollers = sheet
+      ? [...sheet.querySelectorAll('[data-festival-hero-thumbs-scroller]')]
+      : [];
+    const frozenLeft = scrollers.map((el) => el.scrollLeft);
+    const freezeScroll = () => {
+      scrollers.forEach((el, index) => {
+        if (el.scrollLeft !== frozenLeft[index]) el.scrollLeft = frozenLeft[index];
+      });
+      if (sheet && sheet.scrollTop !== sheetTop) sheet.scrollTop = sheetTop;
+    };
+    scrollers.forEach((el) => el.addEventListener('scroll', freezeScroll));
+    sheet?.addEventListener('scroll', freezeScroll);
+    return () => {
+      scrollers.forEach((el) => el.removeEventListener('scroll', freezeScroll));
+      sheet?.removeEventListener('scroll', freezeScroll);
+      body.style.position = prev.bodyPosition;
+      body.style.top = prev.bodyTop;
+      body.style.left = prev.bodyLeft;
+      body.style.right = prev.bodyRight;
+      body.style.width = prev.bodyWidth;
+      body.style.overflow = prev.bodyOverflow;
+      body.style.touchAction = prev.bodyTouchAction;
+      html.style.overflow = prev.htmlOverflow;
+      html.style.overscrollBehavior = prev.htmlOverscroll;
+      if (sheet) {
+        sheet.style.overflow = prev.sheetOverflow;
+        sheet.style.touchAction = prev.sheetTouchAction;
+      }
+      window.scrollTo(0, scrollY);
+    };
+  }, [lightboxOpen]);
+
+  useEffect(() => {
+    if (!lightboxOpen || typeof window === 'undefined') return undefined;
+    const savedUrl = window.location.href;
+    const savedState = window.history.state;
+    // iOS swipe-back is a history pop. Capture runs before React Router's
+    // bubble listener so the festival URL is restored in the same turn.
+    const onPop = (event) => {
+      event.stopImmediatePropagation();
+      const saved = new URL(savedUrl);
+      const savedPath = `${saved.pathname}${saved.search}${saved.hash}`;
+      const here = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+      if (here !== savedPath) {
+        window.history.pushState(savedState, '', savedPath);
+      }
+    };
+    window.addEventListener('popstate', onPop, true);
+    return () => window.removeEventListener('popstate', onPop, true);
+  }, [lightboxOpen]);
+
+  useEffect(() => {
+    if (!lightboxOpen) return undefined;
+    const root = lightboxRootRef.current;
+    if (!root) return undefined;
+    const blockMove = (event) => {
+      if (event.cancelable) event.preventDefault();
+    };
+    root.addEventListener('touchmove', blockMove, { passive: false });
+    return () => root.removeEventListener('touchmove', blockMove);
+  }, [lightboxOpen]);
 
   const resetFestivalSheetOverlayUi = useCallback(() => {
     setLightboxOpen(false);
@@ -2071,9 +2205,10 @@ export default function FestivalDetailSheet({
       />
       <div
         ref={sheetScrollRef}
+        inert={lightboxOpen ? true : undefined}
         className="relative z-10 pointer-events-auto flex w-full max-w-lg md:max-w-6xl xl:max-w-7xl max-h-[100dvh] md:my-0 md:h-full md:max-h-none flex-col md:flex-row overflow-y-auto overscroll-contain md:overflow-hidden rounded-t-3xl md:rounded-3xl border border-stone-200 bg-white text-stone-900 shadow-2xl custom-scrollbar"
         role="dialog"
-        aria-modal="true"
+        aria-modal={lightboxOpen ? undefined : 'true'}
         aria-labelledby="korea-festival-sheet-title"
         data-nearby-parking={nearbyParkingReady ? 'ready' : 'loading'}
       >
@@ -2162,6 +2297,7 @@ export default function FestivalDetailSheet({
               urls={imageUrls}
               detailLoading={detailLoading}
               activeIndex={activeImage}
+              locked={lightboxOpen}
               onSelect={onSelectHeroImage}
               onOpen={() => setLightboxOpen(true)}
               resolveSrc={(url) => resolveListImageUrl(url, { role: 'list' })}
@@ -3132,90 +3268,100 @@ export default function FestivalDetailSheet({
         />
       )}
 
-      {lightboxOpen && hero && (
-        <div
-          className="fixed inset-0 z-[60] flex items-center justify-center bg-stone-950/90 p-3 md:p-8"
-          onClick={(e) => {
-            e.stopPropagation();
-            closeLightbox();
-          }}
-          role="presentation"
-        >
+      {lightboxOpen && hero && typeof document !== 'undefined'
+        ? createPortal(
           <div
-            className="relative flex h-full w-full max-w-6xl flex-col"
-            onClick={(e) => e.stopPropagation()}
-            role="dialog"
-            aria-modal="true"
-            aria-label={t('korea.festival.detail.lightboxAria')}
+            ref={lightboxRootRef}
+            data-festival-lightbox=""
+            className="fixed inset-0 z-[80] flex items-center justify-center bg-stone-950/90 p-3 touch-none pointer-events-auto md:p-8"
+            style={{ touchAction: 'none', overscrollBehavior: 'none' }}
+            onClick={(e) => {
+              e.stopPropagation();
+              closeLightbox();
+            }}
+            role="presentation"
           >
-            <div className="flex shrink-0 items-center justify-between gap-3 pb-3">
-              <p className="text-sm font-bold text-white/90 tabular-nums">
-                {imageUrls.length > 1
-                  ? `${activeImage + 1} / ${imageUrls.length}`
-                  : t('korea.festival.detail.lightboxPhoto')}
-              </p>
-              <button
-                type="button"
-                onClick={closeLightbox}
-                aria-label={t('korea.festival.detail.lightboxClose')}
-                className="flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white hover:bg-white/20"
-              >
-                <X size={20} aria-hidden="true" />
-              </button>
-            </div>
-
-            <div className="relative min-h-0 flex-1">
-              <div
-                className="flex h-full items-center justify-center touch-none"
-                onTouchStart={onLightboxTouchStart}
-                onTouchMove={onPinchTouchMove}
-                onTouchEnd={onLightboxTouchEnd}
-                onTouchCancel={onLightboxTouchCancel}
-              >
-                <FestivalPhotoFrame
-                  src={hero}
-                  alt=""
-                  draggable={false}
-                  loading="eager"
-                  style={lightboxTransformStyle}
-                  className="max-h-full max-w-full object-contain select-none"
-                  fallback={
-                    <div
-                      className="flex h-48 w-full items-center justify-center"
-                      data-festival-photo-fallback=""
-                      aria-hidden="true"
-                    >
-                      <div className="h-32 w-32 overflow-hidden rounded-2xl">
-                        <FestivalDetailPhotoFallback size="lg" />
-                      </div>
-                    </div>
-                  }
-                />
+            <div
+              className="relative flex h-full w-full max-w-6xl flex-col"
+              onClick={(e) => e.stopPropagation()}
+              role="dialog"
+              aria-modal="true"
+              aria-label={t('korea.festival.detail.lightboxAria')}
+            >
+              <div className="relative z-30 flex shrink-0 items-center justify-between gap-3 pb-3">
+                <p
+                  className="text-sm font-bold text-white/90 tabular-nums"
+                  data-festival-lightbox-index={activeImage}
+                >
+                  {imageUrls.length > 1
+                    ? `${activeImage + 1} / ${imageUrls.length}`
+                    : t('korea.festival.detail.lightboxPhoto')}
+                </p>
+                <button
+                  type="button"
+                  {...lightboxControlProps(closeLightbox)}
+                  aria-label={t('korea.festival.detail.lightboxClose')}
+                  className="relative z-30 flex h-11 w-11 min-h-11 min-w-11 touch-manipulation pointer-events-auto items-center justify-center rounded-full border-2 border-white bg-stone-950 text-white shadow-[0_2px_14px_rgba(0,0,0,0.72)]"
+                >
+                  <X size={22} strokeWidth={2.5} aria-hidden="true" />
+                </button>
               </div>
-              {imageUrls.length > 1 && (
-                <>
-                  <button
-                    type="button"
-                    onClick={() => stepLightbox(-1)}
-                    aria-label={t('korea.festival.detail.lightboxPrev')}
-                    className="absolute left-0 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-stone-900/55 text-white hover:bg-stone-900/75 md:left-2"
-                  >
-                    <ChevronLeft size={22} aria-hidden="true" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => stepLightbox(1)}
-                    aria-label={t('korea.festival.detail.lightboxNext')}
-                    className="absolute right-0 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-stone-900/55 text-white hover:bg-stone-900/75 md:right-2"
-                  >
-                    <ChevronRight size={22} aria-hidden="true" />
-                  </button>
-                </>
-              )}
+
+              <div className="relative z-0 min-h-0 flex-1 overflow-hidden">
+                <div
+                  data-festival-lightbox-swipe=""
+                  className="absolute inset-0 z-0 flex items-center justify-center touch-none"
+                  onTouchStart={onLightboxTouchStart}
+                  onTouchMove={onPinchTouchMove}
+                  onTouchEnd={onLightboxTouchEnd}
+                  onTouchCancel={onLightboxTouchCancel}
+                >
+                  <FestivalPhotoFrame
+                    src={hero}
+                    alt=""
+                    draggable={false}
+                    loading="eager"
+                    style={lightboxTransformStyle}
+                    className="max-h-full max-w-full object-contain select-none pointer-events-none"
+                    fallback={
+                      <div
+                        className="flex h-48 w-full items-center justify-center"
+                        data-festival-photo-fallback=""
+                        aria-hidden="true"
+                      >
+                        <div className="h-32 w-32 overflow-hidden rounded-2xl">
+                          <FestivalDetailPhotoFallback size="lg" />
+                        </div>
+                      </div>
+                    }
+                  />
+                </div>
+                {imageUrls.length > 1 && (
+                  <>
+                    <button
+                      type="button"
+                      {...lightboxControlProps(() => stepLightbox(-1))}
+                      aria-label={t('korea.festival.detail.lightboxPrev')}
+                      className="absolute left-0 top-1/2 z-20 flex h-11 w-11 min-h-11 min-w-11 -translate-y-1/2 touch-manipulation pointer-events-auto items-center justify-center rounded-full border border-white/20 bg-stone-900/55 text-white hover:bg-stone-900/75 md:left-2"
+                    >
+                      <ChevronLeft size={22} aria-hidden="true" />
+                    </button>
+                    <button
+                      type="button"
+                      {...lightboxControlProps(() => stepLightbox(1))}
+                      aria-label={t('korea.festival.detail.lightboxNext')}
+                      className="absolute right-0 top-1/2 z-20 flex h-11 w-11 min-h-11 min-w-11 -translate-y-1/2 touch-manipulation pointer-events-auto items-center justify-center rounded-full border border-white/20 bg-stone-900/55 text-white hover:bg-stone-900/75 md:right-2"
+                    >
+                      <ChevronRight size={22} aria-hidden="true" />
+                    </button>
+                  </>
+                )}
+              </div>
             </div>
-          </div>
-        </div>
-      )}
+          </div>,
+          document.body,
+        )
+        : null}
     </div>
     </>
   );
