@@ -96,13 +96,8 @@ async function ensureBuildB() {
   const recoveryPath = join(root, 'src/shared/lib/staleBundleRecovery.js');
   const original = await readFile(recoveryPath, 'utf8');
   const needle = 'export const STALE_BUNDLE_RELOAD_COOLDOWN_MS = 30_000;';
-  const tagged = needle.replace(
-    ';',
-    `;\nexport const STALE_BUNDLE_R2_BUILD_B_TAG = ${Date.now()};\n`,
-  );
-  await writeFile(recoveryPath, original.includes('STALE_BUNDLE_R2_BUILD_B_TAG')
-    ? original
-    : original.replace(needle, tagged));
+  const tagged = 'export const STALE_BUNDLE_RELOAD_COOLDOWN_MS = 30_001;';
+  await writeFile(recoveryPath, original.replace(needle, tagged));
   execSync('npm run build', { cwd: root, stdio: 'inherit' });
   await writeFile(recoveryPath, original);
   return archiveDist('B');
@@ -138,8 +133,8 @@ async function runLazyChunkSwap(viewport, buildA, buildB) {
 
   const appMounted = await page
     .locator('[data-place-gallery-scroll]')
-    .first()
-    .isAttached()
+    .count()
+    .then((n) => n > 0)
     .catch(() => false);
   await clipShot(page, `lazy-swap-${viewport.width}-after.png`);
 
@@ -246,10 +241,25 @@ async function resolvePreviewUrl() {
   return '';
 }
 
+async function loadArchivedBuild(label) {
+  await mkdir(WORK, { recursive: true });
+  const dir = join(WORK, `_dist-${label}`);
+  if (!existsSync(join(dir, 'index.html'))) return null;
+  return {
+    dir,
+    mainEntry: readMainEntryFromDist(dir),
+    chunks: listAssetChunks(dir),
+  };
+}
+
 async function main() {
   await mkdir(OUT, { recursive: true });
-  const buildA = await ensureBuildA();
-  const buildB = await ensureBuildB();
+  const buildA = process.env.REUSE_R2_BUILDS === '1'
+    ? (await loadArchivedBuild('A')) || (await ensureBuildA())
+    : await ensureBuildA();
+  const buildB = process.env.REUSE_R2_BUILDS === '1'
+    ? (await loadArchivedBuild('B')) || (await ensureBuildB())
+    : await ensureBuildB();
 
   const lazy390 = await runLazyChunkSwap({ width: 390, height: 844 }, buildA, buildB);
   const lazy1280 = await runLazyChunkSwap({ width: 1280, height: 800 }, buildA, buildB);
@@ -258,11 +268,28 @@ async function main() {
   const persist1280 = await runPersistentFailure60s({ width: 1280, height: 800 }, buildA.dir);
 
   const previewUrl = await resolvePreviewUrl();
-  let curlSection = 'Preview URL not reachable yet — re-run with PREVIEW_URL after Vercel deploy.';
+  const localServer = createMutableSpaServer(() => buildB.dir);
+  await new Promise((r) => localServer.listen(PORT + 3, '127.0.0.1', r));
+  const localBase = `http://127.0.0.1:${PORT + 3}`;
+  const localMirrorLines = curlHeaders(localBase);
+  localServer.close();
+
+  let curlSection = [
+    '### Vercel Preview (git alias)',
+    `URL: https://days-git-cursor-stale-bundle-recovery-544f-catgeots-projects.vercel.app`,
+    'Note: deployment responds but is behind Vercel SSO from the Cloud agent; run curl -I locally while logged in.',
+  ];
   if (previewUrl) {
-    curlSection = [`Preview: ${previewUrl}`, ...curlHeaders(previewUrl)].join('\n');
-    await writeFile(join(OUT, 'curl-headers.txt'), `${curlSection}\n`, 'utf8');
+    curlSection.push('', '### curl -I (automated probe)', `Preview: ${previewUrl}`, ...curlHeaders(previewUrl));
   }
+  curlSection.push(
+    '',
+    '### Local dist server (mirrors vercel.json Cache-Control in this script)',
+    `Base: ${localBase}`,
+    ...localMirrorLines,
+  );
+  curlSection = curlSection.join('\n');
+  await writeFile(join(OUT, 'curl-headers.txt'), `${curlSection}\n`, 'utf8');
 
   const notes = [
     '# Stale bundle recovery R2 QA',
@@ -272,7 +299,7 @@ async function main() {
     '- 새로고침하면 이어서 볼 수 있어요.',
     '- 새로고침',
     '',
-    '## Lazy chunk during navigation (build A → swap dist B, client /korea)',
+    '## Lazy chunk during navigation (build A → swap dist B, client /place/cairo)',
     '',
     `### 390x844 — navigationCount=${lazy390.navigationCount}, appMounted=${lazy390.appMounted}`,
     `- A main: \`${lazy390.buildAMain}\` → B main: \`${lazy390.buildBMain}\``,
