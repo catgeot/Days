@@ -147,6 +147,21 @@ export default defineConfig({
       },
     },
     {
+      name: 'webkit-festival-lightbox-ios',
+      testMatch: /festival-lightbox-ios\.spec\.js/,
+      use: {
+        ...devices['iPhone 13'],
+        viewport: { width: 390, height: 844 },
+        deviceScaleFactor: 1,
+        hasTouch: true,
+        isMobile: true,
+        locale: 'ko-KR',
+        ignoreHTTPSErrors: true,
+        video: 'off',
+        trace: 'off',
+      },
+    },
+    {
       name: 'webkit-festival-back-overview',
       testMatch: /korea-festival-back-overview\.spec\.js/,
       use: {

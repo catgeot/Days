@@ -1,0 +1,898 @@
+{
+  "headSha": "13f35b64900342918e84d2486c6c2039d9a7f8ba",
+  "capturedAt": "2026-10-20T12:17:50.105Z",
+  "engine": "webkit",
+  "hasTouch": true,
+  "deviceScaleFactor": 1,
+  "baseUrl": "http://127.0.0.1:5173",
+  "data": "production tourapi via local vite (VITE_SUPABASE_*), no fixtures",
+  "previewChrome": "localhost work-log widget hidden in the page so hit-testing matches production, where it is not rendered",
+  "notes": [],
+  "runs": [
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "slug": "gangneung-coffee",
+      "region": "강원",
+      "title": "강릉커피축제",
+      "contentId": "825295",
+      "checks": {
+        "1_lightbox_open": {
+          "pass": true,
+          "index": "0",
+          "photoDecoded": true,
+          "screenshot": "390-gangneung-coffee-1-open.png"
+        },
+        "6_hit_targets": {
+          "pass": true,
+          "nextExists": true,
+          "buttons": {
+            "확대보기 닫기": {
+              "label": "확대보기 닫기",
+              "missing": false,
+              "width": 44,
+              "height": 44,
+              "center": {
+                "x": 356,
+                "y": 34
+              },
+              "hitTag": "button",
+              "hitAria": "확대보기 닫기",
+              "exact": true,
+              "containsHit": true,
+              "sizePass": true,
+              "hitPass": true
+            },
+            "이전 사진": {
+              "label": "이전 사진",
+              "missing": false,
+              "width": 44,
+              "height": 44,
+              "center": {
+                "x": 34,
+                "y": 450
+              },
+              "hitTag": "button",
+              "hitAria": "이전 사진",
+              "exact": true,
+              "containsHit": true,
+              "sizePass": true,
+              "hitPass": true
+            },
+            "다음 사진": {
+              "label": "다음 사진",
+              "missing": false,
+              "width": 44,
+              "height": 44,
+              "center": {
+                "x": 356,
+                "y": 450
+              },
+              "hitTag": "button",
+              "hitAria": "다음 사진",
+              "exact": true,
+              "containsHit": true,
+              "sizePass": true,
+              "hitPass": true
+            }
+          }
+        },
+        "2_next": {
+          "pass": true,
+          "indexBefore": "0",
+          "indexAfter": "1",
+          "screenshot": "390-gangneung-coffee-2-next.png"
+        },
+        "3_prev": {
+          "pass": true,
+          "indexBefore": "1",
+          "indexAfter": "0",
+          "screenshot": "390-gangneung-coffee-3-prev.png"
+        },
+        "4_swipe_right": {
+          "pass": true,
+          "hrefBefore": "http://127.0.0.1:5173/korea/?festival=825295",
+          "hrefAfter": "http://127.0.0.1:5173/korea/?festival=825295",
+          "hrefIdentical": true,
+          "scrollLeft": {
+            "unchanged": true,
+            "measured": true,
+            "values": [
+              120,
+              120,
+              120,
+              120,
+              120,
+              120,
+              120,
+              120,
+              120
+            ]
+          },
+          "scrollY": {
+            "unchanged": true,
+            "measured": true,
+            "values": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          "indexBefore": "0",
+          "indexAfter": "10",
+          "indexChanged": true,
+          "dx": 200,
+          "error": null,
+          "samples": [
+            {
+              "phase": "before",
+              "href": "http://127.0.0.1:5173/korea/?festival=825295",
+              "scrollY": 0,
+              "scrollLeft": 120,
+              "index": "0"
+            },
+            {
+              "phase": "touchstart",
+              "href": "http://127.0.0.1:5173/korea/?festival=825295",
+              "scrollY": 0,
+              "scrollLeft": 120,
+              "index": "0"
+            },
+            {
+              "phase": "move-1",
+              "href": "http://127.0.0.1:5173/korea/?festival=825295",
+              "scrollY": 0,
+              "scrollLeft": 120,
+              "index": "0"
+            },
+            {
+              "phase": "move-2",
+              "href": "http://127.0.0.1:5173/korea/?festival=825295",
+              "scrollY": 0,
+              "scrollLeft": 120,
+              "index": "0"
+            },
+            {
+              "phase": "move-3",
+              "href": "http://127.0.0.1:5173/korea/?festival=825295",
+              "scrollY": 0,
+              "scrollLeft": 120,
+              "index": "0"
+            },
+            {
+              "phase": "move-4",
+              "href": "http://127.0.0.1:5173/korea/?festival=825295",
+              "scrollY": 0,
+              "scrollLeft": 120,
+              "index": "0"
+            },
+            {
+              "phase": "move-5",
+              "href": "http://127.0.0.1:5173/korea/?festival=825295",
+              "scrollY": 0,
+              "scrollLeft": 120,
+              "index": "0"
+            },
+            {
+              "phase": "touchend",
+              "href": "http://127.0.0.1:5173/korea/?festival=825295",
+              "scrollY": 0,
+              "scrollLeft": 120,
+              "index": "0"
+            }
+          ]
+        },
+        "5_close": {
+          "pass": true,
+          "scrollYPreOpen": 0,
+          "scrollYAfter": 0,
+          "screenshot": "390-gangneung-coffee-5-closed.png"
+        }
+      },
+      "brokenImages": {
+        "list": {
+          "count": 0,
+          "hosts": [],
+          "pending": 0,
+          "sample": []
+        },
+        "detail": {
+          "count": 0,
+          "hosts": [],
+          "pending": 41,
+          "sample": []
+        },
+        "lightbox": {
+          "count": 0,
+          "hosts": [],
+          "pending": 41,
+          "sample": []
+        }
+      },
+      "error": null,
+      "filmstripBeforeOpen": {
+        "present": true,
+        "scrollLeft": 120,
+        "max": 340,
+        "scrollable": true,
+        "locked": "false"
+      },
+      "scrollYPreOpen": 0,
+      "lightboxPhotoDecoded": true,
+      "indexOpen": "0",
+      "imageHttpFailures": []
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "slug": "seoul-3481597",
+      "region": "서울",
+      "title": "페인터즈",
+      "contentId": "3481597",
+      "checks": {
+        "1_lightbox_open": {
+          "pass": true,
+          "index": "0",
+          "photoDecoded": true,
+          "screenshot": "390-seoul-3481597-1-open.png"
+        },
+        "6_hit_targets": {
+          "pass": true,
+          "nextExists": true,
+          "buttons": {
+            "확대보기 닫기": {
+              "label": "확대보기 닫기",
+              "missing": false,
+              "width": 44,
+              "height": 44,
+              "center": {
+                "x": 356,
+                "y": 34
+              },
+              "hitTag": "button",
+              "hitAria": "확대보기 닫기",
+              "exact": true,
+              "containsHit": true,
+              "sizePass": true,
+              "hitPass": true
+            },
+            "이전 사진": {
+              "label": "이전 사진",
+              "missing": false,
+              "width": 44,
+              "height": 44,
+              "center": {
+                "x": 34,
+                "y": 450
+              },
+              "hitTag": "button",
+              "hitAria": "이전 사진",
+              "exact": true,
+              "containsHit": true,
+              "sizePass": true,
+              "hitPass": true
+            },
+            "다음 사진": {
+              "label": "다음 사진",
+              "missing": false,
+              "width": 44,
+              "height": 44,
+              "center": {
+                "x": 356,
+                "y": 450
+              },
+              "hitTag": "button",
+              "hitAria": "다음 사진",
+              "exact": true,
+              "containsHit": true,
+              "sizePass": true,
+              "hitPass": true
+            }
+          }
+        },
+        "2_next": {
+          "pass": true,
+          "indexBefore": "0",
+          "indexAfter": "1",
+          "screenshot": "390-seoul-3481597-2-next.png"
+        },
+        "3_prev": {
+          "pass": true,
+          "indexBefore": "1",
+          "indexAfter": "0",
+          "screenshot": "390-seoul-3481597-3-prev.png"
+        },
+        "4_swipe_right": {
+          "pass": true,
+          "hrefBefore": "http://127.0.0.1:5173/korea/?festival=3481597",
+          "hrefAfter": "http://127.0.0.1:5173/korea/?festival=3481597",
+          "hrefIdentical": true,
+          "scrollLeft": {
+            "unchanged": true,
+            "measured": true,
+            "values": [
+              84,
+              84,
+              84,
+              84,
+              84,
+              84,
+              84,
+              84,
+              84
+            ]
+          },
+          "scrollY": {
+            "unchanged": true,
+            "measured": true,
+            "values": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          "indexBefore": "0",
+          "indexAfter": "6",
+          "indexChanged": true,
+          "dx": 200,
+          "error": null,
+          "samples": [
+            {
+              "phase": "before",
+              "href": "http://127.0.0.1:5173/korea/?festival=3481597",
+              "scrollY": 0,
+              "scrollLeft": 84,
+              "index": "0"
+            },
+            {
+              "phase": "touchstart",
+              "href": "http://127.0.0.1:5173/korea/?festival=3481597",
+              "scrollY": 0,
+              "scrollLeft": 84,
+              "index": "0"
+            },
+            {
+              "phase": "move-1",
+              "href": "http://127.0.0.1:5173/korea/?festival=3481597",
+              "scrollY": 0,
+              "scrollLeft": 84,
+              "index": "0"
+            },
+            {
+              "phase": "move-2",
+              "href": "http://127.0.0.1:5173/korea/?festival=3481597",
+              "scrollY": 0,
+              "scrollLeft": 84,
+              "index": "0"
+            },
+            {
+              "phase": "move-3",
+              "href": "http://127.0.0.1:5173/korea/?festival=3481597",
+              "scrollY": 0,
+              "scrollLeft": 84,
+              "index": "0"
+            },
+            {
+              "phase": "move-4",
+              "href": "http://127.0.0.1:5173/korea/?festival=3481597",
+              "scrollY": 0,
+              "scrollLeft": 84,
+              "index": "0"
+            },
+            {
+              "phase": "move-5",
+              "href": "http://127.0.0.1:5173/korea/?festival=3481597",
+              "scrollY": 0,
+              "scrollLeft": 84,
+              "index": "0"
+            },
+            {
+              "phase": "touchend",
+              "href": "http://127.0.0.1:5173/korea/?festival=3481597",
+              "scrollY": 0,
+              "scrollLeft": 84,
+              "index": "0"
+            }
+          ]
+        },
+        "5_close": {
+          "pass": true,
+          "scrollYPreOpen": 0,
+          "scrollYAfter": 0,
+          "screenshot": "390-seoul-3481597-5-closed.png"
+        }
+      },
+      "brokenImages": {
+        "list": {
+          "count": 0,
+          "hosts": [],
+          "pending": 19,
+          "sample": []
+        },
+        "detail": {
+          "count": 0,
+          "hosts": [],
+          "pending": 52,
+          "sample": []
+        },
+        "lightbox": {
+          "count": 0,
+          "hosts": [],
+          "pending": 52,
+          "sample": []
+        }
+      },
+      "error": null,
+      "filmstripBeforeOpen": {
+        "present": true,
+        "scrollLeft": 84,
+        "max": 84,
+        "scrollable": true,
+        "locked": "false"
+      },
+      "scrollYPreOpen": 0,
+      "lightboxPhotoDecoded": true,
+      "indexOpen": "0",
+      "imageHttpFailures": []
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "slug": "jeju-506616",
+      "region": "제주",
+      "title": "서귀포칠십리축제",
+      "contentId": "506616",
+      "checks": {
+        "1_lightbox_open": {
+          "pass": true,
+          "index": "0",
+          "photoDecoded": true,
+          "screenshot": "390-jeju-506616-1-open.png"
+        },
+        "6_hit_targets": {
+          "pass": true,
+          "nextExists": true,
+          "buttons": {
+            "확대보기 닫기": {
+              "label": "확대보기 닫기",
+              "missing": false,
+              "width": 44,
+              "height": 44,
+              "center": {
+                "x": 356,
+                "y": 34
+              },
+              "hitTag": "button",
+              "hitAria": "확대보기 닫기",
+              "exact": true,
+              "containsHit": true,
+              "sizePass": true,
+              "hitPass": true
+            },
+            "이전 사진": {
+              "label": "이전 사진",
+              "missing": false,
+              "width": 44,
+              "height": 44,
+              "center": {
+                "x": 34,
+                "y": 450
+              },
+              "hitTag": "button",
+              "hitAria": "이전 사진",
+              "exact": true,
+              "containsHit": true,
+              "sizePass": true,
+              "hitPass": true
+            },
+            "다음 사진": {
+              "label": "다음 사진",
+              "missing": false,
+              "width": 44,
+              "height": 44,
+              "center": {
+                "x": 356,
+                "y": 450
+              },
+              "hitTag": "button",
+              "hitAria": "다음 사진",
+              "exact": true,
+              "containsHit": true,
+              "sizePass": true,
+              "hitPass": true
+            }
+          }
+        },
+        "2_next": {
+          "pass": true,
+          "indexBefore": "0",
+          "indexAfter": "1",
+          "screenshot": "390-jeju-506616-2-next.png"
+        },
+        "3_prev": {
+          "pass": true,
+          "indexBefore": "1",
+          "indexAfter": "0",
+          "screenshot": "390-jeju-506616-3-prev.png"
+        },
+        "4_swipe_right": {
+          "pass": true,
+          "hrefBefore": "http://127.0.0.1:5173/korea/?festival=506616",
+          "hrefAfter": "http://127.0.0.1:5173/korea/?festival=506616",
+          "hrefIdentical": true,
+          "scrollLeft": {
+            "unchanged": true,
+            "measured": true,
+            "values": [
+              120,
+              120,
+              120,
+              120,
+              120,
+              120,
+              120,
+              120,
+              120
+            ]
+          },
+          "scrollY": {
+            "unchanged": true,
+            "measured": true,
+            "values": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          "indexBefore": "0",
+          "indexAfter": "7",
+          "indexChanged": true,
+          "dx": 200,
+          "error": null,
+          "samples": [
+            {
+              "phase": "before",
+              "href": "http://127.0.0.1:5173/korea/?festival=506616",
+              "scrollY": 0,
+              "scrollLeft": 120,
+              "index": "0"
+            },
+            {
+              "phase": "touchstart",
+              "href": "http://127.0.0.1:5173/korea/?festival=506616",
+              "scrollY": 0,
+              "scrollLeft": 120,
+              "index": "0"
+            },
+            {
+              "phase": "move-1",
+              "href": "http://127.0.0.1:5173/korea/?festival=506616",
+              "scrollY": 0,
+              "scrollLeft": 120,
+              "index": "0"
+            },
+            {
+              "phase": "move-2",
+              "href": "http://127.0.0.1:5173/korea/?festival=506616",
+              "scrollY": 0,
+              "scrollLeft": 120,
+              "index": "0"
+            },
+            {
+              "phase": "move-3",
+              "href": "http://127.0.0.1:5173/korea/?festival=506616",
+              "scrollY": 0,
+              "scrollLeft": 120,
+              "index": "0"
+            },
+            {
+              "phase": "move-4",
+              "href": "http://127.0.0.1:5173/korea/?festival=506616",
+              "scrollY": 0,
+              "scrollLeft": 120,
+              "index": "0"
+            },
+            {
+              "phase": "move-5",
+              "href": "http://127.0.0.1:5173/korea/?festival=506616",
+              "scrollY": 0,
+              "scrollLeft": 120,
+              "index": "0"
+            },
+            {
+              "phase": "touchend",
+              "href": "http://127.0.0.1:5173/korea/?festival=506616",
+              "scrollY": 0,
+              "scrollLeft": 120,
+              "index": "0"
+            }
+          ]
+        },
+        "5_close": {
+          "pass": true,
+          "scrollYPreOpen": 0,
+          "scrollYAfter": 0,
+          "screenshot": "390-jeju-506616-5-closed.png"
+        }
+      },
+      "brokenImages": {
+        "list": {
+          "count": 0,
+          "hosts": [],
+          "pending": 0,
+          "sample": []
+        },
+        "detail": {
+          "count": 0,
+          "hosts": [],
+          "pending": 47,
+          "sample": []
+        },
+        "lightbox": {
+          "count": 0,
+          "hosts": [],
+          "pending": 47,
+          "sample": []
+        }
+      },
+      "error": null,
+      "filmstripBeforeOpen": {
+        "present": true,
+        "scrollLeft": 120,
+        "max": 148,
+        "scrollable": true,
+        "locked": "false"
+      },
+      "scrollYPreOpen": 0,
+      "lightboxPhotoDecoded": true,
+      "indexOpen": "0",
+      "imageHttpFailures": []
+    },
+    {
+      "viewport": {
+        "width": 1280,
+        "height": 844
+      },
+      "slug": "gangneung-coffee",
+      "region": "강원",
+      "title": "강릉커피축제",
+      "contentId": "825295",
+      "checks": {
+        "1_lightbox_open": {
+          "pass": true,
+          "index": "0",
+          "photoDecoded": true,
+          "screenshot": "1280-gangneung-coffee-1-open.png"
+        },
+        "6_hit_targets": {
+          "pass": true,
+          "nextExists": true,
+          "buttons": {
+            "확대보기 닫기": {
+              "label": "확대보기 닫기",
+              "missing": false,
+              "width": 44,
+              "height": 44,
+              "center": {
+                "x": 1194,
+                "y": 54
+              },
+              "hitTag": "button",
+              "hitAria": "확대보기 닫기",
+              "exact": true,
+              "containsHit": true,
+              "sizePass": true,
+              "hitPass": true
+            },
+            "이전 사진": {
+              "label": "이전 사진",
+              "missing": false,
+              "width": 44,
+              "height": 44,
+              "center": {
+                "x": 94,
+                "y": 450
+              },
+              "hitTag": "button",
+              "hitAria": "이전 사진",
+              "exact": true,
+              "containsHit": true,
+              "sizePass": true,
+              "hitPass": true
+            },
+            "다음 사진": {
+              "label": "다음 사진",
+              "missing": false,
+              "width": 44,
+              "height": 44,
+              "center": {
+                "x": 1186,
+                "y": 450
+              },
+              "hitTag": "button",
+              "hitAria": "다음 사진",
+              "exact": true,
+              "containsHit": true,
+              "sizePass": true,
+              "hitPass": true
+            }
+          }
+        },
+        "2_next": {
+          "pass": true,
+          "indexBefore": "0",
+          "indexAfter": "1",
+          "screenshot": "1280-gangneung-coffee-2-next.png"
+        },
+        "3_prev": {
+          "pass": true,
+          "indexBefore": "1",
+          "indexAfter": "0",
+          "screenshot": "1280-gangneung-coffee-3-prev.png"
+        },
+        "4_swipe_right": {
+          "pass": true,
+          "hrefBefore": "http://127.0.0.1:5173/korea/?festival=825295",
+          "hrefAfter": "http://127.0.0.1:5173/korea/?festival=825295",
+          "hrefIdentical": true,
+          "scrollLeft": {
+            "unchanged": true,
+            "measured": true,
+            "values": [
+              120,
+              120,
+              120,
+              120,
+              120,
+              120,
+              120,
+              120,
+              120
+            ]
+          },
+          "scrollY": {
+            "unchanged": true,
+            "measured": true,
+            "values": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          "indexBefore": "0",
+          "indexAfter": "10",
+          "indexChanged": true,
+          "dx": 200.00000000000006,
+          "error": null,
+          "samples": [
+            {
+              "phase": "before",
+              "href": "http://127.0.0.1:5173/korea/?festival=825295",
+              "scrollY": 0,
+              "scrollLeft": 120,
+              "index": "0"
+            },
+            {
+              "phase": "touchstart",
+              "href": "http://127.0.0.1:5173/korea/?festival=825295",
+              "scrollY": 0,
+              "scrollLeft": 120,
+              "index": "0"
+            },
+            {
+              "phase": "move-1",
+              "href": "http://127.0.0.1:5173/korea/?festival=825295",
+              "scrollY": 0,
+              "scrollLeft": 120,
+              "index": "0"
+            },
+            {
+              "phase": "move-2",
+              "href": "http://127.0.0.1:5173/korea/?festival=825295",
+              "scrollY": 0,
+              "scrollLeft": 120,
+              "index": "0"
+            },
+            {
+              "phase": "move-3",
+              "href": "http://127.0.0.1:5173/korea/?festival=825295",
+              "scrollY": 0,
+              "scrollLeft": 120,
+              "index": "0"
+            },
+            {
+              "phase": "move-4",
+              "href": "http://127.0.0.1:5173/korea/?festival=825295",
+              "scrollY": 0,
+              "scrollLeft": 120,
+              "index": "0"
+            },
+            {
+              "phase": "move-5",
+              "href": "http://127.0.0.1:5173/korea/?festival=825295",
+              "scrollY": 0,
+              "scrollLeft": 120,
+              "index": "0"
+            },
+            {
+              "phase": "touchend",
+              "href": "http://127.0.0.1:5173/korea/?festival=825295",
+              "scrollY": 0,
+              "scrollLeft": 120,
+              "index": "0"
+            }
+          ]
+        },
+        "5_close": {
+          "pass": true,
+          "scrollYPreOpen": 0,
+          "scrollYAfter": 0,
+          "screenshot": "1280-gangneung-coffee-5-closed.png"
+        }
+      },
+      "brokenImages": {
+        "list": {
+          "count": 0,
+          "hosts": [],
+          "pending": 0,
+          "sample": []
+        },
+        "detail": {
+          "count": 0,
+          "hosts": [],
+          "pending": 41,
+          "sample": []
+        },
+        "lightbox": {
+          "count": 0,
+          "hosts": [],
+          "pending": 41,
+          "sample": []
+        }
+      },
+      "error": null,
+      "filmstripBeforeOpen": {
+        "present": true,
+        "scrollLeft": 120,
+        "max": 193,
+        "scrollable": true,
+        "locked": "false"
+      },
+      "scrollYPreOpen": 0,
+      "lightboxPhotoDecoded": true,
+      "indexOpen": "0",
+      "imageHttpFailures": []
+    }
+  ],
+  "captureNote": "Captured against the working tree of this SHA before it was committed. The commit contains only pointer-events-none on the lightbox close, previous, and next icons. An earlier capture on 1535bf14 failed item 6 exact identity because elementFromPoint returned the icon SVG/path."
+}
