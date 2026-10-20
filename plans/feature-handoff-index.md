@@ -18,14 +18,14 @@
 
 | | |
 |--|--|
-| **상태** | **#2 세로 중앙·뒤로가기** · 코드 `d7e08231` · 증거 `bd6f913f` · draft PR [#531](https://github.com/catgeot/Days/pull/531) · **병합 금지** · #530 병합됨 `23b3ac3b` |
+| **상태** | **#3 실경로 뒤로가기** · 코드 `9186a2e7` · 증거 `61038297` · draft PR [#531](https://github.com/catgeot/Days/pull/531) · **병합 금지** · #530 병합됨 `23b3ac3b` |
 | **브랜치** | `cursor/lightbox-center-aaff` |
 | **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
 | **일지** | [`2026-10-20-project-log.md`](./2026-10-20-project-log.md) |
-| **Preview** | 실데이터 `gateo-ops/qa/lightbox-center-2026-10-20/d7e082316377a1333f5a401136a31cd0befb0c23/` |
+| **Preview** | 실데이터 `gateo-ops/qa/lightbox-center-2026-10-20/9186a2e782efc2cf458f1575875151eabf0e02c9/` (강원 칩 경로) · 이전 오픈샷 `d7e082316377a1333f5a401136a31cd0befb0c23/` |
 | **금지** | PR 병합 · 코드를 `origin/main`에 push · feature에 `plans/**` 커밋 · 플래그 |
 | **VERIFY** | `SMOKE_SITE_URL=http://127.0.0.1:5173/ npx playwright test e2e/festival-lightbox-ios.spec.js --project=webkit-festival-lightbox-ios` |
-| **남은 일** | 사람이 draft #531만 본다. 390에서 사진·화살표 세로 중앙, 1280에서 화살표는 사진 밖. 라이트박스에서 뒤로가면 상세가 남고, 한 번 더 뒤로가면 목록. |
+| **남은 일** | 사람이 draft #531만 본다. WebKit 390 실데이터 8 PASS. 강원 칩 → 카드 → 확대 → 뒤로가기 한 번은 상세, 한 번은 목록(강원 유지). Esc·여백 탭 뒤 뒤로가기 한 번이 목록. 다음 3회 뒤 뒤로가기 한 번은 라이트박스만 닫음. |
 
 **다음 제시어 없음**.
 

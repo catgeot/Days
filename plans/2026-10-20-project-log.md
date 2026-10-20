@@ -11,3 +11,4 @@
 
 - draft [#531](https://github.com/catgeot/Days/pull/531) `cursor/lightbox-center-aaff` 코드 `d7e08231` · 증거 `bd6f913f`. 390에서 사진을 스테이지 세로 중앙에 두고 이전/다음을 그 높이에 맞춘다. 1280 화살표는 사진 밖. 열 때 같은 URL history 한 칸. 뒤로가면 라이트박스만 닫고 `?festival=`에 남는다. X는 그 칸을 소비. **병합 금지**. 플래그 없음.
 - WebKit `e2e/festival-lightbox-ios.spec.js` 4 PASS. 실데이터 `gateo-ops/qa/lightbox-center-2026-10-20/d7e082316377a1333f5a401136a31cd0befb0c23/` (825295 · 세로 포스터 4127746).
+- 조건부 QA: 같은 스펙 실데이터 4건 추가. 여백 탭이 안 닫혀 `9186a2e7`에서 칠해진 사진 밖 짧은 탭만 `closeLightbox`. 재실행 8 PASS. 강원 칩 경로 샷 `61038297` → `gateo-ops/qa/lightbox-center-2026-10-20/9186a2e782efc2cf458f1575875151eabf0e02c9/`. tip `61038297`. **병합 금지**.
