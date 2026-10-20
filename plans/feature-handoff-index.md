@@ -14,6 +14,21 @@
 
 ## 활성 목록
 
+### 축제 확대보기 iOS
+
+| | |
+|--|--|
+| **상태** | **#1 라이트박스 탭·스와이프** · tip `7096f1e3` · draft PR [#530](https://github.com/catgeot/Days/pull/530) · **병합 금지** |
+| **브랜치** | `cursor/festival-lightbox-ios-e9da` |
+| **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
+| **일지** | [`2026-10-20-project-log.md`](./2026-10-20-project-log.md) |
+| **Preview** | WebKit 390 before/after `docs/qa/festival-lightbox-ios/` |
+| **금지** | PR 병합 · 코드를 `origin/main`에 push · feature에 `plans/**` 커밋 |
+| **VERIFY** | `SMOKE_SITE_URL=http://127.0.0.1:5173/ npx playwright test e2e/festival-lightbox-ios.spec.js --project=webkit-festival-lightbox-ios` |
+| **남은 일** | 사람이 draft #530만 본다. 다음 에이전트 작업 없음 |
+
+**다음 제시어 없음**.
+
 ### 축제 기간 칩
 
 | | |
