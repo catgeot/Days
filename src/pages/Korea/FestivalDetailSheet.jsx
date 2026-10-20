@@ -3273,8 +3273,12 @@ export default function FestivalDetailSheet({
           <div
             ref={lightboxRootRef}
             data-festival-lightbox=""
-            className="fixed inset-0 z-[80] flex items-center justify-center bg-stone-950/90 p-3 touch-none pointer-events-auto md:p-8"
-            style={{ touchAction: 'none', overscrollBehavior: 'none' }}
+            className="fixed inset-0 z-[80] flex items-center justify-center p-3 touch-none pointer-events-auto md:p-8"
+            style={{
+              touchAction: 'none',
+              overscrollBehavior: 'none',
+              backgroundColor: 'rgba(0,0,0,0.92)',
+            }}
             onClick={(e) => {
               e.stopPropagation();
               closeLightbox();
@@ -3307,7 +3311,8 @@ export default function FestivalDetailSheet({
                 </button>
               </div>
 
-              <div className="relative z-0 min-h-0 flex-1 overflow-hidden">
+              <div className="relative z-0 min-h-0 flex-1">
+                <div className="absolute inset-y-0 left-0 right-0 overflow-hidden md:left-16 md:right-16">
                 <div
                   data-festival-lightbox-swipe=""
                   className="absolute inset-0 z-0 flex items-center justify-center touch-none"
@@ -3336,13 +3341,14 @@ export default function FestivalDetailSheet({
                     }
                   />
                 </div>
+                </div>
                 {imageUrls.length > 1 && (
                   <>
                     <button
                       type="button"
                       {...lightboxControlProps(() => stepLightbox(-1))}
                       aria-label={t('korea.festival.detail.lightboxPrev')}
-                      className="absolute left-0 top-1/2 z-20 flex h-11 w-11 min-h-11 min-w-11 -translate-y-1/2 touch-manipulation pointer-events-auto items-center justify-center rounded-full border border-white/20 bg-stone-900/55 text-white hover:bg-stone-900/75 md:left-2"
+                      className="absolute left-0 top-1/2 z-20 flex h-11 w-11 min-h-11 min-w-11 -translate-y-1/2 touch-manipulation pointer-events-auto items-center justify-center rounded-full border border-white/20 bg-stone-900/55 text-white hover:bg-stone-900/75"
                     >
                       <ChevronLeft size={22} className="pointer-events-none" aria-hidden="true" />
                     </button>
@@ -3350,7 +3356,7 @@ export default function FestivalDetailSheet({
                       type="button"
                       {...lightboxControlProps(() => stepLightbox(1))}
                       aria-label={t('korea.festival.detail.lightboxNext')}
-                      className="absolute right-0 top-1/2 z-20 flex h-11 w-11 min-h-11 min-w-11 -translate-y-1/2 touch-manipulation pointer-events-auto items-center justify-center rounded-full border border-white/20 bg-stone-900/55 text-white hover:bg-stone-900/75 md:right-2"
+                      className="absolute right-0 top-1/2 z-20 flex h-11 w-11 min-h-11 min-w-11 -translate-y-1/2 touch-manipulation pointer-events-auto items-center justify-center rounded-full border border-white/20 bg-stone-900/55 text-white hover:bg-stone-900/75"
                     >
                       <ChevronRight size={22} className="pointer-events-none" aria-hidden="true" />
                     </button>
