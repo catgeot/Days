@@ -1285,7 +1285,7 @@ export default function FestivalDetailSheet({
     resetIosZoomAfterInput();
   }, [resetLightboxPinch]);
 
-  useLightboxHistory(lightboxOpen, closeLightbox);
+  useLightboxHistory(lightboxOpen, closeLightbox, { always: true });
 
   const lightboxControlProps = useCallback((fn) => ({
     onPointerDown: (event) => {

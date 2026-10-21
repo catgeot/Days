@@ -1,20 +1,31 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
+import { readFileSync } from 'node:fs';
+
 import {
   GATEO_ENV_FLAG_NAMES,
   isGateoLightboxHistoryEnabled,
+  resolveLightboxHistoryEnabled,
 } from '../../src/shared/gateoFeatureFlags.js';
 import {
   LIGHTBOX_HISTORY_KEY,
+  LIGHTBOX_HISTORY_SWALLOW_MS,
   createLightboxHistorySession,
 } from '../../src/shared/lightboxHistory.js';
 
 function createFakeWindow() {
-  const stack = [{ idx: 2, key: 'place', usr: { tab: 'gallery' } }];
+  const entries = [{
+    state: { idx: 2, key: 'place', usr: { tab: 'gallery' } },
+    url: 'http://local/place/jeju',
+  }];
   const listeners = [];
   const queue = [];
+  const timers = new Map();
+  let timerSeq = 0;
+  let now = 0;
   let asyncBack = false;
+  let silentBack = false;
 
   function dispatch() {
     const event = {
@@ -32,19 +43,28 @@ function createFakeWindow() {
     return event;
   }
 
+  function resolveUrl(url) {
+    if (!url) return entries[entries.length - 1].url;
+    return String(url);
+  }
+
   const history = {
     get state() {
-      return stack[stack.length - 1];
+      return entries[entries.length - 1].state;
     },
     get length() {
-      return stack.length;
+      return entries.length;
     },
-    pushState(state) {
-      stack.push(state);
+    pushState(state, _title, url) {
+      entries.push({ state, url: resolveUrl(url) });
+    },
+    replaceState(state, _title, url) {
+      entries[entries.length - 1] = { state, url: resolveUrl(url) };
     },
     back() {
       const run = () => {
-        if (stack.length > 1) stack.pop();
+        if (!silentBack && entries.length > 1) entries.pop();
+        if (silentBack) return undefined;
         return dispatch();
       };
       if (asyncBack) {
@@ -56,19 +76,50 @@ function createFakeWindow() {
   };
 
   return {
-    stack,
+    entries,
+    get stack() {
+      return entries.map((entry) => entry.state);
+    },
     setAsyncBack(value) {
       asyncBack = value;
+    },
+    setSilentBack(value) {
+      silentBack = value;
     },
     flush() {
       const jobs = queue.splice(0, queue.length);
       return jobs.map((job) => job());
+    },
+    advance(ms) {
+      now += ms;
+      const due = [...timers.entries()]
+        .filter(([, timer]) => timer.at <= now)
+        .sort((a, b) => a[1].at - b[1].at);
+      for (const [id, timer] of due) {
+        if (!timers.has(id)) continue;
+        timers.delete(id);
+        timer.fn();
+      }
+    },
+    dispatchPop() {
+      return dispatch();
     },
     addRouter(fn) {
       listeners.push({ fn, capture: false });
     },
     win: {
       history,
+      get location() {
+        return { href: entries[entries.length - 1].url };
+      },
+      setTimeout(fn, ms) {
+        const id = ++timerSeq;
+        timers.set(id, { fn, at: now + ms });
+        return id;
+      },
+      clearTimeout(id) {
+        timers.delete(id);
+      },
       addEventListener(type, fn, capture) {
         if (type !== 'popstate') return;
         listeners.push({ fn, capture: capture === true });
@@ -164,6 +215,25 @@ test('explicit close history.back is swallowed so the router stays put', () => {
   assert.equal(fake.stack.length, 1);
 });
 
+test('place flag 0 still leaves festival lightbox history enabled', () => {
+  const key = GATEO_ENV_FLAG_NAMES.LIGHTBOX_HISTORY;
+  const prev = globalThis.__VITE_ENV__[key];
+  try {
+    globalThis.__VITE_ENV__[key] = '0';
+    assert.equal(isGateoLightboxHistoryEnabled(), false);
+    assert.equal(resolveLightboxHistoryEnabled(false), false);
+    assert.equal(resolveLightboxHistoryEnabled(true), true);
+    const sheet = readFileSync(
+      new URL('../../src/pages/Korea/FestivalDetailSheet.jsx', import.meta.url),
+      'utf8',
+    );
+    assert.match(sheet, /useLightboxHistory\(lightboxOpen,\s*closeLightbox,\s*\{\s*always:\s*true\s*\}\)/);
+  } finally {
+    if (prev === undefined) delete globalThis.__VITE_ENV__[key];
+    else globalThis.__VITE_ENV__[key] = prev;
+  }
+});
+
 test('disabled flag does not push or back', () => {
   const fake = createFakeWindow();
   let closes = 0;
@@ -209,4 +279,88 @@ test('strict-mode remount leaves a single entry and does not close on the queued
   fake.flush();
   assert.equal(fake.stack.length, 1);
   assert.equal(closes.length, 0);
+});
+
+test('swallow listener is removed when history.back never fires popstate', () => {
+  const fake = createFakeWindow();
+  fake.setSilentBack(true);
+  let routerPops = 0;
+  fake.addRouter(() => {
+    routerPops += 1;
+  });
+  const session = createLightboxHistorySession(fake.win, {
+    enabled: true,
+    onCloseFromPop() {},
+    swallowTimeoutMs: LIGHTBOX_HISTORY_SWALLOW_MS,
+  });
+  session.open();
+  session.dispose();
+  fake.advance(LIGHTBOX_HISTORY_SWALLOW_MS - 1);
+  fake.dispatchPop();
+  assert.equal(routerPops, 0);
+
+  const late = createFakeWindow();
+  late.setSilentBack(true);
+  let lateRouterPops = 0;
+  late.addRouter(() => {
+    lateRouterPops += 1;
+  });
+  const lateSession = createLightboxHistorySession(late.win, {
+    enabled: true,
+    onCloseFromPop() {},
+    swallowTimeoutMs: LIGHTBOX_HISTORY_SWALLOW_MS,
+  });
+  lateSession.open();
+  lateSession.dispose();
+  late.advance(LIGHTBOX_HISTORY_SWALLOW_MS);
+  late.setSilentBack(false);
+  late.win.history.back();
+  assert.equal(lateRouterPops, 1);
+  assert.equal(late.stack.length, 1);
+  assert.equal(late.stack[0][LIGHTBOX_HISTORY_KEY], undefined);
+});
+
+test('route change while open removes the orphaned lightbox entry and keeps the new route', () => {
+  const fake = createFakeWindow();
+  let routerPops = 0;
+  let closes = 0;
+  fake.addRouter(() => {
+    routerPops += 1;
+  });
+  const session = createLightboxHistorySession(fake.win, {
+    enabled: true,
+    onCloseFromPop() {
+      closes += 1;
+    },
+  });
+  session.open();
+  fake.win.history.pushState({ idx: 4, key: 'korea' }, '', 'http://local/korea');
+  assert.equal(fake.stack.length, 3);
+  session.dispose();
+  assert.equal(closes, 0);
+  assert.equal(routerPops, 0);
+  assert.equal(fake.stack.length, 2);
+  assert.equal(fake.stack[1].key, 'korea');
+  assert.equal(fake.stack[1][LIGHTBOX_HISTORY_KEY], undefined);
+  assert.equal(fake.stack[0].key, 'place');
+  assert.equal(fake.win.location.href, 'http://local/korea');
+});
+
+test('replace over the lightbox entry does not history.back away from the new route', () => {
+  const fake = createFakeWindow();
+  let routerPops = 0;
+  fake.addRouter(() => {
+    routerPops += 1;
+  });
+  const session = createLightboxHistorySession(fake.win, {
+    enabled: true,
+    onCloseFromPop() {},
+  });
+  session.open();
+  fake.win.history.replaceState({ idx: 2, key: 'replaced' }, '', 'http://local/elsewhere');
+  session.dispose();
+  assert.equal(routerPops, 0);
+  assert.equal(fake.stack.length, 2);
+  assert.equal(fake.stack[1].key, 'replaced');
+  assert.equal(fake.win.location.href, 'http://local/elsewhere');
 });

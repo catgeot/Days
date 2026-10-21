@@ -1,5 +1,6 @@
 /** Gateo rollout flags — `VITE_GATEO_*` env, value `'1'` enables. Default off in prod.
- *  Exception: `VITE_GATEO_LIGHTBOX_HISTORY` defaults on. Set `0` to disable.
+ *  Exception: `VITE_GATEO_LIGHTBOX_HISTORY` defaults on for the place gallery.
+ *  Set `0` to disable that step only. Festival lightbox history stays on (#531).
  */
 
 export const GATEO_ENV_FLAG_NAMES = {
@@ -48,11 +49,16 @@ export function isGateoPhotoCreditEnabled() {
   return readGateoEnvFlag(GATEO_ENV_FLAG_NAMES.PHOTO_CREDIT);
 }
 
-/** Unset defaults on. `0`, `false`, and `off` disable the same-URL lightbox history step. */
+/** Place gallery. Unset defaults on. `0`, `false`, and `off` disable the step. */
 export function isGateoLightboxHistoryEnabled() {
   const name = GATEO_ENV_FLAG_NAMES.LIGHTBOX_HISTORY;
   const raw = import.meta.env?.[name] ?? globalThis.__VITE_ENV__?.[name];
   if (raw == null || String(raw).trim() === '') return true;
   const value = String(raw).trim().toLowerCase();
   return value !== '0' && value !== 'false' && value !== 'off';
+}
+
+/** Festival passes `always` so flag `0` cannot drop the sheet's lightbox step (#531). */
+export function resolveLightboxHistoryEnabled(always = false) {
+  return always === true || isGateoLightboxHistoryEnabled();
 }

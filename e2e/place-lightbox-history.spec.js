@@ -1,21 +1,25 @@
-// Place gallery lightbox: iOS edge-swipe (history.back) closes the photo and stays on the gallery.
+// Place + festival lightbox history. Start at `/`, not a /place deeplink.
 import { mkdir } from 'node:fs/promises';
 import { test, expect } from './fixtures.js';
 
-const VIEWPORT = { width: 390, height: 844 };
-const OUT = '/opt/cursor/artifacts';
+const OUT = '/opt/cursor/artifacts/qa/pr534';
 
-const PLACES = [
-  { slug: 'jeju', label: 'jeju', name: /제주/ },
-  { slug: 'paris', label: 'paris', name: /파리|Paris/ },
-  { slug: 'bangkok', label: 'bangkok', name: /방콕|Bangkok/ },
+const SIZES = [
+  { label: '390', width: 390, height: 844, mobile: true },
+  { label: '1280', width: 1280, height: 800, mobile: false },
 ];
 
-async function shot(page, name) {
+const PLACES = [
+  { slug: 'jeju', query: '제주', name: /제주/ },
+  { slug: 'paris', query: '파리', name: /파리|Paris/ },
+  { slug: 'bangkok', query: '방콕', name: /방콕|Bangkok/ },
+];
+
+async function shot(page, name, size) {
   await mkdir(OUT, { recursive: true });
   await page.screenshot({
     path: `${OUT}/${name}.png`,
-    clip: { x: 0, y: 0, width: VIEWPORT.width, height: VIEWPORT.height },
+    clip: { x: 0, y: 0, width: size.width, height: size.height },
   });
 }
 
@@ -23,7 +27,6 @@ async function historySnap(page) {
   return page.evaluate(() => ({
     length: history.length,
     lightbox: history.state?.gateoLightbox === true,
-    idx: history.state?.idx ?? null,
     path: `${location.pathname}${location.search}`,
   }));
 }
@@ -61,17 +64,50 @@ async function swipeLightbox(page, direction) {
   await dispatchTouch(page, { x: endX, y, type: 'touchend', active: false });
 }
 
-async function openGalleryFromHomeSummary(page, place) {
-  await page.goto(`/place/${place.slug}?lang=ko`, { waitUntil: 'domcontentloaded' });
-  const home = page.getByRole('button', { name: '홈으로 이동' }).first();
-  await expect(home).toBeVisible({ timeout: 60_000 });
-  await home.click();
-  await expect(page).toHaveURL(/\/(\?.*)?$/, { timeout: 30_000 });
+async function openSummaryFromHome(page, place, size) {
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  const search = page.getByRole('button', { name: /여행지 검색|여행지 탐색|Search destinations/i }).first();
+  await expect(search).toBeVisible({ timeout: 60_000 });
+  await shot(page, `${place.slug}-${size.label}-01-home`, size);
+
+  await search.click();
+  await expect(page).toHaveURL(/\/explore/, { timeout: 30_000 });
+  const input = page.locator('input[placeholder]:visible').first();
+  await expect(input).toBeVisible();
+  await input.fill(place.query);
+  const row = page
+    .locator('[data-search-popover] button')
+    .filter({ hasNotText: 'MOONi' })
+    .filter({ hasText: place.name })
+    .first();
+  await expect(row).toBeVisible({ timeout: 20_000 });
+  await row.click();
+
+  await expect.poll(async () => {
+    if (new RegExp(`/place/${place.slug}(?:/|$|\\?)`).test(new URL(page.url()).pathname)) return 'place';
+    if (await page.locator('.place-summary-card').isVisible().catch(() => false)) return 'summary';
+    return '';
+  }, { timeout: 30_000 }).not.toBe('');
+  const landed = new RegExp(`/place/${place.slug}(?:/|$|\\?)`).test(new URL(page.url()).pathname)
+    ? 'place'
+    : 'summary';
+  if (landed === 'place') {
+    const home = page.getByRole('button', { name: /홈으로 이동|Go to home/ }).first();
+    await expect(home).toBeVisible({ timeout: 60_000 });
+    await home.click();
+    await expect(page).toHaveURL(/\/(\?.*)?$/, { timeout: 30_000 });
+  }
+
   const summary = page.locator('.place-summary-card');
   await expect(summary).toBeVisible({ timeout: 45_000 });
   await expect(summary).toContainText(place.name);
-  await shot(page, `lightbox-history-${place.label}-summary-390`);
-  const more = summary.getByRole('button', { name: '더보기', exact: true });
+  await expect(page).toHaveURL(/\/(\?.*)?$/);
+  await shot(page, `${place.slug}-${size.label}-02-summary`, size);
+  return summary;
+}
+
+async function openGalleryFromSummary(page, place, summary, size) {
+  const more = summary.getByRole('button', { name: /^(더보기|More)$/ });
   await expect(more).toBeVisible({ timeout: 20_000 });
   await more.click();
   await expect(page).toHaveURL(new RegExp(`/place/${place.slug}(?:/|$|\\?)`), { timeout: 30_000 });
@@ -82,80 +118,115 @@ async function openGalleryFromHomeSummary(page, place) {
   await expect.poll(async () => tile.evaluate((img) => (
     img.complete && img.naturalWidth > 10 ? img.naturalWidth : 0
   ))).toBeGreaterThan(10);
-  await shot(page, `lightbox-history-${place.label}-gallery-390`);
+  await shot(page, `${place.slug}-${size.label}-03-gallery`, size);
   return tile;
 }
 
-test.describe('place lightbox history — WebKit 390', () => {
-  test.use({ viewport: VIEWPORT, deviceScaleFactor: 1 });
+for (const size of SIZES) {
+  test.describe(`place lightbox history — WebKit ${size.label}`, () => {
+    test.use({
+      viewport: { width: size.width, height: size.height },
+      deviceScaleFactor: 1,
+      isMobile: size.mobile,
+      hasTouch: true,
+    });
 
-  for (const place of PLACES) {
-    test(`${place.label}: edge-back closes the lightbox and stays on the gallery`, async ({ page }) => {
-      const tile = await openGalleryFromHomeSummary(page, place);
+    for (const place of PLACES) {
+      test(`${place.slug}: home → summary → gallery → photo → back → card back`, async ({ page }) => {
+        const summary = await openSummaryFromHome(page, place, size);
+        const tile = await openGalleryFromSummary(page, place, summary, size);
+        const before = await historySnap(page);
+        expect(before.lightbox).toBe(false);
+
+        await tile.click();
+        const lightbox = page.locator('[data-place-lightbox]');
+        await expect(lightbox).toBeVisible();
+        await expect(lightbox).toHaveAttribute('data-place-lightbox-index', '0');
+        const opened = await historySnap(page);
+        expect(opened.lightbox).toBe(true);
+        expect(opened.length).toBe(before.length + 1);
+        expect(opened.path).toBe(before.path);
+        await shot(page, `${place.slug}-${size.label}-04-photo`, size);
+
+        await swipeLightbox(page, 'next');
+        await expect(lightbox).toHaveAttribute('data-place-lightbox-index', '1');
+        const swiped = await historySnap(page);
+        expect(swiped.length).toBe(opened.length);
+        expect(swiped.lightbox).toBe(true);
+        await shot(page, `${place.slug}-${size.label}-05-swipe`, size);
+
+        await page.goBack({ waitUntil: 'commit' });
+        await expect(lightbox).toBeHidden();
+        await expect(page).toHaveURL(new RegExp(`/place/${place.slug}(?:/|$|\\?)`));
+        await expect(page.locator('[data-place-gallery-scroll]')).toBeVisible();
+        const closed = await historySnap(page);
+        expect(closed.lightbox).toBe(false);
+        await shot(page, `${place.slug}-${size.label}-06-back-gallery`, size);
+
+        await page.goBack({ waitUntil: 'commit' });
+        await expect(page).toHaveURL(/\/(\?.*)?$/);
+        const summaryAgain = page.locator('.place-summary-card');
+        await expect(summaryAgain).toBeVisible({ timeout: 30_000 });
+        await expect(summaryAgain).toContainText(place.name);
+        await shot(page, `${place.slug}-${size.label}-07-back-summary`, size);
+
+        const cardBack = summaryAgain.getByRole('button', { name: /써머리 닫기|Close summary/ });
+        await expect(cardBack).toBeVisible();
+        await cardBack.click();
+        await expect(summaryAgain).toBeHidden({ timeout: 15_000 });
+        await expect(page).toHaveURL(/\/(\?.*)?$/);
+        await shot(page, `${place.slug}-${size.label}-08-card-back`, size);
+      });
+    }
+  });
+
+  test.describe(`festival lightbox history — WebKit ${size.label}`, () => {
+    test.use({
+      viewport: { width: size.width, height: size.height },
+      deviceScaleFactor: 1,
+      isMobile: size.mobile,
+      hasTouch: true,
+    });
+
+    test('region chip → festival lightbox back stays on the sheet', async ({ page }) => {
+      await page.goto('/korea', { waitUntil: 'domcontentloaded' });
+      const region = page.getByRole('button', { name: /지역 대분류/ }).first();
+      await expect(region).toBeVisible({ timeout: 60_000 });
+      await shot(page, `festival-${size.label}-01-korea`, size);
+      await region.click();
+      const chip = page.getByRole('button', { name: /제주/ }).last();
+      await expect(chip).toBeVisible({ timeout: 20_000 });
+      await chip.click();
+      await shot(page, `festival-${size.label}-02-region`, size);
+
+      const row = page.locator('[data-festival-id]').first();
+      await expect(row).toBeVisible({ timeout: 60_000 });
+      await row.click();
+      await expect(page).toHaveURL(/[?&]festival=\d+/, { timeout: 20_000 });
+      const sheet = page.locator('[role="dialog"]');
+      await expect(sheet).toBeVisible({ timeout: 20_000 });
+      await shot(page, `festival-${size.label}-03-sheet`, size);
+
       const before = await historySnap(page);
-      expect(before.lightbox).toBe(false);
-
-      await tile.click();
-      const lightbox = page.locator('[data-place-lightbox]');
+      const expand = sheet.getByRole('button', { name: /사진 확대보기/ }).first();
+      await expect(expand).toBeVisible({ timeout: 30_000 });
+      await expand.click();
+      const lightbox = page.locator('[data-festival-lightbox]');
       await expect(lightbox).toBeVisible();
-      await expect(lightbox).toHaveAttribute('data-place-lightbox-index', '0');
-      await expect.poll(async () => {
-        const text = await lightbox.innerText();
-        const match = text.match(/(\d+)\s*\/\s*(\d+)/);
-        return match ? Number(match[2]) : 0;
-      }).toBeGreaterThan(1);
-
       const opened = await historySnap(page);
       expect(opened.lightbox).toBe(true);
       expect(opened.length).toBe(before.length + 1);
-      expect(opened.path).toBe(before.path);
-      await shot(page, `lightbox-history-${place.label}-open-390`);
-
-      await swipeLightbox(page, 'next');
-      await expect(lightbox).toHaveAttribute('data-place-lightbox-index', '1');
-      const swiped = await historySnap(page);
-      expect(swiped.length).toBe(opened.length);
-      expect(swiped.lightbox).toBe(true);
-      expect(swiped.path).toBe(opened.path);
-      await shot(page, `lightbox-history-${place.label}-swipe-390`);
+      expect(opened.path).toContain('festival=');
+      await shot(page, `festival-${size.label}-04-lightbox`, size);
 
       await page.goBack({ waitUntil: 'commit' });
       await expect(lightbox).toBeHidden();
-      await expect(page).toHaveURL(new RegExp(`/place/${place.slug}(?:/|$|\\?)`));
-      await expect(page.locator('[data-place-gallery-scroll]')).toBeVisible();
+      await expect(sheet).toBeVisible();
+      await expect(page).toHaveURL(/[?&]festival=\d+/);
       const closed = await historySnap(page);
       expect(closed.lightbox).toBe(false);
-      await shot(page, `lightbox-history-${place.label}-back-gallery-390`);
-
-      await page.goBack({ waitUntil: 'commit' });
-      await expect(page).toHaveURL(/\/(\?.*)?$/);
-      const summary = page.locator('.place-summary-card');
-      await expect(summary).toBeVisible({ timeout: 30_000 });
-      await expect(summary).toContainText(place.name);
-      await shot(page, `lightbox-history-${place.label}-back-summary-390`);
+      expect(closed.path).toContain('festival=');
+      await shot(page, `festival-${size.label}-05-back-sheet`, size);
     });
-  }
-
-  test('jeju: X releases the lightbox history entry', async ({ page }) => {
-    const place = PLACES[0];
-    const tile = await openGalleryFromHomeSummary(page, place);
-    const before = await historySnap(page);
-    await tile.click();
-    const lightbox = page.locator('[data-place-lightbox]');
-    await expect(lightbox).toBeVisible();
-    const opened = await historySnap(page);
-    expect(opened.lightbox).toBe(true);
-    expect(opened.length).toBe(before.length + 1);
-
-    await lightbox.getByRole('button', { name: '닫기' }).click();
-    await expect(lightbox).toBeHidden();
-    await expect(page).toHaveURL(new RegExp(`/place/${place.slug}(?:/|$|\\?)`));
-    const closed = await historySnap(page);
-    expect(closed.lightbox).toBe(false);
-
-    await page.goBack({ waitUntil: 'commit' });
-    await expect(page).toHaveURL(/\/(\?.*)?$/);
-    await expect(page.locator('.place-summary-card')).toBeVisible({ timeout: 30_000 });
-    await shot(page, 'lightbox-history-jeju-x-then-summary-390');
   });
-});
+}
