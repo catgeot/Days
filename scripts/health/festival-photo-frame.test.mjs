@@ -16,6 +16,8 @@ import { FestivalHeroPhoto } from '../../src/pages/Korea/festivalHeroPhoto.js';
 import {
   FestivalHeroThumbStrip,
   festivalHeroStripMode,
+  festivalLightboxSlides,
+  stepFestivalLightbox,
 } from '../../src/pages/Korea/festivalHeroThumbs.js';
 
 const rootDir = join(dirname(fileURLToPath(import.meta.url)), '../..');
@@ -483,4 +485,83 @@ test('two successful loads open the strip and a later failure collapses it', asy
 
   assert.equal(stripMode(), 'collapsed');
   assert.equal(container.querySelectorAll('[role="option"]').length, 0);
+});
+
+test('lightbox slides follow loaded filmstrip urls and keep the open photo when one loads later', () => {
+  const urls = ['a', 'b', 'c', 'd', 'e', 'f'].map((id) => `https://example.test/${id}.jpg`);
+  const loaded = [urls[0], urls[5]];
+  let slides = festivalLightboxSlides(urls, loaded, 5);
+  assert.deepEqual(slides.urls, loaded);
+  assert.equal(slides.index, 1);
+  assert.equal(slides.rawIndex, 5);
+  assert.equal(`${slides.index + 1} / ${slides.urls.length}`, '2 / 2');
+
+  slides = festivalLightboxSlides(urls, [urls[0], urls[2], urls[5]], 5);
+  assert.equal(slides.rawIndex, 5);
+  assert.equal(slides.index, 2);
+  assert.equal(slides.urls[slides.index], urls[5]);
+  assert.equal(`${slides.index + 1} / ${slides.urls.length}`, '3 / 3');
+
+  const stepped = stepFestivalLightbox(urls, [urls[0], urls[2], urls[5]], 5, 1);
+  assert.equal(stepped.index, 0);
+  assert.equal(stepped.rawIndex, 0);
+
+  const skipped = stepFestivalLightbox(urls, [urls[0], urls[2], urls[5]], 0, 1);
+  assert.equal(skipped.rawIndex, 2);
+  assert.equal(skipped.urls[skipped.index], urls[2]);
+
+  const removed = festivalLightboxSlides(urls, [urls[0], urls[5]], 2, [urls[2]]);
+  assert.equal(removed.urls[removed.index], urls[0]);
+  assert.equal(removed.rawIndex, 0);
+
+  const removedFirst = festivalLightboxSlides(urls, [urls[2], urls[5]], 5, [urls[0]]);
+  assert.equal(removedFirst.rawIndex, 5);
+  assert.equal(removedFirst.index, 1);
+  assert.equal(`${removedFirst.index + 1} / ${removedFirst.urls.length}`, '2 / 2');
+
+  const pendingOnly = festivalLightboxSlides(urls, [], 3);
+  assert.deepEqual(pendingOnly.urls, [urls[3]]);
+  assert.equal(pendingOnly.rawIndex, 3);
+});
+
+test('filmstrip photo N opens the lightbox on that same loaded url', async () => {
+  const urls = ['a', 'b', 'c'].map((id) => `https://example.test/strip-${id}.jpg`);
+  const opened = [];
+  const reports = [];
+  await mountStrip({
+    urls,
+    onOpen: (index) => opened.push(index),
+    onStripChange: (next) => reports.push({
+      loadedUrls: [...next.loadedUrls],
+      failedUrls: [...next.failedUrls],
+    }),
+  });
+  await settleProbe(true);
+  await settleProbe(false);
+  await settleProbe(true);
+
+  const options = [...container.querySelectorAll('[role="option"]')];
+  assert.equal(options.length, 2);
+  await act(async () => {
+    options[1].dispatchEvent(new window.MouseEvent('dblclick', { bubbles: true }));
+  });
+  assert.deepEqual(opened, [2]);
+
+  const last = reports[reports.length - 1];
+  assert.deepEqual(last.loadedUrls, [urls[0], urls[2]]);
+  assert.deepEqual(last.failedUrls, [urls[1]]);
+  const slides = festivalLightboxSlides(urls, last.loadedUrls, opened[0], last.failedUrls);
+  assert.equal(slides.index, 1);
+  assert.equal(slides.urls[slides.index], urls[2]);
+  assert.equal(`${slides.index + 1} / ${slides.urls.length}`, '2 / 2');
+});
+
+test('festival lightbox counter uses loaded slides, not the raw url list', () => {
+  const start = sheet.indexOf('data-festival-lightbox-index');
+  assert.ok(start > 0);
+  const block = sheet.slice(start, start + 500);
+  assert.match(block, /lightboxSlides\.index/);
+  assert.match(block, /lightboxSlides\.urls\.length/);
+  assert.doesNotMatch(block, /imageUrls\.length/);
+  assert.match(sheet, /stepFestivalLightbox/);
 });

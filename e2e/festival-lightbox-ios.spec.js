@@ -328,6 +328,67 @@ test.describe('festival lightbox iOS touch — WebKit 390', () => {
     expect(edges.prevW).toBeGreaterThanOrEqual(44);
     expect(edges.prevH).toBeGreaterThanOrEqual(44);
   });
+
+  test('lightbox count matches the loaded filmstrip and keeps that photo when another loads', async ({ page }) => {
+    let releaseMiddle;
+    const middleReady = new Promise((resolve) => {
+      releaseMiddle = resolve;
+    });
+    await page.route(/e2e-static\.gateo\.test/i, async (route) => {
+      const url = route.request().url();
+      if (/manual-638576-gallery-2\.png/.test(url)) {
+        await middleReady;
+        await route.fulfill({
+          status: 200,
+          contentType: 'image/png',
+          body: BRIGHT_PNG,
+        });
+        return;
+      }
+      const keep = /festival-hero-638576\.png/.test(url)
+        || /manual-638576-gallery-5\.png/.test(url);
+      if (!keep) {
+        await route.fulfill({ status: 404, contentType: 'text/plain', body: 'missing' });
+        return;
+      }
+      await route.fulfill({
+        status: 200,
+        contentType: 'image/png',
+        body: BRIGHT_PNG,
+      });
+    });
+
+    await page.goto('/korea/', { waitUntil: 'domcontentloaded' });
+    await dismissLocHint(page);
+    await page.goto(`/korea/?festival=${FESTIVAL_ID}`, { waitUntil: 'domcontentloaded' });
+
+    const sheet = page.getByRole('dialog').filter({ has: page.locator('#korea-festival-sheet-title') });
+    await expect(sheet).toBeVisible({ timeout: 60_000 });
+    const options = sheet.locator('[data-festival-hero-thumbs-scroller] [role="option"]');
+    await expect(options).toHaveCount(2, { timeout: 30_000 });
+
+    const secondSrc = await options.nth(1).locator('img').getAttribute('src');
+    await options.nth(1).click();
+    await sheet.getByRole('button', { name: /사진 확대보기/ }).click();
+    const lightbox = page.getByRole('dialog', { name: '사진 확대보기' });
+    await expect(lightbox).toBeVisible();
+    const index = lightbox.locator('[data-festival-lightbox-index]');
+    await expect(index).toHaveAttribute('data-festival-lightbox-index', '1');
+    await expect(index).toHaveText('2 / 2');
+    await expect(lightbox.locator('img').first()).toHaveAttribute('src', secondSrc);
+
+    releaseMiddle();
+    await expect(options).toHaveCount(3, { timeout: 15_000 });
+    await expect(index).toHaveAttribute('data-festival-lightbox-index', '2');
+    await expect(index).toHaveText('3 / 3');
+    await expect(lightbox.locator('img').first()).toHaveAttribute('src', secondSrc);
+    await shot(page, 'festival-lightbox-loaded-count-390');
+
+    await lightbox.getByRole('button', { name: '다음 사진' }).click();
+    await expect(index).toHaveText('1 / 3');
+    await expect(index).toHaveAttribute('data-festival-lightbox-index', '0');
+    await expect(page).toHaveURL(new RegExp(`festival=${FESTIVAL_ID}`));
+  });
 });
 
 const REAL_OUT = process.env.LIGHTBOX_QA_OUT || '/tmp/lightbox-center-qa';

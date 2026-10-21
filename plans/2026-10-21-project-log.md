@@ -2,6 +2,12 @@
 
 이전: [`2026-10-20-project-log.md`](./2026-10-20-project-log.md)
 
+## 현지 정보 #1, LI-1 레지스트리
+
+- draft [#533](https://github.com/catgeot/Days/pull/533) `cursor/local-info-registry-8958` tip `a359f621`. 카이로만 slug 레지스트리. 언급은 토큰 전체 일치. 공항→시내 출처는 cairo-airport.com 안내만. Uber 문장 삭제. `VITE_GATEO_LOCAL_INFO_ROLLOUT` 기본 OFF. **병합 금지**.
+- 증거 `gateo-ops/qa/li-1-registry/` (ko·en, 390·1280, before/after). `npm run test:health` 581 PASS. 로컬 `place-local-info` 3 PASS. `PlaceGalleryView.jsx` 미변경.
+- 확인 안 된 항목 숨김은 이 PR에 없음.
+
 ## 축제 확대보기 #4, 로드된 장수
 
 - draft [#532](https://github.com/catgeot/Days/pull/532) `cursor/festival-lightbox-loaded-0e70` tip `6e8a33c3`. 확대보기 카운트·이전/다음이 필름스트립에 로드된 URL만 따른다. 나중에 로드되면 보고 있던 URL은 유지하고 장수만 갱신. **병합 금지**.
