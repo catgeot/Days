@@ -14,7 +14,7 @@ permissions:
 jobs:
   probe:
     runs-on: ubuntu-latest
-    timeout-minutes: 3
+    timeout-minutes: 4
     steps:
       - name: Probe MOFA travel alarm for AE
         env:
@@ -42,8 +42,33 @@ jobs:
           print(f"::add-mask::{urllib.parse.quote_plus(key)}", flush=True)
           PY
 
+          echo "reachability: apis.data.go.kr (no service key)"
           set +e
-          http_code=$(curl -sS --globoff --max-time 30 -G \
+          curl -4 -sS --globoff --connect-timeout 15 --max-time 20 \
+            -o /dev/null -w 'ipv4_http:%{http_code} connect:%{time_connect}\n' \
+            'https://apis.data.go.kr/'
+          ipv4_rc=$?
+          echo "ipv4_curl_exit:${ipv4_rc}"
+          curl -6 -sS --globoff --connect-timeout 10 --max-time 12 \
+            -o /dev/null -w 'ipv6_http:%{http_code} connect:%{time_connect}\n' \
+            'https://apis.data.go.kr/'
+          ipv6_rc=$?
+          echo "ipv6_curl_exit:${ipv6_rc}"
+          set -e
+          ip_flag=(-4)
+          if [ "$ipv4_rc" -eq 0 ]; then
+            ip_flag=(-4)
+            echo "ip_family: ipv4"
+          elif [ "$ipv6_rc" -eq 0 ]; then
+            ip_flag=(-6)
+            echo "ip_family: ipv6"
+          else
+            echo "NETWORK: apis.data.go.kr unreachable from this runner on ipv4 and ipv6"
+            echo "ip_family: ipv4-fallback"
+          fi
+
+          set +e
+          http_code=$(curl -sS --globoff --connect-timeout 20 --max-time 40 "${ip_flag[@]}" -G \
             -o /tmp/travel-alarm-body.txt \
             -w '%{http_code}' \
             -H 'Accept: application/json' \
