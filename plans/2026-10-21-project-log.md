@@ -8,6 +8,7 @@
 - 증거 `gateo-ops/qa/li-1-registry/` (ko·en, 390·1280, before/after). `npm run test:health` 581 PASS. 로컬 `place-local-info` 3 PASS. `PlaceGalleryView.jsx` 미변경.
 - 확인 안 된 항목 숨김은 이 PR에 없음.
 - tip `a4213e86`. 공항 안내 URL은 Chromium WAF 500, WebKit은 TLS 거절. 출처 정의는 남기고 공항→시내 슬롯은 빈 칸이라 칩이 안 나온다. `data-unverified-items`에 공항→시내. `npm run test:health` 584 PASS. 로컬 `place-local-info` 3 PASS.
+- tip `83ef9007`. 리뷰 결정으로 공항→시내 칩을 되돌림. 본문은 1c195e32와 같고 Uber 문장은 그대로 없음. 출처는 URL 없이 평문. 확인 안 된 항목에서 공항→시내를 뺌. URL은 2026-10-21 기준 접속 불가 주석만. `npm run test:health` 584 PASS. 로컬 `place-local-info` 3 PASS.
 
 ## 축제 확대보기 #4, 로드된 장수
 

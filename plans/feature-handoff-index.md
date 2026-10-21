@@ -18,14 +18,14 @@
 
 | | |
 |--|--|
-| **상태** | **#1 LI-1 레지스트리** · tip `a4213e86` · draft PR [#533](https://github.com/catgeot/Days/pull/533) · **병합 금지** |
+| **상태** | **#1 LI-1 레지스트리** · tip `83ef9007` · draft PR [#533](https://github.com/catgeot/Days/pull/533) · **병합 금지** |
 | **브랜치** | `cursor/local-info-registry-8958` |
 | **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
 | **일지** | [`2026-10-21-project-log.md`](./2026-10-21-project-log.md) |
 | **Preview** | `vercel.json`에서 `cursor/*` 배포 꺼짐. 증거 `gateo-ops/qa/li-1-registry/` (ko·en, 390·1280, before/after) |
 | **금지** | PR 병합 · 코드를 `origin/main`에 push · feature에 `plans/**` 커밋 · 확인 안 된 항목 숨김(별도 PR) · 새 칩 · `PlaceGalleryView.jsx` 수정 |
 | **VERIFY** | `npm run test:health` |
-| **남은 일** | 사람이 draft #533만 본다. 카이로 현지 정보에 공항→시내 행이 없고, 확인 안 된 항목에 공항→시내가 있는지. 다른 장소에는 현지 정보 칸이 없는지. |
+| **남은 일** | 사람이 draft #533만 본다. 카이로 공항→시내 칩은 보이고, 출처는 링크 없는 「카이로국제공항 교통 안내 · 확인일 2026-10-11」인지. 확인 안 된 항목에는 공항→시내가 없는지. |
 
 **다음 제시어**
 
