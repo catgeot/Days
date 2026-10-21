@@ -135,7 +135,12 @@ import { shouldShowFestivalNearbyListSection } from './lib/festivalDetailSection
 import { formatFestivalPhotoCreditLine } from './festivalPhotoCredit.js';
 import { useFestivalHeroPhotoDecoded } from './useFestivalHeroPhotoDecoded.js';
 import { loadNearbyParkingFacts } from './lib/festivalNearbyParking.js';
-import { FestivalHeroThumbStrip, festivalHeroStripMode } from './festivalHeroThumbs';
+import {
+  FestivalHeroThumbStrip,
+  festivalHeroStripMode,
+  festivalLightboxSlides,
+  stepFestivalLightbox,
+} from './festivalHeroThumbs';
 import { FestivalHeroPhoto } from './festivalHeroPhoto';
 import {
   festivalOmitsOfficialEventHours,
@@ -649,7 +654,7 @@ export default function FestivalDetailSheet({
   const [common, setCommon] = useState(null);
   const [infoItems, setInfoItems] = useState([]);
   const [imageUrls, setImageUrls] = useState([]);
-  const [heroStrip, setHeroStrip] = useState({ loadedCount: 0, loadedUrls: [] });
+  const [heroStrip, setHeroStrip] = useState({ loadedCount: 0, loadedUrls: [], failedUrls: [] });
   const [imageCredits, setImageCredits] = useState([]);
   const [detailLoading, setDetailLoading] = useState(false);
   const [heroReady, setHeroReady] = useState(false);
@@ -1237,8 +1242,18 @@ export default function FestivalDetailSheet({
     setHeroStrip((prev) => {
       const prevKey = prev.loadedUrls.join('\n');
       const nextKey = next.loadedUrls.join('\n');
-      if (prev.loadedCount === next.loadedCount && prevKey === nextKey) return prev;
-      return { loadedCount: next.loadedCount, loadedUrls: next.loadedUrls };
+      const prevFailed = (prev.failedUrls || []).join('\n');
+      const nextFailed = (next.failedUrls || []).join('\n');
+      if (
+        prev.loadedCount === next.loadedCount
+        && prevKey === nextKey
+        && prevFailed === nextFailed
+      ) return prev;
+      return {
+        loadedCount: next.loadedCount,
+        loadedUrls: next.loadedUrls,
+        failedUrls: next.failedUrls || [],
+      };
     });
   }, []);
 
@@ -1246,8 +1261,8 @@ export default function FestivalDetailSheet({
     detailMinOwner.current = String(item?.contentId || '');
     detailMinPx.current = 0;
     heroColMin.current = 0;
-    if (heroStrip.loadedCount !== 0 || heroStrip.loadedUrls.length) {
-      setHeroStrip({ loadedCount: 0, loadedUrls: [] });
+    if (heroStrip.loadedCount !== 0 || heroStrip.loadedUrls.length || heroStrip.failedUrls?.length) {
+      setHeroStrip({ loadedCount: 0, loadedUrls: [], failedUrls: [] });
     }
   }
   if (heroStrip.loadedCount <= 1) heroColMin.current = 0;
@@ -1483,24 +1498,72 @@ export default function FestivalDetailSheet({
   }, [selectedNearby, selectedScenic, selectedCourse, item?.contentId, resetFestivalSheetOverlayUi]);
 
   const openLightbox = useCallback(() => {
-    if (!imageUrls[activeImage] && !imageUrls[0]) return;
+    const slides = festivalLightboxSlides(
+      imageUrls,
+      heroStrip.loadedUrls,
+      activeImage,
+      heroStrip.failedUrls,
+    );
+    if (!slides.urls.length && !imageUrls[activeImage] && !imageUrls[0]) return;
     setLightboxOpen(true);
-  }, [activeImage, imageUrls]);
+  }, [activeImage, heroStrip.failedUrls, heroStrip.loadedUrls, imageUrls]);
 
   const stepLightbox = useCallback((delta) => {
-    if (imageUrls.length < 2) return;
-    setActiveImage((i) => (i + delta + imageUrls.length) % imageUrls.length);
-  }, [imageUrls.length]);
+    setActiveImage((i) => {
+      const next = stepFestivalLightbox(
+        imageUrls,
+        heroStrip.loadedUrls,
+        i,
+        delta,
+        heroStrip.failedUrls,
+      );
+      if (next.urls.length < 2) return i;
+      return next.rawIndex;
+    });
+  }, [heroStrip.failedUrls, heroStrip.loadedUrls, imageUrls]);
+
+  // A URL that left the filmstrip must not stay selected, including while the lightbox is open.
+  useEffect(() => {
+    const slides = festivalLightboxSlides(
+      imageUrls,
+      heroStrip.loadedUrls,
+      activeImage,
+      heroStrip.failedUrls,
+    );
+    if (slides.rawIndex < 0 || slides.rawIndex === activeImage) return;
+    const current = imageUrls[activeImage] || '';
+    const failed = (heroStrip.failedUrls || []).includes(current);
+    const pending = Boolean(current) && !failed && !(heroStrip.loadedUrls || []).includes(current);
+    if (pending && !lightboxOpen) return;
+    if (!slides.urls.length) {
+      if (lightboxOpen && failed) closeLightbox();
+      return;
+    }
+    setActiveImage(slides.rawIndex);
+  }, [
+    activeImage,
+    closeLightbox,
+    heroStrip.failedUrls,
+    heroStrip.loadedUrls,
+    imageUrls,
+    lightboxOpen,
+  ]);
 
   const consumeHorizontalSwipe = useCallback((start, endX, endY) => {
-    if (!start || imageUrls.length < 2) return false;
+    const slides = festivalLightboxSlides(
+      imageUrls,
+      heroStrip.loadedUrls,
+      activeImage,
+      heroStrip.failedUrls,
+    );
+    if (!start || slides.urls.length < 2) return false;
     const dx = endX - start.x;
     const dy = endY - start.y;
     if (Math.abs(dx) < PHOTO_SWIPE_THRESHOLD_PX) return false;
     if (Math.abs(dx) < Math.abs(dy) * PHOTO_SWIPE_DIRECTION_RATIO) return false;
     stepLightbox(dx > 0 ? -1 : 1);
     return true;
-  }, [imageUrls.length, stepLightbox]);
+  }, [activeImage, heroStrip.failedUrls, heroStrip.loadedUrls, imageUrls, stepLightbox]);
 
   const onHeroTouchStart = useCallback((e) => {
     if (e.touches.length !== 1) return;
@@ -1564,7 +1627,13 @@ export default function FestivalDetailSheet({
         onClose();
         return;
       }
-      if (!lightboxOpen || imageUrls.length < 2) return;
+      const slides = festivalLightboxSlides(
+        imageUrls,
+        heroStrip.loadedUrls,
+        activeImage,
+        heroStrip.failedUrls,
+      );
+      if (!lightboxOpen || slides.urls.length < 2) return;
       if (event.key === 'ArrowLeft') {
         stepLightbox(-1);
       } else if (event.key === 'ArrowRight') {
@@ -1576,7 +1645,10 @@ export default function FestivalDetailSheet({
   }, [
     lightboxOpen,
     mooniOpen,
-    imageUrls.length,
+    activeImage,
+    imageUrls,
+    heroStrip.loadedUrls,
+    heroStrip.failedUrls,
     onClose,
     selectedNearby,
     selectedScenic,
@@ -2180,6 +2252,13 @@ export default function FestivalDetailSheet({
   const tel = String(intro?.sponsor1tel || item.tel || '').trim();
   const sponsor2tel = String(intro?.sponsor2tel || '').trim();
   const hero = imageUrls[activeImage] || imageUrls[0] || '';
+  const lightboxSlides = festivalLightboxSlides(
+    imageUrls,
+    heroStrip.loadedUrls,
+    activeImage,
+    heroStrip.failedUrls,
+  );
+  const lightboxPhoto = lightboxSlides.urls[lightboxSlides.index] || '';
   const photoStripMode = festivalHeroStripMode(
     heroStrip.loadedCount,
     detailLoading,
@@ -2303,7 +2382,7 @@ export default function FestivalDetailSheet({
               onTouchCancel={onHeroTouchCancel}
               className="group relative flex h-[min(40vh,18rem)] w-full shrink-0 items-center justify-center overflow-hidden bg-stone-200/70 text-left touch-pan-y md:h-auto md:min-h-[12rem] md:flex-1 md:overflow-hidden"
               aria-label={
-                imageUrls.length > 1
+                heroStrip.loadedCount > 1
                   ? t('korea.festival.detail.heroExpandSwipe')
                   : t('korea.festival.detail.heroExpand')
               }
@@ -2365,7 +2444,10 @@ export default function FestivalDetailSheet({
               activeIndex={activeImage}
               locked={lightboxOpen}
               onSelect={onSelectHeroImage}
-              onOpen={() => setLightboxOpen(true)}
+              onOpen={(index) => {
+                if (Number.isInteger(index)) setActiveImage(index);
+                setLightboxOpen(true);
+              }}
               resolveSrc={(url) => resolveListImageUrl(url, { role: 'list' })}
               photosAria={t('korea.festival.detail.photosAria')}
               onStripChange={onHeroStripChange}
@@ -3334,7 +3416,7 @@ export default function FestivalDetailSheet({
         />
       )}
 
-      {lightboxOpen && hero && typeof document !== 'undefined'
+      {lightboxOpen && lightboxPhoto && typeof document !== 'undefined'
         ? createPortal(
           <div
             ref={lightboxRootRef}
@@ -3367,10 +3449,10 @@ export default function FestivalDetailSheet({
               <div className="relative z-30 flex shrink-0 items-center justify-between gap-3 pb-3">
                 <p
                   className="text-sm font-bold text-white/90 tabular-nums"
-                  data-festival-lightbox-index={activeImage}
+                  data-festival-lightbox-index={lightboxSlides.index}
                 >
-                  {imageUrls.length > 1
-                    ? `${activeImage + 1} / ${imageUrls.length}`
+                  {lightboxSlides.urls.length > 1
+                    ? `${lightboxSlides.index + 1} / ${lightboxSlides.urls.length}`
                     : t('korea.festival.detail.lightboxPhoto')}
                 </p>
                 <button
@@ -3394,7 +3476,7 @@ export default function FestivalDetailSheet({
                   onTouchCancel={onLightboxTouchCancel}
                 >
                   <FestivalPhotoFrame
-                    src={hero}
+                    src={lightboxPhoto}
                     alt=""
                     draggable={false}
                     loading="eager"
@@ -3414,7 +3496,7 @@ export default function FestivalDetailSheet({
                   />
                 </div>
                 </div>
-                {imageUrls.length > 1 && (
+                {lightboxSlides.urls.length > 1 && (
                   <>
                     <button
                       type="button"
