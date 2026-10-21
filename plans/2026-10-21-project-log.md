@@ -22,3 +22,9 @@
 - draft [#534](https://github.com/catgeot/Days/pull/534) `cursor/lightbox-history-d223` tip `f018ddff`. 확대보기를 열면 같은 URL 히스토리 한 칸. 가장자리 스와이프·브라우저 뒤로가기는 사진만 닫고 갤러리에 남는다. 그다음 뒤로가기는 지구본 써머리. X도 그 칸을 `history.back()`. 사진 변경은 칸을 더하지 않음. 축제 확대보기와 세션 공유. `VITE_GATEO_LIGHTBOX_HISTORY` 기본 ON (`0`이면 OFF). **병합 금지**.
 - WebKit 390 제주·파리·방콕: 홈 써머리 → 갤러리 → 확대 → 스와이프 → 뒤로(갤러리) → 뒤로(써머리) 4 PASS. `scripts/health/lightbox-history.test.mjs` 7 PASS.
 - 사람 체크: 아이폰 사파리에서 장소 사진 확대 후 왼쪽 가장자리 스와이프가 지구본 써머리로 나가지 않고 갤러리에 남는지.
+- Site QA HOLD 반영. 로직 tip `4c790106`. `VITE_GATEO_LIGHTBOX_HISTORY=0`은 장소 갤러리만 끈다. 축제 확대보기 히스토리는 항상 켜 둠(#531). `history.back()`이 popstate를 안 주면 삼키는 리스너는 500ms 뒤 제거. 열린 채 라우트가 바뀌면 같은 URL 칸을 새 라우트로 덮어 고아 칸을 없앰. 단위 10 PASS. WebKit 390·1280 홈→써머리→갤러리→사진→뒤로→써머리 닫기, 제주·파리·방콕, 그리고 `/korea` 지역 칩→축제 확대→뒤로(시트 유지) PASS. draft 유지. **병합 금지**.
+
+## 여행경보 API 키 프로브
+
+- draft [#535](https://github.com/catgeot/Days/pull/535) `cursor/travel-advisory-probe-4534`. 호스티드 러너가 `apis.data.go.kr:443`에 연결하지 못함. run `39591764354`: IPv4 curl 28, IPv6 주소 없음, HTTP 000. 시크릿은 로그에 `***`. UAE 경보 단계 미확인. **병합 금지**.
+- Gemini health ping `workflow_dispatch`는 GitHub App 토큰 403으로 실행하지 못함. 리셋(20:20 KST) 이전 스케줄 run `39576844493`(18:25 KST)은 `FAIL(http) code=403 error=origin_not_allowed`.
