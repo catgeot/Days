@@ -30,6 +30,7 @@ import PlaceScenicGateway from '../common/PlaceScenicGateway';
 import { useLocale } from '../../../i18n/LocaleProvider';
 import { useGalleryLongPress } from '../common/galleryLongPress';
 import { GALLERY_REPORT_REASONS } from '../../../shared/api/placeGalleryPersist';
+import { resolveGalleryTileReferrerPolicy } from '../../../utils/listImageUrl';
 
 const REPORT_REASON_I18N = {
   irrelevant: 'place.gallery.manageReasonIrrelevant',
@@ -60,7 +61,6 @@ const galleryPhotoCreditFlagOn = isPlaceGalleryPhotoCreditEnabled();
 const GalleryGridTile = React.memo(function GalleryGridTile({
   img,
   index,
-  eager = false,
   onOpen,
   onManage,
   enableLongPress = false,
@@ -71,8 +71,11 @@ const GalleryGridTile = React.memo(function GalleryGridTile({
   photoCreditLocale,
 }) {
   const [loaded, setLoaded] = useState(false);
+  const [broken, setBroken] = useState(false);
   const paintedRef = useRef(false);
+  const tileRef = useRef(null);
   const imgElRef = useRef(null);
+  const hangTimerRef = useRef(null);
   const imgPropRef = useRef(img);
   const onBrokenRef = useRef(onBroken);
   const onPaintedRef = useRef(onPainted);
@@ -96,6 +99,8 @@ const GalleryGridTile = React.memo(function GalleryGridTile({
   }, [markPainted]);
 
   const settleBroken = useCallback(() => {
+    setBroken(true);
+    setLoaded(true);
     markPainted();
     onBrokenRef.current?.(imgPropRef.current);
   }, [markPainted]);
@@ -104,6 +109,7 @@ const GalleryGridTile = React.memo(function GalleryGridTile({
   // 목록 드롭은 onError·(hang 후)확정 깨짐만 — lazy 미시작 complete/0폭 오탐 금지.
   useEffect(() => {
     setLoaded(false);
+    setBroken(false);
     paintedRef.current = false;
     if (!src) {
       settleBroken();
@@ -113,35 +119,84 @@ const GalleryGridTile = React.memo(function GalleryGridTile({
     const syncFromElement = () => {
       const el = imgElRef.current;
       if (!el || paintedRef.current) return;
-      // 성공 decode만 즉시 반영. complete+0폭은 lazy/미시작일 수 있어 드롭하지 않음.
+      // WebKit: naturalWidth>0인데 complete/onLoad가 늦을 수 있음 — opacity 0 고착 방지.
+      if (el.naturalWidth > 0) {
+        settleLoaded();
+        return;
+      }
+      // complete+0폭은 lazy/미시작일 수 있어 드롭하지 않음.
       if (el.complete && el.naturalWidth > 0) settleLoaded();
     };
 
     const raf = window.requestAnimationFrame(syncFromElement);
-    const hangTimer = window.setTimeout(() => {
-      if (paintedRef.current) return;
-      const el = imgElRef.current;
-      if (el?.complete && el.naturalWidth > 0) {
-        settleLoaded();
-        return;
+    const el = imgElRef.current;
+    if (el?.decode) {
+      void el
+        .decode()
+        .then(() => {
+          if (el.naturalWidth > 0) settleLoaded();
+        })
+        .catch(() => {});
+    }
+    const clearHang = () => {
+      if (hangTimerRef.current) {
+        window.clearTimeout(hangTimerRef.current);
+        hangTimerRef.current = null;
       }
-      // 화면에 있는데 6초 뒤에도 decode가 없으면 빈 칸으로 남기지 않고 빼서 재배치한다.
-      const rect = el?.getBoundingClientRect();
-      const inView = Boolean(
-        rect && rect.width > 0 && rect.bottom > 0 && rect.top < window.innerHeight,
-      );
-      if (inView) settleBroken();
-      else markPainted();
-    }, TILE_LOAD_HANG_MS);
+    };
+
+    const scheduleHangIfVisible = () => {
+      clearHang();
+      const tile = tileRef.current;
+      if (!tile || paintedRef.current) return;
+      const scroller = tile.closest('.custom-scrollbar-blue');
+      const root = scroller instanceof Element ? scroller : null;
+      const rect = tile.getBoundingClientRect();
+      const rootRect = root?.getBoundingClientRect();
+      const vTop = rootRect?.top ?? 0;
+      const vBottom = rootRect?.bottom ?? window.innerHeight;
+      const inView = rect.width > 0 && rect.bottom > vTop && rect.top < vBottom;
+      if (!inView) return;
+
+      hangTimerRef.current = window.setTimeout(() => {
+        if (paintedRef.current) return;
+        const el = imgElRef.current;
+        if (el?.naturalWidth > 0) {
+          settleLoaded();
+          return;
+        }
+        settleBroken();
+      }, TILE_LOAD_HANG_MS);
+    };
+
+    const scroller = tileRef.current?.closest('.custom-scrollbar-blue');
+    const ioRoot = scroller instanceof Element ? scroller : null;
+    const observer =
+      typeof IntersectionObserver !== 'undefined' && tileRef.current
+        ? new IntersectionObserver(
+            (entries) => {
+              if (entries.some((e) => e.isIntersecting)) scheduleHangIfVisible();
+              else clearHang();
+            },
+            { root: ioRoot, threshold: 0.02, rootMargin: '48px' },
+          )
+        : null;
+    if (observer && tileRef.current) observer.observe(tileRef.current);
+    scheduleHangIfVisible();
 
     return () => {
       window.cancelAnimationFrame(raf);
-      window.clearTimeout(hangTimer);
+      clearHang();
+      observer?.disconnect();
     };
   }, [src, settleLoaded, settleBroken, markPainted]);
 
+  const paintAttr = broken ? 'broken' : loaded ? 'painted' : 'pending';
+
   return (
     <div
+      ref={tileRef}
+      data-gallery-paint={paintAttr}
       onClick={(e) => {
         if (longPress.consumeClickSuppression()) {
           e.preventDefault();
@@ -170,25 +225,33 @@ const GalleryGridTile = React.memo(function GalleryGridTile({
         WebkitTouchCallout: enableLongPress ? 'none' : undefined,
       }}
     >
-      {!loaded && (
+      {!loaded && !broken && (
         <div
           className={`absolute inset-0 animate-pulse bg-gradient-to-br from-white/[0.12] via-white/[0.05] to-transparent ${hasAspect ? '' : 'min-h-[140px]'}`}
           aria-hidden
         />
+      )}
+      {broken && (
+        <div
+          className={`absolute inset-0 flex flex-col items-center justify-center gap-2 bg-white/[0.04] text-white/45 ${hasAspect ? '' : 'min-h-[140px]'}`}
+          aria-hidden
+        >
+          <ImageIcon size={28} strokeWidth={1.5} className="opacity-70" />
+        </div>
       )}
       <img
         ref={imgElRef}
         src={src}
         className={`w-full object-cover ${
           hasAspect ? 'h-full absolute inset-0' : 'h-auto relative'
-        }`}
+        } ${broken ? 'hidden' : ''}`}
         alt={`place-img-${index}`}
-        loading={eager ? 'eager' : 'lazy'}
+        loading="eager"
         decoding="async"
-        referrerPolicy="no-referrer"
+        referrerPolicy={resolveGalleryTileReferrerPolicy(src)}
         draggable={false}
         style={{
-          opacity: loaded ? 1 : 0,
+          opacity: loaded && !broken ? 1 : 0,
           ...(enableLongPress ? { WebkitTouchCallout: 'none' } : {}),
         }}
         width={img.width || undefined}
@@ -417,7 +480,13 @@ const PlaceGalleryView = React.memo(({
       paintedCount < paintTarget,
   );
   const showLoadingChrome = Boolean(showInitialSkeleton || isPaintPending);
-  const showRefreshButton = Boolean(hasImages && handleRefresh && !showInitialSkeleton && !galleryAtMax);
+  const showRefreshButton = Boolean(
+    hasImages &&
+      handleRefresh &&
+      !showInitialSkeleton &&
+      !galleryAtMax &&
+      galleryVisuallyReady,
+  );
   const gallerySourcesAttribution = useMemo(
     () =>
       formatGalleryDisplaySourcesAttribution(images, locale, {
@@ -546,16 +615,6 @@ const PlaceGalleryView = React.memo(({
       setGalleryVisuallyReady(true);
     }
   }, [paintedCount, paintTarget]);
-
-  /** decode/onLoad 누락 시 스피너·버튼 숨김이 고착되지 않게 (타일 hang 6s보다 짧게) */
-  useEffect(() => {
-    if (!isPaintPending || paintTarget <= 0) return undefined;
-    const t = window.setTimeout(() => {
-      setPaintedCount((n) => Math.max(n, paintTarget));
-      setGalleryVisuallyReady(true);
-    }, 3500);
-    return () => window.clearTimeout(t);
-  }, [isPaintPending, paintTarget, galleryPlaceKey]);
 
   const onTilePainted = useCallback(() => {
     setPaintedCount((n) => n + 1);
@@ -1266,7 +1325,6 @@ const PlaceGalleryView = React.memo(({
                       key={img.id || i}
                       img={img}
                       index={i}
-                      eager={i < 4}
                       showPhotoCredit={galleryPhotoCreditFlagOn}
                       photoCreditLocation={location}
                       photoCreditLocale={locale}
