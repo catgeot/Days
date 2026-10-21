@@ -194,16 +194,18 @@ for (const size of SIZES) {
       await expect(region).toBeVisible({ timeout: 60_000 });
       await shot(page, `festival-${size.label}-01-korea`, size);
       await region.click();
-      const chip = page.getByRole('button', { name: /제주/ }).last();
+      const chip = page.getByRole('button', { name: /^제주(?:\s+\d+)?$/ }).first();
       await expect(chip).toBeVisible({ timeout: 20_000 });
       await chip.click();
       await shot(page, `festival-${size.label}-02-region`, size);
 
-      const row = page.locator('[data-festival-id]').first();
-      await expect(row).toBeVisible({ timeout: 60_000 });
-      await row.click();
+      if (!/[?&]festival=\d+/.test(new URL(page.url()).search)) {
+        const row = page.locator('[data-festival-id]:not([data-social-promo-card])').first();
+        await expect(row).toBeVisible({ timeout: 60_000 });
+        await row.click();
+      }
       await expect(page).toHaveURL(/[?&]festival=\d+/, { timeout: 20_000 });
-      const sheet = page.locator('[role="dialog"]');
+      const sheet = page.locator('[role="dialog"][aria-labelledby="korea-festival-sheet-title"]');
       await expect(sheet).toBeVisible({ timeout: 20_000 });
       await shot(page, `festival-${size.label}-03-sheet`, size);
 
