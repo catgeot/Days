@@ -14,18 +14,18 @@
 
 ## 활성 목록
 
-### 축제 확대보기 세로 중앙
+### 축제 확대보기 로드된 장수
 
 | | |
 |--|--|
-| **상태** | **#3 실경로 뒤로가기** · 코드 `9186a2e7` · 증거 `61038297` · draft PR [#531](https://github.com/catgeot/Days/pull/531) · **병합 금지** · #530 병합됨 `23b3ac3b` |
-| **브랜치** | `cursor/lightbox-center-aaff` |
+| **상태** | **#4 로드된 장수** · tip `860189dc` · draft PR [#532](https://github.com/catgeot/Days/pull/532) · **병합 금지** · #530 병합됨 `23b3ac3b` · #531 병합됨 `25135b92` |
+| **브랜치** | `cursor/festival-lightbox-loaded-0e70` |
 | **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
-| **일지** | [`2026-10-20-project-log.md`](./2026-10-20-project-log.md) |
-| **Preview** | 실데이터 `gateo-ops/qa/lightbox-center-2026-10-20/9186a2e782efc2cf458f1575875151eabf0e02c9/` (강원 칩 경로) · 이전 오픈샷 `d7e082316377a1333f5a401136a31cd0befb0c23/` |
+| **일지** | [`2026-10-21-project-log.md`](./2026-10-21-project-log.md) |
+| **Preview** | `vercel.json`에서 `cursor/*` 배포 꺼짐. 390px 증거는 PR #532 스크린샷 · WebKit `e2e/festival-lightbox-ios.spec.js` |
 | **금지** | PR 병합 · 코드를 `origin/main`에 push · feature에 `plans/**` 커밋 · 플래그 |
-| **VERIFY** | `SMOKE_SITE_URL=http://127.0.0.1:5173/ npx playwright test e2e/festival-lightbox-ios.spec.js --project=webkit-festival-lightbox-ios` |
-| **남은 일** | 사람이 draft #531만 본다. WebKit 390 실데이터 8 PASS. 강원 칩 → 카드 → 확대 → 뒤로가기 한 번은 상세, 한 번은 목록(강원 유지). Esc·여백 탭 뒤 뒤로가기 한 번이 목록. 다음 3회 뒤 뒤로가기 한 번은 라이트박스만 닫음. |
+| **VERIFY** | `npm run test:health` · `SMOKE_SITE_URL=https://127.0.0.1:5173/ npx playwright test e2e/festival-lightbox-ios.spec.js --project=webkit-festival-lightbox-ios -g "lightbox count matches"` |
+| **남은 일** | 사람이 draft #532만 본다. 필름스트립에 뜬 장수와 확대보기 `n / m`이 같다. 뒤에 로드된 사진이 앞에 끼어도 보고 있던 사진은 유지. 뒤로가기·X·스와이프는 #531 그대로. |
 
 **다음 제시어 없음**.
 
