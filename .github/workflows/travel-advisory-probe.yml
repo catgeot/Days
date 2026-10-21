@@ -1,0 +1,252 @@
+# Probe data.go.kr MOFA travel alarm (dataset 15076237) with the decoding key.
+# Decoding keys must be URL-encoded once. Do not enable set -x or print the key.
+name: Travel advisory probe
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/travel-advisory-probe.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Probe MOFA travel alarm for AE
+        env:
+          DATA_GO_KR_SERVICE_KEY: ${{ secrets.DATA_GO_KR_SERVICE_KEY }}
+        run: |
+          set -euo pipefail
+          if [ -z "${DATA_GO_KR_SERVICE_KEY}" ]; then
+            echo "SKIP: repository secret DATA_GO_KR_SERVICE_KEY is not set"
+            exit 0
+          fi
+          DATA_GO_KR_SERVICE_KEY=$(printf '%s' "$DATA_GO_KR_SERVICE_KEY" | tr -d '\r\n')
+          export DATA_GO_KR_SERVICE_KEY
+          if [ -z "${DATA_GO_KR_SERVICE_KEY}" ]; then
+            echo "SKIP: repository secret DATA_GO_KR_SERVICE_KEY is empty"
+            exit 0
+          fi
+
+          python3 - << 'PY'
+          import os
+          import urllib.parse
+
+          key = os.environ.get("DATA_GO_KR_SERVICE_KEY", "")
+          print(f"::add-mask::{key}", flush=True)
+          print(f"::add-mask::{urllib.parse.quote(key, safe='')}", flush=True)
+          print(f"::add-mask::{urllib.parse.quote_plus(key)}", flush=True)
+          PY
+
+          set +e
+          http_code=$(curl -sS --globoff --max-time 30 -G \
+            -o /tmp/travel-alarm-body.txt \
+            -w '%{http_code}' \
+            -H 'Accept: application/json' \
+            'https://apis.data.go.kr/1262000/TravelAlarmService2/getTravelAlarmList2' \
+            --data-urlencode "ServiceKey=${DATA_GO_KR_SERVICE_KEY}" \
+            --data-urlencode 'returnType=JSON' \
+            --data-urlencode 'numOfRows=100' \
+            --data-urlencode 'pageNo=1' \
+            --data-urlencode 'cond[country_iso_alp2::EQ]=AE' \
+            2>/tmp/travel-alarm-curl.err)
+          curl_rc=$?
+          set -e
+
+          DATA_GO_KR_HTTP_CODE="$http_code" DATA_GO_KR_CURL_RC="$curl_rc" python3 - << 'PY'
+          import json
+          import os
+          import re
+          import sys
+          import urllib.parse
+
+          key = os.environ.get("DATA_GO_KR_SERVICE_KEY", "")
+          encoded = urllib.parse.quote(key, safe="") if key else ""
+          encoded_plus = urllib.parse.quote_plus(key) if key else ""
+          secrets = [s for s in (key, encoded, encoded_plus) if s]
+
+          def redact(text: str) -> str:
+              out = text
+              for secret in secrets:
+                  out = out.replace(secret, "***")
+              return out
+
+          def emit(line: str) -> None:
+              print(redact(line), flush=True)
+
+          http_code = os.environ.get("DATA_GO_KR_HTTP_CODE", "")
+          curl_rc = int(os.environ.get("DATA_GO_KR_CURL_RC", "1") or "1")
+          body = ""
+          try:
+              body = open("/tmp/travel-alarm-body.txt", encoding="utf-8", errors="replace").read()
+          except OSError:
+              body = ""
+          err = ""
+          try:
+              err = open("/tmp/travel-alarm-curl.err", encoding="utf-8", errors="replace").read()
+          except OSError:
+              err = ""
+
+          emit(f"HTTP status: {http_code or '(none)'}")
+          if curl_rc != 0:
+              emit(f"curl_exit: {curl_rc}")
+              snippet = redact(err).strip()
+              if snippet:
+                  emit("curl_error: " + snippet[:500])
+
+          AUTH_MARKERS = [
+              "SERVICE_KEY_IS_NOT_REGISTERED_ERROR",
+              "SERVICE_KEY_IS_NOT_REGISTERED",
+              "SERVICE_ACCESS_DENIED_ERROR",
+              "DEADLINE_HAS_EXPIRED_ERROR",
+              "UNREGISTERED_IP_ERROR",
+              "UNSIGNED_CALL_ERROR",
+              "INVALID_REQUEST_PARAMETER_ERROR",
+              "NO_MANDATORY_REQUEST_PARAMETERS_ERROR",
+              "SERVICE_ACCESS_DENIED",
+          ]
+          upper = body.upper()
+          auth_hits = [m for m in AUTH_MARKERS if m in upper]
+          if auth_hits:
+              emit("AUTH_ERROR: " + auth_hits[0])
+
+          def xml_value(text: str, tag: str):
+              match = re.search(rf"<{tag}[^>]*>([^<]*)</{tag}>", text, re.I)
+              return match.group(1).strip() if match else None
+
+          payload = None
+          stripped = body.lstrip("\ufeff").lstrip()
+          if stripped.startswith("{") or stripped.startswith("["):
+              try:
+                  payload = json.loads(stripped)
+              except json.JSONDecodeError:
+                  payload = None
+
+          def find_scalars(node, name, found):
+              if isinstance(node, dict):
+                  if name in node and not isinstance(node[name], (dict, list)):
+                      found.append(node[name])
+                  for value in node.values():
+                      find_scalars(value, name, found)
+              elif isinstance(node, list):
+                  for value in node:
+                      find_scalars(value, name, found)
+
+          result_codes = []
+          result_msgs = []
+          if payload is not None:
+              find_scalars(payload, "resultCode", result_codes)
+              find_scalars(payload, "resultMsg", result_msgs)
+          if not result_codes:
+              xml_code = xml_value(body, "resultCode") or xml_value(body, "returnReasonCode")
+              if xml_code:
+                  result_codes.append(xml_code)
+          if not result_msgs:
+              xml_msg = xml_value(body, "resultMsg") or xml_value(body, "returnAuthMsg") or xml_value(body, "errMsg")
+              if xml_msg:
+                  result_msgs.append(xml_msg)
+
+          def unique(values):
+              out = []
+              for value in values:
+                  text = str(value).strip()
+                  if text and text not in out:
+                      out.append(text)
+              return out
+
+          codes = unique(result_codes)
+          msgs = unique(result_msgs)
+          emit("resultCode: " + (", ".join(codes) if codes else "(missing)"))
+          emit("resultMsg: " + (", ".join(msgs) if msgs else "(missing)"))
+
+          def as_list(value):
+              if isinstance(value, list):
+                  return value
+              if isinstance(value, dict):
+                  return [value]
+              return []
+
+          items = []
+
+          def collect(node):
+              if isinstance(node, dict):
+                  if "country_iso_alp2" in node or "country_nm" in node or "country_eng_nm" in node:
+                      items.append(node)
+                      return
+                  for key_name in ("data", "item", "items", "response", "body"):
+                      if key_name in node:
+                          for child in as_list(node[key_name]):
+                              collect(child)
+              elif isinstance(node, list):
+                  for child in node:
+                      collect(child)
+
+          if payload is not None:
+              collect(payload)
+
+          ae_rows = []
+          for item in items:
+              iso = str(item.get("country_iso_alp2", "")).strip().upper()
+              if iso == "AE" or not iso:
+                  ae_rows.append(item)
+          if any(str(item.get("country_iso_alp2", "")).strip().upper() == "AE" for item in items):
+              ae_rows = [
+                  item
+                  for item in items
+                  if str(item.get("country_iso_alp2", "")).strip().upper() == "AE"
+              ]
+
+          emit(f"rows_total: {len(items)}")
+          emit(f"AE rows: {len(ae_rows)}")
+
+          PRINT_KEYS = [
+              "country_nm",
+              "country_eng_nm",
+              "country_iso_alp2",
+              "alarm_lvl",
+              "region_ty",
+              "continent_cd",
+              "continent_nm",
+              "continent_eng_nm",
+              "written_dt",
+          ]
+
+          def interesting_extra(item):
+              for key_name, value in item.items():
+                  if key_name in PRINT_KEYS or key_name == "remark":
+                      continue
+                  lowered = key_name.lower()
+                  if any(tok in lowered for tok in ("lvl", "level", "region", "alarm", "written")):
+                      if "url" in lowered:
+                          continue
+                      yield key_name, value
+
+          for index, item in enumerate(ae_rows, start=1):
+              emit(f"--- AE row {index} ---")
+              for key_name in PRINT_KEYS:
+                  if key_name in item and item[key_name] not in (None, ""):
+                      emit(f"{key_name}: {item[key_name]}")
+              for key_name, value in interesting_extra(item):
+                  emit(f"{key_name}: {value}")
+              remark = item.get("remark")
+              if remark not in (None, ""):
+                  text = re.sub(r"\s+", " ", str(remark)).strip()
+                  emit("remark: " + text[:500])
+
+          if payload is None and body.strip():
+              preview = re.sub(r"\s+", " ", body).strip()[:400]
+              emit("body_preview: " + preview)
+          elif payload is not None and not ae_rows:
+              if isinstance(payload, dict):
+                  emit("top_level_keys: " + ", ".join(payload.keys()))
+
+          success_codes = {"0", "00"}
+          ok = bool(codes) and all(code in success_codes for code in codes) and not auth_hits and curl_rc == 0 and bool(ae_rows)
+          if http_code and http_code.isdigit() and int(http_code) >= 400:
+              ok = False
+          sys.exit(0 if ok else 1)
+          PY
