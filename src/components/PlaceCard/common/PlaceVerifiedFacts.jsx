@@ -94,19 +94,25 @@ function sourceLabelClass(text) {
   return 'break-keep [overflow-wrap:normal]';
 }
 
+function sourceHref(source) {
+  const url = String(source?.url || '').trim();
+  return /^https?:\/\//i.test(url) ? url : '';
+}
+
 function SourceLine({ sources, locale, light }) {
   return (
     <span data-fact-source="">
       {sources.map((source, index) => {
         const name = sourceNameForLocale(publicSourceName(source.name || source.url), locale);
+        const href = sourceHref(source);
         const wrap = sourceLabelClass(name);
         const linkClass = light
           ? 'underline decoration-gray-400 underline-offset-2 hover:decoration-gray-700'
           : 'underline decoration-white/30 underline-offset-2 hover:decoration-white';
-        const node = source.url ? (
+        const node = href ? (
           <a
-            key={`${source.url}-${index}`}
-            href={source.url}
+            key={`${href}-${index}`}
+            href={href}
             target="_blank"
             rel="noopener noreferrer"
             className={`${linkClass} ${wrap}`}

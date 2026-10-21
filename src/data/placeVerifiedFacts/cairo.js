@@ -11,10 +11,9 @@ const VISA = {
   name: 'visa2egypt.gov.eg',
   url: 'https://www.visa2egypt.gov.eg/eVisa/FAQ?VISTK=',
 };
-// source unreachable 2026-10-21 (WAF 500 / incomplete cert chain), re-check later.
-export const AIRPORT = {
+// URL unreachable as of 2026-10-21 (WAF 500 / incomplete cert chain): https://www.cairo-airport.com/en-us/Services/Passenger-Guide/Move-From-To-Airport
+const AIRPORT = {
   name: '카이로국제공항 교통 안내',
-  url: 'https://www.cairo-airport.com/en-us/Services/Passenger-Guide/Move-From-To-Airport',
 };
 const PYRAMIDS_TICKET = {
   name: 'egymonuments.com',
@@ -86,7 +85,13 @@ export const CAIRO_CITY_FACTS = {
       DAY,
       { id: 'entry' },
     ),
-    emptySlot('airport', '공항→시내'),
+    verifiedSlot(
+      '공항→시내',
+      '미터가 있는 흰색 택시를 타요.\n구형 흑백 택시는 미터가 없으니, 타기 전에 요금을 합의해요.\n입국장에서 호객하는 기사는 조심해요.\n터미널 앞 연석 «리무진»은 목적지와 차종 A~D별로 정액이에요.\n시내버스는 1터미널 앞 주차장 버스 정류장에서만 출발해요.',
+      [AIRPORT],
+      DAY,
+      { id: 'airport' },
+    ),
     emptySlot('stay-area', '머물 지역'),
     verifiedSlot(
       '1·2·3일 동선',
