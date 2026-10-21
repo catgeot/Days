@@ -13,11 +13,7 @@ const VISA = {
 };
 const AIRPORT = {
   name: '카이로국제공항 교통 안내',
-  url: '',
-};
-const UBER_CAI = {
-  name: 'Uber CAI pickup',
-  url: 'https://www.uber.com/global/en/r/airports/cai/pickup/',
+  url: 'https://www.cairo-airport.com/en-us/Services/Passenger-Guide/Move-From-To-Airport',
 };
 const PYRAMIDS_TICKET = {
   name: 'egymonuments.com',
@@ -91,8 +87,8 @@ export const CAIRO_CITY_FACTS = {
     ),
     verifiedSlot(
       '공항→시내',
-      '미터가 있는 흰색 택시를 타요.\n구형 흑백 택시는 미터가 없으니, 타기 전에 요금을 합의해요.\n입국장에서 호객하는 기사는 조심해요.\n터미널 앞 연석 «리무진»은 목적지와 차종 A~D별로 정액이에요.\n시내버스는 1터미널 앞 주차장 버스 정류장에서만 출발해요.\n차량 호출 앱(Uber) CAI 승차 안내 페이지가 있어요.',
-      [AIRPORT, UBER_CAI],
+      '미터가 있는 흰색 택시를 타요.\n구형 흑백 택시는 미터가 없으니, 타기 전에 요금을 합의해요.\n입국장에서 호객하는 기사는 조심해요.\n터미널 앞 연석 «리무진»은 목적지와 차종 A~D별로 정액이에요.\n시내버스는 1터미널 앞 주차장 버스 정류장에서만 출발해요.',
+      [AIRPORT],
       DAY,
       { id: 'airport' },
     ),
@@ -305,16 +301,20 @@ export function resolveVerifiedFacts(locationOrName) {
   return null;
 }
 
-function mentionScore(mention, target) {
-  const needle = norm(mention);
-  if (!needle) return 0;
+function mentionKey(value) {
+  return String(value ?? '').trim().toLowerCase().replace(/\s+/g, ' ');
+}
+
+/** Whole-token exact match. 1–2 character keys are not aliases; no substring or prefix. */
+export function mentionScore(mention, target) {
+  const needle = mentionKey(mention);
+  if (!needle || [...needle].length <= 2) return 0;
   const aliases = [target.name, target.nameEn, target.slug, ...(target.aliases || [])];
   let best = 0;
   for (const alias of aliases) {
-    const key = norm(alias);
-    if (!key) continue;
-    if (key === needle) best = Math.max(best, 1000 + key.length);
-    else if (needle.length >= 4 && key.length >= 4 && needle.includes(key)) best = Math.max(best, key.length);
+    const key = mentionKey(alias);
+    if (!key || [...key].length <= 2) continue;
+    if (key === needle) best = Math.max(best, 1000 + [...key].length);
   }
   return best;
 }

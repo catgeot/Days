@@ -3,15 +3,15 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ChevronDown, Compass, PenLine } from 'lucide-react';
 import { useLocale } from '../../../i18n/LocaleProvider';
-import { resolveVerifiedFacts } from '../../../data/placeVerifiedFacts/cairo.js';
 import {
   checkedAtForLocale,
   factValueForLocale,
   linkLabelForLocale,
+  resolveVerifiedFacts,
   sourceNameForLocale,
   splitFactTimeRanges,
   TIME_RANGE_CLASS,
-} from '../../../data/placeVerifiedFacts/cairoEn.js';
+} from '../../../data/placeVerifiedFacts/index.js';
 import { splitItineraryPlaceMentions } from '../../../data/placeVerifiedFacts/itineraryLinks.js';
 import {
   plannerSlotForToolkit,

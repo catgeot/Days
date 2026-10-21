@@ -92,7 +92,13 @@ test('public source labels and one unverified line', () => {
   assert.match(entry.value, /25달러, 복수 60달러/);
   const airport = CAIRO_CITY_FACTS.slots.find((slot) => slot.id === 'airport');
   assert.match(airport.value, /흰색 택시/);
-  assert.equal(airport.sources[0].url, '');
+  assert.equal(airport.value.includes('Uber'), false);
+  assert.equal(airport.value.includes('차량 호출'), false);
+  assert.equal(airport.sources.length, 1);
+  assert.equal(
+    airport.sources[0].url,
+    'https://www.cairo-airport.com/en-us/Services/Passenger-Guide/Move-From-To-Airport',
+  );
   assert.equal(airport.sources[0].name, '카이로국제공항 교통 안내');
   assert.equal(/접속 불가/.test(airport.sources[0].name), false);
   const itinerary = CAIRO_CITY_FACTS.slots.find((slot) => slot.id === 'itinerary');
@@ -100,7 +106,6 @@ test('public source labels and one unverified line', () => {
   assert.match(itinerary.value, /^D1 도착하면 위 ‘공항→시내’ 방법으로 시내에 들어가 쉬어요/);
   assert.equal(itinerary.value.includes('(위 칸)'), false);
   assert.equal(itinerary.value.split('\n').filter((line) => /^D[123] /.test(line)).length, 3);
-  assert.equal(airport.sources[1].url, 'https://www.uber.com/global/en/r/airports/cai/pickup/');
   assert.equal(unverifiedItemsLabel(CAIRO_CITY_FACTS.slots), '확인 안 된 항목: 머물 지역, 시즌');
 
   const gem = resolveVerifiedFacts('grand-egyptian-museum');
@@ -289,7 +294,8 @@ test('english fact values keep Korean numbers, times, amounts, and URLs', () => 
     CAIRO_CITY_FACTS.slots.find((slot) => slot.id === 'airport'),
     'en',
   );
-  assert.match(airport, /Uber has a CAI pickup guide page/);
+  assert.equal(/uber/i.test(airport), false);
+  assert.match(airport, /Terminal 1/);
   const safety = factValueForLocale(
     'cairo',
     CAIRO_CITY_FACTS.slots.find((slot) => slot.id === 'money-safety'),

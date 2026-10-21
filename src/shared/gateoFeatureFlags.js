@@ -8,6 +8,7 @@ export const GATEO_ENV_FLAG_NAMES = {
   LOGBOOK_REVIEW_HUB: 'VITE_GATEO_LOGBOOK_REVIEW_HUB',
   REVIEW_DEEPLINK: 'VITE_GATEO_REVIEW_DEEPLINK',
   PHOTO_CREDIT: 'VITE_GATEO_PHOTO_CREDIT',
+  LOCAL_INFO_ROLLOUT: 'VITE_GATEO_LOCAL_INFO_ROLLOUT',
 };
 
 /** @param {string} name */
@@ -43,4 +44,9 @@ export function isGateoReviewDeeplinkEnabled() {
 
 export function isGateoPhotoCreditEnabled() {
   return readGateoEnvFlag(GATEO_ENV_FLAG_NAMES.PHOTO_CREDIT);
+}
+
+/** Extra local-info places. Cairo stays on when this is off. */
+export function isGateoLocalInfoRolloutEnabled() {
+  return readGateoEnvFlag(GATEO_ENV_FLAG_NAMES.LOCAL_INFO_ROLLOUT);
 }
