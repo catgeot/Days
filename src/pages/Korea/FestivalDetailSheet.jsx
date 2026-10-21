@@ -19,6 +19,7 @@ import {
   fetchTourApiFestivalImages,
 } from '../../utils/fetchTourApiFestivals';
 import AppOutlineBackButton from '../../shared/navigation/AppOutlineBackButton';
+import { useLightboxHistory } from '../../shared/useLightboxHistory';
 import { useTrustBarOverlayLockEffect } from '../../shared/hooks/useTrustBarOverlayLockEffect.js';
 import { OutboundSearchButtons } from '../../shared/outbound/OutboundSearchButtons.jsx';
 import { useLocale } from '../../i18n/LocaleProvider';
@@ -170,21 +171,6 @@ const PHOTO_SWIPE_THRESHOLD_PX = 48;
 const PHOTO_SWIPE_DIRECTION_RATIO = 1.25;
 const LIGHTBOX_TAP_SLOP_PX = 18;
 const lightboxTouchHandled = new WeakMap();
-
-function historyStateRecord() {
-  const state = window.history.state;
-  return state && typeof state === 'object' ? state : null;
-}
-
-/** Same URL as the open sheet. React Router reads idx/key/usr off history.state. */
-function pushLightboxHistoryEntry() {
-  const prev = historyStateRecord();
-  window.history.pushState({ ...(prev || {}), gateoLightbox: true }, '');
-}
-
-function historyEntryIsLightbox() {
-  return historyStateRecord()?.gateoLightbox === true;
-}
 
 /** object-contain box. The swipe layer covers the letterbox, so a click never reaches the root scrim. */
 function lightboxTapOutsidePaintedPhoto(swipeEl, x, y) {
@@ -743,9 +729,6 @@ export default function FestivalDetailSheet({
   const lightboxSwipeStartRef = useRef(null);
   const lightboxRootRef = useRef(null);
   const lightboxTouchRef = useRef(null);
-  const lightboxHistoryPushedRef = useRef(false);
-  const ignoreLightboxPopRef = useRef(false);
-  const closeLightboxFromPopRef = useRef(() => {});
   const suppressHeroTapRef = useRef(false);
   const tabListRef = useRef(null);
   const overviewScrollPendingRef = useRef(false);
@@ -1296,27 +1279,13 @@ export default function FestivalDetailSheet({
     onPinchTouchCancel,
   } = useLightboxPinchTransform(activeImage);
 
-  const consumeLightboxHistory = useCallback(() => {
-    if (!lightboxHistoryPushedRef.current || typeof window === 'undefined') return;
-    lightboxHistoryPushedRef.current = false;
-    if (!historyEntryIsLightbox()) return;
-    ignoreLightboxPopRef.current = true;
-    window.history.back();
-  }, []);
-
   const closeLightbox = useCallback(() => {
     setLightboxOpen(false);
     resetLightboxPinch();
     resetIosZoomAfterInput();
-    consumeLightboxHistory();
-  }, [consumeLightboxHistory, resetLightboxPinch]);
+  }, [resetLightboxPinch]);
 
-  closeLightboxFromPopRef.current = () => {
-    lightboxHistoryPushedRef.current = false;
-    setLightboxOpen(false);
-    resetLightboxPinch();
-    resetIosZoomAfterInput();
-  };
+  useLightboxHistory(lightboxOpen, closeLightbox);
 
   const lightboxControlProps = useCallback((fn) => ({
     onPointerDown: (event) => {
@@ -1415,38 +1384,6 @@ export default function FestivalDetailSheet({
         sheet.style.touchAction = prev.sheetTouchAction;
       }
       window.scrollTo(0, scrollY);
-    };
-  }, [lightboxOpen]);
-
-  useEffect(() => {
-    if (!lightboxOpen || typeof window === 'undefined') return undefined;
-    // iOS edge-swipe is a real history pop. A same-URL step sits above the
-    // festival sheet entry so that pop closes the lightbox and leaves ?festival=.
-    try {
-      pushLightboxHistoryEntry();
-      lightboxHistoryPushedRef.current = true;
-    } catch {
-      lightboxHistoryPushedRef.current = false;
-    }
-    const onPop = (event) => {
-      if (ignoreLightboxPopRef.current) {
-        ignoreLightboxPopRef.current = false;
-        event.stopImmediatePropagation();
-        return;
-      }
-      event.stopImmediatePropagation();
-      closeLightboxFromPopRef.current();
-    };
-    window.addEventListener('popstate', onPop, true);
-    return () => {
-      if (lightboxHistoryPushedRef.current && historyEntryIsLightbox()) {
-        lightboxHistoryPushedRef.current = false;
-        ignoreLightboxPopRef.current = true;
-        window.history.back();
-      } else {
-        lightboxHistoryPushedRef.current = false;
-      }
-      window.removeEventListener('popstate', onPop, true);
     };
   }, [lightboxOpen]);
 

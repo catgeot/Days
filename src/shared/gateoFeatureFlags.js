@@ -1,4 +1,6 @@
-/** Gateo rollout flags — `VITE_GATEO_*` env, value `'1'` enables. Default off in prod. */
+/** Gateo rollout flags — `VITE_GATEO_*` env, value `'1'` enables. Default off in prod.
+ *  Exception: `VITE_GATEO_LIGHTBOX_HISTORY` defaults on. Set `0` to disable.
+ */
 
 export const GATEO_ENV_FLAG_NAMES = {
   POI_COUNTY_SLUG_SEARCH: 'VITE_GATEO_POI_COUNTY_SLUG_SEARCH',
@@ -8,6 +10,7 @@ export const GATEO_ENV_FLAG_NAMES = {
   LOGBOOK_REVIEW_HUB: 'VITE_GATEO_LOGBOOK_REVIEW_HUB',
   REVIEW_DEEPLINK: 'VITE_GATEO_REVIEW_DEEPLINK',
   PHOTO_CREDIT: 'VITE_GATEO_PHOTO_CREDIT',
+  LIGHTBOX_HISTORY: 'VITE_GATEO_LIGHTBOX_HISTORY',
 };
 
 /** @param {string} name */
@@ -43,4 +46,13 @@ export function isGateoReviewDeeplinkEnabled() {
 
 export function isGateoPhotoCreditEnabled() {
   return readGateoEnvFlag(GATEO_ENV_FLAG_NAMES.PHOTO_CREDIT);
+}
+
+/** Unset defaults on. `0`, `false`, and `off` disable the same-URL lightbox history step. */
+export function isGateoLightboxHistoryEnabled() {
+  const name = GATEO_ENV_FLAG_NAMES.LIGHTBOX_HISTORY;
+  const raw = import.meta.env?.[name] ?? globalThis.__VITE_ENV__?.[name];
+  if (raw == null || String(raw).trim() === '') return true;
+  const value = String(raw).trim().toLowerCase();
+  return value !== '0' && value !== 'false' && value !== 'off';
 }

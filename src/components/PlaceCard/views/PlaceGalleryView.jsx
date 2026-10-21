@@ -30,6 +30,7 @@ import PlaceScenicGateway from '../common/PlaceScenicGateway';
 import { useLocale } from '../../../i18n/LocaleProvider';
 import { useGalleryLongPress } from '../common/galleryLongPress';
 import { GALLERY_REPORT_REASONS } from '../../../shared/api/placeGalleryPersist';
+import { useLightboxHistory } from '../../../shared/useLightboxHistory';
 
 const REPORT_REASON_I18N = {
   irrelevant: 'place.gallery.manageReasonIrrelevant',
@@ -356,6 +357,7 @@ const PlaceGalleryView = React.memo(({
   const { locale } = useLocale();
   const fullScreenContainerRef = useRef(null);
   const scrollContainerRef = useRef(null);
+  const lightboxRootRef = useRef(null);
   const mobileSwipeStartRef = useRef(null);
   const suppressMobileTapRef = useRef(false);
   /** 그리드 클릭 직후 라이트박스에 같은 클릭이 전달되어 즉시 닫히는 것 방지 */
@@ -570,6 +572,8 @@ const PlaceGalleryView = React.memo(({
     onPinchTouchCancel,
   } = useLightboxPinchTransform(selectedImg?.id);
 
+  useLightboxHistory(Boolean(selectedImg), () => setSelectedImg(null));
+
   /** 그리드·확대·회전 중에도 터치 기기는 body 포털 유지 (헤더 z-index 겹침 방지) */
   const shouldUseMobilePortal = Boolean(selectedImg && (isMobileViewport || isTouchDevice));
 
@@ -689,6 +693,28 @@ const PlaceGalleryView = React.memo(({
       document.body.style.overflow = prevOverflow;
       document.body.style.touchAction = prevTouchAction;
     };
+  }, [shouldUseMobilePortal]);
+
+  useEffect(() => {
+    if (!shouldUseMobilePortal) return undefined;
+    const root = lightboxRootRef.current;
+    if (!root) return undefined;
+    // React onTouchMove is passive, so it cannot cancel a horizontal swipe.
+    const blockHorizontalMove = (event) => {
+      if (event.touches?.length > 1) {
+        if (event.cancelable) event.preventDefault();
+        return;
+      }
+      const start = mobileSwipeStartRef.current;
+      const touch = event.touches?.[0];
+      if (!start || !touch) return;
+      const dx = touch.clientX - start.x;
+      const dy = touch.clientY - start.y;
+      if (Math.abs(dx) < 8 || Math.abs(dx) <= Math.abs(dy)) return;
+      if (event.cancelable) event.preventDefault();
+    };
+    root.addEventListener('touchmove', blockHorizontalMove, { passive: false });
+    return () => root.removeEventListener('touchmove', blockHorizontalMove);
   }, [shouldUseMobilePortal]);
 
   useEffect(() => {
@@ -858,7 +884,10 @@ const PlaceGalleryView = React.memo(({
     if (mobilePortal) {
       return (
         <div
-          className="fixed inset-0 z-[9999] h-[100dvh] min-h-[100svh] w-screen overflow-hidden bg-black animate-fade-in"
+          ref={lightboxRootRef}
+          data-place-lightbox=""
+          data-place-lightbox-index={currentIndex}
+          className="fixed inset-0 z-[9999] h-[100dvh] min-h-[100svh] w-screen touch-none overscroll-none overflow-hidden bg-black animate-fade-in"
           role="dialog"
           aria-modal="true"
           aria-label={t('place.gallery.zoomView')}
@@ -891,6 +920,7 @@ const PlaceGalleryView = React.memo(({
           </div>
 
           <div
+            data-place-lightbox-swipe=""
             className="relative z-10 flex min-h-0 flex-1 items-center justify-center px-4 portrait:flex-1 landscape:absolute landscape:inset-0 landscape:z-0 landscape:px-14 landscape:py-1 touch-none"
             onTouchStart={onMobilePhotoTouchStart}
             onTouchMove={onMobilePhotoTouchMove}
