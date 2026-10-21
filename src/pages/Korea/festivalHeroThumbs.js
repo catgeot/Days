@@ -47,15 +47,93 @@ export function useFestivalHeroThumbs(urls) {
   }, []);
 
   const loadedUrls = list.filter((url) => current.loaded.has(url) && !current.failed.has(url));
+  const failedUrls = list.filter((url) => current.failed.has(url) && !current.loaded.has(url));
   const pendingUrls = list.filter((url) => !current.loaded.has(url) && !current.failed.has(url));
 
   return {
     loadedUrls,
+    failedUrls,
     pendingUrls,
     loadedCount: loadedUrls.length,
     markLoaded,
     markFailed,
   };
+}
+
+/**
+ * Lightbox slides are the filmstrip's loaded URLs, in that order.
+ * The open photo is the URL, not a numeric slot: a later decode may insert
+ * a neighbor, and a removed URL must not stay selected.
+ */
+export function festivalLightboxSlides(imageUrls, loadedUrls, activeIndex, failedUrls = []) {
+  const all = Array.isArray(imageUrls) ? imageUrls : [];
+  const loaded = [];
+  const seen = new Set();
+  for (const url of Array.isArray(loadedUrls) ? loadedUrls : []) {
+    if (!url || seen.has(url) || all.indexOf(url) < 0) continue;
+    seen.add(url);
+    loaded.push(url);
+  }
+  const failed = new Set(
+    (Array.isArray(failedUrls) ? failedUrls : []).filter((url) => url && all.indexOf(url) >= 0),
+  );
+  const safeIndex = Number.isInteger(activeIndex) && activeIndex >= 0 && activeIndex < all.length
+    ? activeIndex
+    : 0;
+  const current = all[safeIndex] || '';
+  const at = current ? loaded.indexOf(current) : -1;
+  if (at >= 0) {
+    return { urls: loaded, index: at, rawIndex: safeIndex };
+  }
+  if (!loaded.length) {
+    if (current && !failed.has(current)) {
+      return { urls: [current], index: 0, rawIndex: safeIndex };
+    }
+    return { urls: [], index: 0, rawIndex: safeIndex };
+  }
+  let chosen = null;
+  for (const url of loaded) {
+    if (all.indexOf(url) <= safeIndex) chosen = url;
+    else break;
+  }
+  if (!chosen) chosen = loaded[0];
+  return {
+    urls: loaded,
+    index: loaded.indexOf(chosen),
+    rawIndex: all.indexOf(chosen),
+  };
+}
+
+export function stepFestivalLightbox(imageUrls, loadedUrls, activeIndex, delta, failedUrls = []) {
+  const slides = festivalLightboxSlides(imageUrls, loadedUrls, activeIndex, failedUrls);
+  if (slides.urls.length < 2 || !Number.isFinite(delta) || delta === 0) return slides;
+  const all = Array.isArray(imageUrls) ? imageUrls : [];
+  const safeIndex = Number.isInteger(activeIndex) && activeIndex >= 0 && activeIndex < all.length
+    ? activeIndex
+    : 0;
+  const current = all[safeIndex] || '';
+  const at = slides.urls.indexOf(current);
+  const count = slides.urls.length;
+  if (at < 0) {
+    const dir = delta < 0 ? -1 : 1;
+    let chosen = null;
+    if (dir > 0) {
+      chosen = slides.urls.find((url) => all.indexOf(url) > safeIndex) || slides.urls[0];
+    } else {
+      for (const url of slides.urls) {
+        if (all.indexOf(url) < safeIndex) chosen = url;
+      }
+      if (!chosen) chosen = slides.urls[count - 1];
+    }
+    return {
+      urls: slides.urls,
+      index: slides.urls.indexOf(chosen),
+      rawIndex: all.indexOf(chosen),
+    };
+  }
+  const index = (at + delta + count * 2) % count;
+  const url = slides.urls[index];
+  return { urls: slides.urls, index, rawIndex: all.indexOf(url) };
 }
 
 /**
@@ -74,12 +152,19 @@ export function FestivalHeroThumbStrip({
   onStripChange,
 }) {
   const list = Array.isArray(urls) ? urls.filter(Boolean) : [];
-  const { loadedUrls, pendingUrls, loadedCount, markLoaded, markFailed } = useFestivalHeroThumbs(list);
+  const {
+    loadedUrls,
+    failedUrls,
+    pendingUrls,
+    loadedCount,
+    markLoaded,
+    markFailed,
+  } = useFestivalHeroThumbs(list);
   const mode = festivalHeroStripMode(loadedCount, detailLoading, list.length);
-  const signature = `${mode}\n${loadedUrls.join('\n')}`;
+  const signature = `${mode}\n${loadedUrls.join('\n')}\n${failedUrls.join('\n')}`;
 
   useLayoutEffect(() => {
-    if (onStripChange) onStripChange({ mode, loadedCount, loadedUrls });
+    if (onStripChange) onStripChange({ mode, loadedCount, loadedUrls, failedUrls });
   }, [signature]);
 
   return createElement(
