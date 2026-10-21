@@ -18,11 +18,11 @@
 
 | | |
 |--|--|
-| **상태** | **#4 로드된 장수** · tip `860189dc` · draft PR [#532](https://github.com/catgeot/Days/pull/532) · **병합 금지** · #530 병합됨 `23b3ac3b` · #531 병합됨 `25135b92` |
+| **상태** | **#4 로드된 장수** · tip `6e8a33c3` · draft PR [#532](https://github.com/catgeot/Days/pull/532) · **병합 금지** · #530 병합됨 `23b3ac3b` · #531 병합됨 `25135b92` |
 | **브랜치** | `cursor/festival-lightbox-loaded-0e70` |
 | **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
 | **일지** | [`2026-10-21-project-log.md`](./2026-10-21-project-log.md) |
-| **Preview** | `vercel.json`에서 `cursor/*` 배포 꺼짐. 390px 증거는 PR #532 스크린샷 · WebKit `e2e/festival-lightbox-ios.spec.js` |
+| **Preview** | `vercel.json`에서 `cursor/*` 배포 꺼짐. 실데이터 증거 `gateo-ops/qa/lightbox-loaded-532/` · WebKit `e2e/festival-lightbox-ios.spec.js` |
 | **금지** | PR 병합 · 코드를 `origin/main`에 push · feature에 `plans/**` 커밋 · 플래그 |
 | **VERIFY** | `npm run test:health` · `SMOKE_SITE_URL=https://127.0.0.1:5173/ npx playwright test e2e/festival-lightbox-ios.spec.js --project=webkit-festival-lightbox-ios -g "lightbox count matches"` |
 | **남은 일** | 사람이 draft #532만 본다. 필름스트립에 뜬 장수와 확대보기 `n / m`이 같다. 뒤에 로드된 사진이 앞에 끼어도 보고 있던 사진은 유지. 뒤로가기·X·스와이프는 #531 그대로. |
