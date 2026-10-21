@@ -104,6 +104,22 @@ export function festivalLightboxSlides(imageUrls, loadedUrls, activeIndex, faile
   };
 }
 
+/**
+ * Open only when the chosen URL has decoded. A pending URL is not a slide yet.
+ * `decodedHeroUrl` covers the visible hero when the filmstrip probe has not reported it.
+ */
+export function canOpenFestivalLightbox(imageUrls, loadedUrls, activeIndex, decodedHeroUrl = '') {
+  const all = Array.isArray(imageUrls) ? imageUrls : [];
+  const loaded = new Set((Array.isArray(loadedUrls) ? loadedUrls : []).filter(Boolean));
+  if (decodedHeroUrl) loaded.add(decodedHeroUrl);
+  if (loaded.size === 0) return false;
+  const safeIndex = Number.isInteger(activeIndex) && activeIndex >= 0 && activeIndex < all.length
+    ? activeIndex
+    : 0;
+  const current = all[safeIndex] || '';
+  return Boolean(current) && loaded.has(current);
+}
+
 export function stepFestivalLightbox(imageUrls, loadedUrls, activeIndex, delta, failedUrls = []) {
   const slides = festivalLightboxSlides(imageUrls, loadedUrls, activeIndex, failedUrls);
   if (slides.urls.length < 2 || !Number.isFinite(delta) || delta === 0) return slides;

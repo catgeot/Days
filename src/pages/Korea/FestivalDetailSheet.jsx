@@ -139,6 +139,7 @@ import { loadNearbyParkingFacts } from './lib/festivalNearbyParking.js';
 import {
   FestivalHeroThumbStrip,
   festivalHeroStripMode,
+  canOpenFestivalLightbox,
   festivalLightboxSlides,
   stepFestivalLightbox,
 } from './festivalHeroThumbs';
@@ -1434,16 +1435,13 @@ export default function FestivalDetailSheet({
     });
   }, [selectedNearby, selectedScenic, selectedCourse, item?.contentId, resetFestivalSheetOverlayUi]);
 
-  const openLightbox = useCallback(() => {
-    const slides = festivalLightboxSlides(
-      imageUrls,
-      heroStrip.loadedUrls,
-      activeImage,
-      heroStrip.failedUrls,
-    );
-    if (!slides.urls.length && !imageUrls[activeImage] && !imageUrls[0]) return;
+  const openLightbox = useCallback((index) => {
+    const target = Number.isInteger(index) ? index : activeImage;
+    const decodedHero = heroPhotoDecoded ? (imageUrls[activeImage] || imageUrls[0] || '') : '';
+    if (!canOpenFestivalLightbox(imageUrls, heroStrip.loadedUrls, target, decodedHero)) return;
+    if (target !== activeImage) setActiveImage(target);
     setLightboxOpen(true);
-  }, [activeImage, heroStrip.failedUrls, heroStrip.loadedUrls, imageUrls]);
+  }, [activeImage, heroPhotoDecoded, heroStrip.loadedUrls, imageUrls]);
 
   const stepLightbox = useCallback((delta) => {
     setActiveImage((i) => {
@@ -2202,6 +2200,12 @@ export default function FestivalDetailSheet({
     imageUrls.length,
   );
   const loadedPhotoIndex = heroStrip.loadedUrls.indexOf(hero);
+  const heroCanExpand = canOpenFestivalLightbox(
+    imageUrls,
+    heroStrip.loadedUrls,
+    activeImage,
+    heroPhotoDecoded ? hero : '',
+  );
   const activePhotoCredit = formatFestivalPhotoCreditLine(
     imageCredits[activeImage],
     locale,
@@ -2307,8 +2311,10 @@ export default function FestivalDetailSheet({
           >
             <button
               type="button"
+              disabled={!heroCanExpand}
+              data-festival-hero-expand={heroCanExpand ? 'ready' : 'wait'}
               onClick={() => {
-                if (suppressHeroTapRef.current) {
+                if (!heroCanExpand || suppressHeroTapRef.current) {
                   suppressHeroTapRef.current = false;
                   return;
                 }
@@ -2382,8 +2388,7 @@ export default function FestivalDetailSheet({
               locked={lightboxOpen}
               onSelect={onSelectHeroImage}
               onOpen={(index) => {
-                if (Number.isInteger(index)) setActiveImage(index);
-                setLightboxOpen(true);
+                openLightbox(index);
               }}
               resolveSrc={(url) => resolveListImageUrl(url, { role: 'list' })}
               photosAria={t('korea.festival.detail.photosAria')}
@@ -3153,8 +3158,7 @@ export default function FestivalDetailSheet({
                     key={`tab-photo-${url}-${index}`}
                     type="button"
                     onClick={() => {
-                      setActiveImage(index);
-                      setLightboxOpen(true);
+                      openLightbox(index);
                     }}
                     className="relative aspect-square overflow-hidden rounded-xl border border-stone-200 bg-stone-100"
                     aria-label={t('korea.festival.detail.photoExpandAria', {
@@ -3417,11 +3421,12 @@ export default function FestivalDetailSheet({
                     alt=""
                     draggable={false}
                     loading="eager"
+                    pendingShimmer
                     style={lightboxTransformStyle}
                     className="pointer-events-none absolute inset-0 h-full w-full object-contain object-center select-none"
                     fallback={
                       <div
-                        className="flex h-48 w-full items-center justify-center"
+                        className="absolute inset-0 flex items-center justify-center bg-stone-200"
                         data-festival-photo-fallback=""
                         aria-hidden="true"
                       >

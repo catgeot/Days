@@ -15,6 +15,11 @@ const PLACES = [
   { slug: 'bangkok', query: '방콕', name: /방콕|Bangkok/ },
 ];
 
+const FESTIVALS = [
+  { id: '506616', slug: 'seogwipo-506616', name: /서귀포칠십리/, region: /^제주(?:\s+\d+)?$/ },
+  { id: '825295', slug: 'gangneung-825295', name: /강릉커피/, region: /^강원(?:\s+\d+)?$/ },
+];
+
 async function shot(page, name, size) {
   await mkdir(OUT, { recursive: true });
   await page.screenshot({
@@ -31,9 +36,9 @@ async function historySnap(page) {
   }));
 }
 
-async function dispatchTouch(page, { x, y, type, active }) {
-  await page.evaluate(({ x: clientX, y: clientY, type: eventType, active: keepActive }) => {
-    const target = document.querySelector('[data-place-lightbox-swipe]')
+async function dispatchTouch(page, { x, y, type, active, selector = '[data-place-lightbox-swipe]' }) {
+  await page.evaluate(({ x: clientX, y: clientY, type: eventType, active: keepActive, selector: targetSelector }) => {
+    const target = document.querySelector(targetSelector)
       || document.elementFromPoint(clientX, clientY);
     if (!target) throw new Error('missing lightbox swipe target');
     const touch = document.createTouch(window, target, 1, clientX, clientY, clientX, clientY);
@@ -47,11 +52,11 @@ async function dispatchTouch(page, { x, y, type, active }) {
       changedTouches: { value: list },
     });
     target.dispatchEvent(event);
-  }, { x, y, type, active });
+  }, { x, y, type, active, selector });
 }
 
-async function swipeLightbox(page, direction) {
-  const stage = page.locator('[data-place-lightbox-swipe]');
+async function swipeLightbox(page, direction, selector = '[data-place-lightbox-swipe]') {
+  const stage = page.locator(selector);
   const box = await stage.boundingBox();
   expect(box).toBeTruthy();
   const y = box.y + Math.min(box.height * 0.45, 360);
@@ -59,9 +64,9 @@ async function swipeLightbox(page, direction) {
   const endX = direction === 'next' ? startX - 170 : startX + 170;
   expect(startX).toBeGreaterThan(24);
   expect(endX).toBeGreaterThan(24);
-  await dispatchTouch(page, { x: startX, y, type: 'touchstart', active: true });
-  await dispatchTouch(page, { x: (startX + endX) / 2, y, type: 'touchmove', active: true });
-  await dispatchTouch(page, { x: endX, y, type: 'touchend', active: false });
+  await dispatchTouch(page, { x: startX, y, type: 'touchstart', active: true, selector });
+  await dispatchTouch(page, { x: (startX + endX) / 2, y, type: 'touchmove', active: true, selector });
+  await dispatchTouch(page, { x: endX, y, type: 'touchend', active: false, selector });
 }
 
 async function openSummaryFromHome(page, place, size) {
@@ -188,47 +193,70 @@ for (const size of SIZES) {
       hasTouch: true,
     });
 
-    test('region chip → festival lightbox back stays on the sheet', async ({ page }) => {
-      await page.goto('/korea', { waitUntil: 'domcontentloaded' });
-      const region = page.getByRole('button', { name: /지역 대분류/ }).first();
-      await expect(region).toBeVisible({ timeout: 60_000 });
-      await shot(page, `festival-${size.label}-01-korea`, size);
-      await region.click();
-      const chip = page.getByRole('button', { name: /^제주(?:\s+\d+)?$/ }).first();
-      await expect(chip).toBeVisible({ timeout: 20_000 });
-      await chip.click();
-      await shot(page, `festival-${size.label}-02-region`, size);
+    for (const festival of FESTIVALS) {
+      test(`${festival.slug}: photos load before the lightbox opens`, async ({ page }) => {
+        await page.goto('/korea', { waitUntil: 'domcontentloaded' });
+        const region = page.getByRole('button', { name: /지역 대분류/ }).first();
+        await expect(region).toBeVisible({ timeout: 60_000 });
+        await shot(page, `${festival.slug}-${size.label}-01-korea`, size);
+        await region.click();
+        const chip = page.getByRole('button', { name: festival.region }).first();
+        await expect(chip).toBeVisible({ timeout: 20_000 });
+        await chip.click();
+        await shot(page, `${festival.slug}-${size.label}-02-region`, size);
 
-      if (!/[?&]festival=\d+/.test(new URL(page.url()).search)) {
-        const row = page.locator('[data-festival-id]:not([data-social-promo-card])').first();
+        const row = page.locator(`[data-festival-id="${festival.id}"]`).first();
         await expect(row).toBeVisible({ timeout: 60_000 });
+        await row.scrollIntoViewIfNeeded();
         await row.click();
-      }
-      await expect(page).toHaveURL(/[?&]festival=\d+/, { timeout: 20_000 });
-      const sheet = page.locator('[role="dialog"][aria-labelledby="korea-festival-sheet-title"]');
-      await expect(sheet).toBeVisible({ timeout: 20_000 });
-      await shot(page, `festival-${size.label}-03-sheet`, size);
+        await expect(page).toHaveURL(new RegExp(`[?&]festival=${festival.id}(?:&|$)`), { timeout: 20_000 });
+        const sheet = page.locator('[role="dialog"][aria-labelledby="korea-festival-sheet-title"]');
+        await expect(sheet).toBeVisible({ timeout: 20_000 });
+        await expect(sheet).toContainText(festival.name);
 
-      const before = await historySnap(page);
-      const expand = sheet.getByRole('button', { name: /사진 확대보기/ }).first();
-      await expect(expand).toBeVisible({ timeout: 30_000 });
-      await expand.click();
-      const lightbox = page.locator('[data-festival-lightbox]');
-      await expect(lightbox).toBeVisible();
-      const opened = await historySnap(page);
-      expect(opened.lightbox).toBe(true);
-      expect(opened.length).toBe(before.length + 1);
-      expect(opened.path).toContain('festival=');
-      await shot(page, `festival-${size.label}-04-lightbox`, size);
+        const expand = sheet.locator('[data-festival-hero-expand="ready"]');
+        await expect(sheet.locator('[data-festival-photo-strip="open"]').first()).toBeVisible({ timeout: 60_000 });
+        await expect(expand).toBeEnabled({ timeout: 60_000 });
+        const heroPhoto = sheet.locator('[data-festival-hero] img[data-festival-photo-loaded="true"]');
+        await expect(heroPhoto).toBeVisible({ timeout: 20_000 });
+        await expect.poll(async () => heroPhoto.evaluate((img) => (
+          img.complete && img.naturalWidth > 10 ? img.naturalWidth : 0
+        ))).toBeGreaterThan(10);
+        await shot(page, `${festival.slug}-${size.label}-03-sheet`, size);
 
-      await page.goBack({ waitUntil: 'commit' });
-      await expect(lightbox).toBeHidden();
-      await expect(sheet).toBeVisible();
-      await expect(page).toHaveURL(/[?&]festival=\d+/);
-      const closed = await historySnap(page);
-      expect(closed.lightbox).toBe(false);
-      expect(closed.path).toContain('festival=');
-      await shot(page, `festival-${size.label}-05-back-sheet`, size);
-    });
+        const before = await historySnap(page);
+        await expand.click();
+        const lightbox = page.locator('[data-festival-lightbox]');
+        await expect(lightbox).toBeVisible();
+        const photo = lightbox.locator('img[data-festival-photo-loaded="true"]');
+        await expect(photo).toBeVisible({ timeout: 20_000 });
+        await expect.poll(async () => photo.evaluate((img) => (
+          img.complete && img.naturalWidth > 10 ? img.naturalWidth : 0
+        ))).toBeGreaterThan(10);
+        const opened = await historySnap(page);
+        expect(opened.lightbox).toBe(true);
+        expect(opened.length).toBe(before.length + 1);
+        expect(opened.path).toContain(`festival=${festival.id}`);
+        await shot(page, `${festival.slug}-${size.label}-04-lightbox`, size);
+
+        const index = lightbox.locator('[data-festival-lightbox-index]');
+        const indexBefore = await index.getAttribute('data-festival-lightbox-index');
+        await swipeLightbox(page, 'next', '[data-festival-lightbox-swipe]');
+        await expect.poll(async () => index.getAttribute('data-festival-lightbox-index')).not.toBe(indexBefore);
+        const swiped = await historySnap(page);
+        expect(swiped.length).toBe(opened.length);
+        expect(swiped.lightbox).toBe(true);
+        await shot(page, `${festival.slug}-${size.label}-05-swipe`, size);
+
+        await page.goBack({ waitUntil: 'commit' });
+        await expect(lightbox).toBeHidden();
+        await expect(sheet).toBeVisible();
+        await expect(page).toHaveURL(new RegExp(`[?&]festival=${festival.id}(?:&|$)`));
+        const closed = await historySnap(page);
+        expect(closed.lightbox).toBe(false);
+        expect(closed.path).toContain(`festival=${festival.id}`);
+        await shot(page, `${festival.slug}-${size.label}-06-back-sheet`, size);
+      });
+    }
   });
 }
