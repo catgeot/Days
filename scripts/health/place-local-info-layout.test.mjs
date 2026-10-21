@@ -63,9 +63,9 @@ test('no verified facts leaves the place card unchanged', () => {
 
 test('cairo gallery keeps filled topics only and planner skips the itinerary', () => {
   const filled = verifiedFactSlots(CAIRO_CITY_FACTS).map((slot) => slot.id);
-  assert.deepEqual(filled, ['entry', 'airport', 'itinerary', 'money-safety']);
+  assert.deepEqual(filled, ['entry', 'itinerary', 'money-safety']);
   assert.equal(plannerSlotForToolkit(CAIRO_CITY_FACTS, 'visa')?.id, 'entry');
-  assert.equal(plannerSlotForToolkit(CAIRO_CITY_FACTS, 'airport_transfer')?.id, 'airport');
+  assert.equal(plannerSlotForToolkit(CAIRO_CITY_FACTS, 'airport_transfer'), null);
   assert.equal(plannerSlotForToolkit(CAIRO_CITY_FACTS, 'safety')?.id, 'money-safety');
   assert.equal(plannerSlotForToolkit(CAIRO_CITY_FACTS, 'accommodation'), null);
   assert.equal(plannerSlotForToolkit(CAIRO_CITY_FACTS, 'flight'), null);
@@ -94,7 +94,6 @@ test('sketch assigns the first matching section once', () => {
     { title: '골목', content: '환전과 소매치기를 조심한다.' },
   ];
   assert.deepEqual(assignSketchLocalInfo(sections, CAIRO_CITY_FACTS), [
-    { index: 0, slotId: 'airport' },
     { index: 2, slotId: 'itinerary' },
     { index: 3, slotId: 'money-safety' },
   ]);
@@ -104,7 +103,6 @@ test('sketch assigns the first matching section once', () => {
   ];
   assert.deepEqual(assignSketchLocalInfo(withEntry, CAIRO_CITY_FACTS), [
     { index: 0, slotId: 'entry' },
-    { index: 1, slotId: 'airport' },
   ]);
 });
 

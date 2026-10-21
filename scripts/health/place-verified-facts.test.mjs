@@ -4,6 +4,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import test from 'node:test';
 import {
+  AIRPORT,
   CAIRO_ATTRACTION_FACTS,
   CAIRO_CITY_FACTS,
   resolveOfficialMention,
@@ -63,7 +64,7 @@ test('cairo city has 6 slots and attractions have 7', () => {
 });
 
 test('empty cells stay empty and render as unverified', () => {
-  const cityEmpty = ['stay-area', 'season'];
+  const cityEmpty = ['airport', 'stay-area', 'season'];
   for (const id of cityEmpty) {
     const slot = CAIRO_CITY_FACTS.slots.find((item) => item.id === id);
     assert.equal(slot.value, '');
@@ -91,22 +92,18 @@ test('public source labels and one unverified line', () => {
   assert.match(entry.value, /^한국 여권은 전자비자\(e-Visa\) 대상이에요/);
   assert.match(entry.value, /25달러, 복수 60달러/);
   const airport = CAIRO_CITY_FACTS.slots.find((slot) => slot.id === 'airport');
-  assert.match(airport.value, /흰색 택시/);
-  assert.equal(airport.value.includes('Uber'), false);
-  assert.equal(airport.value.includes('차량 호출'), false);
-  assert.equal(airport.sources.length, 1);
+  assert.equal(slotLooksEmpty(airport), true);
+  assert.equal(airport.sources.length, 0);
   assert.equal(
-    airport.sources[0].url,
+    AIRPORT.url,
     'https://www.cairo-airport.com/en-us/Services/Passenger-Guide/Move-From-To-Airport',
   );
-  assert.equal(airport.sources[0].name, '카이로국제공항 교통 안내');
-  assert.equal(/접속 불가/.test(airport.sources[0].name), false);
+  assert.equal(AIRPORT.name, '카이로국제공항 교통 안내');
   const itinerary = CAIRO_CITY_FACTS.slots.find((slot) => slot.id === 'itinerary');
-  assert.equal(airport.value.startsWith('CAI 공식 안내예요'), false);
   assert.match(itinerary.value, /^D1 도착하면 위 ‘공항→시내’ 방법으로 시내에 들어가 쉬어요/);
   assert.equal(itinerary.value.includes('(위 칸)'), false);
   assert.equal(itinerary.value.split('\n').filter((line) => /^D[123] /.test(line)).length, 3);
-  assert.equal(unverifiedItemsLabel(CAIRO_CITY_FACTS.slots), '확인 안 된 항목: 머물 지역, 시즌');
+  assert.equal(unverifiedItemsLabel(CAIRO_CITY_FACTS.slots), '확인 안 된 항목: 공항→시내, 머물 지역, 시즌');
 
   const gem = resolveVerifiedFacts('grand-egyptian-museum');
   const booking = gem.slots.find((slot) => slot.id === 'booking');
@@ -294,8 +291,7 @@ test('english fact values keep Korean numbers, times, amounts, and URLs', () => 
     CAIRO_CITY_FACTS.slots.find((slot) => slot.id === 'airport'),
     'en',
   );
-  assert.equal(/uber/i.test(airport), false);
-  assert.match(airport, /Terminal 1/);
+  assert.equal(airport, '');
   const safety = factValueForLocale(
     'cairo',
     CAIRO_CITY_FACTS.slots.find((slot) => slot.id === 'money-safety'),
@@ -336,7 +332,7 @@ test('english fact values keep Korean numbers, times, amounts, and URLs', () => 
       assert.equal(/\d{1,2}:\d{2}~/.test(en), false);
     }
   }
-  assert.match(factValueForLocale('cairo', CAIRO_CITY_FACTS.slots.find((slot) => slot.id === 'airport'), 'en'), /A–D/);
+  assert.equal(factValueForLocale('cairo', CAIRO_CITY_FACTS.slots.find((slot) => slot.id === 'airport'), 'en'), '');
 
   assert.deepEqual(
     splitFactTimeRanges('windows 08:30–11:00, 11:00–13:00 and 09:00~18:00').filter((part) => part.type === 'time').map((part) => part.text),

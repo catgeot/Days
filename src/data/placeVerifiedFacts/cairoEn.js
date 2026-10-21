@@ -3,8 +3,7 @@
 const EN_VALUES = {
   'cairo:entry':
     'e-Visa eligibility depends on nationality. Check visa2egypt.gov.eg.\nApply on the government portal and pay by card.\nA tourist single entry is USD 25, and a multiple entry is USD 60.\nYour passport must have at least 6 months left on the arrival date. Bring a printed e-Visa, your travel itinerary, and your accommodation booking.',
-  'cairo:airport':
-    'Take a white taxi that has a meter.\nOlder black-and-white taxis have no meter, so agree the fare before you ride.\nBe careful of drivers who solicit in the arrivals hall.\nThe curbside limousine in front of the terminal is a flat fare by destination and car class A~D.\nCity buses depart only from the bus stop in the parking lot in front of Terminal 1.',
+  // source unreachable 2026-10-21 (WAF 500 / incomplete cert chain), re-check later.
   'cairo:itinerary':
     'D1 When you arrive, use the airport-to-city way above to get into the city and rest.\nD2 Go to the Giza Plateau early for the 07:00 opening. GEM requires a timed ticket. Galleries are open until 21:00 on Wed and Sat, and until 18:00 on other days. Last entry is 1 hour before closing. For dinner, try Koshary Abou Tarek downtown.\nD3 At 09:00 go to the Egyptian Museum in Tahrir. Ticket sales end at 16:00. In the afternoon go to the Sultan Hassan Mosque, and last entry is 16:00.',
   'cairo:money-safety':

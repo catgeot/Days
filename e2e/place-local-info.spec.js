@@ -40,15 +40,19 @@ test.describe('place card local info v2', () => {
     const gallery = page.locator('[data-local-info="gallery"]:visible');
     await expect(gallery).toBeVisible();
     await expect(gallery).toContainText('현지 정보');
-    await expect(gallery).toContainText('4개 주제');
+    await expect(gallery).toContainText('3개 주제');
+    await expect(gallery).toHaveAttribute(
+      'data-unverified-items',
+      '확인 안 된 항목: 공항→시내, 머물 지역, 시즌',
+    );
     const factsHeader = page.getByRole('button', { name: /현지 정보/ }).first();
     await factsHeader.click();
     const rows = page.locator('[data-local-info-row]:visible');
-    await expect(rows).toHaveCount(4);
+    await expect(rows).toHaveCount(3);
     await expect(rows.nth(0)).toContainText('입국');
-    await expect(rows.nth(1)).toContainText('공항→시내');
-    await expect(rows.nth(2)).toContainText('1·2·3일 동선');
-    await expect(rows.nth(3)).toContainText('돈·치안');
+    await expect(rows.nth(1)).toContainText('1·2·3일 동선');
+    await expect(rows.nth(2)).toContainText('돈·치안');
+    await expect(page.locator('[data-local-info-row="airport"]:visible')).toHaveCount(0);
     await expect(page.locator('[data-local-info-row="stay-area"]:visible')).toHaveCount(0);
     await expect(page.locator('[data-local-info-row="season"]:visible')).toHaveCount(0);
     await expect(page.locator('[data-fact-source]:visible')).toHaveCount(0);
@@ -96,7 +100,7 @@ test.describe('place card local info v2', () => {
     await expect(page.getByRole('button', { name: '확인된 돈·치안 정보' })).toBeVisible();
     await expect(page.locator('[data-fact-slot="itinerary"]:visible')).toHaveCount(0);
     await page.getByRole('tab', { name: '이동·통신' }).click();
-    await expect(page.getByRole('button', { name: '확인된 공항→시내 정보' })).toBeVisible();
+    await expect(page.getByRole('button', { name: '확인된 공항→시내 정보' })).toHaveCount(0);
   });
 
   test('기자 피라미드 검색에서 명소 슬롯도 같은 접힘 규칙이다', async ({ page }) => {

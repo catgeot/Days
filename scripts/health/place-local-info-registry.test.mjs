@@ -3,13 +3,14 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import test from 'node:test';
-import { CAIRO_ATTRACTION_FACTS, mentionScore } from '../../src/data/placeVerifiedFacts/cairo.js';
+import { AIRPORT, CAIRO_ATTRACTION_FACTS, mentionScore } from '../../src/data/placeVerifiedFacts/cairo.js';
 import {
   localInfoRegistry,
   resolveRegisteredCard,
   resolveVerifiedFacts,
 } from '../../src/data/placeVerifiedFacts/index.js';
 import { GATEO_ENV_FLAG_NAMES } from '../../src/shared/gateoFeatureFlags.js';
+import { slotLooksEmpty } from '../../src/data/placeVerifiedFacts/schema.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const AIRPORT_URL = 'https://www.cairo-airport.com/en-us/Services/Passenger-Guide/Move-From-To-Airport';
@@ -27,15 +28,17 @@ test('registry maps cairo only and keeps ko and en card data', () => {
 
   const koAirport = localInfoRegistry.cairo.ko.city.slots.find((slot) => slot.id === 'airport');
   const enAirport = localInfoRegistry.cairo.en.city.slots.find((slot) => slot.id === 'airport');
-  assert.equal(koAirport.sources.length, 1);
-  assert.equal(koAirport.sources[0].url, AIRPORT_URL);
-  assert.equal(koAirport.sources[0].name, '카이로국제공항 교통 안내');
-  assert.equal(enAirport.sources.length, 1);
-  assert.equal(enAirport.sources[0].url, AIRPORT_URL);
-  assert.equal(enAirport.sources[0].name, 'Cairo International Airport transport guide');
-  assert.equal(/uber/i.test(koAirport.value), false);
-  assert.equal(/uber/i.test(enAirport.value), false);
-  assert.match(enAirport.value, /white taxi/i);
+  assert.equal(slotLooksEmpty(koAirport), true);
+  assert.equal(slotLooksEmpty(enAirport), true);
+  assert.equal(koAirport.value, '');
+  assert.equal(enAirport.value, '');
+  assert.equal(AIRPORT.url, AIRPORT_URL);
+  assert.equal(AIRPORT.name, '카이로국제공항 교통 안내');
+  const cairoJs = readFileSync(join(root, 'src/data/placeVerifiedFacts/cairo.js'), 'utf8');
+  const cairoEn = readFileSync(join(root, 'src/data/placeVerifiedFacts/cairoEn.js'), 'utf8');
+  assert.match(cairoJs, /source unreachable 2026-10-21 \(WAF 500 \/ incomplete cert chain\), re-check later\./);
+  assert.match(cairoEn, /source unreachable 2026-10-21 \(WAF 500 \/ incomplete cert chain\), re-check later\./);
+  assert.equal(cairoEn.includes('white taxi'), false);
 });
 
 test('registry lookup keeps cairo when the rollout flag is off and renders nothing for other places', () => {
