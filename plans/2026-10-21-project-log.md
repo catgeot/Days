@@ -16,3 +16,9 @@
 - 실데이터 WebKit 증거 `gateo-ops/qa/lightbox-loaded-532/` (390·1280, 825295·637693·3481597, 스와이프·뒤로·X, 2/2→3/3). 목록 URL과 원본 URL 192장 동일, 원본만 실패 0%. 앱 코드 변경 없음.
 - #531은 main `25135b92`. WebKit 390 `e2e/festival-lightbox-ios.spec.js` 픽스처 5건 PASS (X 테스트 `page.goto` 타임아웃 1회 후 재실행 PASS). `npm run test:health` 580 PASS.
 - 사람 체크: 깨진 사진이 있는 축제에서 필름스트립 장수와 확대보기 `n / m`이 같은지, N번째 썸네일이 그 사진을 여는지.
+
+## 장소 갤러리 라이트박스 iOS 뒤로가기
+
+- draft [#534](https://github.com/catgeot/Days/pull/534) `cursor/lightbox-history-d223` tip `f018ddff`. 확대보기를 열면 같은 URL 히스토리 한 칸. 가장자리 스와이프·브라우저 뒤로가기는 사진만 닫고 갤러리에 남는다. 그다음 뒤로가기는 지구본 써머리. X도 그 칸을 `history.back()`. 사진 변경은 칸을 더하지 않음. 축제 확대보기와 세션 공유. `VITE_GATEO_LIGHTBOX_HISTORY` 기본 ON (`0`이면 OFF). **병합 금지**.
+- WebKit 390 제주·파리·방콕: 홈 써머리 → 갤러리 → 확대 → 스와이프 → 뒤로(갤러리) → 뒤로(써머리) 4 PASS. `scripts/health/lightbox-history.test.mjs` 7 PASS.
+- 사람 체크: 아이폰 사파리에서 장소 사진 확대 후 왼쪽 가장자리 스와이프가 지구본 써머리로 나가지 않고 갤러리에 남는지.
