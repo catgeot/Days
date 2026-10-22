@@ -3,6 +3,7 @@ import { resolveCityAttractionHub } from '../../Home/lib/cityAttractionHubs.js';
 import { listsForHub } from '../../Home/lib/koreaLocalScenicLists.js';
 import { areaCodeForHubId } from '../koreaHubSeeds.js';
 import { matchSigungu, resolveFestivalItemSidoCode } from '../koreaAreaFilter.js';
+import { festivalLngLat } from '../koreaFestivalCorridors.js';
 import {
   festivalDateSheetWeekRangeFromYmd,
   isYmd,
@@ -10,8 +11,11 @@ import {
 } from '../festivalDateFilter.js';
 import { rangesOverlap } from '../festivalTimeFilter.js';
 
-/** Fixed map slot height. The line is drawn in a later pass, not here. */
+/** Fixed map slot height. The line is a separate chunk, drawn only with 2+ points. */
 export const FESTIVAL_ROAD_MAP_SLOT_PX = 160;
+
+/** Fewer points than this: the slot is not rendered. */
+export const FESTIVAL_ROAD_MAP_MIN_POINTS = 2;
 
 const NEARBY_LABEL_LIMIT = 4;
 
@@ -239,4 +243,84 @@ export function festivalRoadFill(leg, nearbyLabels) {
     accessItem: inPeriod,
     nearbyLabels: labels,
   };
+}
+
+/**
+ * @param {object | null | undefined} item
+ * @returns {{ lng: number, lat: number } | null}
+ */
+function festivalItemPoint(item) {
+  return festivalLngLat(item?.mapx, item?.mapy);
+}
+
+/**
+ * First scenic member on this stop that has a Korea coordinate.
+ * @param {string} hubId
+ * @returns {{ lng: number, lat: number, label: string } | null}
+ */
+function firstSightPoint(hubId) {
+  for (const list of listsForHub(hubId)) {
+    for (const member of list?.members || []) {
+      const point = festivalLngLat(member?.lng, member?.lat);
+      if (!point) continue;
+      return { ...point, label: String(member?.attractionName || '').trim() };
+    }
+  }
+  return null;
+}
+
+/**
+ * Numbered pins in stop order. In-period festival, else any festival, else a sight, else the hub.
+ * @param {{ stopIndex?: number, hubId?: string, label?: string, items?: { item: object, inPeriod: boolean }[] }[]} legs
+ * @returns {{ stopIndex: number, hubId: string, label: string, kind: 'festival' | 'sight' | 'hub', lng: number, lat: number }[]}
+ */
+export function festivalRoadMapPoints(legs) {
+  /** @type {{ stopIndex: number, hubId: string, label: string, kind: 'festival' | 'sight' | 'hub', lng: number, lat: number }[]} */
+  const points = [];
+  for (const leg of legs || []) {
+    const rows = Array.isArray(leg?.items) ? leg.items : [];
+    const inPeriod = rows.find((row) => row?.inPeriod && festivalItemPoint(row.item));
+    const anyFestival = rows.find((row) => festivalItemPoint(row?.item));
+    const festival = inPeriod || anyFestival;
+    const hubId = String(leg?.hubId || '');
+    const stopIndex = Number(leg?.stopIndex);
+    if (!Number.isFinite(stopIndex)) continue;
+    if (festival) {
+      const point = festivalItemPoint(festival.item);
+      if (!point) continue;
+      points.push({
+        stopIndex,
+        hubId,
+        label: String(festival.item?.title || leg?.label || ''),
+        kind: 'festival',
+        lng: point.lng,
+        lat: point.lat,
+      });
+      continue;
+    }
+    const sight = firstSightPoint(hubId);
+    if (sight) {
+      points.push({
+        stopIndex,
+        hubId,
+        label: sight.label || String(leg?.label || ''),
+        kind: 'sight',
+        lng: sight.lng,
+        lat: sight.lat,
+      });
+      continue;
+    }
+    const hub = hubId ? resolveCityAttractionHub(hubId) : null;
+    const hubPoint = festivalLngLat(hub?.lng, hub?.lat);
+    if (!hubPoint) continue;
+    points.push({
+      stopIndex,
+      hubId,
+      label: String(leg?.label || hub?.name || hubId),
+      kind: 'hub',
+      lng: hubPoint.lng,
+      lat: hubPoint.lat,
+    });
+  }
+  return points;
 }

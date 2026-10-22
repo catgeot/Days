@@ -1,6 +1,12 @@
-import React from 'react';
+import React, { lazy, Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FESTIVAL_ROAD_MAP_SLOT_PX } from './lib/festivalRoad.js';
+import {
+  FESTIVAL_ROAD_MAP_MIN_POINTS,
+  FESTIVAL_ROAD_MAP_SLOT_PX,
+  festivalRoadMapPoints,
+} from './lib/festivalRoad.js';
+
+const FestivalRoadMap = lazy(() => import('./FestivalRoadMap.jsx'));
 
 const CHIP_IDLE =
   'border-stone-200 bg-stone-50 text-stone-800 hover:bg-stone-100';
@@ -12,7 +18,7 @@ const WEEK_CHIPS = [
 ];
 
 /**
- * Draft route skeleton. The map slot is an empty fixed-height box.
+ * Draft route. The map chunk loads only when the line has two or more points.
  * @param {{
  *   beltName: string,
  *   legs: object[],
@@ -45,19 +51,26 @@ export function FestivalRoadPanel({
   mooniSlot = null,
 }) {
   const { t } = useTranslation();
+  const mapPoints = festivalRoadMapPoints(legs);
+  const showMap = mapPoints.length >= FESTIVAL_ROAD_MAP_MIN_POINTS;
 
   return (
     <div className="space-y-3" data-festival-road="">
       <p className="text-sm font-extrabold text-stone-900 break-keep">{beltName}</p>
-      <div
-        data-festival-road-map=""
-        role="img"
-        aria-label={t('korea.festival.road.mapSlot')}
-        className="flex shrink-0 items-center justify-center rounded-2xl border border-dashed border-stone-300 bg-stone-100 text-sm font-semibold text-stone-500"
-        style={{ height: FESTIVAL_ROAD_MAP_SLOT_PX }}
-      >
-        {t('korea.festival.road.mapSlot')}
-      </div>
+      {showMap ? (
+        <div
+          data-festival-road-map=""
+          data-festival-road-map-points={String(mapPoints.length)}
+          role="img"
+          aria-label={t('korea.festival.road.mapSlot')}
+          className="shrink-0 overflow-hidden rounded-2xl border border-stone-200 bg-stone-100"
+          style={{ height: FESTIVAL_ROAD_MAP_SLOT_PX }}
+        >
+          <Suspense fallback={null}>
+            <FestivalRoadMap points={mapPoints} />
+          </Suspense>
+        </div>
+      ) : null}
       <div className="flex flex-wrap gap-2" data-festival-date-week-shortcuts="">
         {WEEK_CHIPS.map((chip) => {
           const active = weeksAhead === chip.id;
