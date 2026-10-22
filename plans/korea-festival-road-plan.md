@@ -103,8 +103,8 @@
 
 | | |
 |--|--|
-| **상태** | **PR-A 골격** draft · 플래그 기본 OFF · 사람 Preview 후 **PR-B 지도 선** · 머지 금지 |
-| **브랜치** | `cursor/festival-road-pr-a-545a` · tip `8c94f1f2` · PR [#536](https://github.com/catgeot/Days/pull/536) |
+| **상태** | **#536 승인본 `abd4db43` 고정** · QA draft [#538](https://github.com/catgeot/Days/pull/538) · 플래그 기본 OFF · **#536 병합 후 rebase** · 그 전 병합 금지 |
+| **브랜치** | QA `cursor/festival-road-qa-9d86` · #536 `cursor/festival-road-pr-a-545a` @ `abd4db43` (**push 금지**) · PR [#536](https://github.com/catgeot/Days/pull/536) |
 | **플래그** | `VITE_GATEO_FESTIVAL_ROAD` 기본 OFF. OFF면 축제 상세 무변화 |
 | **플랜** | 본 파일 · [`korea-festival-hub-plan.md`](./korea-festival-hub-plan.md) S5 벨트 절 |
 | **일지** | [`2026-10-22-project-log.md`](./2026-10-22-project-log.md) |
@@ -125,6 +125,8 @@
 
 **PR-A 산출**: `groupFestivalsForBelt` · 상세 «이 축제로 동선 보기» · 번호 순서 · 회색 점 · 이번주/다음주 · 빈 지도 자리(160px, Mapbox 없음).
 
+**QA (#538)**: 무니 버튼 한 번 · 기간 밖 `M/D 시작` · 지도 자리 숨김 · 볼거리 탭 · 서울 자정 기준일 · 원주=`gw-central` · 플래그 OFF 번들에서 로드 JSON 제외.
+
 **다음 제시어 (PR-B 지도 선)**:
 
 ```
@@ -132,9 +134,9 @@
 @plans/feature-handoff-index.md
 @plans/2026-10-22-project-log.md
 @plans/korea-festival-road-plan.md
-브랜치 cursor/festival-road-pr-a-545a · PR #536 · 플래그 VITE_GATEO_FESTIVAL_ROAD
-금지: 플래그 기본 ON · PR #170 코드 이관 · 저장·공유(PR-C) · plans/ feature 커밋 · Mapbox를 플래그 OFF 화면에 노출
-작업: 플래그 ON일 때만 지도 자리에 동선 선·번호 핀. OFF는 축제 상세 무변화
+브랜치 cursor/festival-road-qa-9d86 · draft PR #538 · 의존 #536(abd4db43, push 금지)
+금지: #536 브랜치 push · 플래그 기본 ON · #538을 #536 병합 전에 merge · PR #170 코드 이관 · plans/ feature 커밋 · Mapbox를 플래그 OFF 화면에 노출
+작업: #536 병합 후 #538 rebase. 플래그 ON일 때만 지도 자리에 동선 선·번호 핀. OFF는 축제 상세 무변화
 ```
 
 **#1 미완 시 다음 채팅**: `축제 로드 #1a, 검증·확장` — index·일지에 **남은 항목**만.
