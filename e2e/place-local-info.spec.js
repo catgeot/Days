@@ -41,6 +41,10 @@ test.describe('place card local info v2', () => {
     await expect(gallery).toBeVisible();
     await expect(gallery).toContainText('현지 정보');
     await expect(gallery).toContainText('4개 주제');
+    await expect(gallery).toHaveAttribute(
+      'data-unverified-items',
+      '확인 안 된 항목: 머물 지역, 시즌',
+    );
     const factsHeader = page.getByRole('button', { name: /현지 정보/ }).first();
     await factsHeader.click();
     const rows = page.locator('[data-local-info-row]:visible');
@@ -58,6 +62,12 @@ test.describe('place card local info v2', () => {
     await expect(page.locator('[data-fact-source]:visible')).toContainText('visa2egypt.gov.eg');
     await expect(page.locator('[data-fact-checked-at]:visible')).toContainText('2026-10-11');
     await expect(page).toHaveURL(urlBefore);
+
+    const airportRow = page.locator('[data-local-info-row="airport"]:visible');
+    await airportRow.locator('button').click();
+    const airportMeta = airportRow.locator('[data-fact-checked-at]');
+    await expect(airportMeta).toContainText('카이로국제공항 교통 안내 · 확인일 2026-10-11');
+    await expect(airportMeta.locator('a')).toHaveCount(0);
 
     const storiesHeader = page.getByRole('button', { name: /다녀온 이야기/ }).first();
     if (await storiesHeader.isVisible().catch(() => false)) {

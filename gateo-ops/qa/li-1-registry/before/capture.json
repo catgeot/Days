@@ -1,0 +1,38 @@
+[
+  {
+    "file": "before-ko-390.png",
+    "locale": "ko",
+    "width": 390,
+    "y": 124,
+    "height": 558,
+    "sourceText": "카이로국제공항 교통 안내 · Uber CAI pickup",
+    "valueTail": "미터가 있는 흰색 택시를 타요. 구형 흑백 택시는 미터가 없으니, 타기 전에 요금을 합의해요. 입국장에서 호객하는 기사는 조심해요. 터미널 앞 연석 «리무진»은 목적지와 차종 A~D별로 정액이에요. 시내버스는 1터미널 앞 주차장 버스 정류장에서만 출발해요. 차량 호출 앱(Uber) CAI 승차 안내 페이지가 있어요."
+  },
+  {
+    "file": "before-ko-1280.png",
+    "locale": "ko",
+    "width": 1280,
+    "y": 50,
+    "height": 452,
+    "sourceText": "카이로국제공항 교통 안내 · Uber CAI pickup",
+    "valueTail": "미터가 있는 흰색 택시를 타요. 구형 흑백 택시는 미터가 없으니, 타기 전에 요금을 합의해요. 입국장에서 호객하는 기사는 조심해요. 터미널 앞 연석 «리무진»은 목적지와 차종 A~D별로 정액이에요. 시내버스는 1터미널 앞 주차장 버스 정류장에서만 출발해요. 차량 호출 앱(Uber) CAI 승차 안내 페이지가 있어요."
+  },
+  {
+    "file": "before-en-390.png",
+    "locale": "en",
+    "width": 390,
+    "y": 124,
+    "height": 558,
+    "sourceText": "Cairo International Airport transport guide · Uber CAI pickup",
+    "valueTail": " the terminal is a flat fare by destination and car class A–D. City buses depart only from the bus stop in the parking lot in front of Terminal 1. Uber has a CAI pickup guide page."
+  },
+  {
+    "file": "before-en-1280.png",
+    "locale": "en",
+    "width": 1280,
+    "y": 50,
+    "height": 452,
+    "sourceText": "Cairo International Airport transport guide · Uber CAI pickup",
+    "valueTail": " the terminal is a flat fare by destination and car class A–D. City buses depart only from the bus stop in the parking lot in front of Terminal 1. Uber has a CAI pickup guide page."
+  }
+]
