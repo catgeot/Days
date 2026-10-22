@@ -1383,6 +1383,7 @@
         "viewFromThis": "이 축제로 동선 보기",
         "mapSlot": "지도",
         "emptyStop": "이 기간엔 축제가 없어요 · 주변 볼거리 보기",
+        "startsOn": "{{month}}/{{day}} 시작",
         "allEmpty": "고른 기간에 축제가 없어요. 날짜를 바꿔 보세요"
       },
       "resetFilters": "필터 초기화",

@@ -14,6 +14,7 @@ import {
   beltStopNearbyLabels,
   festivalRoadAllEmpty,
   festivalRoadFill,
+  festivalRoadLineOrder,
   festivalRoadMapPoints,
   groupFestivalsForBelt,
 } from '../../src/pages/Korea/lib/festivalRoad.js';
@@ -34,12 +35,17 @@ test('flag off leaves the live festival detail unchanged', () => {
   globalThis.__VITE_ENV__ = prev;
 
   const sheet = read('src/pages/Korea/FestivalDetailSheet.jsx');
-  const entryAt = sheet.indexOf('data-festival-road-entry');
-  assert.ok(entryAt > 0);
-  const gate = sheet.slice(Math.max(0, entryAt - 500), entryAt);
-  assert.match(gate, /roadEnabled && roadBelt/);
-  assert.match(sheet, /const roadEnabled = isGateoFestivalRoadEnabled\(\)/);
-  assert.match(sheet, /korea\.festival\.road\.viewFromThis/);
+  assert.match(sheet, /VITE_GATEO_FESTIVAL_ROAD === '1'/);
+  assert.match(sheet, /FestivalRoadBlock/);
+  assert.match(sheet, /import\('\.\/FestivalRoadBlock\.jsx'\)/);
+  assert.doesNotMatch(sheet, /FestivalRoadPanel/);
+  assert.doesNotMatch(sheet, /mooniSlot=\{[\s\S]*FestivalRoadPanel/);
+
+  const block = read('src/pages/Korea/FestivalRoadBlock.jsx');
+  assert.match(block, /data-festival-road-entry/);
+  assert.match(block, /korea\.festival\.road\.viewFromThis/);
+  assert.match(block, /useSeoulCalendarNow/);
+  assert.doesNotMatch(block, /mooniSlot/);
 
   const summary = read('src/pages/Korea/FestivalDetailFirstSummary.jsx');
   assert.match(summary, /afterPlace \?/);
@@ -62,8 +68,7 @@ test('flag off leaves the live festival detail unchanged', () => {
     assert.doesNotMatch(src, /mapbox|mapboxgl|KoreaFestivalMap|scrollIntoView/i);
   }
   assert.doesNotMatch(sheet, /from ['"][^'"]*mapbox|KoreaFestivalMap/i);
-  const entryBlock = sheet.slice(entryAt, entryAt + 800);
-  assert.doesNotMatch(entryBlock, /scrollIntoView/);
+  assert.doesNotMatch(block, /scrollIntoView/);
   assert.match(panel, /FESTIVAL_ROAD_MAP_SLOT_PX/);
   assert.equal(FESTIVAL_ROAD_MAP_SLOT_PX, 160);
   assert.match(panel, /data-festival-road-map/);
@@ -71,6 +76,9 @@ test('flag off leaves the live festival detail unchanged', () => {
   assert.match(panel, /import\('\.\/FestivalRoadMap\.jsx'\)/);
   assert.doesNotMatch(panel, /from ['"]\.\/FestivalRoadMap/);
   assert.doesNotMatch(sheet, /FestivalRoadMap/);
+  assert.match(panel, /nearbySights/);
+  assert.match(panel, /festivalRoadStartMonthDay/);
+  assert.doesNotMatch(panel, /mooniSlot/);
   const map = read('src/pages/Korea/FestivalRoadMap.jsx');
   assert.match(map, /react-map-gl\/mapbox/);
   assert.match(map, /LineString/);
@@ -280,6 +288,10 @@ test('map points follow stop order and stay hidden under two points', () => {
     },
   ]);
   assert.equal(none.length, 0);
+
+  const line = festivalRoadLineOrder(points);
+  assert.equal(line.length, points.length);
+  assert.deepEqual(line.map((point) => point.stopIndex).sort((a, b) => a - b), indexes);
 });
 
 test('road copy matches the approved lines', () => {
