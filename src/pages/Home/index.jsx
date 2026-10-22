@@ -847,24 +847,64 @@ function Home() {
     navigate(`/place/${param}${tabSuffix}`);
   }, [category, navigate, addScoutPin, moveToLocation, rememberGlobeFocus, setSelectedLocation]);
 
-  /** 장소카드 헤더 지구본 — URL SSOT 포커스 고정 후 홈 (연관 키워드 점프 후 stale selectedLocation race 방지) */
+  /** 장소카드 헤더 지구본 — 홈 URL·써머리 닫기, 지구본 핀·포커스는 유지 (dismissPlaceSelectionKeepGlobePin과 동일 SSOT) */
   const goHomeFromPlace = useCallback(() => {
     clearPlaceReturnTo();
     clearExploreReturn();
+    skipHomeSummaryRestoreRef.current = true;
+    pendingGlobeHomeFocusRef.current = null;
+
     const focusLoc = routeLocation.pathname.startsWith('/place/')
       ? resolveFocusLocationFromPlacePath(routeLocation.pathname, category, savedTrips)
       : null;
     const target = focusLoc || lastGlobeFocusRef.current || selectedLocationRef.current;
-    if (target && hasValidCoords(target)) {
-      pendingGlobeHomeFocusRef.current = target;
-      selectedLocationRef.current = target;
-      rememberGlobeFocus(target);
-      addScoutPin(target);
-      setSelectedLocation(target);
+
+    const globeApi = globeRef.current || getGlobeApi();
+    globeApi?.suppressOverlayClick?.();
+
+    const pinTarget =
+      target && hasValidCoords(target) ? target : selectedLocationRef.current;
+    if (pinTarget && hasValidCoords(pinTarget)) {
+      const lat = Number(pinTarget.lat);
+      const lng = Number(pinTarget.lng);
+      const immersed = isPlaceImmersed || globeApi?.isImmersed?.();
+      if (immersed) {
+        globeApi?.exitImmerse?.(lat, lng);
+      } else {
+        globeApi?.clearImmerseState?.();
+      }
+      rememberGlobeFocus(pinTarget);
+      addScoutPin(pinTarget);
+      moveToLocation(lat, lng, pinTarget.name, pinTarget.category || category, {
+        location: pinTarget,
+      });
     }
-    navigate('/');
+
+    selectedLocationRef.current = null;
+    setIsCardExpanded(false);
+    setSelectedLocation(null);
+
+    const path = routeLocation.pathname;
+    if (path.startsWith('/place/') || path.startsWith('/explore')) {
+      navigate('/');
+    }
+
+    queueMicrotask(() => {
+      globeRef.current?.wakeAfterOverlay?.();
+    });
     recalibrateHomeChromeAfterNav();
-  }, [routeLocation.pathname, category, navigate, rememberGlobeFocus, addScoutPin, setSelectedLocation, recalibrateHomeChromeAfterNav]);
+  }, [
+    addScoutPin,
+    category,
+    isPlaceImmersed,
+    moveToLocation,
+    navigate,
+    rememberGlobeFocus,
+    routeLocation.pathname,
+    savedTrips,
+    setSelectedLocation,
+    recalibrateHomeChromeAfterNav,
+  ]);
 
   const leavePlaceCard = useCallback(() => {
     const returnTo = peekPlaceReturnTo(routeLocation.state);

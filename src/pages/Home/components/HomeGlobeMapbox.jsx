@@ -2,6 +2,7 @@ import React, {
   useRef,
   useState,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useCallback,
   forwardRef,
@@ -305,57 +306,57 @@ function readNativeDevicePixelRatio() {
   return Number.isFinite(n) && n > 0 ? n : 1;
 }
 
+function runWithGlobePixelRatioCap(fn, maxRatio = GLOBE_MAX_PIXEL_RATIO) {
+  if (typeof window === 'undefined') return fn();
+  const ownBefore = Object.getOwnPropertyDescriptor(window, 'devicePixelRatio');
+  const proto = Object.getOwnPropertyDescriptor(Window.prototype, 'devicePixelRatio');
+  const capped = Math.min(readNativeDevicePixelRatio(), maxRatio);
+  Object.defineProperty(window, 'devicePixelRatio', {
+    configurable: true,
+    get() {
+      return capped;
+    },
+  });
+  try {
+    return fn();
+  } finally {
+    try {
+      delete window.devicePixelRatio;
+    } catch {
+      // Host locked the property.
+    }
+    if (ownBefore && !proto?.get) {
+      try {
+        Object.defineProperty(window, 'devicePixelRatio', ownBefore);
+      } catch {
+        // Prototype getter remains after delete.
+      }
+    }
+  }
+}
+
+function syncGlobeCanvasToPixelRatioCap(map, maxRatio = GLOBE_MAX_PIXEL_RATIO) {
+  if (!map || map._removed) return;
+  runWithGlobePixelRatioCap(() => {
+    try {
+      map.resize();
+      map.triggerRepaint?.();
+    } catch {
+      // Map may be mid-remove.
+    }
+  }, maxRatio);
+}
+
 function scopeGlobePixelRatio(map, maxRatio) {
   if (!map || map.__gateoDprScoped || typeof window === 'undefined') return;
   map.__gateoDprScoped = true;
-  let depth = 0;
-  let restore = null;
-  const enter = () => {
-    if (depth++ > 0) return;
-    const ownBefore = Object.getOwnPropertyDescriptor(window, 'devicePixelRatio');
-    const proto = Object.getOwnPropertyDescriptor(Window.prototype, 'devicePixelRatio');
-    const capped = Math.min(readNativeDevicePixelRatio(), maxRatio);
-    Object.defineProperty(window, 'devicePixelRatio', {
-      configurable: true,
-      get() {
-        return capped;
-      },
-    });
-    restore = () => {
-      try {
-        delete window.devicePixelRatio;
-      } catch {
-        // Host locked the property.
-      }
-      if (ownBefore && !proto?.get) {
-        try {
-          Object.defineProperty(window, 'devicePixelRatio', ownBefore);
-        } catch {
-          // Prototype getter remains after delete.
-        }
-      }
-    };
-  };
-  const leave = () => {
-    if (--depth > 0) return;
-    restore?.();
-    restore = null;
-  };
   const wrap = (fn) => function scopedPixelRatio(...args) {
-    enter();
-    try {
-      return fn.apply(this, args);
-    } finally {
-      leave();
-    }
+    return runWithGlobePixelRatioCap(() => fn.apply(this, args), maxRatio);
   };
   if (typeof map.resize === 'function') map.resize = wrap(map.resize);
   if (typeof map._render === 'function') map._render = wrap(map._render);
-  try {
-    map.resize();
-  } catch {
-    // Container may still be hidden.
-  }
+  syncGlobeCanvasToPixelRatioCap(map, maxRatio);
+  requestAnimationFrame(() => syncGlobeCanvasToPixelRatioCap(map, maxRatio));
 }
 
 function isGlobeCameraInMotion(map) {
@@ -641,6 +642,39 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   const rotationTimer = useRef(null);
   const pauseRenderRef = useRef(pauseRender);
   pauseRenderRef.current = pauseRender;
+
+  /** WebKit/Mapbox construct the canvas before onLoad — cap window DPR for this map's lifetime. */
+  useLayoutEffect(() => {
+    if (typeof window === 'undefined') return undefined;
+    const native = readNativeDevicePixelRatio();
+    if (native <= GLOBE_MAX_PIXEL_RATIO) return undefined;
+
+    const capped = Math.min(native, GLOBE_MAX_PIXEL_RATIO);
+    const ownBefore = Object.getOwnPropertyDescriptor(window, 'devicePixelRatio');
+    const proto = Object.getOwnPropertyDescriptor(Window.prototype, 'devicePixelRatio');
+
+    Object.defineProperty(window, 'devicePixelRatio', {
+      configurable: true,
+      get() {
+        return capped;
+      },
+    });
+
+    return () => {
+      try {
+        delete window.devicePixelRatio;
+      } catch {
+        // Host locked the property.
+      }
+      if (ownBefore && !proto?.get) {
+        try {
+          Object.defineProperty(window, 'devicePixelRatio', ownBefore);
+        } catch {
+          // Prototype getter remains after delete.
+        }
+      }
+    };
+  }, []);
   const pageHiddenRef = useRef(typeof document !== 'undefined' && document.hidden);
   const idleRotateStoppedRef = useRef(false);
   const resumeAfterIdleTouchRef = useRef(false);
@@ -1401,44 +1435,6 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     setReachBoundariesLoading(false);
   }, []);
 
-  const loadReachBoundaries = useCallback(async (lng, lat, { easeCamera = true } = {}) => {
-    const map = mapRef.current?.getMap();
-    if (!map || !Number.isFinite(lng) || !Number.isFinite(lat)) return;
-
-    const gen = reachFetchGenRef.current + 1;
-    reachFetchGenRef.current = gen;
-    setReachBoundariesReady(false);
-    setReachBoundariesLoading(true);
-
-    try {
-      setupReachBoundaryLayers(map);
-      setReachBoundaryVisibility(map, reachBoundariesVisibleRef.current);
-
-      const geojson = await resolveReachBoundaryGeoJSON(lng, lat, MAPBOX_TOKEN);
-      if (reachFetchGenRef.current !== gen) return;
-
-      reachGeoJsonRef.current = geojson;
-      updateReachBoundarySource(map, geojson);
-      setupReachBoundaryLayers(map);
-      setReachBoundaryVisibility(map, reachBoundariesVisibleRef.current);
-      if (easeCamera && reachBoundariesVisibleRef.current) easeCameraForReachReveal(map);
-      setReachBoundariesReady(true);
-    } catch {
-      if (reachFetchGenRef.current !== gen) return;
-      const fallback = await resolveReachBoundaryGeoJSON(lng, lat, null);
-      reachGeoJsonRef.current = fallback;
-      updateReachBoundarySource(map, fallback);
-      setupReachBoundaryLayers(map);
-      setReachBoundaryVisibility(map, reachBoundariesVisibleRef.current);
-      if (easeCamera && reachBoundariesVisibleRef.current) easeCameraForReachReveal(map);
-      setReachBoundariesReady(true);
-    } finally {
-      if (reachFetchGenRef.current === gen) {
-        setReachBoundariesLoading(false);
-      }
-    }
-  }, []);
-
   const restoreReachBoundaryLayersIfNeeded = useCallback(() => {
     if (globeMode !== GLOBE_MODE.TOUR_READY || !reachGeoJsonRef.current) return;
     const map = mapRef.current?.getMap();
@@ -1729,6 +1725,52 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     }
   }, []);
 
+  const loadReachBoundaries = useCallback(async (lng, lat, { easeCamera = true } = {}) => {
+    const map = mapRef.current?.getMap();
+    if (!map || !Number.isFinite(lng) || !Number.isFinite(lat)) return;
+
+    const gen = reachFetchGenRef.current + 1;
+    reachFetchGenRef.current = gen;
+    setReachBoundariesReady(false);
+    setReachBoundariesLoading(true);
+
+    try {
+      setupReachBoundaryLayers(map);
+      setReachBoundaryVisibility(map, reachBoundariesVisibleRef.current);
+
+      const geojson = await resolveReachBoundaryGeoJSON(lng, lat, MAPBOX_TOKEN);
+      if (reachFetchGenRef.current !== gen) return;
+
+      reachGeoJsonRef.current = geojson;
+      updateReachBoundarySource(map, geojson);
+      setupReachBoundaryLayers(map);
+      setReachBoundaryVisibility(map, reachBoundariesVisibleRef.current);
+      if (easeCamera && reachBoundariesVisibleRef.current) {
+        haltGlobeAutoRotateForCameraFlight();
+        easeCameraForReachReveal(map);
+        scheduleOrientRotateResume(map, 1200);
+      }
+      setReachBoundariesReady(true);
+    } catch {
+      if (reachFetchGenRef.current !== gen) return;
+      const fallback = await resolveReachBoundaryGeoJSON(lng, lat, null);
+      reachGeoJsonRef.current = fallback;
+      updateReachBoundarySource(map, fallback);
+      setupReachBoundaryLayers(map);
+      setReachBoundaryVisibility(map, reachBoundariesVisibleRef.current);
+      if (easeCamera && reachBoundariesVisibleRef.current) {
+        haltGlobeAutoRotateForCameraFlight();
+        easeCameraForReachReveal(map);
+        scheduleOrientRotateResume(map, 1200);
+      }
+      setReachBoundariesReady(true);
+    } finally {
+      if (reachFetchGenRef.current === gen) {
+        setReachBoundariesLoading(false);
+      }
+    }
+  }, [haltGlobeAutoRotateForCameraFlight, scheduleOrientRotateResume]);
+
   const executeFocus = useCallback((lat, lng, options = {}) => {
     const map = mapRef.current?.getMap();
     if (!map || pauseRender) return false;
@@ -1782,6 +1824,13 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
             flushPendingGateoMarkerSource(map);
             clearGlobeCameraBusy(map);
             applyPlaceLabelVisibility();
+            safeMapResize(map);
+            try {
+              map.triggerRepaint();
+            } catch {
+              // Map may be mid-teardown.
+            }
+            tryRevealGlobeOverlays();
           });
         });
       });
@@ -1793,7 +1842,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
 
     scheduleOrientRotateResume(map, flyDuration);
     return true;
-  }, [applyPlaceLabelVisibility, haltGlobeAutoRotateForCameraFlight, pauseRender, scheduleOrientRotateResume]);
+  }, [applyPlaceLabelVisibility, haltGlobeAutoRotateForCameraFlight, pauseRender, scheduleOrientRotateResume, tryRevealGlobeOverlays]);
 
   /** TOUR_READY pivot — ease center only; pitch/zoom/bearing unchanged (no flyTo). */
   const pivotTourExplore = useCallback((location) => {
@@ -2591,10 +2640,13 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       setRipples([]);
       haltGlobeAutoRotateForCameraFlight();
       const map = mapRef.current?.getMap();
+      const easeMs = 1500;
       if (map) {
-        map.easeTo({ ...GLOBE_VIEW.default, duration: 1500 });
+        map.easeTo({ ...GLOBE_VIEW.default, duration: easeMs });
+        scheduleOrientRotateResume(map, easeMs);
+      } else if (!pauseRender) {
+        autoRotateRef.current = true;
       }
-      autoRotateRef.current = true;
       resetAndApplyPlaceLabelVisibility();
     },
     startTour,
@@ -2624,7 +2676,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     whenGlobeFocusReady,
     getGlobeMode: () => tourEngineRef.current?.getMode?.() ?? globeMode,
     suppressOverlayClick,
-  }), [addRipple, clearImmerseState, clearRegionFocus, closeFlightCinema, endTour, ensureInteractionReady, exitImmerse, flyToAndPin, flyToRegion, globeMode, haltGlobeAutoRotateForCameraFlight, immerseToPin, isGlobeFocusReady, isStyleTransitioning, mapReady, pauseRender, pivotTourExplore, resetAndApplyPlaceLabelVisibility, skipTour, startFlightCinema, startTour, suppressOverlayClick, tryRevealGlobeOverlays, whenGlobeFocusReady]);
+  }), [addRipple, clearImmerseState, clearRegionFocus, closeFlightCinema, endTour, ensureInteractionReady, exitImmerse, flyToAndPin, flyToRegion, globeMode, haltGlobeAutoRotateForCameraFlight, immerseToPin, isGlobeFocusReady, isStyleTransitioning, mapReady, pauseRender, pivotTourExplore, resetAndApplyPlaceLabelVisibility, scheduleOrientRotateResume, skipTour, startFlightCinema, startTour, suppressOverlayClick, tryRevealGlobeOverlays, whenGlobeFocusReady]);
 
   useEffect(() => {
     highlightCategoryRef.current = highlightCategory;
@@ -2736,8 +2788,10 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     // 프레임 경계에서 resize를 두 번 보정한다.
     const raf1 = requestAnimationFrame(() => {
       safeMapResize(map);
+      syncGlobeCanvasToPixelRatioCap(map);
       raf2 = requestAnimationFrame(() => {
         safeMapResize(map);
+        syncGlobeCanvasToPixelRatioCap(map);
         syncMapZoom();
         applyPlaceLabelVisibility();
       });
@@ -3276,7 +3330,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
               const shared = readGlobeShareViewFromUrl();
               hasRestoredShareViewRef.current = true;
               if (shared) {
-                autoRotateRef.current = false;
+                haltGlobeAutoRotateForCameraFlight();
                 try {
                   map.jumpTo({
                     center: [shared.lng, shared.lat],
@@ -3348,6 +3402,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
           if (waitingThemeSettleRef.current) {
             const pendingCamera = pendingThemeCameraRef.current;
             if (map && pendingCamera) {
+              haltGlobeAutoRotateForCameraFlight();
               try {
                 map.jumpTo(pendingCamera);
               } catch {
