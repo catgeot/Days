@@ -168,6 +168,9 @@ export function buildPlaceChatIntroKeys(locOrName, lng = i18n.language) {
     if (country && !isPlaceholderCountry(country) && !parentCity.includes(country)) {
       push(`${country} ${parentCity} ${name}`);
     }
+    // Bare `name` and `{country} {name}` are shared by another place (완도·가야산 상왕봉).
+    // A hit there is cached, so a missing parent row must not fall through.
+    return keys;
   }
 
   push(label);
@@ -302,10 +305,12 @@ export async function ensurePlaceChatIntroForLocation(locOrName, options = {}) {
         locOrName?.displayLabel ||
         locOrName?.name ||
         primaryKey;
+  const parentCity =
+    typeof locOrName === 'object' ? normalizeDestinationKey(locOrName?.parentCity || '') : '';
   const generateLabel =
     typeof locOrName === 'string'
       ? normalizeDestinationKey(locOrName)
-      : formatPlaceChatLabel(locOrName, lng) || primaryKey;
+      : (parentCity && primaryKey) || formatPlaceChatLabel(locOrName, lng) || primaryKey;
 
   const promise = (async () => {
     try {
