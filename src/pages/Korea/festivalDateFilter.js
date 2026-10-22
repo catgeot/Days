@@ -221,37 +221,47 @@ export function formatFestivalRangeLabel(startYmd, endYmd, todayYmd) {
   return `${startLabel}\u2013${formatFestivalMonthDayPart(end, endWithYear)}`;
 }
 
-/** Shown when the stored edition has ended and no later dates are on the row. */
-export const FESTIVAL_NEXT_DATES_UNANNOUNCED_KO = '다음 일정 미발표';
-export const FESTIVAL_NEXT_DATES_UNANNOUNCED_EN = 'Next dates not announced';
-
 /**
- * True when the only known interval ended before Seoul today.
- * An ongoing or upcoming range is the announced edition.
- * @param {string} endYmd
- * @param {string} todayYmd
+ * Latest valid interval. A stale list row must not hide a rolled-forward detail.
+ * TourAPI keeps one date pair per contentId and overwrites it when the next
+ * edition is posted, so the newest end is the announced edition.
+ * @param {Array<{ start?: string, end?: string, eventStartDate?: string, eventEndDate?: string, eventstartdate?: string, eventenddate?: string } | [string, string]>} intervals
+ * @returns {{ start: string, end: string } | null}
  */
-export function festivalNextEditionUnannounced(endYmd, todayYmd) {
-  const end = String(endYmd || '');
-  const today = String(todayYmd || '');
-  if (!isYmd(end) || !isYmd(today)) return false;
-  return end < today;
-}
-
-function nextEditionUnannouncedNote(locale) {
-  return String(locale || '').startsWith('en')
-    ? FESTIVAL_NEXT_DATES_UNANNOUNCED_EN
-    : FESTIVAL_NEXT_DATES_UNANNOUNCED_KO;
+export function pickLatestFestivalInterval(intervals) {
+  let best = null;
+  for (const raw of intervals || []) {
+    const start = Array.isArray(raw)
+      ? raw[0]
+      : raw?.eventStartDate || raw?.start || raw?.eventstartdate;
+    const end = Array.isArray(raw)
+      ? raw[1]
+      : raw?.eventEndDate || raw?.end || raw?.eventenddate;
+    const interval = festivalIntervalYmd({
+      eventStartDate: start,
+      eventEndDate: end,
+    });
+    if (!interval) continue;
+    if (
+      !best
+      || interval.end > best.end
+      || (interval.end === best.end && interval.start > best.start)
+    ) {
+      best = interval;
+    }
+  }
+  return best;
 }
 
 /**
  * Detail sheet · list cards · 인근 축제 rows.
- * Off-month ranges keep a year (`2026.1.9–1.31`). Ended editions with no
- * later dates append 「다음 일정 미발표」. Seoul today when `todayYmd` is omitted.
+ * Off-month ranges keep a year (`2026.1.9–1.31`). No 「다음 일정 미발표」:
+ * the place + date line on 인근 축제 wraps at 390 when that phrase is added,
+ * and TourAPI has no separate next-edition field. Seoul today when omitted.
  * @param {string} startYmd
  * @param {string} endYmd
  * @param {string} [todayYmd]
- * @param {string} [locale]
+ * @param {string} [locale] accepted so list/detail callers can pass UI locale
  */
 export function formatFestivalDetailDateRange(
   startYmd,
@@ -259,15 +269,29 @@ export function formatFestivalDetailDateRange(
   todayYmd = seoulTodayYmd(),
   locale = 'ko',
 ) {
+  void locale;
   const start = String(startYmd || '');
   const endRaw = String(endYmd || '');
   if (!isYmd(start) && !isYmd(endRaw)) return '';
-  const range = formatFestivalRangeLabel(start, endRaw || start, todayYmd)
+  return formatFestivalRangeLabel(start, endRaw || start, todayYmd)
     || formatFestivalMonthDay(isYmd(start) ? start : endRaw, todayYmd);
-  if (!range) return '';
-  const endedEnd = isYmd(endRaw) ? endRaw : (isYmd(start) ? start : '');
-  if (!festivalNextEditionUnannounced(endedEnd, todayYmd)) return range;
-  return `${range} · ${nextEditionUnannouncedNote(locale)}`;
+}
+
+/**
+ * Label for the newest interval among list and detail pairs.
+ * Year rules match `formatFestivalDetailDateRange`. No unannounced-edition phrase.
+ * @param {Parameters<typeof pickLatestFestivalInterval>[0]} intervals
+ * @param {string} [todayYmd]
+ * @param {string} [locale]
+ */
+export function formatFestivalEditionDateRange(
+  intervals,
+  todayYmd = seoulTodayYmd(),
+  locale = 'ko',
+) {
+  const latest = pickLatestFestivalInterval(intervals);
+  if (!latest) return '';
+  return formatFestivalDetailDateRange(latest.start, latest.end, todayYmd, locale);
 }
 
 /**

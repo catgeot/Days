@@ -34,7 +34,6 @@ export default defineConfig({
         /place-travelogue-card-qa-screenshots\.spec\.js/,
         /korea-festival-date-chip\.spec\.js/,
         /place-lightbox-history\.spec\.js/,
-        /festival-year-close-screenshots\.spec\.js/,
       ],
       use: { ...devices['Desktop Chrome'], viewport: { width: 1280, height: 720 } },
     },
@@ -93,18 +92,6 @@ export default defineConfig({
       name: 'webkit-festival-hero-credit',
       testMatch: /korea-festival-hero-credit-en\.spec\.js/,
       use: { ...devices['iPhone 13'] },
-    },
-    {
-      name: 'webkit-festival-year-close',
-      testMatch: /festival-year-close-screenshots\.spec\.js/,
-      use: {
-        ...devices['iPhone 13'],
-        viewport: { width: 390, height: 844 },
-        deviceScaleFactor: 1,
-        locale: 'ko-KR',
-        timezoneId: 'Asia/Seoul',
-        ignoreHTTPSErrors: true,
-      },
     },
     {
       name: 'webkit-pr492-qa',

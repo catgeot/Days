@@ -1,3 +1,4 @@
+import { pickLatestFestivalInterval } from './festivalDateFilter.js';
 import {
   festivalDetailAsOf,
   festivalItemFromDetail,
@@ -68,6 +69,7 @@ export function mergeFestivalRowItem(primary, overlay) {
     primary.firstimage2,
     overlay.firstimage2,
   );
+  const latestInterval = pickLatestFestivalInterval([primary, overlay]);
   return normalizeFestivalItemImages({
     ...primary,
     ...overlay,
@@ -75,8 +77,10 @@ export function mergeFestivalRowItem(primary, overlay) {
     titleEn: pickStr(overlay.titleEn, primary.titleEn),
     firstimage,
     imageUrl,
-    eventStartDate: pickStr(overlay.eventStartDate, primary.eventStartDate),
-    eventEndDate: pickStr(overlay.eventEndDate, primary.eventEndDate),
+    eventStartDate: latestInterval?.start
+      || pickStr(overlay.eventStartDate, primary.eventStartDate),
+    eventEndDate: latestInterval?.end
+      || pickStr(overlay.eventEndDate, primary.eventEndDate),
     addr1: pickStr(overlay.addr1, primary.addr1),
     detailAsOf: overlay.detailAsOf || primary.detailAsOf,
     contentId: String(overlay.contentId || primary.contentId),

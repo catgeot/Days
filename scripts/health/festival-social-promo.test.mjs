@@ -161,6 +161,26 @@ test('festivalItemThumbSrc normalizes protocol-relative VisitKorea URLs', () => 
   );
 });
 
+test('mergeFestivalRowItem keeps the later edition when detail dates are stale', () => {
+  const merged = mergeFestivalRowItem(
+    {
+      contentId: '507599',
+      title: '목록',
+      eventStartDate: '20270109',
+      eventEndDate: '20270131',
+    },
+    {
+      contentId: '507599',
+      title: '상세',
+      eventStartDate: '20260109',
+      eventEndDate: '20260131',
+    },
+  );
+  assert.equal(merged.eventStartDate, '20270109');
+  assert.equal(merged.eventEndDate, '20270131');
+  assert.equal(merged.title, '상세');
+});
+
 test('normalizeFestivalItemImages upgrades http list URLs', () => {
   const normalized = normalizeFestivalItemImages({
     contentId: '638576',
