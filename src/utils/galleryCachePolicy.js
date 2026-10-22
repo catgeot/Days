@@ -6,8 +6,51 @@ export function gallerySwrStampKey(cacheVersion, placeKey) {
   return `days_gallery_swr_${cacheVersion}_${encodeURIComponent(placeKey || '')}`;
 }
 
+/** Local "hide this photo" ids. Not tied to CACHE_VERSION. */
+export const GALLERY_HIDDEN_IDS_VERSION = 'v1';
+
+const GALLERY_HIDDEN_LEGACY_VERSIONS = ['v1.25', 'v1.24'];
+
 export function galleryHiddenIdsKey(cacheVersion, placeKey) {
   return `days_gallery_hidden_${cacheVersion}_${encodeURIComponent(placeKey || '')}`;
+}
+
+function parseHiddenIdList(raw) {
+  try {
+    const arr = raw ? JSON.parse(raw) : [];
+    return new Set(Array.isArray(arr) ? arr.filter(Boolean) : []);
+  } catch {
+    return new Set();
+  }
+}
+
+export function readGalleryHiddenIds(placeKey, storage) {
+  if (!placeKey || !storage) return new Set();
+  const stableKey = galleryHiddenIdsKey(GALLERY_HIDDEN_IDS_VERSION, placeKey);
+  const stable = parseHiddenIdList(storage.getItem(stableKey));
+  if (stable.size) return stable;
+  for (const version of GALLERY_HIDDEN_LEGACY_VERSIONS) {
+    const legacy = parseHiddenIdList(storage.getItem(galleryHiddenIdsKey(version, placeKey)));
+    if (!legacy.size) continue;
+    try {
+      storage.setItem(stableKey, JSON.stringify([...legacy]));
+    } catch {
+      /* quota — still honor the legacy list for this read */
+    }
+    return legacy;
+  }
+  return new Set();
+}
+
+export function addGalleryHiddenId(placeKey, imageId, storage) {
+  if (!placeKey || !imageId || !storage) return false;
+  const next = readGalleryHiddenIds(placeKey, storage);
+  next.add(imageId);
+  storage.setItem(
+    galleryHiddenIdsKey(GALLERY_HIDDEN_IDS_VERSION, placeKey),
+    JSON.stringify([...next]),
+  );
+  return true;
 }
 
 export function isGallerySwrDue(lastAt, now = Date.now(), ttlMs = GALLERY_SWR_TTL_MS) {
