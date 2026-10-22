@@ -14,7 +14,7 @@ function LanguageControl() {
 }
 
 /**
- * @param {{ stopIndex: number, lng: number, lat: number, label?: string }[]} points
+ * @param {{ stopIndex: number, lng: number, lat: number, label?: string, kind?: string }[]} points
  */
 function lineFeature(points) {
   const ordered = festivalRoadLineOrder(points);
@@ -61,37 +61,58 @@ function fitRoad(map, points) {
  * @param {() => void} onIdle
  */
 function whenMapTilesIdle(map, onIdle) {
-  let done = false;
+  let idleCount = 0;
   const finish = () => {
-    if (done) return;
-    done = true;
+    idleCount += 1;
+    if (idleCount < 2) {
+      map.triggerRepaint();
+      map.once('idle', finish);
+      return;
+    }
     onIdle();
   };
-  if (map.loaded() && !map.isMoving()) {
-    map.once('idle', finish);
-    return;
-  }
-  map.once('load', () => {
-    map.once('idle', finish);
-  });
+  map.once('idle', finish);
+}
+
+function PinMarker({ point, offset }) {
+  const isStop = point.kind === 'stop' || point.kind === 'hub';
+  const isSight = point.kind === 'sight';
+  const baseClass = isStop
+    ? 'flex h-5 w-5 items-center justify-center rounded-md border-2 border-stone-600 bg-stone-100 text-[10px] font-extrabold text-stone-800 shadow'
+    : isSight
+      ? 'flex h-5 w-5 items-center justify-center rounded-full border-2 border-amber-700 bg-white text-[10px] font-extrabold text-amber-800 shadow'
+      : 'flex h-5 w-5 items-center justify-center rounded-full bg-amber-700 text-[10px] font-extrabold text-white shadow';
+  return (
+    <span
+      data-festival-road-pin={point.stopIndex}
+      data-festival-road-pin-kind={point.kind || 'festival'}
+      className={baseClass}
+      style={{
+        transform: `translate(${offset.x}px, ${offset.y}px)`,
+      }}
+      aria-label={point.label || String(point.stopIndex)}
+    >
+      {point.stopIndex}
+    </span>
+  );
 }
 
 /**
  * Route line and numbered pins. Loaded only after the panel has two or more points.
- * @param {{ points: { stopIndex: number, lng: number, lat: number, label?: string }[] }} props
+ * @param {{ points: { stopIndex: number, lng: number, lat: number, label?: string, kind?: string }[] }} props
  */
 export default function FestivalRoadMap({ points }) {
   const [ready, setReady] = useState(false);
   const [tilesIdle, setTilesIdle] = useState(false);
   const line = useMemo(() => lineFeature(points), [points]);
   const pinOffsets = useMemo(() => festivalRoadPinOffsets(points), [points]);
-  const viewKey = points.map((point) => `${point.stopIndex}:${point.lng}:${point.lat}`).join('|');
+  const viewKey = points.map((point) => `${point.stopIndex}:${point.kind}:${point.lng}:${point.lat}`).join('|');
 
   if (!MAPBOX_TOKEN || points.length < 2) return null;
 
   return (
     <div
-      className="gateo-mapbox-map h-full w-full"
+      className="gateo-mapbox-map h-full w-full bg-stone-200"
       data-festival-road-map-ready={ready ? '1' : '0'}
       data-festival-road-map-tiles-idle={tilesIdle ? '1' : '0'}
     >
@@ -108,8 +129,7 @@ export default function FestivalRoadMap({ points }) {
         attributionControl={{ compact: true }}
         logoPosition="bottom-left"
         reuseMaps={false}
-        preserveDrawingBuffer
-        canvasContextAttributes={{ preserveDrawingBuffer: true }}
+        antialias
         scrollZoom={false}
         dragPan={false}
         dragRotate={false}
@@ -136,24 +156,15 @@ export default function FestivalRoadMap({ points }) {
           const offset = pinOffsets.get(point.stopIndex) || { x: 0, y: 0 };
           return (
             <Marker
-              key={point.stopIndex}
+              key={`${point.stopIndex}-${point.kind}`}
               longitude={point.lng}
               latitude={point.lat}
               anchor="center"
               style={{
-                zIndex: point.stopIndex,
+                zIndex: 120 - point.stopIndex,
               }}
             >
-              <span
-                data-festival-road-pin={point.stopIndex}
-                className="flex h-5 w-5 items-center justify-center rounded-full bg-amber-700 text-[10px] font-extrabold text-white shadow"
-                style={{
-                  transform: `translate(${offset.x}px, ${offset.y}px)`,
-                }}
-                aria-label={point.label || String(point.stopIndex)}
-              >
-                {point.stopIndex}
-              </span>
+              <PinMarker point={point} offset={offset} />
             </Marker>
           );
         })}
