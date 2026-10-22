@@ -2,7 +2,6 @@ import React, {
   useRef,
   useState,
   useEffect,
-  useLayoutEffect,
   useMemo,
   useCallback,
   forwardRef,
@@ -291,49 +290,100 @@ const resolveGlobePixelRatio = () => {
   return Math.min(window.devicePixelRatio || 1, GLOBE_MAX_PIXEL_RATIO);
 };
 
-// mapbox-gl 3.20 has no pixelRatio constructor option and no setPixelRatio.
-// _resizeCanvas / painter.resize read window.devicePixelRatio directly, so the
-// react-map-gl pixelRatio prop is ignored. Cap the getter the engine actually reads.
-function installGlobePixelRatioCap(maxRatio) {
-  if (typeof window === 'undefined') return () => {};
-  const protoDesc = Object.getOwnPropertyDescriptor(Window.prototype, 'devicePixelRatio');
-  const ownBefore = Object.getOwnPropertyDescriptor(window, 'devicePixelRatio');
-  const readNative = () => {
-    if (protoDesc?.get) return protoDesc.get.call(window);
-    if (ownBefore && !ownBefore.get && 'value' in ownBefore) return ownBefore.value;
-    if (ownBefore?.get) return ownBefore.get.call(window);
-    return 1;
-  };
-  Object.defineProperty(window, 'devicePixelRatio', {
-    configurable: true,
-    get() {
-      const n = Number(readNative());
-      const dpr = Number.isFinite(n) && n > 0 ? n : 1;
-      return Math.min(dpr, maxRatio);
-    },
-  });
-  return () => {
-    try {
-      delete window.devicePixelRatio;
-    } catch {
-      // Ignore if the host locked the property.
-    }
-    if (ownBefore && !protoDesc?.get) {
+// mapbox-gl 3.20 reads window.devicePixelRatio inside resize/_render (no pixelRatio option).
+// Cap only while this map's resize/render run so other maps and canvases keep the native ratio.
+function readNativeDevicePixelRatio() {
+  if (typeof window === 'undefined') return 1;
+  const proto = Object.getOwnPropertyDescriptor(Window.prototype, 'devicePixelRatio');
+  if (proto?.get) {
+    const n = Number(proto.get.call(window));
+    if (Number.isFinite(n) && n > 0) return n;
+  }
+  const own = Object.getOwnPropertyDescriptor(window, 'devicePixelRatio');
+  const raw = own?.get ? own.get.call(window) : own && 'value' in own ? own.value : window.devicePixelRatio;
+  const n = Number(raw);
+  return Number.isFinite(n) && n > 0 ? n : 1;
+}
+
+function scopeGlobePixelRatio(map, maxRatio) {
+  if (!map || map.__gateoDprScoped || typeof window === 'undefined') return;
+  map.__gateoDprScoped = true;
+  let depth = 0;
+  let restore = null;
+  const enter = () => {
+    if (depth++ > 0) return;
+    const ownBefore = Object.getOwnPropertyDescriptor(window, 'devicePixelRatio');
+    const proto = Object.getOwnPropertyDescriptor(Window.prototype, 'devicePixelRatio');
+    const capped = Math.min(readNativeDevicePixelRatio(), maxRatio);
+    Object.defineProperty(window, 'devicePixelRatio', {
+      configurable: true,
+      get() {
+        return capped;
+      },
+    });
+    restore = () => {
       try {
-        Object.defineProperty(window, 'devicePixelRatio', ownBefore);
+        delete window.devicePixelRatio;
       } catch {
-        // Prototype getter remains after delete.
+        // Host locked the property.
       }
+      if (ownBefore && !proto?.get) {
+        try {
+          Object.defineProperty(window, 'devicePixelRatio', ownBefore);
+        } catch {
+          // Prototype getter remains after delete.
+        }
+      }
+    };
+  };
+  const leave = () => {
+    if (--depth > 0) return;
+    restore?.();
+    restore = null;
+  };
+  const wrap = (fn) => function scopedPixelRatio(...args) {
+    enter();
+    try {
+      return fn.apply(this, args);
+    } finally {
+      leave();
     }
   };
+  if (typeof map.resize === 'function') map.resize = wrap(map.resize);
+  if (typeof map._render === 'function') map._render = wrap(map._render);
+  try {
+    map.resize();
+  } catch {
+    // Container may still be hidden.
+  }
+}
+
+function isGlobeCameraInMotion(map) {
+  if (!map || map._removed) return false;
+  try {
+    if (map.isMoving?.()) return true;
+    if (map.isEasing?.()) return true;
+    if (map.isRotating?.()) return true;
+    if (map.isZooming?.()) return true;
+  } catch {
+    return false;
+  }
+  return false;
+}
+
+function clearHoldArm(hold) {
+  if (!hold.armOff) return;
+  hold.armOff();
+  hold.armOff = null;
+  hold.waitMap = null;
 }
 
 function applyMapRenderHold(holdRef, map) {
   const hold = holdRef.current;
   if (!map || map._removed || hold.original || hold.reasons.size === 0) return;
   // loaded() is false while _styleDirty. Swallowing triggerRepaint before that
-  // clears leaves the map stuck at loaded:false.
-  if (!map.loaded?.()) return;
+  // clears leaves the map stuck at loaded:false. stop() here aborts flyTo.
+  if (!map.loaded?.() || isGlobeCameraInMotion(map)) return;
   hold.original = map.triggerRepaint.bind(map);
   hold.map = map;
   const original = hold.original;
@@ -341,27 +391,19 @@ function applyMapRenderHold(holdRef, map) {
     if (map._removed || map.loaded?.()) return;
     original();
   };
-  try {
-    map.stop();
-  } catch {
-    // Map may already be stopped.
-  }
 }
 
 function holdMapRender(holdRef, map, reason) {
   if (!map || map._removed) return;
   const hold = holdRef.current;
   hold.reasons.add(reason);
-  if (hold.armOff && hold.waitMap !== map) {
-    hold.armOff();
-    hold.armOff = null;
-    hold.waitMap = null;
-  }
-  if (map.loaded?.()) {
+  if (hold.armOff && hold.waitMap !== map) clearHoldArm(hold);
+  const settled = map.loaded?.() && !isGlobeCameraInMotion(map);
+  if (settled) {
     applyMapRenderHold(holdRef, map);
-    return;
+    if (hold.original) return;
   }
-  if (!hold.flushed) {
+  if (!hold.flushed && !map.loaded?.()) {
     hold.flushed = true;
     try {
       map.triggerRepaint();
@@ -369,22 +411,27 @@ function holdMapRender(holdRef, map, reason) {
       // Style may still be starting.
     }
   }
-  if (hold.waitMap === map) return;
+  if (hold.waitMap === map && hold.armOff) return;
   hold.waitMap = map;
   const arm = () => {
-    if (hold.waitMap !== map || hold.reasons.size === 0 || hold.original) return;
-    applyMapRenderHold(holdRef, map);
-    if (hold.original && hold.armOff) {
-      const off = hold.armOff;
-      hold.armOff = null;
-      hold.waitMap = null;
-      off();
+    if (hold.reasons.size === 0 || hold.original) {
+      clearHoldArm(hold);
+      return;
     }
+    if (!map.loaded?.() || isGlobeCameraInMotion(map)) return;
+    applyMapRenderHold(holdRef, map);
+    if (hold.original) clearHoldArm(hold);
   };
   map.on('idle', arm);
+  map.on('moveend', arm);
   hold.armOff = () => {
     try {
       map.off('idle', arm);
+    } catch {
+      // Map may already be removed.
+    }
+    try {
+      map.off('moveend', arm);
     } catch {
       // Map may already be removed.
     }
@@ -395,11 +442,7 @@ function releaseMapRender(holdRef, map, reason) {
   const hold = holdRef.current;
   hold.reasons.delete(reason);
   if (hold.reasons.size > 0) return;
-  if (hold.armOff) {
-    hold.armOff();
-    hold.armOff = null;
-    hold.waitMap = null;
-  }
+  clearHoldArm(hold);
   hold.flushed = false;
   if (!hold.original) return;
   const target = map && !map._removed ? map : hold.map;
@@ -2790,8 +2833,6 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     tryRevealGlobe,
   ]);
 
-  useLayoutEffect(() => installGlobePixelRatioCap(GLOBE_MAX_PIXEL_RATIO), []);
-
   useEffect(() => {
     const map = mapRef.current?.getMap();
     if (!map || !mapReady) return undefined;
@@ -2869,6 +2910,20 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     resumeAfterIdleTouchRef.current = false;
     releaseMapRender(renderHoldRef, mapRef.current?.getMap(), 'pause');
     releaseMapRender(renderHoldRef, mapRef.current?.getMap(), 'idle');
+    let visibleRepaintOuter = 0;
+    let visibleRepaintInner = 0;
+    visibleRepaintOuter = requestAnimationFrame(() => {
+      visibleRepaintInner = requestAnimationFrame(() => {
+        const map = mapRef.current?.getMap();
+        if (!map || map._removed || pauseRenderRef.current) return;
+        safeMapResize(map);
+        try {
+          map.triggerRepaint();
+        } catch {
+          // Map may be mid-remove.
+        }
+      });
+    });
     startLoop();
     let kickTimer = 0;
     let tries = 0;
@@ -2889,6 +2944,8 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     kickRotate();
 
     return () => {
+      cancelAnimationFrame(visibleRepaintOuter);
+      cancelAnimationFrame(visibleRepaintInner);
       window.clearTimeout(kickTimer);
       stopLoop();
       startRotationLoopRef.current = () => {};
@@ -3177,20 +3234,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
           markGlobeLoadPhase('onLoad');
           mapLoadedRef.current = true;
           const map = evt?.target ?? mapRef.current?.getMap();
-          if (map && typeof map.setPixelRatio === 'function') {
-            try {
-              map.setPixelRatio(resolveGlobePixelRatio());
-            } catch {
-              // mapbox-gl 3.20 reads window.devicePixelRatio instead.
-            }
-          }
-          if (map) {
-            try {
-              map.resize();
-            } catch {
-              // Container may still be hidden.
-            }
-          }
+          if (map) scopeGlobePixelRatio(map, GLOBE_MAX_PIXEL_RATIO);
 
           const diagMoveLayerHookEnabled =
             import.meta.env.DEV
