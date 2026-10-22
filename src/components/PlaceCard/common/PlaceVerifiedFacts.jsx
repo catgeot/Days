@@ -74,7 +74,8 @@ function usePlaceGallerySectionOpen(sectionId, placeKey) {
 }
 
 function slotHeading(slot, t) {
-  return t(`place.facts.slots.${slot.id}`, { defaultValue: slot.label });
+  const key = slot.headingKey || slot.id;
+  return t(`place.facts.slots.${key}`, { defaultValue: slot.label });
 }
 
 function unverifiedLine(slots, t) {

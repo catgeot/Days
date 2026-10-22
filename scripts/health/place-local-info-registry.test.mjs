@@ -119,6 +119,9 @@ test('paris rollout hides the money row and does not call ETIAS required', () =>
   const itinerary = city.slots.find((slot) => slot.id === 'itinerary');
   assert.equal(itinerary.sources[0].url, 'https://www.louvre.fr/en/visit');
   assert.equal(/D[123] /.test(itinerary.value), false);
+  assert.equal(itinerary.headingKey, 'louvre-visit');
+  assert.equal(/22유로|32유로|18세 미만/.test(itinerary.value), false);
+  assert.equal(/EUR 22|EUR 32|under 18/i.test(factValueForLocale('paris', itinerary, 'en')), false);
   for (const slot of city.slots) {
     const ko = factValueForLocale('paris', slot, 'ko');
     const translated = factValueForLocale('paris', slot, 'en');
