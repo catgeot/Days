@@ -1766,6 +1766,8 @@ export default function FestivalDetailSheet({
     const dateRange = formatFestivalDetailDateRange(
       item?.eventStartDate || intro?.eventStartDate,
       item?.eventEndDate || intro?.eventEndDate,
+      undefined,
+      locale,
     );
     const introForSummary = (() => {
       const fromDetail = omitEventHours && intro ? { ...intro, playtime: '' } : intro;
@@ -2180,10 +2182,6 @@ export default function FestivalDetailSheet({
     );
   }
 
-  const range = formatFestivalDetailDateRange(
-    item.eventStartDate || intro?.eventStartDate,
-    item.eventEndDate || intro?.eventEndDate,
-  );
   const tel = String(intro?.sponsor1tel || item.tel || '').trim();
   const sponsor2tel = String(intro?.sponsor2tel || '').trim();
   const hero = imageUrls[activeImage] || imageUrls[0] || '';

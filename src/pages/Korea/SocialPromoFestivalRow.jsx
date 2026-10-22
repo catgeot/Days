@@ -17,7 +17,12 @@ export function SocialPromoNearLine({ card, onSelect }) {
   const item = card?.item;
   if (!item?.contentId) return null;
   const title = String(item.title || '').trim();
-  const range = formatFestivalDetailDateRange(item.eventStartDate, item.eventEndDate);
+  const range = formatFestivalDetailDateRange(
+    item.eventStartDate,
+    item.eventEndDate,
+    undefined,
+    locale,
+  );
   const city = localizedSocialPromoRegionPlaceLabel(locale, item);
   return (
     <button
@@ -93,7 +98,12 @@ function SocialPromoCard({ item, onSelect }) {
   const { isEnglish, locale } = useLocale();
   const rowItem = normalizeFestivalItemImages(item);
   const titleLines = festivalListDisplayTitleLines(rowItem, locale);
-  const range = formatFestivalDetailDateRange(item.eventStartDate, item.eventEndDate);
+  const range = formatFestivalDetailDateRange(
+    item.eventStartDate,
+    item.eventEndDate,
+    undefined,
+    locale,
+  );
   const regionPlace = localizedSocialPromoRegionPlaceLabel(locale, item);
 
   return (

@@ -6,8 +6,11 @@ import {
   daysInMonth,
   festivalIntervalYmd,
   filterFestivalsByYmdRange,
+  formatFestivalDetailDateRange,
   formatFestivalMonthDay,
   formatFestivalRangeLabel,
+  festivalNextEditionUnannounced,
+  FESTIVAL_NEXT_DATES_UNANNOUNCED_KO,
   formatWindow30RangeSuffix,
   formatWindow30UntilMetaLabel,
   replaceMonthTabWithDateChips,
@@ -52,6 +55,40 @@ test('range year policy — Oct→Nov span, future month, year-cross, past', () 
     '2026.8.1\u20138.31',
   );
   assert.equal(formatFestivalMonthDay('20261215', SEOUL_TODAY), '2026.12.15');
+});
+
+test('detail and nearby rows: year off-month, unannounced next edition when ended', () => {
+  assert.equal(
+    formatFestivalDetailDateRange('20260109', '20260131', SEOUL_TODAY),
+    `2026.1.9\u20131.31 · ${FESTIVAL_NEXT_DATES_UNANNOUNCED_KO}`,
+  );
+  assert.equal(
+    formatFestivalDetailDateRange('20261106', '20261108', SEOUL_TODAY),
+    '2026.11.6\u201311.8',
+  );
+  assert.equal(
+    formatFestivalDetailDateRange('20261228', '20270104', SEOUL_TODAY),
+    '2026.12.28\u20132027.1.4',
+  );
+  assert.equal(
+    formatFestivalDetailDateRange('20261001', '20261010', SEOUL_TODAY),
+    `10.1\u201310.10 · ${FESTIVAL_NEXT_DATES_UNANNOUNCED_KO}`,
+  );
+  assert.equal(
+    formatFestivalDetailDateRange('20261023', '20261108', SEOUL_TODAY),
+    '10.23\u201311.8',
+  );
+  assert.equal(
+    formatFestivalDetailDateRange('20261016', '20261020', SEOUL_TODAY),
+    '10.16\u201310.20',
+  );
+  assert.equal(
+    formatFestivalDetailDateRange('20260109', '20260131', SEOUL_TODAY, 'en'),
+    '2026.1.9\u20131.31 · Next dates not announced',
+  );
+  assert.equal(festivalNextEditionUnannounced('20261015', SEOUL_TODAY), true);
+  assert.equal(festivalNextEditionUnannounced('20261016', SEOUL_TODAY), false);
+  assert.equal(formatFestivalRangeLabel('20260109', '20260131', SEOUL_TODAY).includes('미발표'), false);
 });
 
 test('leap day 2028.2.1 keeps the year prefix and a real 29 February', () => {

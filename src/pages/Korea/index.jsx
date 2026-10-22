@@ -754,7 +754,12 @@ function FestivalRow({
   const { isEnglish } = useLocale();
   const koText = koreanApiTextProps(isEnglish);
   const img = festivalImage(item);
-  const range = formatFestivalDetailDateRange(item.eventStartDate, item.eventEndDate);
+  const range = formatFestivalDetailDateRange(
+    item.eventStartDate,
+    item.eventEndDate,
+    undefined,
+    isEnglish ? 'en' : 'ko',
+  );
   const distanceLabel = formatDistanceKm(distanceKm);
 
   return (

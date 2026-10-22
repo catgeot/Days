@@ -221,22 +221,53 @@ export function formatFestivalRangeLabel(startYmd, endYmd, todayYmd) {
   return `${startLabel}\u2013${formatFestivalMonthDayPart(end, endWithYear)}`;
 }
 
+/** Shown when the stored edition has ended and no later dates are on the row. */
+export const FESTIVAL_NEXT_DATES_UNANNOUNCED_KO = '다음 일정 미발표';
+export const FESTIVAL_NEXT_DATES_UNANNOUNCED_EN = 'Next dates not announced';
+
 /**
- * Detail sheet · 인근 축제 rows — uses Seoul today when `todayYmd` is omitted.
+ * True when the only known interval ended before Seoul today.
+ * An ongoing or upcoming range is the announced edition.
+ * @param {string} endYmd
+ * @param {string} todayYmd
+ */
+export function festivalNextEditionUnannounced(endYmd, todayYmd) {
+  const end = String(endYmd || '');
+  const today = String(todayYmd || '');
+  if (!isYmd(end) || !isYmd(today)) return false;
+  return end < today;
+}
+
+function nextEditionUnannouncedNote(locale) {
+  return String(locale || '').startsWith('en')
+    ? FESTIVAL_NEXT_DATES_UNANNOUNCED_EN
+    : FESTIVAL_NEXT_DATES_UNANNOUNCED_KO;
+}
+
+/**
+ * Detail sheet · list cards · 인근 축제 rows.
+ * Off-month ranges keep a year (`2026.1.9–1.31`). Ended editions with no
+ * later dates append 「다음 일정 미발표」. Seoul today when `todayYmd` is omitted.
  * @param {string} startYmd
  * @param {string} endYmd
  * @param {string} [todayYmd]
+ * @param {string} [locale]
  */
-export function formatFestivalDetailDateRange(startYmd, endYmd, todayYmd = seoulTodayYmd()) {
-  if (!isYmd(String(startYmd || '')) && !isYmd(String(endYmd || ''))) return '';
-  const range = formatFestivalRangeLabel(
-    String(startYmd || ''),
-    String(endYmd || startYmd || ''),
-    todayYmd,
-  );
-  if (range) return range;
-  const single = formatFestivalMonthDay(String(startYmd || endYmd || ''), todayYmd);
-  return single;
+export function formatFestivalDetailDateRange(
+  startYmd,
+  endYmd,
+  todayYmd = seoulTodayYmd(),
+  locale = 'ko',
+) {
+  const start = String(startYmd || '');
+  const endRaw = String(endYmd || '');
+  if (!isYmd(start) && !isYmd(endRaw)) return '';
+  const range = formatFestivalRangeLabel(start, endRaw || start, todayYmd)
+    || formatFestivalMonthDay(isYmd(start) ? start : endRaw, todayYmd);
+  if (!range) return '';
+  const endedEnd = isYmd(endRaw) ? endRaw : (isYmd(start) ? start : '');
+  if (!festivalNextEditionUnannounced(endedEnd, todayYmd)) return range;
+  return `${range} · ${nextEditionUnannouncedNote(locale)}`;
 }
 
 /**
