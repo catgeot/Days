@@ -9,6 +9,12 @@ const EN_VALUES = {
     'D1 When you arrive, use the airport-to-city way above to get into the city and rest.\nD2 Go to the Giza Plateau early for the 07:00 opening. GEM requires a timed ticket. Galleries are open until 21:00 on Wed and Sat, and until 18:00 on other days. Last entry is 1 hour before closing. For dinner, try Koshary Abou Tarek downtown.\nD3 At 09:00 go to the Egyptian Museum in Tahrir. Ticket sales end at 16:00. In the afternoon go to the Sultan Hassan Mosque, and last entry is 16:00.',
   'cairo:money-safety':
     'The currency is the Egyptian pound (EGP).\nOn the MOFA travel alert, Nile-valley cities such as Cairo are at the exercise-caution level.\nParts of the Western Desert and southern Sinai are at the reconsider-travel level, and central and northern Sinai plus the area within 30km of the Libya border have a \'leave the country\' advisory.\nA recent embassy notice (2026-09-22) says to be careful amid military tension in the Middle East and to watch out for private currency-exchange scams.\nThe consular call center is +82-2-3210-0404.',
+  'paris:entry':
+    'Use the France-Visas online assistant to check whether your stay needs a visa.\nNon-EU nationals are registered in the Entry/Exit System (EES) when they enter for a short stay.\nFrance uses this system.\nEntries, exits, and entry refusals are recorded electronically.\nThe EES uses fingerprint and face data.\nA short stay is up to 90 days within 180 days.\nETIAS is not in operation yet.\nApplications for a travel authorisation are not being collected.\nThe European Union will announce the start date several months before it begins.',
+  'paris:itinerary':
+    'The Louvre Museum is closed on Tuesday.\nMonday, Thursday, Saturday, and Sunday are 09:00~18:00.\nWednesday and Friday are 09:00~21:00.\nLast entry is 1 hour before closing.\nExhibition rooms are cleared 30 minutes before closing.\nA timed ticket is recommended, including for free admission.\nEEA residents and citizens pay EUR 22, and visitors who are not EEA pay EUR 32.\nVisitors under 18 years, and EEA residents under 26 years, enter free.\nThe Pyramid is the main entrance.\nAt busy times you may also use the Carrousel or Porte des Lions entrances.\nA ticket is valid only for the booked time and date, and it cannot be changed, exchanged, or refunded.',
+  'paris:safety':
+    'A MOFA safety notice (2026-10-22) says large protests that started in France are spreading across Europe, including Italy, Belgium, Spain, Portugal, and Albania.\nIn some areas, protesters and police have clashed, and there has been arson and looting of shops.\nThe consular call center is +82-2-3210-0404.',
   'giza-pyramids:hours':
     'Open daily at 07:00; last entry is 16:00.\nDuring Ramadan, opening is 08:00 and last entry is 15:30.\nThe Ministry page lists 08:00–16:00.',
   'grand-egyptian-museum:hours':
@@ -29,6 +35,9 @@ const EN_VALUES = {
 
 const SOURCE_EN = {
   '카이로국제공항 교통 안내': 'Cairo International Airport transport guide',
+  'EU 출입국 시스템(EES)': 'EU Entry/Exit System (EES)',
+  '루브르 박물관 방문 안내': 'Louvre visit guide',
+  '외교부 안전공지': 'MOFA safety notice',
   'GATEO 로그북 (2026-10-03)': 'GATEO logbook (2026-10-03)',
   '외교부 여행경보': 'MOFA travel alert',
   '대사관 공지': 'Embassy notice',

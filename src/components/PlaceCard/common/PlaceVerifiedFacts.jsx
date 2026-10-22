@@ -435,6 +435,7 @@ export function PlaceLocalInfoInline({
     entry: 'place.facts.confirmed.entry',
     airport: 'place.facts.confirmed.airport',
     'money-safety': 'place.facts.confirmed.moneySafety',
+    safety: 'place.facts.confirmed.safety',
     'stay-area': 'place.facts.confirmed.stayArea',
   }[slot.id];
   const title = presentation === 'planner'
