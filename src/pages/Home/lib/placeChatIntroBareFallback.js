@@ -1,10 +1,6 @@
-import { isPlaceholderCountry } from '../../../utils/travelSpotResolve.js';
 import { i18n } from '../../../i18n/config.js';
 import { normalizeAppLocale } from '../../../i18n/constants.js';
-import {
-  getLocalizedCountryName,
-  getLocalizedPlaceName,
-} from '../../../components/PlaceCard/common/locationDisplay.js';
+import { getLocalizedPlaceName } from '../../../components/PlaceCard/common/locationDisplay.js';
 import { normalizeDestinationKey } from './mooniPlaceChatLabel.js';
 
 const INVALID_DESTINATIONS = new Set(['', 'new session', 'scanning...', 'mooni']);
@@ -86,9 +82,6 @@ export function buildPlaceChatIntroBareFallbackKeys(locOrName, lng = i18n.langua
   );
   if (!name || name.includes(parentCity)) return [];
 
-  const country = normalizeDestinationKey(
-    getLocalizedCountryName(locOrName, locale) || locOrName.country || '',
-  );
   const keys = [];
   const push = (k) => {
     const n = normalizeDestinationKey(k);
@@ -97,9 +90,6 @@ export function buildPlaceChatIntroBareFallbackKeys(locOrName, lng = i18n.langua
   };
 
   push(name);
-  if (country && !isPlaceholderCountry(country) && !name.includes(country)) {
-    push(`${country} ${name}`);
-  }
   return keys;
 }
 

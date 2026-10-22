@@ -142,7 +142,11 @@ export function stripPlaceChatIntroForSummary(text, placeName = '') {
   return body;
 }
 
-/** 조회·저장에 쓸 destination_key 후보. parentCity가 있으면 `{parentCity} {name}` · `{country} {parentCity} {name}`을 먼저 둔다. */
+/**
+ * 조회·저장에 쓸 destination_key 후보 (순서 = 조회 순서).
+ * parentCity 있음: `{parentCity} {name}` → `{country} {name}` (PROD 118건) → bare는 fetchBareFallback(동명 1건일 때만).
+ * parentCity 없음: label/name → `{country} {name}`.
+ */
 export function buildPlaceChatIntroKeys(locOrName, lng = i18n.language) {
   if (locOrName == null) return [];
   if (typeof locOrName === 'string') {
@@ -170,11 +174,9 @@ export function buildPlaceChatIntroKeys(locOrName, lng = i18n.language) {
 
   if (parentCity && name && !name.includes(parentCity)) {
     push(`${parentCity} ${name}`);
-    if (country && !isPlaceholderCountry(country) && !parentCity.includes(country)) {
-      push(`${country} ${parentCity} ${name}`);
+    if (country && !isPlaceholderCountry(country) && !name.includes(country)) {
+      push(`${country} ${name}`);
     }
-    // Bare `name` and `{country} {name}` are shared by another place (완도·가야산 상왕봉).
-    // A hit there is cached, so a missing parent row must not fall through.
     return keys;
   }
 
