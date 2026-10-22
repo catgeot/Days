@@ -29,6 +29,7 @@ import {
 import {
   buildPlaceChatIntroBareFallbackKeys,
   destinationKeyMatchesBareName,
+  introLocaleStorageKeys,
   pickBareFallbackIntroFromRows,
 } from './placeChatIntroBareFallback.js';
 
@@ -188,34 +189,27 @@ export function buildPlaceChatIntroKeys(locOrName, lng = i18n.language) {
   return keys;
 }
 
+/** Session cache — primary keys already missed; bare exact lookup empty */
+const bareIntroExactMissCache = new Set();
+
 async function fetchIntroRowsMatchingBareName(bareName) {
   const b = normalizeDestinationKey(bareName);
   if (!isValidIntroDestination(b)) return [];
+  if (bareIntroExactMissCache.has(b)) return [];
 
-  const exactKeys = [
-    withPlaceChatIntroLocale(b, 'ko'),
-    withPlaceChatIntroLocale(b, 'en'),
-  ].filter((k, i, arr) => k && arr.indexOf(k) === i);
+  const exactKeys = introLocaleStorageKeys(b);
+  if (!exactKeys.length) return [];
 
-  const likeBase = `% ${b}`;
-  const likeEn = `% ${b}@en`;
+  const { data } = await supabase
+    .from('place_chat_intro')
+    .select('destination_key, summary')
+    .in('destination_key', exactKeys);
 
-  const [exactRes, suffixedRes, suffixedEnRes] = await Promise.all([
-    supabase.from('place_chat_intro').select('destination_key, summary').in('destination_key', exactKeys),
-    supabase.from('place_chat_intro').select('destination_key, summary').ilike('destination_key', likeBase),
-    supabase.from('place_chat_intro').select('destination_key, summary').ilike('destination_key', likeEn),
-  ]);
-
-  const byKey = new Map();
-  for (const row of [
-    ...(exactRes.data ?? []),
-    ...(suffixedRes.data ?? []),
-    ...(suffixedEnRes.data ?? []),
-  ]) {
-    if (!destinationKeyMatchesBareName(row.destination_key, b)) continue;
-    byKey.set(row.destination_key, row);
-  }
-  return [...byKey.values()];
+  const rows = (data ?? []).filter((row) =>
+    destinationKeyMatchesBareName(row.destination_key, b),
+  );
+  if (!rows.length) bareIntroExactMissCache.add(b);
+  return rows;
 }
 
 async function fetchBareFallbackIntroSummary(locOrName, lng, placeName) {
