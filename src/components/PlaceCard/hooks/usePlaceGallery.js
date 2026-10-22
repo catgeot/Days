@@ -47,6 +47,12 @@ import {
   resolveGallerySaveTarget,
   unsplashGallerySearchPage,
 } from '../../../utils/gallerySaveGuard.js';
+import {
+  emptyGalleryExclusion,
+  filterExcludedGalleryImages,
+  loadGalleryExcludedKeys,
+  sessionCacheAfterDroppedIds,
+} from '../../../utils/galleryExclusion.js';
 import { isLegacyMishealPlaceStatsId } from '../../../pages/Home/lib/legacyMishealPlaceSlugs.js';
 import { KO_GALLERY_QUERY_OVERRIDES } from '../../../pages/Home/lib/koreaPlaceMatchDictionary.js';
 import {
@@ -64,8 +70,8 @@ import {
   readGalleryAttributionReturnState,
 } from '../common/galleryAttributionNavigation';
 
-/** v1.23 — Tour 시설 컷 후 스톡 보강 · 라틴 지명 스톡 · 단일 인물 제외 */
-const CACHE_VERSION = 'v1.24';
+/** v1.25 — active exclusion keys are applied before render and session cache */
+const CACHE_VERSION = 'v1.25';
 const CACHE_TTL = 1000 * 60 * 60 * 24;
 
 /** 장소 갤러리 UI·세션 캐시 상한 (Pexels 다중 쿼리 백필 과다 방지) */
@@ -361,6 +367,7 @@ export const usePlaceGallery = (locationSource, options = {}) => {
   /** 같은 영문 쿼리를 쓰는 서로 다른 장소 구분 + in-flight 요청 무효화 */
   const lastFetchKeyRef = useRef(null);
   const galleryLoadSeqRef = useRef(0);
+  const excludedKeysRef = useRef(emptyGalleryExclusion());
   /** 공유 upsert·관리자 PATCH용 — 숨김 필터 미적용(storage) */
   const allImagesRef = useRef([]);
   const unsplashPageRef = useRef(1);
@@ -448,7 +455,11 @@ export const usePlaceGallery = (locationSource, options = {}) => {
   // storage 갱신 후 view만 숨김 필터 적용 (upsert는 allImagesRef = storage)
   const processAndSetImages = useCallback(
     (rawImages) => {
-      const storage = capGalleryImages(filterOutSinglePersonPortraits(rawImages));
+      const storage = capGalleryImages(
+        filterOutSinglePersonPortraits(
+          filterExcludedGalleryImages(rawImages, excludedKeysRef.current),
+        ),
+      );
       if (!storage.length) {
         allImagesRef.current = [];
         setImages([]);
@@ -570,6 +581,21 @@ export const usePlaceGallery = (locationSource, options = {}) => {
       loadedStatsPlaceIdRef.current = '';
     }
     canonicalStatsIdRef.current = nextCanonicalId;
+
+    const requestedPlaceKey = stablePlaceKey;
+    try {
+      excludedKeysRef.current = await withTimeout(
+        loadGalleryExcludedKeys(
+          (name, args) => supabase.rpc(name, args),
+          nextCanonicalId || spotSlugForDb,
+        ),
+        PLACE_STATS_QUERY_MS,
+        'gallery_excluded_keys',
+      );
+    } catch {
+      excludedKeysRef.current = emptyGalleryExclusion();
+    }
+    if (currentPlaceKeyRef.current !== requestedPlaceKey) return;
 
     // 이미 성공한 동일 키 + 이미지가 있을 때만 스킵 (시작 전 마킹하면 hang 후 재시도 불가)
     if (
@@ -772,13 +798,20 @@ export const usePlaceGallery = (locationSource, options = {}) => {
       });
       const runAtCall = runId;
       supabase.rpc('persist_place_gallery', args).then(({ data, error }) => {
-        if (runAtCall !== galleryLoadSeqRef.current) return;
         if (error) {
-          console.error('⚠️ persist_place_gallery', mode, error);
+          if (runAtCall === galleryLoadSeqRef.current) {
+            console.error('⚠️ persist_place_gallery', mode, error);
+          }
           return;
         }
         const dropped = droppedGalleryIds(data);
         if (!dropped.length) return;
+        const cached = loadFromSmartCache(CACHE_KEY);
+        if (cached?.length) {
+          const nextCache = sessionCacheAfterDroppedIds(cached, dropped);
+          if (nextCache.changed) saveToSmartCache(CACHE_KEY, nextCache.images);
+        }
+        if (runAtCall !== galleryLoadSeqRef.current) return;
         const next = withoutDroppedGalleryImages(allImagesRef.current, dropped);
         if (next.length === allImagesRef.current.length) return;
         allImagesRef.current = next;
@@ -962,8 +995,8 @@ export const usePlaceGallery = (locationSource, options = {}) => {
                 id: 'db-thumb',
                 urls: { small: dbData.image_url, regular: dbData.image_url },
               };
-              processAndSetImages([thumb]);
-              saveToSmartCache(CACHE_KEY, [thumb]);
+              const shownThumb = processAndSetImages([thumb]);
+              saveToSmartCache(CACHE_KEY, shownThumb);
               markFetchDone();
               finishLoading();
               return;
