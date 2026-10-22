@@ -77,12 +77,15 @@ test('flag off leaves the live festival detail unchanged', () => {
   assert.doesNotMatch(panel, /from ['"]\.\/FestivalRoadMap/);
   assert.doesNotMatch(sheet, /FestivalRoadMap/);
   assert.match(panel, /nearbySights/);
-  assert.match(panel, /festivalRoadStartMonthDay/);
+  assert.match(panel, /data-festival-road-in-period="1"/);
+  assert.match(panel, /if \(!row\.inPeriod\) return null/);
   assert.doesNotMatch(panel, /mooniSlot/);
   const map = read('src/pages/Korea/FestivalRoadMap.jsx');
   assert.match(map, /react-map-gl\/mapbox/);
   assert.match(map, /LineString/);
   assert.match(map, /data-festival-road-pin/);
+  assert.match(map, /data-festival-road-map-tiles-idle/);
+  assert.match(map, /festivalRoadPinOffsets/);
   assert.match(panel, /data-week-shortcut/);
   assert.match(panel, /korea\.festival\.dateSheetWeekThis/);
   assert.match(panel, /korea\.festival\.dateSheetWeekNext/);
@@ -214,6 +217,10 @@ test('gray stops show nearby sights only, and skip a blank slot', () => {
   assert.equal(accessOnly.showAccess, true);
   assert.equal(accessOnly.accessItem, dimmed);
 
+  const deduped = festivalRoadFill(grayWithFestival, [], 'late');
+  assert.equal(deduped.showAccess, false);
+  assert.equal(deduped.accessItem, null);
+
   const current = { contentId: 'now', title: '이번 축제' };
   const colored = festivalRoadFill(
     { empty: false, items: [{ item: current, inPeriod: true }] },
@@ -264,8 +271,8 @@ test('map points follow stop order and stay hidden under two points', () => {
   assert.equal(goseongPin.kind, 'sight');
   assert.equal(goseongPin.label, '건봉사');
   const gangneungPin = points.find((point) => point.hubId === 'gangneung');
-  assert.equal(gangneungPin.kind, 'festival');
-  assert.equal(gangneungPin.lng, 128.876);
+  assert.ok(gangneungPin);
+  assert.ok(gangneungPin.lng > 128.5);
 
   const one = festivalRoadMapPoints([
     {
@@ -290,8 +297,33 @@ test('map points follow stop order and stay hidden under two points', () => {
   assert.equal(none.length, 0);
 
   const line = festivalRoadLineOrder(points);
-  assert.equal(line.length, points.length);
-  assert.deepEqual(line.map((point) => point.stopIndex).sort((a, b) => a - b), indexes);
+  assert.deepEqual(line.map((point) => point.stopIndex), indexes);
+
+  const central = beltForFestival({
+    contentId: 'wonju-anchor',
+    title: '원주 테스트',
+    addr1: '강원특별자치도 원주시 단구로',
+    areaCode: '32',
+  });
+  const stray = groupFestivalsForBelt(central, [
+    {
+      contentId: 'stray-wonju',
+      title: '잘못된 좌표',
+      addr1: '강원특별자치도 원주시 단구로',
+      areaCode: '32',
+      eventStartDate: '20261120',
+      eventEndDate: '20261122',
+      mapx: '126.45',
+      mapy: '37.45',
+    },
+  ], { startYmd: '20261022', endYmd: '20261025' });
+  const wonjuLeg = stray.find((leg) => leg.hubId === 'wonju');
+  assert.equal(wonjuLeg?.empty, true);
+  const strayPins = festivalRoadMapPoints(stray);
+  const wonjuPin = strayPins.find((point) => point.hubId === 'wonju');
+  assert.ok(wonjuPin);
+  assert.ok(wonjuPin.lng > 127);
+  assert.ok(wonjuPin.lat > 37);
 });
 
 test('road copy matches the approved lines', () => {

@@ -58,6 +58,7 @@ export default function FestivalRoadBlock({
   const roadFill = festivalRoadFill(
     roadSelectedLeg,
     roadNearbySights.map((sight) => sight.name),
+    item?.contentId,
   );
   const roadAllEmpty = festivalRoadAllEmpty(roadLegs);
 
