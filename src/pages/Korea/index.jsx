@@ -55,7 +55,7 @@ import {
   festivalHubTimeMajorLabel,
 } from './festivalHubDefaultPeriod.js';
 import FestivalDateSheet from './FestivalDateSheet';
-import { isGateoFestivalDateChipEnabled } from '../../shared/gateoFeatureFlags';
+import { isGateoFestivalDateChipEnabled, isGateoFestivalRoadEnabled } from '../../shared/gateoFeatureFlags';
 import { defaultFestivalHubTimeTab } from './festivalHubDefaultTimeTab.js';
 import { buildTasteTags, filterByTaste, tasteLabel } from './festivalTasteTags';
 import {
@@ -3516,6 +3516,7 @@ export default function KoreaFestivalHub() {
           favorited={Boolean(selected) && favoriteIds.has(String(selected.contentId))}
           onToggleFavorite={handleToggleFavorite}
           onClose={closeFestivalDetail}
+          festivalPool={isGateoFestivalRoadEnabled() ? itemsWithSocialPromo : undefined}
           onOpenHub={(hubId) => {
             resetIosZoomAfterInput();
             setPlaceReturnTo('/korea');

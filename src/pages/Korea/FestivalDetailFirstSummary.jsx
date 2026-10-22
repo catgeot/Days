@@ -50,6 +50,7 @@ const officialLinkClass =
  *   bookingSlot?: React.ReactNode,
  *   mooniSlot?: React.ReactNode,
  *   footnote?: React.ReactNode,
+ *   afterPlace?: React.ReactNode,
  *   hideEventHours?: boolean,
  * }} props
  */
@@ -70,6 +71,7 @@ export function FestivalDetailFirstSummary({
   bookingSlot,
   mooniSlot,
   footnote = null,
+  afterPlace = null,
   reserveDetail = false,
   hideEventHours = false,
 }) {
@@ -89,6 +91,7 @@ export function FestivalDetailFirstSummary({
   }, [reserveDetail, reserveSlack, timeText, feeText, placeText, showOfficial]);
   const hasFacts =
     dateText || timeText || feeText || placeText || bookingSlot || mooniSlot || showOfficial || footnote
+    || afterPlace
     || reserveTime || reserveFee || reserveOfficial;
   if (!hasFacts) return null;
 
@@ -120,6 +123,11 @@ export function FestivalDetailFirstSummary({
           ) : null}
         </SummaryRow>
       </dl>
+      {afterPlace ? (
+        <div className="mt-3" data-festival-road-slot="">
+          {afterPlace}
+        </div>
+      ) : null}
       {reserveSlack ? <div className="h-2.5" data-festival-summary-slack="" aria-hidden="true" /> : null}
       {footnote}
       {(bookingSlot || mooniSlot || showOfficial || reserveOfficial) && (

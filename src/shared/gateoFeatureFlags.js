@@ -13,6 +13,7 @@ export const GATEO_ENV_FLAG_NAMES = {
   PHOTO_CREDIT: 'VITE_GATEO_PHOTO_CREDIT',
   LIGHTBOX_HISTORY: 'VITE_GATEO_LIGHTBOX_HISTORY',
   LOCAL_INFO_ROLLOUT: 'VITE_GATEO_LOCAL_INFO_ROLLOUT',
+  FESTIVAL_ROAD: 'VITE_GATEO_FESTIVAL_ROAD',
 };
 
 /** @param {string} name */
@@ -67,4 +68,9 @@ export function resolveLightboxHistoryEnabled(always = false) {
 /** Extra local-info places. Cairo stays on when this is off. */
 export function isGateoLocalInfoRolloutEnabled() {
   return readGateoEnvFlag(GATEO_ENV_FLAG_NAMES.LOCAL_INFO_ROLLOUT);
+}
+
+/** Festival road draft inside festival detail. Default off. */
+export function isGateoFestivalRoadEnabled() {
+  return readGateoEnvFlag(GATEO_ENV_FLAG_NAMES.FESTIVAL_ROAD);
 }
