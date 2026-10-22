@@ -1,7 +1,7 @@
 # 축제 로드 — 킬러 맵 (장기·완성도 우선)
 
 **세션 표기**: `축제 로드 #{N}, {단계}` — **본 트랙 전용 순번** ([`cloud-preview-continuity.md`](./cloud-preview-continuity.md) §1.1)  
-**고정 브랜치**: `cursor/korea-festival-proxy`  
+**고정 브랜치**: `cursor/festival-road-pr-a-545a` (PR-A부터. 닫힌 `cursor/korea-festival-proxy` / PR #170 코드는 가져오지 않음)  
 **Preview**: `/qa/korea` → `/korea`  
 **상위 플랜**: [`korea-festival-hub-plan.md`](./korea-festival-hub-plan.md) S5 · corridor 칩 **부활 금지**  
 **워크플로**: 로직=feature · 문서=`main` — [`docs-on-main-workflow.md`](./docs-on-main-workflow.md)
@@ -103,11 +103,12 @@
 
 | | |
 |--|--|
-| **상태** | **#3-a 진입 QA** · 벨트 스크롤 수정 · 사람 Preview → **#4 leg UI** |
-| **브랜치** | `cursor/korea-festival-proxy` · tip `0708af9b` · PR [#170](https://github.com/catgeot/Days/pull/170) |
+| **상태** | **PR-A 골격** draft · 플래그 기본 OFF · 사람 Preview 후 **PR-B 지도 선** · 머지 금지 |
+| **브랜치** | `cursor/festival-road-pr-a-545a` · tip `8c94f1f2` · PR [#536](https://github.com/catgeot/Days/pull/536) |
+| **플래그** | `VITE_GATEO_FESTIVAL_ROAD` 기본 OFF. OFF면 축제 상세 무변화 |
 | **플랜** | 본 파일 · [`korea-festival-hub-plan.md`](./korea-festival-hub-plan.md) S5 벨트 절 |
-| **일지** | [`2026-09-01-project-log.md`](./2026-09-01-project-log.md) |
-| **Preview** | `/qa/korea` |
+| **일지** | [`2026-10-22-project-log.md`](./2026-10-22-project-log.md) |
+| **Preview** | 플래그 ON `/qa/festival-road` · 실상세 `/korea` |
 
 **#1 산출**: overrides 4벨트 · `koreaFestivalBelts.json` · generate/audit/smoke · LIVE 32건·10/17 stop 매칭.
 
@@ -122,16 +123,18 @@
 
 **#3-a 산출**: 벨트 아코디언 펼침 시 `scrollIntoView` — 하단 스크롤 후 로드 클릭 시 선택 카드 화면 유지.
 
-**다음 제시어 (#4 leg UI)**:
+**PR-A 산출**: `groupFestivalsForBelt` · 상세 «이 축제로 동선 보기» · 번호 순서 · 회색 점 · 이번주/다음주 · 빈 지도 자리(160px, Mapbox 없음).
+
+**다음 제시어 (PR-B 지도 선)**:
 
 ```
-축제 로드 #4, leg UI
+축제 로드 #5, 지도 선
 @plans/feature-handoff-index.md
-@plans/2026-09-01-project-log.md
+@plans/2026-10-22-project-log.md
 @plans/korea-festival-road-plan.md
-브랜치 cursor/korea-festival-proxy · PR #170 · Preview /qa/korea
-금지: 지도(#5) 착수 · plans/ feature 커밋 · corridor 부활 · 한 세션 leg UI+지도
-작업: FestivalBeltLegList · connector · 빈 leg · belt 모드 리스트 전환
+브랜치 cursor/festival-road-pr-a-545a · PR #536 · 플래그 VITE_GATEO_FESTIVAL_ROAD
+금지: 플래그 기본 ON · PR #170 코드 이관 · 저장·공유(PR-C) · plans/ feature 커밋 · Mapbox를 플래그 OFF 화면에 노출
+작업: 플래그 ON일 때만 지도 자리에 동선 선·번호 핀. OFF는 축제 상세 무변화
 ```
 
 **#1 미완 시 다음 채팅**: `축제 로드 #1a, 검증·확장` — index·일지에 **남은 항목**만.

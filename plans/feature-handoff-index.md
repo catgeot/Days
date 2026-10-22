@@ -1339,27 +1339,28 @@ PROD https://www.gateo.kr/
 
 | | |
 |--|--|
-| **상태** | **#3-a 진입 QA** · 벨트 스크롤 수정 · 사람 Preview → **#4 leg UI** |
-| **브랜치** | `cursor/korea-festival-proxy` · tip `0708af9b` |
-| **PR** | [#170](https://github.com/catgeot/Days/pull/170) |
+| **상태** | **PR-A 골격** draft [#536](https://github.com/catgeot/Days/pull/536) · 플래그 기본 OFF · 사람 Preview 후 **PR-B 지도 선** · 머지 금지 |
+| **브랜치** | `cursor/festival-road-pr-a-545a` · tip `8c94f1f2` |
+| **PR** | [#536](https://github.com/catgeot/Days/pull/536) |
+| **플래그** | `VITE_GATEO_FESTIVAL_ROAD` 기본 OFF |
 | **플랜** | [`korea-festival-road-plan.md`](./korea-festival-road-plan.md) §9 · [`korea-festival-hub-plan.md`](./korea-festival-hub-plan.md) S5 벨트 |
-| **일지** | [`2026-09-01-project-log.md`](./2026-09-01-project-log.md) |
-| **Preview** | `/qa/korea` → `/korea` · **로드** 칩·카드·선택 |
-| **순번** | 로드 트랙 **#0~** · 미완 이어하기 **#Na** ([`korea-festival-road-plan.md`](./korea-festival-road-plan.md)) |
-| **VERIFY** | `generate:korea-festival-belts` · `audit:korea-festival-belts` · `smoke:korea-festival-belts` · `build` |
+| **일지** | [`2026-10-22-project-log.md`](./2026-10-22-project-log.md) |
+| **Preview** | 플래그 ON `/qa/festival-road` · 실사용은 `/korea` 상세 |
+| **순번** | 로드 트랙 **#0~** · 이번 **#4 PR-A** · 다음 **#5 지도 선** |
+| **VERIFY** | `scripts/health/festival-road.test.mjs` · `npm run lint` |
 
-**게이트**: #3 belt 진입 smoke·build PASS ✅ · #6·#8 = 사람 Preview QA.
+**게이트**: 플래그 OFF 유닛 1건(상세 엔트리 없음) · ON 390 화면은 PR 본문. #170 브랜치 코드 이관 금지.
 
-**다음 제시어 (#4 leg UI)**:
+**다음 제시어 (#5 지도 선)**:
 
 ```
-축제 로드 #4, leg UI
+축제 로드 #5, 지도 선
 @plans/feature-handoff-index.md
-@plans/2026-09-01-project-log.md
+@plans/2026-10-22-project-log.md
 @plans/korea-festival-road-plan.md
-브랜치 cursor/korea-festival-proxy · PR #170 · Preview /qa/korea
-금지: 지도(#5) 착수 · plans/ feature 커밋 · corridor 부활 · 한 세션 leg UI+지도
-작업: FestivalBeltLegList · connector · 빈 leg · belt 모드 리스트 전환
+브랜치 cursor/festival-road-pr-a-545a · PR #536 · 플래그 VITE_GATEO_FESTIVAL_ROAD
+금지: 플래그 기본 ON · PR #170 코드 이관 · 저장·공유(PR-C) · plans/ feature 커밋 · Mapbox를 플래그 OFF 화면에 노출
+작업: 플래그 ON일 때만 지도 자리에 동선 선·번호 핀. OFF는 축제 상세 무변화
 ```
 
 ---
