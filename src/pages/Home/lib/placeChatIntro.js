@@ -26,6 +26,11 @@ import {
 import {
   sanitizeGeminiUserText,
 } from '../../../../supabase/functions/_shared/gemini/answerSanitize.mjs';
+import {
+  buildPlaceChatIntroBareFallbackKeys,
+  destinationKeyMatchesBareName,
+  pickBareFallbackIntroFromRows,
+} from './placeChatIntroBareFallback.js';
 
 export { isSyntheticOrEmptyPlaceDesc, needsPlaceChatIntroHydration };
 
@@ -181,6 +186,53 @@ export function buildPlaceChatIntroKeys(locOrName, lng = i18n.language) {
   return keys;
 }
 
+async function fetchIntroRowsMatchingBareName(bareName) {
+  const b = normalizeDestinationKey(bareName);
+  if (!isValidIntroDestination(b)) return [];
+
+  const exactKeys = [
+    withPlaceChatIntroLocale(b, 'ko'),
+    withPlaceChatIntroLocale(b, 'en'),
+  ].filter((k, i, arr) => k && arr.indexOf(k) === i);
+
+  const likeBase = `% ${b}`;
+  const likeEn = `% ${b}@en`;
+
+  const [exactRes, suffixedRes, suffixedEnRes] = await Promise.all([
+    supabase.from('place_chat_intro').select('destination_key, summary').in('destination_key', exactKeys),
+    supabase.from('place_chat_intro').select('destination_key, summary').ilike('destination_key', likeBase),
+    supabase.from('place_chat_intro').select('destination_key, summary').ilike('destination_key', likeEn),
+  ]);
+
+  const byKey = new Map();
+  for (const row of [
+    ...(exactRes.data ?? []),
+    ...(suffixedRes.data ?? []),
+    ...(suffixedEnRes.data ?? []),
+  ]) {
+    if (!destinationKeyMatchesBareName(row.destination_key, b)) continue;
+    byKey.set(row.destination_key, row);
+  }
+  return [...byKey.values()];
+}
+
+async function fetchBareFallbackIntroSummary(locOrName, lng, placeName) {
+  const bareKeys = buildPlaceChatIntroBareFallbackKeys(locOrName, lng);
+  for (const bareKey of bareKeys) {
+    const rows = await fetchIntroRowsMatchingBareName(bareKey);
+    const picked = pickBareFallbackIntroFromRows(rows, bareKey, lng);
+    if (!picked) continue;
+
+    const text = sanitizeGeminiUserText(picked.summary);
+    if (!text || !isPlaceChatIntroSummaryAccepted(text)) continue;
+
+    savePlaceChatIntroLocal(picked.logicalKey, text, picked.lngUsed);
+    const stripped = stripPlaceChatIntroForSummary(text, placeName);
+    if (stripped) return stripped;
+  }
+  return null;
+}
+
 async function fetchIntroByExactKey(destinationKey, lng = i18n.language) {
   const storageKey = withPlaceChatIntroLocale(destinationKey, lng);
   if (!isValidIntroDestination(destinationKey)) return null;
@@ -226,6 +278,10 @@ export async function fetchPlaceChatIntroSummaryForLocation(locOrName, lng = i18
     if (!raw) continue;
     const stripped = stripPlaceChatIntroForSummary(raw, placeName);
     if (stripped) return stripped;
+  }
+
+  if (typeof locOrName === 'object' && locOrName?.parentCity) {
+    return fetchBareFallbackIntroSummary(locOrName, lng, placeName);
   }
   return null;
 }
