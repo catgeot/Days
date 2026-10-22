@@ -41,6 +41,12 @@ import { filterOutSinglePersonPortraits, pickPlaceStatsGalleryRow } from '../../
 import { pickKoreanNameGallery } from '../../../utils/placeStatsNameGallery.js';
 import { lookupTourContentIdByName } from '../../../utils/tourKeywordPick.js';
 import { resolveGalleryStockQuery, isLatinPlaceName } from '../../../pages/Home/lib/uiPlaceAssetQuery.js';
+import {
+  filterGalleryIncomingForSave,
+  galleryUnsplashSearchQuery,
+  resolveGallerySaveTarget,
+  unsplashGallerySearchPage,
+} from '../../../utils/gallerySaveGuard.js';
 import { isLegacyMishealPlaceStatsId } from '../../../pages/Home/lib/legacyMishealPlaceSlugs.js';
 import { KO_GALLERY_QUERY_OVERRIDES } from '../../../pages/Home/lib/koreaPlaceMatchDictionary.js';
 import {
@@ -222,6 +228,12 @@ function resolvePexelsQueries(primaryQuery, backupQuery, koreanName, spotSlug) {
   const extras = spotSlug ? (GALLERY_PEXELS_EXTRA_QUERIES[spotSlug] || []) : [];
   const extraName = isLatinPlaceName(koreanName) ? koreanName : '';
   return [...new Set([primaryQuery, backupQuery, ...extras, extraName].filter(Boolean))];
+}
+
+async function fetchPlaceUnsplash(accessKey, query, page) {
+  const allowedPage = unsplashGallerySearchPage(page);
+  if (!accessKey || !query || !allowedPage) return [];
+  return apiClient.fetchUnsplashImages(accessKey, query, allowedPage);
 }
 
 function mergeGalleryAppend(existing, incoming, max = GALLERY_MAX_IMAGES) {
@@ -515,6 +527,12 @@ export const usePlaceGallery = (locationSource, options = {}) => {
       primaryQuery = slugOverride.primary;
       backupQuery = slugOverride.backup || backupQuery;
     }
+    const galleryTarget = resolveGallerySaveTarget(
+      typeof targetSpot === 'object' ? targetSpot : { name: String(targetSpot || koreanName || '') },
+      spotSlugForDb,
+    );
+    const unsplashQuery = galleryUnsplashSearchQuery(primaryQuery, galleryTarget);
+    const unsplashBackupQuery = galleryUnsplashSearchQuery(backupQuery, galleryTarget);
 
     // 라틴 스톡 쿼리가 없어도 place_stats·TourAPI는 계속한다. 빈 쿼리 Unsplash는 인물 오탐.
     if (!primaryQuery && !String(koreanName || '').trim()) {
@@ -786,12 +804,13 @@ export const usePlaceGallery = (locationSource, options = {}) => {
         return;
       }
       try {
-        let results = await apiClient.fetchUnsplashImages(ACCESS_KEY, primaryQuery, 1);
+        let results = await fetchPlaceUnsplash(ACCESS_KEY, unsplashQuery, 1);
         if (runId !== galleryLoadSeqRef.current) return;
-        if (results.length === 0 && backupQuery) {
-          results = await apiClient.fetchUnsplashImages(ACCESS_KEY, backupQuery, 1);
+        if (results.length === 0 && unsplashBackupQuery) {
+          results = await fetchPlaceUnsplash(ACCESS_KEY, unsplashBackupQuery, 1);
         }
         if (runId !== galleryLoadSeqRef.current) return;
+        results = filterGalleryIncomingForSave(results, galleryTarget);
         const beforeIds = new Set((allImagesRef.current || []).map((img) => img?.id).filter(Boolean));
         const { merged, added } = mergeGalleryFreshKeepHero(
           allImagesRef.current,
@@ -1088,25 +1107,29 @@ export const usePlaceGallery = (locationSource, options = {}) => {
       // 더보기: TourAPI page2는 중복·공허한 경우가 많아 건너뛰고 Unsplash/Pexels만 append
       unsplashPageRef.current += 1;
       console.log(
-        `🔄 더 많은 사진: 기존 ${allImagesRef.current.length}장 유지 · Unsplash/Pexels append (${primaryQuery}, unsplash p${unsplashPageRef.current})`,
+        `🔄 더 많은 사진: 기존 ${allImagesRef.current.length}장 유지 · Unsplash/Pexels append (${unsplashQuery}, unsplash p${unsplashPageRef.current})`,
       );
     }
 
     try {
       let results = [];
 
-      if (primaryQuery && ACCESS_KEY) {
-        results = await apiClient.fetchUnsplashImages(ACCESS_KEY, primaryQuery, unsplashPageRef.current);
+      if (unsplashQuery && ACCESS_KEY) {
+        results = await fetchPlaceUnsplash(ACCESS_KEY, unsplashQuery, unsplashPageRef.current);
         if (isStale()) return;
 
-        if (results.length === 0 && backupQuery) {
-          results = await apiClient.fetchUnsplashImages(ACCESS_KEY, backupQuery, unsplashPageRef.current);
+        if (results.length === 0 && unsplashBackupQuery) {
+          results = await fetchPlaceUnsplash(ACCESS_KEY, unsplashBackupQuery, unsplashPageRef.current);
         }
         if (results.length === 0 && spotSlugForDb) {
           const unsplashExtras = GALLERY_UNSPLASH_EXTRA_QUERIES[spotSlugForDb] || [];
           for (const extraQuery of unsplashExtras) {
             if (results.length > 0) break;
-            results = await apiClient.fetchUnsplashImages(ACCESS_KEY, extraQuery, unsplashPageRef.current);
+            results = await fetchPlaceUnsplash(
+              ACCESS_KEY,
+              galleryUnsplashSearchQuery(extraQuery, galleryTarget),
+              unsplashPageRef.current,
+            );
           }
         }
         if (isStale()) return;
@@ -1149,6 +1172,7 @@ export const usePlaceGallery = (locationSource, options = {}) => {
       }
 
       if (isStale()) return;
+      results = filterGalleryIncomingForSave(results, galleryTarget);
 
       // 5) soft 국내: 스톡 0일 때만 TourAPI (해외·공식 contentId 경로 제외)
       if (
@@ -1176,6 +1200,7 @@ export const usePlaceGallery = (locationSource, options = {}) => {
         } catch (tourErr) {
           console.warn('⚠️ TourAPI soft fallback miss', tourErr);
         }
+        results = filterGalleryIncomingForSave(results, galleryTarget);
       }
 
       // 🚨 [New] 강제 새로고침에서 결과를 얻지 못했다면 기존 캐시/상태 보존
