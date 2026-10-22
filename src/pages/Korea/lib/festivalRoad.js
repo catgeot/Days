@@ -367,10 +367,12 @@ function hubCenterPoint(hubId) {
  * @returns {{ lng: number, lat: number, label: string } | null}
  */
 function firstSightPoint(hubId) {
+  const hubPoint = hubCenterPoint(hubId);
   for (const list of listsForHub(hubId)) {
     for (const member of list?.members || []) {
       const point = festivalLngLat(member?.lng, member?.lat);
       if (!point) continue;
+      if (hubPoint && !festivalCoordWithinHub(point, hubPoint)) continue;
       return { ...point, label: String(member?.attractionName || '').trim() };
     }
   }
@@ -461,6 +463,15 @@ export function festivalRoadLineOrder(points) {
 }
 
 /**
+ * LineString vertices — only {@link festivalRoadMapPoints} display coordinates.
+ * @param {{ lng: number, lat: number, stopIndex?: number }[]} points
+ * @returns {[number, number][]}
+ */
+export function festivalRoadLineCoordinates(points) {
+  return festivalRoadLineOrder(points).map((point) => [point.lng, point.lat]);
+}
+
+/**
  * Pixel offsets when stops share nearly the same coordinate.
  * @param {{ stopIndex: number, lng: number, lat: number }[]} points
  */
@@ -492,12 +503,12 @@ export function festivalRoadPinOffsets(points) {
     const ordered = [...cluster].sort(
       (a, b) => sorted[a].stopIndex - sorted[b].stopIndex,
     );
-    const baseRadius = 16;
+    const baseRadius = 24;
     const step = 360 / ordered.length;
     ordered.forEach((pointIndex, ringIndex) => {
       const point = sorted[pointIndex];
       const angle = ((ringIndex * step) - 90) * (Math.PI / 180);
-      const radius = baseRadius + ringIndex * 4;
+      const radius = baseRadius + ringIndex * 7;
       offsets.set(point.stopIndex, {
         x: Math.round(Math.cos(angle) * radius),
         y: Math.round(Math.sin(angle) * radius),

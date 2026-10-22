@@ -14,6 +14,7 @@ import {
   beltStopNearbyLabels,
   festivalRoadAllEmpty,
   festivalRoadFill,
+  festivalRoadLineCoordinates,
   festivalRoadLineOrder,
   festivalRoadMapPoints,
   festivalRoadTakeDiscardedCoords,
@@ -87,6 +88,9 @@ test('flag off leaves the live festival detail unchanged', () => {
   assert.match(map, /data-festival-road-pin/);
   assert.match(map, /data-festival-road-map-tiles-idle/);
   assert.match(map, /festivalRoadPinOffsets/);
+  assert.match(map, /festivalRoadLineCoordinates/);
+  assert.match(map, /reuseMaps/);
+  assert.doesNotMatch(map, /key=\{viewKey\}/);
   assert.match(panel, /data-week-shortcut/);
   assert.match(panel, /korea\.festival\.dateSheetWeekThis/);
   assert.match(panel, /korea\.festival\.dateSheetWeekNext/);
@@ -334,6 +338,14 @@ test('map points follow stop order and stay hidden under two points', () => {
   assert.equal(discards.length, 1);
   assert.equal(discards[0].reason, 'festival_coord_too_far');
   assert.equal(discards[0].hubId, 'wonju');
+  const lineCoords = festivalRoadLineCoordinates(strayPins);
+  for (const discard of discards) {
+    const bad = [discard.lng, discard.lat];
+    for (const coord of lineCoords) {
+      assert.notDeepEqual(coord, bad);
+    }
+  }
+  assert.ok(lineCoords.every((coord) => coord[0] > 127 && coord[0] < 130));
 
   const centralBelt = beltForFestival({
     contentId: 'wonju-order',
