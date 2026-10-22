@@ -328,6 +328,30 @@ export async function generatePlaceChatIntroWithAi(destinationDisplayName, lng =
   }
 }
 
+/**
+ * AI 생성·persist에 쓸 destination_key (항상 primary lookup key — fallback 키로 저장하지 않음).
+ * parentCity 있으면 `{parentCity} {name}`만; country+name·bare는 조회 전용.
+ */
+export function resolvePlaceChatIntroPersistKey(locOrName, lng = i18n.language) {
+  const keys = buildPlaceChatIntroKeys(locOrName, lng);
+  if (!keys.length) return null;
+  const primaryKey = keys[0];
+  const parentCity =
+    typeof locOrName === 'object' ? normalizeDestinationKey(locOrName?.parentCity || '') : '';
+  if (typeof locOrName === 'string') {
+    return normalizeDestinationKey(locOrName);
+  }
+  return (parentCity && primaryKey) || formatPlaceChatLabel(locOrName, lng) || primaryKey;
+}
+
+/** @returns {string[]} lookup-only keys (country+name, bare) — never used for AI persist */
+export function placeChatIntroFallbackOnlyKeys(locOrName, lng = i18n.language) {
+  if (!locOrName || typeof locOrName !== 'object' || !locOrName.parentCity) return [];
+  const keys = buildPlaceChatIntroKeys(locOrName, lng);
+  const bare = buildPlaceChatIntroBareFallbackKeys(locOrName, lng);
+  return [...new Set([...keys.slice(1), ...bare].filter(Boolean))];
+}
+
 /** 동시 방문·탭 전환 시 동일 키 AI 재호출 방지 */
 const introEnsureInflight = new Map();
 /** 생성 실패 키 — 세션 내 재시도 폭주 방지 (캐시 hit는 계속 조회) */
@@ -363,12 +387,8 @@ export async function ensurePlaceChatIntroForLocation(locOrName, options = {}) {
         locOrName?.displayLabel ||
         locOrName?.name ||
         primaryKey;
-  const parentCity =
-    typeof locOrName === 'object' ? normalizeDestinationKey(locOrName?.parentCity || '') : '';
-  const generateLabel =
-    typeof locOrName === 'string'
-      ? normalizeDestinationKey(locOrName)
-      : (parentCity && primaryKey) || formatPlaceChatLabel(locOrName, lng) || primaryKey;
+  const generateLabel = resolvePlaceChatIntroPersistKey(locOrName, lng);
+  if (!generateLabel) return null;
 
   const promise = (async () => {
     try {
