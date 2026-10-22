@@ -8,11 +8,13 @@ import {
   isGateoFestivalRoadEnabled,
 } from '../../src/shared/gateoFeatureFlags.js';
 import {
+  FESTIVAL_ROAD_MAP_MIN_POINTS,
   FESTIVAL_ROAD_MAP_SLOT_PX,
   beltForFestival,
   beltStopNearbyLabels,
   festivalRoadAllEmpty,
   festivalRoadFill,
+  festivalRoadMapPoints,
   groupFestivalsForBelt,
 } from '../../src/pages/Korea/lib/festivalRoad.js';
 
@@ -65,6 +67,14 @@ test('flag off leaves the live festival detail unchanged', () => {
   assert.match(panel, /FESTIVAL_ROAD_MAP_SLOT_PX/);
   assert.equal(FESTIVAL_ROAD_MAP_SLOT_PX, 160);
   assert.match(panel, /data-festival-road-map/);
+  assert.match(panel, /mapPoints\.length >= FESTIVAL_ROAD_MAP_MIN_POINTS/);
+  assert.match(panel, /import\('\.\/FestivalRoadMap\.jsx'\)/);
+  assert.doesNotMatch(panel, /from ['"]\.\/FestivalRoadMap/);
+  assert.doesNotMatch(sheet, /FestivalRoadMap/);
+  const map = read('src/pages/Korea/FestivalRoadMap.jsx');
+  assert.match(map, /react-map-gl\/mapbox/);
+  assert.match(map, /LineString/);
+  assert.match(map, /data-festival-road-pin/);
   assert.match(panel, /data-week-shortcut/);
   assert.match(panel, /korea\.festival\.dateSheetWeekThis/);
   assert.match(panel, /korea\.festival\.dateSheetWeekNext/);
@@ -204,6 +214,72 @@ test('gray stops show nearby sights only, and skip a blank slot', () => {
   assert.equal(colored.showNearby, true);
   assert.equal(colored.showAccess, true);
   assert.equal(colored.accessItem, current);
+});
+
+test('map points follow stop order and stay hidden under two points', () => {
+  assert.equal(FESTIVAL_ROAD_MAP_MIN_POINTS, 2);
+  const sokcho = {
+    contentId: 'sokcho-map',
+    title: '속초 해변 축제',
+    addr1: '강원특별자치도 속초시 해오름로 186',
+    areaCode: '32',
+    eventStartDate: '20261022',
+    eventEndDate: '20261025',
+    mapx: '128.5918',
+    mapy: '38.207',
+  };
+  const gangneung = {
+    contentId: 'gangneung-map',
+    title: '강릉 단풍 축제',
+    addr1: '강원특별자치도 강릉시 강릉대로 33',
+    areaCode: '32',
+    eventStartDate: '20261110',
+    eventEndDate: '20261112',
+    mapx: '128.876',
+    mapy: '37.751',
+  };
+  const belt = beltForFestival(sokcho);
+  const legs = groupFestivalsForBelt(belt, [sokcho, gangneung], {
+    startYmd: '20261022',
+    endYmd: '20261025',
+  });
+  const points = festivalRoadMapPoints(legs);
+  assert.ok(points.length >= FESTIVAL_ROAD_MAP_MIN_POINTS);
+  const indexes = points.map((point) => point.stopIndex);
+  assert.deepEqual([...indexes].sort((a, b) => a - b), indexes);
+  const sokchoPin = points.find((point) => point.hubId === 'sokcho');
+  assert.equal(sokchoPin.kind, 'festival');
+  assert.equal(sokchoPin.stopIndex, 3);
+  assert.equal(sokchoPin.lng, 128.5918);
+  assert.equal(sokchoPin.lat, 38.207);
+  const goseongPin = points.find((point) => point.hubId === 'goseong');
+  assert.equal(goseongPin.kind, 'sight');
+  assert.equal(goseongPin.label, '건봉사');
+  const gangneungPin = points.find((point) => point.hubId === 'gangneung');
+  assert.equal(gangneungPin.kind, 'festival');
+  assert.equal(gangneungPin.lng, 128.876);
+
+  const one = festivalRoadMapPoints([
+    {
+      stopIndex: 1,
+      hubId: 'not-a-hub',
+      label: '하나',
+      items: [{ item: { title: '하나', mapx: '128.5', mapy: '38.2' }, inPeriod: true }],
+    },
+  ]);
+  assert.equal(one.length, 1);
+  assert.ok(one.length < FESTIVAL_ROAD_MAP_MIN_POINTS);
+
+  const none = festivalRoadMapPoints([
+    { stopIndex: 1, hubId: 'not-a-hub', label: '없음', items: [] },
+    {
+      stopIndex: 2,
+      hubId: '',
+      label: '',
+      items: [{ item: { title: '바다', mapx: '1', mapy: '1' }, inPeriod: true }],
+    },
+  ]);
+  assert.equal(none.length, 0);
 });
 
 test('road copy matches the approved lines', () => {
