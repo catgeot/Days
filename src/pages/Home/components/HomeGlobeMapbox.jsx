@@ -61,7 +61,9 @@ import {
   markGlobeCameraBusy,
   clearGlobeCameraBusy,
   isGlobeCameraBusy,
+  GATEO_DOT_LAYER_ID,
 } from '../lib/globeMarkerLayers';
+import { CLUSTER_POI_DOT_ID } from '../lib/globeClusterBoundaries';
 import { GLOBE_MODE, canEndTour, canSkipTour, isTourMode } from '../lib/globeMode';
 import { createGlobeTourEngine } from '../lib/globeTourEngine';
 import { resolveGlobeTourConfig } from '../lib/globeTourResolve';
@@ -290,74 +292,6 @@ const resolveGlobePixelRatio = () => {
   return Math.min(window.devicePixelRatio || 1, GLOBE_MAX_PIXEL_RATIO);
 };
 
-// mapbox-gl 3.20 reads window.devicePixelRatio inside resize/_render (no pixelRatio option).
-// Cap only while this map's resize/render run so other maps and canvases keep the native ratio.
-function readNativeDevicePixelRatio() {
-  if (typeof window === 'undefined') return 1;
-  const proto = Object.getOwnPropertyDescriptor(Window.prototype, 'devicePixelRatio');
-  if (proto?.get) {
-    const n = Number(proto.get.call(window));
-    if (Number.isFinite(n) && n > 0) return n;
-  }
-  const own = Object.getOwnPropertyDescriptor(window, 'devicePixelRatio');
-  const raw = own?.get ? own.get.call(window) : own && 'value' in own ? own.value : window.devicePixelRatio;
-  const n = Number(raw);
-  return Number.isFinite(n) && n > 0 ? n : 1;
-}
-
-function runWithGlobePixelRatioCap(fn, maxRatio = GLOBE_MAX_PIXEL_RATIO) {
-  if (typeof window === 'undefined') return fn();
-  const ownBefore = Object.getOwnPropertyDescriptor(window, 'devicePixelRatio');
-  const proto = Object.getOwnPropertyDescriptor(Window.prototype, 'devicePixelRatio');
-  const capped = Math.min(readNativeDevicePixelRatio(), maxRatio);
-  Object.defineProperty(window, 'devicePixelRatio', {
-    configurable: true,
-    get() {
-      return capped;
-    },
-  });
-  try {
-    return fn();
-  } finally {
-    try {
-      delete window.devicePixelRatio;
-    } catch {
-      // Host locked the property.
-    }
-    if (ownBefore && !proto?.get) {
-      try {
-        Object.defineProperty(window, 'devicePixelRatio', ownBefore);
-      } catch {
-        // Prototype getter remains after delete.
-      }
-    }
-  }
-}
-
-function syncGlobeCanvasToPixelRatioCap(map, maxRatio = GLOBE_MAX_PIXEL_RATIO) {
-  if (!map || map._removed) return;
-  runWithGlobePixelRatioCap(() => {
-    try {
-      map.resize();
-      map.triggerRepaint?.();
-    } catch {
-      // Map may be mid-remove.
-    }
-  }, maxRatio);
-}
-
-function scopeGlobePixelRatio(map, maxRatio) {
-  if (!map || map.__gateoDprScoped || typeof window === 'undefined') return;
-  map.__gateoDprScoped = true;
-  const wrap = (fn) => function scopedPixelRatio(...args) {
-    return runWithGlobePixelRatioCap(() => fn.apply(this, args), maxRatio);
-  };
-  if (typeof map.resize === 'function') map.resize = wrap(map.resize);
-  if (typeof map._render === 'function') map._render = wrap(map._render);
-  syncGlobeCanvasToPixelRatioCap(map, maxRatio);
-  requestAnimationFrame(() => syncGlobeCanvasToPixelRatioCap(map, maxRatio));
-}
-
 function isGlobeCameraInMotion(map) {
   if (!map || map._removed) return false;
   try {
@@ -469,6 +403,45 @@ const safeMapResize = (map) => {
     // Map may be mid-projection/style transition.
   }
 };
+
+function refreshGlobeMapCanvas(map) {
+  if (!map || map._removed) return;
+  safeMapResize(map);
+  requestAnimationFrame(() => {
+    safeMapResize(map);
+    try {
+      map.triggerRepaint?.();
+    } catch {
+      // Map may be mid-teardown.
+    }
+  });
+}
+
+function publishGlobeQaMetrics(map) {
+  if (!map || map._removed || typeof window === 'undefined') return;
+  if (!/(?:\?|&)gateoGlobeQa=1(?:&|$)/.test(window.location.search)) return;
+  try {
+    const canvas = map.getCanvas();
+    const cssW = canvas?.clientWidth ?? 0;
+    const dotLayers = [GATEO_DOT_LAYER_ID, CLUSTER_POI_DOT_ID].filter((id) => map.getLayer(id));
+    const gateoDots = map.getLayer(GATEO_DOT_LAYER_ID)
+      ? map.queryRenderedFeatures({ layers: [GATEO_DOT_LAYER_ID] }).length
+      : 0;
+    const clusterDots = map.getLayer(CLUSTER_POI_DOT_ID)
+      ? map.queryRenderedFeatures({ layers: [CLUSTER_POI_DOT_ID] }).length
+      : 0;
+    window.__gateoGlobeQaMetrics = {
+      idleAt: Date.now(),
+      gateoDots,
+      clusterDots,
+      symbolLayersReady: dotLayers.length,
+      canvasBackingRatio: cssW > 0 ? canvas.width / cssW : null,
+      zoom: map.getZoom(),
+    };
+  } catch {
+    // QA hook only.
+  }
+}
 
 const areCoordsNear = (a, b, thresholdDeg) => {
   const latDiff = Math.abs(a.lat - b.lat);
@@ -2570,8 +2543,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
         if (isFlightCinemaGlobeReady(map)) {
           flightCinemaLayersLatchedRef.current = true;
         }
-        syncGlobeCanvasToPixelRatioCap(map);
-        safeMapResize(map);
+        refreshGlobeMapCanvas(map);
         syncGateoMarkerLayers();
         applyPlaceLabelVisibility();
         try {
@@ -2770,11 +2742,9 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     // 카드/탭 전환 후 display:none -> block 복귀 시 캔버스가 축소된 채 남는 경우가 있어
     // 프레임 경계에서 resize를 두 번 보정한다.
     const raf1 = requestAnimationFrame(() => {
-      safeMapResize(map);
-      syncGlobeCanvasToPixelRatioCap(map);
+      refreshGlobeMapCanvas(map);
       raf2 = requestAnimationFrame(() => {
-        safeMapResize(map);
-        syncGlobeCanvasToPixelRatioCap(map);
+        refreshGlobeMapCanvas(map);
         syncMapZoom();
         applyPlaceLabelVisibility();
       });
@@ -3258,7 +3228,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
           markGlobeLoadPhase('onLoad');
           mapLoadedRef.current = true;
           const map = evt?.target ?? mapRef.current?.getMap();
-          if (map) scopeGlobePixelRatio(map, GLOBE_MAX_PIXEL_RATIO);
+          if (map) refreshGlobeMapCanvas(map);
 
           const diagMoveLayerHookEnabled =
             import.meta.env.DEV
@@ -3398,6 +3368,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
           if (!pauseRenderRef.current && !pageHiddenRef.current && !idleRotateStoppedRef.current) {
             tryRevealGlobe();
           }
+          if (map) publishGlobeQaMetrics(map);
         }}
         onDragStart={(event) => {
           pauseAutoRotateIfGlobeHit(event);
