@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import Map, { Layer, Marker, Source, useControl } from 'react-map-gl/mapbox';
 import MapboxLanguage from '@mapbox/mapbox-gl-language';
 import 'mapbox-gl/dist/mapbox-gl.css';
+import { festivalRoadLineOrder } from './lib/festivalRoad.js';
 
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
 const MAP_STYLE = 'mapbox://styles/mapbox/outdoors-v12';
@@ -16,12 +17,13 @@ function LanguageControl() {
  * @param {{ stopIndex: number, lng: number, lat: number, label?: string }[]} points
  */
 function lineFeature(points) {
+  const alongRoute = festivalRoadLineOrder(points);
   return {
     type: 'Feature',
     properties: {},
     geometry: {
       type: 'LineString',
-      coordinates: points.map((point) => [point.lng, point.lat]),
+      coordinates: alongRoute.map((point) => [point.lng, point.lat]),
     },
   };
 }
@@ -46,7 +48,11 @@ function fitRoad(map, points) {
       [west, south],
       [east, north],
     ],
-    { padding: 28, duration: 0, maxZoom: 9 },
+    {
+      padding: { top: 32, bottom: 56, left: 32, right: 80 },
+      duration: 0,
+      maxZoom: 9,
+    },
   );
 }
 

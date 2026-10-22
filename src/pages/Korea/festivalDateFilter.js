@@ -47,6 +47,22 @@ export function seoulTodayYmd(now = new Date()) {
 }
 
 /**
+ * @param {Date} [now]
+ * @returns {number} milliseconds, at least 1000
+ */
+export function msUntilNextSeoulMidnight(now = new Date()) {
+  const ymd = seoulTodayYmd(now);
+  if (!isYmd(ymd)) return 60_000;
+  const next = addDaysYmd(ymd, 1);
+  const midnightUtc = Date.UTC(
+    Number(next.slice(0, 4)),
+    Number(next.slice(4, 6)) - 1,
+    Number(next.slice(6, 8)),
+  ) - 9 * 60 * 60 * 1000;
+  return Math.max(1000, midnightUtc - now.getTime() + 20);
+}
+
+/**
  * @param {string} ymd
  * @param {number} days
  * @returns {string} YYYYMMDD, or '' when ymd is not a real day

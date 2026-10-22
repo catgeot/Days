@@ -4,6 +4,8 @@ import {
   FESTIVAL_ROAD_MAP_MIN_POINTS,
   FESTIVAL_ROAD_MAP_SLOT_PX,
   festivalRoadMapPoints,
+  festivalRoadStartMonthDay,
+  festivalRoadNearbyMapHref,
 } from './lib/festivalRoad.js';
 
 const FestivalRoadMap = lazy(() => import('./FestivalRoadMap.jsx'));
@@ -17,6 +19,47 @@ const WEEK_CHIPS = [
   { id: 1, labelKey: 'korea.festival.dateSheetWeekNext' },
 ];
 
+const NEARBY_TARGET_CLASS =
+  'block w-full text-left text-sm font-medium text-stone-800 underline decoration-stone-300 underline-offset-2 break-keep';
+
+/**
+ * @param {{ name: string, contentId?: string, listId?: string, lat?: number | null, lng?: number | null }} sight
+ * @param {(sight: object) => void} [onSelectNearby]
+ */
+function NearbySightControl({ sight, onSelectNearby }) {
+  const detail = Boolean(sight.contentId || sight.listId);
+  if (detail && onSelectNearby) {
+    return (
+      <button
+        type="button"
+        data-festival-road-nearby-target=""
+        data-festival-road-nearby-id={sight.contentId || ''}
+        onClick={() => onSelectNearby(sight)}
+        className={NEARBY_TARGET_CLASS}
+      >
+        {sight.name}
+      </button>
+    );
+  }
+  const href = festivalRoadNearbyMapHref(sight);
+  if (!href) {
+    return (
+      <span className="block text-sm font-medium text-stone-800 break-keep">{sight.name}</span>
+    );
+  }
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      data-festival-road-nearby-target=""
+      className={NEARBY_TARGET_CLASS}
+    >
+      {sight.name}
+    </a>
+  );
+}
+
 /**
  * Draft route. The map chunk loads only when the line has two or more points.
  * @param {{
@@ -29,10 +72,10 @@ const WEEK_CHIPS = [
  *   onSelectStop: (stopIndex: number) => void,
  *   originHubId?: string,
  *   showNearby: boolean,
- *   nearbyLabels: string[],
+ *   nearbySights: object[],
+ *   onSelectNearby?: (sight: object) => void,
  *   showAccess: boolean,
  *   accessSlot?: React.ReactNode,
- *   mooniSlot?: React.ReactNode,
  * }} props
  */
 export function FestivalRoadPanel({
@@ -45,10 +88,10 @@ export function FestivalRoadPanel({
   onSelectStop,
   originHubId = '',
   showNearby,
-  nearbyLabels,
+  nearbySights,
+  onSelectNearby,
   showAccess,
   accessSlot = null,
-  mooniSlot = null,
 }) {
   const { t } = useTranslation();
   const mapPoints = festivalRoadMapPoints(legs);
@@ -131,17 +174,29 @@ export function FestivalRoadPanel({
                   ) : null}
                   {leg.items?.length ? (
                     <span className="mt-1 block space-y-0.5">
-                      {leg.items.map((row) => (
-                        <span
-                          key={String(row.item?.contentId || row.item?.title)}
-                          data-festival-road-in-period={row.inPeriod ? '1' : '0'}
-                          className={`block text-xs break-keep ${
-                            row.inPeriod ? 'font-semibold text-stone-800' : 'text-stone-400'
-                          }`}
-                        >
-                          {String(row.item?.title || '')}
-                        </span>
-                      ))}
+                      {leg.items.map((row) => {
+                        const title = String(row.item?.title || '').trim();
+                        if (!title) return null;
+                        const start = row.inPeriod ? null : festivalRoadStartMonthDay(row.item);
+                        if (!row.inPeriod && !start) return null;
+                        if (leg.empty && !start) return null;
+                        return (
+                          <span
+                            key={String(row.item?.contentId || title)}
+                            data-festival-road-in-period={row.inPeriod ? '1' : '0'}
+                            {...(start
+                              ? { 'data-festival-road-starts': `${start.month}/${start.day}` }
+                              : {})}
+                            className={`block text-xs break-keep ${
+                              row.inPeriod ? 'font-semibold text-stone-800' : 'text-stone-400'
+                            }`}
+                          >
+                            {start
+                              ? `${title} · ${t('korea.festival.road.startsOn', start)}`
+                              : title}
+                          </span>
+                        );
+                      })}
                     </span>
                   ) : null}
                 </span>
@@ -154,9 +209,9 @@ export function FestivalRoadPanel({
                         {t('korea.festival.detail.nearbySights')}
                       </p>
                       <ul className="mt-1 space-y-1">
-                        {nearbyLabels.map((name) => (
-                          <li key={name} className="text-sm font-medium text-stone-800 break-keep">
-                            {name}
+                        {(nearbySights || []).map((sight) => (
+                          <li key={sight.name}>
+                            <NearbySightControl sight={sight} onSelectNearby={onSelectNearby} />
                           </li>
                         ))}
                       </ul>
@@ -169,7 +224,6 @@ export function FestivalRoadPanel({
           );
         })}
       </ol>
-      {mooniSlot}
     </div>
   );
 }

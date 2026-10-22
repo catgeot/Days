@@ -195,23 +195,75 @@ export function festivalRoadAllEmpty(legs) {
 }
 
 /**
+ * Month/day of a festival start, for an out-of-period row. Null when the date is missing.
+ * @param {object | null | undefined} item
+ * @returns {{ month: number, day: number } | null}
+ */
+export function festivalRoadStartMonthDay(item) {
+  const ymd = String(item?.eventStartDate || '');
+  if (!isYmd(ymd)) return null;
+  return {
+    month: Number(ymd.slice(4, 6)),
+    day: Number(ymd.slice(6, 8)),
+  };
+}
+
+/**
+ * Local scenic sights for a gray stop. contentId opens place detail; lat/lng is the map fallback.
+ * @param {string} hubId
+ * @param {number} [limit]
+ */
+export function beltStopNearbySights(hubId, limit = NEARBY_LABEL_LIMIT) {
+  const cap = Math.max(0, Number(limit) || 0);
+  const id = String(hubId || '').trim();
+  /** @type {{ name: string, hubId: string, listId: string, contentId: string, lat: number | null, lng: number | null }[]} */
+  const sights = [];
+  const seen = new Set();
+  for (const list of listsForHub(id)) {
+    for (const member of list?.members || []) {
+      const name = String(member?.attractionName || '').trim();
+      if (!name || seen.has(name)) continue;
+      seen.add(name);
+      const lat = Number(member?.lat);
+      const lng = Number(member?.lng);
+      sights.push({
+        name,
+        hubId: id,
+        listId: String(list?.listId || ''),
+        contentId: String(member?.contentId || '').trim(),
+        lat: Number.isFinite(lat) ? lat : null,
+        lng: Number.isFinite(lng) ? lng : null,
+      });
+      if (sights.length >= cap) return sights;
+    }
+  }
+  return sights;
+}
+
+/**
  * Local scenic names already used as 주변 볼거리. No extra empty row when none exist.
  * @param {string} hubId
  * @param {number} [limit]
  * @returns {string[]}
  */
 export function beltStopNearbyLabels(hubId, limit = NEARBY_LABEL_LIMIT) {
-  const cap = Math.max(0, Number(limit) || 0);
-  const names = [];
-  for (const list of listsForHub(hubId)) {
-    for (const member of list?.members || []) {
-      const name = String(member?.attractionName || '').trim();
-      if (!name || names.includes(name)) continue;
-      names.push(name);
-      if (names.length >= cap) return names;
-    }
+  return beltStopNearbySights(hubId, limit).map((sight) => sight.name);
+}
+
+/**
+ * Map link when a sight has no place detail id.
+ * @param {{ name?: string, lat?: number | null, lng?: number | null }} sight
+ * @returns {string}
+ */
+export function festivalRoadNearbyMapHref(sight) {
+  const lat = Number(sight?.lat);
+  const lng = Number(sight?.lng);
+  if (Number.isFinite(lat) && Number.isFinite(lng)) {
+    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${lat},${lng}`)}`;
   }
-  return names;
+  const name = String(sight?.name || '').trim();
+  if (!name) return '';
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(name)}`;
 }
 
 /**
@@ -323,4 +375,23 @@ export function festivalRoadMapPoints(legs) {
     });
   }
   return points;
+}
+
+/**
+ * Line vertices sorted along the belt axis (first stop → last) to avoid zigzag chords.
+ * Pin markers still use belt stop order via {@link festivalRoadMapPoints}.
+ * @param {{ stopIndex: number, lng: number, lat: number }[]} points
+ */
+export function festivalRoadLineOrder(points) {
+  if (!Array.isArray(points) || points.length < 2) return points || [];
+  const ordered = [...points].sort((a, b) => a.stopIndex - b.stopIndex);
+  if (ordered.length < 3) return ordered;
+  const first = ordered[0];
+  const last = ordered[ordered.length - 1];
+  const dx = last.lng - first.lng;
+  const dy = last.lat - first.lat;
+  const denom = dx * dx + dy * dy || 1;
+  const projection = (point) =>
+    ((point.lng - first.lng) * dx + (point.lat - first.lat) * dy) / denom;
+  return [...ordered].sort((a, b) => projection(a) - projection(b));
 }
