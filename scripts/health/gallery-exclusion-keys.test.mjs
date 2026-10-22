@@ -200,6 +200,8 @@ test('hook filters every render path and writes a stale persist drop into cache'
   assert.match(hook, /filterExcludedGalleryImages\(rawImages, excludedKeysRef\.current\)/);
   assert.doesNotMatch(hook, /galleryHiddenIdsKey\(CACHE_VERSION/);
   assert.match(hook, /readGalleryHiddenIds\(placeKey, localStorage\)/);
+  assert.match(hook, /galleryAtMax: images\.length >= GALLERY_MAX_IMAGES/);
+  assert.match(hook, /void loadGalleryExcludedKeys\(/);
   assert.match(sql, /FUNCTION public\.gallery_excluded_keys\(p_place_id text\)/);
   assert.match(sql, /SECURITY DEFINER/);
   assert.match(sql, /GRANT EXECUTE ON FUNCTION public\.gallery_excluded_keys\(text\) TO anon, authenticated/);
