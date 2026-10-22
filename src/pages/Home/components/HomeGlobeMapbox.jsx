@@ -1742,6 +1742,11 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
 
     try {
       cameraAnimatingRef.current = true;
+      autoRotateRef.current = false;
+      if (rotationFrameRef.current) {
+        cancelAnimationFrame(rotationFrameRef.current);
+        rotationFrameRef.current = null;
+      }
       map.flyTo({
         center: [normalizedLng, lat],
         zoom: targetZoom,
