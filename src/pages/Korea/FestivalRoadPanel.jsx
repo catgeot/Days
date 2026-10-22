@@ -4,7 +4,6 @@ import {
   FESTIVAL_ROAD_MAP_MIN_POINTS,
   FESTIVAL_ROAD_MAP_SLOT_PX,
   festivalRoadMapPoints,
-  festivalRoadStartMonthDay,
   festivalRoadNearbyMapHref,
 } from './lib/festivalRoad.js';
 
@@ -172,28 +171,19 @@ export function FestivalRoadPanel({
                       {t('korea.festival.road.emptyStop')}
                     </span>
                   ) : null}
-                  {leg.items?.length ? (
+                  {!leg.empty && leg.items?.length ? (
                     <span className="mt-1 block space-y-0.5">
                       {leg.items.map((row) => {
+                        if (!row.inPeriod) return null;
                         const title = String(row.item?.title || '').trim();
                         if (!title) return null;
-                        const start = row.inPeriod ? null : festivalRoadStartMonthDay(row.item);
-                        if (!row.inPeriod && !start) return null;
-                        if (leg.empty && !start) return null;
                         return (
                           <span
                             key={String(row.item?.contentId || title)}
-                            data-festival-road-in-period={row.inPeriod ? '1' : '0'}
-                            {...(start
-                              ? { 'data-festival-road-starts': `${start.month}/${start.day}` }
-                              : {})}
-                            className={`block text-xs break-keep ${
-                              row.inPeriod ? 'font-semibold text-stone-800' : 'text-stone-400'
-                            }`}
+                            data-festival-road-in-period="1"
+                            className="block text-xs font-semibold text-stone-800 break-keep"
                           >
-                            {start
-                              ? `${title} · ${t('korea.festival.road.startsOn', start)}`
-                              : title}
+                            {title}
                           </span>
                         );
                       })}
