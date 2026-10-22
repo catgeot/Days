@@ -72,12 +72,21 @@ async function waitGlobeSettled(page, prevIdleAt = 0) {
   await page.waitForFunction(
     (since) => {
       const m = window.__gateoGlobeQaMetrics;
-      return Boolean(m?.idleAt && m.idleAt > since && (m.gateoDots > 0 || m.clusterDots > 0));
+      return Boolean(m?.idleAt && m.idleAt > since);
     },
     prevIdleAt,
-    { timeout: 45_000 },
+    { timeout: 25_000 },
   ).catch(() => {});
-  await page.waitForTimeout(1000);
+  await page.waitForFunction(
+    (since) => {
+      const m = window.__gateoGlobeQaMetrics;
+      if (!m?.idleAt || m.idleAt <= since) return false;
+      return (m.gateoDots ?? 0) > 0 || (m.clusterDots ?? 0) > 0;
+    },
+    prevIdleAt,
+    { timeout: 20_000 },
+  ).catch(() => {});
+  await page.waitForTimeout(1500);
 }
 
 async function metrics(page) {
