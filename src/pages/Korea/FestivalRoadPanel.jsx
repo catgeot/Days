@@ -109,7 +109,7 @@ export function FestivalRoadPanel({
           style={{ height: FESTIVAL_ROAD_MAP_SLOT_PX }}
         >
           <Suspense fallback={null}>
-            <FestivalRoadMap points={mapPoints} />
+            <FestivalRoadMap points={mapPoints} routeKey={weeksAhead} />
           </Suspense>
         </div>
       ) : null}

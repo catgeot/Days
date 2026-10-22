@@ -1,8 +1,12 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import Map, { Layer, Marker, Source, useControl } from 'react-map-gl/mapbox';
 import MapboxLanguage from '@mapbox/mapbox-gl-language';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import { festivalRoadLineOrder, festivalRoadPinOffsets } from './lib/festivalRoad.js';
+import {
+  festivalRoadLineCoordinates,
+  festivalRoadLineOrder,
+  festivalRoadPinOffsets,
+} from './lib/festivalRoad.js';
 
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
 const MAP_STYLE = 'mapbox://styles/mapbox/outdoors-v12';
@@ -17,13 +21,12 @@ function LanguageControl() {
  * @param {{ stopIndex: number, lng: number, lat: number, label?: string, kind?: string }[]} points
  */
 function lineFeature(points) {
-  const ordered = festivalRoadLineOrder(points);
   return {
     type: 'Feature',
     properties: {},
     geometry: {
       type: 'LineString',
-      coordinates: ordered.map((point) => [point.lng, point.lat]),
+      coordinates: festivalRoadLineCoordinates(points),
     },
   };
 }
@@ -61,20 +64,25 @@ function fitRoad(map, points) {
  * @param {() => void} onIdle
  */
 function whenMapTilesIdle(map, onIdle) {
-  let idleCount = 0;
+  let done = false;
   const finish = () => {
-    idleCount += 1;
-    if (idleCount < 2) {
-      map.triggerRepaint();
-      map.once('idle', finish);
-      return;
-    }
+    if (done) return;
+    done = true;
     onIdle();
   };
-  map.once('idle', finish);
+  const fallback = globalThis.setTimeout(finish, 3200);
+  const onReady = () => {
+    map.triggerRepaint();
+    map.once('idle', () => {
+      globalThis.clearTimeout(fallback);
+      requestAnimationFrame(() => requestAnimationFrame(finish));
+    });
+  };
+  if (map.isStyleLoaded()) onReady();
+  else map.once('load', onReady);
 }
 
-function PinMarker({ point, offset }) {
+function PinMarker({ point }) {
   const isStop = point.kind === 'stop' || point.kind === 'hub';
   const isSight = point.kind === 'sight';
   const baseClass = isStop
@@ -87,9 +95,6 @@ function PinMarker({ point, offset }) {
       data-festival-road-pin={point.stopIndex}
       data-festival-road-pin-kind={point.kind || 'festival'}
       className={baseClass}
-      style={{
-        transform: `translate(${offset.x}px, ${offset.y}px)`,
-      }}
       aria-label={point.label || String(point.stopIndex)}
     >
       {point.stopIndex}
@@ -99,36 +104,55 @@ function PinMarker({ point, offset }) {
 
 /**
  * Route line and numbered pins. Loaded only after the panel has two or more points.
- * @param {{ points: { stopIndex: number, lng: number, lat: number, label?: string, kind?: string }[] }} props
+ * @param {{ points: { stopIndex: number, lng: number, lat: number, label?: string, kind?: string }[], routeKey?: number | string }} props
  */
-export default function FestivalRoadMap({ points }) {
+export default function FestivalRoadMap({ points, routeKey = 0 }) {
+  const mapRef = useRef(null);
   const [ready, setReady] = useState(false);
   const [tilesIdle, setTilesIdle] = useState(false);
-  const line = useMemo(() => lineFeature(points), [points]);
-  const pinOffsets = useMemo(() => festivalRoadPinOffsets(points), [points]);
-  const viewKey = points.map((point) => `${point.stopIndex}:${point.kind}:${point.lng}:${point.lat}`).join('|');
+  const pointsKey = useMemo(
+    () => points.map((p) => `${p.stopIndex}:${p.kind}:${p.lng}:${p.lat}`).join('|'),
+    [points],
+  );
+  const syncKey = `${routeKey}|${pointsKey}`;
+  const line = useMemo(() => lineFeature(points), [pointsKey, points]);
+  const pinOffsets = useMemo(() => festivalRoadPinOffsets(points), [pointsKey, points]);
+  const initial = festivalRoadLineOrder(points)[0];
 
-  if (!MAPBOX_TOKEN || points.length < 2) return null;
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !ready || points.length < 2) return;
+    setTilesIdle(false);
+    const source = map.getSource(LINE_SOURCE);
+    if (source && typeof source.setData === 'function') {
+      source.setData(line);
+    }
+    if (typeof map.stop === 'function') map.stop();
+    map.resize();
+    fitRoad(map, points);
+    whenMapTilesIdle(map, () => setTilesIdle(true));
+  }, [syncKey, line, ready, points]);
+
+  if (!MAPBOX_TOKEN || points.length < 2 || !initial) return null;
 
   return (
     <div
-      className="gateo-mapbox-map h-full w-full bg-stone-200"
+      className="gateo-mapbox-map relative isolate h-full w-full overflow-hidden bg-stone-200 [contain:paint]"
       data-festival-road-map-ready={ready ? '1' : '0'}
       data-festival-road-map-tiles-idle={tilesIdle ? '1' : '0'}
     >
       <Map
-        key={viewKey}
         mapboxAccessToken={MAPBOX_TOKEN}
         initialViewState={{
-          longitude: points[0].lng,
-          latitude: points[0].lat,
+          longitude: initial.lng,
+          latitude: initial.lat,
           zoom: 7,
         }}
         mapStyle={MAP_STYLE}
         style={{ width: '100%', height: '100%' }}
         attributionControl={{ compact: true }}
         logoPosition="bottom-left"
-        reuseMaps={false}
+        reuseMaps
         antialias
         scrollZoom={false}
         dragPan={false}
@@ -137,9 +161,7 @@ export default function FestivalRoadMap({ points }) {
         doubleClickZoom={false}
         keyboard={false}
         onLoad={(event) => {
-          const map = event.target;
-          fitRoad(map, points);
-          whenMapTilesIdle(map, () => setTilesIdle(true));
+          mapRef.current = event.target;
           setReady(true);
         }}
       >
@@ -160,11 +182,12 @@ export default function FestivalRoadMap({ points }) {
               longitude={point.lng}
               latitude={point.lat}
               anchor="center"
+              offset={[offset.x, offset.y]}
               style={{
                 zIndex: 120 - point.stopIndex,
               }}
             >
-              <PinMarker point={point} offset={offset} />
+              <PinMarker point={point} />
             </Marker>
           );
         })}
