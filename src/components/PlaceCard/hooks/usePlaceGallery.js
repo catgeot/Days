@@ -50,6 +50,7 @@ import {
 import {
   emptyGalleryExclusion,
   filterExcludedGalleryImages,
+  galleryExclusionIsActive,
   loadGalleryExcludedKeys,
   sessionCacheAfterDroppedIds,
 } from '../../../utils/galleryExclusion.js';
@@ -57,10 +58,11 @@ import { isLegacyMishealPlaceStatsId } from '../../../pages/Home/lib/legacyMishe
 import { KO_GALLERY_QUERY_OVERRIDES } from '../../../pages/Home/lib/koreaPlaceMatchDictionary.js';
 import {
   GALLERY_SWR_TTL_MS,
+  addGalleryHiddenId,
   filterHiddenGalleryIncoming,
-  galleryHiddenIdsKey,
   gallerySwrStampKey,
   mergeGalleryFreshKeepHero,
+  readGalleryHiddenIds,
   shouldRunGalleryStockSwr,
 } from '../../../utils/galleryCachePolicy';
 import {
@@ -275,9 +277,7 @@ function writeGallerySwrAt(placeKey, at = Date.now()) {
 function readHiddenGalleryIds(placeKey) {
   if (!placeKey) return new Set();
   try {
-    const raw = localStorage.getItem(galleryHiddenIdsKey(CACHE_VERSION, placeKey));
-    const arr = raw ? JSON.parse(raw) : [];
-    return new Set(Array.isArray(arr) ? arr : []);
+    return readGalleryHiddenIds(placeKey, localStorage);
   } catch {
     return new Set();
   }
@@ -285,11 +285,8 @@ function readHiddenGalleryIds(placeKey) {
 
 function addHiddenGalleryId(placeKey, imageId) {
   if (!placeKey || !imageId) return false;
-  const next = readHiddenGalleryIds(placeKey);
-  next.add(imageId);
   try {
-    localStorage.setItem(galleryHiddenIdsKey(CACHE_VERSION, placeKey), JSON.stringify([...next]));
-    return true;
+    return addGalleryHiddenId(placeKey, imageId, localStorage);
   } catch {
     return false;
   }
@@ -583,19 +580,28 @@ export const usePlaceGallery = (locationSource, options = {}) => {
     canonicalStatsIdRef.current = nextCanonicalId;
 
     const requestedPlaceKey = stablePlaceKey;
-    try {
-      excludedKeysRef.current = await withTimeout(
-        loadGalleryExcludedKeys(
-          (name, args) => supabase.rpc(name, args),
-          nextCanonicalId || spotSlugForDb,
-        ),
-        PLACE_STATS_QUERY_MS,
-        'gallery_excluded_keys',
-      );
-    } catch {
+    const CACHE_KEY = thumbnailOnly
+      ? `days_gallery_thumb_${encodeURIComponent(stablePlaceKey)}`
+      : `days_gallery_${encodeURIComponent(stablePlaceKey)}_${primaryQuery}`;
+
+    // Exclusion keys must not block cache/DB paint. Filter when the RPC returns.
+    void loadGalleryExcludedKeys(
+      (name, args) => supabase.rpc(name, args),
+      nextCanonicalId || spotSlugForDb,
+    ).then((exclusion) => {
+      if (currentPlaceKeyRef.current !== requestedPlaceKey) return;
+      excludedKeysRef.current = exclusion || emptyGalleryExclusion();
+      if (!galleryExclusionIsActive(excludedKeysRef.current)) return;
+      if (!allImagesRef.current.length) return;
+      const before = allImagesRef.current.length;
+      processAndSetImages(allImagesRef.current);
+      if (allImagesRef.current.length !== before) {
+        saveToSmartCache(CACHE_KEY, allImagesRef.current);
+      }
+    }).catch(() => {
+      if (currentPlaceKeyRef.current !== requestedPlaceKey) return;
       excludedKeysRef.current = emptyGalleryExclusion();
-    }
-    if (currentPlaceKeyRef.current !== requestedPlaceKey) return;
+    });
 
     // 이미 성공한 동일 키 + 이미지가 있을 때만 스킵 (시작 전 마킹하면 hang 후 재시도 불가)
     if (
@@ -624,10 +630,6 @@ export const usePlaceGallery = (locationSource, options = {}) => {
       setImages([]);
       setLoadFailed(false);
     }
-
-    const CACHE_KEY = thumbnailOnly
-      ? `days_gallery_thumb_${encodeURIComponent(stablePlaceKey)}`
-      : `days_gallery_${encodeURIComponent(stablePlaceKey)}_${primaryQuery}`;
 
     const tourPlaceCandidate =
       typeof targetSpot === 'object' && targetSpot

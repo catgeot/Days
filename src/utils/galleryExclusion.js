@@ -60,15 +60,69 @@ export function filterExcludedGalleryImages(images, exclusion) {
   return list.filter((image) => !isGalleryPhotoExcluded(image, exclusion));
 }
 
-/** RPC error, timeout, or a missing place id shows the gallery. */
+const EXCLUSION_RPC_MISSING_KEY = 'days_gallery_excluded_rpc_missing';
+let exclusionRpcMissing = false;
+
+export function resetGalleryExclusionRpcMemo() {
+  exclusionRpcMissing = false;
+  try {
+    sessionStorage.removeItem(EXCLUSION_RPC_MISSING_KEY);
+  } catch {
+    /* node or private mode */
+  }
+}
+
+function exclusionRpcMemoIsMissing() {
+  if (exclusionRpcMissing) return true;
+  try {
+    if (sessionStorage.getItem(EXCLUSION_RPC_MISSING_KEY) === '1') {
+      exclusionRpcMissing = true;
+      return true;
+    }
+  } catch {
+    /* private mode */
+  }
+  return false;
+}
+
+function rememberExclusionRpcMissing() {
+  exclusionRpcMissing = true;
+  try {
+    sessionStorage.setItem(EXCLUSION_RPC_MISSING_KEY, '1');
+  } catch {
+    /* private mode */
+  }
+}
+
+/** PostgREST has no gallery_excluded_keys yet (migration not applied). */
+export function galleryExclusionRpcIsMissing(error) {
+  if (!error || typeof error !== 'object') return false;
+  const code = String(error.code || '');
+  const status = Number(error.status || error.statusCode || 0);
+  const text = `${error.message || ''} ${error.details || ''}`;
+  return code === 'PGRST202'
+    || status === 404
+    || /PGRST202|Could not find the function|schema cache/i.test(text);
+}
+
+export function galleryExclusionIsActive(exclusion) {
+  return Boolean(exclusion?.ids?.size || exclusion?.urlKeys?.size);
+}
+
+/** RPC error, timeout, or a missing place id shows the gallery. A missing function is remembered for the session. */
 export async function loadGalleryExcludedKeys(rpc, placeId) {
   const id = String(placeId || '').trim();
   if (!id || typeof rpc !== 'function') return emptyGalleryExclusion();
+  if (exclusionRpcMemoIsMissing()) return emptyGalleryExclusion();
   try {
     const { data, error } = await rpc('gallery_excluded_keys', { p_place_id: id });
-    if (error) return emptyGalleryExclusion();
+    if (error) {
+      if (galleryExclusionRpcIsMissing(error)) rememberExclusionRpcMissing();
+      return emptyGalleryExclusion();
+    }
     return galleryExclusionFromRows(data);
-  } catch {
+  } catch (error) {
+    if (galleryExclusionRpcIsMissing(error)) rememberExclusionRpcMissing();
     return emptyGalleryExclusion();
   }
 }

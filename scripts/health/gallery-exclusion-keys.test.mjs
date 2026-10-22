@@ -8,11 +8,20 @@ import {
   emptyGalleryExclusion,
   filterExcludedGalleryImages,
   galleryExclusionFromRows,
+  galleryExclusionIsActive,
+  galleryExclusionRpcIsMissing,
   galleryUrlKey,
   isGalleryPhotoExcluded,
   loadGalleryExcludedKeys,
+  resetGalleryExclusionRpcMemo,
   sessionCacheAfterDroppedIds,
 } from '../../src/utils/galleryExclusion.js';
+import {
+  GALLERY_HIDDEN_IDS_VERSION,
+  addGalleryHiddenId,
+  galleryHiddenIdsKey,
+  readGalleryHiddenIds,
+} from '../../src/utils/galleryCachePolicy.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '../..');
 
@@ -72,6 +81,7 @@ test('active exclusion rows drop by image id or url key', () => {
 });
 
 test('gallery_excluded_keys errors fail open', async () => {
+  resetGalleryExclusionRpcMemo();
   const visible = photo('keep-me', 'https://images.unsplash.com/photo-keep');
   const thrown = await loadGalleryExcludedKeys(async () => {
     throw new Error('network down');
@@ -90,6 +100,73 @@ test('gallery_excluded_keys errors fail open', async () => {
   }, '  ');
   assert.equal(blank.urlKeys.size, 0);
   assert.equal(filterExcludedGalleryImages([visible], emptyGalleryExclusion()).length, 1);
+});
+
+test('a missing gallery_excluded_keys function is not requested again this session', async () => {
+  resetGalleryExclusionRpcMemo();
+  let calls = 0;
+  const rpc = async () => {
+    calls += 1;
+    return {
+      data: null,
+      error: {
+        code: 'PGRST202',
+        message: 'Could not find the function public.gallery_excluded_keys in the schema cache',
+      },
+    };
+  };
+  const first = await loadGalleryExcludedKeys(rpc, 'bangkok');
+  const second = await loadGalleryExcludedKeys(rpc, 'barcelona');
+  assert.equal(galleryExclusionIsActive(first), false);
+  assert.equal(second.ids.size, 0);
+  assert.equal(calls, 1);
+  assert.equal(galleryExclusionRpcIsMissing({ status: 404 }), true);
+  assert.equal(galleryExclusionRpcIsMissing({ message: 'timeout' }), false);
+
+  resetGalleryExclusionRpcMemo();
+  let transient = 0;
+  await loadGalleryExcludedKeys(async () => {
+    transient += 1;
+    return { data: null, error: { message: 'timeout' } };
+  }, 'seoul');
+  await loadGalleryExcludedKeys(async () => {
+    transient += 1;
+    return { data: [{ image_id: 'gone', image_url_key: null }] };
+  }, 'seoul');
+  assert.equal(transient, 2);
+  resetGalleryExclusionRpcMemo();
+});
+
+function memoryStorage(seed = {}) {
+  const data = { ...seed };
+  return {
+    getItem(key) {
+      return Object.prototype.hasOwnProperty.call(data, key) ? data[key] : null;
+    },
+    setItem(key, value) {
+      data[key] = String(value);
+    },
+    data,
+  };
+}
+
+test('hidden photo ids stay on a stable key when the gallery cache version changes', () => {
+  const placeKey = 'bangkok';
+  const legacyKey = galleryHiddenIdsKey('v1.24', placeKey);
+  const stableKey = galleryHiddenIdsKey(GALLERY_HIDDEN_IDS_VERSION, placeKey);
+  const storage = memoryStorage({ [legacyKey]: JSON.stringify(['q7J4p8V-RWU']) });
+  const read = readGalleryHiddenIds(placeKey, storage);
+  assert.equal(read.has('q7J4p8V-RWU'), true);
+  assert.equal(storage.data[stableKey], JSON.stringify(['q7J4p8V-RWU']));
+
+  storage.setItem(stableKey, JSON.stringify(['kept-by-user']));
+  storage.setItem(galleryHiddenIdsKey('v1.25', placeKey), JSON.stringify(['from-cache-bump']));
+  const stable = readGalleryHiddenIds(placeKey, storage);
+  assert.deepEqual([...stable], ['kept-by-user']);
+  assert.equal(addGalleryHiddenId(placeKey, 'second', storage), true);
+  assert.equal(storage.data[stableKey].includes('second'), true);
+  assert.equal(Object.keys(storage.data).some((key) => key.includes('v1.25')), true);
+  assert.equal(storage.data[stableKey].includes('from-cache-bump'), false);
 });
 
 test('dropped ids are removed from the place session cache list', () => {
@@ -116,7 +193,13 @@ test('hook filters every render path and writes a stale persist drop into cache'
   );
   assert.match(hook, /CACHE_VERSION = 'v1\.25'/);
   assert.equal(hook.match(/loadGalleryExcludedKeys\(/g).length, 1);
+  assert.doesNotMatch(hook, /await withTimeout\(\s*loadGalleryExcludedKeys/);
+  const exclusionAt = hook.indexOf('loadGalleryExcludedKeys(');
+  const cacheAt = hook.indexOf('const validCache = loadFromSmartCache(CACHE_KEY)');
+  assert.ok(exclusionAt > 0 && cacheAt > exclusionAt);
   assert.match(hook, /filterExcludedGalleryImages\(rawImages, excludedKeysRef\.current\)/);
+  assert.doesNotMatch(hook, /galleryHiddenIdsKey\(CACHE_VERSION/);
+  assert.match(hook, /readGalleryHiddenIds\(placeKey, localStorage\)/);
   assert.match(sql, /FUNCTION public\.gallery_excluded_keys\(p_place_id text\)/);
   assert.match(sql, /SECURITY DEFINER/);
   assert.match(sql, /GRANT EXECUTE ON FUNCTION public\.gallery_excluded_keys\(text\) TO anon, authenticated/);
