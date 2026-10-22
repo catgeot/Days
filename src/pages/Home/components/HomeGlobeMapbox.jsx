@@ -404,17 +404,81 @@ const safeMapResize = (map) => {
   }
 };
 
-function refreshGlobeMapCanvas(map) {
+const globeCanvasRefreshState = new WeakMap();
+
+function globeCanvasBackingMismatch(map) {
+  const canvas = map.getCanvas?.();
+  const container = map.getContainer?.();
+  if (!canvas || !container || container.clientWidth <= 0 || container.clientHeight <= 0) {
+    return false;
+  }
+  const ratio = resolveGlobePixelRatio();
+  const expectedW = Math.max(1, Math.floor(container.clientWidth * ratio));
+  const expectedH = Math.max(1, Math.floor(container.clientHeight * ratio));
+  return Math.abs(canvas.width - expectedW) > 2 || Math.abs(canvas.height - expectedH) > 2;
+}
+
+function syncGlobeMapCanvasOnce(map) {
   if (!map || map._removed) return;
   safeMapResize(map);
-  requestAnimationFrame(() => {
-    safeMapResize(map);
+  if (globeCanvasBackingMismatch(map)) {
     try {
-      map.triggerRepaint?.();
+      map.resize();
     } catch {
-      // Map may be mid-teardown.
+      // Map may be mid-projection/style transition.
     }
+  }
+  try {
+    map.triggerRepaint?.();
+  } catch {
+    // Map may be mid-teardown.
+  }
+}
+
+/** pauseRender·오버레이 해제 후 캔버스 backing store ↔ CSS 크기 불일치(검은 wedge) 보정 */
+function refreshGlobeMapCanvas(map) {
+  if (!map || map._removed) return;
+  let state = globeCanvasRefreshState.get(map);
+  if (!state) {
+    state = { generation: 0, timers: [] };
+    globeCanvasRefreshState.set(map, state);
+  }
+  state.generation += 1;
+  const generation = state.generation;
+  state.timers.forEach((id) => window.clearTimeout(id));
+  state.timers = [];
+
+  const run = () => {
+    if (map._removed || state.generation !== generation) return;
+    syncGlobeMapCanvasOnce(map);
+  };
+
+  run();
+  requestAnimationFrame(() => {
+    run();
+    requestAnimationFrame(run);
   });
+  for (const delayMs of [32, 120, 320]) {
+    state.timers.push(
+      window.setTimeout(() => {
+        run();
+      }, delayMs),
+    );
+  }
+}
+
+function refreshGlobeMapCanvasAfterMotion(map) {
+  if (!map || map._removed) return;
+  refreshGlobeMapCanvas(map);
+  const onSettled = () => {
+    refreshGlobeMapCanvas(map);
+  };
+  try {
+    map.once('moveend', onSettled);
+    map.once('idle', onSettled);
+  } catch {
+    // Map may be mid-teardown.
+  }
 }
 
 function publishGlobeQaMetrics(map) {
@@ -430,12 +494,16 @@ function publishGlobeQaMetrics(map) {
     const clusterDots = map.getLayer(CLUSTER_POI_DOT_ID)
       ? map.queryRenderedFeatures({ layers: [CLUSTER_POI_DOT_ID] }).length
       : 0;
+    const ratio = resolveGlobePixelRatio();
+    const expectedW = cssW > 0 ? Math.max(1, Math.floor(cssW * ratio)) : null;
     window.__gateoGlobeQaMetrics = {
       idleAt: Date.now(),
       gateoDots,
       clusterDots,
       symbolLayersReady: dotLayers.length,
       canvasBackingRatio: cssW > 0 ? canvas.width / cssW : null,
+      canvasBackingMismatch: globeCanvasBackingMismatch(map),
+      canvasExpectedWidth: expectedW,
       zoom: map.getZoom(),
     };
   } catch {
@@ -2543,14 +2611,9 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
         if (isFlightCinemaGlobeReady(map)) {
           flightCinemaLayersLatchedRef.current = true;
         }
-        refreshGlobeMapCanvas(map);
+        refreshGlobeMapCanvasAfterMotion(map);
         syncGateoMarkerLayers();
         applyPlaceLabelVisibility();
-        try {
-          map.triggerRepaint();
-        } catch {
-          // Map may be mid-teardown.
-        }
         tryRevealGlobeOverlays();
       }
     },
@@ -2910,12 +2973,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       visibleRepaintInner = requestAnimationFrame(() => {
         const map = mapRef.current?.getMap();
         if (!map || map._removed || pauseRenderRef.current) return;
-        safeMapResize(map);
-        try {
-          map.triggerRepaint();
-        } catch {
-          // Map may be mid-remove.
-        }
+        refreshGlobeMapCanvas(map);
       });
     });
     startLoop();
