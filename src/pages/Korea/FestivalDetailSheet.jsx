@@ -19,6 +19,7 @@ import {
   fetchTourApiFestivalImages,
 } from '../../utils/fetchTourApiFestivals';
 import AppOutlineBackButton from '../../shared/navigation/AppOutlineBackButton';
+import { useLightboxHistory } from '../../shared/useLightboxHistory';
 import { useTrustBarOverlayLockEffect } from '../../shared/hooks/useTrustBarOverlayLockEffect.js';
 import { OutboundSearchButtons } from '../../shared/outbound/OutboundSearchButtons.jsx';
 import { useLocale } from '../../i18n/LocaleProvider';
@@ -138,6 +139,7 @@ import { loadNearbyParkingFacts } from './lib/festivalNearbyParking.js';
 import {
   FestivalHeroThumbStrip,
   festivalHeroStripMode,
+  canOpenFestivalLightbox,
   festivalLightboxSlides,
   stepFestivalLightbox,
 } from './festivalHeroThumbs';
@@ -170,21 +172,6 @@ const PHOTO_SWIPE_THRESHOLD_PX = 48;
 const PHOTO_SWIPE_DIRECTION_RATIO = 1.25;
 const LIGHTBOX_TAP_SLOP_PX = 18;
 const lightboxTouchHandled = new WeakMap();
-
-function historyStateRecord() {
-  const state = window.history.state;
-  return state && typeof state === 'object' ? state : null;
-}
-
-/** Same URL as the open sheet. React Router reads idx/key/usr off history.state. */
-function pushLightboxHistoryEntry() {
-  const prev = historyStateRecord();
-  window.history.pushState({ ...(prev || {}), gateoLightbox: true }, '');
-}
-
-function historyEntryIsLightbox() {
-  return historyStateRecord()?.gateoLightbox === true;
-}
 
 /** object-contain box. The swipe layer covers the letterbox, so a click never reaches the root scrim. */
 function lightboxTapOutsidePaintedPhoto(swipeEl, x, y) {
@@ -743,9 +730,6 @@ export default function FestivalDetailSheet({
   const lightboxSwipeStartRef = useRef(null);
   const lightboxRootRef = useRef(null);
   const lightboxTouchRef = useRef(null);
-  const lightboxHistoryPushedRef = useRef(false);
-  const ignoreLightboxPopRef = useRef(false);
-  const closeLightboxFromPopRef = useRef(() => {});
   const suppressHeroTapRef = useRef(false);
   const tabListRef = useRef(null);
   const overviewScrollPendingRef = useRef(false);
@@ -1296,27 +1280,13 @@ export default function FestivalDetailSheet({
     onPinchTouchCancel,
   } = useLightboxPinchTransform(activeImage);
 
-  const consumeLightboxHistory = useCallback(() => {
-    if (!lightboxHistoryPushedRef.current || typeof window === 'undefined') return;
-    lightboxHistoryPushedRef.current = false;
-    if (!historyEntryIsLightbox()) return;
-    ignoreLightboxPopRef.current = true;
-    window.history.back();
-  }, []);
-
   const closeLightbox = useCallback(() => {
     setLightboxOpen(false);
     resetLightboxPinch();
     resetIosZoomAfterInput();
-    consumeLightboxHistory();
-  }, [consumeLightboxHistory, resetLightboxPinch]);
+  }, [resetLightboxPinch]);
 
-  closeLightboxFromPopRef.current = () => {
-    lightboxHistoryPushedRef.current = false;
-    setLightboxOpen(false);
-    resetLightboxPinch();
-    resetIosZoomAfterInput();
-  };
+  useLightboxHistory(lightboxOpen, closeLightbox, { always: true });
 
   const lightboxControlProps = useCallback((fn) => ({
     onPointerDown: (event) => {
@@ -1419,38 +1389,6 @@ export default function FestivalDetailSheet({
   }, [lightboxOpen]);
 
   useEffect(() => {
-    if (!lightboxOpen || typeof window === 'undefined') return undefined;
-    // iOS edge-swipe is a real history pop. A same-URL step sits above the
-    // festival sheet entry so that pop closes the lightbox and leaves ?festival=.
-    try {
-      pushLightboxHistoryEntry();
-      lightboxHistoryPushedRef.current = true;
-    } catch {
-      lightboxHistoryPushedRef.current = false;
-    }
-    const onPop = (event) => {
-      if (ignoreLightboxPopRef.current) {
-        ignoreLightboxPopRef.current = false;
-        event.stopImmediatePropagation();
-        return;
-      }
-      event.stopImmediatePropagation();
-      closeLightboxFromPopRef.current();
-    };
-    window.addEventListener('popstate', onPop, true);
-    return () => {
-      if (lightboxHistoryPushedRef.current && historyEntryIsLightbox()) {
-        lightboxHistoryPushedRef.current = false;
-        ignoreLightboxPopRef.current = true;
-        window.history.back();
-      } else {
-        lightboxHistoryPushedRef.current = false;
-      }
-      window.removeEventListener('popstate', onPop, true);
-    };
-  }, [lightboxOpen]);
-
-  useEffect(() => {
     if (!lightboxOpen) return undefined;
     const root = lightboxRootRef.current;
     if (!root) return undefined;
@@ -1497,16 +1435,13 @@ export default function FestivalDetailSheet({
     });
   }, [selectedNearby, selectedScenic, selectedCourse, item?.contentId, resetFestivalSheetOverlayUi]);
 
-  const openLightbox = useCallback(() => {
-    const slides = festivalLightboxSlides(
-      imageUrls,
-      heroStrip.loadedUrls,
-      activeImage,
-      heroStrip.failedUrls,
-    );
-    if (!slides.urls.length && !imageUrls[activeImage] && !imageUrls[0]) return;
+  const openLightbox = useCallback((index) => {
+    const target = Number.isInteger(index) ? index : activeImage;
+    const decodedHero = heroPhotoDecoded ? (imageUrls[activeImage] || imageUrls[0] || '') : '';
+    if (!canOpenFestivalLightbox(imageUrls, heroStrip.loadedUrls, target, decodedHero)) return;
+    if (target !== activeImage) setActiveImage(target);
     setLightboxOpen(true);
-  }, [activeImage, heroStrip.failedUrls, heroStrip.loadedUrls, imageUrls]);
+  }, [activeImage, heroPhotoDecoded, heroStrip.loadedUrls, imageUrls]);
 
   const stepLightbox = useCallback((delta) => {
     setActiveImage((i) => {
@@ -2265,6 +2200,12 @@ export default function FestivalDetailSheet({
     imageUrls.length,
   );
   const loadedPhotoIndex = heroStrip.loadedUrls.indexOf(hero);
+  const heroCanExpand = canOpenFestivalLightbox(
+    imageUrls,
+    heroStrip.loadedUrls,
+    activeImage,
+    heroPhotoDecoded ? hero : '',
+  );
   const activePhotoCredit = formatFestivalPhotoCreditLine(
     imageCredits[activeImage],
     locale,
@@ -2370,8 +2311,10 @@ export default function FestivalDetailSheet({
           >
             <button
               type="button"
+              disabled={!heroCanExpand}
+              data-festival-hero-expand={heroCanExpand ? 'ready' : 'wait'}
               onClick={() => {
-                if (suppressHeroTapRef.current) {
+                if (!heroCanExpand || suppressHeroTapRef.current) {
                   suppressHeroTapRef.current = false;
                   return;
                 }
@@ -2445,8 +2388,7 @@ export default function FestivalDetailSheet({
               locked={lightboxOpen}
               onSelect={onSelectHeroImage}
               onOpen={(index) => {
-                if (Number.isInteger(index)) setActiveImage(index);
-                setLightboxOpen(true);
+                openLightbox(index);
               }}
               resolveSrc={(url) => resolveListImageUrl(url, { role: 'list' })}
               photosAria={t('korea.festival.detail.photosAria')}
@@ -3216,8 +3158,7 @@ export default function FestivalDetailSheet({
                     key={`tab-photo-${url}-${index}`}
                     type="button"
                     onClick={() => {
-                      setActiveImage(index);
-                      setLightboxOpen(true);
+                      openLightbox(index);
                     }}
                     className="relative aspect-square overflow-hidden rounded-xl border border-stone-200 bg-stone-100"
                     aria-label={t('korea.festival.detail.photoExpandAria', {
@@ -3480,11 +3421,12 @@ export default function FestivalDetailSheet({
                     alt=""
                     draggable={false}
                     loading="eager"
+                    pendingShimmer
                     style={lightboxTransformStyle}
                     className="pointer-events-none absolute inset-0 h-full w-full object-contain object-center select-none"
                     fallback={
                       <div
-                        className="flex h-48 w-full items-center justify-center"
+                        className="absolute inset-0 flex items-center justify-center bg-stone-200"
                         data-festival-photo-fallback=""
                         aria-hidden="true"
                       >

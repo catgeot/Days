@@ -16,6 +16,7 @@ import { FestivalHeroPhoto } from '../../src/pages/Korea/festivalHeroPhoto.js';
 import {
   FestivalHeroThumbStrip,
   festivalHeroStripMode,
+  canOpenFestivalLightbox,
   festivalLightboxSlides,
   stepFestivalLightbox,
 } from '../../src/pages/Korea/festivalHeroThumbs.js';
@@ -522,6 +523,12 @@ test('lightbox slides follow loaded filmstrip urls and keep the open photo when 
   const pendingOnly = festivalLightboxSlides(urls, [], 3);
   assert.deepEqual(pendingOnly.urls, [urls[3]]);
   assert.equal(pendingOnly.rawIndex, 3);
+
+  assert.equal(canOpenFestivalLightbox(urls, [], 3), false);
+  assert.equal(canOpenFestivalLightbox(urls, [], 3, urls[3]), true);
+  assert.equal(canOpenFestivalLightbox(urls, [urls[0]], 3), false);
+  assert.equal(canOpenFestivalLightbox(urls, [urls[0], urls[3]], 3), true);
+  assert.equal(canOpenFestivalLightbox(urls, [], 0, ''), false);
 });
 
 test('filmstrip photo N opens the lightbox on that same loaded url', async () => {

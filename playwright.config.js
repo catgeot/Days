@@ -33,6 +33,7 @@ export default defineConfig({
         /place-travelogue-card\.spec\.js/,
         /place-travelogue-card-qa-screenshots\.spec\.js/,
         /korea-festival-date-chip\.spec\.js/,
+        /place-lightbox-history\.spec\.js/,
       ],
       use: { ...devices['Desktop Chrome'], viewport: { width: 1280, height: 720 } },
     },
