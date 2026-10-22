@@ -155,7 +155,7 @@ export const CLOUD_QA_SHARE_LINKS = [
     branch: 'cursor/reviews-related-b9fa',
     destination:
       'https://days-git-cursor-reviews-related-b9fa-catgeots-projects.vercel.app/place/paris/reviews',
-    active: true,
+    active: false,
   },
   {
     slug: 'gallery-panel',

@@ -41,17 +41,22 @@ assert.match(
   'nested reviews scroller is reset',
 );
 assert.match(reviews, /\[placeSlug\]/, 'reset is keyed to the place');
+assert.match(
+  reviews,
+  /useRelatedBlogs\(location\.name,\s*placeSlug\)/,
+  'related logbooks follow the place slug, not a stale name',
+);
 
 const vercel = readFileSync(join(root, 'vercel.json'), 'utf8');
-assert.match(vercel, /\/qa\/reviews-related/, 'vercel.json has /qa/reviews-related');
-assert.match(
-  vercel,
-  /days-git-cursor-reviews-related-b9fa-catgeots-projects\.vercel\.app\/place\/paris\/reviews/,
-  'qa/reviews-related points at this Preview',
-);
+assert.doesNotMatch(vercel, /\/qa\/reviews-related/, 'prod redirects do not include the reviews preview');
 
 const qa = readFileSync(join(root, 'src/shared/cloudPreview/cloudQaShareLinks.js'), 'utf8');
 assert.match(qa, /slug:\s*'reviews-related'/, 'qa share slug is reviews-related');
 assert.match(qa, /branch:\s*'cursor\/reviews-related-b9fa'/, 'qa share branch is reviews-related');
+assert.match(
+  qa.slice(qa.indexOf("slug: 'reviews-related'"), qa.indexOf("slug: 'reviews-related'") + 400),
+  /active:\s*false/,
+  'reviews preview share stays inactive so prod does not redirect',
+);
 
 console.log('smoke:reviews-related-tab PASS');
