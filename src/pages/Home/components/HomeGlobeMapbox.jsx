@@ -2,7 +2,6 @@ import React, {
   useRef,
   useState,
   useEffect,
-  useLayoutEffect,
   useMemo,
   useCallback,
   forwardRef,
@@ -642,39 +641,6 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   const rotationTimer = useRef(null);
   const pauseRenderRef = useRef(pauseRender);
   pauseRenderRef.current = pauseRender;
-
-  /** WebKit/Mapbox construct the canvas before onLoad — cap window DPR for this map's lifetime. */
-  useLayoutEffect(() => {
-    if (typeof window === 'undefined') return undefined;
-    const native = readNativeDevicePixelRatio();
-    if (native <= GLOBE_MAX_PIXEL_RATIO) return undefined;
-
-    const capped = Math.min(native, GLOBE_MAX_PIXEL_RATIO);
-    const ownBefore = Object.getOwnPropertyDescriptor(window, 'devicePixelRatio');
-    const proto = Object.getOwnPropertyDescriptor(Window.prototype, 'devicePixelRatio');
-
-    Object.defineProperty(window, 'devicePixelRatio', {
-      configurable: true,
-      get() {
-        return capped;
-      },
-    });
-
-    return () => {
-      try {
-        delete window.devicePixelRatio;
-      } catch {
-        // Host locked the property.
-      }
-      if (ownBefore && !proto?.get) {
-        try {
-          Object.defineProperty(window, 'devicePixelRatio', ownBefore);
-        } catch {
-          // Prototype getter remains after delete.
-        }
-      }
-    };
-  }, []);
   const pageHiddenRef = useRef(typeof document !== 'undefined' && document.hidden);
   const idleRotateStoppedRef = useRef(false);
   const resumeAfterIdleTouchRef = useRef(false);
@@ -1704,9 +1670,13 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     }, ttl);
   }, []);
 
-  const scheduleOrientRotateResume = useCallback((map, flyDurationMs) => {
+  const scheduleOrientRotateResume = useCallback((map, flyDurationMs, options = {}) => {
     if (rotationTimer.current) clearTimeout(rotationTimer.current);
-    const waitMs = Math.max(0, Number(flyDurationMs) || 0) + GLOBE_VIEW.orientRotatePauseMs;
+    const pauseAfterMs =
+      options.rotatePauseMs !== undefined
+        ? options.rotatePauseMs
+        : GLOBE_VIEW.orientRotatePauseMs;
+    const waitMs = Math.max(0, Number(flyDurationMs) || 0) + Math.max(0, pauseAfterMs);
     rotationTimer.current = setTimeout(() => {
       tryResumeAutoRotate(map);
     }, waitMs);
@@ -2596,8 +2566,20 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       interactionRef.current = false;
       ensureInteractionReady();
       const map = mapRef.current?.getMap();
-      if (map && !map._removed && isFlightCinemaGlobeReady(map)) {
-        flightCinemaLayersLatchedRef.current = true;
+      if (map && !map._removed) {
+        if (isFlightCinemaGlobeReady(map)) {
+          flightCinemaLayersLatchedRef.current = true;
+        }
+        syncGlobeCanvasToPixelRatioCap(map);
+        safeMapResize(map);
+        syncGateoMarkerLayers();
+        applyPlaceLabelVisibility();
+        try {
+          map.triggerRepaint();
+        } catch {
+          // Map may be mid-teardown.
+        }
+        tryRevealGlobeOverlays();
       }
     },
     requestGateoMarkerReveal: () => {
@@ -2643,7 +2625,8 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       const easeMs = 1500;
       if (map) {
         map.easeTo({ ...GLOBE_VIEW.default, duration: easeMs });
-        scheduleOrientRotateResume(map, easeMs);
+        // resetPins: resume after ease only (no +orientRotatePauseMs — that path is ~4.3s total)
+        scheduleOrientRotateResume(map, easeMs, { rotatePauseMs: 0 });
       } else if (!pauseRender) {
         autoRotateRef.current = true;
       }
@@ -2676,7 +2659,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     whenGlobeFocusReady,
     getGlobeMode: () => tourEngineRef.current?.getMode?.() ?? globeMode,
     suppressOverlayClick,
-  }), [addRipple, clearImmerseState, clearRegionFocus, closeFlightCinema, endTour, ensureInteractionReady, exitImmerse, flyToAndPin, flyToRegion, globeMode, haltGlobeAutoRotateForCameraFlight, immerseToPin, isGlobeFocusReady, isStyleTransitioning, mapReady, pauseRender, pivotTourExplore, resetAndApplyPlaceLabelVisibility, scheduleOrientRotateResume, skipTour, startFlightCinema, startTour, suppressOverlayClick, tryRevealGlobeOverlays, whenGlobeFocusReady]);
+  }), [addRipple, applyPlaceLabelVisibility, clearImmerseState, clearRegionFocus, closeFlightCinema, endTour, ensureInteractionReady, exitImmerse, flyToAndPin, flyToRegion, globeMode, haltGlobeAutoRotateForCameraFlight, immerseToPin, isGlobeFocusReady, isStyleTransitioning, mapReady, pauseRender, pivotTourExplore, resetAndApplyPlaceLabelVisibility, scheduleOrientRotateResume, skipTour, startFlightCinema, startTour, suppressOverlayClick, syncGateoMarkerLayers, tryRevealGlobeOverlays, whenGlobeFocusReady]);
 
   useEffect(() => {
     highlightCategoryRef.current = highlightCategory;

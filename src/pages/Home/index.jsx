@@ -891,6 +891,7 @@ function Home() {
 
     queueMicrotask(() => {
       globeRef.current?.wakeAfterOverlay?.();
+      globeRef.current?.requestGateoMarkerReveal?.();
     });
     recalibrateHomeChromeAfterNav();
   }, [
