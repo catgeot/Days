@@ -418,6 +418,21 @@ function globeCanvasBackingMismatch(map) {
   return Math.abs(canvas.width - expectedW) > 2 || Math.abs(canvas.height - expectedH) > 2;
 }
 
+function resyncGlobeCameraFrame(map) {
+  if (!map || map._removed || isGlobeCameraInMotion(map)) return;
+  try {
+    const center = map.getCenter();
+    map.jumpTo({
+      center: [center.lng, center.lat],
+      zoom: map.getZoom(),
+      pitch: map.getPitch(),
+      bearing: map.getBearing(),
+    });
+  } catch {
+    // Map may be mid-projection/style transition.
+  }
+}
+
 function syncGlobeMapCanvasOnce(map) {
   if (!map || map._removed) return;
   safeMapResize(map);
@@ -428,6 +443,7 @@ function syncGlobeMapCanvasOnce(map) {
       // Map may be mid-projection/style transition.
     }
   }
+  resyncGlobeCameraFrame(map);
   try {
     map.triggerRepaint?.();
   } catch {
@@ -2812,12 +2828,33 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
         applyPlaceLabelVisibility();
       });
     });
+    const lateRefresh = window.setTimeout(() => refreshGlobeMapCanvas(map), 500);
 
     return () => {
       cancelAnimationFrame(raf1);
       if (raf2) cancelAnimationFrame(raf2);
+      window.clearTimeout(lateRefresh);
     };
   }, [pauseRender, syncMapZoom, applyPlaceLabelVisibility]);
+
+  useEffect(() => {
+    if (!mapReady) return undefined;
+    const map = mapRef.current?.getMap();
+    const container = map?.getContainer?.();
+    if (!map || map._removed || !container || typeof ResizeObserver === 'undefined') {
+      return undefined;
+    }
+    let raf = 0;
+    const observer = new ResizeObserver(() => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => refreshGlobeMapCanvas(map));
+    });
+    observer.observe(container);
+    return () => {
+      cancelAnimationFrame(raf);
+      observer.disconnect();
+    };
+  }, [mapReady]);
 
   useEffect(() => {
     if (pauseRender || !mapReady) return;
@@ -3254,7 +3291,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   return (
     <div
       className={`absolute inset-0 z-0 touch-none transition-opacity duration-500 ${
-        globePaused ? 'pointer-events-none invisible' : globeDimmed ? 'opacity-30' : 'opacity-100'
+        globePaused ? 'pointer-events-none opacity-0' : globeDimmed ? 'opacity-30' : 'opacity-100'
       }`}
       onPointerDown={handleInteractionStart}
       onPointerUp={handleInteractionEnd}

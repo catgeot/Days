@@ -69,19 +69,37 @@ async function dismissSummaryCard(page) {
   }
 }
 
+async function isHomePath(urlString) {
+  try {
+    const p = new URL(urlString).pathname;
+    return p === '/' || p === '';
+  } catch {
+    return false;
+  }
+}
+
 async function settleHomeFromPlace(page, base) {
   const home = page.getByRole('button', { name: /홈으로 이동|Go to home/i }).first();
   if (await home.isVisible().catch(() => false)) {
     await home.click();
-    await page.waitForURL(/\/(\?.*)?$/, { timeout: 30_000 }).catch(() => {});
+    await page
+      .waitForURL((url) => isHomePath(String(url)), { timeout: 30_000 })
+      .catch(() => {});
+    await page.waitForTimeout(500);
   }
-  await dismissSummaryCard(page);
-  if (/\/place\//.test(page.url())) {
+  for (let attempt = 0; attempt < 6; attempt += 1) {
+    await dismissSummaryCard(page);
+    if (!(await page.locator('.place-summary-card').isVisible().catch(() => false))) break;
+    await page.waitForTimeout(450);
+  }
+  if (!isHomePath(page.url()) || (await page.locator('.place-summary-card').isVisible().catch(() => false))) {
     await page.goto(`${base}/?gateoGlobeQa=1`, { waitUntil: 'domcontentloaded' });
     await page.waitForTimeout(2000);
-  }
-  if (await page.locator('.place-summary-card').isVisible().catch(() => false)) {
-    await dismissSummaryCard(page);
+    for (let attempt = 0; attempt < 4; attempt += 1) {
+      await dismissSummaryCard(page);
+      if (!(await page.locator('.place-summary-card').isVisible().catch(() => false))) break;
+      await page.waitForTimeout(400);
+    }
   }
 }
 

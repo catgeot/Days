@@ -13,5 +13,6 @@ See `artifacts/pr373-r4/map-stop-audit.md` for `map.stop()` inventory (12 calls)
 - **No** `window.devicePixelRatio` override (removed — caused WebKit black wedges / rectangles when combined with Mapbox).
 - **No** `scopeGlobePixelRatio` wrapper around `map.resize` / `map._render` (removed in r6).
 - **SSOT cap**: `resolveGlobePixelRatio()` → `Math.min(window.devicePixelRatio || 1, GLOBE_MAX_PIXEL_RATIO)` with `GLOBE_MAX_PIXEL_RATIO = 2`, passed only as `<Map pixelRatio={resolveGlobePixelRatio()}>`.
-- **After overlay / `pauseRender` unpause**: `refreshGlobeMapCanvas` runs staged `map.resize()` + `triggerRepaint`, re-checks canvas backing dimensions vs `container × pixelRatio`, and `refreshGlobeMapCanvasAfterMotion` repeats after `moveend` / `idle` (home flyTo settle).
+- **`pauseRender` visibility**: use `opacity-0` (not Tailwind `invisible` / `visibility:hidden`) so WebKit keeps painting the full WebGL framebuffer while the place card covers the globe.
+- **After overlay / `pauseRender` unpause**: `refreshGlobeMapCanvas` — staged `map.resize()`, backing-dimension check, `jumpTo` same camera (full frame resync), `ResizeObserver` on the map container, and `refreshGlobeMapCanvasAfterMotion` after `moveend` / `idle`.
 - **QA hook** (`?gateoGlobeQa=1`): `window.__gateoGlobeQaMetrics.canvasBackingMismatch` flags backing-store drift.
