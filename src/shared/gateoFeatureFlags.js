@@ -12,6 +12,7 @@ export const GATEO_ENV_FLAG_NAMES = {
   REVIEW_DEEPLINK: 'VITE_GATEO_REVIEW_DEEPLINK',
   PHOTO_CREDIT: 'VITE_GATEO_PHOTO_CREDIT',
   LIGHTBOX_HISTORY: 'VITE_GATEO_LIGHTBOX_HISTORY',
+  LOCAL_INFO_ROLLOUT: 'VITE_GATEO_LOCAL_INFO_ROLLOUT',
 };
 
 /** @param {string} name */
@@ -61,4 +62,9 @@ export function isGateoLightboxHistoryEnabled() {
 /** Festival passes `always` so flag `0` cannot drop the sheet's lightbox step (#531). */
 export function resolveLightboxHistoryEnabled(always = false) {
   return always === true || isGateoLightboxHistoryEnabled();
+}
+
+/** Extra local-info places. Cairo stays on when this is off. */
+export function isGateoLocalInfoRolloutEnabled() {
+  return readGateoEnvFlag(GATEO_ENV_FLAG_NAMES.LOCAL_INFO_ROLLOUT);
 }

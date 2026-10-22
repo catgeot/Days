@@ -38,18 +38,22 @@ function assertSlotSchema(slot) {
   assert.equal(typeof slot.value, 'string');
   assert.equal(typeof slot.checkedAt, 'string');
   assert.ok('source' in slot);
-  if (slot.source) {
-    assert.equal(typeof slot.source.name, 'string');
-    assert.equal(typeof slot.source.url, 'string');
-  }
+  if (slot.source) assertPlainOrLinkedSource(slot.source);
   assert.ok(Array.isArray(slot.sources));
-  for (const source of slot.sources) {
-    assert.equal(typeof source.name, 'string');
-    assert.equal(typeof source.url, 'string');
-    assert.equal(source.url.includes('google.com/search'), false);
-    assert.equal(/drafts\/|\.md\b/.test(source.name), false);
-    assert.equal(/drafts\/|\.md\b/.test(source.url), false);
+  for (const source of slot.sources) assertPlainOrLinkedSource(source);
+}
+
+function assertPlainOrLinkedSource(source) {
+  assert.equal(typeof source.name, 'string');
+  assert.equal(/drafts\/|\.md\b/.test(source.name), false);
+  if (source.url == null) {
+    assert.equal('url' in source, false);
+    return;
   }
+  assert.equal(typeof source.url, 'string');
+  assert.match(source.url, /^https?:\/\//);
+  assert.equal(source.url.includes('google.com/search'), false);
+  assert.equal(/drafts\/|\.md\b/.test(source.url), false);
 }
 
 test('cairo city has 6 slots and attractions have 7', () => {
@@ -86,21 +90,28 @@ test('empty cells stay empty and render as unverified', () => {
 test('public source labels and one unverified line', () => {
   assert.equal(publicSourceName('drafts/blog-2026-cairo-travelogue.md «사흘의 윤곽»'), 'GATEO 로그북 (2026-10-03)');
   const citySources = CAIRO_CITY_FACTS.slots.flatMap((slot) => slot.sources);
-  assert.ok(citySources.some((source) => source.name === 'GATEO 로그북 (2026-10-03)' && source.url === ''));
+  assert.ok(citySources.some((source) => source.name === 'GATEO 로그북 (2026-10-03)' && source.url == null));
   const entry = CAIRO_CITY_FACTS.slots.find((slot) => slot.id === 'entry');
   assert.match(entry.value, /^한국 여권은 전자비자\(e-Visa\) 대상이에요/);
   assert.match(entry.value, /25달러, 복수 60달러/);
   const airport = CAIRO_CITY_FACTS.slots.find((slot) => slot.id === 'airport');
   assert.match(airport.value, /흰색 택시/);
-  assert.equal(airport.sources[0].url, '');
+  assert.equal(airport.value.includes('Uber'), false);
+  assert.equal(airport.value.includes('차량 호출'), false);
+  assert.equal(airport.sources.length, 1);
   assert.equal(airport.sources[0].name, '카이로국제공항 교통 안내');
-  assert.equal(/접속 불가/.test(airport.sources[0].name), false);
+  assert.equal(airport.sources[0].url, undefined);
+  assert.equal(airport.checkedAt, '2026-10-11');
+  assert.equal(slotLooksEmpty(airport), false);
+  const cairoJs = readFileSync(join(root, 'src/data/placeVerifiedFacts/cairo.js'), 'utf8');
+  assert.match(cairoJs, /URL unreachable as of 2026-10-21 \(WAF 500 \/ incomplete cert chain\)/);
+  const factsUi = readFileSync(join(root, 'src/components/PlaceCard/common/PlaceVerifiedFacts.jsx'), 'utf8');
+  assert.match(factsUi, /function sourceHref/);
+  assert.equal(factsUi.includes('href=""'), false);
   const itinerary = CAIRO_CITY_FACTS.slots.find((slot) => slot.id === 'itinerary');
-  assert.equal(airport.value.startsWith('CAI 공식 안내예요'), false);
   assert.match(itinerary.value, /^D1 도착하면 위 ‘공항→시내’ 방법으로 시내에 들어가 쉬어요/);
   assert.equal(itinerary.value.includes('(위 칸)'), false);
   assert.equal(itinerary.value.split('\n').filter((line) => /^D[123] /.test(line)).length, 3);
-  assert.equal(airport.sources[1].url, 'https://www.uber.com/global/en/r/airports/cai/pickup/');
   assert.equal(unverifiedItemsLabel(CAIRO_CITY_FACTS.slots), '확인 안 된 항목: 머물 지역, 시즌');
 
   const gem = resolveVerifiedFacts('grand-egyptian-museum');
@@ -119,7 +130,6 @@ test('public source labels and one unverified line', () => {
   assert.ok(notes.sources.some((source) => source.name === 'GATEO 로그북 (2026-10-03)'));
   assert.equal(notes.sources.some((source) => /drafts\/|\.md/.test(source.name)), false);
 
-  const factsUi = readFileSync(join(root, 'src/components/PlaceCard/common/PlaceVerifiedFacts.jsx'), 'utf8');
   const header = readFileSync(join(root, 'src/components/PlaceCard/panels/PlaceChatPanel.jsx'), 'utf8');
   assert.match(factsUi, /data-unverified-items/);
   assert.match(header, /line-clamp-2/);
@@ -289,7 +299,8 @@ test('english fact values keep Korean numbers, times, amounts, and URLs', () => 
     CAIRO_CITY_FACTS.slots.find((slot) => slot.id === 'airport'),
     'en',
   );
-  assert.match(airport, /Uber has a CAI pickup guide page/);
+  assert.equal(/uber/i.test(airport), false);
+  assert.match(airport, /Terminal 1/);
   const safety = factValueForLocale(
     'cairo',
     CAIRO_CITY_FACTS.slots.find((slot) => slot.id === 'money-safety'),
