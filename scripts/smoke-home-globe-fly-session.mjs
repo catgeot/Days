@@ -27,6 +27,7 @@ assert.match(mapboxSrc, /homeGlobeFlySession\.js/);
 assert.match(mapboxSrc, /onHomeGlobeFlySettled/);
 assert.match(mapboxSrc, /homeGlobeFlyEffectAppliedRef/);
 assert.match(mapboxSrc, /HOME_GLOBE_SETTLE_MS/);
+assert.match(mapboxSrc, /homeFlySettleHold/);
 assert.ok(HOME_GLOBE_SETTLE_MS >= 10_000);
 
 console.log('smoke:home-globe-fly-session PASS');

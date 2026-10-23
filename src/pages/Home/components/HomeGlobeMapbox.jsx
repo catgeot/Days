@@ -896,7 +896,9 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       homeGlobeFlySettleTimerRef.current = 0;
     }
 
-    if (outcome === 'arrived' && map && !map._removed) {
+    const homeFlySettleHold = hadSession
+      && (outcome === 'arrived' || outcome === 'short' || outcome === 'interrupted');
+    if (homeFlySettleHold && map && !map._removed) {
       autoRotateRef.current = false;
       const until = Date.now() + HOME_GLOBE_SETTLE_MS;
       homeGlobeFlySettleUntilRef.current = until;
