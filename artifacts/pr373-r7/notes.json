@@ -1,0 +1,183 @@
+{
+  "branchBase": "https://127.0.0.1:4173",
+  "mainBase": "https://127.0.0.1:4174",
+  "capturePolicy": "branch+main summaryOpen=false (settleHomeFromPlace + dismissSummaryCard on main)",
+  "runs": [
+    {
+      "flow": "paris",
+      "size": "390",
+      "prefix": "branch-",
+      "base": "https://127.0.0.1:4173",
+      "idleAt": 1792717104071,
+      "gateoDots": 0,
+      "clusterDots": 0,
+      "symbolLayersReady": 2,
+      "canvasBackingRatio": 1,
+      "canvasBackingMismatch": false,
+      "canvasExpectedWidth": 390,
+      "zoom": 2.35,
+      "summaryOpen": false
+    },
+    {
+      "flow": "paris",
+      "size": "390",
+      "prefix": "main-",
+      "base": "https://127.0.0.1:4174",
+      "summaryOpen": false
+    },
+    {
+      "flow": "tokyo",
+      "size": "390",
+      "prefix": "branch-",
+      "base": "https://127.0.0.1:4173",
+      "idleAt": 1792717290548,
+      "gateoDots": 0,
+      "clusterDots": 0,
+      "symbolLayersReady": 2,
+      "canvasBackingRatio": 1,
+      "canvasBackingMismatch": false,
+      "canvasExpectedWidth": 390,
+      "zoom": 2.35,
+      "summaryOpen": false
+    },
+    {
+      "flow": "tokyo",
+      "size": "390",
+      "prefix": "main-",
+      "base": "https://127.0.0.1:4174",
+      "summaryOpen": false
+    },
+    {
+      "flow": "jeju",
+      "size": "390",
+      "prefix": "branch-",
+      "base": "https://127.0.0.1:4173",
+      "idleAt": 1792717478667,
+      "gateoDots": 0,
+      "clusterDots": 0,
+      "symbolLayersReady": 2,
+      "canvasBackingRatio": 1,
+      "canvasBackingMismatch": false,
+      "canvasExpectedWidth": 390,
+      "zoom": 2.35,
+      "summaryOpen": false
+    },
+    {
+      "flow": "jeju",
+      "size": "390",
+      "prefix": "main-",
+      "base": "https://127.0.0.1:4174",
+      "summaryOpen": false
+    },
+    {
+      "flow": "jeju-explore",
+      "size": "390",
+      "prefix": "branch-",
+      "base": "https://127.0.0.1:4173",
+      "idleAt": 1792717667108,
+      "gateoDots": 0,
+      "clusterDots": 0,
+      "symbolLayersReady": 2,
+      "canvasBackingRatio": 1,
+      "canvasBackingMismatch": false,
+      "canvasExpectedWidth": 390,
+      "zoom": 2.35,
+      "summaryOpen": false
+    },
+    {
+      "flow": "jeju-explore",
+      "size": "390",
+      "prefix": "main-",
+      "base": "https://127.0.0.1:4174",
+      "summaryOpen": false
+    },
+    {
+      "flow": "paris",
+      "size": "1280",
+      "prefix": "branch-",
+      "base": "https://127.0.0.1:4173",
+      "idleAt": 1792717853722,
+      "gateoDots": 0,
+      "clusterDots": 0,
+      "symbolLayersReady": 2,
+      "canvasBackingRatio": 1,
+      "canvasBackingMismatch": false,
+      "canvasExpectedWidth": 1280,
+      "zoom": 2.35,
+      "summaryOpen": false
+    },
+    {
+      "flow": "paris",
+      "size": "1280",
+      "prefix": "main-",
+      "base": "https://127.0.0.1:4174",
+      "summaryOpen": false
+    },
+    {
+      "flow": "tokyo",
+      "size": "1280",
+      "prefix": "branch-",
+      "base": "https://127.0.0.1:4173",
+      "idleAt": 1792718044288,
+      "gateoDots": 0,
+      "clusterDots": 0,
+      "symbolLayersReady": 2,
+      "canvasBackingRatio": 1,
+      "canvasBackingMismatch": false,
+      "canvasExpectedWidth": 1280,
+      "zoom": 2.35,
+      "summaryOpen": false
+    },
+    {
+      "flow": "tokyo",
+      "size": "1280",
+      "prefix": "main-",
+      "base": "https://127.0.0.1:4174",
+      "summaryOpen": false
+    },
+    {
+      "flow": "jeju",
+      "size": "1280",
+      "prefix": "branch-",
+      "base": "https://127.0.0.1:4173",
+      "idleAt": 1792718234613,
+      "gateoDots": 0,
+      "clusterDots": 0,
+      "symbolLayersReady": 2,
+      "canvasBackingRatio": 1,
+      "canvasBackingMismatch": false,
+      "canvasExpectedWidth": 1280,
+      "zoom": 2.35,
+      "summaryOpen": false
+    },
+    {
+      "flow": "jeju",
+      "size": "1280",
+      "prefix": "main-",
+      "base": "https://127.0.0.1:4174",
+      "summaryOpen": false
+    },
+    {
+      "flow": "jeju-explore",
+      "size": "1280",
+      "prefix": "branch-",
+      "base": "https://127.0.0.1:4173",
+      "idleAt": 1792718426529,
+      "gateoDots": 0,
+      "clusterDots": 0,
+      "symbolLayersReady": 2,
+      "canvasBackingRatio": 1,
+      "canvasBackingMismatch": false,
+      "canvasExpectedWidth": 1280,
+      "zoom": 2.35,
+      "summaryOpen": false
+    },
+    {
+      "flow": "jeju-explore",
+      "size": "1280",
+      "prefix": "main-",
+      "base": "https://127.0.0.1:4174",
+      "summaryOpen": false
+    }
+  ]
+}
