@@ -3,32 +3,21 @@ import Map, { Layer, Marker, Source, useControl } from 'react-map-gl/mapbox';
 import MapboxLanguage from '@mapbox/mapbox-gl-language';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import {
-  festivalRoadLineCoordinates,
+  festivalRoadEmptyLineGeoJson,
+  festivalRoadLineGeoJson,
   festivalRoadLineOrder,
+  festivalRoadMarkerOffsetsFromProjections,
   festivalRoadPinOffsets,
 } from './lib/festivalRoad.js';
 
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
 const MAP_STYLE = 'mapbox://styles/mapbox/outdoors-v12';
 const LINE_SOURCE = 'festival-road-line';
+const EMPTY_LINE = festivalRoadEmptyLineGeoJson();
 
 function LanguageControl() {
   useControl(() => new MapboxLanguage({ defaultLanguage: 'ko' }));
   return null;
-}
-
-/**
- * @param {{ stopIndex: number, lng: number, lat: number, label?: string, kind?: string }[]} points
- */
-function lineFeature(points) {
-  return {
-    type: 'Feature',
-    properties: {},
-    geometry: {
-      type: 'LineString',
-      coordinates: festivalRoadLineCoordinates(points),
-    },
-  };
 }
 
 /**
@@ -57,6 +46,19 @@ function fitRoad(map, points) {
       maxZoom: 9,
     },
   );
+}
+
+/**
+ * @param {import('mapbox-gl').Map} map
+ * @param {{ lng: number, lat: number, stopIndex: number }[]} points
+ */
+function projectPinOffsets(map, points) {
+  const ordered = festivalRoadLineOrder(points);
+  const projections = ordered.map((point) => {
+    const pixel = map.project([point.lng, point.lat]);
+    return { stopIndex: point.stopIndex, x: pixel.x, y: pixel.y };
+  });
+  return festivalRoadMarkerOffsetsFromProjections(projections, 42);
 }
 
 /**
@@ -126,14 +128,18 @@ export default function FestivalRoadMap({ points, routeKey = 0 }) {
   const mapRef = useRef(null);
   const [ready, setReady] = useState(false);
   const [tilesIdle, setTilesIdle] = useState(false);
+  const [pinOffsets, setPinOffsets] = useState(() => festivalRoadPinOffsets(points));
   const pointsKey = useMemo(
     () => points.map((p) => `${p.stopIndex}:${p.kind}:${p.lng}:${p.lat}`).join('|'),
     [points],
   );
   const syncKey = `${routeKey}|${pointsKey}`;
-  const line = useMemo(() => lineFeature(points), [pointsKey, points]);
-  const pinOffsets = useMemo(() => festivalRoadPinOffsets(points), [pointsKey, points]);
-  const initial = festivalRoadLineOrder(points)[0];
+  const orderedPoints = useMemo(() => festivalRoadLineOrder(points), [pointsKey, points]);
+  const initial = orderedPoints[0];
+
+  useEffect(() => {
+    setPinOffsets(festivalRoadPinOffsets(points));
+  }, [pointsKey, points]);
 
   useEffect(() => {
     const el = containerRef.current;
@@ -152,76 +158,91 @@ export default function FestivalRoadMap({ points, routeKey = 0 }) {
     setTilesIdle(false);
     afterLayout(map, () => {
       const source = map.getSource(LINE_SOURCE);
+      const line = festivalRoadLineGeoJson(points);
       if (source && typeof source.setData === 'function') {
+        source.setData(EMPTY_LINE);
         source.setData(line);
       }
       if (typeof map.stop === 'function') map.stop();
       map.resize();
       fitRoad(map, points);
-      whenMapTilesIdle(map, () => setTilesIdle(true));
+      setPinOffsets(projectPinOffsets(map, points));
+      whenMapTilesIdle(map, () => {
+        setPinOffsets(projectPinOffsets(map, points));
+        setTilesIdle(true);
+      });
     });
-  }, [syncKey, line, ready, points]);
+  }, [syncKey, ready, points]);
 
   if (!MAPBOX_TOKEN || points.length < 2 || !initial) return null;
 
   return (
     <div
       ref={containerRef}
-      className="gateo-mapbox-map relative h-full w-full overflow-hidden bg-stone-200"
+      className="gateo-mapbox-map relative h-full w-full bg-stone-200"
       data-festival-road-map-ready={ready ? '1' : '0'}
       data-festival-road-map-tiles-idle={tilesIdle ? '1' : '0'}
     >
-      <Map
-        mapboxAccessToken={MAPBOX_TOKEN}
-        initialViewState={{
-          longitude: initial.lng,
-          latitude: initial.lat,
-          zoom: 7,
-        }}
-        mapStyle={MAP_STYLE}
-        style={{ width: '100%', height: '100%' }}
-        attributionControl={{ compact: true }}
-        logoPosition="bottom-left"
-        reuseMaps
-        scrollZoom={false}
-        dragPan={false}
-        dragRotate={false}
-        touchZoomRotate={false}
-        doubleClickZoom={false}
-        keyboard={false}
-        onLoad={(event) => {
-          const map = event.target;
-          mapRef.current = map;
-          afterLayout(map, () => setReady(true));
-        }}
+      <div
+        className="h-full w-full overflow-hidden rounded-2xl [transform:translateZ(0)] [backface-visibility:hidden]"
+        data-festival-road-map-clip=""
       >
-        <LanguageControl />
-        <Source id={LINE_SOURCE} type="geojson" data={line}>
-          <Layer
-            id="festival-road-line-layer"
-            type="line"
-            layout={{ 'line-cap': 'round', 'line-join': 'round' }}
-            paint={{ 'line-color': '#b45309', 'line-width': 3 }}
-          />
-        </Source>
-        {festivalRoadLineOrder(points).map((point) => {
-          const offset = pinOffsets.get(point.stopIndex) || { x: 0, y: 0 };
-          return (
-            <Marker
-              key={`${point.stopIndex}-${point.kind}`}
-              longitude={point.lng}
-              latitude={point.lat}
-              anchor="center"
-              offset={[offset.x, offset.y]}
-              style={{
-                zIndex: 100 + point.stopIndex,
+        <Map
+          mapboxAccessToken={MAPBOX_TOKEN}
+          initialViewState={{
+            longitude: initial.lng,
+            latitude: initial.lat,
+            zoom: 7,
+          }}
+          mapStyle={MAP_STYLE}
+          style={{ width: '100%', height: '100%' }}
+          attributionControl={{ compact: true }}
+          logoPosition="bottom-left"
+          reuseMaps={false}
+          scrollZoom={false}
+          dragPan={false}
+          dragRotate={false}
+          touchZoomRotate={false}
+          doubleClickZoom={false}
+          keyboard={false}
+          onLoad={(event) => {
+            const map = event.target;
+            mapRef.current = map;
+            afterLayout(map, () => setReady(true));
+          }}
+        >
+          <LanguageControl />
+          <Source id={LINE_SOURCE} type="geojson" data={EMPTY_LINE}>
+            <Layer
+              id="festival-road-line-layer"
+              type="line"
+              layout={{ 'line-cap': 'round', 'line-join': 'round' }}
+              paint={{
+                'line-color': '#b45309',
+                'line-width': 3,
+                'line-opacity': tilesIdle ? 1 : 0,
               }}
-            >
-              <PinMarker point={point} />
-            </Marker>
-          );
-        })}
-      </Map>
+            />
+          </Source>
+          {orderedPoints.map((point) => {
+            const offset = pinOffsets.get(point.stopIndex) || { x: 0, y: 0 };
+            return (
+              <Marker
+                key={`${point.stopIndex}-${point.kind}`}
+                longitude={point.lng}
+                latitude={point.lat}
+                anchor="center"
+                offset={[offset.x, offset.y]}
+                style={{
+                  zIndex: 100 + point.stopIndex,
+                }}
+              >
+                <PinMarker point={point} />
+              </Marker>
+            );
+          })}
+        </Map>
+      </div>
     </div>
   );
 }

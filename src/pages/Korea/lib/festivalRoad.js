@@ -472,6 +472,80 @@ export function festivalRoadLineCoordinates(points) {
 }
 
 /**
+ * GeoJSON line — vertices are exactly the numbered pin coordinates (no extra vertices).
+ * @param {{ lng: number, lat: number, stopIndex?: number }[]} points
+ */
+export function festivalRoadLineGeoJson(points) {
+  const ordered = festivalRoadLineOrder(points);
+  return {
+    type: 'Feature',
+    properties: {
+      stopIndexes: ordered.map((point) => point.stopIndex),
+    },
+    geometry: {
+      type: 'LineString',
+      coordinates: ordered.map((point) => [point.lng, point.lat]),
+    },
+  };
+}
+
+const EMPTY_LINE_GEOJSON = {
+  type: 'Feature',
+  properties: {},
+  geometry: { type: 'LineString', coordinates: [] },
+};
+
+/** @returns {typeof EMPTY_LINE_GEOJSON} */
+export function festivalRoadEmptyLineGeoJson() {
+  return EMPTY_LINE_GEOJSON;
+}
+
+/**
+ * Spread marker pixel offsets after map projection so labels do not overlap.
+ * @param {{ stopIndex: number, x: number, y: number }[]} projections
+ * @param {number} [minGapPx]
+ */
+export function festivalRoadMarkerOffsetsFromProjections(projections, minGapPx = 40) {
+  /** @type {Map<number, { x: number, y: number }>} */
+  const offsets = new Map();
+  if (!Array.isArray(projections) || projections.length < 2) return offsets;
+  const items = projections.map((point) => ({
+    stopIndex: point.stopIndex,
+    x: point.x,
+    y: point.y,
+    ox: 0,
+    oy: 0,
+  }));
+  const gap = Math.max(28, minGapPx);
+  for (let pass = 0; pass < 12; pass += 1) {
+    for (let i = 0; i < items.length; i += 1) {
+      for (let j = i + 1; j < items.length; j += 1) {
+        const a = items[i];
+        const b = items[j];
+        const dx = b.x + b.ox - (a.x + a.ox);
+        const dy = b.y + b.oy - (a.y + a.oy);
+        const dist = Math.hypot(dx, dy);
+        if (dist >= gap) continue;
+        const push = dist > 0.01 ? (gap - dist) / 2 : gap / 2;
+        const ux = dist > 0.01 ? dx / dist : 1;
+        const uy = dist > 0.01 ? dy / dist : 0;
+        a.ox -= ux * push;
+        a.oy -= uy * push;
+        b.ox += ux * push;
+        b.oy += uy * push;
+      }
+    }
+  }
+  for (const item of items) {
+    offsets.set(item.stopIndex, {
+      x: Math.round(item.ox),
+      y: Math.round(item.oy),
+    });
+  }
+  return offsets;
+}
+
+/**
  * Pixel offsets when stops share nearly the same coordinate.
  * @param {{ stopIndex: number, lng: number, lat: number }[]} points
  */

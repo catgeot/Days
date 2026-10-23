@@ -105,7 +105,7 @@ export function FestivalRoadPanel({
           data-festival-road-map-points={String(mapPoints.length)}
           role="img"
           aria-label={t('korea.festival.road.mapSlot')}
-          className="shrink-0 overflow-hidden rounded-2xl border border-stone-200 bg-stone-100"
+          className="shrink-0 overflow-hidden rounded-2xl border border-stone-200 bg-stone-100 [transform:translateZ(0)]"
           style={{ height: FESTIVAL_ROAD_MAP_SLOT_PX }}
         >
           <Suspense fallback={null}>

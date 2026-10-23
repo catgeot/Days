@@ -15,8 +15,10 @@ import {
   festivalRoadAllEmpty,
   festivalRoadFill,
   festivalRoadLineCoordinates,
+  festivalRoadLineGeoJson,
   festivalRoadLineOrder,
   festivalRoadMapPoints,
+  festivalRoadMarkerOffsetsFromProjections,
   festivalRoadTakeDiscardedCoords,
   groupFestivalsForBelt,
 } from '../../src/pages/Korea/lib/festivalRoad.js';
@@ -84,16 +86,19 @@ test('flag off leaves the live festival detail unchanged', () => {
   assert.doesNotMatch(panel, /mooniSlot/);
   const map = read('src/pages/Korea/FestivalRoadMap.jsx');
   assert.match(map, /react-map-gl\/mapbox/);
-  assert.match(map, /LineString/);
+  assert.match(map, /festivalRoadLineGeoJson/);
   assert.match(map, /data-festival-road-pin/);
   assert.match(map, /data-festival-road-map-tiles-idle/);
   assert.match(map, /festivalRoadPinOffsets/);
-  assert.match(map, /festivalRoadLineCoordinates/);
   assert.match(map, /reuseMaps/);
   assert.doesNotMatch(map, /key=\{viewKey\}/);
   assert.doesNotMatch(map, /contain:paint/);
   assert.doesNotMatch(map, /\bantialias\b/);
   assert.match(map, /zIndex: 100 \+ point\.stopIndex/);
+  assert.match(map, /festivalRoadLineGeoJson/);
+  assert.match(map, /festivalRoadMarkerOffsetsFromProjections/);
+  assert.match(map, /data-festival-road-map-clip/);
+  assert.match(map, /reuseMaps=\{false\}/);
   assert.match(panel, /data-week-shortcut/);
   assert.match(panel, /korea\.festival\.dateSheetWeekThis/);
   assert.match(panel, /korea\.festival\.dateSheetWeekNext/);
@@ -349,6 +354,34 @@ test('map points follow stop order and stay hidden under two points', () => {
     }
   }
   assert.ok(lineCoords.every((coord) => coord[0] > 127 && coord[0] < 130));
+  const geo = festivalRoadLineGeoJson(strayPins);
+  assert.deepEqual(geo.geometry.coordinates, lineCoords);
+  const wonjuOrdered = festivalRoadLineOrder(strayPins);
+  for (let i = 0; i < wonjuOrdered.length; i += 1) {
+    assert.equal(geo.geometry.coordinates[i][0], wonjuOrdered[i].lng);
+    assert.equal(geo.geometry.coordinates[i][1], wonjuOrdered[i].lat);
+  }
+  const westernTailLng = 126.45;
+  assert.ok(
+    geo.geometry.coordinates.every((coord) => Math.abs(coord[0] - westernTailLng) > 0.5),
+    'wonju 390 tail: stray western lng must not appear in line',
+  );
+  const wonjuHub = wonjuOrdered.find((point) => point.hubId === 'wonju');
+  assert.ok(wonjuHub);
+  const minLng = Math.min(...geo.geometry.coordinates.map((coord) => coord[0]));
+  assert.equal(minLng, wonjuHub.lng);
+
+  const spread = festivalRoadMarkerOffsetsFromProjections(
+    [
+      { stopIndex: 2, x: 120, y: 80 },
+      { stopIndex: 3, x: 128, y: 82 },
+    ],
+    40,
+  );
+  const o2 = spread.get(2) || { x: 0, y: 0 };
+  const o3 = spread.get(3) || { x: 0, y: 0 };
+  const sep = Math.hypot(128 + o3.x - (120 + o2.x), 82 + o3.y - (80 + o2.y));
+  assert.ok(sep >= 39);
 
   const centralBelt = beltForFestival({
     contentId: 'wonju-order',
