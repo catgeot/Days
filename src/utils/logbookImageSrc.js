@@ -1,3 +1,4 @@
+import { resolveListImageUrl } from './listImageUrl.js';
 import { resolveReviewImageSrc } from './placeReviewContentBlocks.js';
 
 export function resolveLogbookImageSrc(img) {
@@ -42,11 +43,13 @@ export function resolveLogbookDisplaySrc(img, opts = {}) {
   if (!src) return null;
 
   if (opts.role === 'thumb') {
-    return withUnsplashSizing(src, { width: 400, fit: 'crop', quality: 80, forceWidth: true });
+    const listSrc = resolveListImageUrl(src, { role: 'list', width: 400 });
+    return withUnsplashSizing(listSrc, { width: 400, fit: 'crop', quality: 80, forceWidth: true });
   }
 
   const width = opts.maxWidth ?? 1200;
-  return withUnsplashSizing(src, {
+  const displaySrc = resolveListImageUrl(src, { role: 'hero' });
+  return withUnsplashSizing(displaySrc, {
     width,
     fit: 'crop',
     quality: opts.quality ?? 80,

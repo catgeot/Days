@@ -8,8 +8,10 @@ import ReviewInlineMarkdown, {
 import { ReviewLinkChips } from '../src/components/PlaceCard/tabs/ReviewLinkChips.jsx';
 import { ReviewPlainFallbackBoundary } from '../src/components/PlaceCard/tabs/ReviewPlainFallbackBoundary.jsx';
 import {
+  plainTextFromReviewMarkdownHtml,
   reviewInlineLinkProps,
   reviewInlineUrlTransform,
+  reviewPlainTextForAccessibility,
   stripReviewInlineMarkdown,
 } from '../src/utils/reviewInlineMarkdown.js';
 
@@ -157,7 +159,8 @@ assert.deepEqual(ReviewPlainFallbackBoundary.getDerivedStateFromError(new Error(
 const inlineBoundary = new ReviewInlineMarkdownBoundary({ text: '평문 폴백 **그대로**' });
 inlineBoundary.state = { failed: true };
 const fallen = renderToStaticMarkup(inlineBoundary.render());
-assert.match(fallen, /평문 폴백 \*\*그대로\*\*/);
+assert.match(fallen, /평문 폴백 그대로/);
+assert.equal(fallen.includes('**'), false);
 const plainBoundary = new ReviewPlainFallbackBoundary({
   text: '레이지 실패',
   className: 'whitespace-pre-wrap',
@@ -170,6 +173,40 @@ assert.equal(
   stripReviewInlineMarkdown('**미즈노**([공식 사이트](https://www.mizuno-osaka.com/))'),
   '미즈노(공식 사이트)',
 );
+
+assert.equal(stripReviewInlineMarkdown('*이탤릭*'), '이탤릭');
+assert.equal(stripReviewInlineMarkdown('__굵게__'), '굵게');
+assert.equal(stripReviewInlineMarkdown('_기울임_'), '기울임');
+assert.equal(
+  stripReviewInlineMarkdown('[공식](https://example.com/path_(segment)/end)'),
+  '공식',
+);
+assert.equal(stripReviewInlineMarkdown('미완 **굵게'), '미완 굵게');
+
+assert.equal(stripReviewInlineMarkdown('snake_case_word'), 'snake_case_word');
+assert.equal(
+  stripReviewInlineMarkdown('see https://ex.com/a_b_c/d here'),
+  'see https://ex.com/a_b_c/d here',
+);
+assert.equal(stripReviewInlineMarkdown('2*3*4'), '2*3*4');
+assert.equal(stripReviewInlineMarkdown('a * b * c'), 'a * b * c');
+assert.equal(stripReviewInlineMarkdown('a _ b _ c'), 'a _ b _ c');
+assert.equal(stripReviewInlineMarkdown('한글_단어'), '한글_단어');
+assert.equal(stripReviewInlineMarkdown('**사려니숲길**은'), '사려니숲길은');
+
+const parenLinkMd = '[공식](https://example.com/path_(foo))';
+const parenStrip = reviewPlainTextForAccessibility(`**제목** ${parenLinkMd}`);
+assert.equal(parenStrip.includes('**'), false);
+assert.equal(parenStrip.includes(']('), false);
+assert.match(parenStrip, /제목/);
+assert.match(parenStrip, /공식/);
+
+const editorialSample = '**사려니** [공식](https://hallatrail.or.kr/salyeonisup)';
+const editorialPlain = reviewPlainTextForAccessibility(editorialSample);
+assert.equal(editorialPlain.includes('**'), false);
+assert.equal(editorialPlain.includes(']('), false);
+assert.match(editorialPlain, /사려니/);
+assert.match(editorialPlain, /공식/);
 
 const live = renderMd(
   '도톤보리에서 아케이드로 들어서면 바로 나오는 미즈노(美津の, [공식 사이트](https://www.mizuno-osaka.com/))는 11:00~22:00',
@@ -205,8 +242,18 @@ const editorialSrc = readFileSync(
   new URL('../src/components/PlaceCard/tabs/EditorialReviewText.jsx', import.meta.url),
   'utf8',
 );
-assert.match(editorialSrc, /const plain = <div className=\{plainClass\}>/);
+assert.match(editorialSrc, /reviewPlainTextForAccessibility/);
+assert.match(editorialSrc, /from '\.\.\/\.\.\/\.\.\/utils\/reviewInlineMarkdown\.js'/);
+assert.doesNotMatch(editorialSrc, /reviewPlainTextAccessibility/);
 assert.match(editorialSrc, /<Suspense fallback=\{plain\}>\s*<div className=\{plainClass\}>/);
+
+const navSrc = readFileSync(
+  new URL('../src/components/PlaceCard/common/PlaceMobileSecondaryNav.jsx', import.meta.url),
+  'utf8',
+);
+assert.match(navSrc, /<Link[\s\S]*to=\{reviewsHref\}/);
+assert.match(navSrc, /\/reviews/);
+assert.match(navSrc, /shouldHandlePlaceSpaNavClick/);
 
 const collapsed = renderToStaticMarkup(
   React.createElement(
