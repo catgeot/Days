@@ -44,6 +44,7 @@ test('stripReviewInlineMarkdown preserves intraword underscores and asterisks', 
   assert.equal(stripReviewInlineMarkdown('2*3*4'), '2*3*4');
   assert.equal(stripReviewInlineMarkdown('한글_단어'), '한글_단어');
   assert.equal(stripReviewInlineMarkdown('**사려니숲길**은'), '사려니숲길은');
+  assert.equal(stripReviewInlineMarkdown('a * b * c'), 'a * b * c');
 });
 
 test('PlaceMobileSecondaryNav allows modifier clicks through', () => {

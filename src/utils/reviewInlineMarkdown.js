@@ -105,6 +105,21 @@ function isIntrawordEmphasisDelimiter(text, index, markerLen) {
   return isReviewPlainAlnum(left) && isReviewPlainAlnum(right);
 }
 
+/** Spaced multiplication-style asterisks: `a * b * c` stays literal. */
+function isWhitespaceSurroundedDelimiter(text, index, markerLen) {
+  const left = text[index - 1];
+  const right = text[index + markerLen];
+  const leftWs = left === undefined || /\s/.test(left);
+  const rightWs = right === undefined || /\s/.test(right);
+  return leftWs && rightWs;
+}
+
+function isEmphasisDelimiterRun(text, index, markerLen) {
+  if (isIntrawordEmphasisDelimiter(text, index, markerLen)) return false;
+  if (isWhitespaceSurroundedDelimiter(text, index, markerLen)) return false;
+  return true;
+}
+
 function protectBareUrls(text) {
   const urls = [];
   const masked = text.replace(/https?:\/\/[^\s<>\])"\]]+/g, (match) => {
@@ -155,13 +170,13 @@ function stripDelimitedEmphasis(text, marker, markerLen) {
   let result = '';
   let i = 0;
   while (i < text.length) {
-    if (text.startsWith(marker, i) && !isIntrawordEmphasisDelimiter(text, i, markerLen)) {
+    if (text.startsWith(marker, i) && isEmphasisDelimiterRun(text, i, markerLen)) {
       let close = i + markerLen;
       let found = -1;
       while (close < text.length) {
         const idx = text.indexOf(marker, close);
         if (idx === -1) break;
-        if (!isIntrawordEmphasisDelimiter(text, idx, markerLen)) {
+        if (isEmphasisDelimiterRun(text, idx, markerLen)) {
           found = idx;
           break;
         }
