@@ -35,6 +35,17 @@ test('stripReviewInlineMarkdown handles emphasis, paren URLs, unclosed bold', ()
   assert.equal(stripReviewInlineMarkdown('open **bold'), 'open bold');
 });
 
+test('stripReviewInlineMarkdown preserves intraword underscores and asterisks', () => {
+  assert.equal(stripReviewInlineMarkdown('snake_case_word'), 'snake_case_word');
+  assert.equal(
+    stripReviewInlineMarkdown('https://ex.com/a_b_c/d'),
+    'https://ex.com/a_b_c/d',
+  );
+  assert.equal(stripReviewInlineMarkdown('2*3*4'), '2*3*4');
+  assert.equal(stripReviewInlineMarkdown('한글_단어'), '한글_단어');
+  assert.equal(stripReviewInlineMarkdown('**사려니숲길**은'), '사려니숲길은');
+});
+
 test('PlaceMobileSecondaryNav allows modifier clicks through', () => {
   const src = readFileSync(
     join(root, 'src/components/PlaceCard/common/PlaceMobileSecondaryNav.jsx'),

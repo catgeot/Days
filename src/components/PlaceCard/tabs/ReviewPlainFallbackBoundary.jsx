@@ -1,5 +1,5 @@
 import React from 'react';
-import { reviewPlainTextForAccessibility } from '../../../utils/reviewPlainTextAccessibility.jsx';
+import { reviewPlainTextForAccessibility } from '../../../utils/reviewInlineMarkdown.js';
 
 /** Eager boundary so a failed lazy markdown chunk still shows plain review text. */
 export class ReviewPlainFallbackBoundary extends React.Component {

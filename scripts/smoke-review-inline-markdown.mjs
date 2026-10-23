@@ -11,9 +11,9 @@ import {
   plainTextFromReviewMarkdownHtml,
   reviewInlineLinkProps,
   reviewInlineUrlTransform,
+  reviewPlainTextForAccessibility,
   stripReviewInlineMarkdown,
 } from '../src/utils/reviewInlineMarkdown.js';
-import { reviewPlainTextForAccessibility } from '../src/utils/reviewPlainTextAccessibility.jsx';
 
 function renderMd(text, props = {}) {
   return renderToStaticMarkup(
@@ -183,14 +183,21 @@ assert.equal(
 );
 assert.equal(stripReviewInlineMarkdown('미완 **굵게'), '미완 굵게');
 
+assert.equal(stripReviewInlineMarkdown('snake_case_word'), 'snake_case_word');
+assert.equal(
+  stripReviewInlineMarkdown('see https://ex.com/a_b_c/d here'),
+  'see https://ex.com/a_b_c/d here',
+);
+assert.equal(stripReviewInlineMarkdown('2*3*4'), '2*3*4');
+assert.equal(stripReviewInlineMarkdown('한글_단어'), '한글_단어');
+assert.equal(stripReviewInlineMarkdown('**사려니숲길**은'), '사려니숲길은');
+
 const parenLinkMd = '[공식](https://example.com/path_(foo))';
-const parenHtml = renderMd(`**제목** ${parenLinkMd}`);
-const parenPlain = plainTextFromReviewMarkdownHtml(parenHtml);
-assert.equal(parenPlain.includes('**'), false);
-assert.equal(parenPlain.includes(']('), false);
-assert.match(parenPlain, /제목/);
-assert.match(parenPlain, /공식/);
-assert.equal(reviewPlainTextForAccessibility(`**제목** ${parenLinkMd}`), parenPlain);
+const parenStrip = reviewPlainTextForAccessibility(`**제목** ${parenLinkMd}`);
+assert.equal(parenStrip.includes('**'), false);
+assert.equal(parenStrip.includes(']('), false);
+assert.match(parenStrip, /제목/);
+assert.match(parenStrip, /공식/);
 
 const editorialSample = '**사려니** [공식](https://hallatrail.or.kr/salyeonisup)';
 const editorialPlain = reviewPlainTextForAccessibility(editorialSample);
@@ -234,7 +241,8 @@ const editorialSrc = readFileSync(
   'utf8',
 );
 assert.match(editorialSrc, /reviewPlainTextForAccessibility/);
-assert.match(editorialSrc, /const plainText = reviewPlainTextForAccessibility\(text/);
+assert.match(editorialSrc, /from '\.\.\/\.\.\/\.\.\/utils\/reviewInlineMarkdown\.js'/);
+assert.doesNotMatch(editorialSrc, /reviewPlainTextAccessibility/);
 assert.match(editorialSrc, /<Suspense fallback=\{plain\}>\s*<div className=\{plainClass\}>/);
 
 const navSrc = readFileSync(

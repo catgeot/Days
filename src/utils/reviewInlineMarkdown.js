@@ -90,6 +90,39 @@ export function plainTextFromReviewMarkdownHtml(html) {
   return s;
 }
 
+const URL_SLOT_PREFIX = '\uE000U';
+const URL_SLOT_SUFFIX = '\uE001';
+
+/** Letters/digits including Hangul — used for intraword delimiter guard. */
+function isReviewPlainAlnum(ch) {
+  if (!ch) return false;
+  return /[0-9A-Za-z\u3131-\u318E\uAC00-\uD7A3]/.test(ch);
+}
+
+function isIntrawordEmphasisDelimiter(text, index, markerLen) {
+  const left = text[index - 1];
+  const right = text[index + markerLen];
+  return isReviewPlainAlnum(left) && isReviewPlainAlnum(right);
+}
+
+function protectBareUrls(text) {
+  const urls = [];
+  const masked = text.replace(/https?:\/\/[^\s<>\])"\]]+/g, (match) => {
+    const id = urls.length;
+    urls.push(match);
+    return `${URL_SLOT_PREFIX}${id}${URL_SLOT_SUFFIX}`;
+  });
+  return { masked, urls };
+}
+
+function restoreBareUrls(text, urls) {
+  if (!urls.length) return text;
+  return text.replace(
+    new RegExp(`${URL_SLOT_PREFIX}(\\d+)${URL_SLOT_SUFFIX}`, 'g'),
+    (_, id) => urls[Number(id)] ?? '',
+  );
+}
+
 function stripReviewInlineLinks(text) {
   let result = '';
   let i = 0;
@@ -118,24 +151,62 @@ function stripReviewInlineLinks(text) {
   return result;
 }
 
+function stripDelimitedEmphasis(text, marker, markerLen) {
+  let result = '';
+  let i = 0;
+  while (i < text.length) {
+    if (text.startsWith(marker, i) && !isIntrawordEmphasisDelimiter(text, i, markerLen)) {
+      let close = i + markerLen;
+      let found = -1;
+      while (close < text.length) {
+        const idx = text.indexOf(marker, close);
+        if (idx === -1) break;
+        if (!isIntrawordEmphasisDelimiter(text, idx, markerLen)) {
+          found = idx;
+          break;
+        }
+        close = idx + markerLen;
+      }
+      if (found > i) {
+        result += text.slice(i + markerLen, found);
+        i = found + markerLen;
+        continue;
+      }
+    }
+    result += text[i];
+    i += 1;
+  }
+  return result;
+}
+
 function stripReviewInlineEmphasis(text) {
-  let s = text;
-  s = s.replace(/\*\*([^*]+)\*\*/g, '$1');
+  let s = stripDelimitedEmphasis(text, '**', 2);
   s = s.replace(/\*\*([^*]*)$/g, '$1');
   s = s.replace(/\*\*/g, '');
-  s = s.replace(/__([^_]+)__/g, '$1');
+  s = stripDelimitedEmphasis(s, '__', 2);
   s = s.replace(/__([^_]*)$/g, '$1');
   s = s.replace(/__/g, '');
-  s = s.replace(/(?<!\*)\*([^*\n]+)\*(?!\*)/g, '$1');
-  s = s.replace(/(?<!_)_([^_\n]+)_(?!_)/g, '$1');
+  s = stripDelimitedEmphasis(s, '*', 1);
+  s = stripDelimitedEmphasis(s, '_', 1);
   return s;
 }
 
 /**
- * Regex fallback when markdown cannot be rendered (expand toggle length, hub previews, etc.).
+ * Plain text for a11y, fallbacks, and expand-toggle length (no react-markdown render).
+ * @param {unknown} text
+ */
+export function reviewPlainTextForAccessibility(text) {
+  return stripReviewInlineMarkdown(text);
+}
+
+/**
+ * Strip review inline markdown for non-rendered DOM (links + emphasis with intraword guards).
  * @param {unknown} text
  */
 export function stripReviewInlineMarkdown(text) {
   const normalized = String(text ?? '').replace(/\r\n/g, '\n');
-  return stripReviewInlineEmphasis(stripReviewInlineLinks(normalized));
+  const linkStripped = stripReviewInlineLinks(normalized);
+  const { masked, urls } = protectBareUrls(linkStripped);
+  const stripped = stripReviewInlineEmphasis(masked);
+  return restoreBareUrls(stripped, urls);
 }

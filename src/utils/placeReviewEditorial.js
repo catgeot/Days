@@ -1,5 +1,5 @@
 import { getCollapsedPreviewText } from './placeReviewContentBlocks.js';
-import { reviewPlainTextForAccessibility } from './reviewPlainTextAccessibility.jsx';
+import { reviewPlainTextForAccessibility } from './reviewInlineMarkdown.js';
 
 const BADGE_PREFIX = 'GATEO 리뷰어 · ';
 const VISIT_STORY_TITLE_MAX = 40;
@@ -23,7 +23,7 @@ export function normalizePersonaLabel(personaLabel) {
  */
 export function placeReviewVisitStoryDisplayTitle(review, maxLen = VISIT_STORY_TITLE_MAX) {
   const raw = getCollapsedPreviewText(review);
-  const plain = reviewPlainTextForAccessibility(raw, { inline: true }).replace(/\s+/g, ' ').trim();
+  const plain = reviewPlainTextForAccessibility(raw).replace(/\s+/g, ' ').trim();
   if (!plain) return '';
   if (plain.length <= maxLen) return plain;
 
