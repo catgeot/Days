@@ -886,7 +886,7 @@ function Home() {
 
     const path = routeLocation.pathname;
     if (path.startsWith('/place/') || path.startsWith('/explore')) {
-      navigate('/');
+      navigate({ pathname: '/', search: routeLocation.search || '' });
     }
 
     queueMicrotask(() => {

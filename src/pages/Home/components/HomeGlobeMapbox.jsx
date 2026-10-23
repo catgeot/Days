@@ -698,6 +698,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   const rotationTimer = useRef(null);
   const pauseRenderRef = useRef(pauseRender);
   pauseRenderRef.current = pauseRender;
+  const globeJustUnpausedRef = useRef(false);
   const pageHiddenRef = useRef(typeof document !== 'undefined' && document.hidden);
   const idleRotateStoppedRef = useRef(false);
   const resumeAfterIdleTouchRef = useRef(false);
@@ -2631,6 +2632,9 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
         syncGateoMarkerLayers();
         applyPlaceLabelVisibility();
         tryRevealGlobeOverlays();
+        if (typeof window !== 'undefined' && /(?:\?|&)gateoGlobeQa=1(?:&|$)/.test(window.location.search)) {
+          window.__gateoGlobeQaWake = () => refreshGlobeMapCanvasAfterMotion(map);
+        }
       }
     },
     requestGateoMarkerReveal: () => {
@@ -2814,6 +2818,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
 
   useEffect(() => {
     if (pauseRender) return;
+    globeJustUnpausedRef.current = true;
     const map = mapRef.current?.getMap();
     if (!map) return;
     let raf2 = null;
@@ -3464,6 +3469,12 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
             tryRevealGlobe();
           }
           if (map) publishGlobeQaMetrics(map);
+          if (map && globeJustUnpausedRef.current) {
+            globeJustUnpausedRef.current = false;
+            refreshGlobeMapCanvas(map);
+            window.setTimeout(() => refreshGlobeMapCanvas(map), 350);
+            window.setTimeout(() => refreshGlobeMapCanvas(map), 900);
+          }
         }}
         onDragStart={(event) => {
           pauseAutoRotateIfGlobeHit(event);

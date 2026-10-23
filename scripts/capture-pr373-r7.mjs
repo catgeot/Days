@@ -46,6 +46,11 @@ async function openCity(page, flow, base) {
     await search.waitFor({ state: 'visible', timeout: 60_000 });
     await search.click();
     await page.waitForURL(/\/explore/, { timeout: 30_000 });
+    await page.evaluate(() => {
+      const u = new URL(window.location.href);
+      u.searchParams.set('gateoGlobeQa', '1');
+      window.history.replaceState({}, '', `${u.pathname}${u.search}`);
+    });
   }
   const input = page.locator('input[placeholder]:visible').first();
   await input.fill(flow.query);
@@ -150,7 +155,19 @@ async function runFlow(browser, flow, size, base, prefix) {
   const t0 = Date.now();
   await openCity(page, flow, base);
   await settleHomeFromPlace(page, base);
+  await page.waitForFunction(
+    () => {
+      const m = window.__gateoGlobeQaMetrics;
+      return Boolean(m?.idleAt) && m.canvasBackingMismatch === false;
+    },
+    null,
+    { timeout: 45_000 },
+  ).catch(() => {});
   await waitGlobeSettled(page, t0);
+  for (let attempt = 0; attempt < 5; attempt += 1) {
+    await page.evaluate(() => window.__gateoGlobeQaWake?.()).catch(() => {});
+    await page.waitForTimeout(2000);
+  }
   const m = await metrics(page);
   const fileBase = `${prefix}${flow.key}-${size.tag}-after-home-settled`;
   await shot(page, fileBase, size);
