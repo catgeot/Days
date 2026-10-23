@@ -101,6 +101,11 @@ test('flag off leaves the live festival detail unchanged', () => {
   assert.match(map, /festivalRoadMarkerOffsetsFromProjections/);
   assert.match(map, /festivalRoadPinLeaderGeoJson/);
   assert.match(map, /zoomend/);
+  assert.match(map, /onMapResize/);
+  assert.match(map, /onContainerResize/);
+  assert.match(map, /ResizeObserver\(onContainerResize\)/);
+  assert.match(map, /festival-road-capture-zoom/);
+  assert.doesNotMatch(map, /map\.on\('resize',\s*onViewportChange\)/);
   assert.match(map, /LEADER_SOURCE/);
   assert.match(map, /data-festival-road-map-clip/);
   assert.match(map, /reuseMaps=\{false\}/);
@@ -387,6 +392,31 @@ test('map points follow stop order and stay hidden under two points', () => {
   const o3 = spread.get(3) || { x: 0, y: 0 };
   const sep = Math.hypot(128 + o3.x - (120 + o2.x), 82 + o3.y - (80 + o2.y));
   assert.ok(sep >= 42);
+
+  const cluster = festivalRoadMarkerOffsetsFromProjections(
+    [
+      { stopIndex: 1, x: 100, y: 80 },
+      { stopIndex: 2, x: 120, y: 80 },
+      { stopIndex: 3, x: 110, y: 95 },
+    ],
+    FESTIVAL_ROAD_PIN_MIN_GAP_PX,
+  );
+  const clusterPts = [
+    { stopIndex: 1, x: 100, y: 80 },
+    { stopIndex: 2, x: 120, y: 80 },
+    { stopIndex: 3, x: 110, y: 95 },
+  ].map((p) => {
+    const o = cluster.get(p.stopIndex) || { x: 0, y: 0 };
+    return { stopIndex: p.stopIndex, x: p.x + o.x, y: p.y + o.y };
+  });
+  for (let i = 0; i < clusterPts.length; i += 1) {
+    for (let j = i + 1; j < clusterPts.length; j += 1) {
+      const a = clusterPts[i];
+      const b = clusterPts[j];
+      const gap = Math.hypot(b.x - a.x, b.y - a.y);
+      assert.ok(gap >= 42, `cluster gap ${a.stopIndex}-${b.stopIndex}=${gap}`);
+    }
+  }
 
   const centralBelt = beltForFestival({
     contentId: 'wonju-order',
