@@ -7,7 +7,9 @@ const OUT = 'docs/qa/pr-festival-back-blank';
 const IS_CI = process.env.CI === 'true' || process.env.GITHUB_ACTIONS === 'true';
 const OPEN_TIMEOUT_MS = IS_CI ? 25_000 : 120_000;
 const TAB_WAIT_MS = IS_CI ? 12_000 : 90_000;
-const TEST_TIMEOUT_MS = IS_CI ? 180_000 : 240_000;
+const TEST_TIMEOUT_MS = IS_CI ? 120_000 : 240_000;
+const OVERVIEW_BASELINE_POLL_MS = IS_CI ? 35_000 : 60_000;
+const SKELETON_WAIT_MS = IS_CI ? 30_000 : 45_000;
 const MIN_PRE_TAP_SCROLL_TOP_PX = 2000;
 const OVERVIEW_SCROLL_HEIGHT_FACTOR = 1.5;
 const VIEWPORT = { width: 390, height: 844 };
@@ -97,11 +99,11 @@ async function measureOverviewTabContentHeight(dialog) {
 async function waitForOverviewScrollBaseline(dialog) {
   await expect(dialog.locator('[data-festival-detail-slot]')).toBeVisible({ timeout: 30_000 });
   await expect(dialog.locator('[data-festival-detail-skeleton]')).toHaveCount(0, {
-    timeout: 45_000,
+    timeout: SKELETON_WAIT_MS,
   });
   await expect
     .poll(async () => (await measurePrimaryScroller(dialog)).scrollHeight, {
-      timeout: 60_000,
+      timeout: OVERVIEW_BASELINE_POLL_MS,
     })
     .toBeGreaterThan(3000);
   const metrics = await measurePrimaryScroller(dialog);
@@ -119,7 +121,7 @@ async function waitForProgramTabReady(dialog) {
     'true',
   );
   await expect(dialog.locator('[data-festival-detail-skeleton]')).toHaveCount(0, {
-    timeout: 45_000,
+    timeout: SKELETON_WAIT_MS,
   });
   await expect
     .poll(
@@ -132,7 +134,7 @@ async function waitForProgramTabReady(dialog) {
             t.includes('국향 가을음악회')
           );
         }),
-      { timeout: 45_000 },
+      { timeout: SKELETON_WAIT_MS },
     )
     .toBe(true);
 }

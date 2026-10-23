@@ -165,6 +165,7 @@ export default defineConfig({
     {
       name: 'webkit-festival-back-overview',
       testMatch: /korea-festival-back-overview\.spec\.js/,
+      timeout: process.env.CI ? 120_000 : 240_000,
       use: {
         ...devices['iPhone 13'],
         viewport: { width: 390, height: 844 },
