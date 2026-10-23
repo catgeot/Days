@@ -18,7 +18,9 @@ import {
   festivalRoadLineGeoJson,
   festivalRoadLineOrder,
   festivalRoadMapPoints,
+  FESTIVAL_ROAD_PIN_MIN_GAP_PX,
   festivalRoadMarkerOffsetsFromProjections,
+  festivalRoadPinLeaderGeoJson,
   festivalRoadTakeDiscardedCoords,
   groupFestivalsForBelt,
 } from '../../src/pages/Korea/lib/festivalRoad.js';
@@ -97,6 +99,9 @@ test('flag off leaves the live festival detail unchanged', () => {
   assert.match(map, /zIndex: 100 \+ point\.stopIndex/);
   assert.match(map, /festivalRoadLineGeoJson/);
   assert.match(map, /festivalRoadMarkerOffsetsFromProjections/);
+  assert.match(map, /festivalRoadPinLeaderGeoJson/);
+  assert.match(map, /zoomend/);
+  assert.match(map, /LEADER_SOURCE/);
   assert.match(map, /data-festival-road-map-clip/);
   assert.match(map, /reuseMaps=\{false\}/);
   assert.match(panel, /data-week-shortcut/);
@@ -374,14 +379,14 @@ test('map points follow stop order and stay hidden under two points', () => {
   const spread = festivalRoadMarkerOffsetsFromProjections(
     [
       { stopIndex: 2, x: 120, y: 80 },
-      { stopIndex: 3, x: 128, y: 82 },
+      { stopIndex: 3, x: 128, y: 80 },
     ],
-    40,
+    FESTIVAL_ROAD_PIN_MIN_GAP_PX,
   );
   const o2 = spread.get(2) || { x: 0, y: 0 };
   const o3 = spread.get(3) || { x: 0, y: 0 };
   const sep = Math.hypot(128 + o3.x - (120 + o2.x), 82 + o3.y - (80 + o2.y));
-  assert.ok(sep >= 39);
+  assert.ok(sep >= 42);
 
   const centralBelt = beltForFestival({
     contentId: 'wonju-order',
