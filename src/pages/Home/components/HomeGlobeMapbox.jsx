@@ -512,6 +512,7 @@ function publishGlobeQaMetrics(map) {
       : 0;
     const ratio = resolveGlobePixelRatio();
     const expectedW = cssW > 0 ? Math.max(1, Math.floor(cssW * ratio)) : null;
+    const center = map.getCenter();
     window.__gateoGlobeQaMetrics = {
       idleAt: Date.now(),
       gateoDots,
@@ -521,6 +522,8 @@ function publishGlobeQaMetrics(map) {
       canvasBackingMismatch: globeCanvasBackingMismatch(map),
       canvasExpectedWidth: expectedW,
       zoom: map.getZoom(),
+      centerLat: center?.lat ?? null,
+      centerLng: center?.lng ?? null,
     };
   } catch {
     // QA hook only.
@@ -1819,6 +1822,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     if (isAlreadyNearTarget && !forceFlyZoom && Math.abs(currentZoom - targetZoom) < 0.05) {
       flushPendingGateoMarkerSource(map);
       clearGlobeCameraBusy(map);
+      refreshGlobeMapCanvas(map);
       scheduleOrientRotateResume(map, 0);
       return true;
     }
@@ -1852,11 +1856,8 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
             flushPendingGateoMarkerSource(map);
             clearGlobeCameraBusy(map);
             applyPlaceLabelVisibility();
-            safeMapResize(map);
-            try {
-              map.triggerRepaint();
-            } catch {
-              // Map may be mid-teardown.
+            for (const delayMs of [0, 120, 320, 720, 1200]) {
+              window.setTimeout(() => refreshGlobeMapCanvas(map), delayMs);
             }
             tryRevealGlobeOverlays();
           });
@@ -2619,6 +2620,13 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       if (userPausedRotateRef.current) return;
       tryResumeAutoRotate(mapRef.current?.getMap());
     },
+    /** /place→홈 직전 pause repaint hold 해제 (WebKit wedge 방지) */
+    releasePauseRenderHold: () => {
+      const map = mapRef.current?.getMap();
+      if (map && !map._removed) {
+        releaseMapRender(renderHoldRef, map, 'pause');
+      }
+    },
     /** 채팅·모달 닫힌 뒤 Mapbox 입력·리사이즈 복구 (몰입 flyTo 무반응 방지) */
     wakeAfterOverlay: () => {
       interactionRef.current = false;
@@ -2998,8 +3006,6 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
 
     if (pauseRender) {
       stopLoop();
-      // pauseRender는 opacity-0만 — holdMapRender('pause')는 loaded() 중 repaint를 막아
-      // /place→홈 flyTo 직후 WebKit에서 검은 wedge를 유발할 수 있음.
       return () => {};
     }
 
@@ -3044,6 +3050,67 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       startRotationLoopRef.current = () => {};
     };
   }, [buildRotateResumeSnapshot, isZenMode, mapReady, pauseRender]);
+
+  /** iPhone heat: pause 중 카메라 정지 시에만 repaint hold — flyTo 중에는 해제(웨지 방지). */
+  useEffect(() => {
+    if (!mapReady) return undefined;
+    const map = mapRef.current?.getMap();
+    if (!map || map._removed) return undefined;
+
+    let idleHoldTimer = 0;
+    const clearIdleHoldTimer = () => {
+      if (idleHoldTimer) window.clearTimeout(idleHoldTimer);
+      idleHoldTimer = 0;
+    };
+
+    const syncPauseRenderHold = () => {
+      clearIdleHoldTimer();
+      if (!pauseRenderRef.current) {
+        releaseMapRender(renderHoldRef, map, 'pause');
+        return;
+      }
+      if (isGlobeCameraInMotion(map)) {
+        releaseMapRender(renderHoldRef, map, 'pause');
+        return;
+      }
+      idleHoldTimer = window.setTimeout(() => {
+        idleHoldTimer = 0;
+        if (!pauseRenderRef.current || isGlobeCameraInMotion(map)) {
+          releaseMapRender(renderHoldRef, map, 'pause');
+          return;
+        }
+        holdMapRender(renderHoldRef, map, 'pause');
+      }, 450);
+    };
+
+    const releasePauseHoldForMotion = () => {
+      clearIdleHoldTimer();
+      releaseMapRender(renderHoldRef, map, 'pause');
+    };
+
+    if (!pauseRender) {
+      clearIdleHoldTimer();
+      releaseMapRender(renderHoldRef, map, 'pause');
+      return undefined;
+    }
+
+    syncPauseRenderHold();
+    map.on('movestart', releasePauseHoldForMotion);
+    map.on('zoomstart', releasePauseHoldForMotion);
+    map.on('rotatestart', releasePauseHoldForMotion);
+    map.on('idle', syncPauseRenderHold);
+    map.on('moveend', syncPauseRenderHold);
+
+    return () => {
+      clearIdleHoldTimer();
+      map.off('movestart', releasePauseHoldForMotion);
+      map.off('zoomstart', releasePauseHoldForMotion);
+      map.off('rotatestart', releasePauseHoldForMotion);
+      map.off('idle', syncPauseRenderHold);
+      map.off('moveend', syncPauseRenderHold);
+      releaseMapRender(renderHoldRef, map, 'pause');
+    };
+  }, [mapReady, pauseRender]);
 
   useEffect(() => {
     const syncHidden = (hidden) => {
@@ -3469,7 +3536,15 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
           if (!pauseRenderRef.current && !pageHiddenRef.current && !idleRotateStoppedRef.current) {
             tryRevealGlobe();
           }
-          if (map) publishGlobeQaMetrics(map);
+          if (map) {
+            publishGlobeQaMetrics(map);
+            if (
+              typeof window !== 'undefined'
+              && /(?:\?|&)gateoGlobeQa=1(?:&|$)/.test(window.location.search)
+            ) {
+              window.__gateoGlobeQaWake = () => refreshGlobeMapCanvasAfterMotion(map);
+            }
+          }
           if (map && globeJustUnpausedRef.current) {
             globeJustUnpausedRef.current = false;
             refreshGlobeMapCanvas(map);

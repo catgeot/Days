@@ -352,6 +352,55 @@ function Home() {
   const shouldPauseGlobe =
     !flightCinemaActive
     && (isCardExpanded || isPlaceRoute || routeLocation.pathname.startsWith('/explore'));
+  const shouldPauseGlobeRef = useRef(shouldPauseGlobe);
+  shouldPauseGlobeRef.current = shouldPauseGlobe;
+
+  const pendingHomeGlobeUnpauseRef = useRef(null);
+  const homeGlobeTimerIdsRef = useRef([]);
+
+  const clearHomeGlobeTimers = useCallback(() => {
+    for (const id of homeGlobeTimerIdsRef.current) {
+      window.clearTimeout(id);
+    }
+    homeGlobeTimerIdsRef.current = [];
+  }, []);
+
+  const scheduleHomeGlobeTimer = useCallback((fn, ms) => {
+    const id = window.setTimeout(fn, ms);
+    homeGlobeTimerIdsRef.current.push(id);
+    return id;
+  }, []);
+
+  const runPendingHomeGlobeWork = useCallback(() => {
+    const pending = pendingHomeGlobeUnpauseRef.current;
+    if (!pending) return;
+    pendingHomeGlobeUnpauseRef.current = null;
+    clearHomeGlobeTimers();
+
+    globeRef.current?.releasePauseRenderHold?.();
+    const { fly } = pending;
+    if (fly) {
+      moveToLocation(fly.lat, fly.lng, fly.name, fly.category, {
+        location: fly.location,
+      });
+    }
+    globeRef.current?.wakeAfterOverlay?.();
+    globeRef.current?.requestGateoMarkerReveal?.();
+    scheduleHomeGlobeTimer(() => {
+      globeRef.current?.wakeAfterOverlay?.();
+    }, 650);
+    scheduleHomeGlobeTimer(() => {
+      globeRef.current?.wakeAfterOverlay?.();
+    }, 2000);
+  }, [clearHomeGlobeTimers, moveToLocation, scheduleHomeGlobeTimer]);
+
+  useEffect(() => {
+    if (!shouldPauseGlobe) {
+      runPendingHomeGlobeWork();
+    }
+  }, [shouldPauseGlobe, runPendingHomeGlobeWork]);
+
+  useEffect(() => () => clearHomeGlobeTimers(), [clearHomeGlobeTimers]);
 
   const {
     handleGlobeClick,
@@ -849,6 +898,8 @@ function Home() {
 
   /** 장소카드 헤더 지구본 — 홈 URL·써머리 닫기, 지구본 핀·포커스는 유지 (dismissPlaceSelectionKeepGlobePin과 동일 SSOT) */
   const goHomeFromPlace = useCallback(() => {
+    clearHomeGlobeTimers();
+    pendingHomeGlobeUnpauseRef.current = null;
     clearPlaceReturnTo();
     clearExploreReturn();
     skipHomeSummaryRestoreRef.current = true;
@@ -861,6 +912,7 @@ function Home() {
 
     const globeApi = globeRef.current || getGlobeApi();
     globeApi?.suppressOverlayClick?.();
+    globeApi?.releasePauseRenderHold?.();
 
     const pinTarget =
       target && hasValidCoords(target) ? target : selectedLocationRef.current;
@@ -895,32 +947,21 @@ function Home() {
       navigate({ pathname: '/', search: routeLocation.search || '' });
     }
 
-    const runHomeGlobeFly = () => {
-      if (homeFly) {
-        moveToLocation(homeFly.lat, homeFly.lng, homeFly.name, homeFly.category, {
-          location: homeFly.location,
-        });
-      }
-      globeRef.current?.wakeAfterOverlay?.();
-      globeRef.current?.requestGateoMarkerReveal?.();
-    };
-
-    window.setTimeout(runHomeGlobeFly, leavingPlaceOrExplore ? 150 : 0);
-    window.setTimeout(() => {
-      globeRef.current?.wakeAfterOverlay?.();
-    }, 800);
-    window.setTimeout(() => {
-      globeRef.current?.wakeAfterOverlay?.();
-    }, 2200);
+    pendingHomeGlobeUnpauseRef.current = { fly: homeFly };
+    if (!shouldPauseGlobeRef.current) {
+      runPendingHomeGlobeWork();
+    }
     recalibrateHomeChromeAfterNav();
   }, [
     addScoutPin,
     category,
+    clearHomeGlobeTimers,
     isPlaceImmersed,
-    moveToLocation,
     navigate,
     rememberGlobeFocus,
     routeLocation.pathname,
+    routeLocation.search,
+    runPendingHomeGlobeWork,
     savedTrips,
     setSelectedLocation,
     recalibrateHomeChromeAfterNav,

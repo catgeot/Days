@@ -27,7 +27,7 @@ reg = im.crop((x0, y0, x1, y1))
 px = list(reg.getdata())
 n = len(px)
 mean = sum(sum(p)/3 for p in px) / n
-dark = sum(1 for p in px if sum(p)/3 < 25) / n
+dark = sum(1 for p in px if p[0] < 18 and p[1] < 18 and p[2] < 18) / n
 print(json.dumps({'darkFraction': dark, 'meanRgb': mean, 'wedgeSuspect': dark >= 0.35}))
 `;
   const { stdout } = await execFileAsync('python3', ['-c', py, jpegPath]);
@@ -48,15 +48,25 @@ async function tokyoHomeReturn(page) {
   await page.waitForTimeout(2500);
   await page.getByRole('button', { name: /홈으로 이동|Go to home/i }).first().click();
   await page.waitForURL((u) => new URL(u).pathname === '/', { timeout: 30_000 });
+  const tokyoBand = { lat: [30, 42], lng: [125, 155] };
   await page.waitForFunction(
-    () => {
+    (band) => {
       const m = window.__gateoGlobeQaMetrics;
-      return Boolean(m?.idleAt) && m.canvasBackingMismatch === false;
+      if (!m?.idleAt || m.canvasBackingMismatch) return false;
+      return (
+        m.centerLat >= band.lat[0]
+        && m.centerLat <= band.lat[1]
+        && m.centerLng >= band.lng[0]
+        && m.centerLng <= band.lng[1]
+      );
     },
-    null,
+    tokyoBand,
     { timeout: 45_000 },
   ).catch(() => {});
-  await page.waitForTimeout(2000);
+  for (let i = 0; i < 3; i += 1) {
+    await page.evaluate(() => window.__gateoGlobeQaWake?.()).catch(() => {});
+    await page.waitForTimeout(1500);
+  }
   const summaryOpen = await page.evaluate(() => Boolean(document.querySelector('.place-summary-card')));
   return { summaryOpen };
 }

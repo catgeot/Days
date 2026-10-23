@@ -13,9 +13,12 @@ export function measureGlobeWedgeFromRgba(rgba, width, height) {
   for (let y = y0; y < y1; y += 1) {
     for (let x = x0; x < x1; x += 1) {
       const i = (y * width + x) * 4;
-      const mean = (rgba[i] + rgba[i + 1] + rgba[i + 2]) / 3;
+      const r = rgba[i];
+      const g = rgba[i + 1];
+      const b = rgba[i + 2];
+      const mean = (r + g + b) / 3;
       sum += mean;
-      if (mean < 25) dark += 1;
+      if (r < 18 && g < 18 && b < 18) dark += 1;
       n += 1;
     }
   }
