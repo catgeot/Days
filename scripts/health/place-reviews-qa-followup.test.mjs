@@ -4,6 +4,7 @@ import { dirname, join } from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
 import { logbookHeroImageUrl } from '../../src/utils/logbookImageSrc.js';
+import { stripReviewInlineMarkdown } from '../../src/utils/reviewInlineMarkdown.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 
@@ -24,6 +25,22 @@ test('PlaceMobileSecondaryNav exposes reviews tab as Link href', () => {
   );
   assert.match(src, /to=\{reviewsHref\}/);
   assert.match(src, /\/reviews/);
+});
+
+test('stripReviewInlineMarkdown handles emphasis, paren URLs, unclosed bold', () => {
+  assert.equal(stripReviewInlineMarkdown('*a*'), 'a');
+  assert.equal(stripReviewInlineMarkdown('__b__'), 'b');
+  assert.equal(stripReviewInlineMarkdown('_c_'), 'c');
+  assert.equal(stripReviewInlineMarkdown('[L](https://x.com/p_(q))'), 'L');
+  assert.equal(stripReviewInlineMarkdown('open **bold'), 'open bold');
+});
+
+test('PlaceMobileSecondaryNav allows modifier clicks through', () => {
+  const src = readFileSync(
+    join(root, 'src/components/PlaceCard/common/PlaceMobileSecondaryNav.jsx'),
+    'utf8',
+  );
+  assert.match(src, /shouldHandlePlaceSpaNavClick/);
 });
 
 test('Related blog cards use thumbnail onError fallback', () => {

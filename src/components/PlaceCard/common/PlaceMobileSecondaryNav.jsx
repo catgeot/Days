@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ImageIcon, Play, PenTool, BookOpen, Briefcase, ArrowLeft } from 'lucide-react';
+import { shouldHandlePlaceSpaNavClick } from './placeSpaNavClick.js';
 
 /**
  * placement="header": 데스크톱 PlaceChatPanel 2행 (리뷰 탭 포함).
@@ -62,6 +63,7 @@ const PlaceMobileSecondaryNav = ({
           to={galleryHref}
           className={reviewsPillClass}
           onClick={(event) => {
+            if (!shouldHandlePlaceSpaNavClick(event)) return;
             event.preventDefault();
             setMediaMode('GALLERY');
           }}
@@ -74,6 +76,7 @@ const PlaceMobileSecondaryNav = ({
           to={reviewsHref}
           className={reviewsPillClass}
           onClick={(event) => {
+            if (!shouldHandlePlaceSpaNavClick(event)) return;
             event.preventDefault();
             setMediaMode('REVIEWS');
           }}

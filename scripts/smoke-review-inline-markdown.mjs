@@ -8,10 +8,12 @@ import ReviewInlineMarkdown, {
 import { ReviewLinkChips } from '../src/components/PlaceCard/tabs/ReviewLinkChips.jsx';
 import { ReviewPlainFallbackBoundary } from '../src/components/PlaceCard/tabs/ReviewPlainFallbackBoundary.jsx';
 import {
+  plainTextFromReviewMarkdownHtml,
   reviewInlineLinkProps,
   reviewInlineUrlTransform,
   stripReviewInlineMarkdown,
 } from '../src/utils/reviewInlineMarkdown.js';
+import { reviewPlainTextForAccessibility } from '../src/utils/reviewPlainTextAccessibility.jsx';
 
 function renderMd(text, props = {}) {
   return renderToStaticMarkup(
@@ -172,6 +174,31 @@ assert.equal(
   '미즈노(공식 사이트)',
 );
 
+assert.equal(stripReviewInlineMarkdown('*이탤릭*'), '이탤릭');
+assert.equal(stripReviewInlineMarkdown('__굵게__'), '굵게');
+assert.equal(stripReviewInlineMarkdown('_기울임_'), '기울임');
+assert.equal(
+  stripReviewInlineMarkdown('[공식](https://example.com/path_(segment)/end)'),
+  '공식',
+);
+assert.equal(stripReviewInlineMarkdown('미완 **굵게'), '미완 굵게');
+
+const parenLinkMd = '[공식](https://example.com/path_(foo))';
+const parenHtml = renderMd(`**제목** ${parenLinkMd}`);
+const parenPlain = plainTextFromReviewMarkdownHtml(parenHtml);
+assert.equal(parenPlain.includes('**'), false);
+assert.equal(parenPlain.includes(']('), false);
+assert.match(parenPlain, /제목/);
+assert.match(parenPlain, /공식/);
+assert.equal(reviewPlainTextForAccessibility(`**제목** ${parenLinkMd}`), parenPlain);
+
+const editorialSample = '**사려니** [공식](https://hallatrail.or.kr/salyeonisup)';
+const editorialPlain = reviewPlainTextForAccessibility(editorialSample);
+assert.equal(editorialPlain.includes('**'), false);
+assert.equal(editorialPlain.includes(']('), false);
+assert.match(editorialPlain, /사려니/);
+assert.match(editorialPlain, /공식/);
+
 const live = renderMd(
   '도톤보리에서 아케이드로 들어서면 바로 나오는 미즈노(美津の, [공식 사이트](https://www.mizuno-osaka.com/))는 11:00~22:00',
 );
@@ -206,8 +233,8 @@ const editorialSrc = readFileSync(
   new URL('../src/components/PlaceCard/tabs/EditorialReviewText.jsx', import.meta.url),
   'utf8',
 );
-assert.match(editorialSrc, /stripReviewInlineMarkdown/);
-assert.match(editorialSrc, /const plainText = stripReviewInlineMarkdown\(text\)/);
+assert.match(editorialSrc, /reviewPlainTextForAccessibility/);
+assert.match(editorialSrc, /const plainText = reviewPlainTextForAccessibility\(text/);
 assert.match(editorialSrc, /<Suspense fallback=\{plain\}>\s*<div className=\{plainClass\}>/);
 
 const navSrc = readFileSync(
@@ -216,6 +243,7 @@ const navSrc = readFileSync(
 );
 assert.match(navSrc, /<Link[\s\S]*to=\{reviewsHref\}/);
 assert.match(navSrc, /\/reviews/);
+assert.match(navSrc, /shouldHandlePlaceSpaNavClick/);
 
 const collapsed = renderToStaticMarkup(
   React.createElement(

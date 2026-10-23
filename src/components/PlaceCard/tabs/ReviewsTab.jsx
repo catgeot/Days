@@ -33,7 +33,7 @@ import {
   shouldShowReviewBottomGallery,
   shouldShowReviewExpandToggle,
 } from '../../../utils/placeReviewContentBlocks';
-import { stripReviewInlineMarkdown } from '../../../utils/reviewInlineMarkdown.js';
+import { reviewPlainTextForAccessibility } from '../../../utils/reviewPlainTextAccessibility.jsx';
 
 const RelatedBlogCardThumbnail = ({ src }) => {
   const [failed, setFailed] = useState(false);
@@ -283,7 +283,7 @@ const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onToggleLike
   const usesContentBlocks = hasReviewContentBlocks(review.content_blocks);
   const contentBlocks = usesContentBlocks ? normalizeReviewContentBlocks(review.content_blocks) : [];
   const collapsedPreviewText = getCollapsedPreviewText(review);
-  const plainCollapsedPreview = stripReviewInlineMarkdown(collapsedPreviewText);
+  const plainCollapsedPreview = reviewPlainTextForAccessibility(collapsedPreviewText, { inline: true });
   const galleryEntries = usesContentBlocks
     ? getGalleryImageEntries(review.images, review.content_blocks)
     : (review.images || []).map((img, index) => ({ img, index }));
@@ -410,7 +410,7 @@ const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onToggleLike
                   }
                   return (
                     <p key={`text-${blockIdx}`} className="whitespace-pre-wrap mt-3 first:mt-0">
-                      {stripReviewInlineMarkdown(block.text)}
+                      {reviewPlainTextForAccessibility(block.text, { inline: true })}
                     </p>
                   );
                 }
@@ -439,7 +439,7 @@ const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onToggleLike
             />
           ) : (
             <div className={`whitespace-pre-wrap ${isExpanded ? '' : 'line-clamp-3'}`}>
-              {stripReviewInlineMarkdown(review.content)}
+              {reviewPlainTextForAccessibility(review.content, { inline: true })}
             </div>
           )}
           {showExpandToggle && (
