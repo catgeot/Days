@@ -1,4 +1,5 @@
 import React, { lazy, Suspense } from 'react';
+import { stripReviewInlineMarkdown } from '../../../utils/reviewInlineMarkdown.js';
 import { ReviewPlainFallbackBoundary } from './ReviewPlainFallbackBoundary.jsx';
 
 const ReviewInlineMarkdownBoundary = lazy(() =>
@@ -7,14 +8,13 @@ const ReviewInlineMarkdownBoundary = lazy(() =>
   })),
 );
 
-/**
- * Editorial review text. Suspense and error fallbacks use the same raw string as plain reviews.
- */
+/** Suspense/error fallbacks use stripped plain text (not markdown source). */
 export function EditorialReviewText({ text, inline = false, className = '' }) {
   const plainClass = ['whitespace-pre-wrap', className].filter(Boolean).join(' ');
-  const plain = <div className={plainClass}>{text}</div>;
+  const plainText = stripReviewInlineMarkdown(text);
+  const plain = <div className={plainClass}>{plainText}</div>;
   return (
-    <ReviewPlainFallbackBoundary text={text} className={plainClass}>
+    <ReviewPlainFallbackBoundary text={plainText} className={plainClass}>
       <Suspense fallback={plain}>
         <div className={plainClass}>
           <ReviewInlineMarkdownBoundary text={text} inline={inline} />

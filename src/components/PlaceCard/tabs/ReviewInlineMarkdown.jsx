@@ -8,6 +8,7 @@ import {
   reviewInlineLinkProps,
   reviewInlineSanitizeSchema,
   reviewInlineUrlTransform,
+  stripReviewInlineMarkdown,
 } from '../../../utils/reviewInlineMarkdown.js';
 
 const REVIEW_LINK_CLASS =
@@ -80,7 +81,7 @@ export class ReviewInlineMarkdownBoundary extends React.Component {
 
   render() {
     if (this.state.failed) {
-      return <span className="whitespace-pre-wrap">{this.props.text}</span>;
+      return <span className="whitespace-pre-wrap">{stripReviewInlineMarkdown(this.props.text)}</span>;
     }
     const Markdown = this.props.MarkdownComponent || ReviewInlineMarkdown;
     return <Markdown text={this.props.text} inline={this.props.inline} />;

@@ -157,7 +157,8 @@ assert.deepEqual(ReviewPlainFallbackBoundary.getDerivedStateFromError(new Error(
 const inlineBoundary = new ReviewInlineMarkdownBoundary({ text: '평문 폴백 **그대로**' });
 inlineBoundary.state = { failed: true };
 const fallen = renderToStaticMarkup(inlineBoundary.render());
-assert.match(fallen, /평문 폴백 \*\*그대로\*\*/);
+assert.match(fallen, /평문 폴백 그대로/);
+assert.equal(fallen.includes('**'), false);
 const plainBoundary = new ReviewPlainFallbackBoundary({
   text: '레이지 실패',
   className: 'whitespace-pre-wrap',
@@ -205,8 +206,16 @@ const editorialSrc = readFileSync(
   new URL('../src/components/PlaceCard/tabs/EditorialReviewText.jsx', import.meta.url),
   'utf8',
 );
-assert.match(editorialSrc, /const plain = <div className=\{plainClass\}>/);
+assert.match(editorialSrc, /stripReviewInlineMarkdown/);
+assert.match(editorialSrc, /const plainText = stripReviewInlineMarkdown\(text\)/);
 assert.match(editorialSrc, /<Suspense fallback=\{plain\}>\s*<div className=\{plainClass\}>/);
+
+const navSrc = readFileSync(
+  new URL('../src/components/PlaceCard/common/PlaceMobileSecondaryNav.jsx', import.meta.url),
+  'utf8',
+);
+assert.match(navSrc, /<Link[\s\S]*to=\{reviewsHref\}/);
+assert.match(navSrc, /\/reviews/);
 
 const collapsed = renderToStaticMarkup(
   React.createElement(

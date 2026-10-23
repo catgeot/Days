@@ -33,6 +33,31 @@ import {
   shouldShowReviewBottomGallery,
   shouldShowReviewExpandToggle,
 } from '../../../utils/placeReviewContentBlocks';
+import { stripReviewInlineMarkdown } from '../../../utils/reviewInlineMarkdown.js';
+
+const RelatedBlogCardThumbnail = ({ src }) => {
+  const [failed, setFailed] = useState(false);
+  if (!src || failed) {
+    return (
+      <div className="h-28 bg-gradient-to-br from-emerald-50 to-teal-50 flex items-center justify-center">
+        <BookOpen className="w-8 h-8 text-emerald-200" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="h-28 overflow-hidden bg-gray-100 relative">
+      <img
+        src={src}
+        alt=""
+        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+        loading="lazy"
+        decoding="async"
+        onError={() => setFailed(true)}
+      />
+    </div>
+  );
+};
 
 const EditorialReviewImageCredits = ({ images, compact = false }) => {
   const credits = collectUniqueEditorialReviewImageCredits(images);
@@ -258,6 +283,7 @@ const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onToggleLike
   const usesContentBlocks = hasReviewContentBlocks(review.content_blocks);
   const contentBlocks = usesContentBlocks ? normalizeReviewContentBlocks(review.content_blocks) : [];
   const collapsedPreviewText = getCollapsedPreviewText(review);
+  const plainCollapsedPreview = stripReviewInlineMarkdown(collapsedPreviewText);
   const galleryEntries = usesContentBlocks
     ? getGalleryImageEntries(review.images, review.content_blocks)
     : (review.images || []).map((img, index) => ({ img, index }));
@@ -367,7 +393,7 @@ const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onToggleLike
                 />
               ) : (
                 <div className="whitespace-pre-wrap line-clamp-3">
-                  {collapsedPreviewText}
+                  {plainCollapsedPreview}
                 </div>
               )
             ) : (
@@ -384,7 +410,7 @@ const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onToggleLike
                   }
                   return (
                     <p key={`text-${blockIdx}`} className="whitespace-pre-wrap mt-3 first:mt-0">
-                      {block.text}
+                      {stripReviewInlineMarkdown(block.text)}
                     </p>
                   );
                 }
@@ -413,7 +439,7 @@ const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onToggleLike
             />
           ) : (
             <div className={`whitespace-pre-wrap ${isExpanded ? '' : 'line-clamp-3'}`}>
-              {review.content}
+              {stripReviewInlineMarkdown(review.content)}
             </div>
           )}
           {showExpandToggle && (
@@ -749,19 +775,7 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null }) => {
                     onClick={() => navigate(publicLogbookDetailPath(blog))}
                     className={`shrink-0 w-56 bg-white border rounded-xl overflow-hidden shadow-sm hover:shadow-md hover:-translate-y-1 transition-all cursor-pointer snap-start flex flex-col group ${editorial ? 'border-indigo-100' : 'border-gray-100'}`}
                   >
-                    {thumb ? (
-                      <div className="h-28 overflow-hidden bg-gray-100 relative">
-                        <img
-                          src={thumb}
-                          alt="thumbnail"
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                        />
-                      </div>
-                    ) : (
-                      <div className="h-28 bg-gradient-to-br from-emerald-50 to-teal-50 flex items-center justify-center">
-                        <BookOpen className="w-8 h-8 text-emerald-200" />
-                      </div>
-                    )}
+                    <RelatedBlogCardThumbnail src={thumb} />
                     <div className="p-3 flex flex-col gap-1">
                       <h5 className="text-sm font-bold text-gray-800 line-clamp-1 group-hover:text-emerald-600 transition-colors">
                         {blog.title}

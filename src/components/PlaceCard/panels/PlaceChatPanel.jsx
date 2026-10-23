@@ -311,6 +311,7 @@ const PlaceChatPanel = React.memo(({
              setMediaMode={setMediaMode}
              matchedPackage={matchedPackage}
              onOpenPackage={onOpenPackage}
+             placeSlug={getPlaceUrlParam(location)}
            />
          </div>
       </div>
