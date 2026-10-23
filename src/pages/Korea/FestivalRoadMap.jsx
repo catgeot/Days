@@ -117,6 +117,17 @@ function afterLayout(map, run) {
   });
 }
 
+/**
+ * @param {import('mapbox-gl').Map} map
+ * @param {() => void} run
+ */
+function afterContainerResize(map, run) {
+  afterLayout(map, () => {
+    if (typeof map.triggerRepaint === 'function') map.triggerRepaint();
+    run();
+  });
+}
+
 function PinMarker({ point }) {
   const isStop = point.kind === 'stop' || point.kind === 'hub';
   const isSight = point.kind === 'sight';
@@ -172,7 +183,27 @@ export default function FestivalRoadMap({ points, routeKey = 0 }) {
     if (root && typeof map.getZoom === 'function') {
       root.setAttribute('data-festival-road-map-zoom', String(Number(map.getZoom().toFixed(3))));
     }
+    if (root) {
+      const canvas = root.querySelector('canvas');
+      if (canvas) {
+        const rect = canvas.getBoundingClientRect();
+        root.setAttribute(
+          'data-festival-road-canvas-sync',
+          `${canvas.width}x${canvas.height}:${Math.round(rect.width)}x${Math.round(rect.height)}`,
+        );
+      }
+    }
   }, []);
+
+  const scheduleContainerSync = useCallback(
+    (map) => {
+      afterContainerResize(map, () => {
+        map.resize();
+        applyPinLayout(map);
+      });
+    },
+    [applyPinLayout],
+  );
 
   useEffect(() => {
     setPinOffsets(festivalRoadPinOffsets(points));
@@ -193,27 +224,47 @@ export default function FestivalRoadMap({ points, routeKey = 0 }) {
     el.addEventListener('festival-road-capture-zoom', onCaptureZoom);
     const onZoomEnd = () => applyPinLayout(map);
     const onMapResize = () => applyPinLayout(map);
-    const onContainerResize = () => {
-      afterLayout(map, () => {
-        map.resize();
-        applyPinLayout(map);
-      });
-    };
+    const onContainerResize = () => scheduleContainerSync(map);
     map.on('zoomend', onZoomEnd);
     map.on('resize', onMapResize);
+    const slotEl = el.closest('[data-festival-road-map]');
+    const clipEl = el.querySelector('[data-festival-road-map-clip]');
     const ro = new ResizeObserver(onContainerResize);
     ro.observe(el);
+    if (slotEl instanceof HTMLElement && slotEl !== el) ro.observe(slotEl);
+    if (clipEl instanceof HTMLElement) ro.observe(clipEl);
+    const scrollRoot = el.closest('[role="dialog"]');
+    let scrollTimer = 0;
+    const onScroll = () => {
+      globalThis.clearTimeout(scrollTimer);
+      scrollTimer = globalThis.setTimeout(() => scheduleContainerSync(map), 100);
+    };
+    scrollRoot?.addEventListener('scroll', onScroll, { passive: true });
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting && entry.intersectionRatio > 0.05)) {
+          scheduleContainerSync(map);
+        }
+      },
+      { threshold: [0, 0.1, 0.5, 1] },
+    );
+    io.observe(el);
     return () => {
       el.removeEventListener('festival-road-capture-zoom', onCaptureZoom);
       map.off('zoomend', onZoomEnd);
       map.off('resize', onMapResize);
+      scrollRoot?.removeEventListener('scroll', onScroll);
+      globalThis.clearTimeout(scrollTimer);
+      io.disconnect();
       ro.disconnect();
     };
-  }, [ready, applyPinLayout]);
+  }, [ready, applyPinLayout, scheduleContainerSync]);
 
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !ready || points.length < 2) return;
+    const root = containerRef.current;
+    if (root) root.setAttribute('data-festival-road-line-ready', '0');
     setTilesIdle(false);
     afterLayout(map, () => {
       const source = map.getSource(LINE_SOURCE);
@@ -227,8 +278,12 @@ export default function FestivalRoadMap({ points, routeKey = 0 }) {
       fitRoad(map, points);
       applyPinLayout(map);
       whenMapTilesIdle(map, () => {
-        applyPinLayout(map);
-        setTilesIdle(true);
+        afterContainerResize(map, () => {
+          map.resize();
+          applyPinLayout(map);
+          if (root) root.setAttribute('data-festival-road-line-ready', '1');
+          setTilesIdle(true);
+        });
       });
     });
   }, [syncKey, ready, points, applyPinLayout]);
