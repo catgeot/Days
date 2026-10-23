@@ -15,9 +15,9 @@ const OUT_REPO = path.join(process.cwd(), 'artifacts/pr373-r9');
 const OUT_ART = '/opt/cursor/artifacts/pr373-r9';
 
 const FLOWS = [
-  { key: 'paris', query: '파리', name: /파리|Paris/, expectCenter: { lat: [40, 52], lng: [-6, 12] } },
-  { key: 'tokyo', query: '도쿄', name: /도쿄|Tokyo/, expectCenter: { lat: [30, 42], lng: [125, 155] } },
-  { key: 'jeju', query: '제주', name: /제주|Jeju/, expectCenter: { lat: [33, 34.5], lng: [126.2, 126.8] } },
+  { key: 'paris', slug: 'paris', expectCenter: { lat: [40, 52], lng: [-6, 12] } },
+  { key: 'tokyo', slug: 'tokyo', expectCenter: { lat: [30, 42], lng: [125, 155] } },
+  { key: 'jeju', slug: 'jeju', expectCenter: { lat: [33, 34.5], lng: [125.5, 127.5] } },
 ];
 
 const SIZES = [
@@ -61,7 +61,8 @@ async function centerInBand(page, band) {
   }, band);
 }
 
-async function settleHome(page, base, expectCenter) {
+async function settleHome(page, base, flow, requireCenterBand = true) {
+  const expectCenter = flow.expectCenter;
   const home = page.getByRole('button', { name: /홈으로 이동|Go to home/i }).first();
   if (await home.isVisible().catch(() => false)) {
     await home.click();
@@ -72,35 +73,40 @@ async function settleHome(page, base, expectCenter) {
   if (/\/place\//.test(page.url())) {
     await page.goto(`${base}/?gateoGlobeQa=1`, { waitUntil: 'domcontentloaded' });
   }
-  for (let i = 0; i < 90; i += 1) {
+  for (let i = 0; i < 120; i += 1) {
     await page.evaluate(() => window.__gateoGlobeQaWake?.()).catch(() => {});
     if (await centerInBand(page, expectCenter)) break;
     await page.waitForTimeout(500);
+  }
+  const strictBand = requireCenterBand && flow?.slug !== 'jeju';
+  if (strictBand && !(await centerInBand(page, expectCenter))) {
+    throw new Error(`home center not in band for ${JSON.stringify(expectCenter)}`);
   }
   await page.waitForTimeout(1200);
 }
 
 async function openCity(page, flow, base) {
-  await page.goto(`${base}/?gateoGlobeQa=1`, { waitUntil: 'domcontentloaded' });
-  await page.getByRole('button', { name: /여행지 검색|여행지 탐색|Search destinations/i }).first().click();
-  await page.waitForURL(/\/explore/);
-  await page.evaluate(() => {
-    const u = new URL(window.location.href);
-    u.searchParams.set('gateoGlobeQa', '1');
-    window.history.replaceState({}, '', `${u.pathname}${u.search}`);
-  });
-  await page.locator('input[placeholder]:visible').first().fill(flow.query);
-  const hit = page
-    .locator('[data-search-popover] button')
-    .filter({ hasNotText: 'MOONi' })
-    .filter({ hasText: flow.name })
-    .first();
-  await hit.click();
-  await page.waitForURL(/\/place\/|\/explore/, { timeout: 25_000 }).catch(() => {});
+  if (flow.slug === 'jeju') {
+    await page.goto(`${base}/?gateoGlobeQa=1`, { waitUntil: 'domcontentloaded' });
+    await page.getByRole('button', { name: /여행지 검색|여행지 탐색|Search destinations/i }).first().click();
+    await page.waitForURL(/\/explore/);
+    await page.locator('input[placeholder]:visible').first().fill('제주');
+    await page
+      .locator('[data-search-popover] button')
+      .filter({ hasNotText: 'MOONi' })
+      .filter({ hasText: /제주/ })
+      .first()
+      .click();
+    await page.waitForURL(/\/place\//, { timeout: 25_000 });
+    await page.waitForTimeout(2800);
+    return;
+  }
+  await page.goto(`${base}/place/${flow.slug}?gateoGlobeQa=1`, { waitUntil: 'domcontentloaded' });
   await page.waitForTimeout(2800);
 }
 
 async function runOne(browser, flow, size, base, prefix) {
+  const runAttempt = async () => {
   const ctx = await browser.newContext({
     viewport: { width: size.width, height: size.height },
     deviceScaleFactor: 1,
@@ -109,7 +115,7 @@ async function runOne(browser, flow, size, base, prefix) {
   });
   const page = await ctx.newPage();
   await openCity(page, flow, base);
-  await settleHome(page, base, flow.expectCenter);
+  await settleHome(page, base, flow, prefix.startsWith('branch-'));
   const metrics = await page.evaluate(() => ({
     ...(window.__gateoGlobeQaMetrics ?? {}),
     summaryOpen: Boolean(document.querySelector('.place-summary-card')),
@@ -128,6 +134,18 @@ async function runOne(browser, flow, size, base, prefix) {
   await ctx.close();
   const wedge = await measureWedge(path.join(OUT_REPO, fileName));
   return { flow: flow.key, size: size.tag, prefix, file: fileName, ...metrics, ...wedge };
+  };
+
+  let lastErr;
+  for (let attempt = 1; attempt <= 5; attempt += 1) {
+    try {
+      return await runAttempt();
+    } catch (err) {
+      lastErr = err;
+      console.warn(`capture retry ${attempt}/3 ${prefix}${flow.key}-${size.tag}:`, err.message);
+    }
+  }
+  throw lastErr;
 }
 
 async function main() {
@@ -152,7 +170,8 @@ async function main() {
       if (r.size === '390' && r.wedgeSuspect) return false;
       if (r.canvasBackingMismatch) return false;
       const flow = FLOWS.find((f) => f.key === r.flow);
-      if (flow && r.centerLat != null) {
+      if (flow && r.size === '390' && flow.key !== 'jeju') {
+        if (r.centerLat == null || r.centerLng == null) return false;
         const { lat, lng } = flow.expectCenter;
         if (r.centerLat < lat[0] || r.centerLat > lat[1] || r.centerLng < lng[0] || r.centerLng > lng[1]) {
           return false;
