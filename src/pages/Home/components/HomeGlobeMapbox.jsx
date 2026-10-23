@@ -2998,10 +2998,9 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
 
     if (pauseRender) {
       stopLoop();
-      holdMapRender(renderHoldRef, mapRef.current?.getMap(), 'pause');
-      return () => {
-        releaseMapRender(renderHoldRef, mapRef.current?.getMap(), 'pause');
-      };
+      // pauseRender는 opacity-0만 — holdMapRender('pause')는 loaded() 중 repaint를 막아
+      // /place→홈 flyTo 직후 WebKit에서 검은 wedge를 유발할 수 있음.
+      return () => {};
     }
 
     lastInteractionAtRef.current = performance.now();
@@ -3298,6 +3297,8 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       className={`absolute inset-0 z-0 touch-none transition-opacity duration-500 ${
         globePaused ? 'pointer-events-none opacity-0' : globeDimmed ? 'opacity-30' : 'opacity-100'
       }`}
+      aria-hidden={globePaused ? true : undefined}
+      inert={globePaused ? true : undefined}
       onPointerDown={handleInteractionStart}
       onPointerUp={handleInteractionEnd}
       onPointerCancel={handleInteractionEnd}

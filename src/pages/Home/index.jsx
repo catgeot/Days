@@ -864,6 +864,7 @@ function Home() {
 
     const pinTarget =
       target && hasValidCoords(target) ? target : selectedLocationRef.current;
+    let homeFly = null;
     if (pinTarget && hasValidCoords(pinTarget)) {
       const lat = Number(pinTarget.lat);
       const lng = Number(pinTarget.lng);
@@ -875,9 +876,13 @@ function Home() {
       }
       rememberGlobeFocus(pinTarget);
       addScoutPin(pinTarget);
-      moveToLocation(lat, lng, pinTarget.name, pinTarget.category || category, {
+      homeFly = {
+        lat,
+        lng,
+        name: pinTarget.name,
+        category: pinTarget.category || category,
         location: pinTarget,
-      });
+      };
     }
 
     selectedLocationRef.current = null;
@@ -885,14 +890,22 @@ function Home() {
     setSelectedLocation(null);
 
     const path = routeLocation.pathname;
-    if (path.startsWith('/place/') || path.startsWith('/explore')) {
+    const leavingPlaceOrExplore = path.startsWith('/place/') || path.startsWith('/explore');
+    if (leavingPlaceOrExplore) {
       navigate({ pathname: '/', search: routeLocation.search || '' });
     }
 
-    queueMicrotask(() => {
+    const runHomeGlobeFly = () => {
+      if (homeFly) {
+        moveToLocation(homeFly.lat, homeFly.lng, homeFly.name, homeFly.category, {
+          location: homeFly.location,
+        });
+      }
       globeRef.current?.wakeAfterOverlay?.();
       globeRef.current?.requestGateoMarkerReveal?.();
-    });
+    };
+
+    window.setTimeout(runHomeGlobeFly, leavingPlaceOrExplore ? 150 : 0);
     window.setTimeout(() => {
       globeRef.current?.wakeAfterOverlay?.();
     }, 800);

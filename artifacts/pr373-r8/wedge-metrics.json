@@ -1,0 +1,91 @@
+{
+  "branchBase": "https://127.0.0.1:4173",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "wedgeRule": "darkFraction>=0.35 in band x[72%,100%] y[26%,56%]",
+  "runs": [
+    {
+      "run": 1,
+      "file": "branch-tokyo-390-home-run-01.jpg",
+      "summaryOpen": false,
+      "darkFraction": 0.0368,
+      "meanRgb": 90.2,
+      "wedgeSuspect": false
+    },
+    {
+      "run": 2,
+      "file": "branch-tokyo-390-home-run-02.jpg",
+      "summaryOpen": false,
+      "darkFraction": 0.038,
+      "meanRgb": 88.9,
+      "wedgeSuspect": false
+    },
+    {
+      "run": 3,
+      "file": "branch-tokyo-390-home-run-03.jpg",
+      "summaryOpen": false,
+      "darkFraction": 0.038,
+      "meanRgb": 88.9,
+      "wedgeSuspect": false
+    },
+    {
+      "run": 4,
+      "file": "branch-tokyo-390-home-run-04.jpg",
+      "summaryOpen": false,
+      "darkFraction": 0.0383,
+      "meanRgb": 88.1,
+      "wedgeSuspect": false
+    },
+    {
+      "run": 5,
+      "file": "branch-tokyo-390-home-run-05.jpg",
+      "summaryOpen": false,
+      "darkFraction": 0.0333,
+      "meanRgb": 94,
+      "wedgeSuspect": false
+    },
+    {
+      "run": 6,
+      "file": "branch-tokyo-390-home-run-06.jpg",
+      "summaryOpen": false,
+      "darkFraction": 0.0315,
+      "meanRgb": 94.6,
+      "wedgeSuspect": false
+    },
+    {
+      "run": 7,
+      "file": "branch-tokyo-390-home-run-07.jpg",
+      "summaryOpen": false,
+      "darkFraction": 0.0349,
+      "meanRgb": 91.5,
+      "wedgeSuspect": false
+    },
+    {
+      "run": 8,
+      "file": "branch-tokyo-390-home-run-08.jpg",
+      "summaryOpen": false,
+      "darkFraction": 0.0346,
+      "meanRgb": 91.1,
+      "wedgeSuspect": false
+    },
+    {
+      "run": 9,
+      "file": "branch-tokyo-390-home-run-09.jpg",
+      "summaryOpen": false,
+      "darkFraction": 0.0322,
+      "meanRgb": 95.2,
+      "wedgeSuspect": false
+    },
+    {
+      "run": 10,
+      "file": "branch-tokyo-390-home-run-10.jpg",
+      "summaryOpen": false,
+      "darkFraction": 0.0383,
+      "meanRgb": 88.1,
+      "wedgeSuspect": false
+    }
+  ],
+  "pass": true
+}
