@@ -1,6 +1,13 @@
-import React from 'react';
+import React, { lazy, Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FESTIVAL_ROAD_MAP_SLOT_PX } from './lib/festivalRoad.js';
+import {
+  FESTIVAL_ROAD_MAP_MIN_POINTS,
+  FESTIVAL_ROAD_MAP_SLOT_PX,
+  festivalRoadMapPoints,
+  festivalRoadNearbyMapHref,
+} from './lib/festivalRoad.js';
+
+const FestivalRoadMap = lazy(() => import('./FestivalRoadMap.jsx'));
 
 const CHIP_IDLE =
   'border-stone-200 bg-stone-50 text-stone-800 hover:bg-stone-100';
@@ -11,8 +18,49 @@ const WEEK_CHIPS = [
   { id: 1, labelKey: 'korea.festival.dateSheetWeekNext' },
 ];
 
+const NEARBY_TARGET_CLASS =
+  'block w-full text-left text-sm font-medium text-stone-800 underline decoration-stone-300 underline-offset-2 break-keep';
+
 /**
- * Draft route skeleton. The map slot is an empty fixed-height box.
+ * @param {{ name: string, contentId?: string, listId?: string, lat?: number | null, lng?: number | null }} sight
+ * @param {(sight: object) => void} [onSelectNearby]
+ */
+function NearbySightControl({ sight, onSelectNearby }) {
+  const detail = Boolean(sight.contentId || sight.listId);
+  if (detail && onSelectNearby) {
+    return (
+      <button
+        type="button"
+        data-festival-road-nearby-target=""
+        data-festival-road-nearby-id={sight.contentId || ''}
+        onClick={() => onSelectNearby(sight)}
+        className={NEARBY_TARGET_CLASS}
+      >
+        {sight.name}
+      </button>
+    );
+  }
+  const href = festivalRoadNearbyMapHref(sight);
+  if (!href) {
+    return (
+      <span className="block text-sm font-medium text-stone-800 break-keep">{sight.name}</span>
+    );
+  }
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      data-festival-road-nearby-target=""
+      className={NEARBY_TARGET_CLASS}
+    >
+      {sight.name}
+    </a>
+  );
+}
+
+/**
+ * Draft route. The map chunk loads only when the line has two or more points.
  * @param {{
  *   beltName: string,
  *   legs: object[],
@@ -23,10 +71,10 @@ const WEEK_CHIPS = [
  *   onSelectStop: (stopIndex: number) => void,
  *   originHubId?: string,
  *   showNearby: boolean,
- *   nearbyLabels: string[],
+ *   nearbySights: object[],
+ *   onSelectNearby?: (sight: object) => void,
  *   showAccess: boolean,
  *   accessSlot?: React.ReactNode,
- *   mooniSlot?: React.ReactNode,
  * }} props
  */
 export function FestivalRoadPanel({
@@ -39,25 +87,32 @@ export function FestivalRoadPanel({
   onSelectStop,
   originHubId = '',
   showNearby,
-  nearbyLabels,
+  nearbySights,
+  onSelectNearby,
   showAccess,
   accessSlot = null,
-  mooniSlot = null,
 }) {
   const { t } = useTranslation();
+  const mapPoints = festivalRoadMapPoints(legs);
+  const showMap = mapPoints.length >= FESTIVAL_ROAD_MAP_MIN_POINTS;
 
   return (
     <div className="space-y-3" data-festival-road="">
       <p className="text-sm font-extrabold text-stone-900 break-keep">{beltName}</p>
-      <div
-        data-festival-road-map=""
-        role="img"
-        aria-label={t('korea.festival.road.mapSlot')}
-        className="flex shrink-0 items-center justify-center rounded-2xl border border-dashed border-stone-300 bg-stone-100 text-sm font-semibold text-stone-500"
-        style={{ height: FESTIVAL_ROAD_MAP_SLOT_PX }}
-      >
-        {t('korea.festival.road.mapSlot')}
-      </div>
+      {showMap ? (
+        <div
+          data-festival-road-map=""
+          data-festival-road-map-points={String(mapPoints.length)}
+          role="img"
+          aria-label={t('korea.festival.road.mapSlot')}
+          className="shrink-0 overflow-hidden rounded-2xl border border-stone-200 bg-stone-100 [transform:translateZ(0)]"
+          style={{ height: FESTIVAL_ROAD_MAP_SLOT_PX }}
+        >
+          <Suspense fallback={null}>
+            <FestivalRoadMap points={mapPoints} routeKey={weeksAhead} />
+          </Suspense>
+        </div>
+      ) : null}
       <div className="flex flex-wrap gap-2" data-festival-date-week-shortcuts="">
         {WEEK_CHIPS.map((chip) => {
           const active = weeksAhead === chip.id;
@@ -116,19 +171,22 @@ export function FestivalRoadPanel({
                       {t('korea.festival.road.emptyStop')}
                     </span>
                   ) : null}
-                  {leg.items?.length ? (
+                  {!leg.empty && leg.items?.length ? (
                     <span className="mt-1 block space-y-0.5">
-                      {leg.items.map((row) => (
-                        <span
-                          key={String(row.item?.contentId || row.item?.title)}
-                          data-festival-road-in-period={row.inPeriod ? '1' : '0'}
-                          className={`block text-xs break-keep ${
-                            row.inPeriod ? 'font-semibold text-stone-800' : 'text-stone-400'
-                          }`}
-                        >
-                          {String(row.item?.title || '')}
-                        </span>
-                      ))}
+                      {leg.items.map((row) => {
+                        if (!row.inPeriod) return null;
+                        const title = String(row.item?.title || '').trim();
+                        if (!title) return null;
+                        return (
+                          <span
+                            key={String(row.item?.contentId || title)}
+                            data-festival-road-in-period="1"
+                            className="block text-xs font-semibold text-stone-800 break-keep"
+                          >
+                            {title}
+                          </span>
+                        );
+                      })}
                     </span>
                   ) : null}
                 </span>
@@ -141,9 +199,9 @@ export function FestivalRoadPanel({
                         {t('korea.festival.detail.nearbySights')}
                       </p>
                       <ul className="mt-1 space-y-1">
-                        {nearbyLabels.map((name) => (
-                          <li key={name} className="text-sm font-medium text-stone-800 break-keep">
-                            {name}
+                        {(nearbySights || []).map((sight) => (
+                          <li key={sight.name}>
+                            <NearbySightControl sight={sight} onSelectNearby={onSelectNearby} />
                           </li>
                         ))}
                       </ul>
@@ -156,7 +214,6 @@ export function FestivalRoadPanel({
           );
         })}
       </ol>
-      {mooniSlot}
     </div>
   );
 }

@@ -13,7 +13,7 @@
     {
       "id": "gw-central",
       "name": "강원 중부 횡단로",
-      "stops": ["wonju", "jeongseon", "pyeongchang"]
+      "stops": ["wonju", "pyeongchang", "jeongseon"]
     },
     {
       "id": "gw-west-jungbu",

@@ -39,6 +39,19 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Festival road QA fixture absent from default prod bundle
+        run: |
+          if grep -rq '/qa/festival-road' dist/assets/; then
+            grep -rl '/qa/festival-road' dist/assets/ || true
+            exit 1
+          fi
+          shopt -s nullglob
+          chunks=(dist/assets/FestivalRoadFixture*.js)
+          if ((${#chunks[@]} > 0)); then
+            ls -la "${chunks[@]}"
+            exit 1
+          fi
+
       - name: Festival hero credit E2E (WebKit)
         env:
           VITE_SUPABASE_URL: https://example.supabase.co
@@ -148,6 +161,65 @@ jobs:
             exit 1
           fi
           SMOKE_SITE_URL=http://127.0.0.1:5173 npx playwright test e2e/korea-festival-external-return.spec.js --project=webkit-festival-external-return --reporter=line
+
+  festival-road-wonju-e2e:
+    name: Festival road Wonju E2E (WebKit 390)
+    runs-on: ubuntu-latest
+    needs: lint-and-build
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build with festival road flag
+        env:
+          VITE_GATEO_FESTIVAL_ROAD: '1'
+          VITE_SUPABASE_URL: https://example.supabase.co
+          VITE_SUPABASE_ANON_KEY: e2e-anon-placeholder
+          VITE_MAPBOX_TOKEN: ${{ secrets.VITE_MAPBOX_TOKEN }}
+        run: npm run build
+
+      - name: Festival road QA fixture absent (flag-on prod build)
+        run: |
+          if grep -rq '/qa/festival-road' dist/assets/; then exit 1; fi
+          shopt -s nullglob
+          chunks=(dist/assets/FestivalRoadFixture*.js)
+          if ((${#chunks[@]} > 0)); then ls -la "${chunks[@]}"; exit 1; fi
+
+      - name: Playwright WebKit — korea-festival-road-wonju-390
+        env:
+          DEV_SSL: '0'
+          VITE_GATEO_FESTIVAL_ROAD: '1'
+          E2E_MAPBOX_OK: ${{ secrets.VITE_MAPBOX_TOKEN != '' && '1' || '' }}
+        run: |
+          if [ -z "$E2E_MAPBOX_OK" ]; then
+            echo "Skip festival road Wonju E2E: VITE_MAPBOX_TOKEN secret not set"
+            exit 0
+          fi
+          npx playwright install --with-deps webkit
+          npx vite preview --host 127.0.0.1 --port 5173 --strictPort > /tmp/vite-festival-road.log 2>&1 &
+          ready=0
+          for _ in $(seq 1 90); do
+            if curl -sf -o /dev/null http://127.0.0.1:5173/; then
+              ready=1
+              break
+            fi
+            sleep 2
+          done
+          if [ "$ready" != 1 ]; then
+            cat /tmp/vite-festival-road.log
+            exit 1
+          fi
+          SMOKE_SITE_URL=http://127.0.0.1:5173 npx playwright test e2e/korea-festival-road-wonju-390.spec.js --project=webkit-festival-road-wonju --reporter=line
 
   place-travelogue-card-e2e:
     name: Place travelogue card E2E (WebKit 390, fixtures)

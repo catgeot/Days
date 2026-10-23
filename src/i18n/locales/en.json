@@ -1604,6 +1604,7 @@
         "viewFromThis": "See a route from this festival",
         "mapSlot": "Map",
         "emptyStop": "No festival in this period · Nearby sights",
+        "startsOn": "Starts {{month}}/{{day}}",
         "allEmpty": "No festivals in this period. Try another date."
       },
       "resetFilters": "Reset filters",
