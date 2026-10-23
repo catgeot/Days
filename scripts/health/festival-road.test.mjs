@@ -1,6 +1,5 @@
 import assert from 'node:assert/strict';
-import { spawnSync } from 'node:child_process';
-import { readFileSync, readdirSync, rmSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
@@ -450,34 +449,4 @@ test('road copy matches the approved lines', () => {
   const en = JSON.parse(read('src/i18n/locales/en.json'));
   assert.equal(en.korea.festival.road.viewFromThis, 'See a route from this festival');
   assert.equal(en.korea.festival.road.mapSlot, 'Map');
-});
-
-test('production build does not ship festival road QA fixture route', { timeout: 240_000 }, () => {
-  const outDir = 'dist-festival-road-probe';
-  rmSync(join(root, outDir), { recursive: true, force: true });
-  const build = spawnSync(
-    'npx',
-    ['vite', 'build', '--outDir', outDir],
-    {
-      cwd: root,
-      env: {
-        ...process.env,
-        NODE_ENV: 'production',
-        VITE_GATEO_FESTIVAL_ROAD: '1',
-        VITE_SUPABASE_URL: 'https://example.supabase.co',
-        VITE_SUPABASE_ANON_KEY: 'e2e-anon-placeholder',
-      },
-      encoding: 'utf8',
-    },
-  );
-  assert.equal(build.status, 0, build.stderr || build.stdout);
-  const assetsDir = join(root, outDir, 'assets');
-  const files = readdirSync(assetsDir);
-  const fixtureChunks = files.filter((f) => /FestivalRoadFixture/i.test(f));
-  assert.equal(fixtureChunks.length, 0, `fixture chunks: ${fixtureChunks.join(', ')}`);
-  const routeLeak = files
-    .filter((f) => f.endsWith('.js'))
-    .some((f) => readFileSync(join(assetsDir, f), 'utf8').includes('/qa/festival-road'));
-  assert.equal(routeLeak, false, 'prod bundle must not contain /qa/festival-road');
-  rmSync(join(root, outDir), { recursive: true, force: true });
 });

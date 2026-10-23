@@ -43,6 +43,19 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Festival road QA fixture absent from default prod bundle
+        run: |
+          if grep -rq '/qa/festival-road' dist/assets/; then
+            grep -rl '/qa/festival-road' dist/assets/ || true
+            exit 1
+          fi
+          shopt -s nullglob
+          chunks=(dist/assets/FestivalRoadFixture*.js)
+          if ((${#chunks[@]} > 0)); then
+            ls -la "${chunks[@]}"
+            exit 1
+          fi
+
   festival-hero-credit-e2e:
     name: Festival hero credit E2E (WebKit)
     runs-on: ubuntu-latest
@@ -234,6 +247,13 @@ jobs:
           VITE_SUPABASE_ANON_KEY: e2e-anon-placeholder
           VITE_MAPBOX_TOKEN: ${{ secrets.VITE_MAPBOX_TOKEN }}
         run: npm run build
+
+      - name: Festival road QA fixture absent (flag-on prod build)
+        run: |
+          if grep -rq '/qa/festival-road' dist/assets/; then exit 1; fi
+          shopt -s nullglob
+          chunks=(dist/assets/FestivalRoadFixture*.js)
+          if ((${#chunks[@]} > 0)); then ls -la "${chunks[@]}"; exit 1; fi
 
       - name: Playwright WebKit — korea-festival-road-wonju-390
         env:
