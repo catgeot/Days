@@ -25,6 +25,7 @@ import {
 import { normalizeLngNear } from '../lib/globeLngUtils';
 import {
   classifyHomeGlobeFlyOutcome,
+  HOME_GLOBE_SETTLE_MS,
   shouldResumeAutoRotateAfterHomeFly,
 } from '../lib/homeGlobeFlySession.js';
 import {
@@ -66,6 +67,7 @@ import {
   clearGlobeCameraBusy,
   isGlobeCameraBusy,
   GATEO_DOT_LAYER_ID,
+  GATEO_ACTIVE_LAYER_ID,
 } from '../lib/globeMarkerLayers';
 import { CLUSTER_POI_DOT_ID } from '../lib/globeClusterBoundaries';
 import { GLOBE_MODE, canEndTour, canSkipTour, isTourMode } from '../lib/globeMode';
@@ -507,10 +509,16 @@ function publishGlobeQaMetrics(map) {
   try {
     const canvas = map.getCanvas();
     const cssW = canvas?.clientWidth ?? 0;
-    const dotLayers = [GATEO_DOT_LAYER_ID, CLUSTER_POI_DOT_ID].filter((id) => map.getLayer(id));
-    const gateoDots = map.getLayer(GATEO_DOT_LAYER_ID)
+    const dotLayers = [GATEO_DOT_LAYER_ID, GATEO_ACTIVE_LAYER_ID, CLUSTER_POI_DOT_ID].filter((id) =>
+      map.getLayer(id),
+    );
+    const gateoDotCount = map.getLayer(GATEO_DOT_LAYER_ID)
       ? map.queryRenderedFeatures({ layers: [GATEO_DOT_LAYER_ID] }).length
       : 0;
+    const gateoActiveRings = map.getLayer(GATEO_ACTIVE_LAYER_ID)
+      ? map.queryRenderedFeatures({ layers: [GATEO_ACTIVE_LAYER_ID] }).length
+      : 0;
+    const gateoDots = gateoDotCount + gateoActiveRings;
     const clusterDots = map.getLayer(CLUSTER_POI_DOT_ID)
       ? map.queryRenderedFeatures({ layers: [CLUSTER_POI_DOT_ID] }).length
       : 0;
@@ -528,6 +536,8 @@ function publishGlobeQaMetrics(map) {
       zoom: map.getZoom(),
       centerLat: center?.lat ?? null,
       centerLng: center?.lng ?? null,
+      homeGlobeFlyOutcome: window.__gateoGlobeQaHomeFly?.lastOutcome ?? null,
+      homeGlobeFlySettleUntil: window.__gateoGlobeQaHomeFly?.settleUntil ?? 0,
     };
   } catch {
     // QA hook only.
@@ -693,7 +703,9 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   placeCardOpen = false,
   onGlobeReady,
   homeGlobeFlyRequest = null,
-  onHomeGlobeFlyApplied,
+  onHomeGlobeFlyWake,
+  onHomeGlobeFlyFinished,
+  onClearHomeGlobeFlyRequest,
 }, ref) => {
   const { locale } = useLocale();
   const { t } = useTranslation();
@@ -792,6 +804,16 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   const homeGlobeFlyAppliedTokenRef = useRef(null);
   const homeGlobeFlySessionRef = useRef(null);
   const homeGlobeFlyInterruptCleanupRef = useRef(null);
+  const homeGlobeFlyEffectAppliedRef = useRef(false);
+  const homeGlobeFlySettleUntilRef = useRef(0);
+  const homeGlobeFlySettleTimerRef = useRef(0);
+  const onHomeGlobeFlyFinishedRef = useRef(onHomeGlobeFlyFinished);
+  const onClearHomeGlobeFlyRequestRef = useRef(onClearHomeGlobeFlyRequest);
+  const applyPlaceLabelVisibilityRef = useRef(() => {});
+  const syncGateoMarkerLayersRef = useRef(() => {});
+  const tryRevealGlobeOverlaysRef = useRef(() => {});
+  onHomeGlobeFlyFinishedRef.current = onHomeGlobeFlyFinished;
+  onClearHomeGlobeFlyRequestRef.current = onClearHomeGlobeFlyRequest;
   const focusRefreshTimerRef = useRef([]);
   const clearFocusRefreshTimers = useCallback(() => {
     for (const id of focusRefreshTimerRef.current) {
@@ -866,13 +888,56 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     clearHomeGlobeFlyInterruptListeners();
     const hadSession = Boolean(homeGlobeFlySessionRef.current);
     homeGlobeFlySessionRef.current = null;
-    suppressCategoryFaceUntilRef.current = 0;
+    homeGlobeFlyEffectAppliedRef.current = false;
     const map = mapRef.current?.getMap();
-    if (map && !map._removed && (hadSession || shouldResumeAutoRotateAfterHomeFly(outcome))) {
-      if (shouldResumeAutoRotateAfterHomeFly(outcome)) {
-        tryResumeAutoRotate(map);
+
+    if (homeGlobeFlySettleTimerRef.current) {
+      window.clearTimeout(homeGlobeFlySettleTimerRef.current);
+      homeGlobeFlySettleTimerRef.current = 0;
+    }
+
+    if (outcome === 'arrived' && map && !map._removed) {
+      autoRotateRef.current = false;
+      const until = Date.now() + HOME_GLOBE_SETTLE_MS;
+      homeGlobeFlySettleUntilRef.current = until;
+      suppressCategoryFaceUntilRef.current = until;
+      applyPlaceLabelVisibilityRef.current?.({ force: true });
+      syncGateoMarkerLayersRef.current?.();
+      tryRevealGlobeOverlaysRef.current?.();
+      try {
+        flushPendingGateoMarkerSource(map);
+        updateGateoMarkerSource(map, markerGeoJSONRef.current);
+        setGateoMarkerLayerVisibility(map, true);
+      } catch {
+        // Map may be mid-teardown.
+      }
+      homeGlobeFlySettleTimerRef.current = window.setTimeout(() => {
+        homeGlobeFlySettleTimerRef.current = 0;
+        homeGlobeFlySettleUntilRef.current = 0;
+        suppressCategoryFaceUntilRef.current = 0;
+        const m = mapRef.current?.getMap();
+        if (m && !m._removed) {
+          tryResumeAutoRotate(m);
+        }
+      }, HOME_GLOBE_SETTLE_MS);
+    } else {
+      suppressCategoryFaceUntilRef.current = 0;
+      homeGlobeFlySettleUntilRef.current = 0;
+      if (map && !map._removed && (hadSession || shouldResumeAutoRotateAfterHomeFly(outcome))) {
+        if (shouldResumeAutoRotateAfterHomeFly(outcome)) {
+          tryResumeAutoRotate(map);
+        }
       }
     }
+    if (typeof window !== 'undefined' && /(?:\?|&)gateoGlobeQa=1(?:&|$)/.test(window.location.search)) {
+      window.__gateoGlobeQaHomeFly = {
+        lastOutcome: outcome,
+        settleUntil: homeGlobeFlySettleUntilRef.current,
+        at: Date.now(),
+      };
+      if (map && !map._removed) publishGlobeQaMetrics(map);
+    }
+    onHomeGlobeFlyFinishedRef.current?.(outcome);
   }, [clearHomeGlobeFlyInterruptListeners, tryResumeAutoRotate]);
 
   const armHomeGlobeFlyInterruptListeners = useCallback((map) => {
@@ -1110,6 +1175,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       lastPlaceLabelVisibleRef.current = shouldShowMapboxContext;
     }
   }, [globeTheme, isPinVisible, refreshPlaceLabelLayers, applySatelliteBasemapLabels]);
+  applyPlaceLabelVisibilityRef.current = applyPlaceLabelVisibility;
 
   const syncMapZoom = useCallback(() => {
     const map = mapRef.current?.getMap();
@@ -1584,6 +1650,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     restoreReachBoundaryLayersIfNeeded();
     syncClusterOverlayLayers();
   }, [isFlightCinemaLaunchPending, markerGeoJSON, pauseRender, restoreReachBoundaryLayersIfNeeded, syncClusterOverlayLayers]);
+  syncGateoMarkerLayersRef.current = syncGateoMarkerLayers;
 
   useEffect(() => {
     if (pauseRender || flightCinemaActiveRef.current) return;
@@ -1739,6 +1806,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     }
     applyPlaceLabelVisibility({ force: true });
   }, [applyPlaceLabelVisibility, beginFirstLabelSettle, pauseRender, syncGateoMarkerLayers]);
+  tryRevealGlobeOverlaysRef.current = tryRevealGlobeOverlays;
 
   const tryRevealGlobe = useCallback(() => {
     tryRevealGlobeBase();
@@ -2894,7 +2962,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     if (isTourMode(globeMode)) return;
     if (tourActiveRef.current) return;
     const map = mapRef.current?.getMap();
-    if (pauseRender || homeGlobeFlyRequest) {
+    if (pauseRender || homeGlobeFlyRequest || Date.now() < homeGlobeFlySettleUntilRef.current) {
       autoRotateRef.current = false;
       if (rotationTimer.current) {
         clearTimeout(rotationTimer.current);
@@ -2966,14 +3034,31 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
 
   /** /place→홈: 레이아웃·캔버스 resize 후 flyTo + 카테고리 면 pan·자전 재개 억제 */
   useEffect(() => {
+    const clearRequest = () => onClearHomeGlobeFlyRequestRef.current?.();
+
     if (pauseRender || !homeGlobeFlyRequest) return undefined;
     const token = homeGlobeFlyRequest.token;
-    if (!token || homeGlobeFlyAppliedTokenRef.current === token) return undefined;
+    if (!token) {
+      clearRequest();
+      return undefined;
+    }
+    if (homeGlobeFlyAppliedTokenRef.current === token) {
+      if (!homeGlobeFlyEffectAppliedRef.current && !homeGlobeFlySessionRef.current) {
+        clearRequest();
+      }
+      return undefined;
+    }
     const { lat, lng } = homeGlobeFlyRequest;
-    if (!Number.isFinite(lat) || !Number.isFinite(lng)) return undefined;
+    if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+      clearRequest();
+      return undefined;
+    }
 
     const map = mapRef.current?.getMap();
-    if (!map || map._removed) return undefined;
+    if (!map || map._removed) {
+      clearRequest();
+      return undefined;
+    }
 
     homeGlobeFlyAppliedTokenRef.current = token;
     suppressCategoryFaceUntilRef.current = Date.now() + 8000;
@@ -2990,6 +3075,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     const applyHomeFocus = () => {
       if (applied || cancelled || pauseRenderRef.current) return;
       applied = true;
+      homeGlobeFlyEffectAppliedRef.current = true;
       homeGlobeFlySessionRef.current = { lat, lng };
       armHomeGlobeFlyInterruptListeners(map);
       const settled = (outcome) => {
@@ -3005,7 +3091,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
         releaseHomeGlobeFlySession('short');
       }
       refreshGlobeMapCanvas(map);
-      onHomeGlobeFlyApplied?.();
+      onHomeGlobeFlyWake?.();
     };
 
     const raf1 = requestAnimationFrame(() => {
@@ -3020,7 +3106,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       cancelled = true;
       cancelAnimationFrame(raf1);
       if (raf2) cancelAnimationFrame(raf2);
-      if (homeGlobeFlySessionRef.current) {
+      if (!homeGlobeFlyEffectAppliedRef.current && homeGlobeFlySessionRef.current) {
         releaseHomeGlobeFlySession('cancelled');
       }
     };
@@ -3030,10 +3116,16 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     executeFocus,
     haltGlobeAutoRotateForCameraFlight,
     homeGlobeFlyRequest,
-    onHomeGlobeFlyApplied,
+    onHomeGlobeFlyWake,
     pauseRender,
     releaseHomeGlobeFlySession,
   ]);
+
+  useEffect(() => () => {
+    if (homeGlobeFlySettleTimerRef.current) {
+      window.clearTimeout(homeGlobeFlySettleTimerRef.current);
+    }
+  }, []);
 
   useEffect(() => () => clearFocusRefreshTimers(), [clearFocusRefreshTimers]);
 
@@ -3129,7 +3221,10 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     const tick = (ts) => {
       rotationFrameRef.current = null;
       if (pauseRenderRef.current || pageHiddenRef.current || idleRotateStoppedRef.current) return;
-      if (Date.now() < suppressCategoryFaceUntilRef.current) {
+      if (
+        Date.now() < suppressCategoryFaceUntilRef.current
+        || Date.now() < homeGlobeFlySettleUntilRef.current
+      ) {
         tick.lastTs = ts;
         if (!pauseRenderRef.current && !pageHiddenRef.current && !idleRotateStoppedRef.current) {
           rotationFrameRef.current = requestAnimationFrame(tick);

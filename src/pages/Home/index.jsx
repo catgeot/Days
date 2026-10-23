@@ -368,8 +368,7 @@ function Home() {
     return id;
   }, []);
 
-  const handleHomeGlobeFlyApplied = useCallback(() => {
-    setHomeGlobeFlyRequest(null);
+  const handleHomeGlobeFlyWake = useCallback(() => {
     globeRef.current?.wakeAfterOverlay?.();
     globeRef.current?.requestGateoMarkerReveal?.();
     scheduleHomeGlobeTimer(() => {
@@ -379,6 +378,14 @@ function Home() {
       globeRef.current?.wakeAfterOverlay?.();
     }, 2000);
   }, [scheduleHomeGlobeTimer]);
+
+  const handleHomeGlobeFlyFinished = useCallback(() => {
+    setHomeGlobeFlyRequest(null);
+  }, []);
+
+  const handleClearHomeGlobeFlyRequest = useCallback(() => {
+    setHomeGlobeFlyRequest(null);
+  }, []);
 
   useEffect(() => () => clearHomeGlobeTimers(), [clearHomeGlobeTimers]);
 
@@ -935,6 +942,8 @@ function Home() {
         lng: homeFly.lng,
         token: Date.now(),
       });
+    } else {
+      setHomeGlobeFlyRequest(null);
     }
     recalibrateHomeChromeAfterNav();
   }, [
@@ -1710,7 +1719,9 @@ function Home() {
           placeCardOpen={isPlaceCardSummaryVisible}
           onReturnToSpace={closeFaceRegions}
           homeGlobeFlyRequest={homeGlobeFlyRequest}
-          onHomeGlobeFlyApplied={handleHomeGlobeFlyApplied}
+          onHomeGlobeFlyWake={handleHomeGlobeFlyWake}
+          onHomeGlobeFlyFinished={handleHomeGlobeFlyFinished}
+          onClearHomeGlobeFlyRequest={handleClearHomeGlobeFlyRequest}
         />
       </div>
 

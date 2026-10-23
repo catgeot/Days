@@ -2,6 +2,8 @@
 
 export const HOME_GLOBE_FLY_ARRIVAL_LAT_DEG = 0.2;
 export const HOME_GLOBE_FLY_ARRIVAL_LNG_DEG = 0.2;
+/** 홈 복귀 fly 도착 후 캡처·라벨 안정화 — 자전 재개 전 대기 */
+export const HOME_GLOBE_SETTLE_MS = 15_000;
 
 /**
  * @param {{ lat: number, lng: number }} center
