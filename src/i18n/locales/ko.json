@@ -1364,6 +1364,12 @@
       "dateSheetWeekForward": "그다음 주 ›",
       "dateSheetMonth": "{{year}}년 {{month}}월",
       "dateSheetWeekdays": ["월", "화", "수", "목", "금", "토", "일"],
+      "road": {
+        "viewFromThis": "이 축제로 동선 보기",
+        "mapSlot": "지도",
+        "emptyStop": "이 기간엔 축제가 없어요 · 주변 볼거리 보기",
+        "allEmpty": "고른 기간에 축제가 없어요. 날짜를 바꿔 보세요"
+      },
       "resetFilters": "필터 초기화",
       "mapPicked": "지도에서 고른 {{count}}건",
       "nearPanelMeta": "{{km}}km 안 {{count}}건",

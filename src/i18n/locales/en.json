@@ -1600,6 +1600,12 @@
       "dateSheetWeekForward": "Following week ›",
       "dateSheetMonth": "{{month}}/{{year}}",
       "dateSheetWeekdays": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+      "road": {
+        "viewFromThis": "See a route from this festival",
+        "mapSlot": "Map",
+        "emptyStop": "No festival in this period · Nearby sights",
+        "allEmpty": "No festivals in this period. Try another date."
+      },
       "resetFilters": "Reset filters",
       "mapPicked": "{{count}} picked on map",
       "mapPointCount": "Points",

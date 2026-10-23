@@ -1,0 +1,226 @@
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import test from 'node:test';
+import { fileURLToPath } from 'node:url';
+import {
+  GATEO_ENV_FLAG_NAMES,
+  isGateoFestivalRoadEnabled,
+} from '../../src/shared/gateoFeatureFlags.js';
+import {
+  FESTIVAL_ROAD_MAP_SLOT_PX,
+  beltForFestival,
+  beltStopNearbyLabels,
+  festivalRoadAllEmpty,
+  festivalRoadFill,
+  groupFestivalsForBelt,
+} from '../../src/pages/Korea/lib/festivalRoad.js';
+
+const root = join(dirname(fileURLToPath(import.meta.url)), '../..');
+
+function read(rel) {
+  return readFileSync(join(root, rel), 'utf8');
+}
+
+test('flag off leaves the live festival detail unchanged', () => {
+  const prev = globalThis.__VITE_ENV__;
+  globalThis.__VITE_ENV__ = {
+    ...(prev || {}),
+    [GATEO_ENV_FLAG_NAMES.FESTIVAL_ROAD]: '',
+  };
+  assert.equal(isGateoFestivalRoadEnabled(), false);
+  globalThis.__VITE_ENV__ = prev;
+
+  const sheet = read('src/pages/Korea/FestivalDetailSheet.jsx');
+  const entryAt = sheet.indexOf('data-festival-road-entry');
+  assert.ok(entryAt > 0);
+  const gate = sheet.slice(Math.max(0, entryAt - 500), entryAt);
+  assert.match(gate, /roadEnabled && roadBelt/);
+  assert.match(sheet, /const roadEnabled = isGateoFestivalRoadEnabled\(\)/);
+  assert.match(sheet, /korea\.festival\.road\.viewFromThis/);
+
+  const summary = read('src/pages/Korea/FestivalDetailFirstSummary.jsx');
+  assert.match(summary, /afterPlace \?/);
+  assert.match(summary, /data-festival-road-slot/);
+  assert.doesNotMatch(summary, /mapbox/i);
+
+  const index = read('src/pages/Korea/index.jsx');
+  assert.match(
+    index,
+    /festivalPool=\{isGateoFestivalRoadEnabled\(\) \? itemsWithSocialPromo : undefined\}/,
+  );
+
+  const app = read('src/App.jsx');
+  assert.match(app, /isGateoFestivalRoadEnabled\(\) && FestivalRoadFixturePage/);
+  assert.match(app, /path="\/qa\/festival-road"/);
+
+  const panel = read('src/pages/Korea/FestivalRoadPanel.jsx');
+  const logic = read('src/pages/Korea/lib/festivalRoad.js');
+  for (const src of [panel, logic]) {
+    assert.doesNotMatch(src, /mapbox|mapboxgl|KoreaFestivalMap|scrollIntoView/i);
+  }
+  assert.doesNotMatch(sheet, /from ['"][^'"]*mapbox|KoreaFestivalMap/i);
+  const entryBlock = sheet.slice(entryAt, entryAt + 800);
+  assert.doesNotMatch(entryBlock, /scrollIntoView/);
+  assert.match(panel, /FESTIVAL_ROAD_MAP_SLOT_PX/);
+  assert.equal(FESTIVAL_ROAD_MAP_SLOT_PX, 160);
+  assert.match(panel, /data-festival-road-map/);
+  assert.match(panel, /data-week-shortcut/);
+  assert.match(panel, /korea\.festival\.dateSheetWeekThis/);
+  assert.match(panel, /korea\.festival\.dateSheetWeekNext/);
+  assert.doesNotMatch(panel, /dateSheetWeekNext2/);
+});
+
+test('groupFestivalsForBelt keeps numbered stops and dims out-of-period festivals', () => {
+  const sokcho = {
+    contentId: 'sokcho-fest',
+    title: '속초 해변 축제',
+    addr1: '강원특별자치도 속초시 해오름로 186',
+    areaCode: '32',
+    eventStartDate: '20261022',
+    eventEndDate: '20261025',
+  };
+  const gangneung = {
+    contentId: 'gangneung-fest',
+    title: '강릉 단풍 축제',
+    addr1: '강원특별자치도 강릉시 강릉대로 33',
+    areaCode: '32',
+    eventStartDate: '20261110',
+    eventEndDate: '20261112',
+  };
+  const belt = beltForFestival(sokcho);
+  assert.equal(belt?.id, 'gw-east-coast');
+  assert.equal(beltForFestival(gangneung)?.id, 'gw-east-coast');
+
+  const thisWeek = { startYmd: '20261022', endYmd: '20261025' };
+  const legs = groupFestivalsForBelt(belt, [sokcho, gangneung, sokcho], thisWeek);
+  assert.deepEqual(legs.map((leg) => leg.hubId), [
+    'goseong',
+    'yangyang',
+    'sokcho',
+    'gangneung',
+    'samcheok',
+  ]);
+  assert.deepEqual(legs.map((leg) => leg.stopIndex), [1, 2, 3, 4, 5]);
+  assert.equal(legs[0].nextLabel, '양양');
+  assert.equal(legs[4].nextLabel, null);
+  assert.equal(legs[0].empty, true);
+  assert.equal(legs[0].items.length, 0);
+  assert.equal(legs[2].label, '속초');
+  assert.equal(legs[2].empty, false);
+  assert.equal(legs[2].items.length, 1);
+  assert.equal(legs[2].items[0].inPeriod, true);
+  assert.equal(legs[3].empty, true);
+  assert.equal(legs[3].items[0].inPeriod, false);
+  assert.equal(legs[3].items[0].item.title, '강릉 단풍 축제');
+
+  const later = groupFestivalsForBelt(belt, [sokcho, gangneung], {
+    startYmd: '20261110',
+    endYmd: '20261112',
+  });
+  assert.deepEqual(later.map((leg) => [leg.stopIndex, leg.hubId]), legs.map((leg) => [leg.stopIndex, leg.hubId]));
+  assert.equal(later[2].empty, true);
+  assert.equal(later[2].items[0].inPeriod, false);
+  assert.equal(later[3].empty, false);
+  assert.equal(later[3].items[0].inPeriod, true);
+
+  const none = groupFestivalsForBelt(belt, [sokcho, gangneung], {
+    startYmd: '20260101',
+    endYmd: '20260107',
+  });
+  assert.equal(festivalRoadAllEmpty(none), true);
+  assert.equal(none[2].items.length, 1);
+  assert.equal(none[3].items[0].inPeriod, false);
+});
+
+test('festival road ignores a same-name region outside the belt province', () => {
+  const gyeongnam = beltForFestival({
+    contentId: 'gn-goseong',
+    title: '고성 공룡',
+    addr1: '경상남도 고성군 고성읍',
+    areaCode: '36',
+    eventStartDate: '20261022',
+    eventEndDate: '20261025',
+  });
+  assert.equal(gyeongnam, null);
+
+  const seoul = beltForFestival({
+    contentId: 'seoul-fest',
+    title: '서울 축제',
+    addr1: '서울특별시 종로구 세종대로',
+    areaCode: '1',
+  });
+  assert.equal(seoul, null);
+
+  const wonju = beltForFestival({
+    contentId: 'wonju-fest',
+    title: '원주 축제',
+    addr1: '강원특별자치도 원주시 단구로',
+    areaCode: '32',
+  });
+  assert.equal(wonju?.id, 'gw-central');
+
+  const jecheon = beltForFestival({
+    contentId: 'jecheon-fest',
+    title: '제천 축제',
+    addr1: '충청북도 제천시 청풍호로',
+    areaCode: '33',
+  });
+  assert.equal(jecheon?.id, 'gw-west-jungbu');
+});
+
+test('gray stops show nearby sights only, and skip a blank slot', () => {
+  const labels = beltStopNearbyLabels('goseong');
+  assert.ok(labels.includes('건봉사'));
+  assert.ok(labels.length <= 4);
+  assert.deepEqual(beltStopNearbyLabels('not-a-hub'), []);
+
+  const gray = { empty: true, items: [] };
+  assert.deepEqual(festivalRoadFill(gray, labels), {
+    showNearby: true,
+    showAccess: false,
+    accessItem: null,
+    nearbyLabels: labels,
+  });
+  assert.deepEqual(festivalRoadFill(gray, []), {
+    showNearby: false,
+    showAccess: false,
+    accessItem: null,
+    nearbyLabels: [],
+  });
+
+  const dimmed = { contentId: 'late', title: '지난 축제', eventStartDate: '20261110' };
+  const grayWithFestival = { empty: true, items: [{ item: dimmed, inPeriod: false }] };
+  const accessOnly = festivalRoadFill(grayWithFestival, []);
+  assert.equal(accessOnly.showNearby, false);
+  assert.equal(accessOnly.showAccess, true);
+  assert.equal(accessOnly.accessItem, dimmed);
+
+  const current = { contentId: 'now', title: '이번 축제' };
+  const colored = festivalRoadFill(
+    { empty: false, items: [{ item: current, inPeriod: true }] },
+    ['오죽헌'],
+  );
+  assert.equal(colored.showNearby, true);
+  assert.equal(colored.showAccess, true);
+  assert.equal(colored.accessItem, current);
+});
+
+test('road copy matches the approved lines', () => {
+  const ko = JSON.parse(read('src/i18n/locales/ko.json'));
+  assert.equal(ko.korea.festival.road.viewFromThis, '이 축제로 동선 보기');
+  assert.equal(ko.korea.festival.road.mapSlot, '지도');
+  assert.equal(
+    ko.korea.festival.road.emptyStop,
+    '이 기간엔 축제가 없어요 · 주변 볼거리 보기',
+  );
+  assert.equal(
+    ko.korea.festival.road.allEmpty,
+    '고른 기간에 축제가 없어요. 날짜를 바꿔 보세요',
+  );
+  assert.equal(ko.korea.festival.dateSheetWeekThis, '이번주');
+  assert.equal(ko.korea.festival.dateSheetWeekNext, '다음주');
+  const en = JSON.parse(read('src/i18n/locales/en.json'));
+  assert.equal(en.korea.festival.road.viewFromThis, 'See a route from this festival');
+  assert.equal(en.korea.festival.road.mapSlot, 'Map');
+});

@@ -1,0 +1,24 @@
+{
+  "belts": [
+    {
+      "id": "gw-north-inland",
+      "name": "강원 북부 내륙로",
+      "stops": ["chuncheon", "cheorwon", "yanggu", "hwacheon", "hongcheon", "hoengseong"]
+    },
+    {
+      "id": "gw-east-coast",
+      "name": "강원 동해안 축제로드",
+      "stops": ["goseong", "yangyang", "sokcho", "gangneung", "samcheok"]
+    },
+    {
+      "id": "gw-central",
+      "name": "강원 중부 횡단로",
+      "stops": ["wonju", "jeongseon", "pyeongchang"]
+    },
+    {
+      "id": "gw-west-jungbu",
+      "name": "원주·충북 북부로",
+      "stops": ["wonju", "jecheon", "danyang"]
+    }
+  ]
+}

@@ -18,6 +18,7 @@ import KoreaThemeCoursesPage from './pages/KoreaTheme/CoursesPage';
 import QaShareIndex from './pages/QaShare';
 import QaShareRedirect from './pages/QaShare/QaShareRedirect';
 import { isQaMooniMarkdownFixtureEnabled } from './shared/cloudPreview/isQaMooniMarkdownFixtureEnabled.js';
+import { isGateoFestivalRoadEnabled } from './shared/gateoFeatureFlags.js';
 const MooniChatMarkdownFixturePage = isQaMooniMarkdownFixtureEnabled
   ? lazy(() => import('./pages/Qa/MooniChatMarkdownFixturePage.jsx'))
   : null;
@@ -27,6 +28,9 @@ const MooniFestivalAccessPolishFixturePage = isQaMooniMarkdownFixtureEnabled
 const galleryWriterHarnessOn = import.meta.env.VITE_GALLERY_WRITER_HARNESS === '1';
 const GallerySingleWriterHarness = galleryWriterHarnessOn
   ? lazy(() => import('./pages/Qa/GallerySingleWriterHarness.jsx'))
+  : null;
+const FestivalRoadFixturePage = isGateoFestivalRoadEnabled()
+  ? lazy(() => import('./pages/Qa/FestivalRoadFixturePage.jsx'))
   : null;
 import AboutPage from './pages/AboutPage';
 
@@ -161,6 +165,16 @@ function App() {
                   element={
                     <Suspense fallback={null}>
                       <GallerySingleWriterHarness />
+                    </Suspense>
+                  }
+                />
+              ) : null}
+              {isGateoFestivalRoadEnabled() && FestivalRoadFixturePage ? (
+                <Route
+                  path="/qa/festival-road"
+                  element={
+                    <Suspense fallback={null}>
+                      <FestivalRoadFixturePage />
                     </Suspense>
                   }
                 />
