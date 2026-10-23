@@ -352,10 +352,7 @@ function Home() {
   const shouldPauseGlobe =
     !flightCinemaActive
     && (isCardExpanded || isPlaceRoute || routeLocation.pathname.startsWith('/explore'));
-  const shouldPauseGlobeRef = useRef(shouldPauseGlobe);
-  shouldPauseGlobeRef.current = shouldPauseGlobe;
-
-  const pendingHomeGlobeUnpauseRef = useRef(null);
+  const [homeGlobeFlyRequest, setHomeGlobeFlyRequest] = useState(null);
   const homeGlobeTimerIdsRef = useRef([]);
 
   const clearHomeGlobeTimers = useCallback(() => {
@@ -371,19 +368,8 @@ function Home() {
     return id;
   }, []);
 
-  const runPendingHomeGlobeWork = useCallback(() => {
-    const pending = pendingHomeGlobeUnpauseRef.current;
-    if (!pending) return;
-    pendingHomeGlobeUnpauseRef.current = null;
-    clearHomeGlobeTimers();
-
-    globeRef.current?.releasePauseRenderHold?.();
-    const { fly } = pending;
-    if (fly) {
-      moveToLocation(fly.lat, fly.lng, fly.name, fly.category, {
-        location: fly.location,
-      });
-    }
+  const handleHomeGlobeFlyApplied = useCallback(() => {
+    setHomeGlobeFlyRequest(null);
     globeRef.current?.wakeAfterOverlay?.();
     globeRef.current?.requestGateoMarkerReveal?.();
     scheduleHomeGlobeTimer(() => {
@@ -392,13 +378,7 @@ function Home() {
     scheduleHomeGlobeTimer(() => {
       globeRef.current?.wakeAfterOverlay?.();
     }, 2000);
-  }, [clearHomeGlobeTimers, moveToLocation, scheduleHomeGlobeTimer]);
-
-  useEffect(() => {
-    if (!shouldPauseGlobe) {
-      runPendingHomeGlobeWork();
-    }
-  }, [shouldPauseGlobe, runPendingHomeGlobeWork]);
+  }, [scheduleHomeGlobeTimer]);
 
   useEffect(() => () => clearHomeGlobeTimers(), [clearHomeGlobeTimers]);
 
@@ -899,7 +879,8 @@ function Home() {
   /** 장소카드 헤더 지구본 — 홈 URL·써머리 닫기, 지구본 핀·포커스는 유지 (dismissPlaceSelectionKeepGlobePin과 동일 SSOT) */
   const goHomeFromPlace = useCallback(() => {
     clearHomeGlobeTimers();
-    pendingHomeGlobeUnpauseRef.current = null;
+    setHomeGlobeFlyRequest(null);
+    globeRef.current?.clearFocusRefreshTimers?.();
     clearPlaceReturnTo();
     clearExploreReturn();
     skipHomeSummaryRestoreRef.current = true;
@@ -947,9 +928,12 @@ function Home() {
       navigate({ pathname: '/', search: routeLocation.search || '' });
     }
 
-    pendingHomeGlobeUnpauseRef.current = { fly: homeFly };
-    if (!shouldPauseGlobeRef.current) {
-      runPendingHomeGlobeWork();
+    if (homeFly) {
+      setHomeGlobeFlyRequest({
+        lat: homeFly.lat,
+        lng: homeFly.lng,
+        token: Date.now(),
+      });
     }
     recalibrateHomeChromeAfterNav();
   }, [
@@ -961,7 +945,6 @@ function Home() {
     rememberGlobeFocus,
     routeLocation.pathname,
     routeLocation.search,
-    runPendingHomeGlobeWork,
     savedTrips,
     setSelectedLocation,
     recalibrateHomeChromeAfterNav,
@@ -1725,6 +1708,8 @@ function Home() {
           focusSlug={globeFocusSlug}
           placeCardOpen={isPlaceCardSummaryVisible}
           onReturnToSpace={closeFaceRegions}
+          homeGlobeFlyRequest={homeGlobeFlyRequest}
+          onHomeGlobeFlyApplied={handleHomeGlobeFlyApplied}
         />
       </div>
 
