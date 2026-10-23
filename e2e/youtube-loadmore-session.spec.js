@@ -121,6 +121,16 @@ async function closePlaylist(page) {
   await expect(heading).toBeHidden();
 }
 
+/** Reviews tab is a real `<Link>` on place secondary nav (PR #544); other tabs stay buttons. */
+async function clickSecondaryNavTab(page, name) {
+  const link = page.getByRole('link', { name, exact: true }).locator('visible=true').first();
+  if (await link.count()) {
+    await link.click();
+    return;
+  }
+  await page.getByRole('button', { name, exact: true }).locator('visible=true').first().click();
+}
+
 async function clientNavigate(page, path) {
   await page.evaluate((href) => {
     const url = new URL(href, window.location.origin);
@@ -164,7 +174,7 @@ test.describe('YouTube load-more session', () => {
     expect(await openPlaylist(page)).toBe(15);
     await closePlaylist(page);
 
-    await page.getByRole('button', { name: '리뷰' }).click();
+    await clickSecondaryNavTab(page, '리뷰');
     await page.getByRole('button', { name: '사진 보기' }).click();
     await page.getByRole('button', { name: '유튜브 영상' }).click();
     expect(await openPlaylist(page)).toBe(15);
