@@ -105,6 +105,10 @@ test('flag off leaves the live festival detail unchanged', () => {
   assert.match(map, /onContainerResize/);
   assert.match(map, /ResizeObserver\(onContainerResize\)/);
   assert.match(map, /festival-road-capture-zoom/);
+  assert.match(map, /scheduleContainerSync/);
+  assert.match(map, /data-festival-road-canvas-sync/);
+  assert.match(map, /data-festival-road-line-ready/);
+  assert.match(map, /IntersectionObserver/);
   assert.doesNotMatch(map, /map\.on\('resize',\s*onViewportChange\)/);
   assert.match(map, /LEADER_SOURCE/);
   assert.match(map, /data-festival-road-map-clip/);
