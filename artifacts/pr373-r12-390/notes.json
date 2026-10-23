@@ -1,5 +1,5 @@
 {
-  "gitHead": "ae7af1c5",
+  "gitHead": "38d3b769",
   "branchBase": "https://127.0.0.1:4173",
   "viewport": {
     "width": 390,
@@ -84,5 +84,7 @@
       }
     }
   ],
-  "pass": true
+  "pass": true,
+  "r12Base": "ae7af1c5",
+  "captureNote": "390 artifacts; homeFlySettleHold for short/interrupted in same push"
 }
