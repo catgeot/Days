@@ -1,4 +1,7 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { test } from 'node:test';
 import {
   WINDOW30_INCLUSIVE_DAYS,
@@ -27,6 +30,7 @@ import {
 } from '../../src/pages/Korea/festivalDateFilter.js';
 
 const SEOUL_TODAY = '20261016';
+const root = join(dirname(fileURLToPath(import.meta.url)), '../..');
 
 test('labels drop leading zeros in the Seoul month: 10.3, 10.31', () => {
   assert.equal(formatFestivalMonthDay('20261003', SEOUL_TODAY), '10.3');
@@ -60,7 +64,7 @@ test('range year policy — Oct→Nov span, future month, year-cross, past', () 
 test('detail and nearby rows keep the year and do not append 미발표', () => {
   assert.equal(
     formatFestivalDetailDateRange('20260109', '20260131', SEOUL_TODAY),
-    '2026.1.9\u20131.31',
+    '2026.1.9\u20131.31 \u00b7 \uc885\ub8cc',
   );
   assert.equal(
     formatFestivalDetailDateRange('20261106', '20261108', SEOUL_TODAY),
@@ -72,7 +76,7 @@ test('detail and nearby rows keep the year and do not append 미발표', () => {
   );
   assert.equal(
     formatFestivalDetailDateRange('20261001', '20261010', SEOUL_TODAY),
-    '10.1\u201310.10',
+    '10.1\u201310.10 \u00b7 \uc885\ub8cc',
   );
   assert.equal(
     formatFestivalDetailDateRange('20261023', '20261108', SEOUL_TODAY),
@@ -84,8 +88,25 @@ test('detail and nearby rows keep the year and do not append 미발표', () => {
   );
   assert.equal(
     formatFestivalDetailDateRange('20260101', '20260101', SEOUL_TODAY, 'en'),
-    '2026.1.1',
+    '2026.1.1 \u00b7 Ended',
   );
+  assert.equal(
+    formatFestivalDetailDateRange('20260101', '20260101', SEOUL_TODAY),
+    '2026.1.1 \u00b7 \uc885\ub8cc',
+  );
+  assert.equal(
+    formatFestivalDetailDateRange('20261016', '20261016', SEOUL_TODAY).includes('\uc885\ub8cc'),
+    false,
+  );
+  assert.equal(
+    formatFestivalDetailDateRange('20260101', '', SEOUL_TODAY).includes('\uc885\ub8cc'),
+    false,
+  );
+  const row = readFileSync(join(root, 'src/pages/Korea/index.jsx'), 'utf8');
+  assert.match(row, /data-festival-row-date=""/);
+  assert.match(row, /whitespace-nowrap text-amber-700/);
+  const summary = readFileSync(join(root, 'src/pages/Korea/FestivalDetailFirstSummary.jsx'), 'utf8');
+  assert.match(summary, /dataKey="date" singleLine/);
   assert.equal(formatFestivalDetailDateRange('20260109', '20260131', SEOUL_TODAY).includes('미발표'), false);
   assert.equal(formatFestivalRangeLabel('20260109', '20260131', SEOUL_TODAY).includes('미발표'), false);
 });
@@ -113,7 +134,7 @@ test('newest known edition wins when list and detail disagree', () => {
       [{ eventStartDate: '20260101', eventEndDate: '20260101' }],
       SEOUL_TODAY,
     ),
-    '2026.1.1',
+    '2026.1.1 \u00b7 \uc885\ub8cc',
   );
   assert.equal(
     formatFestivalEditionDateRange(
@@ -123,7 +144,7 @@ test('newest known edition wins when list and detail disagree', () => {
       ],
       SEOUL_TODAY,
     ),
-    '2026.8.1\u20138.3',
+    '2026.8.1\u20138.3 \u00b7 \uc885\ub8cc',
   );
   assert.equal(
     formatFestivalDetailDateRange('20270109', '20270131', SEOUL_TODAY),

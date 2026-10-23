@@ -12,7 +12,7 @@ function ReserveLine() {
   );
 }
 
-function SummaryRow({ label, children, dataKey }) {
+function SummaryRow({ label, children, dataKey, singleLine = false }) {
   if (!children) return null;
   return (
     <div className="grid grid-cols-[4.25rem_minmax(0,1fr)] gap-x-2 gap-y-0.5 sm:grid-cols-[4.75rem_minmax(0,1fr)]">
@@ -20,7 +20,11 @@ function SummaryRow({ label, children, dataKey }) {
         {label}
       </dt>
       <dd
-        className="text-sm font-medium leading-snug text-stone-800 whitespace-pre-wrap break-keep"
+        className={
+          singleLine
+            ? 'min-w-0 truncate whitespace-nowrap text-sm font-medium leading-snug text-stone-800'
+            : 'text-sm font-medium leading-snug text-stone-800 whitespace-pre-wrap break-keep'
+        }
         {...(dataKey ? { [`data-festival-summary-${dataKey}`]: '' } : {})}
       >
         {children}
@@ -103,7 +107,7 @@ export function FestivalDetailFirstSummary({
       style={reserveDetail && sectionMin.current > 0 ? { minHeight: sectionMin.current } : undefined}
     >
       <dl className="space-y-2">
-        <SummaryRow label={dateLabel} dataKey="date">
+        <SummaryRow label={dateLabel} dataKey="date" singleLine>
           {dateText}
         </SummaryRow>
         {hideEventHours && !timeText ? null : (
