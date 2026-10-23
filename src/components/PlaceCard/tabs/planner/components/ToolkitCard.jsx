@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { ExternalLink } from 'lucide-react';
 import CopyableText from '../../../common/CopyableText';
 import { AiGeneratedBanner, PlaceLocalInfoInline } from '../../../common/PlaceVerifiedFacts';
-import { resolveVerifiedFacts } from '../../../../../data/placeVerifiedFacts/cairo.js';
+import { resolveVerifiedFacts } from '../../../../../data/placeVerifiedFacts/index.js';
 import { plannerSlotForToolkit } from '../../../../../data/placeVerifiedFacts/localInfoLayout.js';
 import { isMobileDevice } from '../../../common/device';
 import FlightOfficialBookingWidget from './FlightOfficialBookingWidget';

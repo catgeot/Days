@@ -74,7 +74,8 @@ function usePlaceGallerySectionOpen(sectionId, placeKey) {
 }
 
 function slotHeading(slot, t) {
-  return t(`place.facts.slots.${slot.id}`, { defaultValue: slot.label });
+  const key = slot.headingKey || slot.id;
+  return t(`place.facts.slots.${key}`, { defaultValue: slot.label });
 }
 
 function unverifiedLine(slots, t) {
@@ -435,6 +436,7 @@ export function PlaceLocalInfoInline({
     entry: 'place.facts.confirmed.entry',
     airport: 'place.facts.confirmed.airport',
     'money-safety': 'place.facts.confirmed.moneySafety',
+    safety: 'place.facts.confirmed.safety',
     'stay-area': 'place.facts.confirmed.stayArea',
   }[slot.id];
   const title = presentation === 'planner'

@@ -28,7 +28,7 @@ export const ATTRACTION_SLOT_IDS = [
  * @param {string} value
  * @param {{ name: string, url: string }[]} sources
  * @param {string} checkedAt
- * @param {{ id: string, linkRole?: 'booking' | 'map' | null, linkLabel?: string | null }} meta
+ * @param {{ id: string, headingKey?: string, linkRole?: 'booking' | 'map' | null, linkLabel?: string | null }} meta
  */
 function sourceRecord(item) {
   const name = publicSourceName(item.name);
@@ -49,6 +49,7 @@ export function verifiedSlot(label, value, sources, checkedAt, meta) {
     source: primary,
     sources: list,
     checkedAt: String(checkedAt || '').trim(),
+    headingKey: meta.headingKey ? String(meta.headingKey).trim() : null,
     linkRole: meta.linkRole || null,
     linkLabel: meta.linkLabel ? String(meta.linkLabel).trim() : null,
   };
