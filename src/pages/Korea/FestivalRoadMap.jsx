@@ -1,19 +1,23 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Map, { Layer, Marker, Source, useControl } from 'react-map-gl/mapbox';
 import MapboxLanguage from '@mapbox/mapbox-gl-language';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import {
+  FESTIVAL_ROAD_PIN_MIN_GAP_PX,
   festivalRoadEmptyLineGeoJson,
   festivalRoadLineGeoJson,
   festivalRoadLineOrder,
   festivalRoadMarkerOffsetsFromProjections,
+  festivalRoadPinLeaderGeoJson,
   festivalRoadPinOffsets,
 } from './lib/festivalRoad.js';
 
 const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
 const MAP_STYLE = 'mapbox://styles/mapbox/outdoors-v12';
 const LINE_SOURCE = 'festival-road-line';
+const LEADER_SOURCE = 'festival-road-pin-leaders';
 const EMPTY_LINE = festivalRoadEmptyLineGeoJson();
+const EMPTY_LEADERS = { type: 'FeatureCollection', features: [] };
 
 function LanguageControl() {
   useControl(() => new MapboxLanguage({ defaultLanguage: 'ko' }));
@@ -58,7 +62,21 @@ function projectPinOffsets(map, points) {
     const pixel = map.project([point.lng, point.lat]);
     return { stopIndex: point.stopIndex, x: pixel.x, y: pixel.y };
   });
-  return festivalRoadMarkerOffsetsFromProjections(projections, 42);
+  return festivalRoadMarkerOffsetsFromProjections(projections, FESTIVAL_ROAD_PIN_MIN_GAP_PX);
+}
+
+/**
+ * @param {import('mapbox-gl').Map} map
+ * @param {{ lng: number, lat: number, stopIndex: number }[]} points
+ * @param {Map<number, { x: number, y: number }>} offsets
+ */
+function leaderDataFor(map, points, offsets) {
+  return festivalRoadPinLeaderGeoJson(
+    points,
+    offsets,
+    (lng, lat) => map.project([lng, lat]),
+    (x, y) => map.unproject([x, y]),
+  );
 }
 
 /**
@@ -126,9 +144,12 @@ function PinMarker({ point }) {
 export default function FestivalRoadMap({ points, routeKey = 0 }) {
   const containerRef = useRef(null);
   const mapRef = useRef(null);
+  const pointsRef = useRef(points);
+  pointsRef.current = points;
   const [ready, setReady] = useState(false);
   const [tilesIdle, setTilesIdle] = useState(false);
   const [pinOffsets, setPinOffsets] = useState(() => festivalRoadPinOffsets(points));
+  const [leaderData, setLeaderData] = useState(EMPTY_LEADERS);
   const pointsKey = useMemo(
     () => points.map((p) => `${p.stopIndex}:${p.kind}:${p.lng}:${p.lat}`).join('|'),
     [points],
@@ -137,20 +158,41 @@ export default function FestivalRoadMap({ points, routeKey = 0 }) {
   const orderedPoints = useMemo(() => festivalRoadLineOrder(points), [pointsKey, points]);
   const initial = orderedPoints[0];
 
+  const applyPinLayout = useCallback((map) => {
+    const currentPoints = pointsRef.current;
+    const offsets = projectPinOffsets(map, currentPoints);
+    setPinOffsets(offsets);
+    const leaders = leaderDataFor(map, currentPoints, offsets);
+    setLeaderData(leaders);
+    const leaderSource = map.getSource(LEADER_SOURCE);
+    if (leaderSource && typeof leaderSource.setData === 'function') {
+      leaderSource.setData(leaders);
+    }
+  }, []);
+
   useEffect(() => {
     setPinOffsets(festivalRoadPinOffsets(points));
+    setLeaderData(EMPTY_LEADERS);
   }, [pointsKey, points]);
 
   useEffect(() => {
     const el = containerRef.current;
     const map = mapRef.current;
     if (!el || !map || !ready) return;
-    const ro = new ResizeObserver(() => {
+    const onViewportChange = () => {
       map.resize();
-    });
+      applyPinLayout(map);
+    };
+    map.on('zoomend', onViewportChange);
+    map.on('resize', onViewportChange);
+    const ro = new ResizeObserver(onViewportChange);
     ro.observe(el);
-    return () => ro.disconnect();
-  }, [ready]);
+    return () => {
+      map.off('zoomend', onViewportChange);
+      map.off('resize', onViewportChange);
+      ro.disconnect();
+    };
+  }, [ready, applyPinLayout]);
 
   useEffect(() => {
     const map = mapRef.current;
@@ -166,13 +208,13 @@ export default function FestivalRoadMap({ points, routeKey = 0 }) {
       if (typeof map.stop === 'function') map.stop();
       map.resize();
       fitRoad(map, points);
-      setPinOffsets(projectPinOffsets(map, points));
+      applyPinLayout(map);
       whenMapTilesIdle(map, () => {
-        setPinOffsets(projectPinOffsets(map, points));
+        applyPinLayout(map);
         setTilesIdle(true);
       });
     });
-  }, [syncKey, ready, points]);
+  }, [syncKey, ready, points, applyPinLayout]);
 
   if (!MAPBOX_TOKEN || points.length < 2 || !initial) return null;
 
@@ -221,6 +263,19 @@ export default function FestivalRoadMap({ points, routeKey = 0 }) {
                 'line-color': '#b45309',
                 'line-width': 3,
                 'line-opacity': tilesIdle ? 1 : 0,
+              }}
+            />
+          </Source>
+          <Source id={LEADER_SOURCE} type="geojson" data={leaderData}>
+            <Layer
+              id="festival-road-pin-leader-layer"
+              type="line"
+              layout={{ 'line-cap': 'round', 'line-join': 'round' }}
+              paint={{
+                'line-color': '#b45309',
+                'line-width': 1.5,
+                'line-opacity': tilesIdle ? 0.85 : 0,
+                'line-dasharray': [1, 1.5],
               }}
             />
           </Source>

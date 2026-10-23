@@ -500,15 +500,28 @@ export function festivalRoadEmptyLineGeoJson() {
   return EMPTY_LINE_GEOJSON;
 }
 
+/** Max pixel offset from the route anchor when separating overlapping pins. */
+export const FESTIVAL_ROAD_PIN_MAX_OFFSET_PX = 26;
+
+/** Screen gap between pin centers when they would overlap. */
+export const FESTIVAL_ROAD_PIN_MIN_GAP_PX = 42;
+
 /**
- * Spread marker pixel offsets after map projection so labels do not overlap.
+ * Minimal pixel offsets — only when projected centers are closer than minGapPx.
  * @param {{ stopIndex: number, x: number, y: number }[]} projections
  * @param {number} [minGapPx]
+ * @param {number} [maxOffsetPx]
  */
-export function festivalRoadMarkerOffsetsFromProjections(projections, minGapPx = 40) {
+export function festivalRoadMarkerOffsetsFromProjections(
+  projections,
+  minGapPx = FESTIVAL_ROAD_PIN_MIN_GAP_PX,
+  maxOffsetPx = FESTIVAL_ROAD_PIN_MAX_OFFSET_PX,
+) {
   /** @type {Map<number, { x: number, y: number }>} */
   const offsets = new Map();
   if (!Array.isArray(projections) || projections.length < 2) return offsets;
+  const gap = minGapPx;
+  const maxOff = Math.max(12, maxOffsetPx);
   const items = projections.map((point) => ({
     stopIndex: point.stopIndex,
     x: point.x,
@@ -516,12 +529,13 @@ export function festivalRoadMarkerOffsetsFromProjections(projections, minGapPx =
     ox: 0,
     oy: 0,
   }));
-  const gap = Math.max(28, minGapPx);
-  for (let pass = 0; pass < 12; pass += 1) {
+  for (let pass = 0; pass < 6; pass += 1) {
     for (let i = 0; i < items.length; i += 1) {
       for (let j = i + 1; j < items.length; j += 1) {
         const a = items[i];
         const b = items[j];
+        const baseDist = Math.hypot(b.x - a.x, b.y - a.y);
+        if (baseDist >= gap) continue;
         const dx = b.x + b.ox - (a.x + a.ox);
         const dy = b.y + b.oy - (a.y + a.oy);
         const dist = Math.hypot(dx, dy);
@@ -537,12 +551,46 @@ export function festivalRoadMarkerOffsetsFromProjections(projections, minGapPx =
     }
   }
   for (const item of items) {
-    offsets.set(item.stopIndex, {
-      x: Math.round(item.ox),
-      y: Math.round(item.oy),
-    });
+    const len = Math.hypot(item.ox, item.oy);
+    if (len > maxOff) {
+      const scale = maxOff / len;
+      item.ox *= scale;
+      item.oy *= scale;
+    }
+    const x = Math.round(item.ox);
+    const y = Math.round(item.oy);
+    if (x !== 0 || y !== 0) {
+      offsets.set(item.stopIndex, { x, y });
+    }
   }
   return offsets;
+}
+
+/**
+ * Short leader segments from route anchor to displaced pin (screen offset).
+ * @param {{ lng: number, lat: number, stopIndex: number }[]} points
+ * @param {Map<number, { x: number, y: number }>} offsets
+ * @param {(lng: number, lat: number) => { x: number, y: number }} project
+ * @param {(x: number, y: number) => { lng: number, lat: number }} unproject
+ */
+export function festivalRoadPinLeaderGeoJson(points, offsets, project, unproject) {
+  /** @type {import('geojson').Feature[]} */
+  const features = [];
+  for (const point of festivalRoadLineOrder(points)) {
+    const off = offsets.get(point.stopIndex);
+    if (!off || (off.x === 0 && off.y === 0)) continue;
+    const pixel = project(point.lng, point.lat);
+    const tip = unproject(pixel.x + off.x, pixel.y + off.y);
+    features.push({
+      type: 'Feature',
+      properties: { stopIndex: point.stopIndex },
+      geometry: {
+        type: 'LineString',
+        coordinates: [[point.lng, point.lat], [tip.lng, tip.lat]],
+      },
+    });
+  }
+  return { type: 'FeatureCollection', features };
 }
 
 /**
@@ -579,8 +627,8 @@ export function festivalRoadPinOffsets(points) {
     );
     if (ordered.length === 2) {
       const [a, b] = ordered.map((index) => sorted[index]);
-      offsets.set(a.stopIndex, { x: -34, y: -6 });
-      offsets.set(b.stopIndex, { x: 34, y: 8 });
+      offsets.set(a.stopIndex, { x: -16, y: -4 });
+      offsets.set(b.stopIndex, { x: 16, y: 4 });
       continue;
     }
     const baseRadius = 30;
