@@ -10,7 +10,7 @@ import { webkit } from '@playwright/test';
 
 const execFileAsync = promisify(execFile);
 const BRANCH = process.env.BR373_BRANCH_BASE || 'https://127.0.0.1:4173';
-const MAIN = process.env.BR373_MAIN_BASE || '';
+const MAIN = process.env.BR373_SKIP_MAIN === '1' ? '' : process.env.BR373_MAIN_BASE || '';
 const OUT_REPO = path.join(process.cwd(), 'artifacts/pr373-r9');
 const OUT_ART = '/opt/cursor/artifacts/pr373-r9';
 
@@ -151,6 +151,13 @@ async function main() {
       if (r.summaryOpen) return false;
       if (r.size === '390' && r.wedgeSuspect) return false;
       if (r.canvasBackingMismatch) return false;
+      const flow = FLOWS.find((f) => f.key === r.flow);
+      if (flow && r.centerLat != null) {
+        const { lat, lng } = flow.expectCenter;
+        if (r.centerLat < lat[0] || r.centerLat > lat[1] || r.centerLng < lng[0] || r.centerLng > lng[1]) {
+          return false;
+        }
+      }
       return true;
     }),
   };
