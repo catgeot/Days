@@ -70,16 +70,31 @@ function whenMapTilesIdle(map, onIdle) {
     done = true;
     onIdle();
   };
-  const fallback = globalThis.setTimeout(finish, 3200);
+  const fallback = globalThis.setTimeout(finish, 4500);
   const onReady = () => {
     map.triggerRepaint();
     map.once('idle', () => {
-      globalThis.clearTimeout(fallback);
-      requestAnimationFrame(() => requestAnimationFrame(finish));
+      map.once('idle', () => {
+        globalThis.clearTimeout(fallback);
+        requestAnimationFrame(() => requestAnimationFrame(finish));
+      });
     });
   };
   if (map.isStyleLoaded()) onReady();
   else map.once('load', onReady);
+}
+
+/**
+ * @param {import('mapbox-gl').Map} map
+ * @param {() => void} run
+ */
+function afterLayout(map, run) {
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      map.resize();
+      run();
+    });
+  });
 }
 
 function PinMarker({ point }) {
@@ -107,6 +122,7 @@ function PinMarker({ point }) {
  * @param {{ points: { stopIndex: number, lng: number, lat: number, label?: string, kind?: string }[], routeKey?: number | string }} props
  */
 export default function FestivalRoadMap({ points, routeKey = 0 }) {
+  const containerRef = useRef(null);
   const mapRef = useRef(null);
   const [ready, setReady] = useState(false);
   const [tilesIdle, setTilesIdle] = useState(false);
@@ -120,24 +136,38 @@ export default function FestivalRoadMap({ points, routeKey = 0 }) {
   const initial = festivalRoadLineOrder(points)[0];
 
   useEffect(() => {
+    const el = containerRef.current;
+    const map = mapRef.current;
+    if (!el || !map || !ready) return;
+    const ro = new ResizeObserver(() => {
+      map.resize();
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [ready]);
+
+  useEffect(() => {
     const map = mapRef.current;
     if (!map || !ready || points.length < 2) return;
     setTilesIdle(false);
-    const source = map.getSource(LINE_SOURCE);
-    if (source && typeof source.setData === 'function') {
-      source.setData(line);
-    }
-    if (typeof map.stop === 'function') map.stop();
-    map.resize();
-    fitRoad(map, points);
-    whenMapTilesIdle(map, () => setTilesIdle(true));
+    afterLayout(map, () => {
+      const source = map.getSource(LINE_SOURCE);
+      if (source && typeof source.setData === 'function') {
+        source.setData(line);
+      }
+      if (typeof map.stop === 'function') map.stop();
+      map.resize();
+      fitRoad(map, points);
+      whenMapTilesIdle(map, () => setTilesIdle(true));
+    });
   }, [syncKey, line, ready, points]);
 
   if (!MAPBOX_TOKEN || points.length < 2 || !initial) return null;
 
   return (
     <div
-      className="gateo-mapbox-map relative isolate h-full w-full overflow-hidden bg-stone-200 [contain:paint]"
+      ref={containerRef}
+      className="gateo-mapbox-map relative h-full w-full overflow-hidden bg-stone-200"
       data-festival-road-map-ready={ready ? '1' : '0'}
       data-festival-road-map-tiles-idle={tilesIdle ? '1' : '0'}
     >
@@ -153,7 +183,6 @@ export default function FestivalRoadMap({ points, routeKey = 0 }) {
         attributionControl={{ compact: true }}
         logoPosition="bottom-left"
         reuseMaps
-        antialias
         scrollZoom={false}
         dragPan={false}
         dragRotate={false}
@@ -161,8 +190,9 @@ export default function FestivalRoadMap({ points, routeKey = 0 }) {
         doubleClickZoom={false}
         keyboard={false}
         onLoad={(event) => {
-          mapRef.current = event.target;
-          setReady(true);
+          const map = event.target;
+          mapRef.current = map;
+          afterLayout(map, () => setReady(true));
         }}
       >
         <LanguageControl />
@@ -184,7 +214,7 @@ export default function FestivalRoadMap({ points, routeKey = 0 }) {
               anchor="center"
               offset={[offset.x, offset.y]}
               style={{
-                zIndex: 120 - point.stopIndex,
+                zIndex: 100 + point.stopIndex,
               }}
             >
               <PinMarker point={point} />

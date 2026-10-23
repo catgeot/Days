@@ -91,6 +91,9 @@ test('flag off leaves the live festival detail unchanged', () => {
   assert.match(map, /festivalRoadLineCoordinates/);
   assert.match(map, /reuseMaps/);
   assert.doesNotMatch(map, /key=\{viewKey\}/);
+  assert.doesNotMatch(map, /contain:paint/);
+  assert.doesNotMatch(map, /\bantialias\b/);
+  assert.match(map, /zIndex: 100 \+ point\.stopIndex/);
   assert.match(panel, /data-week-shortcut/);
   assert.match(panel, /korea\.festival\.dateSheetWeekThis/);
   assert.match(panel, /korea\.festival\.dateSheetWeekNext/);

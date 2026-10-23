@@ -503,12 +503,18 @@ export function festivalRoadPinOffsets(points) {
     const ordered = [...cluster].sort(
       (a, b) => sorted[a].stopIndex - sorted[b].stopIndex,
     );
-    const baseRadius = 24;
+    if (ordered.length === 2) {
+      const [a, b] = ordered.map((index) => sorted[index]);
+      offsets.set(a.stopIndex, { x: -34, y: -6 });
+      offsets.set(b.stopIndex, { x: 34, y: 8 });
+      continue;
+    }
+    const baseRadius = 30;
     const step = 360 / ordered.length;
     ordered.forEach((pointIndex, ringIndex) => {
       const point = sorted[pointIndex];
       const angle = ((ringIndex * step) - 90) * (Math.PI / 180);
-      const radius = baseRadius + ringIndex * 7;
+      const radius = baseRadius + ringIndex * 9;
       offsets.set(point.stopIndex, {
         x: Math.round(Math.cos(angle) * radius),
         y: Math.round(Math.sin(angle) * radius),
