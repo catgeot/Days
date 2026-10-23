@@ -179,7 +179,12 @@ jobs:
         env:
           DEV_SSL: '0'
           VITE_GATEO_FESTIVAL_ROAD: '1'
+          E2E_MAPBOX_OK: ${{ secrets.VITE_MAPBOX_TOKEN != '' && '1' || '' }}
         run: |
+          if [ -z "$E2E_MAPBOX_OK" ]; then
+            echo "Skip festival road Wonju E2E: VITE_MAPBOX_TOKEN secret not set"
+            exit 0
+          fi
           npx playwright install --with-deps webkit
           npx vite preview --host 127.0.0.1 --port 5173 --strictPort > /tmp/vite-festival-road.log 2>&1 &
           ready=0

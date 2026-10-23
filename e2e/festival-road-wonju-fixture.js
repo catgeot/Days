@@ -55,6 +55,26 @@ export const WONJU_ROAD_WINDOW_ITEMS = [
     mapx: '127.9250',
     mapy: '37.3450',
   },
+  {
+    contentId: 'road-pc-next',
+    title: '평창 다음주 축제',
+    addr1: '강원특별자치도 평창군',
+    areaCode: '32',
+    eventStartDate: '20261029',
+    eventEndDate: '20261104',
+    mapx: '128.3950',
+    mapy: '37.3750',
+  },
+  {
+    contentId: 'road-js-next',
+    title: '정선 다음주 축제',
+    addr1: '강원특별자치도 정선군',
+    areaCode: '32',
+    eventStartDate: '20261029',
+    eventEndDate: '20261104',
+    mapx: '128.6650',
+    mapy: '37.3850',
+  },
 ];
 
 function jsonFulfill(route, payload) {
