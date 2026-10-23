@@ -168,6 +168,10 @@ export default function FestivalRoadMap({ points, routeKey = 0 }) {
     if (leaderSource && typeof leaderSource.setData === 'function') {
       leaderSource.setData(leaders);
     }
+    const root = containerRef.current;
+    if (root && typeof map.getZoom === 'function') {
+      root.setAttribute('data-festival-road-map-zoom', String(Number(map.getZoom().toFixed(3))));
+    }
   }, []);
 
   useEffect(() => {
@@ -179,17 +183,30 @@ export default function FestivalRoadMap({ points, routeKey = 0 }) {
     const el = containerRef.current;
     const map = mapRef.current;
     if (!el || !map || !ready) return;
-    const onViewportChange = () => {
-      map.resize();
+    const onCaptureZoom = (event) => {
+      const delta = Number(event?.detail?.delta);
+      if (!Number.isFinite(delta) || delta === 0) return;
+      const next = Math.min(22, Math.max(0, map.getZoom() + delta));
+      map.jumpTo({ zoom: next, center: map.getCenter() });
       applyPinLayout(map);
     };
-    map.on('zoomend', onViewportChange);
-    map.on('resize', onViewportChange);
-    const ro = new ResizeObserver(onViewportChange);
+    el.addEventListener('festival-road-capture-zoom', onCaptureZoom);
+    const onZoomEnd = () => applyPinLayout(map);
+    const onMapResize = () => applyPinLayout(map);
+    const onContainerResize = () => {
+      afterLayout(map, () => {
+        map.resize();
+        applyPinLayout(map);
+      });
+    };
+    map.on('zoomend', onZoomEnd);
+    map.on('resize', onMapResize);
+    const ro = new ResizeObserver(onContainerResize);
     ro.observe(el);
     return () => {
-      map.off('zoomend', onViewportChange);
-      map.off('resize', onViewportChange);
+      el.removeEventListener('festival-road-capture-zoom', onCaptureZoom);
+      map.off('zoomend', onZoomEnd);
+      map.off('resize', onMapResize);
       ro.disconnect();
     };
   }, [ready, applyPinLayout]);
@@ -272,10 +289,10 @@ export default function FestivalRoadMap({ points, routeKey = 0 }) {
               type="line"
               layout={{ 'line-cap': 'round', 'line-join': 'round' }}
               paint={{
-                'line-color': '#b45309',
-                'line-width': 1.5,
-                'line-opacity': tilesIdle ? 0.85 : 0,
-                'line-dasharray': [1, 1.5],
+                'line-color': '#78350f',
+                'line-width': 2,
+                'line-opacity': tilesIdle ? 1 : 0,
+                'line-dasharray': [1.2, 1.2],
               }}
             />
           </Source>

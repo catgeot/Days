@@ -1,0 +1,72 @@
+[info] Successfully preconnected to https://api.mapbox.com/
+[info] Successfully preconnected to https://events.mapbox.com/
+[log] [tp] entrypoint init
+[error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[error] Failed to load resource: the server responded with a status of 403 (Forbidden)
+[error] config is not valid
+[info] Successfully preconnected to https://events.mapbox.com/
+[info] Successfully preconnected to https://api.mapbox.com/
+[log] [tp] entrypoint init
+[error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[error] Failed to load resource: the server responded with a status of 403 (Forbidden)
+[error] config is not valid
+[info] Successfully preconnected to https://api.mapbox.com/
+[info] Successfully preconnected to https://events.mapbox.com/
+[log] [tp] entrypoint init
+[error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[error] Failed to load resource: the server responded with a status of 403 (Forbidden)
+[error] config is not valid
+[info] Successfully preconnected to https://api.mapbox.com/
+[info] Successfully preconnected to https://events.mapbox.com/
+[log] [tp] entrypoint init
+[error] Failed to load resource: the server responded with a status of 403 (Forbidden)
+[error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[error] config is not valid
+[info] Successfully preconnected to https://events.mapbox.com/
+[info] Successfully preconnected to https://api.mapbox.com/
+[log] [tp] entrypoint init
+[error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[error] Failed to load resource: the server responded with a status of 403 (Forbidden)
+[error] config is not valid
+[info] Successfully preconnected to https://events.mapbox.com/
+[info] Successfully preconnected to https://api.mapbox.com/
+[log] [tp] entrypoint init
+[error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[error] Failed to load resource: the server responded with a status of 403 (Forbidden)
+[error] config is not valid
+[info] Successfully preconnected to https://events.mapbox.com/
+[info] Successfully preconnected to https://api.mapbox.com/
+[log] [tp] entrypoint init
+[error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[error] Failed to load resource: the server responded with a status of 403 (Forbidden)
+[error] config is not valid
+[info] Successfully preconnected to https://api.mapbox.com/
+[info] Successfully preconnected to https://events.mapbox.com/
+[log] [tp] entrypoint init
+[error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[error] Failed to load resource: the server responded with a status of 403 (Forbidden)
+[error] config is not valid
+[info] Successfully preconnected to https://api.mapbox.com/
+[info] Successfully preconnected to https://events.mapbox.com/
+[log] [tp] entrypoint init
+[error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[error] Failed to load resource: the server responded with a status of 403 (Forbidden)
+[error] config is not valid
+[info] Successfully preconnected to https://api.mapbox.com/
+[info] Successfully preconnected to https://events.mapbox.com/
+[log] [tp] entrypoint init
+[error] Failed to load resource: the server responded with a status of 403 (Forbidden)
+[error] config is not valid
+[error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[info] Successfully preconnected to https://events.mapbox.com/
+[info] Successfully preconnected to https://api.mapbox.com/
+[log] [tp] entrypoint init
+[error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[error] Failed to load resource: the server responded with a status of 403 (Forbidden)
+[error] config is not valid
+[info] Successfully preconnected to https://events.mapbox.com/
+[info] Successfully preconnected to https://api.mapbox.com/
+[log] [tp] entrypoint init
+[error] Failed to load resource: the server responded with a status of 404 (Not Found)
+[error] Failed to load resource: the server responded with a status of 403 (Forbidden)
+[error] config is not valid
