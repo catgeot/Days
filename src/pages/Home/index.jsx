@@ -893,6 +893,12 @@ function Home() {
       globeRef.current?.wakeAfterOverlay?.();
       globeRef.current?.requestGateoMarkerReveal?.();
     });
+    window.setTimeout(() => {
+      globeRef.current?.wakeAfterOverlay?.();
+    }, 800);
+    window.setTimeout(() => {
+      globeRef.current?.wakeAfterOverlay?.();
+    }, 2200);
     recalibrateHomeChromeAfterNav();
   }, [
     addScoutPin,

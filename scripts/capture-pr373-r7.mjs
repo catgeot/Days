@@ -92,7 +92,7 @@ async function settleHomeFromPlace(page, base) {
     if (!(await page.locator('.place-summary-card').isVisible().catch(() => false))) break;
     await page.waitForTimeout(450);
   }
-  if (!isHomePath(page.url()) || (await page.locator('.place-summary-card').isVisible().catch(() => false))) {
+  if (/\/place\//.test(page.url())) {
     await page.goto(`${base}/?gateoGlobeQa=1`, { waitUntil: 'domcontentloaded' });
     await page.waitForTimeout(2000);
     for (let attempt = 0; attempt < 4; attempt += 1) {
@@ -100,18 +100,24 @@ async function settleHomeFromPlace(page, base) {
       if (!(await page.locator('.place-summary-card').isVisible().catch(() => false))) break;
       await page.waitForTimeout(400);
     }
+  } else if (isHomePath(page.url()) && !page.url().includes('gateoGlobeQa=1')) {
+    await page.evaluate(() => {
+      const u = new URL(window.location.href);
+      u.searchParams.set('gateoGlobeQa', '1');
+      window.history.replaceState({}, '', `${u.pathname}${u.search}`);
+    });
   }
 }
 
 async function waitGlobeSettled(page, prevIdleAt = 0) {
-  await page.waitForTimeout(3000);
+  await page.waitForTimeout(5000);
   await page.waitForFunction(
     (since) => {
       const m = window.__gateoGlobeQaMetrics;
       return Boolean(m?.idleAt && m.idleAt > since);
     },
     prevIdleAt,
-    { timeout: 25_000 },
+    { timeout: 30_000 },
   ).catch(() => {});
   await page.waitForFunction(
     (since) => {
@@ -121,9 +127,9 @@ async function waitGlobeSettled(page, prevIdleAt = 0) {
       return (m.gateoDots ?? 0) > 0 || (m.clusterDots ?? 0) > 0;
     },
     prevIdleAt,
-    { timeout: 25_000 },
+    { timeout: 30_000 },
   ).catch(() => {});
-  await page.waitForTimeout(1500);
+  await page.waitForTimeout(2500);
 }
 
 async function metrics(page) {
