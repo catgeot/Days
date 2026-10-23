@@ -13,7 +13,7 @@ const VARIANT_CLASS = {
   solid:
     'border-stone-200 bg-white text-stone-800 shadow-[0_2px_10px_rgba(28,25,23,0.22)] hover:bg-stone-50 hover:border-stone-300',
   onBrightPhoto:
-    'border-white/80 bg-white/90 text-stone-900 shadow-[0_2px_12px_rgba(28,25,23,0.28)] hover:bg-white hover:border-white/90',
+    'border-stone-900/80 bg-white/90 text-stone-900 shadow-[0_2px_12px_rgba(28,25,23,0.45)] hover:bg-white hover:border-stone-900',
 };
 
 /**

@@ -354,6 +354,8 @@ export default function CourseDetailModal({
                         const when = formatFestivalDetailDateRange(
                           fest.eventStartDate,
                           fest.eventEndDate,
+                          undefined,
+                          locale,
                         );
                         const place = String(fest.locality || fest.region || '').trim();
                         return (

@@ -222,21 +222,76 @@ export function formatFestivalRangeLabel(startYmd, endYmd, todayYmd) {
 }
 
 /**
- * Detail sheet · 인근 축제 rows — uses Seoul today when `todayYmd` is omitted.
+ * Latest valid interval. A stale list row must not hide a rolled-forward detail.
+ * TourAPI keeps one date pair per contentId and overwrites it when the next
+ * edition is posted, so the newest end is the announced edition.
+ * @param {Array<{ start?: string, end?: string, eventStartDate?: string, eventEndDate?: string, eventstartdate?: string, eventenddate?: string } | [string, string]>} intervals
+ * @returns {{ start: string, end: string } | null}
+ */
+export function pickLatestFestivalInterval(intervals) {
+  let best = null;
+  for (const raw of intervals || []) {
+    const start = Array.isArray(raw)
+      ? raw[0]
+      : raw?.eventStartDate || raw?.start || raw?.eventstartdate;
+    const end = Array.isArray(raw)
+      ? raw[1]
+      : raw?.eventEndDate || raw?.end || raw?.eventenddate;
+    const interval = festivalIntervalYmd({
+      eventStartDate: start,
+      eventEndDate: end,
+    });
+    if (!interval) continue;
+    if (
+      !best
+      || interval.end > best.end
+      || (interval.end === best.end && interval.start > best.start)
+    ) {
+      best = interval;
+    }
+  }
+  return best;
+}
+
+/**
+ * Detail sheet · list cards · 인근 축제 rows.
+ * Off-month ranges keep a year (`2026.1.9–1.31`). No 「다음 일정 미발표」:
+ * the place + date line on 인근 축제 wraps at 390 when that phrase is added,
+ * and TourAPI has no separate next-edition field. Seoul today when omitted.
  * @param {string} startYmd
  * @param {string} endYmd
  * @param {string} [todayYmd]
+ * @param {string} [locale] accepted so list/detail callers can pass UI locale
  */
-export function formatFestivalDetailDateRange(startYmd, endYmd, todayYmd = seoulTodayYmd()) {
-  if (!isYmd(String(startYmd || '')) && !isYmd(String(endYmd || ''))) return '';
-  const range = formatFestivalRangeLabel(
-    String(startYmd || ''),
-    String(endYmd || startYmd || ''),
-    todayYmd,
-  );
-  if (range) return range;
-  const single = formatFestivalMonthDay(String(startYmd || endYmd || ''), todayYmd);
-  return single;
+export function formatFestivalDetailDateRange(
+  startYmd,
+  endYmd,
+  todayYmd = seoulTodayYmd(),
+  locale = 'ko',
+) {
+  void locale;
+  const start = String(startYmd || '');
+  const endRaw = String(endYmd || '');
+  if (!isYmd(start) && !isYmd(endRaw)) return '';
+  return formatFestivalRangeLabel(start, endRaw || start, todayYmd)
+    || formatFestivalMonthDay(isYmd(start) ? start : endRaw, todayYmd);
+}
+
+/**
+ * Label for the newest interval among list and detail pairs.
+ * Year rules match `formatFestivalDetailDateRange`. No unannounced-edition phrase.
+ * @param {Parameters<typeof pickLatestFestivalInterval>[0]} intervals
+ * @param {string} [todayYmd]
+ * @param {string} [locale]
+ */
+export function formatFestivalEditionDateRange(
+  intervals,
+  todayYmd = seoulTodayYmd(),
+  locale = 'ko',
+) {
+  const latest = pickLatestFestivalInterval(intervals);
+  if (!latest) return '';
+  return formatFestivalDetailDateRange(latest.start, latest.end, todayYmd, locale);
 }
 
 /**

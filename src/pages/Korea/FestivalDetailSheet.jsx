@@ -161,7 +161,7 @@ import {
   isManualFestivalContentId,
   manualFestivalTourDetail,
 } from './manualFestivalEntries';
-import { formatFestivalDetailDateRange } from './festivalDateFilter.js';
+import { formatFestivalEditionDateRange } from './festivalDateFilter.js';
 import { scrollFestivalOverviewToTop } from './festivalSheetOverviewScroll.js';
 import {
   isHttpOnlyHomepage,
@@ -1775,9 +1775,19 @@ export default function FestivalDetailSheet({
   const omitEventHours = festivalOmitsOfficialEventHours(item);
 
   const summaryFields = useMemo(() => {
-    const dateRange = formatFestivalDetailDateRange(
-      item?.eventStartDate || intro?.eventStartDate,
-      item?.eventEndDate || intro?.eventEndDate,
+    const dateRange = formatFestivalEditionDateRange(
+      [
+        {
+          eventStartDate: item?.eventStartDate,
+          eventEndDate: item?.eventEndDate,
+        },
+        {
+          eventStartDate: intro?.eventStartDate || intro?.eventstartdate,
+          eventEndDate: intro?.eventEndDate || intro?.eventenddate,
+        },
+      ],
+      undefined,
+      locale,
     );
     const introForSummary = (() => {
       const fromDetail = omitEventHours && intro ? { ...intro, playtime: '' } : intro;
@@ -1809,17 +1819,7 @@ export default function FestivalDetailSheet({
       locale,
     });
     return omitEventHours ? { ...base, timeText: '' } : base;
-  }, [
-    item,
-    intro,
-    omitEventHours,
-    locale,
-    t,
-    item?.eventStartDate,
-    item?.eventEndDate,
-    intro?.eventStartDate,
-    intro?.eventEndDate,
-  ]);
+  }, [item, intro, omitEventHours, locale, t]);
 
   const mooniEntryLocation = festivalCross?.stay?.location;
   const mooniEntryEnabled = Boolean(
@@ -2223,10 +2223,6 @@ export default function FestivalDetailSheet({
     );
   }
 
-  const range = formatFestivalDetailDateRange(
-    item.eventStartDate || intro?.eventStartDate,
-    item.eventEndDate || intro?.eventEndDate,
-  );
   const tel = String(intro?.sponsor1tel || item.tel || '').trim();
   const sponsor2tel = String(intro?.sponsor2tel || '').trim();
   const hero = imageUrls[activeImage] || imageUrls[0] || '';

@@ -132,10 +132,25 @@ test('festival nearby sights merge into one section', () => {
   assert.deepEqual(finite, sorted);
 });
 
+function compositeRgb(over, under, alpha) {
+  return over.map((channel, index) => Math.round(channel * alpha + under[index] * (1 - alpha)));
+}
+
 test('festival detail close button contrast on a bright photo', () => {
+  const button = readFileSync(
+    join(root, 'src/shared/navigation/AppOutlineBackButton.jsx'),
+    'utf8',
+  );
+  const variant = button.slice(button.indexOf('onBrightPhoto:'));
+  assert.match(variant, /bg-white\/90/);
+  assert.match(variant, /text-stone-900/);
+  assert.match(variant, /border-stone-900\/80/);
+  const brightPhoto = [255, 252, 240];
   const icon = [28, 25, 23];
-  const bg = [255, 255, 255];
-  assert.ok(contrastRatio(icon, bg) >= 3);
+  const fill = compositeRgb([255, 255, 255], brightPhoto, 0.9);
+  const border = compositeRgb(icon, brightPhoto, 0.8);
+  assert.ok(contrastRatio(icon, fill) >= 4.5);
+  assert.ok(contrastRatio(border, brightPhoto) >= 4.5);
 });
 
 test('flight origin chat-header contrast tokens', () => {
