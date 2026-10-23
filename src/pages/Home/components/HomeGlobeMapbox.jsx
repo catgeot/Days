@@ -24,6 +24,10 @@ import {
 } from '../lib/globeOverlayClickGuard';
 import { normalizeLngNear } from '../lib/globeLngUtils';
 import {
+  classifyHomeGlobeFlyOutcome,
+  shouldResumeAutoRotateAfterHomeFly,
+} from '../lib/homeGlobeFlySession.js';
+import {
   GLOBE_FACE_REGION_DEFAULT_ZOOM,
   GLOBE_FACE_REGION_FLY_MS,
   GLOBE_FACE_REGION_CAMERA_PADDING_DESKTOP,
@@ -786,6 +790,8 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   const categoryFaceFlyGenRef = useRef(0);
   const suppressCategoryFaceUntilRef = useRef(0);
   const homeGlobeFlyAppliedTokenRef = useRef(null);
+  const homeGlobeFlySessionRef = useRef(null);
+  const homeGlobeFlyInterruptCleanupRef = useRef(null);
   const focusRefreshTimerRef = useRef([]);
   const clearFocusRefreshTimers = useCallback(() => {
     for (const id of focusRefreshTimerRef.current) {
@@ -850,6 +856,42 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     }
   }, [canResumeRotate]);
   tryResumeAutoRotateRef.current = tryResumeAutoRotate;
+
+  const clearHomeGlobeFlyInterruptListeners = useCallback(() => {
+    homeGlobeFlyInterruptCleanupRef.current?.();
+    homeGlobeFlyInterruptCleanupRef.current = null;
+  }, []);
+
+  const releaseHomeGlobeFlySession = useCallback((outcome) => {
+    clearHomeGlobeFlyInterruptListeners();
+    const hadSession = Boolean(homeGlobeFlySessionRef.current);
+    homeGlobeFlySessionRef.current = null;
+    suppressCategoryFaceUntilRef.current = 0;
+    const map = mapRef.current?.getMap();
+    if (map && !map._removed && (hadSession || shouldResumeAutoRotateAfterHomeFly(outcome))) {
+      if (shouldResumeAutoRotateAfterHomeFly(outcome)) {
+        tryResumeAutoRotate(map);
+      }
+    }
+  }, [clearHomeGlobeFlyInterruptListeners, tryResumeAutoRotate]);
+
+  const armHomeGlobeFlyInterruptListeners = useCallback((map) => {
+    clearHomeGlobeFlyInterruptListeners();
+    if (!map || map._removed) return;
+    const onInterrupt = (event) => {
+      if (!homeGlobeFlySessionRef.current) return;
+      if (!event?.originalEvent) return;
+      releaseHomeGlobeFlySession('interrupted');
+    };
+    map.on('movestart', onInterrupt);
+    map.on('dragstart', onInterrupt);
+    map.on('zoomstart', onInterrupt);
+    homeGlobeFlyInterruptCleanupRef.current = () => {
+      map.off('movestart', onInterrupt);
+      map.off('dragstart', onInterrupt);
+      map.off('zoomstart', onInterrupt);
+    };
+  }, [clearHomeGlobeFlyInterruptListeners, releaseHomeGlobeFlySession]);
 
   const toggleReachBoundaries = useCallback(() => {
     setReachBoundariesVisible((prev) => {
@@ -1835,7 +1877,11 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       flushPendingGateoMarkerSource(map);
       clearGlobeCameraBusy(map);
       refreshGlobeMapCanvas(map);
-      scheduleOrientRotateResume(map, 0);
+      if (options.homeGlobeFlyTarget) {
+        options.onHomeGlobeFlySettled?.('arrived');
+      } else {
+        scheduleOrientRotateResume(map, 0);
+      }
       return true;
     }
 
@@ -1873,12 +1919,23 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
               focusRefreshTimerRef.current.push(timerId);
             }
             tryRevealGlobeOverlays();
+            if (options.homeGlobeFlyTarget) {
+              const center = map.getCenter();
+              const outcome = classifyHomeGlobeFlyOutcome(
+                { lat: center.lat, lng: center.lng },
+                options.homeGlobeFlyTarget,
+              );
+              options.onHomeGlobeFlySettled?.(outcome);
+            }
           });
         });
       });
     } catch {
       clearGlobeCameraBusy(map);
       cameraAnimatingRef.current = false;
+      if (options.homeGlobeFlyTarget) {
+        options.onHomeGlobeFlySettled?.('short');
+      }
       return false;
     }
 
@@ -2651,6 +2708,9 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     clearFocusRefreshTimers: () => {
       clearFocusRefreshTimers();
     },
+    releaseHomeGlobeFlySession: (outcome = 'repress') => {
+      releaseHomeGlobeFlySession(outcome);
+    },
     /** 채팅·모달 닫힌 뒤 Mapbox 입력·리사이즈 복구 (몰입 flyTo 무반응 방지) */
     wakeAfterOverlay: () => {
       interactionRef.current = false;
@@ -2930,7 +2990,20 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     const applyHomeFocus = () => {
       if (applied || cancelled || pauseRenderRef.current) return;
       applied = true;
-      executeFocus(lat, lng, { forceFlyZoom: true, suppressRotateResume: true });
+      homeGlobeFlySessionRef.current = { lat, lng };
+      armHomeGlobeFlyInterruptListeners(map);
+      const settled = (outcome) => {
+        releaseHomeGlobeFlySession(outcome);
+      };
+      const ok = executeFocus(lat, lng, {
+        forceFlyZoom: true,
+        suppressRotateResume: true,
+        homeGlobeFlyTarget: { lat, lng },
+        onHomeGlobeFlySettled: settled,
+      });
+      if (!ok) {
+        releaseHomeGlobeFlySession('short');
+      }
       refreshGlobeMapCanvas(map);
       onHomeGlobeFlyApplied?.();
     };
@@ -2947,14 +3020,19 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       cancelled = true;
       cancelAnimationFrame(raf1);
       if (raf2) cancelAnimationFrame(raf2);
+      if (homeGlobeFlySessionRef.current) {
+        releaseHomeGlobeFlySession('cancelled');
+      }
     };
   }, [
+    armHomeGlobeFlyInterruptListeners,
     clearFocusRefreshTimers,
     executeFocus,
     haltGlobeAutoRotateForCameraFlight,
     homeGlobeFlyRequest,
     onHomeGlobeFlyApplied,
     pauseRender,
+    releaseHomeGlobeFlySession,
   ]);
 
   useEffect(() => () => clearFocusRefreshTimers(), [clearFocusRefreshTimers]);

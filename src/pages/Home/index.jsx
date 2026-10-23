@@ -880,6 +880,7 @@ function Home() {
   const goHomeFromPlace = useCallback(() => {
     clearHomeGlobeTimers();
     setHomeGlobeFlyRequest(null);
+    globeRef.current?.releaseHomeGlobeFlySession?.('repress');
     globeRef.current?.clearFocusRefreshTimers?.();
     clearPlaceReturnTo();
     clearExploreReturn();
