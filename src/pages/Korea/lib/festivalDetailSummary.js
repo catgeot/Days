@@ -130,7 +130,11 @@ export function localizeFestivalDetailField(raw, locale) {
  */
 export function buildFestivalDetailSummary(input = {}) {
   const { item, intro, range, freeLabel = '무료', locale } = input;
-  const timeText = stripHtml(intro?.playtime);
+  const timeRaw =
+    String(locale || '').slice(0, 2) === 'en' && intro?.playtimeEn
+      ? intro.playtimeEn
+      : intro?.playtime;
+  const timeText = stripHtml(timeRaw);
   const fee = formatFestivalFeeDisplay(intro?.usetimefestival, freeLabel);
   const placeText = pickFestivalPlaceText(intro?.eventplace, item?.addr1);
   const dateText = String(range || '').trim();

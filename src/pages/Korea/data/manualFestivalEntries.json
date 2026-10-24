@@ -1,6 +1,7 @@
 {
   "638576": {
     "contentId": "638576",
+    "omitTourApiPlaytime": true,
     "title": "대한민국 국향대전",
     "titleEn": "Korea Chrysanthemum Festival",
     "officialHomepage": "https://www.hpftf.or.kr/",
@@ -53,9 +54,10 @@
     "mapx": "129.1186111",
     "mapy": "35.1536111",
     "tel": "051-713-5000",
-    "playtime": "",
-    "usetimefestival": "2026. 11. 7.(토) 13:00~20:00 (본행사 불꽃 18:00~20:00, 피날레 19:55~20:00)",
-    "usetimefestivalEn": "Nov 7, 2026 (Sat) 13:00–20:00 (main fireworks 18:00–20:00, finale 19:55–20:00)",
+    "playtime": "2026. 11. 7.(토) 13:00~20:00 (본행사 불꽃 18:00~20:00, 피날레 19:55~20:00)",
+    "playtimeEn": "Nov 7, 2026 (Sat) 13:00–20:00 (main fireworks 18:00–20:00, finale 19:55–20:00)",
+    "usetimefestival": "",
+    "usetimefestivalEn": "",
     "overview": "제21회 부산불꽃축제(부산광역시 주최)로, 광안리해수욕장·이기대·동백섬 일원에서 열리는 대표적인 가을 불꽃 행사입니다.",
     "program": "사전 프로그램·본행사 불꽃 연출·부대 행사(공식 홈페이지 프로그램 안내)",
     "images": [

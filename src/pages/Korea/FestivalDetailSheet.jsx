@@ -156,6 +156,7 @@ import {
 } from './festivalHeroThumbs';
 import { FestivalHeroPhoto } from './festivalHeroPhoto';
 import {
+  festivalEditionEndedForItem,
   festivalOmitsOfficialEventHours,
   getManualFestivalEntry,
   isManualFestivalContentId,
@@ -2211,7 +2212,7 @@ export default function FestivalDetailSheet({
   const roadFill = festivalRoadFill(roadSelectedLeg, roadNearbyLabels);
   const roadAllEmpty = festivalRoadAllEmpty(roadLegs);
 
-  const festivalEnded = isFestivalEnded(item?.eventEndDate || intro?.eventEndDate);
+  const festivalEnded = festivalEditionEndedForItem(item, intro);
 
   if (!item) {
     if (!pending) return null;

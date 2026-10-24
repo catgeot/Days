@@ -1,6 +1,6 @@
 import entries from './data/manualFestivalEntries.json';
 import { formatFestivalAsOfDate, isFestivalEnded } from './festivalDeepLinkItem.js';
-import { festivalIntervalYmd } from './festivalDateFilter.js';
+import { festivalIntervalYmd, pickLatestFestivalInterval } from './festivalDateFilter.js';
 import { mergeFestivalRowItem, normalizeFestivalItemImages } from './socialPromoFestivalsLogic.js';
 
 const byId = new Map(
@@ -73,9 +73,43 @@ export function isManualFestivalContentId(contentId) {
   return Boolean(getManualFestivalEntry(contentId));
 }
 
-/** Official manual SSOT — do not show TourAPI/cache playtime in UI or MOONi. */
+/** Official manual SSOT — hide TourAPI playtime when fee copy lives in usetimefestival (e.g. 638576). */
 export function festivalOmitsOfficialEventHours(item) {
-  return Boolean(item?.detailAsOf?.fromManualOfficial);
+  if (!item?.detailAsOf?.fromManualOfficial) return false;
+  const entry = getManualFestivalEntry(item?.contentId);
+  return Boolean(entry?.omitTourApiPlaytime);
+}
+
+/**
+ * Ended badge / strips — manual edition dates beat stale TourAPI list rows.
+ * @param {Record<string, unknown> | null | undefined} item
+ * @param {Record<string, unknown> | null | undefined} [intro]
+ * @param {Date | string | number} [now]
+ */
+export function festivalEditionEndedForItem(item, intro, now = new Date()) {
+  const manual = getManualFestivalEntry(item?.contentId || intro?.contentId);
+  const intervals = [];
+  if (manual?.eventEndDate) {
+    intervals.push({
+      eventStartDate: manual.eventStartDate,
+      eventEndDate: manual.eventEndDate,
+    });
+  }
+  if (item?.eventEndDate) {
+    intervals.push({
+      eventStartDate: item.eventStartDate,
+      eventEndDate: item.eventEndDate,
+    });
+  }
+  const introEnd = intro?.eventEndDate || intro?.eventenddate;
+  if (introEnd) {
+    intervals.push({
+      eventStartDate: intro?.eventStartDate || intro?.eventstartdate,
+      eventEndDate: introEnd,
+    });
+  }
+  const latest = pickLatestFestivalInterval(intervals);
+  return isFestivalEnded(latest?.end || '', now);
 }
 
 /**
@@ -133,7 +167,8 @@ export function manualFestivalTourDetail(entry) {
       contentId: entry.contentId,
       eventStartDate: entry.eventStartDate,
       eventEndDate: entry.eventEndDate,
-      playtime: '',
+      playtime: entry.playtime || '',
+      playtimeEn: entry.playtimeEn || '',
       usetimefestival: entry.usetimefestival || '',
       usetimefestivalEn: entry.usetimefestivalEn || '',
       eventplace: entry.eventplace || '',

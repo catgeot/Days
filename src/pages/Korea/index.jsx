@@ -955,6 +955,10 @@ export default function KoreaFestivalHub() {
   /** 모바일 지도 · PC 전체화면 — 글라스 헤더·뷰포트 몰입(분할 카드 밖) */
   const mapImmersive = mapOpen && !mapSplitActive;
   const [items, setItems] = useState([]);
+  const itemsWithManualSsot = useMemo(
+    () => mergeManualFestivalsIntoFestivalItems(items, now),
+    [items, now],
+  );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [nearLabel, setNearLabel] = useState('');
@@ -1036,7 +1040,7 @@ export default function KoreaFestivalHub() {
     () =>
       projectFestivalDeepLink({
         festivalId,
-        items,
+        items: itemsWithManualSsot,
         supplementalItems: deepLinkSupplementalItems,
         listLoading: loading,
         phase: deepLinkPhaseForId,
@@ -1044,7 +1048,7 @@ export default function KoreaFestivalHub() {
       }),
     [
       festivalId,
-      items,
+      itemsWithManualSsot,
       deepLinkSupplementalItems,
       loading,
       deepLinkPhaseForId,
