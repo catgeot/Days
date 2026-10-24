@@ -17,6 +17,7 @@ import {
   normalizeAppLocale,
 } from './constants';
 import { ensureI18n, i18n } from './config';
+import { resolveBootLocaleSource } from './resolveBootLocaleSource.js';
 
 const LocaleContext = createContext(null);
 
@@ -56,6 +57,13 @@ function resolveBootLocaleFromSearchParams(searchParams) {
   });
 }
 
+function bootLocaleSourceFromSearchParams(searchParams) {
+  return resolveBootLocaleSource({
+    urlLang: resolveLocaleFromUrl(searchParams),
+    storedLocale: readStoredLocaleOrNull(),
+  });
+}
+
 export function LocaleProvider({ children }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const [locale, setLocaleState] = useState(() => {
@@ -64,6 +72,9 @@ export function LocaleProvider({ children }) {
     syncDocumentLang(initial);
     return initial;
   });
+  const [localeSource, setLocaleSource] = useState(() =>
+    bootLocaleSourceFromSearchParams(searchParams),
+  );
   const bootSyncDone = useRef(false);
 
   useEffect(() => {
@@ -82,18 +93,10 @@ export function LocaleProvider({ children }) {
     const inferred = resolveInitialLocale({ urlLang: null, storedLocale: null });
     if (inferred !== 'en') return;
 
-    persistLocale('en');
+    setLocaleState('en');
     void i18n.changeLanguage('en');
     syncDocumentLang('en');
-    setSearchParams(
-      (prev) => {
-        const next = new URLSearchParams(prev);
-        next.set('lang', 'en');
-        return next;
-      },
-      { replace: true },
-    );
-  }, [searchParams, setSearchParams]);
+  }, [searchParams]);
 
   useEffect(() => {
     const urlLocale = resolveLocaleFromUrl(searchParams);
@@ -101,6 +104,7 @@ export function LocaleProvider({ children }) {
 
     setLocaleState((current) => {
       if (current === urlLocale) return current;
+      setLocaleSource('url');
       persistLocale(urlLocale);
       void i18n.changeLanguage(urlLocale);
       syncDocumentLang(urlLocale);
@@ -111,6 +115,7 @@ export function LocaleProvider({ children }) {
   const setLocale = useCallback(
     (nextLocale) => {
       const normalized = normalizeAppLocale(nextLocale);
+      setLocaleSource('explicit');
       setLocaleState(normalized);
       persistLocale(normalized);
       void i18n.changeLanguage(normalized);
@@ -139,11 +144,13 @@ export function LocaleProvider({ children }) {
   const value = useMemo(
     () => ({
       locale,
+      localeSource,
+      isExplicitLocale: localeSource !== 'browser',
       setLocale,
       toggleLocale,
       isEnglish: locale === 'en',
     }),
-    [locale, setLocale, toggleLocale],
+    [locale, localeSource, setLocale, toggleLocale],
   );
 
   return (

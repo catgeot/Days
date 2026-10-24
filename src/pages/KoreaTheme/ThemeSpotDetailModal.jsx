@@ -89,6 +89,7 @@ import {
   nudgeFestivalSheetScrollAndRepaint,
 } from '../Korea/lib/festivalSheetInteractionRestore.js';
 import { useLocale } from '../../i18n/LocaleProvider';
+import { appendEnglishLangQueryToPath } from '../../i18n/localeUrlQuery.js';
 import {
   formatScenicSpotPlaceLabel,
   scenicSpotMapTitle,
@@ -114,16 +115,6 @@ function localizedSpotModalSubtitle(spot, locale) {
 const PHOTO_SWIPE_THRESHOLD_PX = 48;
 const PHOTO_SWIPE_DIRECTION_RATIO = 1.25;
 
-function appendLocaleQuery(path, locale) {
-  const raw = String(path || '').trim();
-  if (!raw || !String(locale || '').startsWith('en')) return raw;
-  const qIdx = raw.indexOf('?');
-  const pathname = qIdx >= 0 ? raw.slice(0, qIdx) : raw;
-  const params = new URLSearchParams(qIdx >= 0 ? raw.slice(qIdx + 1) : '');
-  if (!params.has('lang')) params.set('lang', 'en');
-  const q = params.toString();
-  return q ? `${pathname}?${q}` : pathname;
-}
 function youtubeThumb(videoId) {
   const id = String(videoId || '').trim();
   if (!id) return '';
@@ -225,7 +216,7 @@ function ThemeSpotCrossRail({
   hideTnaStrip = false,
 }) {
   const { t } = useTranslation();
-  const { locale } = useLocale();
+  const { locale, localeSource } = useLocale();
   const navigate = useNavigate();
 
   const crossSpot = useMemo(
@@ -250,7 +241,7 @@ function ThemeSpotCrossRail({
 
   const goThemePath = (to) => {
     if (!to) return;
-    const dest = appendLocaleQuery(to, locale);
+    const dest = appendEnglishLangQueryToPath(to, locale, localeSource);
     // 축제 오버레이(`/korea`)에서 테마 모듈로 나갈 때만 시트 닫기.
     // 명승 홈에서는 closeModal이 spot query를 지워 deep-link와 경합할 수 있음.
     const leavingFestivalOverlay =
@@ -897,7 +888,7 @@ export default function ThemeSpotDetailModal({
 }) {
   useTrustBarOverlayLockEffect(Boolean(spot));
   const { t } = useTranslation();
-  const { locale } = useLocale();
+  const { locale, localeSource, isExplicitLocale } = useLocale();
   const isEnglish = String(locale || '').startsWith('en');
   const koText = koreanApiTextProps(isEnglish);
   const [showScrollTop, setShowScrollTop] = useState(false);
@@ -1794,7 +1785,7 @@ export default function ThemeSpotDetailModal({
     if (!festId) return;
     const params = new URLSearchParams();
     params.set('festival', festId);
-    if (isEnglish) params.set('lang', 'en');
+    if (isEnglish && isExplicitLocale) params.set('lang', 'en');
     const backEntry = themeNavBackEntryForSpot(spot, returnTo);
     if (backEntry) pushThemeNavBack(backEntry);
     onClose?.();
