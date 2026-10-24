@@ -49,10 +49,25 @@ async function openRegionPanel(page) {
 async function tapSido(page, label) {
   await openRegionPanel(page);
   const chip = page.getByRole('button', { name: new RegExp(`^${label}\\s+\\d+`) });
+  await chip.waitFor({ state: 'visible', timeout: 120_000 });
   await chip.scrollIntoViewIfNeeded();
   await chip.click();
-  await page.locator('main [data-festival-id]').first().waitFor({ timeout: 90_000 });
-  await page.waitForTimeout(300);
+  await page.locator('main [data-festival-id]').first().waitFor({ timeout: 120_000 });
+  await page.waitForTimeout(400);
+}
+
+async function tapFirstAvailableSido(page, labels) {
+  for (const label of labels) {
+    await openRegionPanel(page);
+    const chip = page.getByRole('button', { name: new RegExp(`^${label}\\s+\\d+`) });
+    if ((await chip.count()) === 0) continue;
+    await chip.scrollIntoViewIfNeeded();
+    await chip.click();
+    await page.locator('main [data-festival-id]').first().waitFor({ timeout: 120_000 });
+    await page.waitForTimeout(400);
+    return label;
+  }
+  throw new Error(`no sido chip among: ${labels.join(', ')}`);
 }
 
 async function openTimePanel(page) {
@@ -81,11 +96,18 @@ async function main() {
   await page.goto(`${BASE}/korea/`, { waitUntil: 'domcontentloaded', timeout: 120_000 });
   await page.getByRole('heading', { name: /한국의 축제/ }).waitFor({ timeout: 120_000 });
   await dismissLocHint(page);
-  await page.locator('main [data-festival-id]').first().waitFor({ timeout: 120_000 });
+  await page.locator('main [data-festival-id]').first().waitFor({ timeout: 180_000 });
 
-  await tapSido(page, '광주');
+  const longSido = await tapFirstAvailableSido(page, [
+    '광주',
+    '경기',
+    '전남',
+    '부산',
+    '강원',
+    '서울',
+  ]);
   await scrollMainToBottom(page);
-  saved.push(await clip(page, '01-gwangju-bottom'));
+  saved.push(await clip(page, `01-${longSido}-bottom`));
 
   for (const sido of ['대구', '대전', '인천', '서울']) {
     await tapSido(page, sido);
@@ -93,7 +115,7 @@ async function main() {
     await scrollMainToBottom(page);
   }
 
-  await tapSido(page, '광주');
+  await tapSido(page, longSido);
   await scrollMainToBottom(page);
 
   await openTimePanel(page);
