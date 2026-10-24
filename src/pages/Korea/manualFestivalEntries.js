@@ -1,6 +1,7 @@
 import entries from './data/manualFestivalEntries.json';
-import { formatFestivalAsOfDate } from './festivalDeepLinkItem.js';
-import { normalizeFestivalItemImages } from './socialPromoFestivalsLogic.js';
+import { formatFestivalAsOfDate, isFestivalEnded } from './festivalDeepLinkItem.js';
+import { festivalIntervalYmd, pickLatestFestivalInterval } from './festivalDateFilter.js';
+import { mergeFestivalRowItem, normalizeFestivalItemImages } from './socialPromoFestivalsLogic.js';
 
 const byId = new Map(
   Object.entries(entries).map(([id, row]) => [String(id), { ...row, contentId: String(id) }]),
@@ -22,17 +23,93 @@ export function getManualFestivalEntry(contentId) {
   return id ? byId.get(id) || null : null;
 }
 
-export function listManualFestivalContentIds() {
-  return [...byId.keys()];
+/**
+ * List injection ends only when `expiresAfter` (YYYYMMDD) is set and past in KST.
+ * Omit `expiresAfter` to keep a manual row until the SSOT entry is removed (not `eventEndDate`).
+ * @param {Date | string | number} [now]
+ */
+export function isManualFestivalActive(entry, now = new Date()) {
+  if (!entry?.contentId) return false;
+  const until = String(entry.expiresAfter || '').trim();
+  if (!/^\d{8}$/.test(until)) return true;
+  return !isFestivalEnded(until, now);
+}
+
+/**
+ * TourAPI rolling window can keep an old edition; manual SSOT wins when API dates are missing or older.
+ * @param {Record<string, unknown> | null | undefined} tourRow
+ * @param {ReturnType<typeof getManualFestivalEntry>} manualEntry
+ * @param {Date | string | number} [now]
+ */
+export function shouldManualWinOverTourApiRow(tourRow, manualEntry, now = new Date()) {
+  if (!manualEntry?.contentId) return false;
+  const manualInterval = festivalIntervalYmd(manualEntry);
+  if (!manualInterval) return false;
+  const tourInterval = festivalIntervalYmd(tourRow);
+  if (!tourInterval) return true;
+  if (tourInterval.end < manualInterval.end) return true;
+  if (
+    tourInterval.end === manualInterval.end
+    && tourInterval.start < manualInterval.start
+  ) {
+    return true;
+  }
+  if (
+    isFestivalEnded(tourInterval.end, now)
+    && !isFestivalEnded(manualInterval.end, now)
+  ) {
+    return true;
+  }
+  return false;
+}
+
+export function listManualFestivalContentIds(now = new Date()) {
+  return [...byId.keys()].filter((id) =>
+    isManualFestivalActive(byId.get(id), now),
+  );
 }
 
 export function isManualFestivalContentId(contentId) {
   return Boolean(getManualFestivalEntry(contentId));
 }
 
-/** Official manual SSOT — do not show TourAPI/cache playtime in UI or MOONi. */
+/** Official manual SSOT — hide TourAPI playtime when fee copy lives in usetimefestival (e.g. 638576). */
 export function festivalOmitsOfficialEventHours(item) {
-  return Boolean(item?.detailAsOf?.fromManualOfficial);
+  if (!item?.detailAsOf?.fromManualOfficial) return false;
+  const entry = getManualFestivalEntry(item?.contentId);
+  return Boolean(entry?.omitTourApiPlaytime);
+}
+
+/**
+ * Ended badge / strips — manual edition dates beat stale TourAPI list rows.
+ * @param {Record<string, unknown> | null | undefined} item
+ * @param {Record<string, unknown> | null | undefined} [intro]
+ * @param {Date | string | number} [now]
+ */
+export function festivalEditionEndedForItem(item, intro, now = new Date()) {
+  const manual = getManualFestivalEntry(item?.contentId || intro?.contentId);
+  const intervals = [];
+  if (manual?.eventEndDate) {
+    intervals.push({
+      eventStartDate: manual.eventStartDate,
+      eventEndDate: manual.eventEndDate,
+    });
+  }
+  if (item?.eventEndDate) {
+    intervals.push({
+      eventStartDate: item.eventStartDate,
+      eventEndDate: item.eventEndDate,
+    });
+  }
+  const introEnd = intro?.eventEndDate || intro?.eventenddate;
+  if (introEnd) {
+    intervals.push({
+      eventStartDate: intro?.eventStartDate || intro?.eventstartdate,
+      eventEndDate: introEnd,
+    });
+  }
+  const latest = pickLatestFestivalInterval(intervals);
+  return isFestivalEnded(latest?.end || '', now);
 }
 
 /**
@@ -53,8 +130,9 @@ export function manualFestivalDetailAsOf(entry) {
 /**
  * @param {ReturnType<typeof getManualFestivalEntry>} entry
  */
-export function manualFestivalListItem(entry) {
+export function manualFestivalListItem(entry, now = new Date()) {
   if (!entry?.contentId) return null;
+  if (!isManualFestivalActive(entry, now)) return null;
   const first = entry.images?.[0]?.url || '';
   const detailAsOf = manualFestivalDetailAsOf(entry);
   return normalizeFestivalItemImages({
@@ -89,7 +167,8 @@ export function manualFestivalTourDetail(entry) {
       contentId: entry.contentId,
       eventStartDate: entry.eventStartDate,
       eventEndDate: entry.eventEndDate,
-      playtime: '',
+      playtime: entry.playtime || '',
+      playtimeEn: entry.playtimeEn || '',
       usetimefestival: entry.usetimefestival || '',
       usetimefestivalEn: entry.usetimefestivalEn || '',
       eventplace: entry.eventplace || '',
@@ -114,12 +193,40 @@ export function manualFestivalTourDetail(entry) {
   };
 }
 
-export function buildInitialManualPromoMap() {
+export function buildInitialManualPromoMap(now = new Date()) {
   const map = new Map();
-  for (const id of listManualFestivalContentIds()) {
+  for (const id of listManualFestivalContentIds(now)) {
     const entry = getManualFestivalEntry(id);
-    const item = manualFestivalListItem(entry);
+    const item = manualFestivalListItem(entry, now);
     if (item) map.set(id, item);
   }
   return map;
+}
+
+/**
+ * Inject active manual rows missing from the TourAPI rolling window.
+ * @param {object[]} baseItems
+ * @param {Date | string | number} [now]
+ */
+export function mergeManualFestivalsIntoFestivalItems(baseItems, now = new Date()) {
+  const list = Array.isArray(baseItems) ? [...baseItems] : [];
+  const indexById = new Map(
+    list.map((row, index) => [String(row?.contentId || ''), index]),
+  );
+  for (const id of listManualFestivalContentIds(now)) {
+    const entry = getManualFestivalEntry(id);
+    const manualItem = manualFestivalListItem(entry, now);
+    if (!manualItem) continue;
+    const index = indexById.get(id);
+    if (index === undefined) {
+      list.push(manualItem);
+      indexById.set(id, list.length - 1);
+      continue;
+    }
+    const tourRow = list[index];
+    if (shouldManualWinOverTourApiRow(tourRow, entry, now)) {
+      list[index] = mergeFestivalRowItem(tourRow, manualItem);
+    }
+  }
+  return list;
 }

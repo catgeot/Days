@@ -2,15 +2,120 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
   getManualFestivalEntry,
+  isManualFestivalActive,
   manualFestivalDetailAsOf,
   manualFestivalListItem,
   manualFestivalTourDetail,
+  mergeManualFestivalsIntoFestivalItems,
+  shouldManualWinOverTourApiRow,
+  festivalEditionEndedForItem,
   festivalOmitsOfficialEventHours,
 } from '../../src/pages/Korea/manualFestivalEntries.js';
+import { projectFestivalDeepLink } from '../../src/pages/Korea/festivalDeepLinkItem.js';
+import { buildFestivalDetailSummary } from '../../src/pages/Korea/lib/festivalDetailSummary.js';
+import { resolveFestivalItemSidoCode } from '../../src/pages/Korea/koreaAreaFilter.js';
 import { buildFestivalMooniContext } from '../../src/pages/Korea/lib/festivalMooniContext.js';
 import { FestivalDetailAsOfLine } from '../../src/pages/Korea/festivalDeepLinkItem.js';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
+
+test('235076 manual entry — TourAPI gap fill, Busan list, expires after 2026-11-07', () => {
+  const NOW = new Date('2026-11-01T03:00:00Z');
+  const entry = getManualFestivalEntry('235076');
+  assert.ok(entry);
+  assert.equal(entry.eventStartDate, '20261107');
+  assert.equal(entry.eventEndDate, '20261107');
+  assert.equal(entry.expiresAfter, '20261107');
+  assert.equal(entry.officialHomepage, 'https://www.busanfireworks.com/');
+  assert.match(entry.addr1, /부산광역시/);
+  assert.match(entry.addr1En, /Gwanganhaebyeon-ro/);
+  assert.doesNotMatch(entry.addr1En, /Gwangandaero/i);
+  assert.match(entry.eventplace, /광안리/);
+  assert.match(entry.playtime, /18:00~20:00/);
+  assert.match(entry.playtimeEn, /18:00–20:00/);
+  assert.match(entry.images[0].url, /visitkorea\.or\.kr/);
+
+  assert.equal(isManualFestivalActive(entry, NOW), true);
+  assert.equal(
+    isManualFestivalActive(entry, new Date('2026-11-08T03:00:00Z')),
+    false,
+  );
+
+  const item = manualFestivalListItem(entry, NOW);
+  assert.equal(item.contentId, '235076');
+  assert.equal(resolveFestivalItemSidoCode(item), '6');
+
+  const merged = mergeManualFestivalsIntoFestivalItems(
+    [{ contentId: '999', title: '기타', eventStartDate: '20261101', eventEndDate: '20261102' }],
+    NOW,
+  );
+  assert.ok(merged.some((row) => row.contentId === '235076'));
+
+  const detail = manualFestivalTourDetail(entry);
+  assert.equal(detail.ok, true);
+  assert.equal(detail.manual, true);
+  assert.match(detail.common.title, /부산불꽃/);
+});
+
+test('235076 manual wins over stale TourAPI list row', () => {
+  const NOW = new Date('2026-11-01T03:00:00Z');
+  const entry = getManualFestivalEntry('235076');
+  const staleTour = {
+    contentId: '235076',
+    title: '부산불꽃축제',
+    eventStartDate: '20241102',
+    eventEndDate: '20241102',
+    addr1: '부산광역시 수영구 (구 일정)',
+  };
+  assert.equal(shouldManualWinOverTourApiRow(staleTour, entry, NOW), true);
+  const merged = mergeManualFestivalsIntoFestivalItems([staleTour], NOW);
+  const rows235 = merged.filter((row) => row.contentId === '235076');
+  assert.equal(rows235.length, 1);
+  assert.equal(rows235[0].eventEndDate, '20261107');
+  assert.equal(rows235[0].detailAsOf?.fromManualOfficial, true);
+  assert.match(rows235[0].firstimage, /visitkorea\.or\.kr/);
+});
+
+test('235076 deep link + detail not ended when TourAPI window row is stale', () => {
+  const NOW = new Date('2026-11-01T03:00:00Z');
+  const staleTour = {
+    contentId: '235076',
+    title: '부산불꽃축제',
+    eventStartDate: '20241102',
+    eventEndDate: '20241102',
+    firstimage: 'https://example.invalid/stale.jpg',
+  };
+  const merged = mergeManualFestivalsIntoFestivalItems([staleTour], NOW);
+  const view = projectFestivalDeepLink({
+    festivalId: '235076',
+    items: merged,
+    supplementalItems: [],
+    now: NOW,
+  });
+  assert.equal(view.ended, false);
+  assert.equal(view.badge, '');
+  assert.equal(view.selected?.eventEndDate, '20261107');
+
+  const detail = manualFestivalTourDetail(getManualFestivalEntry('235076'));
+  assert.equal(festivalEditionEndedForItem(view.selected, detail.intro, NOW), false);
+
+  const summary = buildFestivalDetailSummary({
+    item: view.selected,
+    intro: detail.intro,
+    range: '11.7',
+    locale: 'ko',
+  });
+  assert.match(summary.timeText, /18:00~20:00/);
+  assert.equal(summary.fee, null);
+});
+
+test('638576 stays active without expiresAfter after event end', () => {
+  const entry = getManualFestivalEntry('638576');
+  assert.equal(entry.expiresAfter, undefined);
+  const afterFestival = new Date('2026-11-15T03:00:00Z');
+  assert.equal(isManualFestivalActive(entry, afterFestival), true);
+  assert.ok(manualFestivalListItem(entry, afterFestival));
+});
 
 test('638576 manual entry has official fields and as-of line', () => {
   const entry = getManualFestivalEntry('638576');

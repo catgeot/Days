@@ -53,21 +53,44 @@ export function normalizeFestivalItemImages(item) {
 export function mergeFestivalRowItem(primary, overlay) {
   if (!primary) return overlay ? normalizeFestivalItemImages(overlay) : null;
   if (!overlay) return normalizeFestivalItemImages(primary);
+  const preferOverlayMedia = Boolean(overlay?.detailAsOf?.fromManualOfficial);
   const firstimage = pickStr(
-    primary.firstimage,
-    primary.firstImage,
-    overlay.firstimage,
-    overlay.firstImage,
-    primary.imageUrl,
-    overlay.imageUrl,
+    ...(preferOverlayMedia
+      ? [
+          overlay.firstimage,
+          overlay.firstImage,
+          overlay.imageUrl,
+          primary.firstimage,
+          primary.firstImage,
+          primary.imageUrl,
+        ]
+      : [
+          primary.firstimage,
+          primary.firstImage,
+          overlay.firstimage,
+          overlay.firstImage,
+          primary.imageUrl,
+          overlay.imageUrl,
+        ]),
   );
   const imageUrl = pickStr(
-    primary.imageUrl,
-    overlay.imageUrl,
-    primary.firstimage,
-    overlay.firstimage,
-    primary.firstimage2,
-    overlay.firstimage2,
+    ...(preferOverlayMedia
+      ? [
+          overlay.imageUrl,
+          overlay.firstimage,
+          overlay.firstimage2,
+          primary.imageUrl,
+          primary.firstimage,
+          primary.firstimage2,
+        ]
+      : [
+          primary.imageUrl,
+          overlay.imageUrl,
+          primary.firstimage,
+          overlay.firstimage,
+          primary.firstimage2,
+          overlay.firstimage2,
+        ]),
   );
   const latestInterval = pickLatestFestivalInterval([primary, overlay]);
   return normalizeFestivalItemImages({
