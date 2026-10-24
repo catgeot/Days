@@ -93,10 +93,15 @@ async function main() {
   const page = await context.newPage();
   const saved = [];
 
-  await page.goto(`${BASE}/korea/`, { waitUntil: 'domcontentloaded', timeout: 120_000 });
+  await page.goto(`${BASE}/korea/`, { waitUntil: 'networkidle', timeout: 180_000 });
   await page.getByRole('heading', { name: /한국의 축제/ }).waitFor({ timeout: 120_000 });
   await dismissLocHint(page);
   await page.locator('main [data-festival-id]').first().waitFor({ timeout: 180_000 });
+  await page.waitForFunction(
+    () => document.querySelectorAll('main [data-festival-id]').length >= 20,
+    null,
+    { timeout: 180_000 },
+  );
 
   const longSido = await tapFirstAvailableSido(page, [
     '광주',
