@@ -26,6 +26,12 @@ import {
 import {
   sanitizeGeminiUserText,
 } from '../../../../supabase/functions/_shared/gemini/answerSanitize.mjs';
+import {
+  buildPlaceChatIntroBareFallbackKeys,
+  destinationKeyMatchesBareName,
+  introLocaleStorageKeys,
+  pickBareFallbackIntroFromRows,
+} from './placeChatIntroBareFallback.js';
 
 export { isSyntheticOrEmptyPlaceDesc, needsPlaceChatIntroHydration };
 
@@ -137,7 +143,11 @@ export function stripPlaceChatIntroForSummary(text, placeName = '') {
   return body;
 }
 
-/** 조회·저장에 쓸 destination_key 후보 (이름 / 국가+이름 / displayLabel) */
+/**
+ * 조회·저장에 쓸 destination_key 후보 (순서 = 조회 순서).
+ * parentCity 있음: `{parentCity} {name}` → `{country} {name}` (PROD 118건) → bare는 fetchBareFallback(동명 1건일 때만).
+ * parentCity 없음: label/name → `{country} {name}`.
+ */
 export function buildPlaceChatIntroKeys(locOrName, lng = i18n.language) {
   if (locOrName == null) return [];
   if (typeof locOrName === 'string') {
@@ -155,6 +165,7 @@ export function buildPlaceChatIntroKeys(locOrName, lng = i18n.language) {
   const country = normalizeDestinationKey(
     getLocalizedCountryName(locOrName, locale) || locOrName.country || '',
   );
+  const parentCity = normalizeDestinationKey(locOrName.parentCity || '');
   const keys = [];
   const push = (k) => {
     const n = normalizeDestinationKey(k);
@@ -162,12 +173,60 @@ export function buildPlaceChatIntroKeys(locOrName, lng = i18n.language) {
     if (!keys.includes(n)) keys.push(n);
   };
 
+  if (parentCity && name && !name.includes(parentCity)) {
+    push(`${parentCity} ${name}`);
+    if (country && !isPlaceholderCountry(country) && !name.includes(country)) {
+      push(`${country} ${name}`);
+    }
+    return keys;
+  }
+
   push(label);
   push(name);
   if (country && name && !isPlaceholderCountry(country) && !name.includes(country)) {
     push(`${country} ${name}`);
   }
   return keys;
+}
+
+/** Session cache — primary keys already missed; bare exact lookup empty */
+const bareIntroExactMissCache = new Set();
+
+async function fetchIntroRowsMatchingBareName(bareName) {
+  const b = normalizeDestinationKey(bareName);
+  if (!isValidIntroDestination(b)) return [];
+  if (bareIntroExactMissCache.has(b)) return [];
+
+  const exactKeys = introLocaleStorageKeys(b);
+  if (!exactKeys.length) return [];
+
+  const { data } = await supabase
+    .from('place_chat_intro')
+    .select('destination_key, summary')
+    .in('destination_key', exactKeys);
+
+  const rows = (data ?? []).filter((row) =>
+    destinationKeyMatchesBareName(row.destination_key, b),
+  );
+  if (!rows.length) bareIntroExactMissCache.add(b);
+  return rows;
+}
+
+async function fetchBareFallbackIntroSummary(locOrName, lng, placeName) {
+  const bareKeys = buildPlaceChatIntroBareFallbackKeys(locOrName, lng);
+  for (const bareKey of bareKeys) {
+    const rows = await fetchIntroRowsMatchingBareName(bareKey);
+    const picked = pickBareFallbackIntroFromRows(rows, bareKey, lng);
+    if (!picked) continue;
+
+    const text = sanitizeGeminiUserText(picked.summary);
+    if (!text || !isPlaceChatIntroSummaryAccepted(text)) continue;
+
+    savePlaceChatIntroLocal(picked.logicalKey, text, picked.lngUsed);
+    const stripped = stripPlaceChatIntroForSummary(text, placeName);
+    if (stripped) return stripped;
+  }
+  return null;
 }
 
 async function fetchIntroByExactKey(destinationKey, lng = i18n.language) {
@@ -216,6 +275,10 @@ export async function fetchPlaceChatIntroSummaryForLocation(locOrName, lng = i18
     const stripped = stripPlaceChatIntroForSummary(raw, placeName);
     if (stripped) return stripped;
   }
+
+  if (typeof locOrName === 'object' && locOrName?.parentCity) {
+    return fetchBareFallbackIntroSummary(locOrName, lng, placeName);
+  }
   return null;
 }
 
@@ -259,6 +322,30 @@ export async function generatePlaceChatIntroWithAi(destinationDisplayName, lng =
   }
 }
 
+/**
+ * AI 생성·persist에 쓸 destination_key (항상 primary lookup key — fallback 키로 저장하지 않음).
+ * parentCity 있으면 `{parentCity} {name}`만; country+name·bare는 조회 전용.
+ */
+export function resolvePlaceChatIntroPersistKey(locOrName, lng = i18n.language) {
+  const keys = buildPlaceChatIntroKeys(locOrName, lng);
+  if (!keys.length) return null;
+  const primaryKey = keys[0];
+  const parentCity =
+    typeof locOrName === 'object' ? normalizeDestinationKey(locOrName?.parentCity || '') : '';
+  if (typeof locOrName === 'string') {
+    return normalizeDestinationKey(locOrName);
+  }
+  return (parentCity && primaryKey) || formatPlaceChatLabel(locOrName, lng) || primaryKey;
+}
+
+/** @returns {string[]} lookup-only keys (country+name, bare) — never used for AI persist */
+export function placeChatIntroFallbackOnlyKeys(locOrName, lng = i18n.language) {
+  if (!locOrName || typeof locOrName !== 'object' || !locOrName.parentCity) return [];
+  const keys = buildPlaceChatIntroKeys(locOrName, lng);
+  const bare = buildPlaceChatIntroBareFallbackKeys(locOrName, lng);
+  return [...new Set([...keys.slice(1), ...bare].filter(Boolean))];
+}
+
 /** 동시 방문·탭 전환 시 동일 키 AI 재호출 방지 */
 const introEnsureInflight = new Map();
 /** 생성 실패 키 — 세션 내 재시도 폭주 방지 (캐시 hit는 계속 조회) */
@@ -294,10 +381,8 @@ export async function ensurePlaceChatIntroForLocation(locOrName, options = {}) {
         locOrName?.displayLabel ||
         locOrName?.name ||
         primaryKey;
-  const generateLabel =
-    typeof locOrName === 'string'
-      ? normalizeDestinationKey(locOrName)
-      : formatPlaceChatLabel(locOrName, lng) || primaryKey;
+  const generateLabel = resolvePlaceChatIntroPersistKey(locOrName, lng);
+  if (!generateLabel) return null;
 
   const promise = (async () => {
     try {

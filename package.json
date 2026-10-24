@@ -245,6 +245,7 @@
     "test:poi-admin-slug": "node --import ./scripts/register-src-esm.mjs --test scripts/poi-admin-slug.test.mjs",
     "test:korea-admin-region": "node --import ./scripts/register-src-esm.mjs --test scripts/korea-admin-region-match.test.mjs",
     "test:place-cross-links": "node --import ./scripts/register-src-esm.mjs --test scripts/place-cross-links.test.mjs",
+    "test:place-chat-intro-keys": "node --import ./scripts/register-src-esm.mjs --test scripts/place-chat-intro-keys.test.mjs scripts/place-chat-intro-bare-fallback.test.mjs scripts/place-chat-intro-qa-pass.test.mjs",
     "test:site-search-open": "node --import ./scripts/register-src-esm.mjs --test scripts/site-search-open.test.mjs",
     "test:site-search-enter-immediate": "node scripts/site-search-enter-immediate-477.mjs",
     "test:gallery-display-sources": "node --import ./scripts/register-src-esm.mjs --test scripts/gallery-display-sources-attribution.test.mjs",

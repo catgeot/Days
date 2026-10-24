@@ -33,6 +33,9 @@ jobs:
       - name: Health unit tests (test:health)
         run: npm run test:health
 
+      - name: Place chat intro keys (parentCity fallback)
+        run: npm run test:place-chat-intro-keys
+
       - name: Place video allowlist matches /place sources
         run: npm run check:place-video-catalog
 
