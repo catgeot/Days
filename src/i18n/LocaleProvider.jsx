@@ -82,18 +82,10 @@ export function LocaleProvider({ children }) {
     const inferred = resolveInitialLocale({ urlLang: null, storedLocale: null });
     if (inferred !== 'en') return;
 
-    persistLocale('en');
+    setLocaleState('en');
     void i18n.changeLanguage('en');
     syncDocumentLang('en');
-    setSearchParams(
-      (prev) => {
-        const next = new URLSearchParams(prev);
-        next.set('lang', 'en');
-        return next;
-      },
-      { replace: true },
-    );
-  }, [searchParams, setSearchParams]);
+  }, [searchParams]);
 
   useEffect(() => {
     const urlLocale = resolveLocaleFromUrl(searchParams);
