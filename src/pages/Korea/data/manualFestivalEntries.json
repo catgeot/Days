@@ -54,9 +54,9 @@
     "mapy": "35.1536111",
     "tel": "051-713-5000",
     "playtime": "",
-    "usetimefestival": "2026. 11. 7.(토) 불꽃 본행사 — 공식 홈페이지 일정표 기준",
-    "usetimefestivalEn": "Nov 7, 2026 (Sat) main fireworks — see official schedule",
-    "overview": "제21회 부산불꽃축제로, 광안리해수욕장·이기대·동백섬 일원에서 열리는 대표적인 가을 불꽃 행사입니다.",
+    "usetimefestival": "2026. 11. 7.(토) 13:00~20:00 (본행사 불꽃 약 18:00~19:00)",
+    "usetimefestivalEn": "Nov 7, 2026 (Sat) 13:00–20:00 (main fireworks approx. 18:00–19:00)",
+    "overview": "제21회 부산불꽃축제(부산광역시 주최)로, 광안리해수욕장·이기대·동백섬 일원에서 열리는 대표적인 가을 불꽃 행사입니다.",
     "program": "사전 프로그램·본행사 불꽃 연출·부대 행사(공식 홈페이지 프로그램 안내)",
     "images": [
       {
@@ -66,8 +66,12 @@
     ],
     "sources": [
       {
-        "url": "https://busanfireworks.com/content/overview",
-        "note": "행사 일정·장소·문의"
+        "url": "https://www.busanfireworks.com/content/overview",
+        "note": "제21회 일정·장소·주최(부산광역시)"
+      },
+      {
+        "url": "https://www.mcst.go.kr/site/s_culture/festival/festivalView.jsp?pRo=64&pSeq=11935",
+        "note": "문화체육관광부 축제 DB"
       },
       {
         "url": "https://www.busanfireworks.com/content/location",
