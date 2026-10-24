@@ -143,9 +143,14 @@ async function main() {
 
   await scrollMainToBottom(page);
   const deepBeforeMap = await page.locator('main').evaluate((el) => el.scrollTop);
-  await page.getByRole('button', { name: '지도로 위치·동선 보기' }).click();
+  await page
+    .getByRole('button', { name: '지도로 위치·동선 보기' })
+    .evaluate((el) => el.click());
   await page.waitForTimeout(400);
-  await page.getByRole('button', { name: /지도 닫기|목록으로/ }).click();
+  await page
+    .getByRole('button', { name: /지도 닫기|목록으로/ })
+    .first()
+    .evaluate((el) => el.click());
   await page.waitForTimeout(400);
   saved.push(await clip(page, '08-after-map-close'));
   const deepAfterMap = await page.locator('main').evaluate((el) => el.scrollTop);
@@ -153,9 +158,10 @@ async function main() {
 
   await scrollMainToBottom(page);
   const deepBeforeFav = await page.locator('main').evaluate((el) => el.scrollTop);
-  await page.getByRole('button', { name: '즐겨찾기·본 항목' }).click();
+  const favToggle = page.getByRole('button', { name: '즐겨찾기·본 항목' });
+  await favToggle.evaluate((el) => el.click());
   await page.waitForTimeout(300);
-  await page.getByRole('button', { name: '즐겨찾기·본 항목' }).click();
+  await favToggle.evaluate((el) => el.click());
   await page.waitForTimeout(300);
   saved.push(await clip(page, '09-after-favorites-close'));
   const deepAfterFav = await page.locator('main').evaluate((el) => el.scrollTop);
@@ -164,15 +170,17 @@ async function main() {
   await scrollMainToBottom(page);
   const scrollBeforeDetail = await page.locator('main').evaluate((el) => el.scrollTop);
   const card = page.locator('main [data-festival-id]').first();
-  await card.click();
-  await page.getByRole('dialog').waitFor({ timeout: 60_000 });
-  await page.waitForTimeout(500);
-  await page.keyboard.press('Escape').catch(() => {});
-  const backBtn = page.getByRole('button', { name: /닫기|뒤로|목록/ }).first();
-  if (await page.getByRole('dialog').isVisible().catch(() => false)) {
-    await backBtn.click({ timeout: 10_000 }).catch(async () => {
-      await page.goBack();
-    });
+  await card.evaluate((el) => el.click());
+  const dialog = page.getByRole('dialog').filter({
+    has: page.locator('#korea-festival-sheet-title'),
+  });
+  await dialog.waitFor({ timeout: 90_000 });
+  await page.waitForTimeout(600);
+  const closeDetail = dialog.getByRole('button', { name: /^닫기$/ }).first();
+  if (await closeDetail.isVisible().catch(() => false)) {
+    await closeDetail.click();
+  } else {
+    await page.goBack();
   }
   await page.locator('main [data-festival-id]').first().waitFor({ timeout: 60_000 });
   await page.waitForTimeout(500);
