@@ -1,6 +1,7 @@
 import React, {
   useCallback,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -57,6 +58,7 @@ import {
 import FestivalDateSheet from './FestivalDateSheet';
 import { isGateoFestivalDateChipEnabled, isGateoFestivalRoadEnabled } from '../../shared/gateoFeatureFlags';
 import { defaultFestivalHubTimeTab } from './festivalHubDefaultTimeTab.js';
+import { scrollFestivalHubListToTop } from './festivalHubListScroll.js';
 import { buildTasteTags, filterByTaste, tasteLabel } from './festivalTasteTags';
 import {
   buildCityTags,
@@ -2516,6 +2518,17 @@ export default function KoreaFestivalHub() {
     );
   };
 
+  const listFilterScrollKey = useMemo(() => {
+    const rangeStart = customRange?.start ?? '';
+    const rangeEnd = customRange?.end ?? '';
+    return `${areaCode}|${cityName}|${timeTab}|${tasteId}|${rangeStart}|${rangeEnd}`;
+  }, [areaCode, cityName, timeTab, tasteId, customRange]);
+
+  useLayoutEffect(() => {
+    if (mapOpen || personalTab != null) return;
+    scrollFestivalHubListToTop(mainScrollRef.current);
+  }, [listFilterScrollKey, mapOpen, personalTab]);
+
   useEffect(() => {
     const el = mainScrollRef.current;
     if (!el || mapOpen) {
@@ -3255,6 +3268,7 @@ export default function KoreaFestivalHub() {
               }`}
             >
               <div
+                data-festival-list-scroll=""
                 className={`${listLarge ? 'space-y-3' : 'space-y-2'} page-scroll-end-pad px-3 pt-3 ${
                   mapSplitActive
                     ? 'hidden lg:block lg:custom-scrollbar lg:min-h-0 lg:w-[min(26rem,38%)] lg:shrink-0 lg:overflow-y-auto lg:border-r lg:border-stone-200'
@@ -3486,7 +3500,7 @@ export default function KoreaFestivalHub() {
         type="button"
         aria-label={t('korea.common.scrollToTop')}
         onClick={() => {
-          mainScrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+          scrollFestivalHubListToTop(mainScrollRef.current);
         }}
         className={`fixed bottom-[max(3.6rem,calc(env(safe-area-inset-bottom)+2.85rem))] right-3 z-40 flex h-11 items-center gap-1 rounded-full border border-amber-400/60 bg-amber-500 px-3.5 text-white shadow-[0_4px_18px_rgba(245,158,11,0.45)] transition-all duration-300 md:hidden ${
           showScrollTop && !mapOpen && !selected
