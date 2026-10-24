@@ -44,22 +44,6 @@ export function restoreFestivalHubListScrollOffsets(mainEl, tops) {
   });
 }
 
-/**
- * Click-to-open map can zero scroll before openMap runs; keep pointerdown/keydown capture when live read is near top.
- */
-export function mergeFestivalHubListScrollForMapOpen(atOpen, atCapture) {
-  if (!atCapture?.length) return atOpen ?? [];
-  if (!atOpen?.length) return atCapture;
-  return atOpen.map((top, i) => {
-    const captured = atCapture[i];
-    if (typeof captured !== 'number') return top;
-    if (typeof top !== 'number') return captured;
-    if (top < 8 && captured > 24) return captured;
-    if (captured > top + 48) return captured;
-    return top;
-  });
-}
-
 const RESTORE_READY_TIMEOUT_MS = 1000;
 
 function isInteractiveEventTarget(target) {
