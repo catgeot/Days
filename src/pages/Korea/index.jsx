@@ -58,7 +58,11 @@ import {
 import FestivalDateSheet from './FestivalDateSheet';
 import { isGateoFestivalDateChipEnabled, isGateoFestivalRoadEnabled } from '../../shared/gateoFeatureFlags';
 import { defaultFestivalHubTimeTab } from './festivalHubDefaultTimeTab.js';
-import { scrollFestivalHubListToTop } from './festivalHubListScroll.js';
+import {
+  readFestivalHubListScrollOffsets,
+  restoreFestivalHubListScroll,
+  scrollFestivalHubListToTop,
+} from './festivalHubListScroll.js';
 import { buildTasteTags, filterByTaste, tasteLabel } from './festivalTasteTags';
 import {
   buildCityTags,
@@ -1003,6 +1007,7 @@ export default function KoreaFestivalHub() {
   const mobileSearchRootRef = useRef(null);
   const mobileSearchToggleRef = useRef(null);
   const mainScrollRef = useRef(null);
+  const pendingHubListScrollRestoreRef = useRef(/** @type {number[] | null} */ (null));
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [deepLinkForId, setDeepLinkForId] = useState('');
   const [deepLinkPhase, setDeepLinkPhase] = useState(/** @type {'idle' | 'loading' | 'ok' | 'miss'} */ ('idle'));
@@ -2449,6 +2454,11 @@ export default function KoreaFestivalHub() {
   );
 
   const openPersonal = (tab) => {
+    if (personalTab == null) {
+      pendingHubListScrollRestoreRef.current = readFestivalHubListScrollOffsets(
+        mainScrollRef.current,
+      );
+    }
     setPersonalTab(tab);
     clearNear();
     clearFestivalFromUrl();
@@ -2456,22 +2466,31 @@ export default function KoreaFestivalHub() {
     else setViewedList(loadViewed());
   };
 
+  const restorePendingHubListScroll = useCallback(() => {
+    const tops = pendingHubListScrollRestoreRef.current;
+    pendingHubListScrollRestoreRef.current = null;
+    if (!tops?.length) return;
+    restoreFestivalHubListScroll(mainScrollRef.current, tops);
+  }, []);
+
   const closePersonal = () => {
-    setPersonalTab(null);
+    flushSync(() => setPersonalTab(null));
+    restorePendingHubListScroll();
   };
 
   const openMap = () => {
+    pendingHubListScrollRestoreRef.current = readFestivalHubListScrollOffsets(
+      mainScrollRef.current,
+    );
     setMapSessionKey((k) => k + 1);
     setMapFullscreen(false);
     setMapOpen(true);
-    requestAnimationFrame(() => {
-      mainScrollRef.current?.scrollTo({ top: 0 });
-    });
   };
 
   const closeMap = () => {
     setMapFullscreen(false);
-    setMapOpen(false);
+    flushSync(() => setMapOpen(false));
+    restorePendingHubListScroll();
   };
 
   const toggleMapFullscreen = () => {
@@ -2521,13 +2540,29 @@ export default function KoreaFestivalHub() {
   const listFilterScrollKey = useMemo(() => {
     const rangeStart = customRange?.start ?? '';
     const rangeEnd = customRange?.end ?? '';
-    return `${areaCode}|${cityName}|${timeTab}|${tasteId}|${rangeStart}|${rangeEnd}`;
-  }, [areaCode, cityName, timeTab, tasteId, customRange]);
+    const nearKey = nearActive
+      ? `on:${nearLabel}:${nearIds?.length ?? 0}`
+      : 'off';
+    return `${areaCode}|${cityName}|${timeTab}|${tasteId}|${rangeStart}|${rangeEnd}|${searchFilter}|${nearKey}`;
+  }, [
+    areaCode,
+    cityName,
+    timeTab,
+    tasteId,
+    customRange,
+    searchFilter,
+    nearActive,
+    nearLabel,
+    nearIds,
+  ]);
 
+  const listFilterScrollKeyRef = useRef(listFilterScrollKey);
   useLayoutEffect(() => {
-    if (mapOpen || personalTab != null) return;
+    const prev = listFilterScrollKeyRef.current;
+    listFilterScrollKeyRef.current = listFilterScrollKey;
+    if (prev === listFilterScrollKey) return;
     scrollFestivalHubListToTop(mainScrollRef.current);
-  }, [listFilterScrollKey, mapOpen, personalTab]);
+  }, [listFilterScrollKey]);
 
   useEffect(() => {
     const el = mainScrollRef.current;
@@ -3500,7 +3535,7 @@ export default function KoreaFestivalHub() {
         type="button"
         aria-label={t('korea.common.scrollToTop')}
         onClick={() => {
-          scrollFestivalHubListToTop(mainScrollRef.current);
+          mainScrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
         }}
         className={`fixed bottom-[max(3.6rem,calc(env(safe-area-inset-bottom)+2.85rem))] right-3 z-40 flex h-11 items-center gap-1 rounded-full border border-amber-400/60 bg-amber-500 px-3.5 text-white shadow-[0_4px_18px_rgba(245,158,11,0.45)] transition-all duration-300 md:hidden ${
           showScrollTop && !mapOpen && !selected

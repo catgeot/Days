@@ -29,6 +29,29 @@ function resetNestedScrollTops(root) {
   });
 }
 
+export function readFestivalHubListScrollOffsets(mainEl) {
+  return getFestivalHubListScrollContainers(mainEl).map((el) => el.scrollTop);
+}
+
+export function restoreFestivalHubListScrollOffsets(mainEl, tops) {
+  if (!tops?.length) return;
+  const containers = getFestivalHubListScrollContainers(mainEl);
+  containers.forEach((el, i) => {
+    const top = tops[i];
+    if (typeof top !== 'number') return;
+    const maxTop = Math.max(0, el.scrollHeight - el.clientHeight);
+    el.scrollTop = Math.max(0, Math.min(top, maxTop));
+  });
+}
+
+function runScrollRestore(mainEl, tops) {
+  restoreFestivalHubListScrollOffsets(mainEl, tops);
+  requestAnimationFrame(() => {
+    restoreFestivalHubListScrollOffsets(mainEl, tops);
+    requestAnimationFrame(() => restoreFestivalHubListScrollOffsets(mainEl, tops));
+  });
+}
+
 export function scrollFestivalHubListToTop(mainEl) {
   const containers = getFestivalHubListScrollContainers(mainEl);
   if (!containers.length) return;
@@ -43,4 +66,9 @@ export function scrollFestivalHubListToTop(mainEl) {
     run();
     requestAnimationFrame(run);
   });
+}
+
+export function restoreFestivalHubListScroll(mainEl, tops) {
+  if (!tops?.length) return;
+  runScrollRestore(mainEl, tops);
 }

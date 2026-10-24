@@ -17,10 +17,14 @@ test('hub list scroll targets main vs md list pane', () => {
   assert.match(scrollJs, /behavior: 'instant'/);
 });
 
-test('Korea hub resets list scroll on filter key change', () => {
+test('Korea hub resets list scroll on filter key change only', () => {
   assert.match(indexJs, /scrollFestivalHubListToTop/);
   assert.match(indexJs, /festivalHubListScroll\.js/);
   assert.match(indexJs, /listFilterScrollKey/);
+  assert.match(indexJs, /listFilterScrollKeyRef/);
+  assert.match(indexJs, /searchFilter/);
+  assert.match(indexJs, /nearActive/);
   assert.match(indexJs, /useLayoutEffect/);
   assert.match(indexJs, /data-festival-list-scroll/);
+  assert.doesNotMatch(indexJs, /listFilterScrollKey, mapOpen/);
 });

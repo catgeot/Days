@@ -117,4 +117,38 @@ test.describe('Korea festival region chip scroll reset', () => {
 
     await expect(firstCard).toBeInViewport({ ratio: 0.25 });
   });
+
+  test('map and favorites close keep list scroll position', async ({ page }) => {
+    const main = page.locator('main');
+    await main.evaluate((el) => {
+      el.scrollTop = el.scrollHeight;
+    });
+    const deepTop = await main.evaluate((el) => el.scrollTop);
+    expect(deepTop).toBeGreaterThan(200);
+
+    await page
+      .getByRole('button', { name: '지도로 위치·동선 보기' })
+      .evaluate((el) => el.click());
+    await expect(page.getByRole('button', { name: /지도 닫기|목록으로/ }).first()).toBeVisible({
+      timeout: 10_000,
+    });
+    await page
+      .getByRole('button', { name: /지도 닫기|목록으로/ })
+      .first()
+      .evaluate((el) => el.click());
+
+    await expect
+      .poll(async () => main.evaluate((el) => el.scrollTop), { timeout: 8_000 })
+      .toBeGreaterThan(200);
+
+    const favToggle = page.getByRole('button', { name: '즐겨찾기·본 항목' });
+    await favToggle.evaluate((el) => el.click());
+    await expect(favToggle).toHaveAttribute('aria-pressed', 'true');
+    await favToggle.evaluate((el) => el.click());
+    await expect(favToggle).toHaveAttribute('aria-pressed', 'false');
+
+    await expect
+      .poll(async () => main.evaluate((el) => el.scrollTop), { timeout: 8_000 })
+      .toBeGreaterThan(200);
+  });
 });
