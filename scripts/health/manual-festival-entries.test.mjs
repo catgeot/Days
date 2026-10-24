@@ -2,15 +2,51 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
   getManualFestivalEntry,
+  isManualFestivalActive,
   manualFestivalDetailAsOf,
   manualFestivalListItem,
   manualFestivalTourDetail,
+  mergeManualFestivalsIntoFestivalItems,
   festivalOmitsOfficialEventHours,
 } from '../../src/pages/Korea/manualFestivalEntries.js';
+import { resolveFestivalItemSidoCode } from '../../src/pages/Korea/koreaAreaFilter.js';
 import { buildFestivalMooniContext } from '../../src/pages/Korea/lib/festivalMooniContext.js';
 import { FestivalDetailAsOfLine } from '../../src/pages/Korea/festivalDeepLinkItem.js';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
+
+test('235076 manual entry — TourAPI gap fill, Busan list, expires after 2026-11-07', () => {
+  const NOW = new Date('2026-11-01T03:00:00Z');
+  const entry = getManualFestivalEntry('235076');
+  assert.ok(entry);
+  assert.equal(entry.eventStartDate, '20261107');
+  assert.equal(entry.eventEndDate, '20261107');
+  assert.equal(entry.listUntilYmd, '20261107');
+  assert.equal(entry.officialHomepage, 'https://www.busanfireworks.com/');
+  assert.match(entry.addr1, /부산광역시/);
+  assert.match(entry.eventplace, /광안리/);
+
+  assert.equal(isManualFestivalActive(entry, NOW), true);
+  assert.equal(
+    isManualFestivalActive(entry, new Date('2026-11-08T03:00:00Z')),
+    false,
+  );
+
+  const item = manualFestivalListItem(entry, NOW);
+  assert.equal(item.contentId, '235076');
+  assert.equal(resolveFestivalItemSidoCode(item), '6');
+
+  const merged = mergeManualFestivalsIntoFestivalItems(
+    [{ contentId: '999', title: '기타', eventStartDate: '20261101', eventEndDate: '20261102' }],
+    NOW,
+  );
+  assert.ok(merged.some((row) => row.contentId === '235076'));
+
+  const detail = manualFestivalTourDetail(entry);
+  assert.equal(detail.ok, true);
+  assert.equal(detail.manual, true);
+  assert.match(detail.common.title, /부산불꽃/);
+});
 
 test('638576 manual entry has official fields and as-of line', () => {
   const entry = getManualFestivalEntry('638576');

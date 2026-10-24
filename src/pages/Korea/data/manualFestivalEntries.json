@@ -36,5 +36,43 @@
         "note": "입장료·사전예매·무료입장"
       }
     ]
+  },
+  "235076": {
+    "contentId": "235076",
+    "title": "부산불꽃축제",
+    "titleEn": "Busan Fireworks Festival",
+    "officialHomepage": "https://www.busanfireworks.com/",
+    "checkedOn": "2026-10-24",
+    "eventStartDate": "20261107",
+    "eventEndDate": "20261107",
+    "listUntilYmd": "20261107",
+    "addr1": "부산광역시 수영구 광안해변로 264",
+    "addr1En": "264, Gwangandaero, Suyeong-gu, Busan",
+    "eventplace": "광안리해수욕장, 이기대, 동백섬 일원",
+    "eventplaceEn": "Gwangalli Beach, Igidae, and Dongbaekseom Island areas",
+    "mapx": "129.1186111",
+    "mapy": "35.1536111",
+    "tel": "051-713-5000",
+    "playtime": "",
+    "usetimefestival": "2026. 11. 7.(토) 불꽃 본행사 — 공식 홈페이지 일정표 기준",
+    "usetimefestivalEn": "Nov 7, 2026 (Sat) main fireworks — see official schedule",
+    "overview": "제21회 부산불꽃축제로, 광안리해수욕장·이기대·동백섬 일원에서 열리는 대표적인 가을 불꽃 행사입니다.",
+    "program": "사전 프로그램·본행사 불꽃 연출·부대 행사(공식 홈페이지 프로그램 안내)",
+    "images": [
+      {
+        "url": "https://www.busanfireworks.com/data/bf_popup/pu_20261020163327_b7c6bb64.png",
+        "credit": "출처: 부산불꽃축제 공식 홈페이지"
+      }
+    ],
+    "sources": [
+      {
+        "url": "https://busanfireworks.com/content/overview",
+        "note": "행사 일정·장소·문의"
+      },
+      {
+        "url": "https://www.busanfireworks.com/content/location",
+        "note": "교통·장소 구역"
+      }
+    ]
   }
 }

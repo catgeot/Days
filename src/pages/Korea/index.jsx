@@ -113,6 +113,7 @@ import {
   listManualFestivalContentIds,
   manualFestivalListItem,
   manualFestivalTourDetail,
+  mergeManualFestivalsIntoFestivalItems,
 } from './manualFestivalEntries';
 import {
   DEFAULT_AREA_CODE,
@@ -1502,7 +1503,8 @@ export default function KoreaFestivalHub() {
       socialPromoItemById,
       now,
     );
-    return merged.map((item) => {
+    const withManual = mergeManualFestivalsIntoFestivalItems(merged, now);
+    return withManual.map((item) => {
       const id = String(item?.contentId || '');
       if (!promoIds.has(id)) return item;
       return mergeFestivalRowItem(item, socialPromoItemById.get(id));
