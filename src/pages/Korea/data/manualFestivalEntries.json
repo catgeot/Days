@@ -45,23 +45,23 @@
     "checkedOn": "2026-10-24",
     "eventStartDate": "20261107",
     "eventEndDate": "20261107",
-    "listUntilYmd": "20261107",
+    "expiresAfter": "20261107",
     "addr1": "부산광역시 수영구 광안해변로 264",
-    "addr1En": "264, Gwangandaero, Suyeong-gu, Busan",
+    "addr1En": "264 Gwanganhaebyeon-ro, Suyeong-gu, Busan",
     "eventplace": "광안리해수욕장, 이기대, 동백섬 일원",
     "eventplaceEn": "Gwangalli Beach, Igidae, and Dongbaekseom Island areas",
     "mapx": "129.1186111",
     "mapy": "35.1536111",
     "tel": "051-713-5000",
     "playtime": "",
-    "usetimefestival": "2026. 11. 7.(토) 13:00~20:00 (본행사 불꽃 약 18:00~19:00)",
-    "usetimefestivalEn": "Nov 7, 2026 (Sat) 13:00–20:00 (main fireworks approx. 18:00–19:00)",
+    "usetimefestival": "2026. 11. 7.(토) 13:00~20:00 (본행사 불꽃 18:00~20:00, 피날레 19:55~20:00)",
+    "usetimefestivalEn": "Nov 7, 2026 (Sat) 13:00–20:00 (main fireworks 18:00–20:00, finale 19:55–20:00)",
     "overview": "제21회 부산불꽃축제(부산광역시 주최)로, 광안리해수욕장·이기대·동백섬 일원에서 열리는 대표적인 가을 불꽃 행사입니다.",
     "program": "사전 프로그램·본행사 불꽃 연출·부대 행사(공식 홈페이지 프로그램 안내)",
     "images": [
       {
-        "url": "https://www.busanfireworks.com/data/bf_popup/pu_20261020163327_b7c6bb64.png",
-        "credit": "출처: 부산불꽃축제 공식 홈페이지"
+        "url": "https://tong.visitkorea.or.kr/cms/resource/92/4107992_image2_1.jpg",
+        "credit": "출처: 한국관광공사(공공누리 제3유형)"
       }
     ],
     "sources": [
