@@ -13,6 +13,14 @@ import {
   kstYmd,
   mergeIntroSnippetOntoItem,
 } from "./intro_homepage.mjs";
+import {
+  FESTIVAL_WINDOW_ARRANGE,
+  FESTIVAL_WINDOW_MAX_PAGES,
+  FESTIVAL_WINDOW_PAGE_ROWS,
+  festivalWindowFetchLooksIncomplete,
+  mergeFestivalPages,
+  splitFestivalWindowRange,
+} from "./festival_window.mjs";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -77,8 +85,6 @@ const LIST_FRESH_MS = 12 * 60 * 60 * 1000;
 const LIST_STALE_MS = 7 * 24 * 60 * 60 * 1000;
 const DETAIL_FRESH_MS = 7 * 24 * 60 * 60 * 1000;
 const DETAIL_STALE_MS = 30 * 24 * 60 * 60 * 1000;
-const FESTIVAL_WINDOW_MAX_PAGES = 12;
-const FESTIVAL_WINDOW_PAGE_ROWS = 50;
 const FESTIVAL_CONTENT_TYPE_ID = "15";
 
 function introHomepageFlagOn(): boolean {
@@ -845,29 +851,67 @@ async function writeFestivalCache(
   return true;
 }
 
-function mergeFestivalPages(
-  pages: Awaited<ReturnType<typeof callTourApi>>[],
-): Record<string, unknown>[] {
-  const seen = new Set<string>();
-  const merged: Record<string, unknown>[] = [];
-  for (const data of pages) {
-    if (!data?.ok || !Array.isArray(data.items)) continue;
-    for (const item of data.items) {
-      const key = String(
-        item?.contentId || `${item?.title}-${item?.eventStartDate}`,
+type FestivalWindowPage = Awaited<ReturnType<typeof callTourApi>>;
+
+async function fetchFestivalWindowPagesForRange(
+  locale: TourApiLocale,
+  serviceKey: string,
+  eventStartDate: string,
+  eventEndDate: string,
+): Promise<{ ok: boolean; pages: FestivalWindowPage[]; message?: string }> {
+  const pages: FestivalWindowPage[] = [];
+  for (let pageNo = 1; pageNo <= FESTIVAL_WINDOW_MAX_PAGES; pageNo += 1) {
+    let page: FestivalWindowPage;
+    try {
+      page = await callTourApi(
+        locale,
+        "searchFestival",
+        {
+          eventStartDate,
+          eventEndDate,
+          numOfRows: String(FESTIVAL_WINDOW_PAGE_ROWS),
+          pageNo: String(pageNo),
+          arrange: FESTIVAL_WINDOW_ARRANGE,
+        },
+        serviceKey,
       );
-      if (!key || seen.has(key)) continue;
-      if (
-        !item?.title ||
-        !/^\d{8}$/.test(String(item.eventStartDate || ""))
-      ) {
-        continue;
-      }
-      seen.add(key);
-      merged.push(item);
+    } catch (err) {
+      const msg = (err as Error)?.message || "upstream fetch failed";
+      if (pages.some((p) => p?.ok)) break;
+      return { ok: false, pages: [], message: msg };
     }
+    pages.push(page);
+    if (!page.ok) {
+      if (pages.some((p) => p?.ok)) break;
+      return {
+        ok: false,
+        pages: [],
+        message: page.message || "searchFestival failed",
+      };
+    }
+    const count = Array.isArray(page.items) ? page.items.length : 0;
+    if (count < FESTIVAL_WINDOW_PAGE_ROWS) break;
   }
-  return merged;
+
+  const anyOk = pages.some((p) => p?.ok);
+  if (!anyOk) {
+    return {
+      ok: false,
+      pages: [],
+      message: pages[0]?.message || "searchFestival failed",
+    };
+  }
+  return { ok: true, pages };
+}
+
+function mergePagesFromRanges(
+  rangeResults: { ok: boolean; pages: FestivalWindowPage[] }[],
+): Record<string, unknown>[] {
+  const allPages: FestivalWindowPage[] = [];
+  for (const r of rangeResults) {
+    if (r.ok) allPages.push(...r.pages);
+  }
+  return mergeFestivalPages(allPages);
 }
 
 async function fetchFestivalWindowLive(
@@ -880,48 +924,36 @@ async function fetchFestivalWindowLive(
   items: Record<string, unknown>[];
   message?: string;
 }> {
-  const pages: Awaited<ReturnType<typeof callTourApi>>[] = [];
-  for (let pageNo = 1; pageNo <= FESTIVAL_WINDOW_MAX_PAGES; pageNo += 1) {
-    let page: Awaited<ReturnType<typeof callTourApi>>;
-    try {
-      page = await callTourApi(
-        locale,
-        "searchFestival",
-        {
-          eventStartDate,
-          eventEndDate,
-          numOfRows: String(FESTIVAL_WINDOW_PAGE_ROWS),
-          pageNo: String(pageNo),
-        },
-        serviceKey,
-      );
-    } catch (err) {
-      const msg = (err as Error)?.message || "upstream fetch failed";
-      if (pages.some((p) => p?.ok)) break;
-      return { ok: false, items: [], message: msg };
-    }
-    pages.push(page);
-    if (!page.ok) {
-      if (pages.some((p) => p?.ok)) break;
-      return {
-        ok: false,
-        items: [],
-        message: page.message || "searchFestival failed",
-      };
-    }
-    const count = Array.isArray(page.items) ? page.items.length : 0;
-    if (count < FESTIVAL_WINDOW_PAGE_ROWS) break;
+  const fetchRange = (start: string, end: string) =>
+    fetchFestivalWindowPagesForRange(locale, serviceKey, start, end);
+
+  let rangeResult = await fetchRange(eventStartDate, eventEndDate);
+  if (!rangeResult.ok) {
+    return { ok: false, items: [], message: rangeResult.message };
   }
 
-  const anyOk = pages.some((p) => p?.ok);
-  if (!anyOk) {
-    return {
-      ok: false,
-      items: [],
-      message: pages[0]?.message || "searchFestival failed",
-    };
+  let merged = mergeFestivalPages(rangeResult.pages);
+  if (festivalWindowFetchLooksIncomplete(rangeResult.pages, merged)) {
+    const retry = await fetchRange(eventStartDate, eventEndDate);
+    if (retry.ok) {
+      rangeResult = retry;
+      merged = mergeFestivalPages(retry.pages);
+    }
   }
-  return { ok: true, items: mergeFestivalPages(pages) };
+
+  if (festivalWindowFetchLooksIncomplete(rangeResult.pages, merged)) {
+    const chunks = splitFestivalWindowRange(eventStartDate, eventEndDate);
+    if (chunks.length > 1) {
+      const chunkResults = await Promise.all(
+        chunks.map((c) => fetchRange(c.eventStartDate, c.eventEndDate)),
+      );
+      if (chunkResults.some((r) => r.ok)) {
+        merged = mergePagesFromRanges(chunkResults);
+      }
+    }
+  }
+
+  return { ok: true, items: merged };
 }
 
 async function handleFestivalWindow(
