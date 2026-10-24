@@ -15,11 +15,15 @@ import {
 } from "./intro_homepage.mjs";
 import {
   FESTIVAL_WINDOW_ARRANGE,
+  FESTIVAL_WINDOW_MAX_CHUNK_RANGES,
   FESTIVAL_WINDOW_MAX_PAGES,
+  FESTIVAL_WINDOW_MAX_RETRY,
   FESTIVAL_WINDOW_PAGE_ROWS,
   festivalWindowFetchLooksIncomplete,
+  maxFestivalWindowTotalCount,
   mergeFestivalPages,
   splitFestivalWindowRange,
+  unionFestivalItemsByContentId,
 } from "./festival_window.mjs";
 
 const corsHeaders = {
@@ -914,6 +918,19 @@ function mergePagesFromRanges(
   return mergeFestivalPages(allPages);
 }
 
+function totalCountFromRangeResults(
+  primary: FestivalWindowPage[],
+  extras: { ok: boolean; pages: FestivalWindowPage[] }[] = [],
+): number {
+  let max = maxFestivalWindowTotalCount(primary);
+  for (const r of extras) {
+    if (!r.ok) continue;
+    const n = maxFestivalWindowTotalCount(r.pages);
+    if (n > max) max = n;
+  }
+  return max;
+}
+
 async function fetchFestivalWindowLive(
   locale: TourApiLocale,
   serviceKey: string,
@@ -933,23 +950,38 @@ async function fetchFestivalWindowLive(
   }
 
   let merged = mergeFestivalPages(rangeResult.pages);
-  if (festivalWindowFetchLooksIncomplete(rangeResult.pages, merged)) {
+  let extraRangeFetches = 0;
+  const chunkRangeResults: { ok: boolean; pages: FestivalWindowPage[] }[] = [];
+
+  const totalCount = () =>
+    totalCountFromRangeResults(rangeResult.pages, chunkRangeResults);
+
+  const looksIncomplete = () =>
+    festivalWindowFetchLooksIncomplete(merged.length, totalCount());
+
+  while (looksIncomplete() && extraRangeFetches < FESTIVAL_WINDOW_MAX_RETRY) {
+    extraRangeFetches += 1;
     const retry = await fetchRange(eventStartDate, eventEndDate);
-    if (retry.ok) {
-      rangeResult = retry;
-      merged = mergeFestivalPages(retry.pages);
-    }
+    if (!retry.ok) break;
+    rangeResult = retry;
+    merged = unionFestivalItemsByContentId(
+      merged,
+      mergeFestivalPages(retry.pages),
+    );
   }
 
-  if (festivalWindowFetchLooksIncomplete(rangeResult.pages, merged)) {
-    const chunks = splitFestivalWindowRange(eventStartDate, eventEndDate);
+  if (looksIncomplete() && extraRangeFetches <= FESTIVAL_WINDOW_MAX_RETRY) {
+    const chunks = splitFestivalWindowRange(eventStartDate, eventEndDate).slice(
+      0,
+      FESTIVAL_WINDOW_MAX_CHUNK_RANGES,
+    );
     if (chunks.length > 1) {
       const chunkResults = await Promise.all(
         chunks.map((c) => fetchRange(c.eventStartDate, c.eventEndDate)),
       );
-      if (chunkResults.some((r) => r.ok)) {
-        merged = mergePagesFromRanges(chunkResults);
-      }
+      chunkRangeResults.push(...chunkResults);
+      const fromChunks = mergePagesFromRanges(chunkResults);
+      merged = unionFestivalItemsByContentId(merged, fromChunks);
     }
   }
 

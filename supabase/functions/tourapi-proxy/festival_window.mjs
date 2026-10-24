@@ -6,6 +6,12 @@ export const FESTIVAL_WINDOW_ARRANGE = "A";
 export const FESTIVAL_WINDOW_PAGE_ROWS = 500;
 export const FESTIVAL_WINDOW_MAX_PAGES = 12;
 export const FESTIVAL_WINDOW_SPLIT_MONTHS = 2;
+/** Unique rows may be below TourAPI totalCount by this many (dupes / malformed upstream). */
+export const FESTIVAL_WINDOW_TOTAL_COUNT_TOLERANCE = 3;
+/** Extra full-window fetches after the first (retry only). */
+export const FESTIVAL_WINDOW_MAX_RETRY = 1;
+/** Max date-range chunks per recovery pass (each chunk is one paginated fetch). */
+export const FESTIVAL_WINDOW_MAX_CHUNK_RANGES = 6;
 
 /**
  * @param {Array<{ ok?: boolean, items?: unknown[], rawCount?: number }>} pages
@@ -34,18 +40,6 @@ export function mergeFestivalPages(pages) {
 }
 
 /**
- * @param {Array<{ ok?: boolean, items?: unknown[] }>} pages
- */
-export function countRawFestivalPageItems(pages) {
-  let n = 0;
-  for (const p of pages) {
-    if (!p?.ok || !Array.isArray(p.items)) continue;
-    n += p.items.length;
-  }
-  return n;
-}
-
-/**
  * @param {Array<{ ok?: boolean, rawCount?: number }>} pages
  */
 export function maxFestivalWindowTotalCount(pages) {
@@ -59,16 +53,49 @@ export function maxFestivalWindowTotalCount(pages) {
 }
 
 /**
- * @param {Array<{ ok?: boolean, items?: unknown[], rawCount?: number }>} pages
- * @param {unknown[]} mergedItems
+ * @param {unknown} item
  */
-export function festivalWindowFetchLooksIncomplete(pages, mergedItems) {
-  const merged = mergedItems.length;
-  const rawFetched = countRawFestivalPageItems(pages);
-  const totalCount = maxFestivalWindowTotalCount(pages);
-  if (rawFetched > merged) return true;
-  if (totalCount > 0 && merged < totalCount) return true;
-  return false;
+export function isValidFestivalWindowItem(item) {
+  const id = String(item?.contentId || "").trim();
+  return (
+    Boolean(id) &&
+    Boolean(item?.title) &&
+    /^\d{8}$/.test(String(item?.eventStartDate || ""))
+  );
+}
+
+/**
+ * @param {unknown[][]} lists
+ */
+export function unionFestivalItemsByContentId(...lists) {
+  const seen = new Set();
+  const merged = [];
+  for (const list of lists) {
+    if (!Array.isArray(list)) continue;
+    for (const item of list) {
+      const id = String(item?.contentId || "").trim();
+      if (!id || seen.has(id)) continue;
+      if (!isValidFestivalWindowItem(item)) continue;
+      seen.add(id);
+      merged.push(item);
+    }
+  }
+  return merged;
+}
+
+/**
+ * @param {number} uniqueCount — deduped valid items
+ * @param {number} totalCount — TourAPI totalCount (0 = unknown → not incomplete)
+ * @param {number} [tolerance]
+ */
+export function festivalWindowFetchLooksIncomplete(
+  uniqueCount,
+  totalCount,
+  tolerance = FESTIVAL_WINDOW_TOTAL_COUNT_TOLERANCE,
+) {
+  if (!Number.isFinite(totalCount) || totalCount <= 0) return false;
+  const unique = Number(uniqueCount) || 0;
+  return unique + tolerance < totalCount;
 }
 
 /**
