@@ -44,12 +44,59 @@ export function restoreFestivalHubListScrollOffsets(mainEl, tops) {
   });
 }
 
-function runScrollRestore(mainEl, tops) {
-  restoreFestivalHubListScrollOffsets(mainEl, tops);
-  requestAnimationFrame(() => {
+const RESTORE_READY_TIMEOUT_MS = 1000;
+
+function listScrollCanFitTarget(el, targetTop) {
+  if (!(el instanceof HTMLElement)) return true;
+  if (typeof targetTop !== 'number' || targetTop <= 0) return true;
+  const maxTop = Math.max(0, el.scrollHeight - el.clientHeight);
+  return maxTop + 1 >= targetTop;
+}
+
+function hubListScrollTargetsReady(mainEl, tops) {
+  const containers = getFestivalHubListScrollContainers(mainEl);
+  return containers.every((el, i) => listScrollCanFitTarget(el, tops[i]));
+}
+
+function restoreFestivalHubListScrollWhenReady(mainEl, tops) {
+  if (!tops?.length || !(mainEl instanceof HTMLElement)) return;
+
+  const started = performance.now();
+  let ro;
+  let done = false;
+
+  const finish = () => {
+    if (done) return;
+    done = true;
+    ro?.disconnect();
     restoreFestivalHubListScrollOffsets(mainEl, tops);
     requestAnimationFrame(() => restoreFestivalHubListScrollOffsets(mainEl, tops));
-  });
+  };
+
+  const attempt = () => {
+    if (done) return;
+    restoreFestivalHubListScrollOffsets(mainEl, tops);
+    if (hubListScrollTargetsReady(mainEl, tops)) {
+      finish();
+      return;
+    }
+    if (performance.now() - started >= RESTORE_READY_TIMEOUT_MS) {
+      finish();
+      return;
+    }
+    requestAnimationFrame(attempt);
+  };
+
+  if (typeof ResizeObserver !== 'undefined') {
+    ro = new ResizeObserver(() => {
+      if (hubListScrollTargetsReady(mainEl, tops)) finish();
+    });
+    for (const el of getFestivalHubListScrollContainers(mainEl)) {
+      ro.observe(el);
+    }
+  }
+
+  requestAnimationFrame(attempt);
 }
 
 export function scrollFestivalHubListToTop(mainEl) {
@@ -70,5 +117,5 @@ export function scrollFestivalHubListToTop(mainEl) {
 
 export function restoreFestivalHubListScroll(mainEl, tops) {
   if (!tops?.length) return;
-  runScrollRestore(mainEl, tops);
+  restoreFestivalHubListScrollWhenReady(mainEl, tops);
 }

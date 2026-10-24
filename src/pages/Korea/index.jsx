@@ -1008,6 +1008,8 @@ export default function KoreaFestivalHub() {
   const mobileSearchToggleRef = useRef(null);
   const mainScrollRef = useRef(null);
   const pendingHubListScrollRestoreRef = useRef(/** @type {number[] | null} */ (null));
+  const lastHubListScrollOffsetsRef = useRef(/** @type {number[] | null} */ (null));
+  const peakHubListScrollOffsetsRef = useRef(/** @type {number[] | null} */ (null));
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [deepLinkForId, setDeepLinkForId] = useState('');
   const [deepLinkPhase, setDeepLinkPhase] = useState(/** @type {'idle' | 'loading' | 'ok' | 'miss'} */ ('idle'));
@@ -2453,11 +2455,39 @@ export default function KoreaFestivalHub() {
     [festivalId, searchParams, setSearchParams],
   );
 
+  const mergePeakHubListScrollOffsets = useCallback((tops) => {
+    const prev = peakHubListScrollOffsetsRef.current;
+    if (!tops?.length) return prev;
+    if (!prev?.length) {
+      peakHubListScrollOffsetsRef.current = tops;
+      return tops;
+    }
+    const merged = tops.map((top, i) =>
+      Math.max(top, typeof prev[i] === 'number' ? prev[i] : 0),
+    );
+    peakHubListScrollOffsetsRef.current = merged;
+    return merged;
+  }, []);
+
+  const captureHubListScrollForMapOpen = useCallback(() => {
+    const tops = readFestivalHubListScrollOffsets(mainScrollRef.current);
+    lastHubListScrollOffsetsRef.current = tops;
+    const peak = peakHubListScrollOffsetsRef.current;
+    pendingHubListScrollRestoreRef.current =
+      peak?.some((t) => t > 0) ? peak : tops;
+    return pendingHubListScrollRestoreRef.current;
+  }, []);
+
+  const snapshotHubListScrollForOverlay = useCallback(() => {
+    const tops = readFestivalHubListScrollOffsets(mainScrollRef.current);
+    lastHubListScrollOffsetsRef.current = tops;
+    return tops;
+  }, []);
+
   const openPersonal = (tab) => {
     if (personalTab == null) {
-      pendingHubListScrollRestoreRef.current = readFestivalHubListScrollOffsets(
-        mainScrollRef.current,
-      );
+      pendingHubListScrollRestoreRef.current =
+        lastHubListScrollOffsetsRef.current ?? snapshotHubListScrollForOverlay();
     }
     setPersonalTab(tab);
     clearNear();
@@ -2479,9 +2509,13 @@ export default function KoreaFestivalHub() {
   };
 
   const openMap = () => {
-    pendingHubListScrollRestoreRef.current = readFestivalHubListScrollOffsets(
-      mainScrollRef.current,
-    );
+    if (!pendingHubListScrollRestoreRef.current?.length) {
+      const peak = peakHubListScrollOffsetsRef.current;
+      pendingHubListScrollRestoreRef.current =
+        peak?.some((t) => t > 0)
+          ? peak
+          : lastHubListScrollOffsetsRef.current ?? snapshotHubListScrollForOverlay();
+    }
     setMapSessionKey((k) => k + 1);
     setMapFullscreen(false);
     setMapOpen(true);
@@ -2561,6 +2595,8 @@ export default function KoreaFestivalHub() {
     const prev = listFilterScrollKeyRef.current;
     listFilterScrollKeyRef.current = listFilterScrollKey;
     if (prev === listFilterScrollKey) return;
+    peakHubListScrollOffsetsRef.current = null;
+    lastHubListScrollOffsetsRef.current = null;
     scrollFestivalHubListToTop(mainScrollRef.current);
   }, [listFilterScrollKey]);
 
@@ -2570,11 +2606,16 @@ export default function KoreaFestivalHub() {
       setShowScrollTop(false);
       return undefined;
     }
-    const onScroll = () => setShowScrollTop(el.scrollTop > 180);
+    const onScroll = () => {
+      setShowScrollTop(el.scrollTop > 180);
+      const tops = readFestivalHubListScrollOffsets(mainScrollRef.current);
+      lastHubListScrollOffsetsRef.current = tops;
+      mergePeakHubListScrollOffsets(tops);
+    };
     onScroll();
     el.addEventListener('scroll', onScroll, { passive: true });
     return () => el.removeEventListener('scroll', onScroll);
-  }, [mapOpen]);
+  }, [mapOpen, mergePeakHubListScrollOffsets]);
 
   return (
     <div
@@ -3170,6 +3211,9 @@ export default function KoreaFestivalHub() {
                 </button>
                 <button
                   type="button"
+                  onPointerDownCapture={() => {
+                    if (!mapOpen) captureHubListScrollForMapOpen();
+                  }}
                   onClick={() => (mapOpen ? closeMap() : openMap())}
                   aria-label={
                     mapOpen
