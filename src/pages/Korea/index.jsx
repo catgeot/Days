@@ -1008,6 +1008,7 @@ export default function KoreaFestivalHub() {
   const mobileSearchToggleRef = useRef(null);
   const mainScrollRef = useRef(null);
   const pendingHubListScrollRestoreRef = useRef(/** @type {number[] | null} */ (null));
+  const hubListScrollRestoreCancelRef = useRef(/** @type {null | (() => void)} */ (null));
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [deepLinkForId, setDeepLinkForId] = useState('');
   const [deepLinkPhase, setDeepLinkPhase] = useState(/** @type {'idle' | 'loading' | 'ok' | 'miss'} */ ('idle'));
@@ -2467,15 +2468,22 @@ export default function KoreaFestivalHub() {
   };
 
   const restorePendingHubListScroll = useCallback(() => {
+    hubListScrollRestoreCancelRef.current?.();
+    hubListScrollRestoreCancelRef.current = null;
     const tops = pendingHubListScrollRestoreRef.current;
     pendingHubListScrollRestoreRef.current = null;
     if (!tops?.length) return;
-    restoreFestivalHubListScroll(mainScrollRef.current, tops);
+    hubListScrollRestoreCancelRef.current = restoreFestivalHubListScroll(
+      mainScrollRef.current,
+      tops,
+    );
   }, []);
 
   const closePersonal = () => {
     flushSync(() => setPersonalTab(null));
-    restorePendingHubListScroll();
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => restorePendingHubListScroll());
+    });
   };
 
   const openMap = () => {
@@ -2575,6 +2583,14 @@ export default function KoreaFestivalHub() {
     el.addEventListener('scroll', onScroll, { passive: true });
     return () => el.removeEventListener('scroll', onScroll);
   }, [mapOpen]);
+
+  useEffect(
+    () => () => {
+      hubListScrollRestoreCancelRef.current?.();
+      hubListScrollRestoreCancelRef.current = null;
+    },
+    [],
+  );
 
   return (
     <div

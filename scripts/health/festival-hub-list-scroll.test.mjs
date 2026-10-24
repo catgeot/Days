@@ -15,6 +15,10 @@ test('hub list scroll targets main vs md list pane', () => {
   assert.match(scrollJs, /data-festival-list-scroll/);
   assert.match(scrollJs, /min-width: 768px/);
   assert.match(scrollJs, /behavior: 'instant'/);
+  assert.match(scrollJs, /ResizeObserver/);
+  assert.match(scrollJs, /RESTORE_READY_TIMEOUT_MS/);
+  assert.match(scrollJs, /touchstart/);
+  assert.doesNotMatch(scrollJs, /mergeFestivalHubListScrollForMapOpen/);
 });
 
 test('Korea hub resets list scroll on filter key change only', () => {
@@ -27,4 +31,8 @@ test('Korea hub resets list scroll on filter key change only', () => {
   assert.match(indexJs, /useLayoutEffect/);
   assert.match(indexJs, /data-festival-list-scroll/);
   assert.doesNotMatch(indexJs, /listFilterScrollKey, mapOpen/);
+  assert.match(indexJs, /readFestivalHubListScrollOffsets/);
+  assert.doesNotMatch(indexJs, /mapOpenScrollCaptureRef/);
+  assert.doesNotMatch(indexJs, /peakHubListScrollOffsetsRef/);
+  assert.doesNotMatch(indexJs, /lastHubListScrollOffsetsRef/);
 });

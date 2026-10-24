@@ -32,7 +32,7 @@ const DAEGU_ITEMS = [
   },
 ];
 
-const FIXTURE = [...gwangjuItems(28), ...DAEGU_ITEMS];
+const FIXTURE = [...gwangjuItems(72), ...DAEGU_ITEMS];
 
 async function dismissLocHint(page) {
   const close = page.getByRole('button', { name: /^닫기$/ }).first();
@@ -118,17 +118,19 @@ test.describe('Korea festival region chip scroll reset', () => {
     await expect(firstCard).toBeInViewport({ ratio: 0.25 });
   });
 
-  test('map and favorites close keep list scroll position', async ({ page }) => {
+  test('map close keeps deep list scroll (WebKit 390, tall fixture)', async ({ page }) => {
     const main = page.locator('main');
-    await main.evaluate((el) => {
-      el.scrollTop = el.scrollHeight;
-    });
+    const targetTop = 2214;
+    await main.evaluate((el, top) => {
+      el.scrollTop = top;
+      if (el.scrollTop < top) el.scrollTop = el.scrollHeight;
+      el.dispatchEvent(new Event('scroll', { bubbles: true }));
+    }, targetTop);
     const deepTop = await main.evaluate((el) => el.scrollTop);
-    expect(deepTop).toBeGreaterThan(200);
+    expect(deepTop).toBeGreaterThan(2000);
 
-    await page
-      .getByRole('button', { name: '지도로 위치·동선 보기' })
-      .evaluate((el) => el.click());
+    const mapOpenBtn = page.getByRole('button', { name: '지도로 위치·동선 보기' });
+    await mapOpenBtn.evaluate((el) => el.click());
     await expect(page.getByRole('button', { name: /지도 닫기|목록으로/ }).first()).toBeVisible({
       timeout: 10_000,
     });
@@ -139,7 +141,99 @@ test.describe('Korea festival region chip scroll reset', () => {
 
     await expect
       .poll(async () => main.evaluate((el) => el.scrollTop), { timeout: 8_000 })
-      .toBeGreaterThan(200);
+      .toBeGreaterThan(2000);
+    const afterMap = await main.evaluate((el) => el.scrollTop);
+    expect(afterMap).toBeGreaterThanOrEqual(deepTop - 24);
+
+    await page.waitForTimeout(300);
+    const after300 = await main.evaluate((el) => el.scrollTop);
+    expect(after300).toBeGreaterThan(2000);
+
+    await page.waitForTimeout(1200);
+    const after1500 = await main.evaluate((el) => el.scrollTop);
+    expect(after1500).toBeGreaterThan(2000);
+  });
+
+  test('map close keeps top after flick from deep scroll to 0', async ({ page }) => {
+    const main = page.locator('main');
+    await main.evaluate((el) => {
+      el.scrollTop = 2500;
+      if (el.scrollTop < 2000) el.scrollTop = el.scrollHeight;
+    });
+    await main.evaluate((el) => {
+      el.scrollTop = 0;
+    });
+    expect(await main.evaluate((el) => el.scrollTop)).toBeLessThan(8);
+
+    await page.getByRole('button', { name: '지도로 위치·동선 보기' }).click();
+    await expect(page.getByRole('button', { name: /지도 닫기|목록으로/ }).first()).toBeVisible({
+      timeout: 10_000,
+    });
+    await page.getByRole('button', { name: /지도 닫기|목록으로/ }).first().click();
+
+    await expect
+      .poll(async () => main.evaluate((el) => el.scrollTop), { timeout: 8_000 })
+      .toBeLessThan(8);
+    await page.waitForTimeout(1500);
+    expect(await main.evaluate((el) => el.scrollTop)).toBeLessThan(8);
+  });
+
+  test('favorites close keeps top after flick from deep scroll to 0', async ({ page }) => {
+    const main = page.locator('main');
+    await main.evaluate((el) => {
+      el.scrollTop = 2500;
+      if (el.scrollTop < 2000) el.scrollTop = el.scrollHeight;
+    });
+    await main.evaluate((el) => {
+      el.scrollTop = 0;
+    });
+    expect(await main.evaluate((el) => el.scrollTop)).toBeLessThan(8);
+
+    const favToggle = page.getByRole('button', { name: '즐겨찾기·본 항목' });
+    await favToggle.click();
+    await expect(favToggle).toHaveAttribute('aria-pressed', 'true');
+    await favToggle.click();
+    await expect(favToggle).toHaveAttribute('aria-pressed', 'false');
+
+    await expect
+      .poll(async () => main.evaluate((el) => el.scrollTop), { timeout: 8_000 })
+      .toBeLessThan(8);
+  });
+
+  test('map open via keyboard Enter keeps list scroll', async ({ page }) => {
+    const main = page.locator('main');
+    const targetTop = 1800;
+    await main.evaluate((el, top) => {
+      el.scrollTop = top;
+      if (el.scrollTop < top - 50) el.scrollTop = el.scrollHeight;
+      el.dispatchEvent(new Event('scroll', { bubbles: true }));
+    }, targetTop);
+    const deepTop = await main.evaluate((el) => el.scrollTop);
+    expect(deepTop).toBeGreaterThan(1200);
+
+    const mapBtn = page.getByRole('button', { name: '지도로 위치·동선 보기' });
+    await mapBtn.evaluate((el) => el.focus({ preventScroll: true }));
+    await page.keyboard.press('Enter');
+    await expect(page.getByRole('button', { name: /지도 닫기|목록으로/ }).first()).toBeVisible({
+      timeout: 10_000,
+    });
+    await page.getByRole('button', { name: /지도 닫기|목록으로/ }).first().click();
+
+    await expect
+      .poll(async () => main.evaluate((el) => el.scrollTop), { timeout: 8_000 })
+      .toBeGreaterThan(1200);
+    const afterMap = await main.evaluate((el) => el.scrollTop);
+    expect(afterMap).toBeGreaterThanOrEqual(deepTop - 48);
+  });
+
+  test('favorites close keeps list scroll position', async ({ page }) => {
+    const main = page.locator('main');
+    await main.evaluate((el) => {
+      el.scrollTop = 800;
+    });
+    const deepTop = await main.evaluate((el) => el.scrollTop);
+    expect(deepTop).toBeGreaterThan(600);
+    expect(deepTop).toBeLessThan(950);
 
     const favToggle = page.getByRole('button', { name: '즐겨찾기·본 항목' });
     await favToggle.evaluate((el) => el.click());
@@ -149,6 +243,6 @@ test.describe('Korea festival region chip scroll reset', () => {
 
     await expect
       .poll(async () => main.evaluate((el) => el.scrollTop), { timeout: 8_000 })
-      .toBeGreaterThan(200);
+      .toBeGreaterThan(deepTop - 48);
   });
 });
