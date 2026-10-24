@@ -44,7 +44,32 @@ export function restoreFestivalHubListScrollOffsets(mainEl, tops) {
   });
 }
 
+/**
+ * Click-to-open map can zero scroll before openMap runs; keep pointerdown/keydown capture when live read is near top.
+ */
+export function mergeFestivalHubListScrollForMapOpen(atOpen, atCapture) {
+  if (!atCapture?.length) return atOpen ?? [];
+  if (!atOpen?.length) return atCapture;
+  return atOpen.map((top, i) => {
+    const captured = atCapture[i];
+    if (typeof captured !== 'number') return top;
+    if (typeof top !== 'number') return captured;
+    if (top < 8 && captured > 24) return captured;
+    if (captured > top + 48) return captured;
+    return top;
+  });
+}
+
 const RESTORE_READY_TIMEOUT_MS = 1000;
+
+function isInteractiveEventTarget(target) {
+  if (!(target instanceof Element)) return false;
+  return Boolean(
+    target.closest(
+      'button, a, input, textarea, select, [role="button"], [contenteditable="true"]',
+    ),
+  );
+}
 
 function listScrollCanFitTarget(el, targetTop) {
   if (!(el instanceof HTMLElement)) return true;
@@ -59,36 +84,99 @@ function hubListScrollTargetsReady(mainEl, tops) {
 }
 
 function restoreFestivalHubListScrollWhenReady(mainEl, tops) {
-  if (!tops?.length || !(mainEl instanceof HTMLElement)) return;
+  if (!tops?.length || !(mainEl instanceof HTMLElement)) return () => {};
 
   const started = performance.now();
   let ro;
   let done = false;
+  let applying = false;
+  let ignoreScrollUntil = 0;
+
+  let userIntentListenersActive = false;
+
+  const removeListeners = () => {
+    for (const el of getFestivalHubListScrollContainers(mainEl)) {
+      el.removeEventListener('scroll', onScroll, true);
+    }
+    if (typeof window !== 'undefined' && userIntentListenersActive) {
+      window.removeEventListener('wheel', onUserIntent, true);
+      window.removeEventListener('touchstart', onUserIntent, true);
+      window.removeEventListener('pointerdown', onUserIntent, true);
+      window.removeEventListener('keydown', onUserIntent, true);
+      userIntentListenersActive = false;
+    }
+  };
+
+  const enableUserIntentListeners = () => {
+    if (userIntentListenersActive || done || typeof window === 'undefined') return;
+    userIntentListenersActive = true;
+    window.addEventListener('wheel', onUserIntent, { capture: true, passive: true });
+    window.addEventListener('touchstart', onUserIntent, { capture: true, passive: true });
+    window.addEventListener('pointerdown', onUserIntent, { capture: true, passive: true });
+    window.addEventListener('keydown', onUserIntent, { capture: true, passive: true });
+  };
+
+  const abort = () => {
+    if (done) return;
+    done = true;
+    ro?.disconnect();
+    removeListeners();
+  };
 
   const finish = () => {
     if (done) return;
     done = true;
     ro?.disconnect();
+    removeListeners();
+    applyRestore();
+    requestAnimationFrame(() => applyRestore());
+  };
+
+  const onUserIntent = (event) => {
+    if (applying) return;
+    if (event?.type === 'pointerdown' || event?.type === 'touchstart') {
+      if (isInteractiveEventTarget(event.target)) return;
+    }
+    abort();
+  };
+
+  const onScroll = () => {
+    if (applying || performance.now() < ignoreScrollUntil) return;
+    abort();
+  };
+
+  const applyRestore = () => {
+    applying = true;
+    ignoreScrollUntil = performance.now() + 48;
     restoreFestivalHubListScrollOffsets(mainEl, tops);
-    requestAnimationFrame(() => restoreFestivalHubListScrollOffsets(mainEl, tops));
+    requestAnimationFrame(() => {
+      applying = false;
+    });
   };
 
   const attempt = () => {
     if (done) return;
-    restoreFestivalHubListScrollOffsets(mainEl, tops);
     if (hubListScrollTargetsReady(mainEl, tops)) {
       finish();
       return;
     }
     if (performance.now() - started >= RESTORE_READY_TIMEOUT_MS) {
-      finish();
+      abort();
       return;
     }
     requestAnimationFrame(attempt);
   };
 
+  for (const el of getFestivalHubListScrollContainers(mainEl)) {
+    el.addEventListener('scroll', onScroll, { capture: true, passive: true });
+  }
+  requestAnimationFrame(() => {
+    requestAnimationFrame(enableUserIntentListeners);
+  });
+
   if (typeof ResizeObserver !== 'undefined') {
     ro = new ResizeObserver(() => {
+      if (done) return;
       if (hubListScrollTargetsReady(mainEl, tops)) finish();
     });
     for (const el of getFestivalHubListScrollContainers(mainEl)) {
@@ -97,6 +185,8 @@ function restoreFestivalHubListScrollWhenReady(mainEl, tops) {
   }
 
   requestAnimationFrame(attempt);
+
+  return abort;
 }
 
 export function scrollFestivalHubListToTop(mainEl) {
@@ -115,7 +205,8 @@ export function scrollFestivalHubListToTop(mainEl) {
   });
 }
 
+/** @returns {() => void} cancel in-flight restore (user input or unmount) */
 export function restoreFestivalHubListScroll(mainEl, tops) {
-  if (!tops?.length) return;
-  restoreFestivalHubListScrollWhenReady(mainEl, tops);
+  if (!tops?.length) return () => {};
+  return restoreFestivalHubListScrollWhenReady(mainEl, tops);
 }
