@@ -1,6 +1,7 @@
 import React, {
   useCallback,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -57,6 +58,11 @@ import {
 import FestivalDateSheet from './FestivalDateSheet';
 import { isGateoFestivalDateChipEnabled, isGateoFestivalRoadEnabled } from '../../shared/gateoFeatureFlags';
 import { defaultFestivalHubTimeTab } from './festivalHubDefaultTimeTab.js';
+import {
+  readFestivalHubListScrollOffsets,
+  restoreFestivalHubListScroll,
+  scrollFestivalHubListToTop,
+} from './festivalHubListScroll.js';
 import { buildTasteTags, filterByTaste, tasteLabel } from './festivalTasteTags';
 import {
   buildCityTags,
@@ -1001,6 +1007,7 @@ export default function KoreaFestivalHub() {
   const mobileSearchRootRef = useRef(null);
   const mobileSearchToggleRef = useRef(null);
   const mainScrollRef = useRef(null);
+  const pendingHubListScrollRestoreRef = useRef(/** @type {number[] | null} */ (null));
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [deepLinkForId, setDeepLinkForId] = useState('');
   const [deepLinkPhase, setDeepLinkPhase] = useState(/** @type {'idle' | 'loading' | 'ok' | 'miss'} */ ('idle'));
@@ -2447,6 +2454,11 @@ export default function KoreaFestivalHub() {
   );
 
   const openPersonal = (tab) => {
+    if (personalTab == null) {
+      pendingHubListScrollRestoreRef.current = readFestivalHubListScrollOffsets(
+        mainScrollRef.current,
+      );
+    }
     setPersonalTab(tab);
     clearNear();
     clearFestivalFromUrl();
@@ -2454,22 +2466,31 @@ export default function KoreaFestivalHub() {
     else setViewedList(loadViewed());
   };
 
+  const restorePendingHubListScroll = useCallback(() => {
+    const tops = pendingHubListScrollRestoreRef.current;
+    pendingHubListScrollRestoreRef.current = null;
+    if (!tops?.length) return;
+    restoreFestivalHubListScroll(mainScrollRef.current, tops);
+  }, []);
+
   const closePersonal = () => {
-    setPersonalTab(null);
+    flushSync(() => setPersonalTab(null));
+    restorePendingHubListScroll();
   };
 
   const openMap = () => {
+    pendingHubListScrollRestoreRef.current = readFestivalHubListScrollOffsets(
+      mainScrollRef.current,
+    );
     setMapSessionKey((k) => k + 1);
     setMapFullscreen(false);
     setMapOpen(true);
-    requestAnimationFrame(() => {
-      mainScrollRef.current?.scrollTo({ top: 0 });
-    });
   };
 
   const closeMap = () => {
     setMapFullscreen(false);
-    setMapOpen(false);
+    flushSync(() => setMapOpen(false));
+    restorePendingHubListScroll();
   };
 
   const toggleMapFullscreen = () => {
@@ -2515,6 +2536,33 @@ export default function KoreaFestivalHub() {
       { enableHighAccuracy: false, timeout: 15_000, maximumAge: 120_000 },
     );
   };
+
+  const listFilterScrollKey = useMemo(() => {
+    const rangeStart = customRange?.start ?? '';
+    const rangeEnd = customRange?.end ?? '';
+    const nearKey = nearActive
+      ? `on:${nearLabel}:${nearIds?.length ?? 0}`
+      : 'off';
+    return `${areaCode}|${cityName}|${timeTab}|${tasteId}|${rangeStart}|${rangeEnd}|${searchFilter}|${nearKey}`;
+  }, [
+    areaCode,
+    cityName,
+    timeTab,
+    tasteId,
+    customRange,
+    searchFilter,
+    nearActive,
+    nearLabel,
+    nearIds,
+  ]);
+
+  const listFilterScrollKeyRef = useRef(listFilterScrollKey);
+  useLayoutEffect(() => {
+    const prev = listFilterScrollKeyRef.current;
+    listFilterScrollKeyRef.current = listFilterScrollKey;
+    if (prev === listFilterScrollKey) return;
+    scrollFestivalHubListToTop(mainScrollRef.current);
+  }, [listFilterScrollKey]);
 
   useEffect(() => {
     const el = mainScrollRef.current;
@@ -3255,6 +3303,7 @@ export default function KoreaFestivalHub() {
               }`}
             >
               <div
+                data-festival-list-scroll=""
                 className={`${listLarge ? 'space-y-3' : 'space-y-2'} page-scroll-end-pad px-3 pt-3 ${
                   mapSplitActive
                     ? 'hidden lg:block lg:custom-scrollbar lg:min-h-0 lg:w-[min(26rem,38%)] lg:shrink-0 lg:overflow-y-auto lg:border-r lg:border-stone-200'
