@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AlertCircle, CheckCircle2, ExternalLink, Plane, Car, Bed } from 'lucide-react';
 import MrtTimelineAction from './MrtTimelineAction';
@@ -10,6 +10,9 @@ import {
 import { getFlightDestinationSearchHint } from '../../../../../utils/rentalAirportMatch.js';
 import { plannerCaption, plannerMicroLabel } from '../readableText';
 import { scrollPlannerFlightSearchForm } from '../../../../../utils/placePlannerFocus.js';
+import ToolkitFreshnessBadge from './ToolkitFreshnessBadge.jsx';
+import ToolkitReportSheet from './ToolkitReportSheet.jsx';
+import { resolveToolkitSectionCheckedIso } from '../../../../../data/toolkitFreshness/policy.js';
 
 const PreTravelChecklist = ({
     items,
@@ -18,8 +21,16 @@ const PreTravelChecklist = ({
     essentialGuide,
     eventTripWindow,
     scrollContainerRef = null,
+    toolkitFreshnessEnabled = false,
+    sectionMeta = null,
+    toolkitUpdatedAt = null,
+    placeId = null,
 }) => {
     const { t } = useTranslation();
+    const [reportOpen, setReportOpen] = useState(false);
+    const checkedIso = toolkitFreshnessEnabled
+        ? resolveToolkitSectionCheckedIso('pre_travel', sectionMeta?.pre_travel, toolkitUpdatedAt)
+        : null;
     const tripcomHotelOverride = getTripcomHotelOverrideUrlForLocation(location);
     const mrtQuery = t('place.planner.mrtQuery.stayWithPlace', { place: locationName || '' });
     const linkTarget = getPartnerLinkTarget();
@@ -31,10 +42,22 @@ const PreTravelChecklist = ({
 
     return (
         <div className="bg-amber-50/80 border border-amber-200 rounded-2xl p-5 mb-5 shadow-sm flex flex-col">
-            <h3 className="font-bold text-amber-900 mb-4 flex items-center gap-2 text-sm md:text-base">
-                <AlertCircle className="text-amber-600 shrink-0" size={18} />
-                {t('place.planner.preTravel.title')}
-            </h3>
+            {toolkitFreshnessEnabled ? (
+                <div className="flex items-start justify-between gap-2 mb-4">
+                    <h3 className="font-bold text-amber-900 flex items-center gap-2 text-sm md:text-base">
+                        <AlertCircle className="text-amber-600 shrink-0" size={18} />
+                        {t('place.planner.preTravel.title')}
+                    </h3>
+                    {checkedIso ? (
+                        <ToolkitFreshnessBadge section="pre_travel" checkedIso={checkedIso} />
+                    ) : null}
+                </div>
+            ) : (
+                <h3 className="font-bold text-amber-900 mb-4 flex items-center gap-2 text-sm md:text-base">
+                    <AlertCircle className="text-amber-600 shrink-0" size={18} />
+                    {t('place.planner.preTravel.title')}
+                </h3>
+            )}
 
             <div className="flex-1">
                 {items && items.length > 0 && (
@@ -164,6 +187,26 @@ const PreTravelChecklist = ({
                     </div>
                 </a>
             </div>
+            {toolkitFreshnessEnabled && placeId ? (
+                <>
+                    <button
+                        type="button"
+                        data-toolkit-report-trigger=""
+                        data-toolkit-section="pre_travel"
+                        onClick={() => setReportOpen(true)}
+                        className="mt-4 self-start text-xs font-medium border border-amber-200 rounded-lg px-3 py-1.5 text-amber-900/80 hover:bg-white/60 transition-colors"
+                    >
+                        {t('place.planner.toolkitFreshness.reportCta')}
+                    </button>
+                    <ToolkitReportSheet
+                        open={reportOpen}
+                        onClose={() => setReportOpen(false)}
+                        placeId={placeId}
+                        section="pre_travel"
+                        sectionTitle={t('place.planner.preTravel.title')}
+                    />
+                </>
+            ) : null}
         </div>
     );
 };

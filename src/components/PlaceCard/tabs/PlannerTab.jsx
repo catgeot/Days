@@ -563,6 +563,7 @@ const PlannerTab = ({
                             essentialGuide={guideData}
                             eventTripWindow={eventTripWindow}
                             scrollContainerRef={scrollContainerRef}
+                            {...toolkitFreshnessCardProps}
                         />
                         {(guideData?.journey_timeline?.length ?? 0) > 0 ? (
                             <JourneyTimeline
