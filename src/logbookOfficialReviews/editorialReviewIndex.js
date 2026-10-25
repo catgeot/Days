@@ -2,7 +2,7 @@ import { normalizePersonaLabel } from '../utils/placeReviewEditorial.js';
 import { LOGBOOK_OFFICIAL_REVIEWER_DROPDOWN_ORDER } from './constants.js';
 
 export const EDITORIAL_REVIEW_INDEX_SELECT =
-  'id, place_slug, place_name, persona_label, content, images, created_at, is_public';
+  'id, place_slug, place_name, persona_label, content, images, content_blocks, disclosure, created_at, is_public';
 
 /**
  * @param {import('@supabase/supabase-js').SupabaseClient} client

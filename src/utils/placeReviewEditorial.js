@@ -58,3 +58,14 @@ export function formatGateoReviewerBadge(personaLabel) {
   const label = normalizePersonaLabel(personaLabel);
   return label ? `${BADGE_PREFIX}${label}` : 'GATEO 리뷰어';
 }
+
+/** Matches production `place_reviews.disclosure` for editorial rows when the column is empty. */
+export const PLACE_EDITORIAL_REVIEW_DISCLOSURE_FALLBACK_KO =
+  'GATEO 편집 리뷰 · AI 보조 작성 · 실제 방문 후기가 아닙니다.';
+
+export function resolveEditorialReviewDisclosure(review) {
+  const custom = String(review?.disclosure ?? '').trim();
+  if (custom) return custom;
+  if (review?.is_editorial === false) return '';
+  return PLACE_EDITORIAL_REVIEW_DISCLOSURE_FALLBACK_KO;
+}

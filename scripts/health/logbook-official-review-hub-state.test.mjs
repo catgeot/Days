@@ -10,6 +10,10 @@ import {
   snapshotLogbookOfficialReviewHubForBack,
 } from '../../src/utils/logbookOfficialReviewHubState.js';
 import { buildLogbookOfficialReviewHref } from '../../src/utils/logbookOfficialReviewHubRoutes.js';
+import {
+  PLACE_EDITORIAL_REVIEW_DISCLOSURE_FALLBACK_KO,
+  resolveEditorialReviewDisclosure,
+} from '../../src/utils/placeReviewEditorial.js';
 
 const healthRoot = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 
@@ -48,6 +52,14 @@ test('hub card links open in-logbook review URL', () => {
   assert.match(src, /buildLogbookOfficialReviewHref\(review\.id\)/);
   assert.match(src, /snapshotLogbookOfficialReviewHubForBack/);
   assert.match(src, /min-h-11/);
+});
+
+test('resolveEditorialReviewDisclosure uses DB text or production fallback', () => {
+  assert.equal(resolveEditorialReviewDisclosure({ disclosure: '  custom  ' }), 'custom');
+  assert.equal(
+    resolveEditorialReviewDisclosure({ is_editorial: true }),
+    PLACE_EDITORIAL_REVIEW_DISCLOSURE_FALLBACK_KO,
+  );
 });
 
 test('buildLogbookOfficialReviewHref keeps tab=public on /blog', () => {

@@ -147,8 +147,18 @@ const LogbookOfficialReviewHubCard = () => {
   const panelId = useId();
   const navigationType = useNavigationType();
   const restoredBackRef = useRef(false);
-  const [expanded, setExpanded] = useState(false);
-  const [visibleCount, setVisibleCount] = useState(LOGBOOK_OFFICIAL_REVIEW_HUB_PAGE_SIZE);
+  const [expanded, setExpanded] = useState(() => {
+    const back = readLogbookOfficialReviewHubBackState(navigationType);
+    return Boolean(back?.expanded);
+  });
+  const [visibleCount, setVisibleCount] = useState(() => {
+    const back = readLogbookOfficialReviewHubBackState(navigationType);
+    const fromBack = Number(back?.visibleCount);
+    if (Number.isFinite(fromBack) && fromBack > 0) {
+      return Math.max(fromBack, LOGBOOK_OFFICIAL_REVIEW_HUB_PAGE_SIZE);
+    }
+    return LOGBOOK_OFFICIAL_REVIEW_HUB_PAGE_SIZE;
+  });
   const { enabled, rows, isLoading, loadFailed, totalCount, retry } = useLogbookOfficialReviewHub();
 
   const visibleRows = useMemo(() => rows.slice(0, visibleCount), [rows, visibleCount]);
@@ -225,7 +235,7 @@ const LogbookOfficialReviewHubCard = () => {
     return null;
   }
 
-  if (isLoading && totalCount === 0) {
+  if (isLoading && totalCount === 0 && !expanded) {
     return null;
   }
 
@@ -254,6 +264,11 @@ const LogbookOfficialReviewHubCard = () => {
           data-testid="logbook-official-review-hub-panel"
         >
           <ul className="divide-y divide-gray-100">
+            {isLoading && visibleRows.length === 0 ? (
+              <li className="py-6 text-center text-sm text-gray-500" aria-busy="true">
+                불러오는 중…
+              </li>
+            ) : null}
             {visibleRows.map((review) => {
               const slug = String(review.place_slug || '').trim();
               const href = buildLogbookOfficialReviewHref(review.id);

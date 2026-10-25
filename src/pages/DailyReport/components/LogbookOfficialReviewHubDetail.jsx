@@ -1,16 +1,24 @@
 import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
-import { EditorialReviewText } from '../../../components/PlaceCard/tabs/EditorialReviewText.jsx';
+import { LogbookEditorialReviewBody } from '../../../logbookOfficialReviews/LogbookEditorialReviewBody.jsx';
 import { LOGBOOK_OFFICIAL_REVIEW_CARD_TITLE } from '../../../logbookOfficialReviews/constants.js';
 import { useLogbookOfficialReviewHub } from '../../../logbookOfficialReviews/useLogbookOfficialReviewHub.js';
 import { formatLogbookDisplayDate } from '../../../utils/logbookDisplayDate';
 import { formatGateoReviewerBadge } from '../../../utils/placeReviewEditorial';
-import {
-  getGalleryImageEntries,
-  resolveReviewImageSrc,
-} from '../../../utils/placeReviewContentBlocks.js';
 import { buildPlaceReviewsHref } from '../../../utils/placeReviewFocus.js';
+
+function PlaceCardCta({ href }) {
+  return (
+    <Link
+      to={href}
+      className="inline-flex min-h-11 w-full items-center justify-center rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-indigo-700 transition-colors"
+      data-testid="logbook-official-review-hub-go-place-card"
+    >
+      여행지 카드로 가기
+    </Link>
+  );
+}
 
 const LogbookOfficialReviewHubDetail = ({ reviewId }) => {
   const { rows, isLoading } = useLogbookOfficialReviewHub();
@@ -25,11 +33,11 @@ const LogbookOfficialReviewHubDetail = ({ reviewId }) => {
 
   const slug = String(review?.place_slug || '').trim();
   const placePath = slug ? `/place/${slug}` : '';
-  const placeCardHref = placePath ? buildPlaceReviewsHref(placePath, review?.id) : '';
+  const placeCardHref = placePath && review?.id ? buildPlaceReviewsHref(placePath, review.id) : '';
 
   return (
     <section
-      className="mb-6 w-full min-w-0 max-w-full box-border md:max-w-[min(80rem,calc(100vw-16rem-3rem))] overflow-x-hidden rounded-2xl border border-indigo-100 bg-white shadow-sm"
+      className="relative mb-6 w-full min-w-0 max-w-full box-border md:max-w-[min(80rem,calc(100vw-16rem-3rem))] overflow-x-hidden rounded-2xl border border-indigo-100 bg-white shadow-sm"
       aria-label={LOGBOOK_OFFICIAL_REVIEW_CARD_TITLE}
       data-testid="logbook-official-review-hub-detail"
       data-hub-detail-review-id={id}
@@ -47,7 +55,7 @@ const LogbookOfficialReviewHubDetail = ({ reviewId }) => {
         <span className="text-sm font-bold text-gray-900 truncate">GATEO 리뷰어 리뷰</span>
       </div>
 
-      <div className="px-4 py-4 sm:px-5">
+      <div className="px-4 py-4 sm:px-5 pb-24">
         {isLoading && !review ? (
           <p className="text-sm text-gray-500">불러오는 중…</p>
         ) : null}
@@ -72,44 +80,21 @@ const LogbookOfficialReviewHubDetail = ({ reviewId }) => {
                 </span>
               ) : null}
             </div>
-            {review.content ? (
-              <EditorialReviewText
-                text={review.content}
-                className="text-sm text-gray-800 leading-relaxed"
-              />
-            ) : null}
-            {Array.isArray(review.images) && review.images.length > 0 ? (
-              <div className="mt-4 grid grid-cols-2 gap-2">
-                {getGalleryImageEntries(review.images, review.content_blocks).map(({ img, key }) => {
-                  const src = resolveReviewImageSrc(img);
-                  if (!src) return null;
-                  return (
-                    <img
-                      key={key}
-                      src={src}
-                      alt=""
-                      className="w-full rounded-lg object-cover aspect-[4/3] bg-gray-100"
-                      loading="lazy"
-                      decoding="async"
-                    />
-                  );
-                })}
-              </div>
-            ) : null}
-            {placeCardHref ? (
-              <div className="mt-6 pt-4 border-t border-gray-100">
-                <Link
-                  to={placeCardHref}
-                  className="inline-flex min-h-11 w-full items-center justify-center rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-indigo-700 transition-colors"
-                  data-testid="logbook-official-review-hub-go-place-card"
-                >
-                  여행지 카드로 가기
-                </Link>
-              </div>
-            ) : null}
+            <LogbookEditorialReviewBody review={review} />
           </>
         ) : null}
       </div>
+
+      {placeCardHref ? (
+        <div
+          className="pointer-events-none fixed inset-x-0 bottom-0 z-40 px-4 pb-4 pt-2"
+          data-testid="logbook-official-review-hub-go-place-card-sticky"
+        >
+          <div className="pointer-events-auto mx-auto w-full max-w-[min(80rem,calc(100vw-2rem))] rounded-xl border border-gray-200 bg-white/95 p-3 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] backdrop-blur-sm">
+            <PlaceCardCta href={placeCardHref} />
+          </div>
+        </div>
+      ) : null}
     </section>
   );
 };
