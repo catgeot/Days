@@ -7,6 +7,14 @@ const backRestoreLive = new Map();
 /** Lightbox / modal overlays that unmount or reflow the scroll container. */
 const overlayScrollByKey = new Map();
 
+/** Clears in-memory gallery scroll state (health tests only — not for production). */
+export function resetPlaceGalleryScrollMemoryForTests() {
+  tops.clear();
+  backTops.clear();
+  backRestoreLive.clear();
+  overlayScrollByKey.clear();
+}
+
 function isGalleryScrollAtTop(el) {
   const liveTop = Number(el?.scrollTop);
   return Number.isFinite(liveTop) && liveTop <= 8;
@@ -146,9 +154,9 @@ function readGalleryScrollForBackSnapshot(el, placeKey) {
   const attrTop = Number(el?.getAttribute?.('data-gallery-last-scroll'));
   const attr = Number.isFinite(attrTop) && attrTop > 0 ? attrTop : 0;
   if (live <= 8) {
-    if (attr > 0 && (remembered <= 8 || attr <= remembered)) return attr;
-    if (remembered > 0) return remembered;
-    return live;
+    if (remembered <= 8) return live;
+    if (attr > 0 && attr < remembered) return attr;
+    return remembered;
   }
   return Math.max(live, remembered, attr);
 }

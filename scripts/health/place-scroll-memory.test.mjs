@@ -13,9 +13,14 @@ import {
   rememberPlaceGalleryScroll,
   consumeScrollAfterOverlay,
   scheduleOneGalleryScrollRealignAfterImages,
+  resetPlaceGalleryScrollMemoryForTests,
   snapshotGalleryScrollForPlaceBack,
   snapshotScrollBeforeOverlay,
 } from '../../src/components/PlaceCard/common/placeScrollMemory.js';
+
+test.beforeEach(() => {
+  resetPlaceGalleryScrollMemoryForTests();
+});
 
 function withGalleryScrollDom(scrollTop) {
   const dom = new JSDOM('<!DOCTYPE html><html><body></body></html>', {
@@ -49,8 +54,8 @@ test('back to a place restores its gallery scroll and a fresh open does not', ()
 test('snapshotGalleryScrollForPlaceBack uses data-gallery-last-scroll when live scrollTop was zeroed', () => {
   const dom = withGalleryScrollDom(0);
   const el = dom.window.document.querySelector('[data-place-gallery-scroll]');
-  el.setAttribute('data-gallery-last-scroll', '1500');
   rememberPlaceGalleryScroll('cairo', 2000);
+  el.setAttribute('data-gallery-last-scroll', '1500');
   snapshotGalleryScrollForPlaceBack('cairo');
   assert.equal(peekGalleryScrollForPlaceBack('cairo'), 1500);
   dom.window.close();
