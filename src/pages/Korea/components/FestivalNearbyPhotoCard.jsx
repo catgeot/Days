@@ -91,11 +91,11 @@ export default function FestivalNearbyPhotoCard({
                 {category}
               </span>
             ) : null}
-            <span className="block text-[13px] font-bold leading-snug text-stone-900 line-clamp-2 break-words">
+            <span className="block max-h-[2.65rem] text-[13px] font-bold leading-[1.3] text-stone-900 line-clamp-2 break-words overflow-hidden">
               {title}
             </span>
             {metaLine ? (
-              <span className="mt-0.5 block text-[10px] leading-snug text-stone-600 line-clamp-1 break-keep tabular-nums">
+              <span className="mt-0.5 block text-[10px] leading-[1.25] text-stone-600 line-clamp-1 break-keep tabular-nums overflow-hidden">
                 {metaLine}
               </span>
             ) : null}
@@ -136,7 +136,7 @@ export default function FestivalNearbyPhotoCard({
             </span>
           </div>
           {metaLine ? (
-            <p className="px-2.5 py-2 text-[11px] leading-snug text-stone-600 break-keep line-clamp-2">
+            <p className="max-h-[2.5rem] overflow-hidden px-2.5 py-2 text-[11px] leading-[1.25] text-stone-600 break-words line-clamp-2">
               {metaLine}
             </p>
           ) : (

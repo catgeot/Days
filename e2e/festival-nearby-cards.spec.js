@@ -27,15 +27,22 @@ async function openFestival(page, festivalId) {
   return dialog;
 }
 
-async function waitNearbyCardImages(section) {
-  await section.scrollIntoViewIfNeeded();
-  const cards = section.locator('[data-nearby-photo-card]');
-  await expect(cards.first()).toBeVisible({ timeout: 120_000 });
-  const imgs = section.locator('img[data-festival-photo]');
-  const count = await imgs.count();
+async function waitNearbyCardImages(dialog, sectionId = 'nearAttractions') {
+  const section = dialog.locator(`[data-festival-section="${sectionId}"]`);
+  await expect(section).toBeVisible({ timeout: 120_000 });
+  await expect(section.locator('[data-nearby-photo-card]').first()).toBeVisible({
+    timeout: 120_000,
+  });
+  await expect
+    .poll(
+      async () => section.locator('img[data-festival-photo]').count(),
+      { timeout: 120_000 },
+    )
+    .toBeGreaterThan(0);
+  const count = await section.locator('img[data-festival-photo]').count();
   for (let i = 0; i < count; i++) {
-    const img = imgs.nth(i);
-    await img.scrollIntoViewIfNeeded();
+    const img = section.locator('img[data-festival-photo]').nth(i);
+    await img.scrollIntoViewIfNeeded().catch(() => {});
     await expect
       .poll(
         async () =>
@@ -116,6 +123,78 @@ async function screenshotNearbyAttractionsComparison(page, dialog, fileName) {
   await scrollNearbyAttractionsToComparisonView(page);
   const section = dialog.locator('[data-festival-section="nearAttractions"]');
   await section.screenshot({ path: `${SCREENSHOT_DIR}/${fileName}` });
+}
+
+async function scrollTo4106717BottomEvidence(page) {
+  await page.evaluate(() => {
+    const content = document.querySelector('[data-festival-sheet-content]');
+    const dialog = document.querySelector('[role="dialog"].overflow-y-auto');
+    let scroller = dialog;
+    if (content) {
+      const oy = getComputedStyle(content).overflowY;
+      if (oy === 'auto' || oy === 'scroll') scroller = content;
+    }
+    const museum = [...document.querySelectorAll('[data-nearby-photo-card]')].find((node) =>
+      (node.textContent || '').includes('예천박물관'),
+    );
+    const lodging = document.querySelector('[data-festival-section="lodging"]');
+    if (!scroller) return;
+    if (museum) {
+      const mRect = museum.getBoundingClientRect();
+      const tRect = scroller.getBoundingClientRect();
+      scroller.scrollTop += mRect.top - tRect.top - 48;
+    }
+    if (lodging) {
+      const lRect = lodging.getBoundingClientRect();
+      const tRect = scroller.getBoundingClientRect();
+      if (lRect.top > tRect.bottom - 80) {
+        scroller.scrollTop += lRect.top - tRect.top - 200;
+      }
+    }
+  });
+  await page.waitForTimeout(350);
+}
+
+async function scrollNearbyCardsSectionToEnd(page) {
+  await page.evaluate(() => {
+    const section = document.querySelector('[data-nearby-cards-section]');
+    const content = document.querySelector('[data-festival-sheet-content]');
+    const dialog = document.querySelector('[role="dialog"].overflow-y-auto');
+    let scroller = dialog;
+    if (content) {
+      const oy = getComputedStyle(content).overflowY;
+      if (oy === 'auto' || oy === 'scroll') scroller = content;
+    }
+    if (!section || !scroller) return;
+    const sectionBottom = section.offsetTop + section.offsetHeight;
+    scroller.scrollTop = Math.max(0, sectionBottom - scroller.clientHeight + 24);
+  });
+  await page.waitForTimeout(350);
+}
+
+async function assertMooniFabDoesNotCoverLastNearbyCard(page) {
+  const overlap = await page.evaluate(() => {
+    const cards = [...document.querySelectorAll('[data-nearby-photo-card]')];
+    const last = cards[cards.length - 1];
+    const fab = [...document.querySelectorAll('button')].find((btn) =>
+      /무니에게 묻기|ask mooni/i.test(
+        `${btn.getAttribute('aria-label') || ''} ${btn.textContent || ''}`,
+      ),
+    );
+    if (!last || !fab) return { ok: true, reason: 'missing' };
+    const card = last.getBoundingClientRect();
+    const btn = fab.getBoundingClientRect();
+    const vh = window.innerHeight;
+    const cardVisible = card.bottom > 0 && card.top < vh;
+    const intersects =
+      cardVisible &&
+      card.left < btn.right &&
+      card.right > btn.left &&
+      card.top < btn.bottom &&
+      card.bottom > btn.top;
+    return { ok: !intersects, intersects, card, btn };
+  });
+  expect(overlap.ok, JSON.stringify(overlap)).toBe(true);
 }
 
 async function collectCardImageStats(section) {
@@ -234,7 +313,7 @@ test.describe('Festival nearby cards — flag ON', () => {
     const dialog = await openFestival(page, '825295');
     const attractions = dialog.locator('[data-festival-section="nearAttractions"]');
     await assertTwoColumnGrid(attractions);
-    await waitNearbyCardImages(attractions);
+    await waitNearbyCardImages(dialog);
 
     const scrollBefore = await page.evaluate(() => {
       const el = document.querySelector('[role="dialog"].overflow-y-auto');
@@ -254,7 +333,7 @@ test.describe('Festival nearby cards — flag ON', () => {
     const food = dialog.locator('[data-festival-section="nearFood"]');
     await expect(food).toBeVisible({ timeout: 120_000 });
     await assertTwoColumnGrid(food);
-    await waitNearbyCardImages(food);
+    await waitNearbyCardImages(dialog, 'nearFood');
     await assertCloseButtonDoesNotOverlapCards(page, attractions);
     await waitSheetReadyForCapture(page);
     await clearNearbyBandFilter(attractions);
@@ -280,7 +359,7 @@ test.describe('Festival nearby cards — flag ON', () => {
     const dialog = await openFestival(page, '4128786');
     const attractions = dialog.locator('[data-festival-section="nearAttractions"]');
     await assertTwoColumnGrid(attractions);
-    await waitNearbyCardImages(attractions);
+    await waitNearbyCardImages(dialog);
     await waitSheetReadyForCapture(page);
     await attractions.screenshot({
       path: `${SCREENSHOT_DIR}/4128786-nearAttractions-390-flag-on.png`,
@@ -288,7 +367,7 @@ test.describe('Festival nearby cards — flag ON', () => {
     const food = dialog.locator('[data-festival-section="nearFood"]');
     if ((await food.count()) > 0) {
       await assertTwoColumnGrid(food);
-      await waitNearbyCardImages(food);
+      await waitNearbyCardImages(dialog, 'nearFood');
       await food.screenshot({
         path: `${SCREENSHOT_DIR}/4128786-nearFood-390-flag-on.png`,
       });
@@ -301,7 +380,7 @@ test.describe('Festival nearby cards — flag ON', () => {
     const dialog = await openFestival(page, '4106717');
     const attractions = dialog.locator('[data-festival-section="nearAttractions"]');
     await assertTwoColumnGrid(attractions);
-    await waitNearbyCardImages(attractions);
+    await waitNearbyCardImages(dialog);
     await waitSheetReadyForCapture(page);
     await attractions.screenshot({
       path: `${SCREENSHOT_DIR}/4106717-nearAttractions-390-flag-on.png`,
@@ -347,18 +426,21 @@ test.describe('Festival nearby cards — flag ON', () => {
     await dismissLocHint(page);
     const dialog = await openFestival(page, '4106717');
     await expect(dialog.locator('[data-festival-section="nearFood"]')).toHaveCount(0);
+    await expect(dialog.locator('[data-nearby-banner]').filter({ hasText: '맛집' })).toHaveCount(0);
+    await waitNearbyCardImages(dialog, 'nearAttractions');
     const attractions = dialog.locator('[data-festival-section="nearAttractions"]');
-    await waitNearbyCardImages(attractions);
-    await page.evaluate(() => {
-      const content = document.querySelector('[data-festival-sheet-content]');
-      const dialog = document.querySelector('[role="dialog"].overflow-y-auto');
-      const scroller = content || dialog;
-      if (scroller) scroller.scrollTop = scroller.scrollHeight;
-    });
-    await page.waitForTimeout(350);
+    await expect(attractions.locator('[data-nearby-photo-card]').filter({ hasText: '예천박물관' })).toBeVisible();
+    await scrollTo4106717BottomEvidence(page);
+    const lodging = dialog.locator('[data-festival-section="lodging"]');
+    const packages = dialog.locator('[data-festival-section="packages"]');
+    await expect(lodging.or(packages).first()).toBeVisible({ timeout: 60_000 });
     await page.screenshot({
       path: `${SCREENSHOT_DIR}/4106717-page-bottom-no-food-390-flag-on.png`,
       clip: { x: 0, y: 0, width: 390, height: 844 },
+    });
+    await page.screenshot({
+      path: `${SCREENSHOT_DIR}/4106717-page-bottom-no-food-390-flag-on-full.png`,
+      fullPage: true,
     });
   });
 });
@@ -395,11 +477,18 @@ test('825295 attractions desktop 1280 flag ON @desktop1280', async ({ page }) =>
   const dialog = await openFestival(page, '825295');
   const attractions = dialog.locator('[data-festival-section="nearAttractions"]');
   await assertTwoColumnGrid(attractions);
-  await waitNearbyCardImages(attractions);
+  await waitNearbyCardImages(dialog);
   await scrollNearbyAttractionsToComparisonView(page);
   await assertCloseButtonDoesNotOverlapCards(page, attractions);
   await attractions.screenshot({
     path: `${SCREENSHOT_DIR}/825295-nearAttractions-1280-flag-on.png`,
+  });
+  await waitNearbyCardImages(dialog);
+  await scrollNearbyCardsSectionToEnd(page);
+  await assertMooniFabDoesNotCoverLastNearbyCard(page);
+  await page.screenshot({
+    path: `${SCREENSHOT_DIR}/825295-nearAttractions-1280-end-flag-on.png`,
+    clip: { x: 0, y: 0, width: 1280, height: 720 },
   });
 });
 
