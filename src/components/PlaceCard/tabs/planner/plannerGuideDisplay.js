@@ -3,7 +3,7 @@ import {
   hasUsableToolkit,
   resolveEssentialGuideRaw,
   toolkitRowMatchesLocation,
-} from '../../../../utils/toolkitPlaceIdResolve';
+} from '../../../../utils/toolkitPlaceIdResolve.js';
 
 /** 플래너 UI — 지리 검증이 빡빡할 때도 place_id가 맞는 DB 행은 표시 */
 export function resolvePlannerGuideForDisplay(row, location, locale) {

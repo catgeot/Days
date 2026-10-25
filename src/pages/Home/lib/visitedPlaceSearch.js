@@ -261,25 +261,62 @@ function visitedIdentityForRow(placeId, nameKo, nameEn) {
   return { slug: id || undefined, nameEn, parentCity: '' };
 }
 
+function geoCountriesAlign(visited, geo) {
+  const vKo = concreteCountry(visited?.country, '');
+  const vEn = concreteCountry(visited?.country_en, visited?.country);
+  const gKo = concreteCountry(geo?.country, '');
+  const gEn = concreteCountry(geo?.country_en, geo?.country);
+  const pairs = [
+    [vKo, gKo],
+    [vEn, gEn],
+    [vEn, gKo],
+    [vKo, gEn],
+  ];
+  for (const [a, b] of pairs) {
+    if (!a || !b) continue;
+    if (normalizeVisitedSearchKey(a) === normalizeVisitedSearchKey(b)) return true;
+  }
+  if (!vKo && !vEn) return true;
+  if (!gKo && !gEn) return true;
+  return false;
+}
+
+/** Same pin as geocode admin hit but visitor label is the destination (e.g. 티니안 vs San Jose). */
+export function isSamePinKeepVisitorLabel(visited, geo) {
+  if (!visited || !geo) return false;
+  if (!geoCountriesAlign(visited, geo)) return false;
+  if (!samePlaceCenter(visited, geo, 0.3)) return false;
+  const visitedToken = normalizeVisitedSearchKey(visited?.name_ko || visited?.name);
+  const geoName = normalizeVisitedSearchKey(geo.name);
+  if (!visitedToken || !geoName || visitedToken === geoName) return false;
+  const ownLatin = pickLatinPlaceName(visited);
+  const geoLatin = pickLatinPlaceName(geo);
+  if (ownLatin && geoLatin) {
+    return normalizeVisitedSearchKey(ownLatin) !== normalizeVisitedSearchKey(geoLatin);
+  }
+  const kind = String(geo.kind || '').toLowerCase();
+  return kind === 'city' || geo.badge === '도시' || Boolean(geoLatin && latinNameIsAdminArea(geoLatin, geo.name));
+}
+
+function latinFromVisitedSlug(visited) {
+  const slug = String(visited?.slug || visited?.place_id || '').trim();
+  if (!slug || !/^[a-z][a-z0-9-]*$/i.test(slug)) return '';
+  return slug
+    .split('-')
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
+    .join(' ');
+}
+
 function geoHitIsForeignAdmin(visited, geo) {
   if (!geo) return false;
   if (resolveCityAttractionHub(visited?.name_ko) || resolveCityAttractionHub(visited?.name)) {
     return false;
   }
-  const ownLatin = pickLatinPlaceName(visited);
+  if (isSamePinKeepVisitorLabel(visited, geo)) return false;
   const visitedToken = normalizeVisitedSearchKey(visited?.name_ko || visited?.name);
   const geoName = normalizeVisitedSearchKey(geo.name);
   const geoLatin = pickLatinPlaceName(geo);
-  if (
-    ownLatin &&
-    geoLatin &&
-    visitedToken &&
-    geoName !== visitedToken &&
-    normalizeVisitedSearchKey(ownLatin) !== normalizeVisitedSearchKey(geoLatin) &&
-    samePlaceCenter(visited, geo, 2)
-  ) {
-    return false;
-  }
   const latin = geoLatin;
   const latinHub = latin ? resolveCityAttractionHub(latin) : null;
   if (latinHub) {
@@ -323,6 +360,7 @@ export function overlayGeoFieldsOnVisitedSpot(visited, geoHits) {
   if (!visited) return visited;
   const list = Array.isArray(geoHits) ? geoHits : [];
   const geo = list.find((hit) => geoHitMatchesVisited(visited, hit));
+  const keepLabel = geo && isSamePinKeepVisitorLabel(visited, geo);
   const rejectAdmin = geoHitIsForeignAdmin(visited, geo);
   const ownLatin = pickLatinPlaceName(visited);
   const ownIsAdmin =
@@ -330,14 +368,17 @@ export function overlayGeoFieldsOnVisitedSpot(visited, geoHits) {
     (!ownLatin &&
       geo &&
       geoHitIsForeignAdmin(visited, { ...geo, name: ownLatin, name_en: ownLatin }));
-  const latin = rejectAdmin || ownIsAdmin
-    ? ''
-    : (ownLatin || pickLatinPlaceName(geo));
+  const latin = keepLabel
+    ? (ownLatin || latinFromVisitedSlug(visited) || pickLatinPlaceName(geo))
+    : rejectAdmin || ownIsAdmin
+      ? ''
+      : (ownLatin || pickLatinPlaceName(geo));
   const country = concreteCountry(visited.country, geo?.country);
   const countryEn = concreteCountry(visited.country_en, geo?.country_en) ||
     (isUrlSafeEnglishLabel(geo?.country) ? String(geo.country).trim() : '');
-  const parentCity = visited.parentCity ||
-    (rejectAdmin ? String(geo?.name || '').trim() : '');
+  const parentCity = keepLabel
+    ? String(visited.parentCity || '').trim()
+    : visited.parentCity || (rejectAdmin ? String(geo?.name || '').trim() : '');
   return {
     ...visited,
     ...(latin ? { name_en: latin } : rejectAdmin || ownIsAdmin ? { name_en: '' } : {}),

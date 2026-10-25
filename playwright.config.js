@@ -35,6 +35,7 @@ export default defineConfig({
         /place-visit-story-review-focus\.spec\.js/,
         /korea-festival-date-chip\.spec\.js/,
         /place-lightbox-history\.spec\.js/,
+        /tinian-search-planner-390\.spec\.js/,
       ],
       use: { ...devices['Desktop Chrome'], viewport: { width: 1280, height: 720 } },
     },
@@ -57,17 +58,6 @@ export default defineConfig({
       name: 'webkit-390',
       testMatch: /home-search-place-nav\.spec\.js/,
       use: { ...devices['iPhone 13'] },
-    },
-    {
-      name: 'webkit-tinian-390',
-      testMatch: /tinian-search-planner-390\.spec\.js/,
-      use: {
-        ...devices['iPhone 13'],
-        locale: 'ko-KR',
-        viewport: { width: 390, height: 844 },
-        deviceScaleFactor: 1,
-        ignoreHTTPSErrors: true,
-      },
     },
     {
       name: 'webkit-place-travelogue-card',
