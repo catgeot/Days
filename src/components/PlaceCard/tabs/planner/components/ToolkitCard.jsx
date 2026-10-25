@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ExternalLink } from 'lucide-react';
 import CopyableText from '../../../common/CopyableText';
@@ -27,6 +27,9 @@ import { buildGygActivitiesSearchQuery } from '../locationRules';
 import { shouldShowFerryCard } from '../../../../../utils/ferryBookingMatch';
 import { canShowMrtTnaStrip } from '../../../../../utils/mrtTnaQuery';
 import { MRT_TNA_PLANNER_SIZE } from '../../../../../utils/fetchMrtTnas';
+import ToolkitFreshnessBadge from './ToolkitFreshnessBadge.jsx';
+import ToolkitReportSheet from './ToolkitReportSheet.jsx';
+import { resolveToolkitSectionCheckedIso } from '../../../../../data/toolkitFreshness/policy.js';
 
 const ToolkitCard = ({
     icon,
@@ -40,8 +43,13 @@ const ToolkitCard = ({
     eventTripWindow,
     themeColor = 'gray',
     className = '',
+    toolkitFreshnessEnabled = false,
+    sectionMeta = null,
+    toolkitUpdatedAt = null,
+    placeId = null,
 }) => {
     const { t, i18n } = useTranslation();
+    const [reportOpen, setReportOpen] = useState(false);
     const Icon = icon;
     const theme = THEME_COLORS[themeColor] || THEME_COLORS.gray || THEME_COLORS.default;
 
@@ -63,6 +71,11 @@ const ToolkitCard = ({
     const mapPoiWidgetKey =
         location?.slug || gygActivitiesQuery || (useMrtTna ? 'mrt-tna' : 'map-poi-tour');
 
+    const checkedIso = toolkitFreshnessEnabled
+        ? resolveToolkitSectionCheckedIso(type, sectionMeta?.[type], toolkitUpdatedAt)
+        : null;
+    const sourceUrls = toolkitFreshnessEnabled ? sectionMeta?.[type]?.source_urls : null;
+
     return (
         <div className={`${theme.bg} border ${theme.border} rounded-2xl p-5 shadow-sm hover:shadow-md ${theme.hover} transition-all flex flex-col h-full relative group ${className}`.trim()}>
             {/* Label */}
@@ -79,12 +92,26 @@ const ToolkitCard = ({
                 )}
             </div>
 
-            <div className="flex items-center gap-2.5 mb-3">
-                <div className={`p-2.5 ${theme.icon} rounded-xl`}>
-                    <Icon size={20} />
+            {toolkitFreshnessEnabled ? (
+                <div className="flex items-start justify-between gap-2 mb-3 pr-16">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                        <div className={`p-2.5 ${theme.icon} rounded-xl shrink-0`}>
+                            <Icon size={20} />
+                        </div>
+                        <h3 className="font-bold text-gray-800 text-base">{title}</h3>
+                    </div>
+                    {checkedIso ? (
+                        <ToolkitFreshnessBadge section={type} checkedIso={checkedIso} className="mt-0.5" />
+                    ) : null}
                 </div>
-                <h3 className="font-bold text-gray-800 text-base">{title}</h3>
-            </div>
+            ) : (
+                <div className="flex items-center gap-2.5 mb-3">
+                    <div className={`p-2.5 ${theme.icon} rounded-xl`}>
+                        <Icon size={20} />
+                    </div>
+                    <h3 className="font-bold text-gray-800 text-base">{title}</h3>
+                </div>
+            )}
 
             {verifiedPlannerFirst ? (
                 <PlaceLocalInfoInline
@@ -223,6 +250,33 @@ const ToolkitCard = ({
                     className="mt-4"
                 />
             )}
+            {toolkitFreshnessEnabled && Array.isArray(sourceUrls) && sourceUrls.length > 0 ? (
+                <p className="mt-3 text-[11px] text-gray-500 leading-snug" data-toolkit-section-sources="">
+                    {t('place.planner.toolkitFreshness.sources', {
+                        list: sourceUrls.filter(Boolean).join(' · '),
+                    })}
+                </p>
+            ) : null}
+            {toolkitFreshnessEnabled && placeId ? (
+                <>
+                    <button
+                        type="button"
+                        data-toolkit-report-trigger=""
+                        data-toolkit-section={type}
+                        onClick={() => setReportOpen(true)}
+                        className="mt-3 self-start text-xs font-medium border border-gray-200 rounded-lg px-3 py-1.5 text-gray-600 hover:bg-gray-50 transition-colors"
+                    >
+                        {t('place.planner.toolkitFreshness.reportCta')}
+                    </button>
+                    <ToolkitReportSheet
+                        open={reportOpen}
+                        onClose={() => setReportOpen(false)}
+                        placeId={placeId}
+                        section={type}
+                        sectionTitle={title}
+                    />
+                </>
+            ) : null}
         </div>
     );
 };

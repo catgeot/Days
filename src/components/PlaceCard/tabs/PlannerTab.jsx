@@ -58,6 +58,13 @@ import {
   parseFlightCinemaPlannerEntry,
   parseEventPlannerEntry,
 } from '../../../utils/placePlannerPath';
+import { isGateoToolkitFreshnessEnabled } from '../../../shared/gateoFeatureFlags.js';
+import { useToolkitSectionMeta } from '../hooks/useToolkitSectionMeta.js';
+import ToolkitFreshnessBanner from './planner/components/ToolkitFreshnessBanner.jsx';
+import {
+  summarizeToolkitFreshness,
+} from '../../../data/toolkitFreshness/policy.js';
+import { getFreshnessToday } from '../../../data/placeVerifiedFacts/freshness.js';
 
 // Force Update Toolkit: 관리자 역할 검사가 없으므로 운영 빌드에서는 숨김 (로컬 `vite` 개발 서버에서만 표시)
 const SHOW_TOOLKIT_FORCE_UPDATE = import.meta.env.DEV === true;
@@ -117,6 +124,24 @@ const PlannerTab = ({
     const toolkitMismatch = isToolkitLocationMismatch(plannerData, canonicalLocation, locale);
     const isUpdatingExisting = !!guideData;
     const localizedPlaceName = getLocalizedPlaceName(canonicalLocation, locale) || canonicalLocation?.name || '';
+    const toolkitFreshnessOn = isGateoToolkitFreshnessEnabled();
+    const { sectionMetaBySection } = useToolkitSectionMeta(plannerData?.place_id, toolkitFreshnessOn);
+    const toolkitFreshnessSummary = useMemo(() => {
+        if (!toolkitFreshnessOn || !guideData) return null;
+        return summarizeToolkitFreshness(
+            sectionMetaBySection,
+            plannerData?.toolkit_updated_at,
+            getFreshnessToday(),
+        );
+    }, [toolkitFreshnessOn, guideData, sectionMetaBySection, plannerData?.toolkit_updated_at]);
+    const toolkitFreshnessCardProps = toolkitFreshnessOn && plannerData?.place_id
+        ? {
+            toolkitFreshnessEnabled: true,
+            sectionMeta: sectionMetaBySection,
+            toolkitUpdatedAt: plannerData?.toolkit_updated_at,
+            placeId: plannerData.place_id,
+        }
+        : {};
     const loadingMessagesNew = t('place.planner.loading.new', { returnObjects: true });
     const loadingMessagesUpdate = t('place.planner.loading.update', { returnObjects: true });
     const currentMessages = isUpdatingExisting
@@ -515,6 +540,12 @@ const PlannerTab = ({
 
                     <PlannerStageNav value={plannerStage} onChange={handlePlannerStageChange} />
 
+                    {toolkitFreshnessOn && toolkitFreshnessSummary?.showBanner ? (
+                        <ToolkitFreshnessBanner
+                            variant={toolkitFreshnessSummary.hasCritical ? 'critical' : 'warn'}
+                        />
+                    ) : null}
+
                 {plannerStage === PLANNER_STAGE.ESSENTIAL ? (
                 <>
                 {/* 체크리스트(항공·숙소·픽업) — 툴킷 있으면 상시 · 타임라인은 있을 때만 */}
@@ -555,16 +586,16 @@ const PlannerTab = ({
                     </div>
                     <div className="grid grid-cols-1 gap-5">
                         <div id="planner-prep-visa" className="scroll-mt-24">
-                        <ToolkitCard icon={FileText} title={t('place.planner.toolkit.visa')} type="visa" data={guideData?.categories?.visa || guideData?.visa} isOfficial location={location} essentialGuide={guideData} themeColor="warning" />
+                        <ToolkitCard icon={FileText} title={t('place.planner.toolkit.visa')} type="visa" data={guideData?.categories?.visa || guideData?.visa} isOfficial location={location} essentialGuide={guideData} themeColor="warning" {...toolkitFreshnessCardProps} />
                         </div>
                         <div id="planner-prep-flight" className="scroll-mt-24">
-                        <ToolkitCard icon={Plane} title={t('place.planner.toolkit.flight')} type="flight" data={guideData?.categories?.flight || guideData?.flight} isSponsored location={location} essentialGuide={guideData} eventTripWindow={eventTripWindow} themeColor="default" />
+                        <ToolkitCard icon={Plane} title={t('place.planner.toolkit.flight')} type="flight" data={guideData?.categories?.flight || guideData?.flight} isSponsored location={location} essentialGuide={guideData} eventTripWindow={eventTripWindow} themeColor="default" {...toolkitFreshnessCardProps} />
                         </div>
                         <div id="planner-prep-accommodation" className="scroll-mt-24">
-                        <ToolkitCard icon={Bed} title={t('place.planner.toolkit.accommodation')} type="accommodation" data={guideData?.categories?.accommodation || guideData?.accommodation} isSponsored location={location} essentialGuide={guideData} eventTripWindow={eventTripWindow} themeColor="default" />
+                        <ToolkitCard icon={Bed} title={t('place.planner.toolkit.accommodation')} type="accommodation" data={guideData?.categories?.accommodation || guideData?.accommodation} isSponsored location={location} essentialGuide={guideData} eventTripWindow={eventTripWindow} themeColor="default" {...toolkitFreshnessCardProps} />
                         </div>
                         <div id="planner-prep-safety" className="scroll-mt-24">
-                        <ToolkitCard icon={ShieldAlert} title={t('place.planner.toolkit.safety')} type="safety" data={guideData?.categories?.safety || guideData?.safety} isOfficial location={location} essentialGuide={guideData} themeColor="danger" />
+                        <ToolkitCard icon={ShieldAlert} title={t('place.planner.toolkit.safety')} type="safety" data={guideData?.categories?.safety || guideData?.safety} isOfficial location={location} essentialGuide={guideData} themeColor="danger" {...toolkitFreshnessCardProps} />
                         </div>
                     </div>
                 </div>
@@ -580,11 +611,11 @@ const PlannerTab = ({
                     <div className="grid grid-cols-1 gap-5">
                         {(guideData?.categories?.airport_transfer) && (
                             <div id="planner-arrival-transfer" className="scroll-mt-24">
-                            <ToolkitCard icon={Car} title={t('place.planner.toolkit.airportTransfer')} type="airport_transfer" data={guideData.categories.airport_transfer} isSponsored location={location} essentialGuide={guideData} themeColor="default" />
+                            <ToolkitCard icon={Car} title={t('place.planner.toolkit.airportTransfer')} type="airport_transfer" data={guideData.categories.airport_transfer} isSponsored location={location} essentialGuide={guideData} themeColor="default" {...toolkitFreshnessCardProps} />
                             </div>
                         )}
                         {showFerryCard && (
-                            <ToolkitCard icon={Ship} title={t('place.planner.toolkit.ferry')} type="ferry_booking" data={guideData?.categories?.ferry_booking} isSponsored location={location} essentialGuide={guideData} themeColor="default" />
+                            <ToolkitCard icon={Ship} title={t('place.planner.toolkit.ferry')} type="ferry_booking" data={guideData?.categories?.ferry_booking} isSponsored location={location} essentialGuide={guideData} themeColor="default" {...toolkitFreshnessCardProps} />
                         )}
                         <div className="rounded-2xl border border-blue-200/90 bg-gradient-to-b from-blue-50/45 via-white to-white p-3 shadow-sm ring-1 ring-blue-900/[0.06] md:p-4 flex flex-col gap-4">
                             <ToolkitCard
@@ -597,6 +628,7 @@ const PlannerTab = ({
                                 essentialGuide={guideData}
                                 themeColor="default"
                                 className="!border-0 shadow-none bg-transparent hover:!shadow-none hover:!border-transparent"
+                                {...toolkitFreshnessCardProps}
                             />
                             <div className="grid grid-cols-1 gap-3 border-t border-blue-100/90 pt-4 md:grid-cols-2 md:gap-3">
                                 <AiraloBannerWidget />
@@ -614,11 +646,11 @@ const PlannerTab = ({
                         <h3 className="text-lg font-bold text-gray-800">{t('place.planner.sectionEnjoy')}</h3>
                     </div>
                     <div className="grid grid-cols-1 gap-5">
-                        <ToolkitCard icon={MapPin} title={t('place.planner.toolkit.mapPoi')} type="map_poi" data={guideData?.categories?.map_poi || guideData?.map_poi} location={location} essentialGuide={guideData} themeColor="default" />
+                        <ToolkitCard icon={MapPin} title={t('place.planner.toolkit.mapPoi')} type="map_poi" data={guideData?.categories?.map_poi || guideData?.map_poi} location={location} essentialGuide={guideData} themeColor="default" {...toolkitFreshnessCardProps} />
                         <div id="planner-local-transport" className="scroll-mt-24">
-                        <ToolkitCard icon={Train} title={t('place.planner.toolkit.transport')} type="transport" data={guideData?.categories?.transport || guideData?.transport} isSponsored location={location} essentialGuide={guideData} themeColor="default" />
+                        <ToolkitCard icon={Train} title={t('place.planner.toolkit.transport')} type="transport" data={guideData?.categories?.transport || guideData?.transport} isSponsored location={location} essentialGuide={guideData} themeColor="default" {...toolkitFreshnessCardProps} />
                         </div>
-                        <ToolkitCard icon={Smartphone} title={t('place.planner.toolkit.apps')} type="apps" data={guideData?.categories?.apps || guideData?.apps} location={location} essentialGuide={guideData} themeColor="default" />
+                        <ToolkitCard icon={Smartphone} title={t('place.planner.toolkit.apps')} type="apps" data={guideData?.categories?.apps || guideData?.apps} location={location} essentialGuide={guideData} themeColor="default" {...toolkitFreshnessCardProps} />
                     </div>
                 </div>
                 ) : null}

@@ -807,6 +807,24 @@
         "errorSafetyLink": "외교부 해외안전여행",
         "errorMapLink": "지도"
       },
+      "toolkitFreshness": {
+        "badgeChecked": "확인일 {{date}}",
+        "badgeOverdue": "확인 필요 · {{date}}",
+        "bannerWarn": "일부 항목은 확인한 지 오래됐어요. 요금·운영시간은 변동될 수 있어요.",
+        "bannerCritical": "출발 전에는 공식 사이트에서 다시 한번 확인해 주세요.",
+        "sources": "출처: {{list}}",
+        "reportCta": "정보가 달라요",
+        "reportTitle": "정보 수정 제안",
+        "reportSection": "섹션: {{title}}",
+        "reportNoteLabel": "어떤 내용이 다른가요?",
+        "reportNotePlaceholder": "예: 공항 리무진 요금이 바뀌었어요",
+        "reportUrlLabel": "참고 링크 (선택)",
+        "reportSubmit": "보내기",
+        "reportSubmitting": "보내는 중…",
+        "reportSuccess": "감사해요. 검토해 반영할게요.",
+        "reportError": "지금은 제안을 저장하지 못했어요. 잠시 후 다시 시도해 주세요.",
+        "reportClose": "닫기"
+      },
       "hybridNotice": "하이브리드 정보 안내: 본 툴킷은 객관적인 공공 정보(비자, 치안 등)와 함께, 원활한 여행 준비를 돕기 위한 파트너사 제휴광고 연결(숙박, 유심 등)이 일부 포함되어 있습니다. 제휴광고를 통한 서비스 이용 시 사이트 운영에 큰 도움이 됩니다. AI에 의해 자동 생성된 팁이므로 시기에 따라 일부 정보가 다를 수 있습니다.",
       "preTravel": {
         "title": "출발 전 필수 준비사항",
