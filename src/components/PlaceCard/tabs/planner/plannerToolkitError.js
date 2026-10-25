@@ -18,7 +18,7 @@ function toolkitErrorMessage(error, data) {
 /**
  * @param {unknown} error
  * @param {unknown} data
- * @returns {'badRequest'|'unauthorized'|'forbidden'|'rateLimit'|'generic'|'network'|null}
+ * @returns {'badRequest'|'forbidden'|'rateLimit'|'generic'|'network'|null}
  */
 export function plannerToolkitErrorKey(error, data) {
   const status = Number(error?.context?.status ?? error?.status);
@@ -27,24 +27,12 @@ export function plannerToolkitErrorKey(error, data) {
   if (status === 429 || msg.includes('rate limited') || msg.includes('generation attempted recently')) {
     return 'rateLimit';
   }
-  if (
-    status === 401 ||
-    msg.includes('unauthorized') ||
-    msg.includes('overwrite requires admin')
-  ) {
-    return 'unauthorized';
-  }
-  if (status === 403) {
-    if (msg.includes('unregistered') || msg.includes('forbidden: unregistered')) return 'forbidden';
-    if (msg.includes('overwrite')) return 'unauthorized';
+  if (msg.includes('unregistered') || msg.includes('forbidden: unregistered')) {
     return 'forbidden';
   }
+  if (status === 401 || status === 403) return 'generic';
+  if (data && data.success === false) return 'generic';
   if (error) return 'network';
-  if (data && data.success === false) {
-    if (msg.includes('unregistered')) return 'forbidden';
-    if (msg.includes('overwrite') || msg.includes('unauthorized')) return 'unauthorized';
-    return 'generic';
-  }
   return null;
 }
 

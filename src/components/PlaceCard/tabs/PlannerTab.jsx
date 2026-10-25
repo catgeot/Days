@@ -27,7 +27,6 @@ import {
 
 const TOOLKIT_ERROR_MESSAGE_KEY = {
     badRequest: 'place.planner.toolkit.errorBadRequest',
-    unauthorized: 'place.planner.toolkit.errorUnauthorized',
     forbidden: 'place.planner.toolkit.errorForbidden',
     rateLimit: 'place.planner.toolkit.errorRateLimit',
     generic: 'place.planner.toolkit.errorGeneric',
@@ -42,7 +41,6 @@ import {
     hasStoredToolkitRow,
     resolvePlannerGuideForDisplay,
 } from './planner/plannerGuideDisplay.js';
-import { isToolkitAdminUserId } from '../../../utils/toolkitAdmin.js';
 import { shouldShowFerryCard } from '../../../utils/ferryBookingMatch';
 import { mergeCanonicalTravelSpot, getPlaceStableKey } from '../../../utils/travelSpotResolve';
 import {
@@ -83,7 +81,6 @@ const PlannerTab = ({
     const [loadingStep, setLoadingStep] = useState(0);
     const [isRemoteUpdating, setIsRemoteUpdating] = useState(false); // 수동 업데이트 로딩 상태 추가
     const [toolkitErrorKey, setToolkitErrorKey] = useState(null);
-    const [isToolkitAdmin, setIsToolkitAdmin] = useState(false);
 
     // 🆕 [Phase 8 Fix] 스크롤 컨테이너 직접 제어용 ref
     const scrollContainerRef = useRef(null);
@@ -121,7 +118,7 @@ const PlannerTab = ({
     const storedToolkit = hasStoredToolkitRow(plannerData, canonicalLocation, locale);
     const showFerryCard = shouldShowFerryCard(canonicalLocation?.slug);
     const toolkitMismatch = isToolkitLocationMismatch(plannerData, canonicalLocation, locale);
-    const showRunToolkitCta = isToolkitAdmin || !storedToolkit;
+    const showRunToolkitCta = !storedToolkit;
     const isUpdatingExisting = !!guideData;
     const localizedPlaceName = getLocalizedPlaceName(canonicalLocation, locale) || canonicalLocation?.name || '';
     const loadingMessagesNew = t('place.planner.loading.new', { returnObjects: true });
@@ -155,12 +152,6 @@ const PlannerTab = ({
             resetIosZoomAfterInput();
         };
     }, [isActive]);
-
-    useEffect(() => {
-        supabase.auth.getUser().then(({ data }) => {
-            setIsToolkitAdmin(isToolkitAdminUserId(data?.user?.id));
-        });
-    }, []);
 
     useEffect(() => {
         if (!isActive || isLoading || !plannerFocusId) return;

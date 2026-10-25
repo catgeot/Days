@@ -37,18 +37,18 @@ test('Tinian keeps English subtitle when geocode returns San Jose municipality',
   assert.equal(secondaryName, 'Tinian');
 });
 
-test('planner toolkit error keys distinguish unsupported place vs existing toolkit', () => {
+test('planner toolkit error — unregistered place only uses preparing copy key', () => {
   assert.equal(
     plannerToolkitErrorKey({ context: { status: 403 } }, { error: 'forbidden: unregistered place' }),
     'forbidden',
   );
   assert.equal(
     plannerToolkitErrorKey({ context: { status: 401 } }, { error: 'unauthorized: toolkit overwrite requires admin login' }),
-    'unauthorized',
+    'generic',
   );
   assert.equal(
     plannerToolkitErrorKey({ context: { status: 403 } }, { error: 'forbidden: toolkit overwrite requires admin' }),
-    'unauthorized',
+    'generic',
   );
 });
 

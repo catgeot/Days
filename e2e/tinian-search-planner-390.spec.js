@@ -51,13 +51,29 @@ test.describe('Tinian search & planner @webkit-390', () => {
       await expect(tinianSub.first()).toBeVisible();
     }
 
-    const plannerTab = page.getByRole('button', { name: /플래너|Planner/i }).first();
+    const plannerTab = page
+      .getByRole('button', { name: /플래너|Planner/i })
+      .or(page.getByRole('tab', { name: /플래너|Planner/i }))
+      .first();
     if (await plannerTab.isVisible().catch(() => false)) {
       await plannerTab.click();
-      await expect(
-        page.getByText(/스마트 트래블 툴킷|출발 전|journey|비자|visa/i).first(),
-      ).toBeVisible({ timeout: 60_000 });
-      await clip390(page, 'tinian-planner-toolkit-390.png');
+      await page.waitForTimeout(500);
+      const plannerRoot = page.locator('[data-planner-scroll-root]').first();
+      await expect(plannerRoot.or(page.getByText(/스마트 트래블 툴킷|출발 전|준비 중이에요/i).first())).toBeVisible({
+        timeout: 60_000,
+      });
+      await clip390(page, 'tinian-planner-tab-390.png');
+    } else {
+      await page.goto('/place/saipan', { waitUntil: 'domcontentloaded', timeout: 90_000 });
+      const saipanPlanner = page
+        .getByRole('button', { name: /플래너|Planner/i })
+        .or(page.getByRole('tab', { name: /플래너|Planner/i }))
+        .first();
+      if (await saipanPlanner.isVisible().catch(() => false)) {
+        await saipanPlanner.click();
+        await expect(page.locator('[data-planner-scroll-root]').first()).toBeVisible({ timeout: 60_000 });
+        await clip390(page, 'tinian-planner-tab-390.png');
+      }
     }
   });
 });
