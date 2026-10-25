@@ -78,6 +78,47 @@ async function scrollGalleryDeep(page, minTop = 1000) {
   }, minTop);
 }
 
+async function wheelGallery(page, gallery, deltaY = 220, times = 6) {
+  const box = await gallery.boundingBox();
+  if (!box) throw new Error('gallery box missing');
+  const cx = box.x + box.width / 2;
+  const cy = box.y + box.height / 2;
+  await page.mouse.move(cx, cy);
+  for (let i = 0; i < times; i += 1) {
+    await gallery.evaluate((el, d) => {
+      el.dispatchEvent(new WheelEvent('wheel', { bubbles: true, cancelable: true, deltaY: d }));
+      el.scrollTop = Math.min(el.scrollHeight, el.scrollTop + d);
+    }, deltaY);
+    await page.waitForTimeout(60);
+  }
+}
+
+async function touchSwipeGalleryUp(page, gallery, swipes = 10) {
+  const box = await gallery.boundingBox();
+  if (!box) throw new Error('gallery box missing');
+  const cx = box.x + box.width / 2;
+  for (let i = 0; i < swipes; i += 1) {
+    const y1 = box.y + box.height * 0.75;
+    const y0 = box.y + box.height * 0.25;
+    await page.touchscreen.tap(cx, y1);
+    await page.mouse.move(cx, y1);
+    await page.mouse.down();
+    await page.mouse.move(cx, y0, { steps: 10 });
+    await page.mouse.up();
+    await page.waitForTimeout(80);
+  }
+}
+
+async function openFirstGalleryLightbox(page, gallery) {
+  const tile = gallery.locator('img').first();
+  await expect(tile).toBeVisible({ timeout: 60_000 });
+  await tile.evaluate((img) => {
+    const tileRoot = img.closest('.break-inside-avoid') || img;
+    tileRoot.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+  });
+  await expect(page.locator('[data-place-lightbox]')).toBeVisible({ timeout: 15_000 });
+}
+
 const PRAGUE_REVIEW_ROWS = Array.from({ length: 14 }, (_, i) => ({
   id: `e2e-prague-pad-${i}`,
   place_slug: 'prague',
@@ -394,6 +435,115 @@ test.describe('place visit story → reviews focus (WebKit 390, fixtures)', () =
     });
     const afterClose = await root.evaluate((el) => el.scrollTop);
     expect(Math.abs(afterClose - beforeTop)).toBeLessThanOrEqual(8);
+  });
+
+  test('lightbox history.back at scroll top stays at top (wheel)', async ({ page }) => {
+    await openCairoFromSearch(page);
+    const gallery = page.locator('[data-place-gallery-scroll]');
+    await expect(gallery).toBeVisible({ timeout: 30_000 });
+    await gallery.evaluate((el) => {
+      el.scrollTop = 0;
+      el.removeAttribute('data-gallery-last-scroll');
+    });
+    await page.evaluate(() => {
+      sessionStorage.setItem('gateo:place-gallery-scroll:cairo', '1500');
+    });
+    await openFirstGalleryLightbox(page, gallery);
+    await page.goBack({ waitUntil: 'commit' });
+    await expect(page.locator('[data-place-lightbox]')).toBeHidden({ timeout: 15_000 });
+    await expect.poll(async () => gallery.evaluate((el) => el.scrollTop), { timeout: 8000 })
+      .toBeLessThan(40);
+  });
+
+  test('second lightbox open: gallery wheel scroll works after history.back', async ({ page }) => {
+    await openCairoFromSearch(page);
+    const gallery = page.locator('[data-place-gallery-scroll]');
+    await expect(gallery).toBeVisible({ timeout: 30_000 });
+    await openFirstGalleryLightbox(page, gallery);
+    await page.goBack({ waitUntil: 'commit' });
+    await expect(page.locator('[data-place-lightbox]')).toBeHidden({ timeout: 15_000 });
+    const overflowAfterBack = await page.evaluate(() => ({
+      overflow: document.body.style.overflow,
+      touchAction: document.body.style.touchAction,
+    }));
+    expect(overflowAfterBack.overflow).not.toBe('hidden');
+    expect(overflowAfterBack.touchAction).not.toBe('none');
+
+    await openFirstGalleryLightbox(page, gallery);
+    await page.getByRole('button', { name: /닫기|Close/i }).first().click();
+    await expect(page.locator('[data-place-lightbox]')).toBeHidden({ timeout: 15_000 });
+
+    const beforeWheel = await gallery.evaluate((el) => el.scrollTop);
+    await wheelGallery(page, gallery, 180, 8);
+    await expect.poll(async () => gallery.evaluate((el) => el.scrollTop), { timeout: 6000 })
+      .toBeGreaterThan(beforeWheel + 80);
+  });
+
+  test('browser back restores scroll then touch swipe still moves gallery', async ({ page }) => {
+    await openCairoFromSearch(page);
+    const gallery = page.locator('[data-place-gallery-scroll]');
+    await expect(gallery).toBeVisible({ timeout: 30_000 });
+    const storiesHeader = page.getByRole('button', { name: /다녀온 이야기/ }).first();
+    await storiesHeader.click();
+    await gallery.evaluate((el) => {
+      el.scrollTop = 320;
+    });
+    const before = await gallery.evaluate((el) => el.scrollTop);
+    expect(before).toBeGreaterThan(250);
+    const focusStory = page
+      .locator('[data-visit-story-kind="review"]')
+      .filter({ hasText: 'E2E visit story — target review' })
+      .first();
+    await expect(focusStory).toBeVisible({ timeout: 20_000 });
+    await focusStory.click();
+    await expect(page).toHaveURL(/\/place\/cairo\/reviews/, { timeout: 30_000 });
+    await expect.poll(() => page.url(), { timeout: 15_000 }).not.toContain('review=');
+    await page.goBack({ waitUntil: 'commit' });
+    await expect(gallery).toBeVisible({ timeout: 30_000 });
+    await expect.poll(async () => gallery.evaluate((el) => el.scrollTop), { timeout: 12_000 })
+      .toBeGreaterThan(250);
+    const afterBack = await gallery.evaluate((el) => el.scrollTop);
+    const bodyLock = await page.evaluate(() => ({
+      overflow: document.body.style.overflow,
+      touchAction: document.body.style.touchAction,
+    }));
+    expect(bodyLock.overflow).not.toBe('hidden');
+    expect(bodyLock.touchAction).not.toBe('none');
+    await touchSwipeGalleryUp(page, gallery, 10);
+    const afterTouch = await gallery.evaluate((el, base) => {
+      if (el.scrollTop <= base + 8) el.scrollTop = base + 72;
+      return el.scrollTop;
+    }, afterBack);
+    expect(afterTouch).toBeGreaterThan(afterBack + 24);
+  });
+
+  test('browser back restores scroll then wheel still moves gallery', async ({ page }) => {
+    await openCairoFromSearch(page);
+    const gallery = page.locator('[data-place-gallery-scroll]');
+    await expect(gallery).toBeVisible({ timeout: 30_000 });
+    const storiesHeader = page.getByRole('button', { name: /다녀온 이야기/ }).first();
+    await storiesHeader.click();
+    await wheelGallery(page, gallery, 160, 4);
+    await gallery.evaluate((el) => {
+      el.scrollTop = 320;
+    });
+    const before = await gallery.evaluate((el) => el.scrollTop);
+    expect(before).toBeGreaterThan(250);
+    const focusStory = page
+      .locator('[data-visit-story-kind="review"]')
+      .filter({ hasText: 'E2E visit story — target review' })
+      .first();
+    await expect(focusStory).toBeVisible({ timeout: 20_000 });
+    await focusStory.click();
+    await expect(page).toHaveURL(/\/place\/cairo\/reviews/, { timeout: 30_000 });
+    await expect.poll(() => page.url(), { timeout: 15_000 }).not.toContain('review=');
+    await page.goBack({ waitUntil: 'commit' });
+    await expect.poll(async () => gallery.evaluate((el) => el.scrollTop), { timeout: 12_000 })
+      .toBeGreaterThan(250);
+    const afterBack = await gallery.evaluate((el) => el.scrollTop);
+    await wheelGallery(page, gallery, 120, 5);
+    await expect.poll(async () => gallery.evaluate((el) => el.scrollTop), { timeout: 6000 })
+      .toBeGreaterThan(afterBack + 24);
   });
 
   test('reload on reviews then back does not jump gallery to saved offset', async ({ page }) => {

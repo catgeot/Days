@@ -526,9 +526,10 @@ const PlaceGalleryView = React.memo(({
     popBackRealignTargetRef.current = top;
     popBackRealignScheduledRef.current = true;
     return scheduleOneGalleryScrollRealignAfterImages(el, top, () => {
-      popBackRealignTargetRef.current = 0;
       popBackRealignScheduledRef.current = false;
-      if (Math.abs((scrollContainerRef.current?.scrollTop ?? 0) - top) <= 8) {
+      const current = scrollContainerRef.current?.scrollTop ?? 0;
+      if (Math.abs(current - top) <= 8) {
+        popBackRealignTargetRef.current = 0;
         pendingPlaceScrollRestoreRef.current = 0;
       }
     });
@@ -536,11 +537,11 @@ const PlaceGalleryView = React.memo(({
 
   useLayoutEffect(() => {
     if (navigationType !== 'POP') return undefined;
-    if (!isGalleryPanelActive || !galleryPlaceKey) return undefined;
+    if (!galleryPlaceKey || /\/reviews\/?$/.test(routerLocation.pathname)) return undefined;
     const armed = armedGalleryBackScrollToRestore(galleryPlaceKey, navigationType);
     if (armed <= 0) return undefined;
     applyGalleryScrollRestore(armed, { clearBack: true });
-  }, [navigationType, isGalleryPanelActive, galleryPlaceKey, applyGalleryScrollRestore, routerLocation.pathname]);
+  }, [navigationType, galleryPlaceKey, applyGalleryScrollRestore, routerLocation.pathname]);
 
   useLayoutEffect(() => {
     const el = scrollContainerRef.current;
@@ -577,8 +578,8 @@ const PlaceGalleryView = React.memo(({
 
     if (
       navigationType === 'POP' &&
-      isGalleryPanelActive &&
-      peekArmedGalleryBackScroll(galleryPlaceKey) > 0
+      !/\/reviews\/?$/.test(routerLocation.pathname) &&
+      (peekArmedGalleryBackScroll(galleryPlaceKey) > 0 || pendingPlaceScrollRestoreRef.current > 0)
     ) {
       return undefined;
     }
@@ -663,7 +664,12 @@ const PlaceGalleryView = React.memo(({
     if (!el) return undefined;
     popBackRealignScheduledRef.current = true;
     return scheduleOneGalleryScrollRealignAfterImages(el, target, () => {
-      popBackRealignTargetRef.current = 0;
+      popBackRealignScheduledRef.current = false;
+      const current = scrollContainerRef.current?.scrollTop ?? 0;
+      if (Math.abs(current - target) <= 8) {
+        popBackRealignTargetRef.current = 0;
+        pendingPlaceScrollRestoreRef.current = 0;
+      }
     });
   }, [
     navigationType,
@@ -679,9 +685,9 @@ const PlaceGalleryView = React.memo(({
     if (restore > 0) {
       if (isImgLoading || isRefreshing) return undefined;
       const el = scrollContainerRef.current;
-      if (el) el.scrollTop = restore;
-      const current = el?.scrollTop ?? 0;
-      if (!el || Math.abs(current - restore) <= 8) {
+      if (!el) return undefined;
+      el.scrollTop = restore;
+      if (Math.abs(el.scrollTop - restore) <= 8) {
         pendingPlaceScrollRestoreRef.current = 0;
       }
       setShowScrollToTop(restore > 280);
@@ -835,13 +841,11 @@ const PlaceGalleryView = React.memo(({
 
   useEffect(() => {
     if (!shouldUseMobilePortal) return undefined;
-    const prevOverflow = document.body.style.overflow;
-    const prevTouchAction = document.body.style.touchAction;
     document.body.style.overflow = 'hidden';
     document.body.style.touchAction = 'none';
     return () => {
-      document.body.style.overflow = prevOverflow;
-      document.body.style.touchAction = prevTouchAction;
+      document.body.style.removeProperty('overflow');
+      document.body.style.removeProperty('touch-action');
     };
   }, [shouldUseMobilePortal]);
 
@@ -1449,6 +1453,9 @@ const PlaceGalleryView = React.memo(({
                       onPainted={onTilePainted}
                       onOpen={() => {
                         suppressOpenClickRef.current = true;
+                        clearPlaceGalleryScrollBack(galleryPlaceKey);
+                        popBackRealignTargetRef.current = 0;
+                        popBackRealignScheduledRef.current = false;
                         snapshotScrollBeforeOverlay(
                           galleryOverlayKey,
                           scrollContainerRef.current,
