@@ -62,7 +62,23 @@ export function nearbyBandCountsTotal(counts) {
  * @param {Record<string, string>} bandTitles
  * @param {number} groupIndexSeed
  */
-function distanceGroupsFromSpots(pendingSpots, bandTitles, groupIndexSeed) {
+/**
+ * @param {object[]} items
+ * @param {(spot: object) => boolean} [hasPhoto]
+ */
+export function sortNearbyBandItemsPhotoFirst(items, hasPhoto) {
+  const photoFn = typeof hasPhoto === 'function' ? hasPhoto : () => false;
+  return [...(items || [])].sort((a, b) => {
+    const ap = photoFn(a) ? 0 : 1;
+    const bp = photoFn(b) ? 0 : 1;
+    if (ap !== bp) return ap - bp;
+    const da = Number.isFinite(a?.distKm) ? a.distKm : Number.POSITIVE_INFINITY;
+    const db = Number.isFinite(b?.distKm) ? b.distKm : Number.POSITIVE_INFINITY;
+    return da - db;
+  });
+}
+
+function distanceGroupsFromSpots(pendingSpots, bandTitles, groupIndexSeed, hasPhoto) {
   /** @type {Map<string, object[]>} */
   const byBand = new Map();
   for (const spot of pendingSpots) {
@@ -82,7 +98,7 @@ function distanceGroupsFromSpots(pendingSpots, bandTitles, groupIndexSeed) {
       band,
       id: `distance-${band}-${i}`,
       title: bandTitles[band] || band,
-      items,
+      items: sortNearbyBandItemsPhotoFirst(items, hasPhoto),
     });
     i += 1;
   }
@@ -93,7 +109,7 @@ function distanceGroupsFromSpots(pendingSpots, bandTitles, groupIndexSeed) {
  * @param {Array<{ kind: 'spot', spot: object } | { kind: 'heading', title: string, listId: string, venueNote?: string }>} blocks
  * @param {Record<string, string>} bandTitles
  */
-export function groupFestivalNearbyBlocks(blocks, bandTitles) {
+export function groupFestivalNearbyBlocks(blocks, bandTitles, hasPhoto) {
   /** @type {Array<{ kind: 'distance' | 'heading', band?: string, id: string, title: string, venueNote?: string, items: object[] }>} */
   const displayGroups = [];
   /** @type {object[]} */
@@ -104,14 +120,25 @@ export function groupFestivalNearbyBlocks(blocks, bandTitles) {
   const flushPending = () => {
     if (!pendingSpots.length) return;
     displayGroups.push(
-      ...distanceGroupsFromSpots(pendingSpots, bandTitles, displayGroups.length),
+      ...distanceGroupsFromSpots(
+        pendingSpots,
+        bandTitles,
+        displayGroups.length,
+        hasPhoto,
+      ),
     );
     pendingSpots = [];
   };
 
   const closeHeading = () => {
     if (!currentHeading) return;
-    if (currentHeading.items.length) displayGroups.push(currentHeading);
+    if (currentHeading.items.length) {
+      currentHeading.items = sortNearbyBandItemsPhotoFirst(
+        currentHeading.items,
+        hasPhoto,
+      );
+      displayGroups.push(currentHeading);
+    }
     currentHeading = null;
   };
 
@@ -142,9 +169,9 @@ export function groupFestivalNearbyBlocks(blocks, bandTitles) {
  * @param {object[]} items
  * @param {Record<string, string>} bandTitles
  */
-export function groupFestivalNearbyItems(items, bandTitles) {
+export function groupFestivalNearbyItems(items, bandTitles, hasPhoto) {
   const blocks = (items || []).map((spot) => ({ kind: 'spot', spot }));
-  return groupFestivalNearbyBlocks(blocks, bandTitles);
+  return groupFestivalNearbyBlocks(blocks, bandTitles, hasPhoto);
 }
 
 /**

@@ -17,6 +17,7 @@ import {
   groupFestivalNearbyItems,
   nearbyBandCountsTotal,
   nearbyDistanceBand,
+  sortNearbyBandItemsPhotoFirst,
   summarizeNearbyListItems,
 } from '../../src/pages/Korea/lib/festivalNearbyDistanceGroups.js';
 
@@ -72,6 +73,20 @@ test('heading blocks stay separate groups', () => {
   const flat = flattenNearbyDisplayGroups(groups);
   assert.equal(flat.length, 3);
   assert.equal(nearbyBandCountsTotal(countNearbyDistanceBands(flat)), 3);
+});
+
+test('photo cards sort before compact cards within a band', () => {
+  const items = [
+    { name: 'no-photo-near', distKm: 0.1 },
+    { name: 'photo-far', distKm: 0.8, firstImage: 'https://example.test/a.jpg' },
+    { name: 'no-photo-mid', distKm: 0.5 },
+  ];
+  const sorted = sortNearbyBandItemsPhotoFirst(items, (row) =>
+    Boolean(String(row?.firstImage || '').trim()),
+  );
+  assert.equal(sorted[0].name, 'photo-far');
+  assert.equal(sorted[1].name, 'no-photo-near');
+  assert.equal(sorted[2].name, 'no-photo-mid');
 });
 
 test('food items group by distance only', () => {

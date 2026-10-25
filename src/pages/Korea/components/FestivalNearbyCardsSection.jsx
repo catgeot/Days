@@ -23,6 +23,7 @@ const BAND_KEYS = ['walk', 'drive', 'far'];
  *   renderSpotMeta?: (spot: object) => { title: string, subtitleLines: string[], thumbUrls: string[], imagePending?: boolean, clickable?: boolean },
  *   onSpotActivate?: (spot: object) => void,
  *   headingAttr?: boolean,
+ *   spotHasPhoto?: (spot: object) => boolean,
  * }} props
  */
 export default function FestivalNearbyCardsSection({
@@ -35,6 +36,7 @@ export default function FestivalNearbyCardsSection({
   renderSpotMeta,
   onSpotActivate,
   headingAttr = false,
+  spotHasPhoto,
 }) {
   const { t } = useTranslation();
   const [highlightBand, setHighlightBand] = useState(null);
@@ -60,9 +62,11 @@ export default function FestivalNearbyCardsSection({
   );
 
   const displayGroups = useMemo(() => {
-    if (blocks?.length) return groupFestivalNearbyBlocks(blocks, bandGroupTitles);
-    return groupFestivalNearbyItems(items || [], bandGroupTitles);
-  }, [blocks, items, bandGroupTitles]);
+    if (blocks?.length) {
+      return groupFestivalNearbyBlocks(blocks, bandGroupTitles, spotHasPhoto);
+    }
+    return groupFestivalNearbyItems(items || [], bandGroupTitles, spotHasPhoto);
+  }, [blocks, items, bandGroupTitles, spotHasPhoto]);
 
   const flatItems = useMemo(() => flattenNearbyDisplayGroups(displayGroups), [displayGroups]);
   const summary = useMemo(() => summarizeNearbyListItems(flatItems), [flatItems]);
@@ -197,6 +201,7 @@ export default function FestivalNearbyCardsSection({
                         thumbUrls={meta.thumbUrls}
                         imagePending={meta.imagePending}
                         clickable={meta.clickable}
+                        variant={variant}
                         onActivate={() => onSpotActivate?.(spot)}
                       />
                     </li>
