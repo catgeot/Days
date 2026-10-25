@@ -621,3 +621,29 @@ body {
     opacity: 0.85;
   }
 }
+
+@keyframes place-review-focus-fade {
+  0% {
+    background-color: rgba(59, 130, 246, 0.14);
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.38);
+  }
+  100% {
+    background-color: transparent;
+    box-shadow: 0 0 0 0 transparent;
+  }
+}
+
+.place-review-focus-highlight {
+  animation: place-review-focus-fade 1.5s ease-out forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .place-review-focus-highlight {
+    animation: none;
+  }
+
+  .place-review-focus-highlight-static {
+    outline: 2px solid rgba(59, 130, 246, 0.45);
+    outline-offset: 2px;
+  }
+}

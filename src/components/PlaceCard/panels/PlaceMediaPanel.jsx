@@ -157,6 +157,7 @@ const PlaceMediaPanel = React.memo(({
               location={location}
               setMediaMode={setMediaMode}
               mobileSecondaryNav={mobileSecondaryNav}
+              isActive={mediaMode === 'REVIEWS'}
             />
         </div>
 

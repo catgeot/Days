@@ -2,7 +2,7 @@ import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import { EditorialReviewText } from './EditorialReviewText.jsx';
 import { ReviewLinkChips } from './ReviewLinkChips.jsx';
 import { createPortal } from 'react-dom';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation, Trans } from 'react-i18next';
 import { PenSquare, Star, MessageSquare, Image as ImageIcon, MoreVertical, Trash2, Edit, X, ChevronLeft, ChevronRight, Heart, Eye, BookOpen } from 'lucide-react';
 import { usePlaceReviews } from '../../../hooks/usePlaceReviews';
@@ -34,6 +34,13 @@ import {
   shouldShowReviewExpandToggle,
 } from '../../../utils/placeReviewContentBlocks';
 import { reviewPlainTextForAccessibility } from '../../../utils/reviewInlineMarkdown.js';
+import {
+  parsePlaceReviewFocusId,
+  placeReviewDomId,
+  placeReviewFocusSearchWithoutReview,
+  PLACE_REVIEW_USER_INPUT_EVENTS,
+  startPlaceReviewFocusSession,
+} from '../../../utils/placeReviewFocus.js';
 
 const RelatedBlogCardThumbnail = ({ src }) => {
   const [failed, setFailed] = useState(false);
@@ -320,9 +327,12 @@ const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onToggleLike
     );
   };
 
+  const reviewAnchorId = placeReviewDomId(review.id);
+
   return (
     <div
-      className="bg-white border border-gray-100 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow"
+      id={reviewAnchorId || undefined}
+      className="bg-white border border-gray-100 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow scroll-mt-4"
       data-review-id={review.id}
     >
       {/* 작성자 및 별점 정보 */}
@@ -509,11 +519,16 @@ const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onToggleLike
 };
 // --------------------------------------------------------------------------
 
-const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null }) => {
+const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null, isActive = true }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const focusReviewId = parsePlaceReviewFocusId(searchParams);
   const scrollContainerRef = useRef(null);
-  usePlaceMediaScrollToTop('REVIEWS', scrollContainerRef, true);
+  const focusSessionRef = useRef(null);
+  const userCancelledDeepLinkRef = useRef(false);
+  const prevFocusReviewIdRef = useRef(focusReviewId);
+  usePlaceMediaScrollToTop('REVIEWS', scrollContainerRef, !focusReviewId);
   const [user, setUser] = useState(null);
 
   useEffect(() => {
@@ -540,8 +555,12 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null }) => {
       : (location.slug || idStr);
 
   useLayoutEffect(() => {
+    const hadFocus = Boolean(prevFocusReviewIdRef.current);
+    prevFocusReviewIdRef.current = focusReviewId;
+    if (focusReviewId) return;
+    if (hadFocus) return;
     resetPlaceMediaScrollInstant(scrollContainerRef.current);
-  }, [placeSlug]);
+  }, [placeSlug, focusReviewId]);
 
   const {
     reviews,
@@ -554,6 +573,89 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null }) => {
     incrementView,
     refetch
   } = usePlaceReviews(placeSlug, user);
+
+  const consumeReviewDeepLink = React.useCallback(() => {
+    if (!parsePlaceReviewFocusId(searchParams)) return;
+    const next = placeReviewFocusSearchWithoutReview(searchParams);
+    setSearchParams(next, { replace: true });
+  }, [searchParams, setSearchParams]);
+
+  useEffect(() => {
+    userCancelledDeepLinkRef.current = false;
+    if (!isActive || !focusReviewId) return undefined;
+
+    const listeners = [];
+    const cancelFromUser = () => {
+      userCancelledDeepLinkRef.current = true;
+      focusSessionRef.current?.abort();
+    };
+
+    const attach = () => {
+      const root = scrollContainerRef.current;
+      if (!root || listeners.length) return;
+      for (const type of PLACE_REVIEW_USER_INPUT_EVENTS) {
+        root.addEventListener(type, cancelFromUser, { passive: true });
+        listeners.push([root, type, cancelFromUser]);
+      }
+    };
+
+    attach();
+    const poll = window.setInterval(attach, 50);
+
+    return () => {
+      window.clearInterval(poll);
+      listeners.forEach(([root, type, handler]) => {
+        root.removeEventListener(type, handler);
+      });
+    };
+  }, [isActive, focusReviewId, placeSlug]);
+
+  useEffect(() => {
+    if (!isActive) {
+      focusSessionRef.current?.abort();
+      focusSessionRef.current = null;
+      return undefined;
+    }
+    if (!focusReviewId) return undefined;
+    if (userCancelledDeepLinkRef.current) {
+      consumeReviewDeepLink();
+      return undefined;
+    }
+    if (isLoading) return undefined;
+
+    const prev = focusSessionRef.current;
+    if (prev) prev.abort();
+
+    const session = startPlaceReviewFocusSession(
+      focusReviewId,
+      scrollContainerRef.current,
+    );
+    focusSessionRef.current = session;
+    let cancelled = false;
+
+    session.promise.then(() => {
+      if (cancelled) return;
+      consumeReviewDeepLink();
+    });
+
+    return () => {
+      cancelled = true;
+      const result = session.getResult();
+      if (result?.reason === 'found' && result.ok) {
+        session.release();
+      } else {
+        session.abort();
+      }
+      if (focusSessionRef.current === session) {
+        focusSessionRef.current = null;
+      }
+    };
+  }, [isActive, focusReviewId, isLoading, reviews, placeSlug, consumeReviewDeepLink]);
+
+  useEffect(() => () => {
+    focusSessionRef.current?.abort();
+    focusSessionRef.current = null;
+  }, []);
 
   const { blogs, isLoading: blogsLoading } = useRelatedBlogs(location.name, placeSlug);
 
@@ -678,10 +780,16 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null }) => {
       <div className={mobilePlaceHeaderSpacerClass} aria-hidden="true" />
       <div
         ref={scrollContainerRef}
+        data-place-reviews-scroll-root=""
         className={`flex-1 min-h-0 overflow-y-auto overflow-x-hidden custom-scrollbar ${placeScrollSurfaceClass} ${mobilePlaceReviewsFooterScrollPadding} md:pb-4 md:pt-0`}
       >
         {mobileSecondaryNav && (
-          <div className={`md:hidden px-2 pb-2 shrink-0 ${mobileLandscapeChromeHidden}`}>{mobileSecondaryNav}</div>
+          <div
+            data-place-reviews-scroll-chrome=""
+            className={`md:hidden px-2 pb-2 shrink-0 ${mobileLandscapeChromeHidden}`}
+          >
+            {mobileSecondaryNav}
+          </div>
         )}
 
         {/* 모바일 전용 압축 헤더 — sticky 제거, 스크롤과 함께 이동 */}
