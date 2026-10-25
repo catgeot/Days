@@ -105,7 +105,7 @@ export const CAIRO_CITY_FACTS = {
       '통화는 이집트 파운드(EGP)예요.\n외교부 여행경보에서 카이로 등 나일강 유역 도시지역은 여행유의예요.\n서부사막과 시나이 남부 일부는 여행자제, 중·북부 시나이와 리비아 국경 30km는 출국권고예요.\n대사관 최근 공지(2026-09-22)는 중동 군사적 긴장에 안전을 유의하고, 개인 간 환전 사기를 조심하라고 해요.\n영사콜센터는 +82-2-3210-0404예요.',
       [LOGBOOK, SAFETY, EMBASSY_NOTICES],
       DAY,
-      { id: 'money-safety' },
+      { id: 'money-safety', kind: 'standing', checkedOn: DAY },
     ),
     emptySlot('season', '시즌'),
   ],

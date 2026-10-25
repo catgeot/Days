@@ -878,6 +878,13 @@
       },
       "source": "Source",
       "checked": "Checked {{date}}",
+      "freshness": {
+        "checkedChip": "Checked {{date}}",
+        "warn": "For the latest updates, check with the Ministry of Foreign Affairs.",
+        "mofaLink": "MOFA overseas travel safety",
+        "hiddenLead": "See the latest safety updates on MOFA overseas travel safety.",
+        "consular": "Consular Call Center {{phone}}"
+      },
       "unverified": "Unverified: {{items}}",
       "aiGenerated": "AI-generated · no source",
       "aiGeneratedDated": "AI-generated · no source · {{date}}",
