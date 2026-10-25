@@ -78,6 +78,65 @@ async function scrollGalleryDeep(page, minTop = 1000) {
   }, minTop);
 }
 
+async function waitGalleryImagesReady(page, gallery, minHeight = 1700) {
+  await expect.poll(async () => {
+    return gallery.evaluate((el, minH) => {
+      const imgs = [...el.querySelectorAll('img')];
+      const loaded = imgs.filter((i) => i.complete && i.naturalHeight > 0).length;
+      const max = Math.max(0, el.scrollHeight - el.clientHeight);
+      const tallEnough = el.scrollHeight >= minH && max >= 1350;
+      const imgsOk = imgs.length === 0 || loaded >= Math.min(imgs.length, 6);
+      return tallEnough && imgsOk;
+    }, minHeight);
+  }, { timeout: 120_000 }).toBe(true);
+  const metrics = await gallery.evaluate((el) => ({
+    scrollHeight: el.scrollHeight,
+    max: Math.max(0, el.scrollHeight - el.clientHeight),
+  }));
+  if (metrics.max < 1350) {
+    return { ...metrics, skipped: true };
+  }
+  return { ...metrics, skipped: false };
+}
+
+async function scrollGalleryToTarget(page, gallery, targetTop = 1500) {
+  const top = await gallery.evaluate((el, t) => {
+    const max = Math.max(0, el.scrollHeight - el.clientHeight);
+    const top = Math.min(max, t);
+    el.scrollTop = top;
+    el.setAttribute('data-gallery-last-scroll', String(top));
+    return top;
+  }, targetTop);
+  expect(top).toBeGreaterThan(targetTop - 200);
+  return top;
+}
+
+async function cairoReviewsBackAtDepth(page, { input = 'wheel' } = {}) {
+  const gallery = page.locator('[data-place-gallery-scroll]');
+  await page.getByRole('button', { name: /다녀온 이야기/ }).first().click();
+  const ready = await waitGalleryImagesReady(page, gallery);
+  if (ready.skipped) return { skipped: true, reason: 'gallery shorter than 1350px scroll range' };
+  if (input === 'touch') await touchSwipeGalleryUp(page, gallery, 12);
+  else await wheelGallery(page, gallery, 200, 10);
+  const before = await scrollGalleryToTarget(page, gallery, 1500);
+  const focusStory = page
+    .locator('[data-visit-story-kind="review"]')
+    .filter({ hasText: 'E2E visit story — target review' })
+    .first();
+  await expect(focusStory).toBeVisible({ timeout: 20_000 });
+  await focusStory.click();
+  await expect(page).toHaveURL(/\/place\/cairo\/reviews/, { timeout: 30_000 });
+  await expect.poll(() => page.url(), { timeout: 15_000 }).not.toContain('review=');
+  await page.goBack({ waitUntil: 'commit' });
+  await expect(page).toHaveURL(/\/place\/cairo(?:\/|$|\?)/, { timeout: 30_000 });
+  await expect(gallery).toBeVisible({ timeout: 30_000 });
+  await expect.poll(async () => gallery.evaluate((el) => el.scrollTop), { timeout: 25_000 })
+    .toBeGreaterThan(before - 48);
+  const after = await gallery.evaluate((el) => el.scrollTop);
+  expect(Math.abs(after - before)).toBeLessThanOrEqual(48);
+  return { before, after };
+}
+
 async function wheelGallery(page, gallery, deltaY = 220, times = 6) {
   const box = await gallery.boundingBox();
   if (!box) throw new Error('gallery box missing');
@@ -435,6 +494,22 @@ test.describe('place visit story → reviews focus (WebKit 390, fixtures)', () =
     });
     const afterClose = await root.evaluate((el) => el.scrollTop);
     expect(Math.abs(afterClose - beforeTop)).toBeLessThanOrEqual(8);
+  });
+
+  test('cairo reviews back restores ~1500 after gallery images load (wheel)', async ({ page }) => {
+    await openCairoFromSearch(page);
+    const gallery = page.locator('[data-place-gallery-scroll]');
+    await expect(gallery).toBeVisible({ timeout: 30_000 });
+    const result = await cairoReviewsBackAtDepth(page, { input: 'wheel' });
+    if (result.skipped) test.skip(true, result.reason);
+  });
+
+  test('cairo reviews back restores ~1500 after gallery images load (touch)', async ({ page }) => {
+    await openCairoFromSearch(page);
+    const gallery = page.locator('[data-place-gallery-scroll]');
+    await expect(gallery).toBeVisible({ timeout: 30_000 });
+    const result = await cairoReviewsBackAtDepth(page, { input: 'touch' });
+    if (result.skipped) test.skip(true, result.reason);
   });
 
   test('lightbox history.back at scroll top stays at top (wheel)', async ({ page }) => {
