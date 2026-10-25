@@ -1,4 +1,4 @@
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { test, expect } from './fixtures.js';
@@ -13,8 +13,6 @@ const JEJU_ROWS = JSON.parse(
 
 const FOCUS_ID = 'e2e-logbook-hub-jeju-editorial';
 const FOCUS_ANCHOR_ID = `place-review-${FOCUS_ID}`;
-const ARTIFACT_DIR =
-  process.env.LOGBOOK_REVIEW_HUB_ARTIFACT_DIR || '/opt/cursor/artifacts/logbook-review-hub-fix';
 
 test.use({
   ignoreHTTPSErrors: true,
@@ -93,13 +91,6 @@ async function measureReviewFocusMetrics(page, reviewId = FOCUS_ID) {
   }, reviewId);
 }
 
-async function shootClip(page, filename) {
-  mkdirSync(ARTIFACT_DIR, { recursive: true });
-  const path = join(ARTIFACT_DIR, filename);
-  await page.screenshot({ path, clip: { x: 0, y: 0, width: 390, height: 844 } });
-  return path;
-}
-
 test.describe('logbook official review hub (WebKit 390, flag ON fixtures)', () => {
   test.beforeEach(async ({ page }) => {
     await page.route('**/rest/v1/place_reviews**', fulfillPlaceReviews);
@@ -111,8 +102,6 @@ test.describe('logbook official review hub (WebKit 390, flag ON fixtures)', () =
   test('hub tap opens LogBook review; back restores hub; place CTA aligns; direct ?review=', async ({
     page,
   }) => {
-    const metricsLog = { capturedAt: new Date().toISOString(), steps: [] };
-
     await page.goto('/blog?tab=public&lang=ko', { waitUntil: 'domcontentloaded' });
     await waitForPublicFeed(page);
 
@@ -123,16 +112,11 @@ test.describe('logbook official review hub (WebKit 390, flag ON fixtures)', () =
     await expect(page.getByTestId('logbook-official-review-hub-panel')).toBeVisible();
 
     const moreBtn = page.getByTestId('logbook-official-review-hub-more');
-    if (await moreBtn.isVisible().catch(() => false)) {
+    if (HUB_ROWS.length > 10) {
+      await expect(moreBtn).toBeVisible();
       const moreBox = await moreBtn.boundingBox();
       expect(moreBox?.height ?? 0).toBeGreaterThanOrEqual(44);
-      metricsLog.steps.push({ step: 'more-button', height: moreBox?.height });
     }
-
-    metricsLog.steps.push({
-      step: 'hub-expanded',
-      shot: await shootClip(page, '01-hub-expanded-390.png'),
-    });
 
     const hubItem = page.locator('[data-testid="logbook-official-review-hub-item"]').first();
     await expect(hubItem).toBeVisible();
@@ -144,20 +128,13 @@ test.describe('logbook official review hub (WebKit 390, flag ON fixtures)', () =
     );
     await expect(page.getByTestId('logbook-official-review-hub-detail')).toBeVisible();
     await expect(page.getByTestId('logbook-official-review-hub-go-place-card')).toBeVisible();
-    metricsLog.steps.push({
-      step: 'logbook-inline-detail',
-      shot: await shootClip(page, '02-logbook-inline-review-detail-390.png'),
-    });
+    await expect(page.getByTestId('logbook-official-review-hub-editorial-notice')).toBeVisible();
 
-    await page.goBack();
+    await page.getByTestId('logbook-official-review-hub-detail-back').click();
     await expect(page).toHaveURL(/\/blog\?tab=public/, { timeout: 30_000 });
     await expect(page.url()).not.toContain(`review=${FOCUS_ID}`);
     await expect(page.getByTestId('logbook-official-review-hub-panel')).toBeVisible({
       timeout: 15_000,
-    });
-    metricsLog.steps.push({
-      step: 'after-back-expanded',
-      shot: await shootClip(page, '03-hub-expanded-after-back-390.png'),
     });
 
     await hubItem.click();
@@ -179,13 +156,6 @@ test.describe('logbook official review hub (WebKit 390, flag ON fixtures)', () =
       .poll(async () => (await measureReviewFocusMetrics(page)).gapUnderChrome, { timeout: 15_000 })
       .toBeLessThanOrEqual(8);
 
-    const placeMetrics = await measureReviewFocusMetrics(page);
-    metricsLog.steps.push({ step: 'place-from-logbook-cta', ...placeMetrics });
-    metricsLog.steps.push({
-      step: 'place-aligned',
-      shot: await shootClip(page, '04-place-review-aligned-390.png'),
-    });
-
     await page.goto(`/place/jeju/reviews?review=${FOCUS_ID}&lang=ko`, {
       waitUntil: 'domcontentloaded',
     });
@@ -196,16 +166,5 @@ test.describe('logbook official review hub (WebKit 390, flag ON fixtures)', () =
     await expect
       .poll(async () => (await measureReviewFocusMetrics(page)).gapUnderChrome, { timeout: 15_000 })
       .toBeLessThanOrEqual(8);
-    metricsLog.steps.push({
-      step: 'direct-review-param',
-      ...(await measureReviewFocusMetrics(page)),
-    });
-    metricsLog.steps.push({
-      step: 'direct-shot',
-      shot: await shootClip(page, '05-direct-review-param-390.png'),
-    });
-
-    mkdirSync(ARTIFACT_DIR, { recursive: true });
-    writeFileSync(join(ARTIFACT_DIR, 'metrics.json'), `${JSON.stringify(metricsLog, null, 2)}\n`);
   });
 });

@@ -42,6 +42,7 @@ export function formatLogbookDisplayDate(reportOrValue, opts = {}) {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
+    timeZone: 'Asia/Seoul',
   });
 }
 

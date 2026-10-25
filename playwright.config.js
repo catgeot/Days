@@ -251,5 +251,28 @@ export default defineConfig({
         ignoreHTTPSErrors: true,
       },
     },
+    {
+      name: 'webkit-logbook-official-review-hub',
+      testMatch: /logbook-official-review-hub-390\.spec\.js/,
+      use: {
+        ...devices['iPhone 13'],
+        locale: 'ko-KR',
+        viewport: { width: 390, height: 844 },
+        deviceScaleFactor: 1,
+        ignoreHTTPSErrors: true,
+        baseURL: 'http://127.0.0.1:5197',
+      },
+    },
   ],
+  ...(process.env.GATEO_LOGBOOK_HUB_E2E
+    ? {
+        webServer: {
+          command:
+            'BROWSER=none DEV_SSL=0 VITE_GATEO_LOGBOOK_REVIEW_HUB=1 npx vite --host 127.0.0.1 --port 5197',
+          url: 'http://127.0.0.1:5197/blog?tab=public',
+          reuseExistingServer: !process.env.CI,
+          timeout: 120_000,
+        },
+      }
+    : {}),
 });

@@ -20,6 +20,7 @@ import {
   readLogbookOfficialReviewHubBackState,
   snapshotLogbookOfficialReviewHubForBack,
 } from '../../../utils/logbookOfficialReviewHubState.js';
+import { restoreLogbookMainScrollWhenReady } from '../../../utils/logbookOfficialReviewHubScrollRestore.js';
 
 export const LOGBOOK_OFFICIAL_REVIEW_HUB_PAGE_SIZE = 10;
 const LIST_PREVIEW_MAX = 120;
@@ -147,6 +148,7 @@ const LogbookOfficialReviewHubCard = () => {
   const panelId = useId();
   const navigationType = useNavigationType();
   const restoredBackRef = useRef(false);
+  const scrollRestoreCancelRef = useRef(null);
   const [expanded, setExpanded] = useState(() => {
     const back = readLogbookOfficialReviewHubBackState(navigationType);
     return Boolean(back?.expanded);
@@ -167,26 +169,28 @@ const LogbookOfficialReviewHubCard = () => {
     if (restoredBackRef.current) return;
     const back = readLogbookOfficialReviewHubBackState(navigationType);
     if (!back) return;
-    restoredBackRef.current = true;
     setExpanded(true);
-    setVisibleCount(Math.min(Math.max(back.visibleCount, LOGBOOK_OFFICIAL_REVIEW_HUB_PAGE_SIZE), totalCount || back.visibleCount));
-    const applyScroll = () => {
-      const main = document.querySelector('[data-logbook-main-scroll]');
-      if (main && back.scrollTop > 0) {
-        main.scrollTop = back.scrollTop;
-      }
-    };
-    applyScroll();
-    const raf = window.requestAnimationFrame(applyScroll);
-    const timer = window.setTimeout(() => {
-      applyScroll();
-      clearLogbookOfficialReviewHubBackState();
-    }, 150);
+    setVisibleCount(
+      Math.min(
+        Math.max(back.visibleCount, LOGBOOK_OFFICIAL_REVIEW_HUB_PAGE_SIZE),
+        totalCount || back.visibleCount,
+      ),
+    );
+    if (isLoading) return undefined;
+
+    scrollRestoreCancelRef.current?.();
+    const main = document.querySelector('[data-logbook-main-scroll]');
+    scrollRestoreCancelRef.current = restoreLogbookMainScrollWhenReady(main, back.scrollTop, {
+      onFinalize: () => {
+        restoredBackRef.current = true;
+        clearLogbookOfficialReviewHubBackState();
+      },
+    });
     return () => {
-      window.cancelAnimationFrame(raf);
-      window.clearTimeout(timer);
+      scrollRestoreCancelRef.current?.();
+      scrollRestoreCancelRef.current = null;
     };
-  }, [navigationType, totalCount]);
+  }, [navigationType, totalCount, isLoading]);
 
   const rememberHubForBrowserBack = () => {
     const main = document.querySelector('[data-logbook-main-scroll]');

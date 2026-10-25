@@ -65,6 +65,7 @@ function setupDom() {
 }
 
 test('findPlaceReviewElement prefers reviews scroll root over hub list items', () => {
+  globalThis.__VITE_ENV__ = { VITE_GATEO_LOGBOOK_REVIEW_HUB: '1' };
   const dom = setupDom();
   const hubItem = dom.window.document.createElement('a');
   hubItem.setAttribute('data-review-id', 'hub-id');
@@ -86,6 +87,7 @@ test('findPlaceReviewElement prefers reviews scroll root over hub list items', (
 });
 
 test('measurePlaceReviewScrollHeaderOffset sums scroll chrome nodes', () => {
+  globalThis.__VITE_ENV__ = { VITE_GATEO_LOGBOOK_REVIEW_HUB: '1' };
   const dom = setupDom();
   const root = dom.window.document.createElement('div');
   root.setAttribute('data-place-reviews-scroll-root', '');

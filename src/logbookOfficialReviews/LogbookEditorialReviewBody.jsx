@@ -11,14 +11,21 @@ import {
   reviewBodyLinkUrlKeys,
 } from '../utils/placeReviewContentBlocks.js';
 
-function EditorialInlineImage({ img, blockKey }) {
+function editorialImageAlt(placeName, imageIndex) {
+  const place = String(placeName || '').trim() || '여행지';
+  const n = Number(imageIndex);
+  const ordinal = Number.isFinite(n) && n >= 0 ? n + 1 : 1;
+  return `${place} 사진 ${ordinal}`;
+}
+
+function EditorialInlineImage({ img, blockKey, placeName, imageIndex }) {
   const src = resolveReviewImageSrc(img);
   if (!src) return null;
   return (
     <div key={blockKey} className="mt-4">
       <img
         src={src}
-        alt=""
+        alt={editorialImageAlt(placeName, imageIndex)}
         className="w-full rounded-lg object-cover max-h-80 bg-gray-100 border border-gray-200"
         loading="lazy"
         decoding="async"
@@ -31,6 +38,7 @@ function EditorialInlineImage({ img, blockKey }) {
 export function LogbookEditorialReviewBody({ review }) {
   if (!review) return null;
 
+  const placeName = String(review.place_name || '').trim();
   const disclosure = resolveEditorialReviewDisclosure(review);
   const usesContentBlocks = hasReviewContentBlocks(review.content_blocks);
   const contentBlocks = normalizeReviewContentBlocks(review.content_blocks);
@@ -73,6 +81,8 @@ export function LogbookEditorialReviewBody({ review }) {
                 key={`image-${blockIdx}`}
                 blockKey={`image-${blockIdx}`}
                 img={images[block.image_index]}
+                placeName={placeName}
+                imageIndex={block.image_index}
               />
             );
           }

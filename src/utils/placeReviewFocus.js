@@ -1,4 +1,9 @@
 import { EDITORIAL_REVIEW_DEEPLINK_QUERY_PARAM } from '../logbookOfficialReviews/constants.js';
+import { isGateoLogbookReviewHubEnabled } from '../shared/gateoFeatureFlags.js';
+
+function hubAlignedPlaceReviewFocusEnabled() {
+  return isGateoLogbookReviewHubEnabled();
+}
 
 export const PLACE_REVIEW_ANCHOR_PREFIX = 'place-review-';
 
@@ -73,7 +78,23 @@ function cssReviewIdSelector(reviewId) {
   return `[data-review-id="${escapeCssIdent(id)}"]`;
 }
 
+function findPlaceReviewElementLegacy(reviewId, root = null) {
+  const doc = root?.ownerDocument || root || globalThis.document;
+  if (!doc) return null;
+  const domId = placeReviewDomId(reviewId);
+  if (domId && typeof doc.getElementById === 'function') {
+    const byId = doc.getElementById(domId);
+    if (byId) return byId;
+  }
+  const scope = typeof root?.querySelector === 'function' ? root : doc;
+  return scope.querySelector?.(`[data-review-id="${reviewId}"]`) ?? null;
+}
+
 export function findPlaceReviewElement(reviewId, root = null) {
+  if (!hubAlignedPlaceReviewFocusEnabled()) {
+    return findPlaceReviewElementLegacy(reviewId, root);
+  }
+
   const doc = root?.ownerDocument || root || globalThis.document;
   if (!doc) return null;
   const domId = placeReviewDomId(reviewId);
@@ -157,6 +178,11 @@ export function measurePlaceReviewScrollHeaderOffset(scrollRoot) {
   if (typeof window === 'undefined') return base + 88;
   const isMobile = window.matchMedia('(max-width: 767px)').matches;
   if (!scrollRoot) return base + (isMobile ? 88 : 16);
+  if (!hubAlignedPlaceReviewFocusEnabled()) {
+    const nav = scrollRoot.querySelector('[data-place-reviews-scroll-chrome]');
+    const navHeight = nav ? nav.getBoundingClientRect().height : (isMobile ? 44 : 0);
+    return base + navHeight;
+  }
   const rootRect = scrollRoot.getBoundingClientRect();
   const chromeNodes = scrollRoot.querySelectorAll('[data-place-reviews-scroll-chrome]');
   let chromeBottom = rootRect.top;
@@ -176,7 +202,41 @@ export function measurePlaceReviewScrollHeaderOffset(scrollRoot) {
  * @param {{ headerOffset?: number, behavior?: ScrollBehavior, onScheduleTimer?: (id: number) => void }} [options]
  * @returns {boolean}
  */
+function scrollPlaceReviewIntoViewLegacy(scrollRoot, reviewId, options = {}) {
+  const el = findPlaceReviewElement(reviewId);
+  if (!el) return false;
+
+  const headerOffset = options.headerOffset ?? measurePlaceReviewScrollHeaderOffset(scrollRoot);
+  const behavior = prefersReducedMotionForReviewFocus()
+    ? 'auto'
+    : (options.behavior ?? 'smooth');
+
+  if (scrollRoot && scrollRoot.contains(el)) {
+    const rootRect = scrollRoot.getBoundingClientRect();
+    const elRect = el.getBoundingClientRect();
+    const nextTop = Math.max(0, scrollRoot.scrollTop + (elRect.top - rootRect.top) - headerOffset);
+    if (behavior === 'auto') {
+      scrollRoot.scrollTop = nextTop;
+    } else {
+      scrollRoot.scrollTo({ top: nextTop, behavior });
+      const timerId = window.setTimeout(() => {
+        if (Math.abs(scrollRoot.scrollTop - nextTop) > 6) {
+          scrollRoot.scrollTop = nextTop;
+        }
+      }, 450);
+      options.onScheduleTimer?.(timerId);
+    }
+  } else {
+    el.scrollIntoView({ behavior, block: 'start' });
+  }
+  return true;
+}
+
 export function scrollPlaceReviewIntoView(scrollRoot, reviewId, options = {}) {
+  if (!hubAlignedPlaceReviewFocusEnabled()) {
+    return scrollPlaceReviewIntoViewLegacy(scrollRoot, reviewId, options);
+  }
+
   const el = findPlaceReviewElement(reviewId);
   if (!el) return false;
 
@@ -334,13 +394,15 @@ export function startPlaceReviewFocusSession(reviewId, scrollRoot, options = {})
       if (settled) return;
 
       const el = findPlaceReviewElement(reviewId, scrollRoot);
-      const root = resolvePlaceReviewsScrollRoot(scrollRoot, el);
+      const root = hubAlignedPlaceReviewFocusEnabled()
+        ? resolvePlaceReviewsScrollRoot(scrollRoot, el)
+        : scrollRoot;
       const ready =
         el &&
         root &&
         root.clientHeight > 0 &&
         root.contains(el) &&
-        isPlaceReviewFocusTargetVisible(el);
+        (!hubAlignedPlaceReviewFocusEnabled() || isPlaceReviewFocusTargetVisible(el));
 
       if (ready) {
         ignoreUserScrollUntil = Date.now() + graceMs;

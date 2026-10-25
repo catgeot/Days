@@ -24,6 +24,9 @@ function setupDom() {
   globalThis.window = dom.window;
   globalThis.document = dom.window.document;
   globalThis.sessionStorage = dom.window.sessionStorage;
+  globalThis.HTMLElement = dom.window.HTMLElement;
+  globalThis.Element = dom.window.Element;
+  globalThis.performance = dom.window.performance;
   return dom;
 }
 
@@ -39,6 +42,16 @@ test('hub back state restores only on POP', () => {
   clearLogbookOfficialReviewHubBackState();
   assert.equal(readLogbookOfficialReviewHubBackState('POP'), null);
   dom.window.close();
+});
+
+test('ReviewsTab gates place review chrome alignment behind hub flag', () => {
+  const src = readFileSync(
+    join(healthRoot, 'src/components/PlaceCard/tabs/ReviewsTab.jsx'),
+    'utf8',
+  );
+  assert.match(src, /isGateoLogbookReviewHubEnabled/);
+  assert.match(src, /hubAlignedReviewFocus/);
+  assert.match(src, /data-place-reviews-scroll-chrome/);
 });
 
 test('hub card links open in-logbook review URL', () => {
@@ -67,4 +80,21 @@ test('buildLogbookOfficialReviewHref keeps tab=public on /blog', () => {
     buildLogbookOfficialReviewHref('abc-123'),
     '/blog?tab=public&review=abc-123',
   );
+});
+
+test('placeReviewFocus hub alignment is gated behind logbook review hub flag', () => {
+  const src = readFileSync(join(healthRoot, 'src/utils/placeReviewFocus.js'), 'utf8');
+  assert.match(src, /isGateoLogbookReviewHubEnabled/);
+  assert.match(src, /hubAlignedPlaceReviewFocusEnabled/);
+  assert.match(src, /findPlaceReviewElementLegacy/);
+});
+
+test('hub scroll restore module cancels on user intent and caps wait', () => {
+  const src = readFileSync(
+    join(healthRoot, 'src/utils/logbookOfficialReviewHubScrollRestore.js'),
+    'utf8',
+  );
+  assert.match(src, /keydown/);
+  assert.match(src, /RESTORE_READY_TIMEOUT_MS/);
+  assert.match(src, /onFinalize/);
 });
