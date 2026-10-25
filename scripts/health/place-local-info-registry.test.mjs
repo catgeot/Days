@@ -138,6 +138,7 @@ test('paris rollout hides the money row and does not call ETIAS required', () =>
   const cairoSafety = localInfoRegistry.cairo.ko.city.slots.find((slot) => slot.id === 'safety');
   assert.equal(cairoMoney.kind, 'standing');
   assert.equal(cairoMoney.checkedOn, null);
+  assert.equal(cairoMoney.checkedAt, '');
   assert.match(cairoMoney.value, /EGP/);
   assert.equal(cairoSafety.kind, 'standing');
   assert.equal(cairoSafety.checkedOn, '2026-10-11');

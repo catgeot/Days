@@ -40,6 +40,7 @@ test('event freshness bands use KST calendar days (Paris safety)', () => {
 test('standing freshness bands (Cairo safety row)', () => {
   assert.equal(cairoMoney.kind, 'standing');
   assert.equal(cairoMoney.checkedOn, null);
+  assert.equal(cairoMoney.checkedAt, '');
   assert.equal(freshnessTier(cairoMoney, '2027-06-01'), 'none');
   assert.equal(cairoSafety.kind, 'standing');
   assert.equal(cairoSafety.checkedOn, '2026-10-11');
@@ -96,6 +97,7 @@ test('freshness UI pins MOFA URL and consular tel link', () => {
   assert.match(factsUi, /CONSULAR_CALL_CENTER_TEL/);
   assert.equal(CONSULAR_CALL_CENTER_TEL, 'tel:+82232100404');
   assert.equal(mofaOverseasSafetyUrl(), 'https://www.0404.go.kr/');
+  assert.match(factsUi, /slot\.kind && !slot\.checkedOn/);
 });
 
 test('event slot staleness emits CI warning without failing', () => {

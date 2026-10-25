@@ -311,7 +311,13 @@ function FactSlotBody({ slot, slug, locale, light }) {
   const showCheckedChip = freshness.tier === 'fresh' && slot.checkedOn;
   const showWarn = freshness.tier === 'warn';
   const showHidden = freshness.tier === 'hidden';
-  const showCheckedInMeta = freshness.tier === 'none' || !slot.kind;
+  const showCheckedInMeta = (() => {
+    if (freshness.tier === 'fresh' || freshness.tier === 'warn' || freshness.tier === 'hidden') {
+      return false;
+    }
+    if (slot.kind && !slot.checkedOn) return false;
+    return Boolean(String(slot.checkedAt || '').trim());
+  })();
 
   return (
     <div data-fact-freshness-tier={freshness.tier}>

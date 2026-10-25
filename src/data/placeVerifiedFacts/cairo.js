@@ -104,7 +104,7 @@ export const CAIRO_CITY_FACTS = {
       '돈',
       '통화는 이집트 파운드(EGP)예요.',
       [LOGBOOK],
-      DAY,
+      '',
       { id: 'money-safety', kind: 'standing' },
     ),
     verifiedSlot(
