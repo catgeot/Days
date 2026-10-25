@@ -108,7 +108,7 @@ test.describe('logbook official review hub (WebKit 390, flag ON fixtures)', () =
     );
   });
 
-  test('hub tap aligns review; back restores hub; direct ?review= aligns; 더 보기 ≥44px', async ({
+  test('hub tap opens LogBook review; back restores hub; place CTA aligns; direct ?review=', async ({
     page,
   }) => {
     const metricsLog = { capturedAt: new Date().toISOString(), steps: [] };
@@ -129,12 +129,40 @@ test.describe('logbook official review hub (WebKit 390, flag ON fixtures)', () =
       metricsLog.steps.push({ step: 'more-button', height: moreBox?.height });
     }
 
-    const hubShot = await shootClip(page, '01-hub-expanded-390.png');
-    metricsLog.steps.push({ step: 'hub-expanded', shot: hubShot });
+    metricsLog.steps.push({
+      step: 'hub-expanded',
+      shot: await shootClip(page, '01-hub-expanded-390.png'),
+    });
 
     const hubItem = page.locator('[data-testid="logbook-official-review-hub-item"]').first();
     await expect(hubItem).toBeVisible();
     await hubItem.click();
+
+    await expect(page).toHaveURL(
+      new RegExp(`/blog\\?.*tab=public.*review=${FOCUS_ID}`),
+      { timeout: 30_000 },
+    );
+    await expect(page.getByTestId('logbook-official-review-hub-detail')).toBeVisible();
+    await expect(page.getByTestId('logbook-official-review-hub-go-place-card')).toBeVisible();
+    metricsLog.steps.push({
+      step: 'logbook-inline-detail',
+      shot: await shootClip(page, '02-logbook-inline-review-detail-390.png'),
+    });
+
+    await page.goBack();
+    await expect(page).toHaveURL(/\/blog\?tab=public/, { timeout: 30_000 });
+    await expect(page.url()).not.toContain(`review=${FOCUS_ID}`);
+    await expect(page.getByTestId('logbook-official-review-hub-panel')).toBeVisible({
+      timeout: 15_000,
+    });
+    metricsLog.steps.push({
+      step: 'after-back-expanded',
+      shot: await shootClip(page, '03-hub-expanded-after-back-390.png'),
+    });
+
+    await hubItem.click();
+    await expect(page.getByTestId('logbook-official-review-hub-detail')).toBeVisible();
+    await page.getByTestId('logbook-official-review-hub-go-place-card').click();
 
     await expect(page).toHaveURL(
       new RegExp(`/place/jeju/reviews\\?review=${FOCUS_ID}`),
@@ -146,24 +174,17 @@ test.describe('logbook official review hub (WebKit 390, flag ON fixtures)', () =
 
     await expect
       .poll(() => measureReviewFocusMetrics(page), { timeout: 15_000 })
-      .toMatchObject({ ok: true, highlighted: true, gapUnderChrome: expect.any(Number) });
-
+      .toMatchObject({ ok: true, highlighted: true });
     await expect
       .poll(async () => (await measureReviewFocusMetrics(page)).gapUnderChrome, { timeout: 15_000 })
       .toBeLessThanOrEqual(8);
 
-    const afterTapMetrics = await measureReviewFocusMetrics(page);
-    metricsLog.steps.push({ step: 'after-hub-tap', ...afterTapMetrics });
-    const alignedShot = await shootClip(page, '02-review-aligned-highlight-390.png');
-    metricsLog.steps.push({ step: 'aligned-shot', shot: alignedShot });
-
-    await page.goBack();
-    await expect(page).toHaveURL(/\/blog\?tab=public/, { timeout: 30_000 });
-    await expect(page.getByTestId('logbook-official-review-hub-panel')).toBeVisible({
-      timeout: 15_000,
+    const placeMetrics = await measureReviewFocusMetrics(page);
+    metricsLog.steps.push({ step: 'place-from-logbook-cta', ...placeMetrics });
+    metricsLog.steps.push({
+      step: 'place-aligned',
+      shot: await shootClip(page, '04-place-review-aligned-390.png'),
     });
-    const backShot = await shootClip(page, '03-hub-expanded-after-back-390.png');
-    metricsLog.steps.push({ step: 'after-back-expanded', shot: backShot });
 
     await page.goto(`/place/jeju/reviews?review=${FOCUS_ID}&lang=ko`, {
       waitUntil: 'domcontentloaded',
@@ -175,10 +196,14 @@ test.describe('logbook official review hub (WebKit 390, flag ON fixtures)', () =
     await expect
       .poll(async () => (await measureReviewFocusMetrics(page)).gapUnderChrome, { timeout: 15_000 })
       .toBeLessThanOrEqual(8);
-    const directMetrics = await measureReviewFocusMetrics(page);
-    metricsLog.steps.push({ step: 'direct-review-param', ...directMetrics });
-    const directShot = await shootClip(page, '04-direct-review-param-390.png');
-    metricsLog.steps.push({ step: 'direct-shot', shot: directShot });
+    metricsLog.steps.push({
+      step: 'direct-review-param',
+      ...(await measureReviewFocusMetrics(page)),
+    });
+    metricsLog.steps.push({
+      step: 'direct-shot',
+      shot: await shootClip(page, '05-direct-review-param-390.png'),
+    });
 
     mkdirSync(ARTIFACT_DIR, { recursive: true });
     writeFileSync(join(ARTIFACT_DIR, 'metrics.json'), `${JSON.stringify(metricsLog, null, 2)}\n`);

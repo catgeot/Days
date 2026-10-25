@@ -9,6 +9,7 @@ import {
   readLogbookOfficialReviewHubBackState,
   snapshotLogbookOfficialReviewHubForBack,
 } from '../../src/utils/logbookOfficialReviewHubState.js';
+import { buildLogbookOfficialReviewHref } from '../../src/utils/logbookOfficialReviewHubRoutes.js';
 
 const healthRoot = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 
@@ -36,7 +37,7 @@ test('hub back state restores only on POP', () => {
   dom.window.close();
 });
 
-test('hub card links use buildPlaceReviewsHref with review id', () => {
+test('hub card links open in-logbook review URL', () => {
   const src = readFileSync(
     join(
       healthRoot,
@@ -44,7 +45,14 @@ test('hub card links use buildPlaceReviewsHref with review id', () => {
     ),
     'utf8',
   );
-  assert.match(src, /buildPlaceReviewsHref\(placePath, review\.id\)/);
+  assert.match(src, /buildLogbookOfficialReviewHref\(review\.id\)/);
   assert.match(src, /snapshotLogbookOfficialReviewHubForBack/);
   assert.match(src, /min-h-11/);
+});
+
+test('buildLogbookOfficialReviewHref keeps tab=public on /blog', () => {
+  assert.equal(
+    buildLogbookOfficialReviewHref('abc-123'),
+    '/blog?tab=public&review=abc-123',
+  );
 });

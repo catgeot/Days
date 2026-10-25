@@ -14,7 +14,7 @@ import {
   resolveReviewThumbnailSrc,
 } from '../../../utils/placeReviewContentBlocks.js';
 import { stripReviewInlineMarkdown } from '../../../utils/reviewInlineMarkdown.js';
-import { buildPlaceReviewsHref } from '../../../utils/placeReviewFocus.js';
+import { buildLogbookOfficialReviewHref } from '../../../utils/logbookOfficialReviewHubRoutes.js';
 import {
   clearLogbookOfficialReviewHubBackState,
   readLogbookOfficialReviewHubBackState,
@@ -256,8 +256,7 @@ const LogbookOfficialReviewHubCard = () => {
           <ul className="divide-y divide-gray-100">
             {visibleRows.map((review) => {
               const slug = String(review.place_slug || '').trim();
-              const placePath = slug ? `/place/${slug}` : '';
-              const href = placePath ? buildPlaceReviewsHref(placePath, review.id) : '#';
+              const href = buildLogbookOfficialReviewHref(review.id);
               const thumbSrc = editorialReviewThumbSrc(review);
               const preview = editorialReviewListPreview(review);
               const placeName = String(review.place_name || '').trim();
