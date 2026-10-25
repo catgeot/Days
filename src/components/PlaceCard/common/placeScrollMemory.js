@@ -4,6 +4,20 @@ const tops = new Map();
 const backTops = new Map();
 /** In-session only — stale sessionStorage after reload/direct entry must not restore. */
 const backRestoreLive = new Map();
+/** Lightbox / modal overlays that unmount or reflow the scroll container. */
+const overlayScrollByKey = new Map();
+
+function readGalleryScrollSnapshotFromElement(el, placeKey) {
+  const id = String(placeKey || '').trim();
+  const liveTop = Number(el?.scrollTop);
+  const remembered = id ? readStoredGalleryScroll(id) : 0;
+  const attrTop = Number(el?.getAttribute?.('data-gallery-last-scroll'));
+  return Math.max(
+    Number.isFinite(liveTop) && liveTop >= 0 ? liveTop : 0,
+    remembered,
+    Number.isFinite(attrTop) && attrTop > 0 ? attrTop : 0,
+  );
+}
 
 function storageKey(id) {
   return `gateo:place-gallery-scroll:${id}`;
@@ -154,6 +168,54 @@ export function isGalleryBackRestoreDue(placeKey, navigationType) {
   return navigationType === 'POP';
 }
 
+/**
+ * Armed gallery back offset for in-app return (e.g. reviews → 사진 보기) without router POP.
+ * @param {unknown} placeKey
+ * @returns {number}
+ */
+export function peekArmedGalleryBackScroll(placeKey) {
+  const id = String(placeKey || '').trim();
+  if (!id || !backRestoreLive.get(id)) return 0;
+  if (!isBackArmed(id)) return 0;
+  return readBackGalleryScroll(id);
+}
+
+/**
+ * @param {unknown} overlayKey
+ * @param {Element | null | undefined} container
+ * @param {unknown} [galleryPlaceKey]
+ */
+export function snapshotScrollBeforeOverlay(overlayKey, container, galleryPlaceKey = '') {
+  const key = String(overlayKey || '').trim();
+  if (!key || !container) return;
+  const placeId = String(galleryPlaceKey || '').trim();
+  const n = placeId
+    ? readGalleryScrollSnapshotFromElement(container, placeId)
+    : Math.max(
+        Number.isFinite(Number(container.scrollTop)) && Number(container.scrollTop) >= 0
+          ? Number(container.scrollTop)
+          : 0,
+        Number(container.getAttribute?.('data-gallery-last-scroll')) > 0
+          ? Number(container.getAttribute('data-gallery-last-scroll'))
+          : 0,
+      );
+  if (!Number.isFinite(n) || n < 0) return;
+  overlayScrollByKey.set(key, n);
+  if (placeId && n > 0) rememberPlaceGalleryScroll(placeId, n);
+}
+
+/**
+ * @param {unknown} overlayKey
+ * @returns {number}
+ */
+export function consumeScrollAfterOverlay(overlayKey) {
+  const key = String(overlayKey || '').trim();
+  if (!key) return 0;
+  const n = overlayScrollByKey.get(key);
+  overlayScrollByKey.delete(key);
+  return Number.isFinite(n) && n > 0 ? n : 0;
+}
+
 export const GALLERY_SCROLL_REALIGN_TIMEOUT_MS = 1500;
 
 function isGalleryImgInContainerViewport(container, img) {
@@ -231,12 +293,12 @@ export function scheduleOneGalleryScrollRealignAfterImages(container, scrollTop,
     finish();
   };
 
+  const maxScrollTop = () =>
+    Math.max(0, container.scrollHeight - container.clientHeight);
+
   const scrollApplied = () => {
-    if (Math.abs(container.scrollTop - top) <= 8) return true;
-    const max = Math.max(0, container.scrollHeight - container.clientHeight);
-    if (max <= 0) return false;
-    const effective = Math.min(top, max);
-    return Math.abs(container.scrollTop - effective) <= 8;
+    if (maxScrollTop() + 8 < top) return false;
+    return Math.abs(container.scrollTop - top) <= 8;
   };
 
   const applyScroll = () => {
@@ -275,6 +337,7 @@ export function scheduleOneGalleryScrollRealignAfterImages(container, scrollTop,
   const onScroll = () => {
     if (finished || applying) return;
     if (Date.now() < ignoreScrollUntil) return;
+    if (maxScrollTop() + 8 < top) return;
     if (Math.abs(container.scrollTop - top) > 24) abort();
   };
 

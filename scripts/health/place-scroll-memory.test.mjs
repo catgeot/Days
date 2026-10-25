@@ -8,8 +8,10 @@ import {
   peekGalleryScrollForPlaceBack,
   placeGalleryScrollToRestore,
   rememberPlaceGalleryScroll,
+  consumeScrollAfterOverlay,
   scheduleOneGalleryScrollRealignAfterImages,
   snapshotGalleryScrollForPlaceBack,
+  snapshotScrollBeforeOverlay,
 } from '../../src/components/PlaceCard/common/placeScrollMemory.js';
 
 function withGalleryScrollDom(scrollTop) {
@@ -67,6 +69,8 @@ test('scheduleOneGalleryScrollRealignAfterImages re-applies scroll once after im
   };
   const root = dom.window.document.createElement('div');
   root.scrollTop = 0;
+  Object.defineProperty(root, 'scrollHeight', { value: 1200, configurable: true });
+  Object.defineProperty(root, 'clientHeight', { value: 400, configurable: true });
   const img = dom.window.document.createElement('img');
   Object.defineProperty(img, 'complete', { value: false, configurable: true });
   root.appendChild(img);
@@ -119,7 +123,6 @@ test('scheduleOneGalleryScrollRealignAfterImages ignores offscreen lazy images p
   });
   globalThis.window = dom.window;
   globalThis.document = dom.window.document;
-  globalThis.performance = dom.window.performance;
   globalThis.requestAnimationFrame = (cb) => {
     cb();
     return 0;
@@ -142,5 +145,39 @@ test('scheduleOneGalleryScrollRealignAfterImages ignores offscreen lazy images p
   assert.equal(done, true);
   offscreen.dispatchEvent(new dom.window.Event('load'));
   assert.equal(root.scrollTop, 280);
+  dom.window.close();
+});
+
+test('snapshotScrollBeforeOverlay restores via consumeScrollAfterOverlay', () => {
+  const dom = new JSDOM('<!DOCTYPE html><html><body></body></html>', {
+    url: 'https://www.gateo.kr/place/cairo',
+  });
+  globalThis.window = dom.window;
+  globalThis.document = dom.window.document;
+  globalThis.sessionStorage = dom.window.sessionStorage;
+  const root = dom.window.document.createElement('div');
+  root.setAttribute('data-place-gallery-scroll', '');
+  root.scrollTop = 880;
+  dom.window.document.body.appendChild(root);
+  snapshotScrollBeforeOverlay('gallery:cairo', root, 'cairo');
+  root.scrollTop = 0;
+  assert.equal(consumeScrollAfterOverlay('gallery:cairo'), 880);
+  assert.equal(consumeScrollAfterOverlay('gallery:cairo'), 0);
+  dom.window.close();
+});
+
+test('snapshotScrollBeforeOverlay uses data-gallery-last-scroll on reviews root', () => {
+  const dom = new JSDOM('<!DOCTYPE html><html><body></body></html>', {
+    url: 'https://www.gateo.kr/place/prague/reviews',
+  });
+  globalThis.window = dom.window;
+  globalThis.document = dom.window.document;
+  const root = dom.window.document.createElement('div');
+  root.setAttribute('data-place-reviews-scroll-root', '');
+  root.setAttribute('data-gallery-last-scroll', '2787');
+  root.scrollTop = 559;
+  dom.window.document.body.appendChild(root);
+  snapshotScrollBeforeOverlay('reviews:prague', root);
+  assert.equal(consumeScrollAfterOverlay('reviews:prague'), 2787);
   dom.window.close();
 });

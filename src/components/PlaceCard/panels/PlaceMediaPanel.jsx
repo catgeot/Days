@@ -90,6 +90,7 @@ const PlaceMediaPanel = React.memo(({
                 loadFailed={galleryData.loadFailed}
                 handleRetryLoad={galleryData.handleRetryLoad}
                 mobileSecondaryNav={mobileSecondaryNav}
+                isGalleryPanelActive={mediaMode === 'GALLERY'}
             />
         </div>
 
