@@ -1037,6 +1037,24 @@
         "errorSafetyLink": "MOFA travel safety",
         "errorMapLink": "Map"
       },
+      "toolkitFreshness": {
+        "badgeChecked": "Checked {{date}}",
+        "badgeOverdue": "Needs review · {{date}}",
+        "bannerWarn": "Some sections haven’t been checked in a while. Fares and hours can change.",
+        "bannerCritical": "Before you go, please double-check on official sites.",
+        "sources": "Sources: {{list}}",
+        "reportCta": "Something’s off",
+        "reportTitle": "Suggest a correction",
+        "reportSection": "Section: {{title}}",
+        "reportNoteLabel": "What’s different?",
+        "reportNotePlaceholder": "e.g. Airport bus fare changed",
+        "reportUrlLabel": "Reference link (optional)",
+        "reportSubmit": "Send",
+        "reportSubmitting": "Sending…",
+        "reportSuccess": "Thanks — we’ll review this.",
+        "reportError": "We couldn’t save your note just now. Please try again shortly.",
+        "reportClose": "Close"
+      },
       "hybridNotice": "Hybrid info notice: This toolkit mixes objective public info (visas, safety, etc.) with partner links (stays, eSIM, etc.) to help you prepare. Using partner links supports the site. Tips are AI-generated and may change over time.",
       "preTravel": {
         "title": "Must-do before departure",

@@ -32,6 +32,11 @@ const GallerySingleWriterHarness = galleryWriterHarnessOn
 const FestivalRoadFixturePage = isGateoFestivalRoadEnabled()
   ? lazy(() => import('./pages/Qa/FestivalRoadFixturePage.jsx'))
   : null;
+const toolkitFreshnessQaBundled =
+  import.meta.env.DEV === true || import.meta.env.VITE_GATEO_TOOLKIT_FRESHNESS === '1';
+const ToolkitFreshnessFixturePage = toolkitFreshnessQaBundled
+  ? lazy(() => import('./pages/Qa/ToolkitFreshnessFixturePage.jsx'))
+  : null;
 import AboutPage from './pages/AboutPage';
 
 import Dashboard from './pages/DailyReport/Dashboard';
@@ -178,6 +183,26 @@ function App() {
                     </Suspense>
                   }
                 />
+              ) : null}
+              {ToolkitFreshnessFixturePage ? (
+                <>
+                  <Route
+                    path="/qa/toolkit-freshness"
+                    element={
+                      <Suspense fallback={null}>
+                        <ToolkitFreshnessFixturePage variant="on" />
+                      </Suspense>
+                    }
+                  />
+                  <Route
+                    path="/qa/toolkit-freshness-baseline"
+                    element={
+                      <Suspense fallback={null}>
+                        <ToolkitFreshnessFixturePage variant="off" />
+                      </Suspense>
+                    }
+                  />
+                </>
               ) : null}
               <Route path="/qa/:slug" element={<QaShareRedirect />} />
               <Route path="/qa" element={<QaShareIndex />} />
