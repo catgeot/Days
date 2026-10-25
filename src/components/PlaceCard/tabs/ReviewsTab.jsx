@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import { EditorialReviewText } from './EditorialReviewText.jsx';
 import { ReviewLinkChips } from './ReviewLinkChips.jsx';
 import { createPortal } from 'react-dom';
@@ -9,8 +9,8 @@ import { usePlaceReviews } from '../../../hooks/usePlaceReviews';
 import { useRelatedBlogs } from '../hooks/useRelatedBlogs';
 import { supabase } from '../../../shared/api/supabase';
 import ReviewEditorModal from '../modals/ReviewEditorModal';
-import { mobilePlaceHeaderSpacerClass, mobilePlaceFooterScrollPadding, mobileLandscapeChromeHidden } from '../common/mobilePlaceHeaderInset';
-import { placeScrollSurfaceClass } from '../common/placeScrollSurface';
+import { mobilePlaceHeaderSpacerClass, mobilePlaceReviewsFooterScrollPadding, mobileLandscapeChromeHidden } from '../common/mobilePlaceHeaderInset';
+import { placeScrollSurfaceClass, resetPlaceMediaScrollInstant } from '../common/placeScrollSurface';
 import {
   PLACE_GALLERY_SECTION,
   queuePlaceGallerySectionAfterReview,
@@ -538,6 +538,11 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null }) => {
     idStr.startsWith('search-') || idStr.startsWith('loc-')
       ? idStr
       : (location.slug || idStr);
+
+  useLayoutEffect(() => {
+    resetPlaceMediaScrollInstant(scrollContainerRef.current);
+  }, [placeSlug]);
+
   const {
     reviews,
     isLoading,
@@ -550,7 +555,7 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null }) => {
     refetch
   } = usePlaceReviews(placeSlug, user);
 
-  const { blogs, isLoading: blogsLoading } = useRelatedBlogs(location.name);
+  const { blogs, isLoading: blogsLoading } = useRelatedBlogs(location.name, placeSlug);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingReview, setEditingReview] = useState(null);
@@ -673,7 +678,7 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null }) => {
       <div className={mobilePlaceHeaderSpacerClass} aria-hidden="true" />
       <div
         ref={scrollContainerRef}
-        className={`flex-1 min-h-0 overflow-y-auto overflow-x-hidden custom-scrollbar ${placeScrollSurfaceClass} ${mobilePlaceFooterScrollPadding} md:pb-4 md:pt-0`}
+        className={`flex-1 min-h-0 overflow-y-auto overflow-x-hidden custom-scrollbar ${placeScrollSurfaceClass} ${mobilePlaceReviewsFooterScrollPadding} md:pb-4 md:pt-0`}
       >
         {mobileSecondaryNav && (
           <div className={`md:hidden px-2 pb-2 shrink-0 ${mobileLandscapeChromeHidden}`}>{mobileSecondaryNav}</div>
