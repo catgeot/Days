@@ -33,6 +33,7 @@ import {
   shouldShowReviewBottomGallery,
   shouldShowReviewExpandToggle,
 } from '../../../utils/placeReviewContentBlocks';
+import { shouldToggleReviewBodyFromClick } from '../../../utils/placeReviewExpandInteraction.js';
 import { reviewPlainTextForAccessibility } from '../../../utils/reviewInlineMarkdown.js';
 
 const RelatedBlogCardThumbnail = ({ src }) => {
@@ -291,6 +292,14 @@ const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onToggleLike
   const showBottomGallery = shouldShowReviewBottomGallery(review, isExpanded);
   const leadThumbnailIndex = getReviewLeadThumbnailImageIndex(review);
 
+  const toggleExpanded = () => setIsExpanded((value) => !value);
+
+  const handleReviewBodyClick = (event) => {
+    if (!showExpandToggle) return;
+    if (!shouldToggleReviewBodyFromClick(event)) return;
+    toggleExpanded();
+  };
+
   const renderInlineImage = (imageIndex, blockKey) => {
     const images = review.images || [];
     const img = images[imageIndex];
@@ -382,7 +391,11 @@ const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onToggleLike
 
       {/* 본문 (content_blocks 인터리브 또는 기존 content + 하단 갤러리) */}
       <div className="mt-2 flex gap-3 items-start">
-        <div className="flex-1 min-w-0 text-gray-700 text-sm leading-relaxed break-keep">
+        <div
+          className={`flex-1 min-w-0 text-gray-700 text-sm leading-relaxed break-keep ${showExpandToggle ? 'cursor-pointer' : ''}`}
+          data-review-body=""
+          onClick={handleReviewBodyClick}
+        >
           {usesContentBlocks ? (
             !isExpanded ? (
               review.is_editorial === true ? (
@@ -445,10 +458,18 @@ const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onToggleLike
           {showExpandToggle && (
             <button
               type="button"
-              onClick={() => setIsExpanded(!isExpanded)}
-              className="text-blue-500 font-medium text-xs mt-1 hover:underline"
+              data-review-expand-toggle=""
+              aria-expanded={isExpanded}
+              onClick={(event) => {
+                event.stopPropagation();
+                toggleExpanded();
+              }}
+              className="mt-2 inline-flex min-h-11 min-w-11 items-center justify-center gap-1.5 rounded-lg bg-slate-100 px-3 py-2 text-sm font-semibold text-slate-900 hover:bg-slate-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
             >
-              {isExpanded ? t('place.reviews.collapse') : t('place.reviews.expand')}
+              <span>{isExpanded ? t('place.reviews.collapse') : t('place.reviews.expand')}</span>
+              <span className="text-base leading-none" aria-hidden="true">
+                {isExpanded ? '▴' : '▾'}
+              </span>
             </button>
           )}
         </div>
