@@ -1,6 +1,7 @@
 import { resolveCityAttractionHub } from '../../../pages/Home/lib/cityAttractionHubs.js';
 import { citiesData } from '../../../pages/Home/data/citiesData.js';
 import { latinFromVisitedSlug } from '../../../pages/Home/lib/visitedPlaceSearch.js';
+import { TRAVEL_SPOT_TOOLKIT_SYNONYMS } from '../../../../scripts/data/travel-spot-place-id-aliases.mjs';
 
 const HANGUL_REGEX = /[\u3131-\u318e\uac00-\ud7a3]/i;
 
@@ -31,6 +32,31 @@ function isRedundantSecondary(primary, secondary) {
   return false;
 }
 
+function normalizePlaceToken(value) {
+  return String(value ?? '')
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, '');
+}
+
+function englishFromToolkitSynonymRegistry(location) {
+  const tokens = new Set(
+    [location?.slug, location?.place_id, location?.name, location?.name_ko, location?.name_en]
+      .map(normalizePlaceToken)
+      .filter((t) => t.length >= 2),
+  );
+  if (!tokens.size) return '';
+  for (const [canonicalSlug, aliases] of Object.entries(TRAVEL_SPOT_TOOLKIT_SYNONYMS)) {
+    const english = latinFromVisitedSlug({ slug: canonicalSlug, place_id: canonicalSlug });
+    if (!english) continue;
+    if (tokens.has(normalizePlaceToken(canonicalSlug))) return english;
+    for (const alias of aliases) {
+      if (tokens.has(normalizePlaceToken(alias))) return english;
+    }
+  }
+  return '';
+}
+
 /** 검색·카드 — name_en 없을 때 slug/place_id 라틴 슬러그에서 영문 표기 */
 export function resolveEnglishPlaceLabel(location) {
   const direct = normalizeText(location?.name_en || location?.curation_data?.locationEn);
@@ -39,7 +65,8 @@ export function resolveEnglishPlaceLabel(location) {
     slug: location?.slug || location?.place_id,
     place_id: location?.place_id,
   });
-  return fromSlug || '';
+  if (fromSlug) return fromSlug;
+  return englishFromToolkitSynonymRegistry(location);
 }
 
 /**

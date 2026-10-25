@@ -82,6 +82,18 @@ test('choice candidate and title lines show Tinian English from slug', () => {
   assert.equal(secondaryName, 'Tinian');
 });
 
+test('Korean place_id 티니안 resolves English via toolkit synonym registry', () => {
+  const spot = visitedRowToSearchSpot({
+    place_id: '티니안',
+    name_ko: '티니안',
+    lat: 15.0,
+    lng: 145.63,
+  });
+  assert.equal(resolveEnglishPlaceLabel(spot), 'Tinian');
+  const { secondaryName } = getPlaceTitleLines(locationToChoiceCandidate(spot));
+  assert.equal(secondaryName, 'Tinian');
+});
+
 test('toolkit candidates for Tinian uiPlace include prod place_id rows, not saipan slug', () => {
   const candidates = buildToolkitPlaceIdCandidates({
     slug: 'tinian',
