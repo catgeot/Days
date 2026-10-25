@@ -57,19 +57,25 @@ async function clipShot(page, filename) {
   });
 }
 
+async function assertConsularTel(row) {
+  await expect(row.locator('[data-fact-consular-phone]').first()).toHaveAttribute('href', 'tel:+82232100404');
+}
+
 async function assertBand(row, tier) {
   await expect(row.locator(`[data-fact-freshness-tier="${tier}"]`).first()).toBeVisible();
   if (tier === 'fresh') {
     await expect(row.locator('[data-fact-freshness-chip]').first()).toBeVisible();
+    await assertConsularTel(row);
   }
   if (tier === 'warn') {
     await expect(row.locator('[data-fact-freshness-warn]').first()).toBeVisible();
     await expect(row.locator('[data-fact-mofa-link]').first()).toHaveAttribute('href', 'https://www.0404.go.kr/');
+    await assertConsularTel(row);
   }
   if (tier === 'hidden') {
     await expect(row.locator('[data-fact-freshness-hidden]').first()).toBeVisible();
     await expect(row.locator('[data-fact-value]')).toHaveCount(0);
-    await expect(row.locator('[data-fact-consular-phone]').first()).toHaveAttribute('href', 'tel:+82232100404');
+    await assertConsularTel(row);
   }
 }
 
