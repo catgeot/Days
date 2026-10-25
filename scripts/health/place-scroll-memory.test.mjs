@@ -5,6 +5,7 @@ import {
   armedGalleryBackScrollToRestore,
   clearPlaceGalleryScrollBack,
   GALLERY_SCROLL_REALIGN_TIMEOUT_MS,
+  GALLERY_SCROLL_USER_INTENT_GRACE_MS,
   isGalleryBackRestoreDue,
   peekArmedGalleryBackScroll,
   peekGalleryScrollForPlaceBack,
@@ -12,9 +13,14 @@ import {
   rememberPlaceGalleryScroll,
   consumeScrollAfterOverlay,
   scheduleOneGalleryScrollRealignAfterImages,
+  resetPlaceGalleryScrollMemoryForTests,
   snapshotGalleryScrollForPlaceBack,
   snapshotScrollBeforeOverlay,
 } from '../../src/components/PlaceCard/common/placeScrollMemory.js';
+
+test.beforeEach(() => {
+  resetPlaceGalleryScrollMemoryForTests();
+});
 
 function withGalleryScrollDom(scrollTop) {
   const dom = new JSDOM('<!DOCTYPE html><html><body></body></html>', {
@@ -42,6 +48,25 @@ test('back to a place restores its gallery scroll and a fresh open does not', ()
   rememberPlaceGalleryScroll('grand-egyptian-museum', 0);
   assert.equal(placeGalleryScrollToRestore('grand-egyptian-museum', 'POP'), 0);
   assert.equal(placeGalleryScrollToRestore('missing', 'POP'), 0);
+  dom.window.close();
+});
+
+test('snapshotGalleryScrollForPlaceBack uses data-gallery-last-scroll when live scrollTop was zeroed', () => {
+  const dom = withGalleryScrollDom(0);
+  const el = dom.window.document.querySelector('[data-place-gallery-scroll]');
+  rememberPlaceGalleryScroll('cairo', 2000);
+  el.setAttribute('data-gallery-last-scroll', '1500');
+  snapshotGalleryScrollForPlaceBack('cairo');
+  assert.equal(peekGalleryScrollForPlaceBack('cairo'), 1500);
+  dom.window.close();
+});
+
+test('snapshotGalleryScrollForPlaceBack ignores stale attr at top with no remembered scroll', () => {
+  const dom = withGalleryScrollDom(0);
+  const el = dom.window.document.querySelector('[data-place-gallery-scroll]');
+  el.setAttribute('data-gallery-last-scroll', '1500');
+  snapshotGalleryScrollForPlaceBack('cairo');
+  assert.equal(peekGalleryScrollForPlaceBack('cairo'), 0);
   dom.window.close();
 });
 
@@ -102,7 +127,36 @@ test('scheduleOneGalleryScrollRealignAfterImages re-applies scroll once after im
   dom.window.close();
 });
 
-test('scheduleOneGalleryScrollRealignAfterImages cancels on wheel', () => {
+test('scheduleOneGalleryScrollRealignAfterImages ignores wheel during restore grace', () => {
+  const dom = new JSDOM('<!DOCTYPE html><html><body></body></html>', {
+    url: 'https://www.gateo.kr/place/cairo',
+  });
+  globalThis.window = dom.window;
+  globalThis.document = dom.window.document;
+  const root = dom.window.document.createElement('div');
+  root.scrollTop = 50;
+  Object.defineProperty(root, 'scrollHeight', { value: 1200, configurable: true });
+  Object.defineProperty(root, 'clientHeight', { value: 400, configurable: true });
+  const img = dom.window.document.createElement('img');
+  Object.defineProperty(img, 'complete', { value: false, configurable: true });
+  root.appendChild(img);
+  dom.window.document.body.appendChild(root);
+  img.getBoundingClientRect = () => ({ top: 0, bottom: 100, left: 0, right: 100 });
+  root.getBoundingClientRect = () => ({ top: 0, bottom: 400, left: 0, right: 390 });
+
+  let done = false;
+  const cleanup = scheduleOneGalleryScrollRealignAfterImages(root, 412, () => {
+    done = true;
+  });
+  dom.window.dispatchEvent(new dom.window.WheelEvent('wheel', { bubbles: true }));
+  img.dispatchEvent(new dom.window.Event('load'));
+  assert.equal(root.scrollTop, 412);
+  assert.equal(done, true);
+  cleanup();
+  dom.window.close();
+});
+
+test('scheduleOneGalleryScrollRealignAfterImages cancels on wheel after grace', async () => {
   const dom = new JSDOM('<!DOCTYPE html><html><body></body></html>', {
     url: 'https://www.gateo.kr/place/cairo',
   });
@@ -121,6 +175,7 @@ test('scheduleOneGalleryScrollRealignAfterImages cancels on wheel', () => {
   const cleanup = scheduleOneGalleryScrollRealignAfterImages(root, 412, () => {
     done = true;
   });
+  await new Promise((r) => setTimeout(r, GALLERY_SCROLL_USER_INTENT_GRACE_MS + 40));
   dom.window.dispatchEvent(new dom.window.WheelEvent('wheel', { bubbles: true }));
   img.dispatchEvent(new dom.window.Event('load'));
   assert.equal(root.scrollTop, 50);
@@ -152,7 +207,7 @@ test('scheduleOneGalleryScrollRealignAfterImages ignores offscreen lazy images p
   scheduleOneGalleryScrollRealignAfterImages(root, 280, () => {
     done = true;
   });
-  await new Promise((r) => setTimeout(r, GALLERY_SCROLL_REALIGN_TIMEOUT_MS + 40));
+  await new Promise((r) => setTimeout(r, GALLERY_SCROLL_REALIGN_TIMEOUT_MS * 3 + 40));
   assert.equal(root.scrollTop, 280);
   assert.equal(done, true);
   offscreen.dispatchEvent(new dom.window.Event('load'));
@@ -175,6 +230,33 @@ test('snapshotScrollBeforeOverlay restores via consumeScrollAfterOverlay', () =>
   root.scrollTop = 0;
   assert.equal(consumeScrollAfterOverlay('gallery:cairo'), 880);
   assert.equal(consumeScrollAfterOverlay('gallery:cairo'), 0);
+  dom.window.close();
+});
+
+test('snapshotScrollBeforeOverlay at gallery top ignores stale data-gallery-last-scroll', () => {
+  const dom = new JSDOM('<!DOCTYPE html><html><body></body></html>', {
+    url: 'https://www.gateo.kr/place/cairo',
+  });
+  globalThis.window = dom.window;
+  globalThis.document = dom.window.document;
+  globalThis.sessionStorage = dom.window.sessionStorage;
+  sessionStorage.setItem('gateo:place-gallery-scroll:cairo', '1500');
+  const root = dom.window.document.createElement('div');
+  root.setAttribute('data-place-gallery-scroll', '');
+  root.setAttribute('data-gallery-last-scroll', '1500');
+  root.scrollTop = 0;
+  dom.window.document.body.appendChild(root);
+  snapshotScrollBeforeOverlay('gallery:cairo', root, 'cairo');
+  assert.equal(consumeScrollAfterOverlay('gallery:cairo'), 0);
+  dom.window.close();
+});
+
+test('rememberPlaceGalleryScroll clears data-gallery-last-scroll at top', () => {
+  const dom = withGalleryScrollDom(0);
+  const el = dom.window.document.querySelector('[data-place-gallery-scroll]');
+  el.setAttribute('data-gallery-last-scroll', '1500');
+  rememberPlaceGalleryScroll('cairo', 0);
+  assert.equal(el.getAttribute('data-gallery-last-scroll'), null);
   dom.window.close();
 });
 

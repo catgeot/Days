@@ -7,13 +7,28 @@ const backRestoreLive = new Map();
 /** Lightbox / modal overlays that unmount or reflow the scroll container. */
 const overlayScrollByKey = new Map();
 
+/** Clears in-memory gallery scroll state (health tests only — not for production). */
+export function resetPlaceGalleryScrollMemoryForTests() {
+  tops.clear();
+  backTops.clear();
+  backRestoreLive.clear();
+  overlayScrollByKey.clear();
+}
+
+function isGalleryScrollAtTop(el) {
+  const liveTop = Number(el?.scrollTop);
+  return Number.isFinite(liveTop) && liveTop <= 8;
+}
+
 function readGalleryScrollSnapshotFromElement(el, placeKey) {
   const id = String(placeKey || '').trim();
   const liveTop = Number(el?.scrollTop);
+  const live = Number.isFinite(liveTop) && liveTop >= 0 ? liveTop : 0;
+  if (isGalleryScrollAtTop(el)) return live;
   const remembered = id ? readStoredGalleryScroll(id) : 0;
   const attrTop = Number(el?.getAttribute?.('data-gallery-last-scroll'));
   return Math.max(
-    Number.isFinite(liveTop) && liveTop >= 0 ? liveTop : 0,
+    live,
     remembered,
     Number.isFinite(attrTop) && attrTop > 0 ? attrTop : 0,
   );
@@ -61,9 +76,11 @@ export function rememberPlaceGalleryScroll(key, top) {
   } catch {
     /* private mode */
   }
-  if (typeof document !== 'undefined' && n > 0) {
+  if (typeof document !== 'undefined') {
     const el = document.querySelector('[data-place-gallery-scroll]');
-    if (el) el.setAttribute('data-gallery-last-scroll', String(n));
+    if (!el) return;
+    if (n > 0) el.setAttribute('data-gallery-last-scroll', String(n));
+    else el.removeAttribute('data-gallery-last-scroll');
   }
 }
 
@@ -129,6 +146,21 @@ export function clearPlaceGalleryScrollBack(key) {
   clearBackArm(id);
 }
 
+function readGalleryScrollForBackSnapshot(el, placeKey) {
+  const id = String(placeKey || '').trim();
+  const liveTop = Number(el?.scrollTop);
+  const live = Number.isFinite(liveTop) && liveTop >= 0 ? liveTop : 0;
+  const remembered = id ? readStoredGalleryScroll(id) : 0;
+  const attrTop = Number(el?.getAttribute?.('data-gallery-last-scroll'));
+  const attr = Number.isFinite(attrTop) && attrTop > 0 ? attrTop : 0;
+  if (live <= 8) {
+    if (remembered <= 8) return live;
+    if (attr > 0 && attr < remembered) return attr;
+    return remembered;
+  }
+  return Math.max(live, remembered, attr);
+}
+
 /** Before in-app route push to reviews — so browser Back restores gallery scroll. */
 export function snapshotGalleryScrollForPlaceBack(placeKey) {
   if (typeof document === 'undefined') return;
@@ -136,14 +168,7 @@ export function snapshotGalleryScrollForPlaceBack(placeKey) {
   if (!id) return;
   const el = document.querySelector('[data-place-gallery-scroll]');
   if (!el) return;
-  const liveTop = Number(el.scrollTop);
-  const remembered = readStoredGalleryScroll(id);
-  const attrTop = Number(el.getAttribute('data-gallery-last-scroll'));
-  const n = Math.max(
-    Number.isFinite(liveTop) && liveTop >= 0 ? liveTop : 0,
-    remembered,
-    Number.isFinite(attrTop) && attrTop > 0 ? attrTop : 0,
-  );
+  const n = readGalleryScrollForBackSnapshot(el, id);
   if (!Number.isFinite(n) || n <= 0) return;
   backTops.set(id, n);
   backRestoreLive.set(id, true);
@@ -228,6 +253,9 @@ export function consumeScrollAfterOverlay(overlayKey) {
 }
 
 export const GALLERY_SCROLL_REALIGN_TIMEOUT_MS = 1500;
+const GALLERY_SCROLL_REALIGN_MAX_MS = GALLERY_SCROLL_REALIGN_TIMEOUT_MS * 3;
+/** Wheel/touch cancel only after restore grace — avoids aborting programmatic realign. */
+export const GALLERY_SCROLL_USER_INTENT_GRACE_MS = 450;
 
 function isGalleryImgInContainerViewport(container, img) {
   if (!container || !img || typeof container.getBoundingClientRect !== 'function') return false;
@@ -254,12 +282,14 @@ export function scheduleOneGalleryScrollRealignAfterImages(container, scrollTop,
 
   let finished = false;
   let applying = false;
-  let ignoreScrollUntil = 0;
   let rafId = 0;
   let timeoutId = 0;
   const trackedImgs = [];
   let userIntentListenersActive = false;
+  let userIntentGraceDone = false;
+  let userIntentGraceTimer = 0;
   let resizeObserver;
+  const realignStartedAt = Date.now();
 
   const detachImgListeners = () => {
     for (const [img, onLoad, onError] of trackedImgs) {
@@ -275,7 +305,6 @@ export function scheduleOneGalleryScrollRealignAfterImages(container, scrollTop,
     window.removeEventListener('wheel', onUserIntent, true);
     window.removeEventListener('touchstart', onUserIntent, true);
     window.removeEventListener('keydown', onUserIntent, true);
-    container.removeEventListener('scroll', onScroll, true);
   };
 
   const detachAll = () => {
@@ -289,19 +318,26 @@ export function scheduleOneGalleryScrollRealignAfterImages(container, scrollTop,
       clearTimeout(timeoutId);
       timeoutId = 0;
     }
+    if (userIntentGraceTimer) {
+      clearTimeout(userIntentGraceTimer);
+      userIntentGraceTimer = 0;
+    }
     resizeObserver?.disconnect();
     resizeObserver = undefined;
   };
 
-  const finish = () => {
+  const finish = (force = false) => {
     if (finished) return;
+    if (!force && !scrollApplied() && Date.now() - realignStartedAt < GALLERY_SCROLL_REALIGN_MAX_MS) {
+      return;
+    }
     finished = true;
     detachAll();
     onDone?.();
   };
 
   const abort = () => {
-    finish();
+    finish(true);
   };
 
   const maxScrollTop = () =>
@@ -314,9 +350,12 @@ export function scheduleOneGalleryScrollRealignAfterImages(container, scrollTop,
 
   const applyScroll = () => {
     applying = true;
-    ignoreScrollUntil = Date.now() + 48;
     container.scrollTop = top;
-    if (typeof requestAnimationFrame === 'function') {
+    if (typeof setTimeout === 'function') {
+      setTimeout(() => {
+        applying = false;
+      }, 96);
+    } else if (typeof requestAnimationFrame === 'function') {
       requestAnimationFrame(() => {
         applying = false;
       });
@@ -328,7 +367,7 @@ export function scheduleOneGalleryScrollRealignAfterImages(container, scrollTop,
   const tryApply = () => {
     if (finished) return;
     applyScroll();
-    if (scrollApplied()) finish();
+    if (scrollApplied()) finish(true);
   };
 
   const scheduleApply = () => {
@@ -341,15 +380,8 @@ export function scheduleOneGalleryScrollRealignAfterImages(container, scrollTop,
   };
 
   const onUserIntent = () => {
-    if (finished || applying) return;
+    if (finished || applying || !userIntentGraceDone) return;
     abort();
-  };
-
-  const onScroll = () => {
-    if (finished || applying) return;
-    if (Date.now() < ignoreScrollUntil) return;
-    if (maxScrollTop() + 8 < top) return;
-    if (Math.abs(container.scrollTop - top) > 24) abort();
   };
 
   const attachUserIntentListeners = () => {
@@ -358,10 +390,18 @@ export function scheduleOneGalleryScrollRealignAfterImages(container, scrollTop,
     window.addEventListener('wheel', onUserIntent, { capture: true, passive: true });
     window.addEventListener('touchstart', onUserIntent, { capture: true, passive: true });
     window.addEventListener('keydown', onUserIntent, { capture: true, passive: true });
-    container.addEventListener('scroll', onScroll, { capture: true, passive: true });
   };
 
-  attachUserIntentListeners();
+  if (typeof setTimeout === 'function') {
+    userIntentGraceTimer = setTimeout(() => {
+      userIntentGraceDone = true;
+      userIntentGraceTimer = 0;
+      attachUserIntentListeners();
+    }, GALLERY_SCROLL_USER_INTENT_GRACE_MS);
+  } else {
+    userIntentGraceDone = true;
+    attachUserIntentListeners();
+  }
 
   const imgs = container.querySelectorAll('img');
   let pending = 0;
@@ -395,8 +435,8 @@ export function scheduleOneGalleryScrollRealignAfterImages(container, scrollTop,
   timeoutId = setTimeout(() => {
     if (finished) return;
     applyScroll();
-    finish();
-  }, GALLERY_SCROLL_REALIGN_TIMEOUT_MS);
+    finish(true);
+  }, GALLERY_SCROLL_REALIGN_MAX_MS);
 
   return abort;
 }
