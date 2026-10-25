@@ -11,9 +11,11 @@ import {
   freshnessTier,
   formatCheckedChipDate,
   isIsoDateString,
+  CONSULAR_CALL_CENTER_DISPLAY,
   CONSULAR_CALL_CENTER_TEL,
   mofaOverseasSafetyUrl,
   seoulTodayYmd,
+  splitConsularCallCenter,
 } from '../../src/data/placeVerifiedFacts/freshness.js';
 import { localInfoRegistry } from '../../src/data/placeVerifiedFacts/index.js';
 import { PARIS_CITY_FACTS } from '../../src/data/placeVerifiedFacts/paris.js';
@@ -88,16 +90,37 @@ test('registry event slots require checkedOn (schema advisory)', () => {
   }
 });
 
-test('freshness UI pins MOFA URL and consular tel link', () => {
+test('splitConsularCallCenter isolates display number in safety copy', () => {
+  const sample = `영사콜센터는 ${CONSULAR_CALL_CENTER_DISPLAY}예요.`;
+  const parts = splitConsularCallCenter(sample);
+  assert.deepEqual(
+    parts.map((part) => part.type),
+    ['text', 'phone', 'text'],
+  );
+  assert.equal(parts[1].text, CONSULAR_CALL_CENTER_DISPLAY);
+});
+
+test('freshness UI pins MOFA URL and consular tel in hidden + fact value paths', () => {
   const factsUi = readFileSync(
     join(root, 'src/components/PlaceCard/common/PlaceVerifiedFacts.jsx'),
     'utf8',
   );
   assert.match(factsUi, /mofaOverseasSafetyUrl/);
   assert.match(factsUi, /CONSULAR_CALL_CENTER_TEL/);
+  assert.match(factsUi, /splitConsularCallCenter/);
+  assert.match(factsUi, /data-fact-consular-phone/);
   assert.equal(CONSULAR_CALL_CENTER_TEL, 'tel:+82232100404');
   assert.equal(mofaOverseasSafetyUrl(), 'https://www.0404.go.kr/');
   assert.match(factsUi, /slot\.kind && !slot\.checkedOn/);
+});
+
+test('safety slot copy includes consular display for linkification', () => {
+  for (const slot of [parisSafety, cairoSafety]) {
+    assert.ok(
+      String(slot.value).includes(CONSULAR_CALL_CENTER_DISPLAY),
+      `${slot.id} value should include consular display`,
+    );
+  }
 });
 
 test('event slot staleness emits CI warning without failing', () => {

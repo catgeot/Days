@@ -102,3 +102,27 @@ export function formatCheckedChipDate(checkedOn, locale) {
 export function mofaOverseasSafetyUrl() {
   return MOFA_OVERSEAS_SAFETY_URL;
 }
+
+/** @returns {Array<{ type: 'text' | 'phone', text: string }>} */
+export function splitConsularCallCenter(text) {
+  const haystack = String(text ?? '');
+  const needle = CONSULAR_CALL_CENTER_DISPLAY;
+  if (!needle || !haystack.includes(needle)) {
+    return [{ type: 'text', text: haystack }];
+  }
+  const parts = [];
+  let cursor = 0;
+  let index = haystack.indexOf(needle, cursor);
+  while (index !== -1) {
+    if (index > cursor) {
+      parts.push({ type: 'text', text: haystack.slice(cursor, index) });
+    }
+    parts.push({ type: 'phone', text: needle });
+    cursor = index + needle.length;
+    index = haystack.indexOf(needle, cursor);
+  }
+  if (cursor < haystack.length) {
+    parts.push({ type: 'text', text: haystack.slice(cursor) });
+  }
+  return parts.length ? parts : [{ type: 'text', text: haystack }];
+}
