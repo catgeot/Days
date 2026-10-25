@@ -38,7 +38,7 @@ import {
 } from '../common/galleryAttributionNavigation';
 import PlaceOverviewProse from '../common/PlaceOverviewProse';
 import { AiGeneratedBanner, PlaceLocalInfoInline } from '../common/PlaceVerifiedFacts';
-import { resolveVerifiedFacts } from '../../../data/placeVerifiedFacts/cairo.js';
+import { resolveVerifiedFacts } from '../../../data/placeVerifiedFacts/index.js';
 import { assignSketchLocalInfo } from '../../../data/placeVerifiedFacts/localInfoLayout.js';
 import { ensurePlaceChatIntroForLocation } from '../../../pages/Home/lib/placeChatIntro';
 import { resolveHubAttractionParentSketch } from '../../../pages/Home/lib/placeWikiParentSketch';

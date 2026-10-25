@@ -13,7 +13,7 @@ import PreTravelChecklist from './planner/components/PreTravelChecklist';
 import JourneyTimeline from './planner/components/JourneyTimeline';
 import ToolkitCard from './planner/components/ToolkitCard';
 import { AiGeneratedBanner } from '../common/PlaceVerifiedFacts';
-import { resolveVerifiedFacts } from '../../../data/placeVerifiedFacts/cairo.js';
+import { resolveVerifiedFacts } from '../../../data/placeVerifiedFacts/index.js';
 import AiraloBannerWidget from './planner/components/AiraloBannerWidget';
 import HolaflyBannerWidget from './planner/components/HolaflyBannerWidget';
 import RentalPickupBanner from './planner/components/RentalPickupBanner';

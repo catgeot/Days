@@ -643,6 +643,7 @@
         "entry": "확인된 입국 정보",
         "airport": "확인된 공항→시내 정보",
         "moneySafety": "확인된 돈·치안 정보",
+        "safety": "확인된 치안 정보",
         "stayArea": "확인된 머물 지역 정보"
       },
       "source": "출처",
@@ -655,7 +656,9 @@
         "airport": "공항→시내",
         "stay-area": "머물 지역",
         "itinerary": "1·2·3일 동선",
+        "louvre-visit": "루브르 방문",
         "money-safety": "돈·치안",
+        "safety": "치안",
         "season": "시즌",
         "hours": "운영시간",
         "fee": "요금",

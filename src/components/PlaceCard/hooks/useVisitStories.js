@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { supabase } from '../../../shared/api/supabase';
-import { resolveVerifiedFacts } from '../../../data/placeVerifiedFacts/cairo.js';
+import { resolveVerifiedFacts } from '../../../data/placeVerifiedFacts/index.js';
 import { selectVisitStories } from '../../../data/placeVerifiedFacts/localInfoLayout.js';
 import { publicLogbookDetailPath } from '../../../utils/logbookEditorial';
 import {

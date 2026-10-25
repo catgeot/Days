@@ -4,6 +4,10 @@ import {
   resolveVerifiedFacts as resolveCairoVerifiedFacts,
 } from './cairo.js';
 import {
+  PARIS_CITY_FACTS,
+  resolveParisVerifiedFacts,
+} from './paris.js';
+import {
   checkedAtForLocale as cairoCheckedAtForLocale,
   factValueForLocale as cairoFactValueForLocale,
   linkLabelForLocale as cairoLinkLabelForLocale,
@@ -38,7 +42,7 @@ function cardForLocale(card, locale) {
   };
 }
 
-/** slug -> {ko, en} card data. Cairo is the only entry. */
+/** slug -> {ko, en} card data. Cairo is the pilot. Paris follows when the rollout flag is on. */
 export const localInfoRegistry = {
   cairo: {
     ko: {
@@ -50,10 +54,21 @@ export const localInfoRegistry = {
       attractions: CAIRO_ATTRACTION_FACTS.map((card) => cardForLocale(card, 'en')),
     },
   },
+  paris: {
+    ko: {
+      city: PARIS_CITY_FACTS,
+      attractions: [],
+    },
+    en: {
+      city: cardForLocale(PARIS_CITY_FACTS, 'en'),
+      attractions: [],
+    },
+  },
 };
 
 const RESOLVERS = [
   { slug: 'cairo', pilot: true, resolve: resolveCairoVerifiedFacts },
+  { slug: 'paris', pilot: false, resolve: resolveParisVerifiedFacts },
 ];
 
 /**
