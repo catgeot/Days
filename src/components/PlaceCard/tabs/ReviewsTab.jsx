@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useRef, useMemo, useCallback } from 'react';
 import { EditorialReviewText } from './EditorialReviewText.jsx';
 import { ReviewLinkChips } from './ReviewLinkChips.jsx';
 import { createPortal } from 'react-dom';
@@ -44,6 +44,13 @@ import {
 } from '../../../utils/placeReviewFocus.js';
 import { isGateoLogbookReviewHubEnabled } from '../../../shared/gateoFeatureFlags';
 import { formatLogbookDisplayDate } from '../../../utils/logbookDisplayDate';
+import {
+  clearPlaceGalleryScrollBack,
+  consumeScrollAfterOverlay,
+  scheduleOneGalleryScrollRealignAfterImages,
+  snapshotScrollBeforeOverlay,
+} from '../common/placeScrollMemory.js';
+import { useLightboxHistory } from '../../../shared/useLightboxHistory.js';
 
 const RelatedBlogCardThumbnail = ({ src }) => {
   const [failed, setFailed] = useState(false);
@@ -576,6 +583,18 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null, isActiv
       ? idStr
       : (location.slug || idStr);
 
+  useEffect(() => {
+    if (!isActive || !placeSlug) return;
+    try {
+      const nav = performance.getEntriesByType?.('navigation')?.[0];
+      if (nav?.type === 'reload') {
+        clearPlaceGalleryScrollBack(placeSlug);
+      }
+    } catch {
+      /* ignore */
+    }
+  }, [isActive, placeSlug]);
+
   useLayoutEffect(() => {
     const hadFocus = Boolean(prevFocusReviewIdRef.current);
     prevFocusReviewIdRef.current = focusReviewId;
@@ -703,15 +722,31 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null, isActiv
   // Lightbox 갤러리 뷰어 관련 상태
   const [viewerImages, setViewerImages] = useState(null);
   const [viewerIndex, setViewerIndex] = useState(0);
+  const reviewsOverlayKey = useMemo(
+    () => (placeSlug ? `reviews:${placeSlug}` : ''),
+    [placeSlug],
+  );
 
-  const openLightbox = (images, startIndex) => {
+  const closeLightbox = useCallback(() => {
+    setViewerImages(null);
+  }, []);
+
+  const openLightbox = useCallback((images, startIndex) => {
+    snapshotScrollBeforeOverlay(reviewsOverlayKey, scrollContainerRef.current, placeSlug);
     setViewerImages(images);
     setViewerIndex(startIndex);
-  };
+  }, [reviewsOverlayKey, placeSlug]);
 
-  const closeLightbox = () => {
-    setViewerImages(null);
-  };
+  useLightboxHistory(Boolean(viewerImages?.length), closeLightbox);
+
+  useLayoutEffect(() => {
+    if (viewerImages) return undefined;
+    const top = consumeScrollAfterOverlay(reviewsOverlayKey);
+    const el = scrollContainerRef.current;
+    if (top <= 0 || !el) return undefined;
+    el.scrollTop = top;
+    return scheduleOneGalleryScrollRealignAfterImages(el, top);
+  }, [viewerImages, reviewsOverlayKey]);
 
   const prevImage = (e) => {
     e.stopPropagation();

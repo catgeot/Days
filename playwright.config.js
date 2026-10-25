@@ -32,7 +32,6 @@ export default defineConfig({
         /youtube-loadmore-session\.spec\.js/,
         /gallery-single-writer\.spec\.js/,
         /place-local-info\.spec\.js/,
-        /place-local-info-consular-tel-qa\.spec\.js/,
         /place-travelogue-card\.spec\.js/,
         /place-travelogue-card-qa-screenshots\.spec\.js/,
         /place-visit-story-review-focus\.spec\.js/,
@@ -106,30 +105,6 @@ export default defineConfig({
     {
       name: 'webkit-place-local-info-freshness',
       testMatch: /place-local-info-freshness-screenshots\.spec\.js/,
-      use: {
-        ...devices['iPhone 13'],
-        locale: 'ko-KR',
-        viewport: { width: 390, height: 844 },
-        deviceScaleFactor: 1,
-        ignoreHTTPSErrors: true,
-      },
-    },
-    {
-      name: 'chromium-consular-tel-qa',
-      testMatch: /place-local-info-consular-tel-qa\.spec\.js/,
-      grep: /@desktop/,
-      use: {
-        ...devices['Desktop Chrome'],
-        locale: 'ko-KR',
-        viewport: { width: 1280, height: 900 },
-        deviceScaleFactor: 1,
-        ignoreHTTPSErrors: true,
-      },
-    },
-    {
-      name: 'webkit-consular-tel-qa',
-      testMatch: /place-local-info-consular-tel-qa\.spec\.js/,
-      grep: /@webkit/,
       use: {
         ...devices['iPhone 13'],
         locale: 'ko-KR',

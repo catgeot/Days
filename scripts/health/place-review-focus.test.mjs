@@ -57,6 +57,7 @@ function setupDom() {
   });
   globalThis.window = dom.window;
   globalThis.document = dom.window.document;
+  globalThis.sessionStorage = dom.window.sessionStorage;
   globalThis.HTMLElement = dom.window.HTMLElement;
   globalThis.Document = dom.window.Document;
   globalThis.CSS = dom.window.CSS;
