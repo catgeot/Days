@@ -17,6 +17,7 @@ import {
   peekGalleryScrollForPlaceBack,
   placeGalleryScrollToRestore,
   rememberPlaceGalleryScroll,
+  scheduleOneGalleryScrollRealignAfterImages,
 } from '../common/placeScrollMemory';
 import { usePlaceMediaScrollToTop } from '../common/usePlaceMediaScrollToTop';
 import { useLightboxPinchTransform } from '../common/useLightboxPinchTransform';
@@ -373,6 +374,7 @@ const PlaceGalleryView = React.memo(({
   const [reportLoginPrompt, setReportLoginPrompt] = useState(false);
   const pendingPlaceScrollResetRef = useRef(false);
   const pendingPlaceScrollRestoreRef = useRef(0);
+  const popBackRealignTargetRef = useRef(0);
   const navigationType = useNavigationType();
   const routerLocation = useLocation();
   const scrollGalleryToTop = usePlaceMediaScrollToTop('GALLERY', scrollContainerRef, !selectedImg);
@@ -500,6 +502,7 @@ const PlaceGalleryView = React.memo(({
     if (restore > 0) {
       pendingPlaceScrollResetRef.current = false;
       pendingPlaceScrollRestoreRef.current = restore;
+      popBackRealignTargetRef.current = restore;
       if (el) el.scrollTop = restore;
       const raf = window.requestAnimationFrame(() => {
         const node = scrollContainerRef.current;
@@ -539,6 +542,7 @@ const PlaceGalleryView = React.memo(({
     if (restore <= 0) return undefined;
     pendingPlaceScrollResetRef.current = false;
     pendingPlaceScrollRestoreRef.current = restore;
+    popBackRealignTargetRef.current = restore;
     const apply = () => {
       const el = scrollContainerRef.current;
       if (el) {
@@ -563,6 +567,7 @@ const PlaceGalleryView = React.memo(({
     if (restore <= 0) return undefined;
     pendingPlaceScrollResetRef.current = false;
     pendingPlaceScrollRestoreRef.current = restore;
+    popBackRealignTargetRef.current = restore;
     const apply = () => {
       const el = scrollContainerRef.current;
       if (el) {
@@ -579,6 +584,24 @@ const PlaceGalleryView = React.memo(({
       window.clearTimeout(timer);
     };
   }, [routerLocation.pathname, navigationType, galleryPlaceKey]); // POP → gallery with snapshot only (PUSH in-app links skip)
+
+  useEffect(() => {
+    const target = popBackRealignTargetRef.current;
+    if (target <= 0 || navigationType !== 'POP') return undefined;
+    if (isImgLoading || isRefreshing) return undefined;
+    const el = scrollContainerRef.current;
+    if (!el) return undefined;
+    return scheduleOneGalleryScrollRealignAfterImages(el, target, () => {
+      popBackRealignTargetRef.current = 0;
+    });
+  }, [
+    navigationType,
+    galleryPlaceKey,
+    images.length,
+    galleryVisuallyReady,
+    isImgLoading,
+    isRefreshing,
+  ]);
 
   useLayoutEffect(() => {
     const restore = pendingPlaceScrollRestoreRef.current;

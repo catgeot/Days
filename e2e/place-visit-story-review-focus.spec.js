@@ -224,4 +224,21 @@ test.describe('place visit story → reviews focus (WebKit 390, fixtures)', () =
     const afterBack = await gallery.evaluate((el) => el.scrollTop);
     expect(afterBack).toBeGreaterThanOrEqual(before - 8);
   });
+
+  test('PUSH navigation does not apply armed gallery back scroll', async ({ page }) => {
+    await openCairoFromSearch(page);
+    const gallery = page.locator('[data-place-gallery-scroll]');
+    await expect(gallery).toBeVisible({ timeout: 30_000 });
+    await gallery.evaluate((el) => {
+      el.scrollTop = 300;
+    });
+    await page.evaluate(() => {
+      sessionStorage.setItem('gateo:place-gallery-back-scroll:cairo', '300');
+      sessionStorage.setItem('gateo:place-gallery-back-armed:cairo', '1');
+    });
+    await page.goto('/place/cairo?lang=ko', { waitUntil: 'domcontentloaded' });
+    await expect(gallery).toBeVisible({ timeout: 30_000 });
+    const scrollTop = await gallery.evaluate((el) => el.scrollTop);
+    expect(scrollTop).toBeLessThan(40);
+  });
 });

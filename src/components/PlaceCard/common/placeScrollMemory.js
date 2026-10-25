@@ -15,20 +15,6 @@ function backArmKey(id) {
   return `gateo:place-gallery-back-armed:${id}`;
 }
 
-let galleryHistoryPopSeen = false;
-
-if (typeof window !== 'undefined') {
-  window.addEventListener('popstate', () => {
-    galleryHistoryPopSeen = true;
-  });
-}
-
-export function consumeGalleryHistoryPopFlag() {
-  const v = galleryHistoryPopSeen;
-  galleryHistoryPopSeen = false;
-  return v;
-}
-
 function isBackArmed(id) {
   try {
     return sessionStorage.getItem(backArmKey(id)) === '1';
@@ -147,8 +133,70 @@ export function isGalleryBackRestoreDue(placeKey, navigationType) {
   const id = String(placeKey || '').trim();
   if (!id || readBackGalleryScroll(id) <= 0) return false;
   if (!isBackArmed(id)) return false;
-  if (navigationType === 'POP') return true;
-  return consumeGalleryHistoryPopFlag();
+  return navigationType === 'POP';
+}
+
+/**
+ * One deferred scroll re-apply after in-container images finish loading (layout shift on WebKit).
+ * @param {Element | null | undefined} container
+ * @param {number} scrollTop
+ * @param {() => void} [onDone]
+ * @returns {() => void}
+ */
+export function scheduleOneGalleryScrollRealignAfterImages(container, scrollTop, onDone) {
+  const top = Number(scrollTop);
+  if (!container || !Number.isFinite(top) || top <= 0) {
+    onDone?.();
+    return () => {};
+  }
+
+  let finished = false;
+  const finish = () => {
+    if (finished) return;
+    finished = true;
+    onDone?.();
+  };
+
+  const applyOnce = () => {
+    if (finished) return;
+    container.scrollTop = top;
+    finish();
+  };
+
+  const imgs = container.querySelectorAll('img');
+  let pending = 0;
+  const onImgSettled = () => {
+    pending -= 1;
+    if (pending <= 0) {
+      if (typeof requestAnimationFrame === 'function') {
+        requestAnimationFrame(applyOnce);
+      } else {
+        applyOnce();
+      }
+    }
+  };
+
+  for (const img of imgs) {
+    if (img.complete) continue;
+    pending += 1;
+    img.addEventListener('load', onImgSettled, { once: true });
+    img.addEventListener('error', onImgSettled, { once: true });
+  }
+
+  if (pending === 0) {
+    if (typeof requestAnimationFrame === 'function') {
+      requestAnimationFrame(applyOnce);
+    } else {
+      applyOnce();
+    }
+  }
+
+  return () => {
+    for (const img of imgs) {
+      img.removeEventListener('load', onImgSettled);
+      img.removeEventListener('error', onImgSettled);
+    }
+  };
 }
 
 /**
