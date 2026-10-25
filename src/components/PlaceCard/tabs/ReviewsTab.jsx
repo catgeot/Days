@@ -647,25 +647,39 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null, isActiv
     const prev = focusSessionRef.current;
     if (prev) prev.abort();
 
-    const session = startPlaceReviewFocusSession(
-      focusReviewId,
-      scrollContainerRef.current,
-    );
-    focusSessionRef.current = session;
     let cancelled = false;
+    let session = null;
+    let rafId = 0;
 
-    session.promise.then(() => {
+    const beginFocus = () => {
       if (cancelled) return;
-      consumeReviewDeepLink();
-    });
+      const root = scrollContainerRef.current;
+      if (!root || root.clientHeight <= 0) {
+        rafId = window.requestAnimationFrame(beginFocus);
+        return;
+      }
+      const prev = focusSessionRef.current;
+      if (prev) prev.abort();
+
+      session = startPlaceReviewFocusSession(focusReviewId, root);
+      focusSessionRef.current = session;
+
+      session.promise.then(() => {
+        if (cancelled) return;
+        consumeReviewDeepLink();
+      });
+    };
+
+    rafId = window.requestAnimationFrame(beginFocus);
 
     return () => {
       cancelled = true;
-      const result = session.getResult();
+      if (rafId) window.cancelAnimationFrame(rafId);
+      const result = session?.getResult();
       if (result?.reason === 'found' && result.ok) {
-        session.release();
+        session?.release();
       } else {
-        session.abort();
+        session?.abort();
       }
       if (focusSessionRef.current === session) {
         focusSessionRef.current = null;
@@ -814,7 +828,10 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null, isActiv
         )}
 
         {/* 모바일 전용 압축 헤더 — sticky 제거, 스크롤과 함께 이동 */}
-        <div className={`md:hidden flex flex-col shrink-0 bg-white border-b border-gray-100 shadow-sm ${mobileLandscapeChromeHidden}`}>
+        <div
+          data-place-reviews-scroll-chrome=""
+          className={`md:hidden flex flex-col shrink-0 bg-white border-b border-gray-100 shadow-sm ${mobileLandscapeChromeHidden}`}
+        >
           <div className="flex items-start justify-between px-3 pt-2.5 pb-1 gap-2">
             <div className="flex items-center gap-2 min-w-0 flex-1">
               <button

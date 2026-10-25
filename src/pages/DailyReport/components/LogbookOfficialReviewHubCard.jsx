@@ -1,5 +1,5 @@
-import React, { useId, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useId, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { Link, useNavigationType } from 'react-router-dom';
 import { ChevronDown, Sparkles } from 'lucide-react';
 import { LOGBOOK_OFFICIAL_REVIEW_CARD_TITLE } from '../../../logbookOfficialReviews/constants.js';
 import { useLogbookOfficialReviewHub } from '../../../logbookOfficialReviews/useLogbookOfficialReviewHub.js';
@@ -14,6 +14,12 @@ import {
   resolveReviewThumbnailSrc,
 } from '../../../utils/placeReviewContentBlocks.js';
 import { stripReviewInlineMarkdown } from '../../../utils/reviewInlineMarkdown.js';
+import { buildPlaceReviewsHref } from '../../../utils/placeReviewFocus.js';
+import {
+  clearLogbookOfficialReviewHubBackState,
+  readLogbookOfficialReviewHubBackState,
+  snapshotLogbookOfficialReviewHubForBack,
+} from '../../../utils/logbookOfficialReviewHubState.js';
 
 export const LOGBOOK_OFFICIAL_REVIEW_HUB_PAGE_SIZE = 10;
 const LIST_PREVIEW_MAX = 120;
@@ -139,11 +145,47 @@ function HubTitleRow({
 
 const LogbookOfficialReviewHubCard = () => {
   const panelId = useId();
+  const navigationType = useNavigationType();
+  const restoredBackRef = useRef(false);
   const [expanded, setExpanded] = useState(false);
   const [visibleCount, setVisibleCount] = useState(LOGBOOK_OFFICIAL_REVIEW_HUB_PAGE_SIZE);
   const { enabled, rows, isLoading, loadFailed, totalCount, retry } = useLogbookOfficialReviewHub();
 
   const visibleRows = useMemo(() => rows.slice(0, visibleCount), [rows, visibleCount]);
+
+  useLayoutEffect(() => {
+    if (restoredBackRef.current) return;
+    const back = readLogbookOfficialReviewHubBackState(navigationType);
+    if (!back) return;
+    restoredBackRef.current = true;
+    setExpanded(true);
+    setVisibleCount(Math.min(Math.max(back.visibleCount, LOGBOOK_OFFICIAL_REVIEW_HUB_PAGE_SIZE), totalCount || back.visibleCount));
+    const applyScroll = () => {
+      const main = document.querySelector('[data-logbook-main-scroll]');
+      if (main && back.scrollTop > 0) {
+        main.scrollTop = back.scrollTop;
+      }
+    };
+    applyScroll();
+    const raf = window.requestAnimationFrame(applyScroll);
+    const timer = window.setTimeout(() => {
+      applyScroll();
+      clearLogbookOfficialReviewHubBackState();
+    }, 150);
+    return () => {
+      window.cancelAnimationFrame(raf);
+      window.clearTimeout(timer);
+    };
+  }, [navigationType, totalCount]);
+
+  const rememberHubForBrowserBack = () => {
+    const main = document.querySelector('[data-logbook-main-scroll]');
+    snapshotLogbookOfficialReviewHubForBack({
+      expanded,
+      visibleCount,
+      scrollTop: main ? main.scrollTop : 0,
+    });
+  };
 
   if (!enabled) {
     return null;
@@ -214,7 +256,8 @@ const LogbookOfficialReviewHubCard = () => {
           <ul className="divide-y divide-gray-100">
             {visibleRows.map((review) => {
               const slug = String(review.place_slug || '').trim();
-              const href = slug ? `/place/${slug}/reviews` : '#';
+              const placePath = slug ? `/place/${slug}` : '';
+              const href = placePath ? buildPlaceReviewsHref(placePath, review.id) : '#';
               const thumbSrc = editorialReviewThumbSrc(review);
               const preview = editorialReviewListPreview(review);
               const placeName = String(review.place_name || '').trim();
@@ -225,6 +268,7 @@ const LogbookOfficialReviewHubCard = () => {
                 <li key={review.id}>
                   <Link
                     to={href}
+                    onClick={rememberHubForBrowserBack}
                     className={`flex py-3 px-1 rounded-lg hover:bg-gray-50 transition-colors${thumbSrc ? ' gap-3' : ''}`}
                     data-testid="logbook-official-review-hub-item"
                     data-hub-place-slug={slug || undefined}
@@ -261,7 +305,7 @@ const LogbookOfficialReviewHubCard = () => {
             <div className="pt-2 flex justify-center">
               <button
                 type="button"
-                className="text-sm font-semibold text-indigo-600 hover:text-indigo-800 px-4 py-2"
+                className="inline-flex min-h-11 items-center justify-center text-sm font-semibold text-indigo-600 hover:text-indigo-800 px-4 py-2"
                 data-testid="logbook-official-review-hub-more"
                 onClick={() =>
                   setVisibleCount((n) =>

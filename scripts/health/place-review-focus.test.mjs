@@ -7,6 +7,8 @@ import {
   parsePlaceReviewFocusId,
   placeReviewDomId,
   placeReviewFocusSearchWithoutReview,
+  findPlaceReviewElement,
+  measurePlaceReviewScrollHeaderOffset,
   startPlaceReviewFocusSession,
 } from '../../src/utils/placeReviewFocus.js';
 import { EDITORIAL_REVIEW_DEEPLINK_QUERY_PARAM } from '../../src/logbookOfficialReviews/constants.js';
@@ -42,6 +44,13 @@ test('placeReviewFocusSearchWithoutReview strips review param', () => {
   assert.equal(next.get('lang'), 'ko');
 });
 
+function stubVisibleRect(el, rect = { width: 120, height: 80, top: 120, bottom: 200, left: 0, right: 120 }) {
+  Object.defineProperty(el, 'getBoundingClientRect', {
+    configurable: true,
+    value: () => ({ ...rect }),
+  });
+}
+
 function setupDom() {
   const dom = new JSDOM('<!DOCTYPE html><html><body></body></html>', {
     url: 'https://www.gateo.kr/place/cairo/reviews',
@@ -50,9 +59,55 @@ function setupDom() {
   globalThis.document = dom.window.document;
   globalThis.HTMLElement = dom.window.HTMLElement;
   globalThis.Document = dom.window.Document;
+  globalThis.CSS = dom.window.CSS;
   dom.window.matchMedia = () => ({ matches: false, addListener: () => {}, removeListener: () => {} });
   return dom;
 }
+
+test('findPlaceReviewElement prefers reviews scroll root over hub list items', () => {
+  const dom = setupDom();
+  const hubItem = dom.window.document.createElement('a');
+  hubItem.setAttribute('data-review-id', 'hub-id');
+  hubItem.setAttribute('data-testid', 'logbook-official-review-hub-item');
+  dom.window.document.body.appendChild(hubItem);
+
+  const root = dom.window.document.createElement('div');
+  root.setAttribute('data-place-reviews-scroll-root', '');
+  const card = dom.window.document.createElement('div');
+  card.id = 'place-review-hub-id';
+  card.setAttribute('data-review-id', 'hub-id');
+  stubVisibleRect(card);
+  root.appendChild(card);
+  dom.window.document.body.appendChild(root);
+
+  const found = findPlaceReviewElement('hub-id');
+  assert.equal(found, card);
+  dom.window.close();
+});
+
+test('measurePlaceReviewScrollHeaderOffset sums scroll chrome nodes', () => {
+  const dom = setupDom();
+  const root = dom.window.document.createElement('div');
+  root.setAttribute('data-place-reviews-scroll-root', '');
+  Object.defineProperty(root, 'getBoundingClientRect', {
+    value: () => ({ height: 400, top: 0, bottom: 400, left: 0, right: 0, width: 100 }),
+  });
+  const chromeA = dom.window.document.createElement('div');
+  chromeA.setAttribute('data-place-reviews-scroll-chrome', '');
+  Object.defineProperty(chromeA, 'getBoundingClientRect', {
+    value: () => ({ height: 40, top: 0, bottom: 40, left: 0, right: 0, width: 100 }),
+  });
+  const chromeB = dom.window.document.createElement('div');
+  chromeB.setAttribute('data-place-reviews-scroll-chrome', '');
+  Object.defineProperty(chromeB, 'getBoundingClientRect', {
+    value: () => ({ height: 52, top: 40, bottom: 92, left: 0, right: 0, width: 100 }),
+  });
+  root.append(chromeA, chromeB);
+  dom.window.document.body.appendChild(root);
+  dom.window.matchMedia = () => ({ matches: true });
+  assert.equal(measurePlaceReviewScrollHeaderOffset(root), 12 + 92);
+  dom.window.close();
+});
 
 test('focus session timeout does not force scroll to top', async () => {
   const dom = setupDom();
@@ -125,6 +180,7 @@ test('focus session release after found keeps highlight until timer ends', async
   const card = dom.window.document.createElement('div');
   card.id = 'place-review-hl-id';
   card.setAttribute('data-review-id', 'hl-id');
+  stubVisibleRect(card);
   Object.defineProperty(card, 'offsetParent', { get: () => root });
   root.appendChild(card);
   dom.window.document.body.appendChild(root);

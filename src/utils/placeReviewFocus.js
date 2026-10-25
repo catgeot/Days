@@ -58,16 +58,63 @@ export function buildPlaceReviewsHref(placePath, reviewId) {
  * @param {ParentNode} [root]
  * @returns {HTMLElement | null}
  */
+function escapeCssIdent(value) {
+  const raw = String(value ?? '');
+  const Css = globalThis.CSS;
+  if (Css && typeof Css.escape === 'function') {
+    return Css.escape(raw);
+  }
+  return raw.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+}
+
+function cssReviewIdSelector(reviewId) {
+  const id = String(reviewId ?? '').trim();
+  if (!id) return null;
+  return `[data-review-id="${escapeCssIdent(id)}"]`;
+}
+
 export function findPlaceReviewElement(reviewId, root = null) {
   const doc = root?.ownerDocument || root || globalThis.document;
   if (!doc) return null;
   const domId = placeReviewDomId(reviewId);
+  const scrollRoot =
+    typeof root?.querySelector === 'function' && root?.hasAttribute?.('data-place-reviews-scroll-root')
+      ? root
+      : doc.querySelector?.('[data-place-reviews-scroll-root]');
+
+  if (domId && scrollRoot?.querySelector) {
+    const inRoot = scrollRoot.querySelector(`#${escapeCssIdent(domId)}`);
+    if (inRoot) return inRoot;
+  }
   if (domId && typeof doc.getElementById === 'function') {
     const byId = doc.getElementById(domId);
-    if (byId) return byId;
+    if (byId && (!scrollRoot || scrollRoot.contains(byId))) return byId;
+  }
+
+  const attrSel = cssReviewIdSelector(reviewId);
+  if (!attrSel) return null;
+  if (scrollRoot?.querySelector) {
+    const inRoot = scrollRoot.querySelector(attrSel);
+    if (inRoot) return inRoot;
   }
   const scope = typeof root?.querySelector === 'function' ? root : doc;
-  return scope.querySelector?.(`[data-review-id="${reviewId}"]`) ?? null;
+  return scope.querySelector?.(attrSel) ?? null;
+}
+
+function isPlaceReviewFocusTargetVisible(element) {
+  if (!element?.isConnected) return false;
+  if (typeof window === 'undefined') return true;
+  const style = window.getComputedStyle(element);
+  if (style.display === 'none' || style.visibility === 'hidden') return false;
+  const rect = element.getBoundingClientRect();
+  return rect.width > 0 && rect.height > 0;
+}
+
+export function resolvePlaceReviewsScrollRoot(scrollRoot, reviewElement) {
+  if (scrollRoot?.contains?.(reviewElement)) return scrollRoot;
+  const fromEl = reviewElement?.closest?.('[data-place-reviews-scroll-root]');
+  if (fromEl) return fromEl;
+  return scrollRoot || null;
 }
 
 export function prefersReducedMotionForReviewFocus() {
@@ -110,8 +157,16 @@ export function measurePlaceReviewScrollHeaderOffset(scrollRoot) {
   if (typeof window === 'undefined') return base + 88;
   const isMobile = window.matchMedia('(max-width: 767px)').matches;
   if (!scrollRoot) return base + (isMobile ? 88 : 16);
-  const nav = scrollRoot.querySelector('[data-place-reviews-scroll-chrome]');
-  const navHeight = nav ? nav.getBoundingClientRect().height : (isMobile ? 44 : 0);
+  const rootRect = scrollRoot.getBoundingClientRect();
+  const chromeNodes = scrollRoot.querySelectorAll('[data-place-reviews-scroll-chrome]');
+  let chromeBottom = rootRect.top;
+  chromeNodes.forEach((node) => {
+    chromeBottom = Math.max(chromeBottom, node.getBoundingClientRect().bottom);
+  });
+  let navHeight = chromeBottom - rootRect.top;
+  if (navHeight <= 0) {
+    navHeight = isMobile ? 88 : 0;
+  }
   return base + navHeight;
 }
 
@@ -130,20 +185,43 @@ export function scrollPlaceReviewIntoView(scrollRoot, reviewId, options = {}) {
     ? 'auto'
     : (options.behavior ?? 'smooth');
 
-  if (scrollRoot && scrollRoot.contains(el)) {
-    const rootRect = scrollRoot.getBoundingClientRect();
+  const activeRoot = resolvePlaceReviewsScrollRoot(scrollRoot, el);
+  if (activeRoot?.contains(el)) {
+    const rootRect = activeRoot.getBoundingClientRect();
     const elRect = el.getBoundingClientRect();
-    const nextTop = Math.max(0, scrollRoot.scrollTop + (elRect.top - rootRect.top) - headerOffset);
+    const chromeNodes = activeRoot.querySelectorAll('[data-place-reviews-scroll-chrome]');
+    let chromeBottom = rootRect.top;
+    chromeNodes.forEach((node) => {
+      chromeBottom = Math.max(chromeBottom, node.getBoundingClientRect().bottom);
+    });
+    const gapBase = 4;
+    const desiredCardTop = chromeBottom + gapBase;
+    const nextTop = Math.max(0, activeRoot.scrollTop + (elRect.top - desiredCardTop));
     if (behavior === 'auto') {
-      scrollRoot.scrollTop = nextTop;
+      activeRoot.scrollTop = nextTop;
     } else {
-      scrollRoot.scrollTo({ top: nextTop, behavior });
+      activeRoot.scrollTo({ top: nextTop, behavior });
       const timerId = window.setTimeout(() => {
-        if (Math.abs(scrollRoot.scrollTop - nextTop) > 6) {
-          scrollRoot.scrollTop = nextTop;
+        if (Math.abs(activeRoot.scrollTop - nextTop) > 6) {
+          activeRoot.scrollTop = nextTop;
         }
       }, 450);
       options.onScheduleTimer?.(timerId);
+    }
+    const realignDelays = options.realignDelays ?? [120, 320, 520];
+    for (const delay of realignDelays) {
+      const realignId = window.setTimeout(() => {
+        if (!activeRoot.contains(el)) return;
+        const rr = activeRoot.getBoundingClientRect();
+        const er = el.getBoundingClientRect();
+        let chromeEdge = rr.top;
+        activeRoot.querySelectorAll('[data-place-reviews-scroll-chrome]').forEach((node) => {
+          chromeEdge = Math.max(chromeEdge, node.getBoundingClientRect().bottom);
+        });
+        const corrected = Math.max(0, activeRoot.scrollTop + (er.top - (chromeEdge + gapBase)));
+        activeRoot.scrollTop = corrected;
+      }, delay);
+      options.onScheduleTimer?.(realignId);
     }
   } else {
     el.scrollIntoView({ behavior, block: 'start' });
@@ -255,9 +333,14 @@ export function startPlaceReviewFocusSession(reviewId, scrollRoot, options = {})
     const attempt = () => {
       if (settled) return;
 
-      const el = findPlaceReviewElement(reviewId);
-      const root = scrollRoot || el?.closest('[data-place-reviews-scroll-root]');
-      const ready = el && root && root.clientHeight > 0 && el.offsetParent !== null;
+      const el = findPlaceReviewElement(reviewId, scrollRoot);
+      const root = resolvePlaceReviewsScrollRoot(scrollRoot, el);
+      const ready =
+        el &&
+        root &&
+        root.clientHeight > 0 &&
+        root.contains(el) &&
+        isPlaceReviewFocusTargetVisible(el);
 
       if (ready) {
         ignoreUserScrollUntil = Date.now() + graceMs;
