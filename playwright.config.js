@@ -59,6 +59,17 @@ export default defineConfig({
       use: { ...devices['iPhone 13'] },
     },
     {
+      name: 'webkit-tinian-390',
+      testMatch: /tinian-search-planner-390\.spec\.js/,
+      use: {
+        ...devices['iPhone 13'],
+        locale: 'ko-KR',
+        viewport: { width: 390, height: 844 },
+        deviceScaleFactor: 1,
+        ignoreHTTPSErrors: true,
+      },
+    },
+    {
       name: 'webkit-place-travelogue-card',
       testMatch: /place-travelogue-card\.spec\.js/,
       use: {

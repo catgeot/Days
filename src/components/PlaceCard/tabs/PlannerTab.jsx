@@ -37,7 +37,12 @@ import PlannerStageNav from './planner/components/PlannerStageNav';
 import { TripcomFlightSearchProvider } from './planner/TripcomFlightSearchContext';
 import RelatedTravelSpots from '../RelatedTravelSpots';
 import TravelAgencyDirectory from '../../travelAgencies/TravelAgencyDirectory';
-import { getEssentialGuide, isToolkitLocationMismatch } from '../../../utils/toolkitPlaceIdResolve';
+import { isToolkitLocationMismatch } from '../../../utils/toolkitPlaceIdResolve';
+import {
+    hasStoredToolkitRow,
+    resolvePlannerGuideForDisplay,
+} from './planner/plannerGuideDisplay.js';
+import { isToolkitAdminUserId } from '../../../utils/toolkitAdmin.js';
 import { shouldShowFerryCard } from '../../../utils/ferryBookingMatch';
 import { mergeCanonicalTravelSpot, getPlaceStableKey } from '../../../utils/travelSpotResolve';
 import {
@@ -78,6 +83,7 @@ const PlannerTab = ({
     const [loadingStep, setLoadingStep] = useState(0);
     const [isRemoteUpdating, setIsRemoteUpdating] = useState(false); // 수동 업데이트 로딩 상태 추가
     const [toolkitErrorKey, setToolkitErrorKey] = useState(null);
+    const [isToolkitAdmin, setIsToolkitAdmin] = useState(false);
 
     // 🆕 [Phase 8 Fix] 스크롤 컨테이너 직접 제어용 ref
     const scrollContainerRef = useRef(null);
@@ -111,10 +117,11 @@ const PlannerTab = ({
 
     const canonicalLocation = useMemo(() => mergeCanonicalTravelSpot(location), [location]);
 
-    // essential_guide가 {} 등 빈 객체여도 UI에 내용이 없도록 정규화
-    const guideData = getEssentialGuide(plannerData, canonicalLocation, locale);
+    const guideData = resolvePlannerGuideForDisplay(plannerData, canonicalLocation, locale);
+    const storedToolkit = hasStoredToolkitRow(plannerData, canonicalLocation, locale);
     const showFerryCard = shouldShowFerryCard(canonicalLocation?.slug);
     const toolkitMismatch = isToolkitLocationMismatch(plannerData, canonicalLocation, locale);
+    const showRunToolkitCta = isToolkitAdmin || !storedToolkit;
     const isUpdatingExisting = !!guideData;
     const localizedPlaceName = getLocalizedPlaceName(canonicalLocation, locale) || canonicalLocation?.name || '';
     const loadingMessagesNew = t('place.planner.loading.new', { returnObjects: true });
@@ -148,6 +155,12 @@ const PlannerTab = ({
             resetIosZoomAfterInput();
         };
     }, [isActive]);
+
+    useEffect(() => {
+        supabase.auth.getUser().then(({ data }) => {
+            setIsToolkitAdmin(isToolkitAdminUserId(data?.user?.id));
+        });
+    }, []);
 
     useEffect(() => {
         if (!isActive || isLoading || !plannerFocusId) return;
@@ -433,14 +446,16 @@ const PlannerTab = ({
                     )}
                 </p>
                 <div className="mb-6 w-full max-w-sm">{rentalPickupBanner}</div>
+                {showRunToolkitCta ? (
                 <button
                     type="button"
-                    onClick={handleRemoteUpdate}
+                    onClick={() => handleRequestToolkitInfo(location?.name, false)}
                     className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-full font-bold shadow-lg transition-colors text-sm"
                 >
                     <Sparkles size={16} />
                     <span>{t('place.planner.runToolkit')}</span>
                 </button>
+                ) : null}
                 {toolkitErrorNotice}
                 <div className="mt-8 w-full text-left">
                     <TravelAgencyDirectory variant="planner" />

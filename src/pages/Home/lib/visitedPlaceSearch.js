@@ -266,14 +266,26 @@ function geoHitIsForeignAdmin(visited, geo) {
   if (resolveCityAttractionHub(visited?.name_ko) || resolveCityAttractionHub(visited?.name)) {
     return false;
   }
-  const latin = pickLatinPlaceName(geo);
-  const latinHub = latin ? resolveCityAttractionHub(latin) : null;
+  const ownLatin = pickLatinPlaceName(visited);
   const visitedToken = normalizeVisitedSearchKey(visited?.name_ko || visited?.name);
+  const geoName = normalizeVisitedSearchKey(geo.name);
+  const geoLatin = pickLatinPlaceName(geo);
+  if (
+    ownLatin &&
+    geoLatin &&
+    visitedToken &&
+    geoName !== visitedToken &&
+    normalizeVisitedSearchKey(ownLatin) !== normalizeVisitedSearchKey(geoLatin) &&
+    samePlaceCenter(visited, geo, 2)
+  ) {
+    return false;
+  }
+  const latin = geoLatin;
+  const latinHub = latin ? resolveCityAttractionHub(latin) : null;
   if (latinHub) {
     const known = [latinHub.name, latinHub.name_en, latinHub.hubId].map(normalizeVisitedSearchKey);
     return Boolean(visitedToken) && !known.includes(visitedToken);
   }
-  const geoName = normalizeVisitedSearchKey(geo.name);
   if (!geoName || !visitedToken || geoName === visitedToken) return false;
   const kind = String(geo.kind || '').toLowerCase();
   return kind === 'city' || geo.badge === '도시';
@@ -313,8 +325,11 @@ export function overlayGeoFieldsOnVisitedSpot(visited, geoHits) {
   const geo = list.find((hit) => geoHitMatchesVisited(visited, hit));
   const rejectAdmin = geoHitIsForeignAdmin(visited, geo);
   const ownLatin = pickLatinPlaceName(visited);
-  const ownIsAdmin = latinNameIsAdminArea(ownLatin, visited?.parentCity) ||
-    (geo && geoHitIsForeignAdmin(visited, { ...geo, name: ownLatin, name_en: ownLatin }));
+  const ownIsAdmin =
+    latinNameIsAdminArea(ownLatin, visited?.parentCity) ||
+    (!ownLatin &&
+      geo &&
+      geoHitIsForeignAdmin(visited, { ...geo, name: ownLatin, name_en: ownLatin }));
   const latin = rejectAdmin || ownIsAdmin
     ? ''
     : (ownLatin || pickLatinPlaceName(geo));

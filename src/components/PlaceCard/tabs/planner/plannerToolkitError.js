@@ -1,5 +1,20 @@
 const SAFETY_HREF = 'https://www.0404.go.kr/dev/country_search.moa';
 
+function toolkitErrorMessage(error, data) {
+  const fromData = data?.error;
+  if (typeof fromData === 'string' && fromData.trim()) return fromData.trim().toLowerCase();
+  const ctxBody = error?.context?.body;
+  if (typeof ctxBody === 'string' && ctxBody.trim()) {
+    try {
+      const parsed = JSON.parse(ctxBody);
+      if (typeof parsed?.error === 'string') return parsed.error.trim().toLowerCase();
+    } catch {
+      return ctxBody.trim().toLowerCase();
+    }
+  }
+  return String(error?.message ?? '').trim().toLowerCase();
+}
+
 /**
  * @param {unknown} error
  * @param {unknown} data
@@ -7,12 +22,29 @@ const SAFETY_HREF = 'https://www.0404.go.kr/dev/country_search.moa';
  */
 export function plannerToolkitErrorKey(error, data) {
   const status = Number(error?.context?.status ?? error?.status);
+  const msg = toolkitErrorMessage(error, data);
   if (status === 400) return 'badRequest';
-  if (status === 401) return 'unauthorized';
-  if (status === 403) return 'forbidden';
-  if (status === 429) return 'rateLimit';
+  if (status === 429 || msg.includes('rate limited') || msg.includes('generation attempted recently')) {
+    return 'rateLimit';
+  }
+  if (
+    status === 401 ||
+    msg.includes('unauthorized') ||
+    msg.includes('overwrite requires admin')
+  ) {
+    return 'unauthorized';
+  }
+  if (status === 403) {
+    if (msg.includes('unregistered') || msg.includes('forbidden: unregistered')) return 'forbidden';
+    if (msg.includes('overwrite')) return 'unauthorized';
+    return 'forbidden';
+  }
   if (error) return 'network';
-  if (data && data.success === false) return 'generic';
+  if (data && data.success === false) {
+    if (msg.includes('unregistered')) return 'forbidden';
+    if (msg.includes('overwrite') || msg.includes('unauthorized')) return 'unauthorized';
+    return 'generic';
+  }
   return null;
 }
 

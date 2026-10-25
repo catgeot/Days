@@ -10,8 +10,8 @@ import {
 
 const messages = {
   badRequest: '이 장소 정보로는 툴킷을 만들 수 없어요',
-  unauthorized: '이 장소 툴킷은 관리자만 다시 만들 수 있어요',
-  forbidden: '아직 툴킷을 지원하지 않는 장소예요',
+  unauthorized: '이 장소에는 이미 툴킷이 있어요. 관리자만 다시 만들 수 있어요',
+  forbidden: '아직 툴킷을 지원하지 않는 장소예요 (등록된 여행지만 생성 가능)',
   rateLimit: '방금 생성 중이에요. 몇 분 뒤 다시 시도해 주세요',
   generic: '지금은 툴킷을 만들지 못했어요',
   network: '연결을 확인한 뒤 다시 시도해 주세요',
@@ -24,6 +24,14 @@ const cases = [
   [plannerToolkitErrorKey({ context: { status: 429 } }, null), 'rateLimit'],
   [plannerToolkitErrorKey(null, { success: false }), 'generic'],
   [plannerToolkitErrorKey(new Error('network'), null), 'network'],
+  [
+    plannerToolkitErrorKey({ context: { status: 403 } }, { error: 'forbidden: unregistered place' }),
+    'forbidden',
+  ],
+  [
+    plannerToolkitErrorKey({ context: { status: 403 } }, { error: 'forbidden: toolkit overwrite requires admin' }),
+    'unauthorized',
+  ],
 ];
 
 const seen = new Set();
@@ -46,6 +54,10 @@ for (const [key, expected] of cases) {
   assert.equal(html.includes('animate-spin'), false);
 }
 assert.equal(seen.size, 6);
+assert.equal(
+  plannerToolkitErrorKey({ context: { status: 401 } }, { error: 'unauthorized: toolkit overwrite requires admin login' }),
+  'unauthorized',
+);
 assert.equal(plannerToolkitErrorKey(null, { success: true }), null);
 assert.equal(plannerToolkitMapHref({ lat: 13.7, lng: 100.5 }).includes('utm_'), false);
 

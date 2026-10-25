@@ -128,6 +128,27 @@ assert.equal(reverseOnly.country, '그리스');
 assert.equal(reverseOnly.country_en, 'Greece');
 assert.equal(resolveGalleryStockQuery(reverseOnly).primaryQuery, 'Zakynthos');
 
+const tinianSpot = visitedRowToSearchSpot({
+  place_id: 'tinian',
+  name_ko: '티니안',
+  name_en: 'Tinian',
+  lat: 15.0,
+  lng: 145.63,
+});
+const tinianOverlaid = overlayGeoFieldsOnVisitedSpot(tinianSpot, [
+  {
+    name: 'San Jose',
+    name_en: 'San Jose',
+    country: '북마리아나 제도',
+    country_en: 'Northern Mariana Islands',
+    lat: 15.0,
+    lng: 145.63,
+    kind: 'city',
+    badge: '도시',
+  },
+]);
+assert.equal(tinianOverlaid.name_en, 'Tinian', 'island label kept over sub-municipality geocode');
+
 const identity = buildPlaceStatsIdentityPayload({
   slug: 'zakynthos',
   name: '자킨토스',
