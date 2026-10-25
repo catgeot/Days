@@ -24,6 +24,7 @@ import {
   freshnessOf,
   getFreshnessToday,
   mofaOverseasSafetyUrl,
+  splitConsularCallCenter,
 } from '../../../data/placeVerifiedFacts/freshness.js';
 import {
   AI_GENERATED_LABEL,
@@ -143,12 +144,41 @@ function SourceLine({ sources, locale, light }) {
   );
 }
 
-function FactRuns({ text }) {
+function consularPhoneLinkClass(light) {
+  return light
+    ? 'font-semibold text-sky-800 underline underline-offset-2'
+    : 'font-semibold text-sky-200 underline underline-offset-2';
+}
+
+function ConsularPhoneLink({ light }) {
+  return (
+    <a
+      href={CONSULAR_CALL_CENTER_TEL}
+      data-fact-consular-phone=""
+      className={consularPhoneLinkClass(light)}
+      onClick={(event) => event.stopPropagation()}
+    >
+      {CONSULAR_CALL_CENTER_DISPLAY}
+    </a>
+  );
+}
+
+function FactTextWithConsularPhone({ text, light }) {
+  return splitConsularCallCenter(text).map((part, index) => (
+    part.type === 'phone' ? (
+      <ConsularPhoneLink key={`phone-${index}`} light={light} />
+    ) : (
+      <React.Fragment key={`text-${index}`}>{part.text}</React.Fragment>
+    )
+  ));
+}
+
+function FactRuns({ text, light = false }) {
   return splitFactTimeRanges(text).map((part, index) => (
     part.type === 'time' ? (
       <span key={`time-${index}`} className={TIME_RANGE_CLASS}>{part.text}</span>
     ) : (
-      <React.Fragment key={`text-${index}`}>{part.text}</React.Fragment>
+      <FactTextWithConsularPhone key={`text-${index}`} text={part.text} light={light} />
     )
   ));
 }
@@ -198,7 +228,7 @@ function FactValue({ slot, slug, locale, light }) {
               {part.text}
             </Link>
           ) : (
-            <FactRuns key={`t-${index}`} text={part.text} />
+            <FactRuns key={`t-${index}`} text={part.text} light={light} />
           )
         ))}
       </p>
@@ -206,7 +236,7 @@ function FactValue({ slot, slug, locale, light }) {
   }
   return (
     <p data-fact-value="" className={valueClass}>
-      <FactRuns text={text} />
+      <FactRuns text={text} light={light} />
     </p>
   );
 }
@@ -293,14 +323,7 @@ function FreshnessHiddenFallback({ slot, locale, light }) {
       </p>
       <p className={textClass}>
         {t('place.facts.freshness.consularLabel')}{' '}
-        <a
-          href={CONSULAR_CALL_CENTER_TEL}
-          data-fact-consular-phone=""
-          className={light ? 'font-semibold text-sky-800 underline underline-offset-2' : 'font-semibold text-sky-200 underline underline-offset-2'}
-          onClick={(event) => event.stopPropagation()}
-        >
-          {CONSULAR_CALL_CENTER_DISPLAY}
-        </a>
+        <ConsularPhoneLink light={light} />
       </p>
     </div>
   );
