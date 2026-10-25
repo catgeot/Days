@@ -92,7 +92,7 @@ export default function FestivalNearbyCardsSection({
 
   return (
     <div
-      className="space-y-3 max-md:pr-[max(3.25rem,calc(env(safe-area-inset-right)+2.5rem))]"
+      className="space-y-3 max-md:pr-[max(3.25rem,calc(env(safe-area-inset-right)+2.5rem))] md:pr-14 lg:pr-16 md:pb-[5.75rem]"
       data-nearby-cards-section=""
     >
       <div

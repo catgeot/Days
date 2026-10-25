@@ -1,6 +1,11 @@
 import { test, expect } from '@playwright/test';
 
 const SCREENSHOT_DIR = '/opt/cursor/artifacts/screenshots/nearby-cards';
+const nearbyCardsLocal = process.env.NEARBY_CARDS_E2E === '1';
+
+function skipUnlessNearbyCardsLocal() {
+  test.skip(!nearbyCardsLocal, 'Set NEARBY_CARDS_E2E=1 to run against local Vite (flag ON/OFF ports)');
+}
 
 async function dismissLocHint(page) {
   const close = page
@@ -57,6 +62,60 @@ async function waitSheetReadyForCapture(page) {
     if (sheet) sheet.scrollTop = 0;
   });
   await page.waitForTimeout(350);
+}
+
+async function scrollNearbyAttractionsToComparisonView(page) {
+  await page.evaluate(() => {
+    const section = document.querySelector('[data-festival-section="nearAttractions"]');
+    if (!section) return;
+    const content = document.querySelector('[data-festival-sheet-content]');
+    const dialog = document.querySelector('[role="dialog"].overflow-y-auto');
+    let scroller = dialog;
+    if (content) {
+      const oy = getComputedStyle(content).overflowY;
+      if (oy === 'auto' || oy === 'scroll') scroller = content;
+    }
+    if (!scroller) return;
+    const sRect = section.getBoundingClientRect();
+    const tRect = scroller.getBoundingClientRect();
+    scroller.scrollTop += sRect.top - tRect.top - 8;
+  });
+  await page.waitForTimeout(250);
+}
+
+async function waitLegacyNearbyAttractionsReady(dialog) {
+  const section = dialog.locator('[data-festival-section="nearAttractions"]');
+  await expect(section).toBeVisible({ timeout: 120_000 });
+  await expect(section.locator('.animate-spin')).toHaveCount(0, { timeout: 120_000 });
+  await expect(section.locator('ul li').first()).toBeVisible({ timeout: 120_000 });
+  await expect
+    .poll(
+      async () => {
+        const pending = await section.locator('[data-nearby-thumb-pending]').count();
+        const rows = await section.locator('ul li').count();
+        return rows > 0 && pending === 0;
+      },
+      { timeout: 120_000 },
+    )
+    .toBe(true);
+  const thumbs = section.locator('[data-nearby-thumb="photo"]');
+  const photoCount = await thumbs.count();
+  for (let i = 0; i < photoCount; i++) {
+    const img = thumbs.nth(i).locator('img[data-festival-photo]');
+    if ((await img.count()) === 0) continue;
+    await expect
+      .poll(async () => img.evaluate((el) => el.complete && el.naturalWidth > 0), {
+        timeout: 45_000,
+      })
+      .toBe(true);
+  }
+}
+
+async function screenshotNearbyAttractionsComparison(page, dialog, fileName) {
+  await waitLegacyNearbyAttractionsReady(dialog);
+  await scrollNearbyAttractionsToComparisonView(page);
+  const section = dialog.locator('[data-festival-section="nearAttractions"]');
+  await section.screenshot({ path: `${SCREENSHOT_DIR}/${fileName}` });
 }
 
 async function collectCardImageStats(section) {
@@ -163,6 +222,10 @@ async function assertCloseButtonDoesNotOverlapCards(page, section) {
 }
 
 test.describe('Festival nearby cards — flag ON', () => {
+  test.beforeEach(() => {
+    skipUnlessNearbyCardsLocal();
+  });
+
   test('825295 attractions + food banner, grid, summary tap no scroll', async ({ page }) => {
     test.setTimeout(180_000);
     await page.goto('/korea/');
@@ -285,14 +348,26 @@ test.describe('Festival nearby cards — flag ON', () => {
     const dialog = await openFestival(page, '4106717');
     await expect(dialog.locator('[data-festival-section="nearFood"]')).toHaveCount(0);
     const attractions = dialog.locator('[data-festival-section="nearAttractions"]');
-    await attractions.scrollIntoViewIfNeeded();
-    await dialog.screenshot({
-      path: `${SCREENSHOT_DIR}/4106717-no-food-section-390-flag-on.png`,
+    await waitNearbyCardImages(attractions);
+    await page.evaluate(() => {
+      const content = document.querySelector('[data-festival-sheet-content]');
+      const dialog = document.querySelector('[role="dialog"].overflow-y-auto');
+      const scroller = content || dialog;
+      if (scroller) scroller.scrollTop = scroller.scrollHeight;
+    });
+    await page.waitForTimeout(350);
+    await page.screenshot({
+      path: `${SCREENSHOT_DIR}/4106717-page-bottom-no-food-390-flag-on.png`,
+      clip: { x: 0, y: 0, width: 390, height: 844 },
     });
   });
 });
 
 test.describe('Festival nearby cards — flag OFF', () => {
+  test.beforeEach(() => {
+    skipUnlessNearbyCardsLocal();
+  });
+
   test('825295 sheet padding matches main (no nearby cards DOM) @flagOff', async ({ page }) => {
     test.setTimeout(180_000);
     await page.goto('/korea/');
@@ -304,13 +379,16 @@ test.describe('Festival nearby cards — flag OFF', () => {
       return el ? getComputedStyle(el).paddingRight : null;
     });
     expect(paddingRight).toBe('20px');
-    await dialog.locator('[data-festival-sheet-content]').screenshot({
-      path: `${SCREENSHOT_DIR}/825295-sheet-body-390-flag-off.png`,
-    });
+    await screenshotNearbyAttractionsComparison(
+      page,
+      dialog,
+      '825295-nearAttractions-390-flag-off.png',
+    );
   });
 });
 
 test('825295 attractions desktop 1280 flag ON @desktop1280', async ({ page }) => {
+  skipUnlessNearbyCardsLocal();
   test.setTimeout(180_000);
   await page.setViewportSize({ width: 1280, height: 720 });
   await dismissLocHint(page);
@@ -318,6 +396,8 @@ test('825295 attractions desktop 1280 flag ON @desktop1280', async ({ page }) =>
   const attractions = dialog.locator('[data-festival-section="nearAttractions"]');
   await assertTwoColumnGrid(attractions);
   await waitNearbyCardImages(attractions);
+  await scrollNearbyAttractionsToComparisonView(page);
+  await assertCloseButtonDoesNotOverlapCards(page, attractions);
   await attractions.screenshot({
     path: `${SCREENSHOT_DIR}/825295-nearAttractions-1280-flag-on.png`,
   });
@@ -331,8 +411,9 @@ test('825295 festival sheet on production main @mainBaseline', async ({ page }) 
   await page.goto('https://www.gateo.kr/korea/?festival=825295', { waitUntil: 'domcontentloaded' });
   const dialog = page.getByRole('dialog');
   await expect(dialog).toBeVisible({ timeout: 120_000 });
-  await dialog.screenshot({
-    path: `${SCREENSHOT_DIR}/825295-sheet-body-390-main-prod.png`,
-    timeout: 60_000,
-  });
+  await screenshotNearbyAttractionsComparison(
+    page,
+    dialog,
+    '825295-nearAttractions-390-main-prod.png',
+  );
 });
