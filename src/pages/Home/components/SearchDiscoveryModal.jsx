@@ -34,8 +34,6 @@ import {
   resolveDestinationToSpot,
 } from '../lib/exploreRecentHistory';
 import { buildHybridSearchSuggestions, buildLocalSearchSuggestions } from '../lib/searchSuggestions';
-import { awaitPreferEnterSuggestion, preferEnterSuggestion } from '../lib/searchEnterMatch';
-import { awaitSiteSearchEnterSinglePoi, isSiteSearchOpenEnabled } from '../lib/siteSearchOpen';
 import { hasUsableVisitedCoords } from '../lib/visitedPlaceSearch';
 import { isSearchDisambiguation } from '../lib/cityAttractionHubs';
 import {
@@ -457,20 +455,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, onAskMooni,
   const handleSearchSubmit = async (submitQuery) => {
     const finalQuery = (submitQuery ?? query).trim();
     if (finalQuery === '' || !onSearch) return;
-    let visiblePick = preferEnterSuggestion(finalQuery, hybridSuggestions);
-    if (!visiblePick && isSiteSearchOpenEnabled()) {
-      visiblePick = await awaitSiteSearchEnterSinglePoi(finalQuery, {
-        cachedSuggestions: hybridSuggestions,
-      });
-    }
-    if (!visiblePick) {
-      visiblePick = await awaitPreferEnterSuggestion(finalQuery, hybridSuggestions);
-    }
-    if (visiblePick) {
-      await handleSuggestionSelect(visiblePick);
-      return;
-    }
-    // 도시 허브 exact(목포)는 visiblePick 없음 → onSearch 선택 카드
+    // Enter는 항상 requireChoice(onSearch) — 제안 행·최근 방문 탭은 handleSuggestionSelect로 직접 오픈
     dismissSearchKeyboard();
     setQuery(finalQuery);
     setRecentSearches(pushRecentSearch(finalQuery));

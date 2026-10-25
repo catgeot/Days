@@ -52,6 +52,7 @@ export default defineConfig({
         /place-visit-story-review-focus\.spec\.js/,
         /korea-festival-date-chip\.spec\.js/,
         /place-lightbox-history\.spec\.js/,
+        /tinian-search-planner-390\.spec\.js/,
       ],
       use: { ...devices['Desktop Chrome'], viewport: { width: 1280, height: 720 } },
     },
