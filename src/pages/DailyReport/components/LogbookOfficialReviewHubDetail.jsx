@@ -7,15 +7,31 @@ import { useLogbookOfficialReviewHub } from '../../../logbookOfficialReviews/use
 import { formatLogbookDisplayDate } from '../../../utils/logbookDisplayDate';
 import { formatGateoReviewerBadge } from '../../../utils/placeReviewEditorial';
 import { buildPlaceReviewsHref } from '../../../utils/placeReviewFocus.js';
+import {
+  peekLogbookOfficialReviewHubBackState,
+  snapshotLogbookOfficialReviewHubForBack,
+} from '../../../utils/logbookOfficialReviewHubState.js';
 
 /** Below link chips — CTA bar + safe-area + chip row so max scroll does not cover chips. */
 const STICKY_CTA_SCROLL_CLEARANCE =
   'min-h-[calc(7.75rem+env(safe-area-inset-bottom,0px))]';
 
+function rememberHubBackBeforePlaceDetour() {
+  const peek = peekLogbookOfficialReviewHubBackState();
+  const main = document.querySelector('[data-logbook-main-scroll]');
+  const feedScroll = peek?.scrollTop ?? (main ? main.scrollTop : 0);
+  snapshotLogbookOfficialReviewHubForBack({
+    expanded: true,
+    visibleCount: peek?.visibleCount ?? 10,
+    scrollTop: feedScroll,
+  });
+}
+
 function PlaceCardCta({ href }) {
   return (
     <Link
       to={href}
+      onClick={rememberHubBackBeforePlaceDetour}
       className="inline-flex min-h-11 w-full items-center justify-center rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-indigo-700 transition-colors"
       data-testid="logbook-official-review-hub-go-place-card"
     >

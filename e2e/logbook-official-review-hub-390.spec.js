@@ -137,6 +137,15 @@ test.describe('logbook official review hub (WebKit 390, flag ON fixtures)', () =
       timeout: 15_000,
     });
 
+    const scrollBeforeDetour = await page.evaluate(() => {
+      const main = document.querySelector('[data-logbook-main-scroll]');
+      if (!main) return 0;
+      const maxTop = Math.max(0, main.scrollHeight - main.clientHeight);
+      main.scrollTop = Math.min(maxTop, 420);
+      return Math.round(main.scrollTop);
+    });
+    expect(scrollBeforeDetour).toBeGreaterThan(80);
+
     await hubItem.click();
     await expect(page.getByTestId('logbook-official-review-hub-detail')).toBeVisible();
     await page.getByTestId('logbook-official-review-hub-go-place-card').click();
@@ -155,6 +164,30 @@ test.describe('logbook official review hub (WebKit 390, flag ON fixtures)', () =
     await expect
       .poll(async () => (await measureReviewFocusMetrics(page)).gapUnderChrome, { timeout: 15_000 })
       .toBeLessThanOrEqual(8);
+
+    await page.goBack();
+    await expect(page).toHaveURL(
+      new RegExp(`/blog\\?.*tab=public.*review=${FOCUS_ID}`),
+      { timeout: 30_000 },
+    );
+    await page.goBack();
+    await expect(page).toHaveURL(/\/blog\?tab=public/, { timeout: 30_000 });
+    await expect(page.url()).not.toContain(`review=${FOCUS_ID}`);
+    await expect(page.getByTestId('logbook-official-review-hub-panel')).toBeVisible({
+      timeout: 15_000,
+    });
+    await expect
+      .poll(
+        async () => {
+          const top = await page.evaluate(() => {
+            const main = document.querySelector('[data-logbook-main-scroll]');
+            return main ? Math.round(main.scrollTop) : 0;
+          });
+          return Math.abs(top - scrollBeforeDetour);
+        },
+        { timeout: 15_000 },
+      )
+      .toBeLessThanOrEqual(48);
 
     await page.goto(`/place/jeju/reviews?review=${FOCUS_ID}&lang=ko`, {
       waitUntil: 'domcontentloaded',

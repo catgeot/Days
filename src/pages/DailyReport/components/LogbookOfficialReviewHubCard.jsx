@@ -181,7 +181,7 @@ const LogbookOfficialReviewHubCard = () => {
     scrollRestoreCancelRef.current?.();
     const main = document.querySelector('[data-logbook-main-scroll]');
     scrollRestoreCancelRef.current = restoreLogbookMainScrollWhenReady(main, back.scrollTop, {
-      onFinalize: () => {
+      onSuccess: () => {
         restoredBackRef.current = true;
         clearLogbookOfficialReviewHubBackState();
       },
@@ -190,7 +190,7 @@ const LogbookOfficialReviewHubCard = () => {
       scrollRestoreCancelRef.current?.();
       scrollRestoreCancelRef.current = null;
     };
-  }, [navigationType, totalCount, isLoading]);
+  }, [navigationType, totalCount, isLoading, rows.length]);
 
   const rememberHubForBrowserBack = () => {
     const main = document.querySelector('[data-logbook-main-scroll]');

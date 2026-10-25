@@ -30,20 +30,33 @@ export function snapshotLogbookOfficialReviewHubForBack(state) {
  * @param {import('react-router-dom').NavigationType} navigationType
  * @returns {LogbookOfficialReviewHubBackState | null}
  */
+function parseLogbookOfficialReviewHubBackPayload(raw) {
+  if (!raw) return null;
+  const parsed = JSON.parse(raw);
+  if (!parsed || parsed.expanded !== true) return null;
+  const visibleCount = Number(parsed.visibleCount);
+  const scrollTop = Number(parsed.scrollTop);
+  return {
+    expanded: true,
+    visibleCount: Number.isFinite(visibleCount) && visibleCount > 0 ? visibleCount : 10,
+    scrollTop: Number.isFinite(scrollTop) && scrollTop >= 0 ? scrollTop : 0,
+  };
+}
+
+/** @returns {LogbookOfficialReviewHubBackState | null} */
+export function peekLogbookOfficialReviewHubBackState() {
+  if (typeof sessionStorage === 'undefined') return null;
+  try {
+    return parseLogbookOfficialReviewHubBackPayload(sessionStorage.getItem(BACK_STATE_KEY));
+  } catch {
+    return null;
+  }
+}
+
 export function readLogbookOfficialReviewHubBackState(navigationType) {
   if (navigationType !== 'POP' || typeof sessionStorage === 'undefined') return null;
   try {
-    const raw = sessionStorage.getItem(BACK_STATE_KEY);
-    if (!raw) return null;
-    const parsed = JSON.parse(raw);
-    if (!parsed || parsed.expanded !== true) return null;
-    const visibleCount = Number(parsed.visibleCount);
-    const scrollTop = Number(parsed.scrollTop);
-    return {
-      expanded: true,
-      visibleCount: Number.isFinite(visibleCount) && visibleCount > 0 ? visibleCount : 10,
-      scrollTop: Number.isFinite(scrollTop) && scrollTop >= 0 ? scrollTop : 0,
-    };
+    return parseLogbookOfficialReviewHubBackPayload(sessionStorage.getItem(BACK_STATE_KEY));
   } catch {
     return null;
   }

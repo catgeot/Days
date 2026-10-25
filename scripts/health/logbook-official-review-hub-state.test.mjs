@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 import { JSDOM } from 'jsdom';
 import {
   clearLogbookOfficialReviewHubBackState,
+  peekLogbookOfficialReviewHubBackState,
   readLogbookOfficialReviewHubBackState,
   snapshotLogbookOfficialReviewHubForBack,
 } from '../../src/utils/logbookOfficialReviewHubState.js';
@@ -38,6 +39,11 @@ test('hub back state restores only on POP', () => {
     visibleCount: 20,
     scrollTop: 180,
   });
+  assert.deepEqual(peekLogbookOfficialReviewHubBackState(), {
+    expanded: true,
+    visibleCount: 20,
+    scrollTop: 180,
+  });
   assert.equal(readLogbookOfficialReviewHubBackState('PUSH'), null);
   clearLogbookOfficialReviewHubBackState();
   assert.equal(readLogbookOfficialReviewHubBackState('POP'), null);
@@ -64,7 +70,20 @@ test('hub card links open in-logbook review URL', () => {
   );
   assert.match(src, /buildLogbookOfficialReviewHref\(review\.id\)/);
   assert.match(src, /snapshotLogbookOfficialReviewHubForBack/);
+  assert.match(src, /onSuccess/);
   assert.match(src, /min-h-11/);
+});
+
+test('hub detail place CTA preserves hub back snapshot for place detour', () => {
+  const src = readFileSync(
+    join(
+      healthRoot,
+      'src/pages/DailyReport/components/LogbookOfficialReviewHubDetail.jsx',
+    ),
+    'utf8',
+  );
+  assert.match(src, /peekLogbookOfficialReviewHubBackState/);
+  assert.match(src, /rememberHubBackBeforePlaceDetour/);
 });
 
 test('resolveEditorialReviewDisclosure uses DB text or production fallback', () => {
@@ -96,5 +115,6 @@ test('hub scroll restore module cancels on user intent and caps wait', () => {
   );
   assert.match(src, /keydown/);
   assert.match(src, /RESTORE_READY_TIMEOUT_MS/);
+  assert.match(src, /onSuccess/);
   assert.match(src, /onFinalize/);
 });

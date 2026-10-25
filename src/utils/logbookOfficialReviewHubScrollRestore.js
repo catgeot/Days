@@ -25,10 +25,11 @@ function scrollCanFitTarget(el, targetTop) {
 /**
  * @param {HTMLElement | null} mainEl
  * @param {number} targetScrollTop
- * @param {{ onFinalize?: () => void }} [options]
+ * @param {{ onSuccess?: () => void; onFinalize?: () => void }} [options]
  * @returns {() => void} cancel (user input, timeout, unmount)
  */
 export function restoreLogbookMainScrollWhenReady(mainEl, targetScrollTop, options = {}) {
+  const onSuccess = options.onSuccess;
   const onFinalize = options.onFinalize;
   const canScroll =
     mainEl &&
@@ -73,7 +74,12 @@ export function restoreLogbookMainScrollWhenReady(mainEl, targetScrollTop, optio
     applyRestore();
     requestAnimationFrame(() => {
       applyRestore();
-      finalize();
+      if (done) return;
+      done = true;
+      ro?.disconnect();
+      removeListeners();
+      onSuccess?.();
+      onFinalize?.();
     });
   };
 
