@@ -38,6 +38,7 @@ export function formatLogbookDisplayDate(reportOrValue, opts = {}) {
   }
 
   const locale = opts.locale === 'en' ? 'en-US' : 'ko-KR';
+  // KST calendar day — avoids UTC midnight showing previous day in hub vs place (e.g. 10/25 vs 10/26).
   return d.toLocaleDateString(locale, {
     year: 'numeric',
     month: 'long',

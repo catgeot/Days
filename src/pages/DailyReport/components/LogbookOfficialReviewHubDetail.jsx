@@ -8,6 +8,10 @@ import { formatLogbookDisplayDate } from '../../../utils/logbookDisplayDate';
 import { formatGateoReviewerBadge } from '../../../utils/placeReviewEditorial';
 import { buildPlaceReviewsHref } from '../../../utils/placeReviewFocus.js';
 
+/** Room for fixed CTA bar (button + chrome) + iOS safe-area — keeps last paragraph readable. */
+const DETAIL_BODY_PADDING_WITH_STICKY_CTA =
+  'pb-[calc(6.25rem+env(safe-area-inset-bottom,0px))]';
+
 function PlaceCardCta({ href }) {
   return (
     <Link
@@ -55,7 +59,10 @@ const LogbookOfficialReviewHubDetail = ({ reviewId }) => {
         <span className="text-sm font-bold text-gray-900 truncate">GATEO 리뷰어 리뷰</span>
       </div>
 
-      <div className="px-4 py-4 sm:px-5 pb-24">
+      <div
+        className={`px-4 py-4 sm:px-5 ${placeCardHref ? DETAIL_BODY_PADDING_WITH_STICKY_CTA : 'pb-4'}`}
+        data-testid="logbook-official-review-hub-detail-body"
+      >
         {isLoading && !review ? (
           <p className="text-sm text-gray-500">불러오는 중…</p>
         ) : null}

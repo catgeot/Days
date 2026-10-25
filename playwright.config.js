@@ -6,6 +6,8 @@ const siteUrl =
   process.env.PLAYWRIGHT_BASE_URL ||
   'https://www.gateo.kr/';
 
+const logbookHubE2eEnabled = Boolean(process.env.GATEO_LOGBOOK_HUB_E2E);
+
 export default defineConfig({
   testDir: './e2e',
   fullyParallel: false,
@@ -251,20 +253,24 @@ export default defineConfig({
         ignoreHTTPSErrors: true,
       },
     },
-    {
-      name: 'webkit-logbook-official-review-hub',
-      testMatch: /logbook-official-review-hub-390\.spec\.js/,
-      use: {
-        ...devices['iPhone 13'],
-        locale: 'ko-KR',
-        viewport: { width: 390, height: 844 },
-        deviceScaleFactor: 1,
-        ignoreHTTPSErrors: true,
-        baseURL: 'http://127.0.0.1:5197',
-      },
-    },
+    ...(logbookHubE2eEnabled
+      ? [
+          {
+            name: 'webkit-logbook-official-review-hub',
+            testMatch: /logbook-official-review-hub-390\.spec\.js/,
+            use: {
+              ...devices['iPhone 13'],
+              locale: 'ko-KR',
+              viewport: { width: 390, height: 844 },
+              deviceScaleFactor: 1,
+              ignoreHTTPSErrors: true,
+              baseURL: 'http://127.0.0.1:5197',
+            },
+          },
+        ]
+      : []),
   ],
-  ...(process.env.GATEO_LOGBOOK_HUB_E2E
+  ...(logbookHubE2eEnabled
     ? {
         webServer: {
           command:
