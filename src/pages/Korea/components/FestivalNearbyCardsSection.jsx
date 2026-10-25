@@ -147,20 +147,15 @@ export default function FestivalNearbyCardsSection({
       <div className="space-y-4" aria-label={ariaLabel}>
         {displayGroups.map((group) => {
           const groupBand = group.kind === 'distance' ? group.band : null;
-          const dimmed =
+          const highlighted =
             highlightBand &&
-            groupBand &&
-            groupBand !== highlightBand &&
+            groupBand === highlightBand &&
             group.kind === 'distance';
           return (
             <section
               key={group.id}
-              className={`space-y-2 transition-opacity ${dimmed ? 'opacity-45' : ''}`}
-              data-nearby-group-highlighted={
-                highlightBand && groupBand === highlightBand && group.kind === 'distance'
-                  ? 'true'
-                  : undefined
-              }
+              className={`space-y-2 ${highlighted ? 'rounded-xl ring-2 ring-amber-400/70 ring-offset-2' : ''}`}
+              data-nearby-group-highlighted={highlighted ? 'true' : undefined}
               data-nearby-group=""
               data-band={groupBand || undefined}
               data-heading={group.kind === 'heading' ? 'true' : undefined}

@@ -33,14 +33,14 @@ export default function FestivalNearbyPhotoCard({
   const urls = thumbUrls.length ? thumbUrls : [];
   const activeUrl = !forceCompact && urlIndex < urls.length ? urls[urlIndex] : '';
   const dist = formatFestivalDistKm(distKm);
-  const category =
-    subtitleLines.find((line) => String(line || '').trim()) ||
-    (variant === 'food' ? '' : '');
-  const metaLine = [dist, ...subtitleLines.filter((line) => String(line || '').trim())]
-    .filter(Boolean)
-    .join(' · ');
-
+  const subtitles = subtitleLines
+    .map((line) => String(line || '').trim())
+    .filter(Boolean);
+  const category = subtitles[0] || '';
   const showCompact = forceCompact || !activeUrl;
+  const metaLine = showCompact
+    ? [dist].filter(Boolean).join(' · ')
+    : [dist, ...subtitles].filter(Boolean).join(' · ');
   const Tag = clickable ? 'button' : 'div';
   const tagProps = clickable
     ? {
@@ -89,7 +89,7 @@ export default function FestivalNearbyPhotoCard({
                 {category}
               </span>
             ) : null}
-            <span className="block text-[13px] font-bold leading-snug text-stone-900 line-clamp-2 break-keep">
+            <span className="block text-[13px] font-bold leading-snug text-stone-900 line-clamp-2 break-words">
               {title}
             </span>
             {metaLine ? (
@@ -115,7 +115,7 @@ export default function FestivalNearbyPhotoCard({
                   className="absolute inset-0 flex items-end bg-gradient-to-t from-stone-900/75 via-stone-400/30 to-stone-200 p-2"
                   data-nearby-photo-fallback=""
                 >
-                  <span className="text-sm font-bold text-white line-clamp-2 break-keep">
+                  <span className="text-sm font-bold text-white line-clamp-2 break-words">
                     {title}
                   </span>
                 </span>
@@ -128,7 +128,7 @@ export default function FestivalNearbyPhotoCard({
               }}
             />
             <span
-              className="pointer-events-none absolute bottom-2 left-2 max-w-[calc(100%-1rem)] rounded-full bg-stone-900/80 px-2 py-0.5 text-[11px] font-bold text-white line-clamp-1 break-keep"
+              className="pointer-events-none absolute bottom-2 left-2 max-w-[calc(100%-0.5rem)] rounded-lg bg-stone-900/80 px-2 py-1 text-[11px] font-bold leading-snug text-white line-clamp-2 break-words"
             >
               {title}
             </span>

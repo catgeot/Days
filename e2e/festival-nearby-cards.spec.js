@@ -39,6 +39,24 @@ async function waitNearbyCardImages(section) {
       )
       .toBe(true);
   }
+  await expect(section.locator('[data-festival-photo-pending]')).toHaveCount(0, {
+    timeout: 5_000,
+  });
+}
+
+async function clearNearbyBandFilter(section) {
+  const pressed = section.locator('[data-nearby-summary-cell][aria-pressed="true"]');
+  if ((await pressed.count()) > 0) {
+    await pressed.first().evaluate((node) => node.click());
+  }
+}
+
+async function waitSheetReadyForCapture(page) {
+  await page.evaluate(() => {
+    const sheet = document.querySelector('[role="dialog"].overflow-y-auto');
+    if (sheet) sheet.scrollTop = 0;
+  });
+  await page.waitForTimeout(350);
 }
 
 async function collectCardImageStats(section) {
@@ -76,7 +94,7 @@ async function assertTwoColumnGrid(section) {
   expect(unique.size, `expected 2+ distinct card x positions, got ${JSON.stringify(xs)}`).toBeGreaterThanOrEqual(2);
 }
 
-async function assertCloseButtonDoesNotOverlapCards(page, section) {
+async function measureCloseVsRightColumnCards(page, section) {
   const close = page.getByRole('button', { name: /^닫기$|^Close$/i }).last();
   await expect(close).toBeVisible();
   await section.scrollIntoViewIfNeeded();
@@ -85,23 +103,63 @@ async function assertCloseButtonDoesNotOverlapCards(page, section) {
     if (sheet) sheet.scrollTop = sheet.scrollHeight;
   });
   await page.waitForTimeout(300);
-  const overlap = await page.evaluate(() => {
+  return page.evaluate(() => {
     const buttons = [...document.querySelectorAll('body > button.fixed')];
     const closeBtn = buttons.find((b) => /닫기|Close/i.test(b.getAttribute('aria-label') || ''));
-    if (!closeBtn) return false;
+    if (!closeBtn) return { close: null, rightColumnCards: [], overlaps: [] };
     const btn = closeBtn.getBoundingClientRect();
     const cards = [...document.querySelectorAll('[data-nearby-photo-card]')];
-    return cards.some((card) => {
-      const r = card.getBoundingClientRect();
-      const intersects =
-        r.left < btn.right &&
-        r.right > btn.left &&
-        r.top < btn.bottom &&
-        r.bottom > btn.top;
-      return intersects;
+    const lefts = cards.map((c) => c.getBoundingClientRect().left);
+    const mid =
+      lefts.length > 1
+        ? (Math.min(...lefts) + Math.max(...lefts)) / 2
+        : Number.POSITIVE_INFINITY;
+    const rightColumnCards = cards
+      .map((card) => {
+        const r = card.getBoundingClientRect();
+        return { title: card.querySelector('[data-nearby-compact-card]')?.textContent?.trim()?.slice(0, 24) || '', rect: r };
+      })
+      .filter((row) => row.rect.left >= mid - 2);
+    const vh = window.innerHeight || 844;
+    const overlaps = rightColumnCards
+      .map((row) => {
+        const r = row.rect;
+        const visible = r.bottom > 0 && r.top < vh;
+        const intersects =
+          visible &&
+          r.left < btn.right &&
+          r.right > btn.left &&
+          r.top < btn.bottom &&
+          r.bottom > btn.top;
+        return { title: row.title, intersects, visible };
+      })
+      .filter((row) => row.intersects);
+    const toJson = (rect) => ({
+      x: Math.round(rect.x),
+      y: Math.round(rect.y),
+      width: Math.round(rect.width),
+      height: Math.round(rect.height),
+      right: Math.round(rect.right),
+      bottom: Math.round(rect.bottom),
     });
+    return {
+      close: toJson(btn),
+      rightColumnCards: rightColumnCards.map((row) => ({
+        title: row.title,
+        rect: toJson(row.rect),
+      })),
+      overlaps,
+    };
   });
-  expect(overlap).toBe(false);
+}
+
+async function assertCloseButtonDoesNotOverlapCards(page, section) {
+  const report = await measureCloseVsRightColumnCards(page, section);
+  test.info().attach('close-x-bbox-390', {
+    body: JSON.stringify(report, null, 2),
+    contentType: 'application/json',
+  });
+  expect(report.overlaps?.length || 0, JSON.stringify(report)).toBe(0);
 }
 
 test.describe('Festival nearby cards — flag ON', () => {
@@ -128,12 +186,15 @@ test.describe('Festival nearby cards — flag ON', () => {
       return el?.scrollTop ?? 0;
     });
     expect(scrollAfter).toBe(scrollBefore);
+    await clearNearbyBandFilter(attractions);
 
     const food = dialog.locator('[data-festival-section="nearFood"]');
     await expect(food).toBeVisible({ timeout: 120_000 });
     await assertTwoColumnGrid(food);
     await waitNearbyCardImages(food);
     await assertCloseButtonDoesNotOverlapCards(page, attractions);
+    await waitSheetReadyForCapture(page);
+    await clearNearbyBandFilter(attractions);
 
     const attrStats = await collectCardImageStats(attractions);
     const foodStats = await collectCardImageStats(food);
@@ -157,6 +218,7 @@ test.describe('Festival nearby cards — flag ON', () => {
     const attractions = dialog.locator('[data-festival-section="nearAttractions"]');
     await assertTwoColumnGrid(attractions);
     await waitNearbyCardImages(attractions);
+    await waitSheetReadyForCapture(page);
     await attractions.screenshot({
       path: `${SCREENSHOT_DIR}/4128786-nearAttractions-390-flag-on.png`,
     });
@@ -177,6 +239,7 @@ test.describe('Festival nearby cards — flag ON', () => {
     const attractions = dialog.locator('[data-festival-section="nearAttractions"]');
     await assertTwoColumnGrid(attractions);
     await waitNearbyCardImages(attractions);
+    await waitSheetReadyForCapture(page);
     await attractions.screenshot({
       path: `${SCREENSHOT_DIR}/4106717-nearAttractions-390-flag-on.png`,
     });
