@@ -56,7 +56,7 @@ function assertPlainOrLinkedSource(source) {
   assert.equal(/drafts\/|\.md\b/.test(source.url), false);
 }
 
-test('cairo city has 6 slots and attractions have 7', () => {
+test('cairo city has 7 slots and attractions have 7', () => {
   assert.deepEqual(CAIRO_CITY_FACTS.slots.map((slot) => slot.id), CITY_SLOT_IDS);
   assert.equal(CAIRO_ATTRACTION_FACTS.length, 4);
   for (const card of CAIRO_ATTRACTION_FACTS) {
@@ -301,9 +301,15 @@ test('english fact values keep Korean numbers, times, amounts, and URLs', () => 
   );
   assert.equal(/uber/i.test(airport), false);
   assert.match(airport, /Terminal 1/);
-  const safety = factValueForLocale(
+  const money = factValueForLocale(
     'cairo',
     CAIRO_CITY_FACTS.slots.find((slot) => slot.id === 'money-safety'),
+    'en',
+  );
+  assert.match(money, /Egyptian pound \(EGP\)/);
+  const safety = factValueForLocale(
+    'cairo',
+    CAIRO_CITY_FACTS.slots.find((slot) => slot.id === 'safety'),
     'en',
   );
   assert.match(safety, /have a 'leave the country' advisory/);

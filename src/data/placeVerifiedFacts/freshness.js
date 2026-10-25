@@ -1,5 +1,9 @@
 /** 현지정보 확인일 신선도 — KST 달력일 기준. */
 
+export const MOFA_OVERSEAS_SAFETY_URL = 'https://www.0404.go.kr/';
+export const CONSULAR_CALL_CENTER_DISPLAY = '+82-2-3210-0404';
+export const CONSULAR_CALL_CENTER_TEL = 'tel:+82232100404';
+
 export const FRESHNESS_POLICY = {
   event: { freshMaxDays: 7, warnMaxDays: 21 },
   standing: { freshMaxDays: 30, warnMaxDays: 90 },
@@ -95,15 +99,6 @@ export function formatCheckedChipDate(checkedOn, locale) {
   return `${Number(mo)}/${Number(d)}`;
 }
 
-export function pickMofaSafetyUrl(sources) {
-  const list = Array.isArray(sources) ? sources : [];
-  for (const source of list) {
-    const url = String(source?.url || '').trim();
-    if (/^https?:\/\//i.test(url) && /0404\.go\.kr/i.test(url)) return url;
-  }
-  for (const source of list) {
-    const url = String(source?.url || '').trim();
-    if (/^https?:\/\//i.test(url)) return url;
-  }
-  return 'https://www.0404.go.kr/';
+export function mofaOverseasSafetyUrl() {
+  return MOFA_OVERSEAS_SAFETY_URL;
 }

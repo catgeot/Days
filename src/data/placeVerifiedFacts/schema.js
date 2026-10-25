@@ -10,6 +10,7 @@ export const CITY_SLOT_IDS = [
   'stay-area',
   'itinerary',
   'money-safety',
+  'safety',
   'season',
 ];
 

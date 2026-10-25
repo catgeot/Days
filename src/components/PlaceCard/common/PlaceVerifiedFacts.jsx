@@ -18,10 +18,12 @@ import {
   verifiedFactSlots,
 } from '../../../data/placeVerifiedFacts/localInfoLayout.js';
 import {
+  CONSULAR_CALL_CENTER_DISPLAY,
+  CONSULAR_CALL_CENTER_TEL,
   formatCheckedChipDate,
   freshnessOf,
   getFreshnessToday,
-  pickMofaSafetyUrl,
+  mofaOverseasSafetyUrl,
 } from '../../../data/placeVerifiedFacts/freshness.js';
 import {
   AI_GENERATED_LABEL,
@@ -29,8 +31,6 @@ import {
   publicSourceName,
   slotLooksEmpty,
 } from '../../../data/placeVerifiedFacts/schema.js';
-
-const CONSULAR_PHONE = '+82-2-3210-0404';
 import { buildPlacePath } from '../../../utils/placePlannerPath';
 import {
   PLACE_GALLERY_SECTION,
@@ -247,9 +247,9 @@ function FreshnessCheckedChip({ slot, locale, light }) {
   );
 }
 
-function MofaSafetyLink({ sources, locale, light, labelKey = 'place.facts.freshness.mofaLink' }) {
+function MofaSafetyLink({ light, labelKey = 'place.facts.freshness.mofaLink' }) {
   const { t } = useTranslation();
-  const href = pickMofaSafetyUrl(sources);
+  const href = mofaOverseasSafetyUrl();
   const linkClass = light
     ? 'font-semibold text-sky-800 underline underline-offset-2'
     : 'font-semibold text-sky-200 underline underline-offset-2';
@@ -275,7 +275,7 @@ function FreshnessWarnBanner({ slot, locale, light }) {
   return (
     <p data-fact-freshness-warn="" className={bannerClass}>
       {t('place.facts.freshness.warn')}{' '}
-      <MofaSafetyLink sources={slot.sources} locale={locale} light={light} />
+      <MofaSafetyLink light={light} />
     </p>
   );
 }
@@ -289,10 +289,18 @@ function FreshnessHiddenFallback({ slot, locale, light }) {
     <div data-fact-freshness-hidden="" className="space-y-2">
       <p className={textClass}>
         {t('place.facts.freshness.hiddenLead')}{' '}
-        <MofaSafetyLink sources={slot.sources} locale={locale} light={light} />
+        <MofaSafetyLink light={light} />
       </p>
-      <p className={textClass} data-fact-consular-phone="">
-        {t('place.facts.freshness.consular', { phone: CONSULAR_PHONE })}
+      <p className={textClass}>
+        {t('place.facts.freshness.consularLabel')}{' '}
+        <a
+          href={CONSULAR_CALL_CENTER_TEL}
+          data-fact-consular-phone=""
+          className={light ? 'font-semibold text-sky-800 underline underline-offset-2' : 'font-semibold text-sky-200 underline underline-offset-2'}
+          onClick={(event) => event.stopPropagation()}
+        >
+          {CONSULAR_CALL_CENTER_DISPLAY}
+        </a>
       </p>
     </div>
   );

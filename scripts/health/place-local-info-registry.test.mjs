@@ -135,8 +135,14 @@ test('paris rollout hides the money row and does not call ETIAS required', () =>
   assert.equal(en.name, 'Paris');
 
   const cairoMoney = localInfoRegistry.cairo.ko.city.slots.find((slot) => slot.id === 'money-safety');
+  const cairoSafety = localInfoRegistry.cairo.ko.city.slots.find((slot) => slot.id === 'safety');
   assert.equal(cairoMoney.kind, 'standing');
-  assert.equal(cairoMoney.checkedOn, '2026-10-11');
+  assert.equal(cairoMoney.checkedOn, null);
+  assert.match(cairoMoney.value, /EGP/);
+  assert.equal(cairoSafety.kind, 'standing');
+  assert.equal(cairoSafety.checkedOn, '2026-10-11');
+  assert.match(cairoSafety.value, /여행유의/);
+  assert.equal(/EGP/.test(cairoSafety.value), false);
 });
 
 test('mention matching is whole-token exact and ignores short or partial keys', () => {

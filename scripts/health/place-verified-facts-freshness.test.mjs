@@ -1,19 +1,26 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import test from 'node:test';
+
+const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 import { CAIRO_CITY_FACTS } from '../../src/data/placeVerifiedFacts/cairo.js';
 import {
   freshnessOf,
   freshnessTier,
   formatCheckedChipDate,
   isIsoDateString,
-  pickMofaSafetyUrl,
+  CONSULAR_CALL_CENTER_TEL,
+  mofaOverseasSafetyUrl,
   seoulTodayYmd,
 } from '../../src/data/placeVerifiedFacts/freshness.js';
 import { localInfoRegistry } from '../../src/data/placeVerifiedFacts/index.js';
 import { PARIS_CITY_FACTS } from '../../src/data/placeVerifiedFacts/paris.js';
 
 const parisSafety = PARIS_CITY_FACTS.slots.find((slot) => slot.id === 'safety');
-const cairoSafety = CAIRO_CITY_FACTS.slots.find((slot) => slot.id === 'money-safety');
+const cairoMoney = CAIRO_CITY_FACTS.slots.find((slot) => slot.id === 'money-safety');
+const cairoSafety = CAIRO_CITY_FACTS.slots.find((slot) => slot.id === 'safety');
 
 test('event freshness bands use KST calendar days (Paris safety)', () => {
   assert.equal(parisSafety.kind, 'event');
@@ -30,7 +37,10 @@ test('event freshness bands use KST calendar days (Paris safety)', () => {
   assert.equal(warn.ageDays, 10);
 });
 
-test('standing freshness bands (Cairo money-safety)', () => {
+test('standing freshness bands (Cairo safety row)', () => {
+  assert.equal(cairoMoney.kind, 'standing');
+  assert.equal(cairoMoney.checkedOn, null);
+  assert.equal(freshnessTier(cairoMoney, '2027-06-01'), 'none');
   assert.equal(cairoSafety.kind, 'standing');
   assert.equal(cairoSafety.checkedOn, '2026-10-11');
 
@@ -62,8 +72,7 @@ test('checked chip date and MOFA URL helpers', () => {
   assert.equal(isIsoDateString('2026-13-01'), false);
   assert.equal(formatCheckedChipDate('2026-10-22', 'ko'), '10/22');
   assert.equal(formatCheckedChipDate('2026-10-22', 'en'), '10/22');
-  const url = pickMofaSafetyUrl(parisSafety.sources);
-  assert.match(url, /0404\.go\.kr/);
+  assert.equal(mofaOverseasSafetyUrl(), 'https://www.0404.go.kr/');
   assert.equal(typeof seoulTodayYmd(new Date('2026-10-24T20:00:00Z')), 'string');
 });
 
@@ -76,6 +85,17 @@ test('registry event slots require checkedOn (schema advisory)', () => {
       }
     }
   }
+});
+
+test('freshness UI pins MOFA URL and consular tel link', () => {
+  const factsUi = readFileSync(
+    join(root, 'src/components/PlaceCard/common/PlaceVerifiedFacts.jsx'),
+    'utf8',
+  );
+  assert.match(factsUi, /mofaOverseasSafetyUrl/);
+  assert.match(factsUi, /CONSULAR_CALL_CENTER_TEL/);
+  assert.equal(CONSULAR_CALL_CENTER_TEL, 'tel:+82232100404');
+  assert.equal(mofaOverseasSafetyUrl(), 'https://www.0404.go.kr/');
 });
 
 test('event slot staleness emits CI warning without failing', () => {

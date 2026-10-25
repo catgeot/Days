@@ -13,7 +13,7 @@ export const SKETCH_SLOT_KEYWORDS = {
 export const PLANNER_FACT_BY_TOOLKIT = {
   visa: 'entry',
   airport_transfer: 'airport',
-  safety: 'money-safety',
+  safety: 'safety',
   accommodation: 'stay-area',
 };
 
@@ -64,7 +64,9 @@ export function plannerSlotForToolkit(card, toolkitType) {
   const slotId = PLANNER_FACT_BY_TOOLKIT[toolkitType];
   if (!card || !slotId) return null;
   const ids = toolkitType === 'safety' ? ['safety', 'money-safety'] : [slotId];
-  const slot = (card.slots || []).find((item) => ids.includes(item.id));
+  const slot = toolkitType === 'safety'
+    ? ids.map((id) => (card.slots || []).find((item) => item.id === id)).find(Boolean)
+    : (card.slots || []).find((item) => ids.includes(item.id));
   if (!slot || slotLooksEmpty(slot)) return null;
   return slot;
 }

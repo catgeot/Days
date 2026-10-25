@@ -872,7 +872,7 @@
       "confirmed": {
         "entry": "Verified entry info",
         "airport": "Verified airport-to-city info",
-        "moneySafety": "Verified money and safety info",
+        "moneySafety": "Verified money info",
         "safety": "Verified safety info",
         "stayArea": "Verified where-to-stay info"
       },
@@ -883,6 +883,7 @@
         "warn": "For the latest updates, check with the Ministry of Foreign Affairs.",
         "mofaLink": "MOFA overseas travel safety",
         "hiddenLead": "See the latest safety updates on MOFA overseas travel safety.",
+        "consularLabel": "Consular Call Center",
         "consular": "Consular Call Center {{phone}}"
       },
       "unverified": "Unverified: {{items}}",
@@ -894,7 +895,7 @@
         "stay-area": "Where to stay",
         "itinerary": "Days 1–3",
         "louvre-visit": "Louvre visit",
-        "money-safety": "Money and safety",
+        "money-safety": "Money",
         "safety": "Safety",
         "season": "Season",
         "hours": "Hours",
