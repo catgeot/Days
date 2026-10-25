@@ -49,6 +49,10 @@ import { getSystemPrompt, PERSONA_TYPES } from './lib/prompts';
 import { persistMooniLastChatId } from './lib/tripChatUtils';
 import { enrichLocationWithRentalAirport } from '../../utils/rentalAirportMatch.js';
 import {
+  clearPlaceGalleryScrollBack,
+  placeGalleryBackScrollKey,
+} from '../../components/PlaceCard/common/placeScrollMemory.js';
+import {
   mergeCanonicalTravelSpot,
   healPlaceholderCountry,
   isPlaceholderCountry,
@@ -847,6 +851,11 @@ function Home() {
     navigate(`/place/${param}${tabSuffix}`);
   }, [category, navigate, addScoutPin, moveToLocation, rememberGlobeFocus, setSelectedLocation]);
 
+  const clearGalleryBackArmForLocation = useCallback((loc) => {
+    const key = placeGalleryBackScrollKey(loc);
+    if (key) clearPlaceGalleryScrollBack(key);
+  }, []);
+
   /** 장소카드 헤더 지구본 — URL SSOT 포커스 고정 후 홈 (연관 키워드 점프 후 stale selectedLocation race 방지) */
   const goHomeFromPlace = useCallback(() => {
     clearPlaceReturnTo();
@@ -862,9 +871,19 @@ function Home() {
       addScoutPin(target);
       setSelectedLocation(target);
     }
+    clearGalleryBackArmForLocation(focusLoc || selectedLocationRef.current);
     navigate('/');
     recalibrateHomeChromeAfterNav();
-  }, [routeLocation.pathname, category, navigate, rememberGlobeFocus, addScoutPin, setSelectedLocation, recalibrateHomeChromeAfterNav]);
+  }, [
+    routeLocation.pathname,
+    category,
+    navigate,
+    rememberGlobeFocus,
+    addScoutPin,
+    setSelectedLocation,
+    recalibrateHomeChromeAfterNav,
+    clearGalleryBackArmForLocation,
+  ]);
 
   const leavePlaceCard = useCallback(() => {
     const returnTo = peekPlaceReturnTo(routeLocation.state);
@@ -879,11 +898,18 @@ function Home() {
     clearExploreReturn();
     skipHomeSummaryRestoreRef.current = true;
     pendingGlobeHomeFocusRef.current = null;
+    clearGalleryBackArmForLocation(selectedLocationRef.current);
     setIsCardExpanded(false);
     setSelectedLocation(null);
     navigate('/');
     recalibrateHomeChromeAfterNav();
-  }, [navigate, routeLocation.state, setSelectedLocation, recalibrateHomeChromeAfterNav]);
+  }, [
+    navigate,
+    routeLocation.state,
+    setSelectedLocation,
+    recalibrateHomeChromeAfterNav,
+    clearGalleryBackArmForLocation,
+  ]);
 
   const createTripOnFirstUserMessage = useCallback(async ({ destination, lat, lng, persona, firstUserText, mooniPromptText }) => {
     const systemPrompt = getSystemPrompt(persona, destination);

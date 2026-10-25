@@ -65,6 +65,81 @@ async function openCairoFromSearch(page) {
   await openCairoFromExplore(page);
 }
 
+async function openCairoFromHomeTop10Chip(page) {
+  await page.goto('/?lang=ko');
+  const search = page.getByRole('button', { name: /여행지 검색|여행지 탐색|Search destinations/i }).first();
+  await expect(search).toBeVisible({ timeout: 60_000 });
+  await search.click();
+  await expect(page).toHaveURL(/\/explore/, { timeout: 30_000 });
+  const chip = page
+    .locator('[data-testid="explore-trending-chips-row"] button')
+    .filter({ hasText: /카이로/ })
+    .first();
+  await expect(chip).toBeVisible({ timeout: 60_000 });
+  await chip.click();
+  await expect(page).toHaveURL(/\/place\/cairo(?:\/|$|\?)/, { timeout: 45_000 });
+}
+
+async function openCairoReviewsTabFromGallery(page) {
+  const reviewsLink = page.locator('a[href*="/place/cairo/reviews"]').first();
+  await expect(reviewsLink).toBeAttached({ timeout: 30_000 });
+  await reviewsLink.evaluate((el) => {
+    el.click();
+  });
+  await expect(page).toHaveURL(/\/place\/cairo\/reviews/, { timeout: 30_000 });
+}
+
+async function cairoHomeTop10ReviewsBackAtDepth(page, { scrollInput = 'wheel' } = {}) {
+  const gallery = page.locator('[data-place-gallery-scroll]');
+  await expect(gallery).toBeVisible({ timeout: 30_000 });
+  const storiesHeader = page.getByRole('button', { name: /다녀온 이야기/ }).first();
+  if (await storiesHeader.isVisible().catch(() => false)) {
+    await storiesHeader.click();
+  }
+  const ready = await waitGalleryImagesReady(page, gallery);
+  if (ready.skipped) return { skipped: true, reason: 'gallery shorter than 1350px scroll range' };
+  let before;
+  if (scrollInput === 'wheel') {
+    await wheelGallery(page, gallery, 200, 16);
+    await expect
+      .poll(() => gallery.evaluate((el) => el.scrollTop), { timeout: 20_000 })
+      .toBeGreaterThan(1350);
+    before = await gallery.evaluate((el) => {
+      const top = el.scrollTop;
+      el.setAttribute('data-gallery-last-scroll', String(top));
+      return top;
+    });
+  } else if (scrollInput === 'scrollTo') {
+    await page.evaluate(() => window.scrollTo(0, 1500));
+    await gallery.evaluate((el) => {
+      const max = Math.max(0, el.scrollHeight - el.clientHeight);
+      const top = Math.min(max, 1500);
+      el.scrollTop = top;
+      el.setAttribute('data-gallery-last-scroll', String(top));
+    });
+    before = await scrollGalleryToTarget(page, gallery, 1500);
+  } else {
+    before = await scrollGalleryToTarget(page, gallery, 1500);
+  }
+  await openCairoReviewsTabFromGallery(page);
+  await page.goBack({ waitUntil: 'commit' });
+  await expect(page).toHaveURL(/\/place\/cairo(?:\/|$|\?)/, { timeout: 30_000 });
+  await expect(page).not.toHaveURL(/\/reviews/);
+  await expect(gallery).toBeVisible({ timeout: 30_000 });
+  await expect
+    .poll(
+      async () => {
+        const top = await gallery.evaluate((el) => el.scrollTop);
+        return Math.abs(top - before) <= 48 ? top : null;
+      },
+      { timeout: 30_000 },
+    )
+    .not.toBeNull();
+  const after = await gallery.evaluate((el) => el.scrollTop);
+  expect(Math.abs(after - before)).toBeLessThanOrEqual(48);
+  return { before, after };
+}
+
 async function scrollGalleryDeep(page, minTop = 1000) {
   const gallery = page.locator('[data-place-gallery-scroll]');
   await expect.poll(async () => {
@@ -497,6 +572,18 @@ test.describe('place visit story → reviews focus (WebKit 390, fixtures)', () =
     });
     const afterClose = await root.evaluate((el) => el.scrollTop);
     expect(Math.abs(afterClose - beforeTop)).toBeLessThanOrEqual(8);
+  });
+
+  test('home TOP10 chip: reviews tab back restores ~1500 (wheel)', async ({ page }) => {
+    await openCairoFromHomeTop10Chip(page);
+    const result = await cairoHomeTop10ReviewsBackAtDepth(page, { scrollInput: 'wheel' });
+    if (result.skipped) test.skip(true, result.reason);
+  });
+
+  test('home TOP10 chip: reviews tab back restores ~1500 (gallery scrollTo)', async ({ page }) => {
+    await openCairoFromHomeTop10Chip(page);
+    const result = await cairoHomeTop10ReviewsBackAtDepth(page, { scrollInput: 'scrollTo' });
+    if (result.skipped) test.skip(true, result.reason);
   });
 
   test('cairo reviews back restores ~1500 after gallery images load (wheel)', async ({ page }) => {

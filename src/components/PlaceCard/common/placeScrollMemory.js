@@ -1,11 +1,33 @@
 /** Gallery scroll offsets keyed by place, so Back can return to the same spot. */
 
-const tops = new Map();
-const backTops = new Map();
-/** In-session only — stale sessionStorage after reload/direct entry must not restore. */
-const backRestoreLive = new Map();
-/** Lightbox / modal overlays that unmount or reflow the scroll container. */
-const overlayScrollByKey = new Map();
+const SCROLL_MEMORY_STORE_KEY = '__gateoPlaceGalleryScrollMemory';
+
+/** @returns {{ tops: Map, backTops: Map, backRestoreLive: Map, overlayScrollByKey: Map }} */
+function galleryScrollMemoryStore() {
+  const root = typeof globalThis !== 'undefined' ? globalThis : {};
+  if (!root[SCROLL_MEMORY_STORE_KEY]) {
+    root[SCROLL_MEMORY_STORE_KEY] = {
+      tops: new Map(),
+      backTops: new Map(),
+      backRestoreLive: new Map(),
+      overlayScrollByKey: new Map(),
+    };
+  }
+  return root[SCROLL_MEMORY_STORE_KEY];
+}
+
+const { tops, backTops, backRestoreLive, overlayScrollByKey } = galleryScrollMemoryStore();
+
+/**
+ * SSOT key for gallery scroll + browser-back restore (matches ReviewsTab slug rules).
+ * @param {{ slug?: string, id?: unknown, name?: string } | null | undefined} location
+ * @returns {string}
+ */
+export function placeGalleryBackScrollKey(location) {
+  const idStr = location?.id != null ? String(location.id) : '';
+  if (idStr.startsWith('search-') || idStr.startsWith('loc-')) return idStr;
+  return String(location?.slug || idStr || location?.name || '').trim();
+}
 
 /** Clears in-memory gallery scroll state (health tests only — not for production). */
 export function resetPlaceGalleryScrollMemoryForTests() {

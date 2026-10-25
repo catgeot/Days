@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useLayoutEffect, useRef, useCallback, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { matchPath, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import PlaceChatPanel from '../panels/PlaceChatPanel';
 import PlaceMediaPanel from '../panels/PlaceMediaPanel';
@@ -20,9 +20,11 @@ import {
 } from '../../../pages/Home/lib/placeSeoText.js';
 import { useLocale } from '../../../i18n/LocaleProvider';
 import { decodeHtmlEntities } from '../../../utils/decodeHtmlEntities';
+import { placeGalleryBackScrollKey, snapshotGalleryScrollForPlaceBack } from '../common/placeScrollMemory.js';
 
 const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, onOpenMooni, onNavigateToPlace, onGoHome, isMooniChatOpen = false, galleryData, onToggleBookmark, initialTab = 'GALLERY' }) => {
   const navigate = useNavigate();
+  const routerLocation = useLocation();
   const { t } = useTranslation();
   const { locale } = useLocale();
   const displayName = getLocalizedPlaceName(location, locale) || location.name;
@@ -37,6 +39,10 @@ const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, onOpenM
   // 탭 변경 시 URL 업데이트 — SSOT slug 기준 · push로 히스토리 쌓아 ← 복귀 가능
   const setMediaMode = useCallback((newMode) => {
       const slug = getPlaceUrlParam(location);
+      if (newMode === 'REVIEWS') {
+        const backKey = placeGalleryBackScrollKey(location);
+        if (backKey) snapshotGalleryScrollForPlaceBack(backKey);
+      }
       const tabPath = newMode === 'GALLERY' ? '' : `/${newMode.toLowerCase()}`;
       const nextPath = `/place/${slug}${tabPath}`;
       if (window.location.pathname !== nextPath) {
@@ -45,11 +51,41 @@ const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, onOpenM
       setMediaModeState(newMode);
   }, [navigate, location]);
 
-  useLayoutEffect(() => {
-      if (['GALLERY', 'VIDEO', 'WIKI', 'REVIEWS', 'PLANNER'].includes(initialTab)) {
-          setMediaModeState(initialTab);
+  const resolveMediaTabFromPathname = useCallback((pathname) => {
+    const tabMatch = matchPath({ path: '/place/:slug/:tab' }, pathname);
+    const raw = tabMatch?.params?.tab?.toLowerCase();
+    if (raw && ['wiki', 'reviews', 'gallery', 'video', 'planner'].includes(raw)) {
+      return raw;
+    }
+    return 'gallery';
+  }, []);
+
+  const mediaTabFromPath = useMemo(
+    () => resolveMediaTabFromPathname(routerLocation.pathname),
+    [routerLocation.pathname, resolveMediaTabFromPathname],
+  );
+
+  const applyMediaTabFromPathname = useCallback(
+    (pathname) => {
+      const mode = resolveMediaTabFromPathname(pathname).toUpperCase();
+      if (['GALLERY', 'VIDEO', 'WIKI', 'REVIEWS', 'PLANNER'].includes(mode)) {
+        setMediaModeState(mode);
       }
-  }, [initialTab]);
+    },
+    [resolveMediaTabFromPathname],
+  );
+
+  useLayoutEffect(() => {
+    applyMediaTabFromPathname(routerLocation.pathname);
+  }, [routerLocation.pathname, applyMediaTabFromPathname]);
+
+  useEffect(() => {
+    const onPopState = () => {
+      applyMediaTabFromPathname(window.location.pathname);
+    };
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
+  }, [applyMediaTabFromPathname]);
 
   const [selectedVideoId, setSelectedVideoId] = useState(null);
 

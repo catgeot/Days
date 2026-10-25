@@ -18,6 +18,7 @@ import {
   armedGalleryBackScrollToRestore,
   peekArmedGalleryBackScroll,
   peekGalleryScrollForPlaceBack,
+  placeGalleryBackScrollKey,
   placeGalleryScrollToRestore,
   rememberPlaceGalleryScroll,
   scheduleOneGalleryScrollRealignAfterImages,
@@ -383,6 +384,10 @@ const PlaceGalleryView = React.memo(({
   const popBackRealignScheduledRef = useRef(false);
   const navigationType = useNavigationType();
   const routerLocation = useLocation();
+  const galleryRoutePathname =
+    navigationType === 'POP' && typeof window !== 'undefined'
+      ? window.location.pathname
+      : routerLocation.pathname;
   const scrollGalleryToTop = usePlaceMediaScrollToTop('GALLERY', scrollContainerRef, !selectedImg);
   const currentIndex = useMemo(() => {
     if (!selectedImg || images.length === 0) return -1;
@@ -417,7 +422,7 @@ const PlaceGalleryView = React.memo(({
   const [paintedCount, setPaintedCount] = useState(0);
   const [galleryVisuallyReady, setGalleryVisuallyReady] = useState(false);
   const galleryPlaceKey = useMemo(
-    () => location?.slug || location?.id || location?.name || '',
+    () => placeGalleryBackScrollKey(location),
     [location?.slug, location?.id, location?.name],
   );
   const galleryOverlayKey = useMemo(
@@ -541,7 +546,7 @@ const PlaceGalleryView = React.memo(({
   useLayoutEffect(() => {
     if (navigationType !== 'POP') return undefined;
     if (!isGalleryPanelActive || !galleryPlaceKey) return undefined;
-    if (/\/reviews\/?$/.test(routerLocation.pathname)) return undefined;
+    if (/\/reviews\/?$/.test(galleryRoutePathname)) return undefined;
     const armed = armedGalleryBackScrollToRestore(galleryPlaceKey, navigationType);
     if (armed <= 0) return undefined;
     applyGalleryScrollRestore(armed, { clearBack: false });
@@ -550,7 +555,7 @@ const PlaceGalleryView = React.memo(({
     isGalleryPanelActive,
     galleryPlaceKey,
     applyGalleryScrollRestore,
-    routerLocation.pathname,
+    galleryRoutePathname,
   ]);
 
   useLayoutEffect(() => {
@@ -561,7 +566,12 @@ const PlaceGalleryView = React.memo(({
       gridPending.placeKey === galleryPlaceKey &&
       Number(gridPending.galleryScrollTop) > 0;
 
-    const restore = placeGalleryScrollToRestore(galleryPlaceKey, navigationTypeRef.current);
+    const onGalleryRoute = !/\/reviews\/?$/.test(galleryRoutePathname);
+    let restore = placeGalleryScrollToRestore(galleryPlaceKey, navigationTypeRef.current);
+    if (restore <= 0 && onGalleryRoute && navigationTypeRef.current === 'POP') {
+      const armedPeek = peekArmedGalleryBackScroll(galleryPlaceKey);
+      if (armedPeek > 0) restore = armedPeek;
+    }
     if (restore > 0) {
       pendingPlaceScrollResetRef.current = false;
       pendingPlaceScrollRestoreRef.current = restore;
@@ -587,8 +597,7 @@ const PlaceGalleryView = React.memo(({
     }
 
     if (
-      navigationType === 'POP' &&
-      !/\/reviews\/?$/.test(routerLocation.pathname) &&
+      !/\/reviews\/?$/.test(galleryRoutePathname) &&
       (peekArmedGalleryBackScroll(galleryPlaceKey) > 0 ||
         pendingPlaceScrollRestoreRef.current > 0 ||
         popBackRealignTargetRef.current > 0)
@@ -612,12 +621,12 @@ const PlaceGalleryView = React.memo(({
       const node = scrollContainerRef.current;
       if (node && node.scrollTop > 0) rememberPlaceGalleryScroll(galleryPlaceKey, node.scrollTop);
     };
-  }, [galleryPlaceKey, navigationType, isGalleryPanelActive, routerLocation.pathname]);
+  }, [galleryPlaceKey, navigationType, isGalleryPanelActive, galleryRoutePathname]);
 
   useLayoutEffect(() => {
     if (navigationType !== 'POP') return undefined;
     if (!isGalleryPanelActive || !galleryPlaceKey) return undefined;
-    if (/\/reviews\/?$/.test(routerLocation.pathname)) return undefined;
+    if (/\/reviews\/?$/.test(galleryRoutePathname)) return undefined;
     const restore = placeGalleryScrollToRestore(galleryPlaceKey, navigationType);
     if (restore <= 0) return undefined;
     applyGalleryScrollRestore(restore, { clearBack: false });
@@ -631,11 +640,11 @@ const PlaceGalleryView = React.memo(({
       window.cancelAnimationFrame(raf);
       window.clearTimeout(timer);
     };
-  }, [navigationType, galleryPlaceKey, isGalleryPanelActive, routerLocation.pathname, applyGalleryScrollRestore]);
+  }, [navigationType, galleryPlaceKey, isGalleryPanelActive, galleryRoutePathname, applyGalleryScrollRestore]);
 
   useLayoutEffect(() => {
     if (!isGalleryPanelActive) return undefined;
-    if (/\/reviews\/?$/.test(routerLocation.pathname)) return undefined;
+    if (/\/reviews\/?$/.test(galleryRoutePathname)) return undefined;
     if (!isGalleryBackRestoreDue(galleryPlaceKey, navigationType)) return undefined;
     const restore = peekGalleryScrollForPlaceBack(galleryPlaceKey);
     if (restore <= 0) return undefined;
@@ -651,7 +660,7 @@ const PlaceGalleryView = React.memo(({
       window.clearTimeout(timer);
     };
   }, [
-    routerLocation.pathname,
+    galleryRoutePathname,
     navigationType,
     galleryPlaceKey,
     isGalleryPanelActive,
