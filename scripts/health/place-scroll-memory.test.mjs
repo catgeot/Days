@@ -2,9 +2,11 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { JSDOM } from 'jsdom';
 import {
+  armedGalleryBackScrollToRestore,
   clearPlaceGalleryScrollBack,
   GALLERY_SCROLL_REALIGN_TIMEOUT_MS,
   isGalleryBackRestoreDue,
+  peekArmedGalleryBackScroll,
   peekGalleryScrollForPlaceBack,
   placeGalleryScrollToRestore,
   rememberPlaceGalleryScroll,
@@ -40,6 +42,16 @@ test('back to a place restores its gallery scroll and a fresh open does not', ()
   rememberPlaceGalleryScroll('grand-egyptian-museum', 0);
   assert.equal(placeGalleryScrollToRestore('grand-egyptian-museum', 'POP'), 0);
   assert.equal(placeGalleryScrollToRestore('missing', 'POP'), 0);
+  dom.window.close();
+});
+
+test('armedGalleryBackScrollToRestore is POP-only', () => {
+  const dom = withGalleryScrollDom(512);
+  snapshotGalleryScrollForPlaceBack('cairo');
+  assert.equal(peekArmedGalleryBackScroll('cairo'), 512);
+  assert.equal(armedGalleryBackScrollToRestore('cairo', 'POP'), 512);
+  assert.equal(armedGalleryBackScrollToRestore('cairo', 'PUSH'), 0);
+  assert.equal(armedGalleryBackScrollToRestore('cairo', 'REPLACE'), 0);
   dom.window.close();
 });
 

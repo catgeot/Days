@@ -169,7 +169,7 @@ export function isGalleryBackRestoreDue(placeKey, navigationType) {
 }
 
 /**
- * Armed gallery back offset for in-app return (e.g. reviews → 사진 보기) without router POP.
+ * Armed gallery back offset when snapshotGalleryScrollForPlaceBack ran this session.
  * @param {unknown} placeKey
  * @returns {number}
  */
@@ -178,6 +178,17 @@ export function peekArmedGalleryBackScroll(placeKey) {
   if (!id || !backRestoreLive.get(id)) return 0;
   if (!isBackArmed(id)) return 0;
   return readBackGalleryScroll(id);
+}
+
+/**
+ * Browser Back (router POP) only — in-app tab/link navigation must not restore armed scroll.
+ * @param {unknown} placeKey
+ * @param {unknown} navigationType
+ * @returns {number}
+ */
+export function armedGalleryBackScrollToRestore(placeKey, navigationType) {
+  if (navigationType !== 'POP') return 0;
+  return peekArmedGalleryBackScroll(placeKey);
 }
 
 /**

@@ -15,6 +15,7 @@ import {
   clearPlaceGalleryScrollBack,
   consumeScrollAfterOverlay,
   isGalleryBackRestoreDue,
+  armedGalleryBackScrollToRestore,
   peekArmedGalleryBackScroll,
   peekGalleryScrollForPlaceBack,
   placeGalleryScrollToRestore,
@@ -534,11 +535,12 @@ const PlaceGalleryView = React.memo(({
   }, [selectedImg, galleryOverlayKey, applyGalleryScrollRestore]);
 
   useLayoutEffect(() => {
-    if (!isGalleryPanelActive || !galleryPlaceKey) return;
-    const armed = peekArmedGalleryBackScroll(galleryPlaceKey);
-    if (armed <= 0) return;
+    if (navigationType !== 'POP') return undefined;
+    if (!isGalleryPanelActive || !galleryPlaceKey) return undefined;
+    const armed = armedGalleryBackScrollToRestore(galleryPlaceKey, navigationType);
+    if (armed <= 0) return undefined;
     applyGalleryScrollRestore(armed, { clearBack: true });
-  }, [isGalleryPanelActive, galleryPlaceKey, applyGalleryScrollRestore, routerLocation.pathname]);
+  }, [navigationType, isGalleryPanelActive, galleryPlaceKey, applyGalleryScrollRestore, routerLocation.pathname]);
 
   useLayoutEffect(() => {
     const el = scrollContainerRef.current;
@@ -573,7 +575,11 @@ const PlaceGalleryView = React.memo(({
       return undefined;
     }
 
-    if (isGalleryPanelActive && peekArmedGalleryBackScroll(galleryPlaceKey) > 0) {
+    if (
+      navigationType === 'POP' &&
+      isGalleryPanelActive &&
+      peekArmedGalleryBackScroll(galleryPlaceKey) > 0
+    ) {
       return undefined;
     }
     if (pendingPlaceScrollRestoreRef.current > 0) {

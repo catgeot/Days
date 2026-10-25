@@ -43,11 +43,10 @@ function fulfillPlaceReviews(route, rows = REVIEW_ROWS, delayMs = 0) {
   });
 }
 
-async function openCairoFromSearch(page) {
-  await page.goto('/?lang=ko');
+async function openCairoFromExplore(page, { forceSearchClick = false } = {}) {
   const search = page.getByRole('button', { name: /여행지 검색|여행지 탐색|Search destinations/i }).first();
   await expect(search).toBeVisible({ timeout: 60_000 });
-  await search.click();
+  await search.click(forceSearchClick ? { force: true } : undefined);
   await expect(page).toHaveURL(/\/explore/, { timeout: 30_000 });
   const input = page.locator('input[placeholder]:visible').first();
   await input.fill('카이로');
@@ -60,6 +59,42 @@ async function openCairoFromSearch(page) {
   await row.click();
   await expect(page).toHaveURL(/\/place\/cairo(?:\/|$|\?)/, { timeout: 30_000 });
 }
+
+async function openCairoFromSearch(page) {
+  await page.goto('/?lang=ko');
+  await openCairoFromExplore(page);
+}
+
+async function scrollGalleryDeep(page, minTop = 1000) {
+  const gallery = page.locator('[data-place-gallery-scroll]');
+  await expect.poll(async () => {
+    return gallery.evaluate((el) => el.scrollHeight);
+  }, { timeout: 30_000 }).toBeGreaterThan(minTop + 200);
+  return gallery.evaluate((el, min) => {
+    const target = Math.min(el.scrollHeight - 8, Math.max(min, 1100));
+    el.scrollTop = target;
+    el.setAttribute('data-gallery-last-scroll', String(target));
+    return el.scrollTop;
+  }, minTop);
+}
+
+const PRAGUE_REVIEW_ROWS = Array.from({ length: 14 }, (_, i) => ({
+  id: `e2e-prague-pad-${i}`,
+  place_slug: 'prague',
+  content: `E2E Prague padding review ${i} — scroll depth filler for review viewer scroll restore.`,
+  content_blocks: null,
+  persona_label: null,
+  is_public: true,
+  is_editorial: false,
+  created_at: `2026-10-${String(20 - i).padStart(2, '0')}T10:00:00.000Z`,
+  rating: 5,
+  user_id: `e2e-prague-u-${i}`,
+  user: { id: `e2e-prague-u-${i}`, display_name: `Prague ${i}`, avatar_url: null },
+  likes: [],
+  images: i === 0
+    ? [{ url: 'https://images.unsplash.com/photo-1541849546-216549ae216d?w=600' }]
+    : [],
+}));
 
 async function tapVisitStoryFocusReview(page) {
   const storiesHeader = page.getByRole('button', { name: /다녀온 이야기/ }).first();
@@ -237,7 +272,7 @@ test.describe('place visit story → reviews focus (WebKit 390, fixtures)', () =
     expect(scrollTop).toBeLessThan(40);
   });
 
-  test('in-app PUSH to place does not apply armed gallery back scroll', async ({ page }) => {
+  test('in-app explore link to same place after reviews does not restore armed scroll', async ({ page }) => {
     await openCairoFromSearch(page);
     const gallery = page.locator('[data-place-gallery-scroll]');
     await expect(gallery).toBeVisible({ timeout: 30_000 });
@@ -245,6 +280,7 @@ test.describe('place visit story → reviews focus (WebKit 390, fixtures)', () =
     await storiesHeader.click();
     await gallery.evaluate((el) => {
       el.scrollTop = 300;
+      el.setAttribute('data-gallery-last-scroll', '300');
     });
     const focusStory = page
       .locator('[data-visit-story-kind="review"]')
@@ -253,16 +289,111 @@ test.describe('place visit story → reviews focus (WebKit 390, fixtures)', () =
     await expect(focusStory).toBeVisible({ timeout: 20_000 });
     await focusStory.click();
     await expect(page).toHaveURL(/\/place\/cairo\/reviews/, { timeout: 30_000 });
-    await page.goBack();
-    await expect(gallery).toBeVisible({ timeout: 30_000 });
-    await expect.poll(async () => gallery.evaluate((el) => el.scrollTop), { timeout: 12_000 })
-      .toBeGreaterThan(250);
 
-    await page.goto('/?lang=ko', { waitUntil: 'domcontentloaded' });
-    await openCairoFromSearch(page);
+    await page.getByRole('button', { name: /홈으로 이동|Go home/i }).click();
+    await expect(page).toHaveURL(/\/(?:\?|$)/, { timeout: 30_000 });
+    await openCairoFromExplore(page);
     await expect(gallery).toBeVisible({ timeout: 30_000 });
     const pushScrollTop = await gallery.evaluate((el) => el.scrollTop);
     expect(pushScrollTop).toBeLessThan(40);
+  });
+
+  test('사진 보기 from reviews starts gallery at top (armed restore is POP-only)', async ({ page }) => {
+    await openCairoFromSearch(page);
+    const gallery = page.locator('[data-place-gallery-scroll]');
+    await expect(gallery).toBeVisible({ timeout: 30_000 });
+    const storiesHeader = page.getByRole('button', { name: /다녀온 이야기/ }).first();
+    await storiesHeader.click();
+    await expect.poll(async () => gallery.evaluate((el) => el.scrollHeight), { timeout: 45_000 })
+      .toBeGreaterThan(1200);
+    const beforeTop = await scrollGalleryDeep(page, 1000);
+    expect(beforeTop).toBeGreaterThan(900);
+    const focusStory = page
+      .locator('[data-visit-story-kind="review"]')
+      .filter({ hasText: 'E2E visit story — target review' })
+      .first();
+    await expect(focusStory).toBeVisible({ timeout: 20_000 });
+    await focusStory.click();
+    await expect(page).toHaveURL(/\/place\/cairo\/reviews/, { timeout: 30_000 });
+    await expect.poll(() => page.url(), { timeout: 15_000 }).not.toContain('review=');
+    const galleryBack = page
+      .getByRole('link', { name: /사진 보기|View photos/ })
+      .or(page.getByRole('button', { name: /사진 보기|View photos/ }))
+      .first();
+    await expect(galleryBack).toBeVisible({ timeout: 20_000 });
+    await galleryBack.click();
+    await expect(page).toHaveURL(/\/place\/cairo(?:\/|$|\?)/, { timeout: 30_000 });
+    await expect(gallery).toBeVisible({ timeout: 30_000 });
+    const afterLink = await gallery.evaluate((el) => el.scrollTop);
+    expect(afterLink).toBeLessThan(40);
+  });
+
+  test('cairo gallery lightbox history.back keeps scroll within 8px', async ({ page }) => {
+    await openCairoFromSearch(page);
+    const gallery = page.locator('[data-place-gallery-scroll]');
+    await expect(gallery).toBeVisible({ timeout: 30_000 });
+    const beforeTop = await scrollGalleryDeep(page, 1200);
+    const tile = gallery.locator('img').first();
+    await expect(tile).toBeVisible({ timeout: 60_000 });
+    await tile.evaluate((img) => {
+      const tileRoot = img.closest('.break-inside-avoid') || img;
+      tileRoot.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+    });
+    await expect(page.locator('[data-place-lightbox]')).toBeVisible({ timeout: 15_000 });
+    await page.goBack({ waitUntil: 'commit' });
+    await expect(page.locator('[data-place-lightbox]')).toBeHidden({ timeout: 15_000 });
+    await expect(gallery).toBeVisible({ timeout: 15_000 });
+    await expect.poll(async () => gallery.evaluate((el) => el.scrollTop), { timeout: 12_000 })
+      .toBeGreaterThan(beforeTop - 24);
+    const afterBack = await gallery.evaluate((el) => el.scrollTop);
+    expect(Math.abs(afterBack - beforeTop)).toBeLessThanOrEqual(8);
+  });
+
+  test('prague reviews image viewer history.back keeps list scroll within 8px', async ({ page }) => {
+    await page.unroute('**/rest/v1/place_reviews**');
+    await page.route('**/rest/v1/place_reviews**', (route) =>
+      fulfillPlaceReviews(route, [...REVIEW_ROWS, ...PRAGUE_REVIEW_ROWS]),
+    );
+    await page.goto('/place/prague/reviews?lang=ko', { waitUntil: 'domcontentloaded' });
+    const root = page.locator('[data-place-reviews-scroll-root]');
+    await expect(root).toBeVisible({ timeout: 60_000 });
+    const expand = page.getByRole('button', { name: /^더보기$/ }).first();
+    for (let i = 0; i < 8; i += 1) {
+      if (!(await expand.isVisible().catch(() => false))) break;
+      await expand.click({ timeout: 10_000 }).catch(() => {});
+      await page.waitForTimeout(250);
+    }
+    await expect.poll(async () => root.evaluate((el) => el.scrollHeight - el.clientHeight), {
+      timeout: 45_000,
+    }).toBeGreaterThan(1500);
+    const beforeTop = await root.evaluate((el) => {
+      const max = Math.max(0, el.scrollHeight - el.clientHeight);
+      const target = Math.min(max, Math.max(1200, max - 40));
+      el.scrollTop = target;
+      el.setAttribute('data-gallery-last-scroll', String(el.scrollTop));
+      return el.scrollTop;
+    });
+    expect(beforeTop).toBeGreaterThan(1000);
+    const reviewWithImage = root.locator('[data-review-id="e2e-prague-pad-0"]');
+    await expect(reviewWithImage).toBeVisible({ timeout: 30_000 });
+    const expandReview = reviewWithImage.getByRole('button', { name: /^더보기$/ });
+    if (await expandReview.isVisible().catch(() => false)) {
+      await expandReview.click();
+    }
+    const thumb = reviewWithImage.locator('img[alt^="review img"]').first();
+    await expect(thumb).toBeVisible({ timeout: 30_000 });
+    await thumb.evaluate((img) => {
+      img.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+    });
+    await expect(page.getByAltText(/갤러리 뷰어 이미지|Gallery viewer image/)).toBeVisible({
+      timeout: 15_000,
+    });
+    await page.goBack({ waitUntil: 'commit' });
+    await expect(page.getByAltText(/갤러리 뷰어 이미지|Gallery viewer image/)).toBeHidden({
+      timeout: 15_000,
+    });
+    const afterClose = await root.evaluate((el) => el.scrollTop);
+    expect(Math.abs(afterClose - beforeTop)).toBeLessThanOrEqual(8);
   });
 
   test('reload on reviews then back does not jump gallery to saved offset', async ({ page }) => {
