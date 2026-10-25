@@ -8,9 +8,9 @@ import { formatLogbookDisplayDate } from '../../../utils/logbookDisplayDate';
 import { formatGateoReviewerBadge } from '../../../utils/placeReviewEditorial';
 import { buildPlaceReviewsHref } from '../../../utils/placeReviewFocus.js';
 
-/** Room for fixed CTA bar (button + chrome) + iOS safe-area — keeps last paragraph readable. */
-const DETAIL_BODY_PADDING_WITH_STICKY_CTA =
-  'pb-[calc(6.25rem+env(safe-area-inset-bottom,0px))]';
+/** Below link chips — CTA bar + safe-area + chip row so max scroll does not cover chips. */
+const STICKY_CTA_SCROLL_CLEARANCE =
+  'min-h-[calc(7.75rem+env(safe-area-inset-bottom,0px))]';
 
 function PlaceCardCta({ href }) {
   return (
@@ -60,7 +60,7 @@ const LogbookOfficialReviewHubDetail = ({ reviewId }) => {
       </div>
 
       <div
-        className={`px-4 py-4 sm:px-5 ${placeCardHref ? DETAIL_BODY_PADDING_WITH_STICKY_CTA : 'pb-4'}`}
+        className="px-4 py-4 sm:px-5 pb-4"
         data-testid="logbook-official-review-hub-detail-body"
       >
         {isLoading && !review ? (
@@ -88,6 +88,13 @@ const LogbookOfficialReviewHubDetail = ({ reviewId }) => {
               ) : null}
             </div>
             <LogbookEditorialReviewBody review={review} />
+            {placeCardHref ? (
+              <div
+                className={STICKY_CTA_SCROLL_CLEARANCE}
+                data-testid="logbook-official-review-hub-detail-sticky-clearance"
+                aria-hidden="true"
+              />
+            ) : null}
           </>
         ) : null}
       </div>
