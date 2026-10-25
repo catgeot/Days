@@ -1,6 +1,10 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { getPlaceTitleLines } from '../../src/components/PlaceCard/common/locationDisplay.js';
+import {
+  getPlaceTitleLines,
+  resolveEnglishPlaceLabel,
+} from '../../src/components/PlaceCard/common/locationDisplay.js';
+import { locationToChoiceCandidate } from '../../src/pages/Home/lib/searchSuggestions.js';
 import {
   isSamePinKeepVisitorLabel,
   overlayGeoFieldsOnVisitedSpot,
@@ -62,6 +66,20 @@ test('Tinian keep-label without stored name_en — slug infers Tinian, no San Jo
   const overlaid = overlayGeoFieldsOnVisitedSpot(spot, [geo]);
   assert.equal(overlaid.name_en, 'Tinian');
   assert.ok(!overlaid.parentCity);
+});
+
+test('choice candidate and title lines show Tinian English from slug', () => {
+  const spot = visitedRowToSearchSpot({
+    place_id: 'tinian',
+    name_ko: '티니안',
+    lat: 15.0,
+    lng: 145.63,
+  });
+  const candidate = locationToChoiceCandidate(spot);
+  assert.equal(resolveEnglishPlaceLabel(candidate), 'Tinian');
+  assert.equal(candidate.name_en, 'Tinian');
+  const { secondaryName } = getPlaceTitleLines(candidate);
+  assert.equal(secondaryName, 'Tinian');
 });
 
 test('toolkit candidates for Tinian uiPlace include prod place_id rows, not saipan slug', () => {
