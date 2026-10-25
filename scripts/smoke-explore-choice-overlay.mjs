@@ -159,12 +159,19 @@ assert.match(suggestionListSrc, /resolveSearchScenicMedia/);
 
 const qa = readFileSync(join(root, 'src/shared/cloudPreview/cloudQaShareLinks.js'), 'utf8');
 assert.match(qa, /slug:\s*'explore-search'/);
-assert.match(qa, /cursor\/explore-search-d14b/);
+assert.match(
+  qa,
+  /slug:\s*'explore-search'[\s\S]{0,280}?destination:\s*'https:\/\/www\.gateo\.kr\/explore'[\s\S]{0,80}?active:\s*false/,
+);
+assert.doesNotMatch(qa, /explore-search-d14b/);
 assert.match(qa, /slug:\s*'search-enter-hub'/);
 assert.match(qa, /cursor\/search-enter-hub-2018/);
 const vercel = readFileSync(join(root, 'vercel.json'), 'utf8');
-assert.match(vercel, /\/qa\/explore-search/);
-assert.match(vercel, /days-git-cursor-explore-search-d14b/);
+assert.match(
+  vercel,
+  /"source":\s*"\/qa\/explore-search"[\s\S]{0,180}?"destination":\s*"https:\/\/www\.gateo\.kr\/explore"/,
+);
+assert.doesNotMatch(vercel, /explore-search-d14b/);
 assert.match(vercel, /\/qa\/search-enter-hub/);
 assert.match(vercel, /days-git-cursor-search-enter-hub-2018/);
 
