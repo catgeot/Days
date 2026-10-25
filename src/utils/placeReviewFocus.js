@@ -5,6 +5,8 @@ export const PLACE_REVIEW_ANCHOR_PREFIX = 'place-review-';
 const HIGHLIGHT_CLASS = 'place-review-focus-highlight';
 const HIGHLIGHT_STATIC_CLASS = 'place-review-focus-highlight-static';
 
+export const PLACE_REVIEW_USER_INPUT_EVENTS = ['wheel', 'touchstart', 'pointerdown'];
+
 /**
  * @param {string | number | null | undefined} reviewId
  * @returns {string | null}
@@ -29,6 +31,16 @@ export function parsePlaceReviewFocusId(search) {
 }
 
 /**
+ * @param {URLSearchParams} searchParams
+ * @returns {URLSearchParams}
+ */
+export function placeReviewFocusSearchWithoutReview(searchParams) {
+  const next = new URLSearchParams(searchParams);
+  next.delete(EDITORIAL_REVIEW_DEEPLINK_QUERY_PARAM);
+  return next;
+}
+
+/**
  * @param {string | null | undefined} placePath
  * @param {string | number | null | undefined} reviewId
  * @returns {string}
@@ -46,15 +58,16 @@ export function buildPlaceReviewsHref(placePath, reviewId) {
  * @param {ParentNode} [root]
  * @returns {HTMLElement | null}
  */
-export function findPlaceReviewElement(reviewId, root = typeof document !== 'undefined' ? document : null) {
-  if (!root) return null;
+export function findPlaceReviewElement(reviewId, root = null) {
+  const doc = root?.ownerDocument || root || globalThis.document;
+  if (!doc) return null;
   const domId = placeReviewDomId(reviewId);
-  if (domId && root instanceof Document) {
-    const byId = root.getElementById(domId);
+  if (domId && typeof doc.getElementById === 'function') {
+    const byId = doc.getElementById(domId);
     if (byId) return byId;
   }
-  const scoped = root instanceof Document ? root : root;
-  return scoped.querySelector?.(`[data-review-id="${reviewId}"]`) ?? null;
+  const scope = typeof root?.querySelector === 'function' ? root : doc;
+  return scope.querySelector?.(`[data-review-id="${reviewId}"]`) ?? null;
 }
 
 export function prefersReducedMotionForReviewFocus() {
@@ -64,22 +77,28 @@ export function prefersReducedMotionForReviewFocus() {
 
 /**
  * @param {HTMLElement | null} element
+ * @returns {() => void}
  */
 export function flashPlaceReviewHighlight(element) {
-  if (!element) return;
+  if (!element) return () => {};
   element.classList.remove(HIGHLIGHT_CLASS, HIGHLIGHT_STATIC_CLASS);
   void element.offsetWidth;
+  const timers = [];
   if (prefersReducedMotionForReviewFocus()) {
     element.classList.add(HIGHLIGHT_STATIC_CLASS);
-    window.setTimeout(() => {
+    timers.push(window.setTimeout(() => {
       element.classList.remove(HIGHLIGHT_STATIC_CLASS);
-    }, 1500);
-    return;
+    }, 1500));
+  } else {
+    element.classList.add(HIGHLIGHT_CLASS);
+    timers.push(window.setTimeout(() => {
+      element.classList.remove(HIGHLIGHT_CLASS);
+    }, 1550));
   }
-  element.classList.add(HIGHLIGHT_CLASS);
-  window.setTimeout(() => {
-    element.classList.remove(HIGHLIGHT_CLASS);
-  }, 1550);
+  return () => {
+    timers.forEach((id) => clearTimeout(id));
+    element.classList.remove(HIGHLIGHT_CLASS, HIGHLIGHT_STATIC_CLASS);
+  };
 }
 
 /**
@@ -99,7 +118,7 @@ export function measurePlaceReviewScrollHeaderOffset(scrollRoot) {
 /**
  * @param {HTMLElement | null} scrollRoot
  * @param {string | number} reviewId
- * @param {{ headerOffset?: number, behavior?: ScrollBehavior }} [options]
+ * @param {{ headerOffset?: number, behavior?: ScrollBehavior, onScheduleTimer?: (id: number) => void }} [options]
  * @returns {boolean}
  */
 export function scrollPlaceReviewIntoView(scrollRoot, reviewId, options = {}) {
@@ -119,11 +138,12 @@ export function scrollPlaceReviewIntoView(scrollRoot, reviewId, options = {}) {
       scrollRoot.scrollTop = nextTop;
     } else {
       scrollRoot.scrollTo({ top: nextTop, behavior });
-      window.setTimeout(() => {
+      const timerId = window.setTimeout(() => {
         if (Math.abs(scrollRoot.scrollTop - nextTop) > 6) {
           scrollRoot.scrollTop = nextTop;
         }
       }, 450);
+      options.onScheduleTimer?.(timerId);
     }
   } else {
     el.scrollIntoView({ behavior, block: 'start' });
@@ -132,36 +152,114 @@ export function scrollPlaceReviewIntoView(scrollRoot, reviewId, options = {}) {
 }
 
 /**
+ * @typedef {'found' | 'timeout' | 'user-interacted' | 'aborted'} PlaceReviewFocusEndReason
+ * @typedef {{ ok: boolean, reason: PlaceReviewFocusEndReason }} PlaceReviewFocusResult
+ */
+
+/**
  * @param {string | number} reviewId
  * @param {HTMLElement | null} scrollRoot
- * @param {{ maxWaitMs?: number, pollMs?: number, headerOffset?: number }} [options]
- * @returns {Promise<boolean>}
+ * @param {{ maxWaitMs?: number, pollMs?: number, headerOffset?: number, programmaticScrollGraceMs?: number }} [options]
+ * @returns {{ promise: Promise<PlaceReviewFocusResult>, abort: () => void }}
  */
-export function waitForPlaceReviewThenFocus(reviewId, scrollRoot, options = {}) {
+export function startPlaceReviewFocusSession(reviewId, scrollRoot, options = {}) {
   const maxWait = options.maxWaitMs ?? 12_000;
   const poll = options.pollMs ?? 80;
+  const graceMs = options.programmaticScrollGraceMs ?? 500;
   const start = Date.now();
+  const timers = new Set();
+  const listeners = [];
+  let settled = false;
+  let ignoreUserScrollUntil = 0;
+  let clearHighlight = () => {};
 
-  return new Promise((resolve) => {
+  const trackTimer = (id) => {
+    timers.add(id);
+    return id;
+  };
+
+  const detach = () => {
+    timers.forEach((id) => clearTimeout(id));
+    timers.clear();
+    listeners.forEach(([target, type, handler, opts]) => {
+      target.removeEventListener(type, handler, opts);
+    });
+    listeners.length = 0;
+  };
+
+  let resolvePromise = () => {};
+
+  const finish = (result) => {
+    if (settled) return;
+    settled = true;
+    detach();
+    if (result.reason !== 'found') {
+      clearHighlight();
+      clearHighlight = () => {};
+    }
+    resolvePromise(result);
+  };
+
+  const abort = () => {
+    clearHighlight();
+    clearHighlight = () => {};
+    finish({ ok: false, reason: 'aborted' });
+  };
+
+  const attachUserInputGuards = (root) => {
+    if (!root) return;
+    const onUserInput = () => {
+      if (settled || Date.now() < ignoreUserScrollUntil) return;
+      finish({ ok: false, reason: 'user-interacted' });
+    };
+    for (const type of PLACE_REVIEW_USER_INPUT_EVENTS) {
+      root.addEventListener(type, onUserInput, { passive: true });
+      listeners.push([root, type, onUserInput, { passive: true }]);
+    }
+  };
+
+  attachUserInputGuards(scrollRoot);
+
+  const promise = new Promise((resolve) => {
+    resolvePromise = resolve;
+
     const attempt = () => {
+      if (settled) return;
+
       const el = findPlaceReviewElement(reviewId);
       const root = scrollRoot || el?.closest('[data-place-reviews-scroll-root]');
       const ready = el && root && root.clientHeight > 0 && el.offsetParent !== null;
+
       if (ready) {
-        const ok = scrollPlaceReviewIntoView(root, reviewId, options);
-        if (ok) flashPlaceReviewHighlight(el);
-        resolve(true);
-        return;
-      }
-      if (Date.now() - start >= maxWait) {
-        if (scrollRoot) {
-          scrollRoot.scrollTo({ top: 0, behavior: 'auto' });
+        ignoreUserScrollUntil = Date.now() + graceMs;
+        const ok = scrollPlaceReviewIntoView(root, reviewId, {
+          ...options,
+          onScheduleTimer: (id) => trackTimer(id),
+        });
+        if (ok) {
+          clearHighlight = flashPlaceReviewHighlight(el);
         }
-        resolve(false);
+        finish({ ok: Boolean(ok), reason: 'found' });
         return;
       }
-      window.setTimeout(attempt, poll);
+
+      if (Date.now() - start >= maxWait) {
+        finish({ ok: false, reason: 'timeout' });
+        return;
+      }
+
+      const pollId = trackTimer(window.setTimeout(attempt, poll));
+      void pollId;
     };
+
     attempt();
   });
+
+  return { promise, abort };
+}
+
+/** @deprecated use startPlaceReviewFocusSession */
+export function waitForPlaceReviewThenFocus(reviewId, scrollRoot, options = {}) {
+  const { promise } = startPlaceReviewFocusSession(reviewId, scrollRoot, options);
+  return promise.then((result) => result.ok);
 }

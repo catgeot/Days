@@ -37,7 +37,9 @@ import { reviewPlainTextForAccessibility } from '../../../utils/reviewInlineMark
 import {
   parsePlaceReviewFocusId,
   placeReviewDomId,
-  waitForPlaceReviewThenFocus,
+  placeReviewFocusSearchWithoutReview,
+  PLACE_REVIEW_USER_INPUT_EVENTS,
+  startPlaceReviewFocusSession,
 } from '../../../utils/placeReviewFocus.js';
 
 const RelatedBlogCardThumbnail = ({ src }) => {
@@ -517,12 +519,15 @@ const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onToggleLike
 };
 // --------------------------------------------------------------------------
 
-const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null }) => {
+const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null, isActive = true }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const focusReviewId = parsePlaceReviewFocusId(searchParams);
   const scrollContainerRef = useRef(null);
+  const focusSessionRef = useRef(null);
+  const userCancelledDeepLinkRef = useRef(false);
+  const prevFocusReviewIdRef = useRef(focusReviewId);
   usePlaceMediaScrollToTop('REVIEWS', scrollContainerRef, !focusReviewId);
   const [user, setUser] = useState(null);
 
@@ -550,7 +555,10 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null }) => {
       : (location.slug || idStr);
 
   useLayoutEffect(() => {
+    const hadFocus = Boolean(prevFocusReviewIdRef.current);
+    prevFocusReviewIdRef.current = focusReviewId;
     if (focusReviewId) return;
+    if (hadFocus) return;
     resetPlaceMediaScrollInstant(scrollContainerRef.current);
   }, [placeSlug, focusReviewId]);
 
@@ -566,19 +574,77 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null }) => {
     refetch
   } = usePlaceReviews(placeSlug, user);
 
+  const consumeReviewDeepLink = React.useCallback(() => {
+    if (!parsePlaceReviewFocusId(searchParams)) return;
+    const next = placeReviewFocusSearchWithoutReview(searchParams);
+    setSearchParams(next, { replace: true });
+  }, [searchParams, setSearchParams]);
+
   useEffect(() => {
-    if (!focusReviewId) return undefined;
-    if (isLoading) return undefined;
-    let cancelled = false;
-    const run = async () => {
-      await waitForPlaceReviewThenFocus(focusReviewId, scrollContainerRef.current);
-      if (cancelled) return;
+    userCancelledDeepLinkRef.current = false;
+    if (!isActive || !focusReviewId) return undefined;
+
+    const listeners = [];
+    const cancelFromUser = () => {
+      userCancelledDeepLinkRef.current = true;
+      focusSessionRef.current?.abort();
     };
-    queueMicrotask(run);
+
+    const attach = () => {
+      const root = scrollContainerRef.current;
+      if (!root || listeners.length) return;
+      for (const type of PLACE_REVIEW_USER_INPUT_EVENTS) {
+        root.addEventListener(type, cancelFromUser, { passive: true });
+        listeners.push([root, type, cancelFromUser]);
+      }
+    };
+
+    attach();
+    const poll = window.setInterval(attach, 50);
+
+    return () => {
+      window.clearInterval(poll);
+      listeners.forEach(([root, type, handler]) => {
+        root.removeEventListener(type, handler);
+      });
+    };
+  }, [isActive, focusReviewId, placeSlug]);
+
+  useEffect(() => {
+    focusSessionRef.current?.abort();
+    focusSessionRef.current = null;
+    if (!isActive || !focusReviewId) return undefined;
+    if (userCancelledDeepLinkRef.current) {
+      consumeReviewDeepLink();
+      return undefined;
+    }
+    if (isLoading) return undefined;
+
+    const session = startPlaceReviewFocusSession(
+      focusReviewId,
+      scrollContainerRef.current,
+    );
+    focusSessionRef.current = session;
+    let cancelled = false;
+
+    session.promise.then(() => {
+      if (cancelled) return;
+      consumeReviewDeepLink();
+    });
+
     return () => {
       cancelled = true;
+      session.abort();
+      if (focusSessionRef.current === session) {
+        focusSessionRef.current = null;
+      }
     };
-  }, [focusReviewId, isLoading, reviews, placeSlug]);
+  }, [isActive, focusReviewId, isLoading, reviews, placeSlug, consumeReviewDeepLink]);
+
+  useEffect(() => () => {
+    focusSessionRef.current?.abort();
+    focusSessionRef.current = null;
+  }, []);
 
   const { blogs, isLoading: blogsLoading } = useRelatedBlogs(location.name, placeSlug);
 

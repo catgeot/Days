@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useLayoutEffect, useState, useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
-import { useNavigationType } from 'react-router-dom';
+import { useLocation, useNavigationType } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Maximize2, Minimize2, ChevronLeft, ChevronRight, X, ImageIcon, Download, RefreshCw, Sparkles, ArrowUp, Trash2, EyeOff, Flag } from 'lucide-react';
 import { i18n } from '../../../i18n/config';
@@ -11,7 +11,11 @@ import {
   readGalleryAttributionReturnState,
   clearGalleryAttributionReturnState,
 } from '../common/galleryAttributionNavigation';
-import { placeGalleryScrollToRestore, rememberPlaceGalleryScroll } from '../common/placeScrollMemory';
+import {
+  peekGalleryScrollForPlaceBack,
+  placeGalleryScrollToRestore,
+  rememberPlaceGalleryScroll,
+} from '../common/placeScrollMemory';
 import { usePlaceMediaScrollToTop } from '../common/usePlaceMediaScrollToTop';
 import { useLightboxPinchTransform } from '../common/useLightboxPinchTransform';
 import {
@@ -368,6 +372,8 @@ const PlaceGalleryView = React.memo(({
   const pendingPlaceScrollResetRef = useRef(false);
   const pendingPlaceScrollRestoreRef = useRef(0);
   const navigationType = useNavigationType();
+  const routerLocation = useLocation();
+  const prevPathRef = useRef(routerLocation.pathname);
   const scrollGalleryToTop = usePlaceMediaScrollToTop('GALLERY', scrollContainerRef, !selectedImg);
   const currentIndex = useMemo(() => {
     if (!selectedImg || images.length === 0) return -1;
@@ -524,7 +530,55 @@ const PlaceGalleryView = React.memo(({
       const node = scrollContainerRef.current;
       if (node && node.scrollTop > 0) rememberPlaceGalleryScroll(galleryPlaceKey, node.scrollTop);
     };
-  }, [galleryPlaceKey]);
+  }, [galleryPlaceKey, navigationType]);
+
+  useLayoutEffect(() => {
+    if (navigationType !== 'POP') return undefined;
+    const restore = placeGalleryScrollToRestore(galleryPlaceKey, navigationType);
+    if (restore <= 0) return undefined;
+    pendingPlaceScrollResetRef.current = false;
+    pendingPlaceScrollRestoreRef.current = restore;
+    const apply = () => {
+      const el = scrollContainerRef.current;
+      if (el) {
+        el.scrollTop = restore;
+        el.setAttribute('data-gallery-scroll-restored', String(restore));
+      }
+    };
+    apply();
+    const raf = window.requestAnimationFrame(apply);
+    const timer = window.setTimeout(apply, 150);
+    return () => {
+      window.cancelAnimationFrame(raf);
+      window.clearTimeout(timer);
+    };
+  }, [navigationType, galleryPlaceKey]);
+
+  useLayoutEffect(() => {
+    const prev = prevPathRef.current;
+    const next = routerLocation.pathname;
+    prevPathRef.current = next;
+    const leftReviews = /\/reviews\/?$/.test(prev) && !/\/reviews\/?$/.test(next);
+    if (!leftReviews) return undefined;
+    const restore = peekGalleryScrollForPlaceBack(galleryPlaceKey);
+    if (restore <= 0) return undefined;
+    pendingPlaceScrollResetRef.current = false;
+    pendingPlaceScrollRestoreRef.current = restore;
+    const apply = () => {
+      const el = scrollContainerRef.current;
+      if (el) {
+        el.scrollTop = restore;
+        el.setAttribute('data-gallery-scroll-restored', String(restore));
+      }
+    };
+    apply();
+    const raf = window.requestAnimationFrame(apply);
+    const timer = window.setTimeout(apply, 200);
+    return () => {
+      window.cancelAnimationFrame(raf);
+      window.clearTimeout(timer);
+    };
+  }, [routerLocation.pathname, galleryPlaceKey]);
 
   useLayoutEffect(() => {
     const restore = pendingPlaceScrollRestoreRef.current;

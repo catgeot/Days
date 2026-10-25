@@ -82,7 +82,7 @@ export default defineConfig({
     },
     {
       name: 'webkit-place-visit-story-review-focus',
-      testMatch: /place-visit-story-review-focus\.spec\.js/,
+      testMatch: /place-visit-story-review-focus.*\.spec\.js/,
       use: {
         ...devices['iPhone 13'],
         locale: 'ko-KR',
