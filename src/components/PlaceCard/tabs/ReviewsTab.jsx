@@ -42,6 +42,8 @@ import {
   PLACE_REVIEW_USER_INPUT_EVENTS,
   startPlaceReviewFocusSession,
 } from '../../../utils/placeReviewFocus.js';
+import { isGateoLogbookReviewHubEnabled } from '../../../shared/gateoFeatureFlags';
+import { formatLogbookDisplayDate } from '../../../utils/logbookDisplayDate';
 import {
   clearPlaceGalleryScrollBack,
   consumeScrollAfterOverlay,
@@ -267,10 +269,8 @@ const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onToggleLike
     });
   }, [hasViewed, onVisible, review.id]);
 
-  const formatDate = (dateString) => {
-    const options = { year: 'numeric', month: 'long', day: 'numeric' };
-    return new Date(dateString).toLocaleDateString(i18n.language === 'en' ? 'en-US' : 'ko-KR', options);
-  };
+  const formatDate = (dateString) =>
+    formatLogbookDisplayDate(dateString, { locale: i18n.language === 'en' ? 'en' : 'ko' });
 
   const renderStars = (rating) => {
     return Array(5).fill(0).map((_, i) => (
@@ -551,6 +551,7 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null, isActiv
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
+  const hubAlignedReviewFocus = isGateoLogbookReviewHubEnabled();
   const focusReviewId = parsePlaceReviewFocusId(searchParams);
   const scrollContainerRef = useRef(null);
   const focusSessionRef = useRef(null);
@@ -663,34 +664,50 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null, isActiv
     }
     if (isLoading) return undefined;
 
-    const prev = focusSessionRef.current;
-    if (prev) prev.abort();
-
-    const session = startPlaceReviewFocusSession(
-      focusReviewId,
-      scrollContainerRef.current,
-    );
-    focusSessionRef.current = session;
     let cancelled = false;
+    let session = null;
+    let rafId = 0;
 
-    session.promise.then(() => {
-      if (cancelled) return;
-      consumeReviewDeepLink();
-    });
+    const startSession = (root) => {
+      const prev = focusSessionRef.current;
+      if (prev) prev.abort();
+      session = startPlaceReviewFocusSession(focusReviewId, root);
+      focusSessionRef.current = session;
+      session.promise.then(() => {
+        if (cancelled) return;
+        consumeReviewDeepLink();
+      });
+    };
+
+    if (hubAlignedReviewFocus) {
+      const beginFocus = () => {
+        if (cancelled) return;
+        const root = scrollContainerRef.current;
+        if (!root || root.clientHeight <= 0) {
+          rafId = window.requestAnimationFrame(beginFocus);
+          return;
+        }
+        startSession(root);
+      };
+      rafId = window.requestAnimationFrame(beginFocus);
+    } else {
+      startSession(scrollContainerRef.current);
+    }
 
     return () => {
       cancelled = true;
-      const result = session.getResult();
+      if (rafId) window.cancelAnimationFrame(rafId);
+      const result = session?.getResult();
       if (result?.reason === 'found' && result.ok) {
-        session.release();
+        session?.release();
       } else {
-        session.abort();
+        session?.abort();
       }
       if (focusSessionRef.current === session) {
         focusSessionRef.current = null;
       }
     };
-  }, [isActive, focusReviewId, isLoading, reviews, placeSlug, consumeReviewDeepLink]);
+  }, [isActive, focusReviewId, isLoading, reviews, placeSlug, consumeReviewDeepLink, hubAlignedReviewFocus]);
 
   useEffect(() => () => {
     focusSessionRef.current?.abort();
@@ -849,7 +866,10 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null, isActiv
         )}
 
         {/* 모바일 전용 압축 헤더 — sticky 제거, 스크롤과 함께 이동 */}
-        <div className={`md:hidden flex flex-col shrink-0 bg-white border-b border-gray-100 shadow-sm ${mobileLandscapeChromeHidden}`}>
+        <div
+          {...(hubAlignedReviewFocus ? { 'data-place-reviews-scroll-chrome': '' } : {})}
+          className={`md:hidden flex flex-col shrink-0 bg-white border-b border-gray-100 shadow-sm ${mobileLandscapeChromeHidden}`}
+        >
           <div className="flex items-start justify-between px-3 pt-2.5 pb-1 gap-2">
             <div className="flex items-center gap-2 min-w-0 flex-1">
               <button

@@ -8,6 +8,8 @@ import AICurationCard from './components/AICurationCard';
 import CalendarCard from './components/CalendarCard';
 import RecentList from './components/RecentList';
 import LogbookOfficialReviewHubCard from './components/LogbookOfficialReviewHubCard';
+import LogbookOfficialReviewHubDetail from './components/LogbookOfficialReviewHubDetail';
+import { parseLogbookOfficialReviewId } from '../../utils/logbookOfficialReviewHubRoutes.js';
 import { useDashboardData } from './hooks/useDashboardData';
 import { reportMatchesLogbookPlace } from '../../utils/logbookReadingMeta';
 import { isGateoLogbookReviewHubEnabled } from '../../shared/gateoFeatureFlags';
@@ -17,6 +19,10 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const locationFilter = searchParams.get('location');
+  const hubReviewId =
+    isGateoLogbookReviewHubEnabled() && searchParams.get('tab') === 'public'
+      ? parseLogbookOfficialReviewId(searchParams)
+      : null;
 
   const [showCuration, setShowCuration] = useState(false);
   const [showCalendar, setShowCalendar] = useState(false);
@@ -182,7 +188,13 @@ const Dashboard = () => {
           </div>
         )}
 
-        {isPublicMode && isGateoLogbookReviewHubEnabled() ? <LogbookOfficialReviewHubCard /> : null}
+        {isPublicMode && isGateoLogbookReviewHubEnabled() ? (
+          hubReviewId ? (
+            <LogbookOfficialReviewHubDetail reviewId={hubReviewId} />
+          ) : (
+            <LogbookOfficialReviewHubCard />
+          )
+        ) : null}
 
         <RecentList reports={reports || []} loading={loading} isPublicMode={isPublicMode} />
 

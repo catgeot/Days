@@ -87,6 +87,9 @@ test('fetchEditorialReviewIndex uses is_editorial filter', async () => {
   const rows = await fetchEditorialReviewIndex(mockClient, { limit: 10 });
   assert.equal(rows.length, 1);
   assert.ok(calls.some((c) => c[0] === 'eq' && c[1] === 'is_editorial' && c[2] === true));
+  const selectCall = calls.find((c) => c[0] === 'select');
+  assert.match(String(selectCall?.[1] || ''), /content_blocks/);
+  assert.match(String(selectCall?.[1] || ''), /disclosure/);
   assert.ok(calls.some((c) => c[0] === 'eq' && c[1] === 'is_public' && c[2] === true));
 });
 

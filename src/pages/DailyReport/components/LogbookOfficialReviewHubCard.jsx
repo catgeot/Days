@@ -1,5 +1,5 @@
-import React, { useId, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useId, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { Link, useNavigationType } from 'react-router-dom';
 import { ChevronDown, Sparkles } from 'lucide-react';
 import { LOGBOOK_OFFICIAL_REVIEW_CARD_TITLE } from '../../../logbookOfficialReviews/constants.js';
 import { useLogbookOfficialReviewHub } from '../../../logbookOfficialReviews/useLogbookOfficialReviewHub.js';
@@ -14,6 +14,13 @@ import {
   resolveReviewThumbnailSrc,
 } from '../../../utils/placeReviewContentBlocks.js';
 import { stripReviewInlineMarkdown } from '../../../utils/reviewInlineMarkdown.js';
+import { buildLogbookOfficialReviewHref } from '../../../utils/logbookOfficialReviewHubRoutes.js';
+import {
+  clearLogbookOfficialReviewHubBackState,
+  readLogbookOfficialReviewHubBackState,
+  snapshotLogbookOfficialReviewHubForBack,
+} from '../../../utils/logbookOfficialReviewHubState.js';
+import { restoreLogbookMainScrollWhenReady } from '../../../utils/logbookOfficialReviewHubScrollRestore.js';
 
 export const LOGBOOK_OFFICIAL_REVIEW_HUB_PAGE_SIZE = 10;
 const LIST_PREVIEW_MAX = 120;
@@ -139,11 +146,60 @@ function HubTitleRow({
 
 const LogbookOfficialReviewHubCard = () => {
   const panelId = useId();
-  const [expanded, setExpanded] = useState(false);
-  const [visibleCount, setVisibleCount] = useState(LOGBOOK_OFFICIAL_REVIEW_HUB_PAGE_SIZE);
+  const navigationType = useNavigationType();
+  const restoredBackRef = useRef(false);
+  const scrollRestoreCancelRef = useRef(null);
+  const [expanded, setExpanded] = useState(() => {
+    const back = readLogbookOfficialReviewHubBackState(navigationType);
+    return Boolean(back?.expanded);
+  });
+  const [visibleCount, setVisibleCount] = useState(() => {
+    const back = readLogbookOfficialReviewHubBackState(navigationType);
+    const fromBack = Number(back?.visibleCount);
+    if (Number.isFinite(fromBack) && fromBack > 0) {
+      return Math.max(fromBack, LOGBOOK_OFFICIAL_REVIEW_HUB_PAGE_SIZE);
+    }
+    return LOGBOOK_OFFICIAL_REVIEW_HUB_PAGE_SIZE;
+  });
   const { enabled, rows, isLoading, loadFailed, totalCount, retry } = useLogbookOfficialReviewHub();
 
   const visibleRows = useMemo(() => rows.slice(0, visibleCount), [rows, visibleCount]);
+
+  useLayoutEffect(() => {
+    if (restoredBackRef.current) return;
+    const back = readLogbookOfficialReviewHubBackState(navigationType);
+    if (!back) return;
+    setExpanded(true);
+    setVisibleCount(
+      Math.min(
+        Math.max(back.visibleCount, LOGBOOK_OFFICIAL_REVIEW_HUB_PAGE_SIZE),
+        totalCount || back.visibleCount,
+      ),
+    );
+    if (isLoading) return undefined;
+
+    scrollRestoreCancelRef.current?.();
+    const main = document.querySelector('[data-logbook-main-scroll]');
+    scrollRestoreCancelRef.current = restoreLogbookMainScrollWhenReady(main, back.scrollTop, {
+      onSuccess: () => {
+        restoredBackRef.current = true;
+        clearLogbookOfficialReviewHubBackState();
+      },
+    });
+    return () => {
+      scrollRestoreCancelRef.current?.();
+      scrollRestoreCancelRef.current = null;
+    };
+  }, [navigationType, totalCount, isLoading, rows.length]);
+
+  const rememberHubForBrowserBack = () => {
+    const main = document.querySelector('[data-logbook-main-scroll]');
+    snapshotLogbookOfficialReviewHubForBack({
+      expanded,
+      visibleCount,
+      scrollTop: main ? main.scrollTop : 0,
+    });
+  };
 
   if (!enabled) {
     return null;
@@ -183,7 +239,7 @@ const LogbookOfficialReviewHubCard = () => {
     return null;
   }
 
-  if (isLoading && totalCount === 0) {
+  if (isLoading && totalCount === 0 && !expanded) {
     return null;
   }
 
@@ -212,9 +268,14 @@ const LogbookOfficialReviewHubCard = () => {
           data-testid="logbook-official-review-hub-panel"
         >
           <ul className="divide-y divide-gray-100">
+            {isLoading && visibleRows.length === 0 ? (
+              <li className="py-6 text-center text-sm text-gray-500" aria-busy="true">
+                불러오는 중…
+              </li>
+            ) : null}
             {visibleRows.map((review) => {
               const slug = String(review.place_slug || '').trim();
-              const href = slug ? `/place/${slug}/reviews` : '#';
+              const href = buildLogbookOfficialReviewHref(review.id);
               const thumbSrc = editorialReviewThumbSrc(review);
               const preview = editorialReviewListPreview(review);
               const placeName = String(review.place_name || '').trim();
@@ -225,6 +286,7 @@ const LogbookOfficialReviewHubCard = () => {
                 <li key={review.id}>
                   <Link
                     to={href}
+                    onClick={rememberHubForBrowserBack}
                     className={`flex py-3 px-1 rounded-lg hover:bg-gray-50 transition-colors${thumbSrc ? ' gap-3' : ''}`}
                     data-testid="logbook-official-review-hub-item"
                     data-hub-place-slug={slug || undefined}
@@ -261,7 +323,7 @@ const LogbookOfficialReviewHubCard = () => {
             <div className="pt-2 flex justify-center">
               <button
                 type="button"
-                className="text-sm font-semibold text-indigo-600 hover:text-indigo-800 px-4 py-2"
+                className="inline-flex min-h-11 items-center justify-center text-sm font-semibold text-indigo-600 hover:text-indigo-800 px-4 py-2"
                 data-testid="logbook-official-review-hub-more"
                 onClick={() =>
                   setVisibleCount((n) =>
