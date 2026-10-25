@@ -225,20 +225,76 @@ test.describe('place visit story → reviews focus (WebKit 390, fixtures)', () =
     expect(afterBack).toBeGreaterThanOrEqual(before - 8);
   });
 
-  test('PUSH navigation does not apply armed gallery back scroll', async ({ page }) => {
-    await openCairoFromSearch(page);
-    const gallery = page.locator('[data-place-gallery-scroll]');
-    await expect(gallery).toBeVisible({ timeout: 30_000 });
-    await gallery.evaluate((el) => {
-      el.scrollTop = 300;
-    });
-    await page.evaluate(() => {
+  test('direct entry / reload does not apply armed gallery back scroll', async ({ page }) => {
+    await page.addInitScript(() => {
       sessionStorage.setItem('gateo:place-gallery-back-scroll:cairo', '300');
       sessionStorage.setItem('gateo:place-gallery-back-armed:cairo', '1');
     });
-    await page.goto('/place/cairo?lang=ko', { waitUntil: 'domcontentloaded' });
+    await openCairoFromSearch(page);
+    const gallery = page.locator('[data-place-gallery-scroll]');
     await expect(gallery).toBeVisible({ timeout: 30_000 });
     const scrollTop = await gallery.evaluate((el) => el.scrollTop);
     expect(scrollTop).toBeLessThan(40);
+  });
+
+  test('in-app PUSH to place does not apply armed gallery back scroll', async ({ page }) => {
+    await openCairoFromSearch(page);
+    const gallery = page.locator('[data-place-gallery-scroll]');
+    await expect(gallery).toBeVisible({ timeout: 30_000 });
+    const storiesHeader = page.getByRole('button', { name: /다녀온 이야기/ }).first();
+    await storiesHeader.click();
+    await gallery.evaluate((el) => {
+      el.scrollTop = 300;
+    });
+    const focusStory = page
+      .locator('[data-visit-story-kind="review"]')
+      .filter({ hasText: 'E2E visit story — target review' })
+      .first();
+    await expect(focusStory).toBeVisible({ timeout: 20_000 });
+    await focusStory.click();
+    await expect(page).toHaveURL(/\/place\/cairo\/reviews/, { timeout: 30_000 });
+    await page.goBack();
+    await expect(gallery).toBeVisible({ timeout: 30_000 });
+    await expect.poll(async () => gallery.evaluate((el) => el.scrollTop), { timeout: 12_000 })
+      .toBeGreaterThan(250);
+
+    await page.goto('/?lang=ko', { waitUntil: 'domcontentloaded' });
+    await openCairoFromSearch(page);
+    await expect(gallery).toBeVisible({ timeout: 30_000 });
+    const pushScrollTop = await gallery.evaluate((el) => el.scrollTop);
+    expect(pushScrollTop).toBeLessThan(40);
+  });
+
+  test('reload on reviews then back does not jump gallery to saved offset', async ({ page }) => {
+    await openCairoFromSearch(page);
+    const gallery = page.locator('[data-place-gallery-scroll]');
+    await expect(gallery).toBeVisible({ timeout: 30_000 });
+    const storiesHeader = page.getByRole('button', { name: /다녀온 이야기/ }).first();
+    await storiesHeader.click();
+    await gallery.evaluate((el) => {
+      el.scrollTop = 320;
+    });
+    const before = await gallery.evaluate((el) => el.scrollTop);
+    expect(before).toBeGreaterThan(250);
+
+    const focusStory = page
+      .locator('[data-visit-story-kind="review"]')
+      .filter({ hasText: 'E2E visit story — target review' })
+      .first();
+    await expect(focusStory).toBeVisible({ timeout: 20_000 });
+    await focusStory.click();
+    await expect(page).toHaveURL(/\/place\/cairo\/reviews/, { timeout: 30_000 });
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await expect(page).toHaveURL(/\/place\/cairo\/reviews/, { timeout: 30_000 });
+
+    await page.goBack();
+    await expect(page).toHaveURL(/\/place\/cairo(?:\/|$|\?)/, { timeout: 30_000 });
+    await expect(gallery).toBeVisible({ timeout: 30_000 });
+    const afterImmediate = await gallery.evaluate((el) => el.scrollTop);
+    expect(afterImmediate).toBeLessThan(120);
+    await page.waitForTimeout(2000);
+    const afterWait = await gallery.evaluate((el) => el.scrollTop);
+    expect(afterWait).toBeLessThan(120);
+    expect(Math.abs(afterWait - afterImmediate)).toBeLessThanOrEqual(24);
   });
 });

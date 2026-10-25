@@ -375,6 +375,7 @@ const PlaceGalleryView = React.memo(({
   const pendingPlaceScrollResetRef = useRef(false);
   const pendingPlaceScrollRestoreRef = useRef(0);
   const popBackRealignTargetRef = useRef(0);
+  const popBackRealignScheduledRef = useRef(false);
   const navigationType = useNavigationType();
   const routerLocation = useLocation();
   const scrollGalleryToTop = usePlaceMediaScrollToTop('GALLERY', scrollContainerRef, !selectedImg);
@@ -503,6 +504,7 @@ const PlaceGalleryView = React.memo(({
       pendingPlaceScrollResetRef.current = false;
       pendingPlaceScrollRestoreRef.current = restore;
       popBackRealignTargetRef.current = restore;
+      popBackRealignScheduledRef.current = false;
       if (el) el.scrollTop = restore;
       const raf = window.requestAnimationFrame(() => {
         const node = scrollContainerRef.current;
@@ -543,6 +545,7 @@ const PlaceGalleryView = React.memo(({
     pendingPlaceScrollResetRef.current = false;
     pendingPlaceScrollRestoreRef.current = restore;
     popBackRealignTargetRef.current = restore;
+    popBackRealignScheduledRef.current = false;
     const apply = () => {
       const el = scrollContainerRef.current;
       if (el) {
@@ -568,6 +571,7 @@ const PlaceGalleryView = React.memo(({
     pendingPlaceScrollResetRef.current = false;
     pendingPlaceScrollRestoreRef.current = restore;
     popBackRealignTargetRef.current = restore;
+    popBackRealignScheduledRef.current = false;
     const apply = () => {
       const el = scrollContainerRef.current;
       if (el) {
@@ -586,11 +590,16 @@ const PlaceGalleryView = React.memo(({
   }, [routerLocation.pathname, navigationType, galleryPlaceKey]); // POP → gallery with snapshot only (PUSH in-app links skip)
 
   useEffect(() => {
+    if (navigationType !== 'POP') {
+      popBackRealignScheduledRef.current = false;
+      return undefined;
+    }
     const target = popBackRealignTargetRef.current;
-    if (target <= 0 || navigationType !== 'POP') return undefined;
+    if (target <= 0 || popBackRealignScheduledRef.current) return undefined;
     if (isImgLoading || isRefreshing) return undefined;
     const el = scrollContainerRef.current;
     if (!el) return undefined;
+    popBackRealignScheduledRef.current = true;
     return scheduleOneGalleryScrollRealignAfterImages(el, target, () => {
       popBackRealignTargetRef.current = 0;
     });

@@ -3,6 +3,7 @@ import test from 'node:test';
 import { JSDOM } from 'jsdom';
 import {
   clearPlaceGalleryScrollBack,
+  GALLERY_SCROLL_REALIGN_TIMEOUT_MS,
   isGalleryBackRestoreDue,
   peekGalleryScrollForPlaceBack,
   placeGalleryScrollToRestore,
@@ -70,6 +71,8 @@ test('scheduleOneGalleryScrollRealignAfterImages re-applies scroll once after im
   Object.defineProperty(img, 'complete', { value: false, configurable: true });
   root.appendChild(img);
   dom.window.document.body.appendChild(root);
+  img.getBoundingClientRect = () => ({ top: 0, bottom: 100, left: 0, right: 100 });
+  root.getBoundingClientRect = () => ({ top: 0, bottom: 400, left: 0, right: 390 });
 
   let done = false;
   const cleanup = scheduleOneGalleryScrollRealignAfterImages(root, 412, () => {
@@ -80,5 +83,64 @@ test('scheduleOneGalleryScrollRealignAfterImages re-applies scroll once after im
   assert.equal(root.scrollTop, 412);
   assert.equal(done, true);
   cleanup();
+  dom.window.close();
+});
+
+test('scheduleOneGalleryScrollRealignAfterImages cancels on wheel', () => {
+  const dom = new JSDOM('<!DOCTYPE html><html><body></body></html>', {
+    url: 'https://www.gateo.kr/place/cairo',
+  });
+  globalThis.window = dom.window;
+  globalThis.document = dom.window.document;
+  const root = dom.window.document.createElement('div');
+  root.scrollTop = 50;
+  const img = dom.window.document.createElement('img');
+  Object.defineProperty(img, 'complete', { value: false, configurable: true });
+  root.appendChild(img);
+  dom.window.document.body.appendChild(root);
+  img.getBoundingClientRect = () => ({ top: 0, bottom: 100, left: 0, right: 100 });
+  root.getBoundingClientRect = () => ({ top: 0, bottom: 400, left: 0, right: 390 });
+
+  let done = false;
+  const cleanup = scheduleOneGalleryScrollRealignAfterImages(root, 412, () => {
+    done = true;
+  });
+  dom.window.dispatchEvent(new dom.window.WheelEvent('wheel', { bubbles: true }));
+  img.dispatchEvent(new dom.window.Event('load'));
+  assert.equal(root.scrollTop, 50);
+  assert.equal(done, true);
+  cleanup();
+  dom.window.close();
+});
+
+test('scheduleOneGalleryScrollRealignAfterImages ignores offscreen lazy images past timeout', async () => {
+  const dom = new JSDOM('<!DOCTYPE html><html><body></body></html>', {
+    url: 'https://www.gateo.kr/place/cairo',
+  });
+  globalThis.window = dom.window;
+  globalThis.document = dom.window.document;
+  globalThis.performance = dom.window.performance;
+  globalThis.requestAnimationFrame = (cb) => {
+    cb();
+    return 0;
+  };
+  const root = dom.window.document.createElement('div');
+  root.scrollTop = 0;
+  const offscreen = dom.window.document.createElement('img');
+  Object.defineProperty(offscreen, 'complete', { value: false, configurable: true });
+  root.appendChild(offscreen);
+  dom.window.document.body.appendChild(root);
+  offscreen.getBoundingClientRect = () => ({ top: 900, bottom: 1100, left: 0, right: 100 });
+  root.getBoundingClientRect = () => ({ top: 0, bottom: 400, left: 0, right: 390 });
+
+  let done = false;
+  scheduleOneGalleryScrollRealignAfterImages(root, 280, () => {
+    done = true;
+  });
+  await new Promise((r) => setTimeout(r, GALLERY_SCROLL_REALIGN_TIMEOUT_MS + 40));
+  assert.equal(root.scrollTop, 280);
+  assert.equal(done, true);
+  offscreen.dispatchEvent(new dom.window.Event('load'));
+  assert.equal(root.scrollTop, 280);
   dom.window.close();
 });

@@ -41,6 +41,7 @@ import {
   PLACE_REVIEW_USER_INPUT_EVENTS,
   startPlaceReviewFocusSession,
 } from '../../../utils/placeReviewFocus.js';
+import { clearPlaceGalleryScrollBack } from '../common/placeScrollMemory.js';
 
 const RelatedBlogCardThumbnail = ({ src }) => {
   const [failed, setFailed] = useState(false);
@@ -553,6 +554,18 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null, isActiv
     idStr.startsWith('search-') || idStr.startsWith('loc-')
       ? idStr
       : (location.slug || idStr);
+
+  useEffect(() => {
+    if (!isActive || !placeSlug) return;
+    try {
+      const nav = performance.getEntriesByType?.('navigation')?.[0];
+      if (nav?.type === 'reload') {
+        clearPlaceGalleryScrollBack(placeSlug);
+      }
+    } catch {
+      /* ignore */
+    }
+  }, [isActive, placeSlug]);
 
   useLayoutEffect(() => {
     const hadFocus = Boolean(prevFocusReviewIdRef.current);
