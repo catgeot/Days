@@ -22,6 +22,7 @@ import {
   placeGalleryScrollToRestore,
   rememberPlaceGalleryScroll,
   scheduleOneGalleryScrollRealignAfterImages,
+  snapshotGalleryScrollForPlaceBack,
   snapshotScrollBeforeOverlay,
 } from '../common/placeScrollMemory';
 import { usePlaceMediaScrollToTop } from '../common/usePlaceMediaScrollToTop';
@@ -450,6 +451,8 @@ const PlaceGalleryView = React.memo(({
   }, [galleryPlaceKey]);
   const galleryPlaceKeyRef = useRef(galleryPlaceKey);
   galleryPlaceKeyRef.current = galleryPlaceKey;
+  const wasGalleryPanelActiveRef = useRef(isGalleryPanelActive);
+  const prevGalleryRoutePathRef = useRef('');
   const paintTarget = Math.min(2, images?.length || 0);
   const hasImages = images.length > 0;
   /** 초기 로드만 전체 스켈레톤 — 더보기(isRefreshing) 중에는 기존 그리드 유지 */
@@ -475,6 +478,21 @@ const PlaceGalleryView = React.memo(({
     setPaintedCount(0);
     setGalleryVisuallyReady(false);
   }, [galleryPlaceKey]);
+
+  useEffect(() => {
+    return () => {
+      const key = galleryPlaceKeyRef.current;
+      if (key) snapshotGalleryScrollForPlaceBack(key);
+    };
+  }, []);
+
+  useLayoutEffect(() => {
+    const wasActive = wasGalleryPanelActiveRef.current;
+    if (wasActive && !isGalleryPanelActive) {
+      snapshotGalleryScrollForPlaceBack(galleryPlaceKey);
+    }
+    wasGalleryPanelActiveRef.current = isGalleryPanelActive;
+  }, [isGalleryPanelActive, galleryPlaceKey]);
 
   /** 모바일 그리드 출처 같은 탭 복귀 — 라이트박스 없이 갤러리 스크롤만 복원 */
   useLayoutEffect(() => {
@@ -560,13 +578,28 @@ const PlaceGalleryView = React.memo(({
 
   useLayoutEffect(() => {
     const el = scrollContainerRef.current;
+    const prevPath = prevGalleryRoutePathRef.current;
+    const nextPath = galleryRoutePathname;
+    prevGalleryRoutePathRef.current = nextPath;
+    const enteringReviews =
+      /\/reviews\/?$/.test(nextPath) && !/\/reviews\/?$/.test(prevPath);
+    if (enteringReviews) {
+      snapshotGalleryScrollForPlaceBack(galleryPlaceKey);
+    }
+
+    const onReviewsRoute = /\/reviews\/?$/.test(nextPath);
+    if (onReviewsRoute) {
+      pendingPlaceScrollResetRef.current = false;
+      return undefined;
+    }
+
     const gridPending = readGalleryAttributionReturnState();
     const gridScrollPending =
       gridPending?.context === 'gallery-grid' &&
       gridPending.placeKey === galleryPlaceKey &&
       Number(gridPending.galleryScrollTop) > 0;
 
-    const onGalleryRoute = !/\/reviews\/?$/.test(galleryRoutePathname);
+    const onGalleryRoute = true;
     let restore = placeGalleryScrollToRestore(galleryPlaceKey, navigationTypeRef.current);
     if (restore <= 0 && onGalleryRoute && navigationTypeRef.current === 'POP') {
       const armedPeek = peekArmedGalleryBackScroll(galleryPlaceKey);

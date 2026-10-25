@@ -6,6 +6,7 @@ import ReviewsTab from '../tabs/ReviewsTab';
 import PlannerTab from '../tabs/PlannerTab';
 import PlaceMobileSecondaryNav from '../common/PlaceMobileSecondaryNav';
 import { getPlaceUrlParam } from '../../../pages/Home/lib/formatUrlName';
+import { placeGalleryBackScrollKey } from '../common/placeScrollMemory.js';
 
 const PlaceMediaPanel = React.memo(({
     galleryData,
@@ -48,6 +49,7 @@ const PlaceMediaPanel = React.memo(({
     onNavigateToPlace,
 }) => {
   const placeSlug = getPlaceUrlParam(location);
+  const galleryBackScrollKey = placeGalleryBackScrollKey(location);
   const mobileSecondaryNav = useMemo(
     () => (
       <PlaceMobileSecondaryNav
@@ -57,9 +59,10 @@ const PlaceMediaPanel = React.memo(({
         matchedPackage={matchedPackage}
         onOpenPackage={onOpenPackage}
         placeSlug={placeSlug}
+        galleryBackScrollKey={galleryBackScrollKey}
       />
     ),
-    [mediaMode, setMediaMode, matchedPackage, onOpenPackage, placeSlug]
+    [mediaMode, setMediaMode, matchedPackage, onOpenPackage, placeSlug, galleryBackScrollKey]
   );
 
   return (

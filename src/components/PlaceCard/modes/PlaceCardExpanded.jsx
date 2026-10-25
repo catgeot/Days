@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useLayoutEffect, useRef, useCallback, useMemo } from 'react';
-import { matchPath, useLocation, useNavigate } from 'react-router-dom';
+import { matchPath, useLocation, useNavigate, useNavigationType } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import PlaceChatPanel from '../panels/PlaceChatPanel';
 import PlaceMediaPanel from '../panels/PlaceMediaPanel';
@@ -25,6 +25,7 @@ import { placeGalleryBackScrollKey, snapshotGalleryScrollForPlaceBack } from '..
 const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, onOpenMooni, onNavigateToPlace, onGoHome, isMooniChatOpen = false, galleryData, onToggleBookmark, initialTab = 'GALLERY' }) => {
   const navigate = useNavigate();
   const routerLocation = useLocation();
+  const navigationType = useNavigationType();
   const { t } = useTranslation();
   const { locale } = useLocale();
   const displayName = getLocalizedPlaceName(location, locale) || location.name;
@@ -86,6 +87,12 @@ const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, onOpenM
     window.addEventListener('popstate', onPopState);
     return () => window.removeEventListener('popstate', onPopState);
   }, [applyMediaTabFromPathname]);
+
+  useLayoutEffect(() => {
+    if (mediaTabFromPath !== 'reviews' || navigationType !== 'PUSH') return;
+    const backKey = placeGalleryBackScrollKey(location);
+    if (backKey) snapshotGalleryScrollForPlaceBack(backKey);
+  }, [mediaTabFromPath, navigationType, location]);
 
   const [selectedVideoId, setSelectedVideoId] = useState(null);
 

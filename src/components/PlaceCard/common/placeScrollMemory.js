@@ -92,6 +92,16 @@ export function rememberPlaceGalleryScroll(key, top) {
   const id = String(key || '').trim();
   const n = Number(top);
   if (!id || !Number.isFinite(n) || n < 0) return;
+  if (n <= 8) {
+    const prev = tops.get(id);
+    if (Number.isFinite(prev) && prev > 8) return;
+    try {
+      const stored = Number(sessionStorage.getItem(storageKey(id)));
+      if (Number.isFinite(stored) && stored > 8) return;
+    } catch {
+      /* ignore */
+    }
+  }
   tops.set(id, n);
   try {
     sessionStorage.setItem(storageKey(id), String(n));
@@ -189,8 +199,9 @@ export function snapshotGalleryScrollForPlaceBack(placeKey) {
   const id = String(placeKey || '').trim();
   if (!id) return;
   const el = document.querySelector('[data-place-gallery-scroll]');
-  if (!el) return;
-  const n = readGalleryScrollForBackSnapshot(el, id);
+  const n = el
+    ? readGalleryScrollForBackSnapshot(el, id)
+    : readStoredGalleryScroll(id);
   if (!Number.isFinite(n) || n <= 0) return;
   backTops.set(id, n);
   backRestoreLive.set(id, true);
