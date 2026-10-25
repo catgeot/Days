@@ -13,10 +13,15 @@ import {
 } from '../common/galleryAttributionNavigation';
 import {
   clearPlaceGalleryScrollBack,
+  consumeScrollAfterOverlay,
   isGalleryBackRestoreDue,
+  armedGalleryBackScrollToRestore,
+  peekArmedGalleryBackScroll,
   peekGalleryScrollForPlaceBack,
   placeGalleryScrollToRestore,
   rememberPlaceGalleryScroll,
+  scheduleOneGalleryScrollRealignAfterImages,
+  snapshotScrollBeforeOverlay,
 } from '../common/placeScrollMemory';
 import { usePlaceMediaScrollToTop } from '../common/usePlaceMediaScrollToTop';
 import { useLightboxPinchTransform } from '../common/useLightboxPinchTransform';
@@ -357,7 +362,8 @@ const PlaceGalleryView = React.memo(({
   handleDropBrokenImage,
   loadFailed = false,
   handleRetryLoad,
-  mobileSecondaryNav = null
+  mobileSecondaryNav = null,
+  isGalleryPanelActive = true,
 }) => {
   const { t } = useTranslation();
   const { locale } = useLocale();
@@ -373,6 +379,8 @@ const PlaceGalleryView = React.memo(({
   const [reportLoginPrompt, setReportLoginPrompt] = useState(false);
   const pendingPlaceScrollResetRef = useRef(false);
   const pendingPlaceScrollRestoreRef = useRef(0);
+  const popBackRealignTargetRef = useRef(0);
+  const popBackRealignScheduledRef = useRef(false);
   const navigationType = useNavigationType();
   const routerLocation = useLocation();
   const scrollGalleryToTop = usePlaceMediaScrollToTop('GALLERY', scrollContainerRef, !selectedImg);
@@ -412,6 +420,26 @@ const PlaceGalleryView = React.memo(({
     () => location?.slug || location?.id || location?.name || '',
     [location?.slug, location?.id, location?.name],
   );
+  const galleryOverlayKey = useMemo(
+    () => (galleryPlaceKey ? `gallery:${galleryPlaceKey}` : ''),
+    [galleryPlaceKey],
+  );
+  const applyGalleryScrollRestore = useCallback((target, { clearBack = false } = {}) => {
+    const top = Number(target);
+    if (!Number.isFinite(top) || top <= 0) return;
+    pendingPlaceScrollResetRef.current = false;
+    pendingPlaceScrollRestoreRef.current = top;
+    popBackRealignTargetRef.current = top;
+    popBackRealignScheduledRef.current = false;
+    const el = scrollContainerRef.current;
+    if (el) {
+      el.scrollTop = top;
+      el.setAttribute('data-gallery-last-scroll', String(top));
+      el.setAttribute('data-gallery-scroll-restored', String(top));
+    }
+    rememberPlaceGalleryScroll(galleryPlaceKey, top);
+    if (clearBack) clearPlaceGalleryScrollBack(galleryPlaceKey);
+  }, [galleryPlaceKey]);
   const galleryPlaceKeyRef = useRef(galleryPlaceKey);
   galleryPlaceKeyRef.current = galleryPlaceKey;
   const paintTarget = Math.min(2, images?.length || 0);
@@ -489,6 +517,32 @@ const PlaceGalleryView = React.memo(({
   navigationTypeRef.current = navigationType;
 
   useLayoutEffect(() => {
+    if (selectedImg || !galleryOverlayKey) return undefined;
+    const top = consumeScrollAfterOverlay(galleryOverlayKey);
+    if (top <= 0) return undefined;
+    applyGalleryScrollRestore(top);
+    const el = scrollContainerRef.current;
+    if (!el) return undefined;
+    popBackRealignTargetRef.current = top;
+    popBackRealignScheduledRef.current = true;
+    return scheduleOneGalleryScrollRealignAfterImages(el, top, () => {
+      popBackRealignTargetRef.current = 0;
+      popBackRealignScheduledRef.current = false;
+      if (Math.abs((scrollContainerRef.current?.scrollTop ?? 0) - top) <= 8) {
+        pendingPlaceScrollRestoreRef.current = 0;
+      }
+    });
+  }, [selectedImg, galleryOverlayKey, applyGalleryScrollRestore]);
+
+  useLayoutEffect(() => {
+    if (navigationType !== 'POP') return undefined;
+    if (!isGalleryPanelActive || !galleryPlaceKey) return undefined;
+    const armed = armedGalleryBackScrollToRestore(galleryPlaceKey, navigationType);
+    if (armed <= 0) return undefined;
+    applyGalleryScrollRestore(armed, { clearBack: true });
+  }, [navigationType, isGalleryPanelActive, galleryPlaceKey, applyGalleryScrollRestore, routerLocation.pathname]);
+
+  useLayoutEffect(() => {
     const el = scrollContainerRef.current;
     const gridPending = readGalleryAttributionReturnState();
     const gridScrollPending =
@@ -500,6 +554,8 @@ const PlaceGalleryView = React.memo(({
     if (restore > 0) {
       pendingPlaceScrollResetRef.current = false;
       pendingPlaceScrollRestoreRef.current = restore;
+      popBackRealignTargetRef.current = restore;
+      popBackRealignScheduledRef.current = false;
       if (el) el.scrollTop = restore;
       const raf = window.requestAnimationFrame(() => {
         const node = scrollContainerRef.current;
@@ -519,6 +575,17 @@ const PlaceGalleryView = React.memo(({
       return undefined;
     }
 
+    if (
+      navigationType === 'POP' &&
+      isGalleryPanelActive &&
+      peekArmedGalleryBackScroll(galleryPlaceKey) > 0
+    ) {
+      return undefined;
+    }
+    if (pendingPlaceScrollRestoreRef.current > 0) {
+      pendingPlaceScrollResetRef.current = false;
+      return undefined;
+    }
     pendingPlaceScrollRestoreRef.current = 0;
     pendingPlaceScrollResetRef.current = true;
     resetPlaceMediaScrollInstant(el);
@@ -531,7 +598,7 @@ const PlaceGalleryView = React.memo(({
       const node = scrollContainerRef.current;
       if (node && node.scrollTop > 0) rememberPlaceGalleryScroll(galleryPlaceKey, node.scrollTop);
     };
-  }, [galleryPlaceKey, navigationType]);
+  }, [galleryPlaceKey, navigationType, isGalleryPanelActive]);
 
   useLayoutEffect(() => {
     if (navigationType !== 'POP') return undefined;
@@ -539,6 +606,8 @@ const PlaceGalleryView = React.memo(({
     if (restore <= 0) return undefined;
     pendingPlaceScrollResetRef.current = false;
     pendingPlaceScrollRestoreRef.current = restore;
+    popBackRealignTargetRef.current = restore;
+    popBackRealignScheduledRef.current = false;
     const apply = () => {
       const el = scrollContainerRef.current;
       if (el) {
@@ -563,6 +632,8 @@ const PlaceGalleryView = React.memo(({
     if (restore <= 0) return undefined;
     pendingPlaceScrollResetRef.current = false;
     pendingPlaceScrollRestoreRef.current = restore;
+    popBackRealignTargetRef.current = restore;
+    popBackRealignScheduledRef.current = false;
     const apply = () => {
       const el = scrollContainerRef.current;
       if (el) {
@@ -580,16 +651,41 @@ const PlaceGalleryView = React.memo(({
     };
   }, [routerLocation.pathname, navigationType, galleryPlaceKey]); // POP → gallery with snapshot only (PUSH in-app links skip)
 
+  useEffect(() => {
+    if (navigationType !== 'POP') {
+      popBackRealignScheduledRef.current = false;
+      return undefined;
+    }
+    const target = popBackRealignTargetRef.current;
+    if (target <= 0 || popBackRealignScheduledRef.current) return undefined;
+    if (isImgLoading || isRefreshing) return undefined;
+    const el = scrollContainerRef.current;
+    if (!el) return undefined;
+    popBackRealignScheduledRef.current = true;
+    return scheduleOneGalleryScrollRealignAfterImages(el, target, () => {
+      popBackRealignTargetRef.current = 0;
+    });
+  }, [
+    navigationType,
+    galleryPlaceKey,
+    images.length,
+    galleryVisuallyReady,
+    isImgLoading,
+    isRefreshing,
+  ]);
+
   useLayoutEffect(() => {
     const restore = pendingPlaceScrollRestoreRef.current;
     if (restore > 0) {
-      if (isImgLoading || isRefreshing) return;
+      if (isImgLoading || isRefreshing) return undefined;
       const el = scrollContainerRef.current;
       if (el) el.scrollTop = restore;
-      const applied = !el || el.scrollTop >= restore - 2;
-      if (applied) pendingPlaceScrollRestoreRef.current = 0;
+      const current = el?.scrollTop ?? 0;
+      if (!el || Math.abs(current - restore) <= 8) {
+        pendingPlaceScrollRestoreRef.current = 0;
+      }
       setShowScrollToTop(restore > 280);
-      return;
+      return undefined;
     }
     if (!pendingPlaceScrollResetRef.current || isImgLoading || isRefreshing) return;
     resetPlaceMediaScrollInstant(scrollContainerRef.current);
@@ -1267,19 +1363,15 @@ const PlaceGalleryView = React.memo(({
       ref={fullScreenContainerRef}
       className={`flex-1 h-full bg-[#05070a]/80 backdrop-blur-xl rounded-[2rem] border border-white/5 overflow-hidden relative shadow-2xl transition-all duration-500 ${isFullScreen ? 'fixed inset-0 z-[200] w-screen h-screen rounded-none border-none' : ''}`}
     >
-      {selectedImg ? (
-        shouldUseMobilePortal
-          ? createPortal(renderPhotoViewer(null, { mobilePortal: true }), document.body)
-          : renderPhotoViewer(
-              'w-full h-full relative animate-fade-in bg-black flex items-center justify-center overflow-hidden'
-            )
-      ) : (
-        <div className="w-full h-full flex flex-col min-h-0">
-          <div className={mobilePlaceHeaderSpacerClass} aria-hidden="true" />
+      <div className="w-full h-full flex flex-col min-h-0 relative">
+          {!selectedImg && <div className={mobilePlaceHeaderSpacerClass} aria-hidden="true" />}
           <div
             ref={scrollContainerRef}
             data-place-gallery-scroll=""
-            className={`flex-1 min-h-0 w-full overflow-y-auto overflow-x-hidden custom-scrollbar-blue relative ${placeScrollSurfaceClass} md:pt-10 ${mobilePlaceGalleryFooterScrollPadding} md:pb-6`}
+            aria-hidden={selectedImg ? true : undefined}
+            className={`flex-1 min-h-0 w-full overflow-y-auto overflow-x-hidden custom-scrollbar-blue relative ${placeScrollSurfaceClass} md:pt-10 ${mobilePlaceGalleryFooterScrollPadding} md:pb-6 ${
+              selectedImg ? 'invisible pointer-events-none' : ''
+            }`}
           >
 
           {mobileSecondaryNav && (
@@ -1357,6 +1449,11 @@ const PlaceGalleryView = React.memo(({
                       onPainted={onTilePainted}
                       onOpen={() => {
                         suppressOpenClickRef.current = true;
+                        snapshotScrollBeforeOverlay(
+                          galleryOverlayKey,
+                          scrollContainerRef.current,
+                          galleryPlaceKey,
+                        );
                         setSelectedImg(img);
                         window.requestAnimationFrame(() => {
                           suppressOpenClickRef.current = false;
@@ -1432,8 +1529,18 @@ const PlaceGalleryView = React.memo(({
             </div>
           </div>
         </div>
-        </div>
-      )}
+      {selectedImg ? (
+        shouldUseMobilePortal
+          ? createPortal(renderPhotoViewer(null, { mobilePortal: true }), document.body)
+          : (
+            <div className="absolute inset-0 z-[210]">
+              {renderPhotoViewer(
+                'w-full h-full relative animate-fade-in bg-black flex items-center justify-center overflow-hidden'
+              )}
+            </div>
+          )
+      ) : null}
+      </div>
       {manageTarget && (
         <GalleryManageSheet
           img={manageTarget}
