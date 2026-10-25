@@ -108,6 +108,8 @@ test.describe('place visit story → reviews focus (WebKit 390, fixtures)', () =
 
     await expect.poll(() => page.url(), { timeout: 15_000 }).toMatch(/\/place\/cairo\/reviews$/);
     await expect(page.url()).not.toContain('review=');
+    await page.waitForTimeout(500);
+    await expect(reviewCard).toHaveClass(/place-review-focus-highlight/);
   });
 
   test('slow loading still focuses after reviews arrive', async ({ page }) => {
@@ -119,6 +121,8 @@ test.describe('place visit story → reviews focus (WebKit 390, fixtures)', () =
     await expect(page).toHaveURL(new RegExp(`review=${FOCUS_ID}`), { timeout: 30_000 });
     await expectReviewInScrollViewport(page);
     await expect.poll(() => page.url(), { timeout: 15_000 }).not.toContain('review=');
+    await page.waitForTimeout(500);
+    await expect(page.locator(`#${FOCUS_ANCHOR_ID}`)).toHaveClass(/place-review-focus-highlight/);
   });
 
   test('unknown review id times out without jumping to top', async ({ page }) => {
@@ -155,15 +159,19 @@ test.describe('place visit story → reviews focus (WebKit 390, fixtures)', () =
     await page.getByRole('button', { name: /다녀온 이야기/ }).first().click();
     await expect(focusStory).toBeVisible({ timeout: 20_000 });
 
+    await focusStory.click();
+    await expect(page).toHaveURL(/\/place\/cairo\/reviews/, { timeout: 30_000 });
     const root = page.locator('[data-place-reviews-scroll-root]');
-    await Promise.all([
-      focusStory.click(),
-      root.waitFor({ state: 'attached', timeout: 30_000 }).then(async () => {
-        await root.evaluate((el) => {
-          el.dispatchEvent(new WheelEvent('wheel', { bubbles: true, cancelable: true }));
-        });
-      }),
-    ]);
+    await expect(root).toBeVisible({ timeout: 30_000 });
+    await expect.poll(async () => {
+      await root.evaluate((el) => {
+        el.dispatchEvent(new WheelEvent('wheel', { bubbles: true, cancelable: true }));
+      });
+      return page.evaluate(() => {
+        const card = document.getElementById('place-review-e2e-visit-story-review-focus');
+        return !card?.classList.contains('place-review-focus-highlight');
+      });
+    }, { timeout: 4000, intervals: [120, 180, 240] }).toBe(true);
 
     await expect.poll(() => page.url(), { timeout: 15_000 }).not.toContain('review=');
 
@@ -211,10 +219,9 @@ test.describe('place visit story → reviews focus (WebKit 390, fixtures)', () =
     await expect(page).toHaveURL(/\/place\/cairo(?:\/|$|\?)/, { timeout: 30_000 });
     await expect(page).not.toHaveURL(/\/reviews/);
     await expect(gallery).toBeVisible({ timeout: 30_000 });
-    await expect(gallery).toHaveAttribute('data-gallery-scroll-restored', String(before), {
-      timeout: 12_000,
-    });
     await expect.poll(async () => gallery.evaluate((el) => el.scrollTop), { timeout: 12_000 })
       .toBeGreaterThan(250);
+    const afterBack = await gallery.evaluate((el) => el.scrollTop);
+    expect(afterBack).toBeGreaterThanOrEqual(before - 8);
   });
 });

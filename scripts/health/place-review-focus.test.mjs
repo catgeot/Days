@@ -11,6 +11,7 @@ import {
 } from '../../src/utils/placeReviewFocus.js';
 import { EDITORIAL_REVIEW_DEEPLINK_QUERY_PARAM } from '../../src/logbookOfficialReviews/constants.js';
 import {
+  clearPlaceGalleryScrollBack,
   peekGalleryScrollForPlaceBack,
   placeGalleryScrollToRestore,
   rememberPlaceGalleryScroll,
@@ -49,6 +50,7 @@ function setupDom() {
   globalThis.document = dom.window.document;
   globalThis.HTMLElement = dom.window.HTMLElement;
   globalThis.Document = dom.window.Document;
+  dom.window.matchMedia = () => ({ matches: false, addListener: () => {}, removeListener: () => {} });
   return dom;
 }
 
@@ -106,7 +108,37 @@ test('snapshotGalleryScrollForPlaceBack stores offset for POP restore', () => {
   snapshotGalleryScrollForPlaceBack('cairo');
   assert.equal(peekGalleryScrollForPlaceBack('cairo'), 340);
   assert.equal(placeGalleryScrollToRestore('cairo', 'POP'), 340);
+  assert.equal(peekGalleryScrollForPlaceBack('cairo'), 340);
+  clearPlaceGalleryScrollBack('cairo');
+  assert.equal(peekGalleryScrollForPlaceBack('cairo'), 0);
+  assert.equal(placeGalleryScrollToRestore('cairo', 'POP'), 0);
   assert.equal(placeGalleryScrollToRestore('cairo', 'PUSH'), 0);
+  dom.window.close();
+});
+
+test('focus session release after found keeps highlight until timer ends', async () => {
+  const dom = setupDom();
+  const root = dom.window.document.createElement('div');
+  root.setAttribute('data-place-reviews-scroll-root', '');
+  Object.defineProperty(root, 'clientHeight', { value: 400 });
+  root.scrollTo = () => {};
+  const card = dom.window.document.createElement('div');
+  card.id = 'place-review-hl-id';
+  card.setAttribute('data-review-id', 'hl-id');
+  Object.defineProperty(card, 'offsetParent', { get: () => root });
+  root.appendChild(card);
+  dom.window.document.body.appendChild(root);
+
+  const { promise, release, getResult } = startPlaceReviewFocusSession('hl-id', root, {
+    maxWaitMs: 500,
+    pollMs: 20,
+  });
+  const result = await promise;
+  assert.equal(result.reason, 'found');
+  assert.equal(card.classList.contains('place-review-focus-highlight'), true);
+  release();
+  assert.equal(getResult()?.reason, 'found');
+  assert.equal(card.classList.contains('place-review-focus-highlight'), true);
   dom.window.close();
 });
 

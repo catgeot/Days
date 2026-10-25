@@ -12,6 +12,8 @@ import {
   clearGalleryAttributionReturnState,
 } from '../common/galleryAttributionNavigation';
 import {
+  clearPlaceGalleryScrollBack,
+  isGalleryBackRestoreDue,
   peekGalleryScrollForPlaceBack,
   placeGalleryScrollToRestore,
   rememberPlaceGalleryScroll,
@@ -373,7 +375,6 @@ const PlaceGalleryView = React.memo(({
   const pendingPlaceScrollRestoreRef = useRef(0);
   const navigationType = useNavigationType();
   const routerLocation = useLocation();
-  const prevPathRef = useRef(routerLocation.pathname);
   const scrollGalleryToTop = usePlaceMediaScrollToTop('GALLERY', scrollContainerRef, !selectedImg);
   const currentIndex = useMemo(() => {
     if (!selectedImg || images.length === 0) return -1;
@@ -546,6 +547,7 @@ const PlaceGalleryView = React.memo(({
       }
     };
     apply();
+    clearPlaceGalleryScrollBack(galleryPlaceKey);
     const raf = window.requestAnimationFrame(apply);
     const timer = window.setTimeout(apply, 150);
     return () => {
@@ -555,11 +557,8 @@ const PlaceGalleryView = React.memo(({
   }, [navigationType, galleryPlaceKey]);
 
   useLayoutEffect(() => {
-    const prev = prevPathRef.current;
-    const next = routerLocation.pathname;
-    prevPathRef.current = next;
-    const leftReviews = /\/reviews\/?$/.test(prev) && !/\/reviews\/?$/.test(next);
-    if (!leftReviews) return undefined;
+    if (/\/reviews\/?$/.test(routerLocation.pathname)) return undefined;
+    if (!isGalleryBackRestoreDue(galleryPlaceKey, navigationType)) return undefined;
     const restore = peekGalleryScrollForPlaceBack(galleryPlaceKey);
     if (restore <= 0) return undefined;
     pendingPlaceScrollResetRef.current = false;
@@ -572,13 +571,14 @@ const PlaceGalleryView = React.memo(({
       }
     };
     apply();
+    clearPlaceGalleryScrollBack(galleryPlaceKey);
     const raf = window.requestAnimationFrame(apply);
     const timer = window.setTimeout(apply, 200);
     return () => {
       window.cancelAnimationFrame(raf);
       window.clearTimeout(timer);
     };
-  }, [routerLocation.pathname, galleryPlaceKey]);
+  }, [routerLocation.pathname, navigationType, galleryPlaceKey]); // POP → gallery with snapshot only (PUSH in-app links skip)
 
   useLayoutEffect(() => {
     const restore = pendingPlaceScrollRestoreRef.current;

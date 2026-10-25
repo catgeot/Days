@@ -167,24 +167,37 @@ export function startPlaceReviewFocusSession(reviewId, scrollRoot, options = {})
   const poll = options.pollMs ?? 80;
   const graceMs = options.programmaticScrollGraceMs ?? 500;
   const start = Date.now();
-  const timers = new Set();
+  const guardTimers = new Set();
+  const scrollCorrectTimers = new Set();
   const listeners = [];
   let settled = false;
+  /** @type {PlaceReviewFocusResult | null} */
+  let lastResult = null;
   let ignoreUserScrollUntil = 0;
   let clearHighlight = () => {};
 
-  const trackTimer = (id) => {
-    timers.add(id);
+  const trackGuardTimer = (id) => {
+    guardTimers.add(id);
     return id;
   };
 
-  const detach = () => {
-    timers.forEach((id) => clearTimeout(id));
-    timers.clear();
+  const trackScrollCorrectTimer = (id) => {
+    scrollCorrectTimers.add(id);
+    return id;
+  };
+
+  const detachGuards = () => {
+    guardTimers.forEach((id) => clearTimeout(id));
+    guardTimers.clear();
     listeners.forEach(([target, type, handler, opts]) => {
       target.removeEventListener(type, handler, opts);
     });
     listeners.length = 0;
+  };
+
+  const detachScrollCorrectTimers = () => {
+    scrollCorrectTimers.forEach((id) => clearTimeout(id));
+    scrollCorrectTimers.clear();
   };
 
   let resolvePromise = () => {};
@@ -192,8 +205,10 @@ export function startPlaceReviewFocusSession(reviewId, scrollRoot, options = {})
   const finish = (result) => {
     if (settled) return;
     settled = true;
-    detach();
+    lastResult = result;
+    detachGuards();
     if (result.reason !== 'found') {
+      detachScrollCorrectTimers();
       clearHighlight();
       clearHighlight = () => {};
     }
@@ -203,7 +218,21 @@ export function startPlaceReviewFocusSession(reviewId, scrollRoot, options = {})
   const abort = () => {
     clearHighlight();
     clearHighlight = () => {};
-    finish({ ok: false, reason: 'aborted' });
+    detachGuards();
+    detachScrollCorrectTimers();
+    if (!settled) {
+      settled = true;
+      lastResult = { ok: false, reason: 'aborted' };
+      resolvePromise(lastResult);
+    }
+  };
+
+  /** After successful focus + URL strip: stop polling/guards but keep highlight + scroll correction. */
+  const release = () => {
+    detachGuards();
+    if (!settled) {
+      abort();
+    }
   };
 
   const attachUserInputGuards = (root) => {
@@ -234,7 +263,7 @@ export function startPlaceReviewFocusSession(reviewId, scrollRoot, options = {})
         ignoreUserScrollUntil = Date.now() + graceMs;
         const ok = scrollPlaceReviewIntoView(root, reviewId, {
           ...options,
-          onScheduleTimer: (id) => trackTimer(id),
+          onScheduleTimer: (id) => trackScrollCorrectTimer(id),
         });
         if (ok) {
           clearHighlight = flashPlaceReviewHighlight(el);
@@ -248,14 +277,15 @@ export function startPlaceReviewFocusSession(reviewId, scrollRoot, options = {})
         return;
       }
 
-      const pollId = trackTimer(window.setTimeout(attempt, poll));
-      void pollId;
+      trackGuardTimer(window.setTimeout(attempt, poll));
     };
 
     attempt();
   });
 
-  return { promise, abort };
+  const getResult = () => lastResult;
+
+  return { promise, abort, release, getResult };
 }
 
 /** @deprecated use startPlaceReviewFocusSession */

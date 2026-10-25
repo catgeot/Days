@@ -611,14 +611,20 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null, isActiv
   }, [isActive, focusReviewId, placeSlug]);
 
   useEffect(() => {
-    focusSessionRef.current?.abort();
-    focusSessionRef.current = null;
-    if (!isActive || !focusReviewId) return undefined;
+    if (!isActive) {
+      focusSessionRef.current?.abort();
+      focusSessionRef.current = null;
+      return undefined;
+    }
+    if (!focusReviewId) return undefined;
     if (userCancelledDeepLinkRef.current) {
       consumeReviewDeepLink();
       return undefined;
     }
     if (isLoading) return undefined;
+
+    const prev = focusSessionRef.current;
+    if (prev) prev.abort();
 
     const session = startPlaceReviewFocusSession(
       focusReviewId,
@@ -634,7 +640,12 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null, isActiv
 
     return () => {
       cancelled = true;
-      session.abort();
+      const result = session.getResult();
+      if (result?.reason === 'found' && result.ok) {
+        session.release();
+      } else {
+        session.abort();
+      }
       if (focusSessionRef.current === session) {
         focusSessionRef.current = null;
       }
