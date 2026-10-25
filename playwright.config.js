@@ -89,6 +89,17 @@ export default defineConfig({
       },
     },
     {
+      name: 'webkit-place-local-info-freshness',
+      testMatch: /place-local-info-freshness-screenshots\.spec\.js/,
+      use: {
+        ...devices['iPhone 13'],
+        locale: 'ko-KR',
+        viewport: { width: 390, height: 844 },
+        deviceScaleFactor: 1,
+        ignoreHTTPSErrors: true,
+      },
+    },
+    {
       name: 'webkit-festival-hero-credit',
       testMatch: /korea-festival-hero-credit-en\.spec\.js/,
       use: { ...devices['iPhone 13'] },

@@ -642,12 +642,20 @@
       "confirmed": {
         "entry": "확인된 입국 정보",
         "airport": "확인된 공항→시내 정보",
-        "moneySafety": "확인된 돈·치안 정보",
+        "moneySafety": "확인된 돈 정보",
         "safety": "확인된 치안 정보",
         "stayArea": "확인된 머물 지역 정보"
       },
       "source": "출처",
       "checked": "확인일 {{date}}",
+      "freshness": {
+        "checkedChip": "{{date}} 확인",
+        "warn": "최신 정보는 외교부에서 확인하세요.",
+        "mofaLink": "외교부 해외안전여행",
+        "hiddenLead": "최신 안전 정보는 외교부 해외안전여행에서 확인하세요.",
+        "consularLabel": "영사콜센터",
+        "consular": "영사콜센터 {{phone}}"
+      },
       "unverified": "확인 안 된 항목: {{items}}",
       "aiGenerated": "AI 생성 · 출처 없음",
       "aiGeneratedDated": "AI 생성 · 출처 없음 · {{date}}",
@@ -657,7 +665,7 @@
         "stay-area": "머물 지역",
         "itinerary": "1·2·3일 동선",
         "louvre-visit": "루브르 방문",
-        "money-safety": "돈·치안",
+        "money-safety": "돈",
         "safety": "치안",
         "season": "시즌",
         "hours": "운영시간",

@@ -18,6 +18,14 @@ import {
   verifiedFactSlots,
 } from '../../../data/placeVerifiedFacts/localInfoLayout.js';
 import {
+  CONSULAR_CALL_CENTER_DISPLAY,
+  CONSULAR_CALL_CENTER_TEL,
+  formatCheckedChipDate,
+  freshnessOf,
+  getFreshnessToday,
+  mofaOverseasSafetyUrl,
+} from '../../../data/placeVerifiedFacts/freshness.js';
+import {
   AI_GENERATED_LABEL,
   presentFactText,
   publicSourceName,
@@ -203,7 +211,7 @@ function FactValue({ slot, slug, locale, light }) {
   );
 }
 
-function FactMeta({ slot, locale, light }) {
+function FactMeta({ slot, locale, light, showCheckedDate = true }) {
   const { t } = useTranslation();
   const date = checkedAtForLocale(slot.checkedAt, locale);
   return (
@@ -214,9 +222,125 @@ function FactMeta({ slot, locale, light }) {
         : 'mt-1.5 text-[11px] leading-snug text-[#9ca3af] break-keep'}
     >
       {t('place.facts.source')} <SourceLine sources={slot.sources} locale={locale} light={light} />
-      {' · '}
-      {t('place.facts.checked', { date })}
+      {showCheckedDate ? (
+        <>
+          {' · '}
+          {t('place.facts.checked', { date })}
+        </>
+      ) : null}
     </p>
+  );
+}
+
+function FreshnessCheckedChip({ slot, locale, light }) {
+  const { t } = useTranslation();
+  const chipDate = formatCheckedChipDate(slot.checkedOn, locale);
+  const chipClass = light
+    ? 'mb-2 inline-flex rounded-full border border-[#92400e]/40 bg-amber-100 px-2.5 py-1 text-xs font-bold text-[#92400e]'
+    : 'mb-2 inline-flex rounded-full border border-amber-300/50 bg-amber-500/25 px-2.5 py-1 text-xs font-bold text-amber-50';
+  return (
+    <p data-fact-freshness-chip="" className="break-keep">
+      <span className={chipClass}>
+        {t('place.facts.freshness.checkedChip', { date: chipDate })}
+      </span>
+    </p>
+  );
+}
+
+function MofaSafetyLink({ light, labelKey = 'place.facts.freshness.mofaLink' }) {
+  const { t } = useTranslation();
+  const href = mofaOverseasSafetyUrl();
+  const linkClass = light
+    ? 'font-semibold text-sky-800 underline underline-offset-2'
+    : 'font-semibold text-sky-200 underline underline-offset-2';
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      data-fact-mofa-link=""
+      className={`${linkClass} break-keep`}
+      onClick={(event) => event.stopPropagation()}
+    >
+      {t(labelKey)}
+    </a>
+  );
+}
+
+function FreshnessWarnBanner({ slot, locale, light }) {
+  const { t } = useTranslation();
+  const bannerClass = light
+    ? 'mt-2 rounded-lg border border-amber-500/50 bg-amber-50 px-3 py-2 text-xs leading-relaxed text-amber-950'
+    : 'mt-2 rounded-lg border border-amber-400/40 bg-amber-500/15 px-3 py-2 text-xs leading-relaxed text-amber-50';
+  return (
+    <p data-fact-freshness-warn="" className={bannerClass}>
+      {t('place.facts.freshness.warn')}{' '}
+      <MofaSafetyLink light={light} />
+    </p>
+  );
+}
+
+function FreshnessHiddenFallback({ slot, locale, light }) {
+  const { t } = useTranslation();
+  const textClass = light
+    ? 'text-sm leading-relaxed text-[#111827] break-keep'
+    : 'text-sm leading-relaxed text-[#e5e7eb] break-keep';
+  return (
+    <div data-fact-freshness-hidden="" className="space-y-2">
+      <p className={textClass}>
+        {t('place.facts.freshness.hiddenLead')}{' '}
+        <MofaSafetyLink light={light} />
+      </p>
+      <p className={textClass}>
+        {t('place.facts.freshness.consularLabel')}{' '}
+        <a
+          href={CONSULAR_CALL_CENTER_TEL}
+          data-fact-consular-phone=""
+          className={light ? 'font-semibold text-sky-800 underline underline-offset-2' : 'font-semibold text-sky-200 underline underline-offset-2'}
+          onClick={(event) => event.stopPropagation()}
+        >
+          {CONSULAR_CALL_CENTER_DISPLAY}
+        </a>
+      </p>
+    </div>
+  );
+}
+
+function FactSlotBody({ slot, slug, locale, light }) {
+  const freshness = freshnessOf(slot, getFreshnessToday());
+  const showCheckedChip = freshness.tier === 'fresh' && slot.checkedOn;
+  const showWarn = freshness.tier === 'warn';
+  const showHidden = freshness.tier === 'hidden';
+  const showCheckedInMeta = (() => {
+    if (freshness.tier === 'fresh' || freshness.tier === 'warn' || freshness.tier === 'hidden') {
+      return false;
+    }
+    if (slot.kind && !slot.checkedOn) return false;
+    return Boolean(String(slot.checkedAt || '').trim());
+  })();
+
+  return (
+    <div data-fact-freshness-tier={freshness.tier}>
+      {showHidden ? (
+        <FreshnessHiddenFallback slot={slot} locale={locale} light={light} />
+      ) : (
+        <>
+          {showCheckedChip ? (
+            <FreshnessCheckedChip slot={slot} locale={locale} light={light} />
+          ) : null}
+          <FactValue slot={slot} slug={slug} locale={locale} light={light} />
+          {showWarn ? (
+            <FreshnessWarnBanner slot={slot} locale={locale} light={light} />
+          ) : null}
+          <FactMeta
+            slot={slot}
+            locale={locale}
+            light={light}
+            showCheckedDate={showCheckedInMeta}
+          />
+        </>
+      )}
+    </div>
   );
 }
 
@@ -357,8 +481,7 @@ function FactTopicRow({ slot, slug, locale, light }) {
       </button>
       {open ? (
         <div id={panelId} className="px-3.5 pb-3.5">
-          <FactValue slot={slot} slug={slug} locale={locale} light={light} />
-          <FactMeta slot={slot} locale={locale} light={light} />
+          <FactSlotBody slot={slot} slug={slug} locale={locale} light={light} />
         </div>
       ) : null}
     </div>
@@ -460,8 +583,7 @@ export function PlaceLocalInfoInline({
       />
       {open ? (
         <div id={panelId} className={light ? 'px-4 pb-4 text-[#111827]' : 'px-4 pb-4'}>
-          <FactValue slot={slot} slug={card.slug} locale={locale} light={light} />
-          <FactMeta slot={slot} locale={locale} light={light} />
+          <FactSlotBody slot={slot} slug={card.slug} locale={locale} light={light} />
         </div>
       ) : null}
     </section>

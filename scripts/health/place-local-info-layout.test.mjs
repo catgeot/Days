@@ -63,10 +63,10 @@ test('no verified facts leaves the place card unchanged', () => {
 
 test('cairo gallery keeps filled topics only and planner skips the itinerary', () => {
   const filled = verifiedFactSlots(CAIRO_CITY_FACTS).map((slot) => slot.id);
-  assert.deepEqual(filled, ['entry', 'airport', 'itinerary', 'money-safety']);
+  assert.deepEqual(filled, ['entry', 'airport', 'itinerary', 'money-safety', 'safety']);
   assert.equal(plannerSlotForToolkit(CAIRO_CITY_FACTS, 'visa')?.id, 'entry');
   assert.equal(plannerSlotForToolkit(CAIRO_CITY_FACTS, 'airport_transfer')?.id, 'airport');
-  assert.equal(plannerSlotForToolkit(CAIRO_CITY_FACTS, 'safety')?.id, 'money-safety');
+  assert.equal(plannerSlotForToolkit(CAIRO_CITY_FACTS, 'safety')?.id, 'safety');
   assert.equal(plannerSlotForToolkit(CAIRO_CITY_FACTS, 'accommodation'), null);
   assert.equal(plannerSlotForToolkit(CAIRO_CITY_FACTS, 'flight'), null);
   assert.equal(

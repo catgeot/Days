@@ -10,6 +10,7 @@ export const CITY_SLOT_IDS = [
   'stay-area',
   'itinerary',
   'money-safety',
+  'safety',
   'season',
 ];
 
@@ -28,7 +29,7 @@ export const ATTRACTION_SLOT_IDS = [
  * @param {string} value
  * @param {{ name: string, url: string }[]} sources
  * @param {string} checkedAt
- * @param {{ id: string, headingKey?: string, linkRole?: 'booking' | 'map' | null, linkLabel?: string | null }} meta
+ * @param {{ id: string, headingKey?: string, kind?: 'event' | 'standing', checkedOn?: string, endsAt?: string, linkRole?: 'booking' | 'map' | null, linkLabel?: string | null }} meta
  */
 function sourceRecord(item) {
   const name = publicSourceName(item.name);
@@ -49,6 +50,9 @@ export function verifiedSlot(label, value, sources, checkedAt, meta) {
     source: primary,
     sources: list,
     checkedAt: String(checkedAt || '').trim(),
+    kind: meta.kind === 'event' || meta.kind === 'standing' ? meta.kind : null,
+    checkedOn: meta.checkedOn ? String(meta.checkedOn).trim() : null,
+    endsAt: meta.endsAt ? String(meta.endsAt).trim() : null,
     headingKey: meta.headingKey ? String(meta.headingKey).trim() : null,
     linkRole: meta.linkRole || null,
     linkLabel: meta.linkLabel ? String(meta.linkLabel).trim() : null,
