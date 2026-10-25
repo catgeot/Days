@@ -47,6 +47,7 @@ test('Tinian keep-label without stored name_en — slug infers Tinian, no San Jo
     lat: 15.0,
     lng: 145.63,
   });
+  assert.equal(spot.name_en, 'Tinian');
   const geo = {
     name: 'San Jose',
     name_en: 'San Jose',

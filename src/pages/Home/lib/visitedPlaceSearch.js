@@ -196,9 +196,12 @@ export function visitedRowToSearchSpot(row, extras = {}) {
 
   const desc = String(extras.desc || '').trim();
   const identity = visitedIdentityForRow(placeId, nameKo, nameEn);
-  const latinName = identity.nameEn
+  let latinName = identity.nameEn
     ? pickLatinPlaceNameFromLocation({ name_en: identity.nameEn, name })
     : '';
+  if (!latinName) {
+    latinName = latinFromVisitedSlug({ slug: identity.slug, place_id: placeId });
+  }
   let country = concreteCountry(extras.country, extras.country_en);
   let countryEn = concreteCountry(extras.country_en, extras.country);
   if (!country && shouldInferKoreaCountryForVisited({ nameKo, lat, lng })) {
@@ -298,7 +301,7 @@ export function isSamePinKeepVisitorLabel(visited, geo) {
   return kind === 'city' || geo.badge === '도시' || Boolean(geoLatin && latinNameIsAdminArea(geoLatin, geo.name));
 }
 
-function latinFromVisitedSlug(visited) {
+export function latinFromVisitedSlug(visited) {
   const slug = String(visited?.slug || visited?.place_id || '').trim();
   if (!slug || !/^[a-z][a-z0-9-]*$/i.test(slug)) return '';
   return slug
