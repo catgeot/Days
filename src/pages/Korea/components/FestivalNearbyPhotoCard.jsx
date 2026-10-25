@@ -14,6 +14,7 @@ import { nearbyRowThumbCandidateUrls } from '../lib/nearbySightImages.js';
  *   onActivate?: () => void,
  *   clickable?: boolean,
  *   variant?: 'sights' | 'food',
+ *   eagerImage?: boolean,
  * }} props
  */
 export default function FestivalNearbyPhotoCard({
@@ -25,6 +26,7 @@ export default function FestivalNearbyPhotoCard({
   onActivate,
   clickable = false,
   variant = 'sights',
+  eagerImage = false,
 }) {
   const [urlIndex, setUrlIndex] = useState(0);
   const [photoReady, setPhotoReady] = useState(false);
@@ -105,7 +107,7 @@ export default function FestivalNearbyPhotoCard({
             <FestivalPhotoFrame
               src={activeUrl}
               alt=""
-              loading="eager"
+              loading={eagerImage ? 'eager' : 'lazy'}
               decoding="async"
               referrerPolicy="no-referrer"
               className="h-full w-full object-cover"

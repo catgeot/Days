@@ -258,5 +258,81 @@ test.describe('Festival nearby cards — flag ON', () => {
     await expect(attractions.locator('[data-nearby-compact-card]').first()).toBeVisible({
       timeout: 120_000,
     });
+    await attractions.screenshot({
+      path: `${SCREENSHOT_DIR}/825295-image-failure-compact-390-flag-on.png`,
+    });
+  });
+
+  test('distance band selected ring state @evidence', async ({ page }) => {
+    test.setTimeout(180_000);
+    await dismissLocHint(page);
+    const dialog = await openFestival(page, '825295');
+    const attractions = dialog.locator('[data-festival-section="nearAttractions"]');
+    await assertTwoColumnGrid(attractions);
+    const walkCell = attractions.locator('[data-nearby-summary-cell][data-band="walk"]');
+    if ((await walkCell.getAttribute('disabled')) == null) {
+      await walkCell.click();
+    }
+    await expect(attractions.locator('[data-nearby-group-highlighted="true"]').first()).toBeVisible();
+    await attractions.screenshot({
+      path: `${SCREENSHOT_DIR}/825295-band-walk-selected-390-flag-on.png`,
+    });
+  });
+
+  test('4106717 food section hidden @evidence', async ({ page }) => {
+    test.setTimeout(180_000);
+    await dismissLocHint(page);
+    const dialog = await openFestival(page, '4106717');
+    await expect(dialog.locator('[data-festival-section="nearFood"]')).toHaveCount(0);
+    const attractions = dialog.locator('[data-festival-section="nearAttractions"]');
+    await attractions.scrollIntoViewIfNeeded();
+    await dialog.screenshot({
+      path: `${SCREENSHOT_DIR}/4106717-no-food-section-390-flag-on.png`,
+    });
+  });
+});
+
+test.describe('Festival nearby cards — flag OFF', () => {
+  test('825295 sheet padding matches main (no nearby cards DOM) @flagOff', async ({ page }) => {
+    test.setTimeout(180_000);
+    await page.goto('/korea/');
+    await dismissLocHint(page);
+    const dialog = await openFestival(page, '825295');
+    await expect(dialog.locator('[data-nearby-cards-section]')).toHaveCount(0);
+    const paddingRight = await page.evaluate(() => {
+      const el = document.querySelector('[data-festival-sheet-content]');
+      return el ? getComputedStyle(el).paddingRight : null;
+    });
+    expect(paddingRight).toBe('20px');
+    await dialog.locator('[data-festival-sheet-content]').screenshot({
+      path: `${SCREENSHOT_DIR}/825295-sheet-body-390-flag-off.png`,
+    });
+  });
+});
+
+test('825295 attractions desktop 1280 flag ON @desktop1280', async ({ page }) => {
+  test.setTimeout(180_000);
+  await page.setViewportSize({ width: 1280, height: 720 });
+  await dismissLocHint(page);
+  const dialog = await openFestival(page, '825295');
+  const attractions = dialog.locator('[data-festival-section="nearAttractions"]');
+  await assertTwoColumnGrid(attractions);
+  await waitNearbyCardImages(attractions);
+  await attractions.screenshot({
+    path: `${SCREENSHOT_DIR}/825295-nearAttractions-1280-flag-on.png`,
+  });
+});
+
+test('825295 festival sheet on production main @mainBaseline', async ({ page }) => {
+  test.setTimeout(180_000);
+  test.skip(Boolean(process.env.NEARBY_CARDS_E2E), 'prod baseline without local nearby-cards server');
+  await page.goto('https://www.gateo.kr/korea/', { waitUntil: 'domcontentloaded' });
+  await dismissLocHint(page);
+  await page.goto('https://www.gateo.kr/korea/?festival=825295', { waitUntil: 'domcontentloaded' });
+  const dialog = page.getByRole('dialog');
+  await expect(dialog).toBeVisible({ timeout: 120_000 });
+  await dialog.screenshot({
+    path: `${SCREENSHOT_DIR}/825295-sheet-body-390-main-prod.png`,
+    timeout: 60_000,
   });
 });

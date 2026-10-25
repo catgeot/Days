@@ -73,6 +73,8 @@ export default function FestivalNearbyCardsSection({
 
   if (!flatItems.length) return null;
 
+  let photoCardIndex = 0;
+
   const closestLabel = formatFestivalDistKm(summary.closestDistKm);
   const bannerSubline =
     variant === 'food' && summary.closestName
@@ -89,7 +91,10 @@ export default function FestivalNearbyCardsSection({
   const bandActive = (band) => highlightBand === band;
 
   return (
-    <div className="space-y-3" data-nearby-cards-section="">
+    <div
+      className="space-y-3 max-md:pr-[max(3.25rem,calc(env(safe-area-inset-right)+2.5rem))]"
+      data-nearby-cards-section=""
+    >
       <div
         className="rounded-2xl bg-gradient-to-br from-amber-600 to-orange-500 px-4 py-3 text-white shadow-sm"
         data-nearby-banner=""
@@ -187,6 +192,8 @@ export default function FestivalNearbyCardsSection({
                     clickable: false,
                   };
                   const key = spot.contentId || spot.id || meta.title;
+                  const eagerImage = photoCardIndex < 4;
+                  photoCardIndex += 1;
                   return (
                     <li key={key} className="min-w-0 list-none">
                       <FestivalNearbyPhotoCard
@@ -197,6 +204,7 @@ export default function FestivalNearbyCardsSection({
                         imagePending={meta.imagePending}
                         clickable={meta.clickable}
                         variant={variant}
+                        eagerImage={eagerImage}
                         onActivate={() => onSpotActivate?.(spot)}
                       />
                     </li>

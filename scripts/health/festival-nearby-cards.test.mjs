@@ -119,3 +119,12 @@ test('FestivalDetailSheet gates legacy list behind flag', () => {
   assert.match(sheet, /data-festival-section="nearFood"/);
   assert.match(sheet, /data-nearby-heading/);
 });
+
+test('flag off keeps main sheet body padding (no nearby-only pr on sheet)', () => {
+  const contentBlock = sheet.slice(
+    sheet.indexOf('data-festival-sheet-content'),
+    sheet.indexOf('data-festival-sheet-content') + 600,
+  );
+  assert.doesNotMatch(contentBlock, /pr-\[max\(5rem/);
+  assert.match(contentBlock, /px-5 pt-5 pb-\[max\(8\.5rem/);
+});
