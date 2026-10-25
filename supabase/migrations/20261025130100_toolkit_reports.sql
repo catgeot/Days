@@ -15,7 +15,8 @@ CREATE TABLE IF NOT EXISTS public.toolkit_reports (
       'airport_transfer', 'transport', 'ferry_booking', 'pre_travel', 'connectivity'
     )
   ),
-  CONSTRAINT toolkit_reports_note_len_chk CHECK (char_length(note) BETWEEN 1 AND 2000)
+  CONSTRAINT toolkit_reports_note_len_chk CHECK (char_length(note) BETWEEN 1 AND 2000),
+  CONSTRAINT toolkit_reports_url_len_chk CHECK (url IS NULL OR char_length(url) <= 500)
 );
 
 CREATE INDEX IF NOT EXISTS toolkit_reports_place_section_created_idx
@@ -35,9 +36,13 @@ CREATE POLICY toolkit_reports_insert_anon
   WITH CHECK (
     place_id IS NOT NULL
     AND char_length(trim(place_id)) > 0
-    AND char_length(trim(note)) > 0
+    AND char_length(trim(place_id)) <= 200
+    AND char_length(trim(note)) BETWEEN 1 AND 2000
+    AND (url IS NULL OR char_length(trim(url)) <= 500)
   );
 
--- No SELECT for anon — service_role triage only.
+-- Anon/authenticated: insert-only (no SELECT/UPDATE/DELETE policies).
+REVOKE ALL ON public.toolkit_reports FROM PUBLIC;
+REVOKE ALL ON public.toolkit_reports FROM anon, authenticated;
 GRANT INSERT ON public.toolkit_reports TO anon, authenticated;
 GRANT ALL ON public.toolkit_reports TO service_role;

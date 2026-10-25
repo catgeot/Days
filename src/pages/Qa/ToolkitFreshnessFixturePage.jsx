@@ -23,7 +23,7 @@ function buildMeta() {
 
 /**
  * Flag-on QA surface — deterministic badges for WebKit 390 captures.
- * Mounted only when VITE_GATEO_TOOLKIT_FRESHNESS=1.
+ * Mounted only when `import.meta.env.DEV` or `VITE_GATEO_TOOLKIT_FRESHNESS=1`.
  */
 export default function ToolkitFreshnessFixturePage({ variant = 'on' }) {
   const freshnessOn = variant !== 'off';

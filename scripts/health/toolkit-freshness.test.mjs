@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import test from 'node:test';
 
 import {
@@ -10,6 +11,7 @@ import {
 } from '../../src/data/toolkitFreshness/policy.js';
 import { isGateoToolkitFreshnessEnabled, GATEO_ENV_FLAG_NAMES } from '../../src/shared/gateoFeatureFlags.js';
 import { submitToolkitReport } from '../../src/utils/submitToolkitReport.js';
+import { fetchToolkitSectionMetaMap } from '../../src/utils/fetchToolkitSectionMeta.js';
 
 test('toolkit section volatility windows', () => {
   assert.equal(maxAgeDaysForToolkitSection('visa'), 30);
@@ -57,4 +59,39 @@ test('submitToolkitReport honeypot short-circuits', async () => {
   );
   assert.equal(result.ok, true);
   assert.equal(result.skipped, true);
+});
+
+test('fetchToolkitSectionMetaMap does not call supabase without place_id', async () => {
+  let calls = 0;
+  const supabase = {
+    from() {
+      calls += 1;
+      return { select: () => ({ eq: async () => ({ data: [], error: null }) }) };
+    },
+  };
+  assert.deepEqual(await fetchToolkitSectionMetaMap(supabase, ''), {});
+  assert.equal(calls, 0);
+});
+
+test('flag off: planner wires section meta hook with enabled=false gate', () => {
+  const planner = readFileSync(
+    new URL('../../src/components/PlaceCard/tabs/PlannerTab.jsx', import.meta.url),
+    'utf8',
+  );
+  assert.match(planner, /toolkitFreshnessOn = isGateoToolkitFreshnessEnabled\(\)/);
+  assert.match(planner, /useToolkitSectionMeta\(\s*plannerData\?\.place_id,\s*toolkitFreshnessOn\s*\)/);
+  const hook = readFileSync(
+    new URL('../../src/components/PlaceCard/hooks/useToolkitSectionMeta.js', import.meta.url),
+    'utf8',
+  );
+  assert.match(hook, /if \(!enabled\)[\s\S]*return;/);
+});
+
+test('QA fixture routes gated in App (not always-on baseline)', () => {
+  const app = readFileSync(new URL('../../src/App.jsx', import.meta.url), 'utf8');
+  assert.match(app, /toolkitFreshnessQaBundled/);
+  assert.match(app, /import\.meta\.env\.DEV/);
+  assert.match(app, /VITE_GATEO_TOOLKIT_FRESHNESS/);
+  assert.doesNotMatch(app, /ToolkitFreshnessBaselineFixturePage/);
+  assert.match(app, /\{ToolkitFreshnessFixturePage \?/);
 });

@@ -18,7 +18,7 @@ import KoreaThemeCoursesPage from './pages/KoreaTheme/CoursesPage';
 import QaShareIndex from './pages/QaShare';
 import QaShareRedirect from './pages/QaShare/QaShareRedirect';
 import { isQaMooniMarkdownFixtureEnabled } from './shared/cloudPreview/isQaMooniMarkdownFixtureEnabled.js';
-import { isGateoFestivalRoadEnabled, isGateoToolkitFreshnessEnabled } from './shared/gateoFeatureFlags.js';
+import { isGateoFestivalRoadEnabled } from './shared/gateoFeatureFlags.js';
 const MooniChatMarkdownFixturePage = isQaMooniMarkdownFixtureEnabled
   ? lazy(() => import('./pages/Qa/MooniChatMarkdownFixturePage.jsx'))
   : null;
@@ -32,12 +32,11 @@ const GallerySingleWriterHarness = galleryWriterHarnessOn
 const FestivalRoadFixturePage = isGateoFestivalRoadEnabled()
   ? lazy(() => import('./pages/Qa/FestivalRoadFixturePage.jsx'))
   : null;
-const ToolkitFreshnessFixturePage = isGateoToolkitFreshnessEnabled()
+const toolkitFreshnessQaBundled =
+  import.meta.env.DEV === true || import.meta.env.VITE_GATEO_TOOLKIT_FRESHNESS === '1';
+const ToolkitFreshnessFixturePage = toolkitFreshnessQaBundled
   ? lazy(() => import('./pages/Qa/ToolkitFreshnessFixturePage.jsx'))
   : null;
-const ToolkitFreshnessBaselineFixturePage = lazy(
-  () => import('./pages/Qa/ToolkitFreshnessFixturePage.jsx'),
-);
 import AboutPage from './pages/AboutPage';
 
 import Dashboard from './pages/DailyReport/Dashboard';
@@ -185,23 +184,25 @@ function App() {
                   }
                 />
               ) : null}
-              <Route
-                path="/qa/toolkit-freshness-baseline"
-                element={
-                  <Suspense fallback={null}>
-                    <ToolkitFreshnessBaselineFixturePage variant="off" />
-                  </Suspense>
-                }
-              />
-              {isGateoToolkitFreshnessEnabled() && ToolkitFreshnessFixturePage ? (
-                <Route
-                  path="/qa/toolkit-freshness"
-                  element={
-                    <Suspense fallback={null}>
-                      <ToolkitFreshnessFixturePage variant="on" />
-                    </Suspense>
-                  }
-                />
+              {ToolkitFreshnessFixturePage ? (
+                <>
+                  <Route
+                    path="/qa/toolkit-freshness"
+                    element={
+                      <Suspense fallback={null}>
+                        <ToolkitFreshnessFixturePage variant="on" />
+                      </Suspense>
+                    }
+                  />
+                  <Route
+                    path="/qa/toolkit-freshness-baseline"
+                    element={
+                      <Suspense fallback={null}>
+                        <ToolkitFreshnessFixturePage variant="off" />
+                      </Suspense>
+                    }
+                  />
+                </>
               ) : null}
               <Route path="/qa/:slug" element={<QaShareRedirect />} />
               <Route path="/qa" element={<QaShareIndex />} />
