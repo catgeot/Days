@@ -14,6 +14,7 @@ export const GATEO_ENV_FLAG_NAMES = {
   LIGHTBOX_HISTORY: 'VITE_GATEO_LIGHTBOX_HISTORY',
   LOCAL_INFO_ROLLOUT: 'VITE_GATEO_LOCAL_INFO_ROLLOUT',
   FESTIVAL_ROAD: 'VITE_GATEO_FESTIVAL_ROAD',
+  NEARBY_CARDS: 'VITE_GATEO_NEARBY_CARDS',
 };
 
 /** @param {string} name */
@@ -73,4 +74,9 @@ export function isGateoLocalInfoRolloutEnabled() {
 /** Festival road draft inside festival detail. Default off. */
 export function isGateoFestivalRoadEnabled() {
   return readGateoEnvFlag(GATEO_ENV_FLAG_NAMES.FESTIVAL_ROAD);
+}
+
+/** Festival nearby sights/food 2-column cards. Default off. */
+export function isGateoNearbyCardsEnabled() {
+  return readGateoEnvFlag(GATEO_ENV_FLAG_NAMES.NEARBY_CARDS);
 }

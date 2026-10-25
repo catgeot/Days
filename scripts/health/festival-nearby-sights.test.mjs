@@ -489,7 +489,7 @@ test('nearby sights render without waiting for festival detail', () => {
   assert.equal(nearbyBlock.includes('heroReady'), false);
   const section = sheet.slice(nearbyAt, lodgingAt);
   assert.match(section, /nearbyPending &&/);
-  assert.match(section, /!nearbyPending && nearbySights\.items\.length > 0/);
+  assert.match(section, /!nearbyPending[\s\S]*?nearbySights\.items\.length > 0/);
   assert.match(sheet, /fetchNearbyTourAttractions\(/);
   assert.match(sheet, /readNearbyAttractionCache\(/);
   const cachedBlock = sheet.slice(sheet.indexOf('const cachedSpots = readNearbyAttractionCache'));
