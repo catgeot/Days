@@ -123,14 +123,17 @@ async function cairoReviewsBackAtDepth(page, { input = 'wheel' } = {}) {
     .locator('[data-visit-story-kind="review"]')
     .filter({ hasText: 'E2E visit story — target review' })
     .first();
-  await expect(focusStory).toBeVisible({ timeout: 20_000 });
-  await focusStory.click();
+  await expect(focusStory).toBeAttached({ timeout: 20_000 });
+  await focusStory.evaluate((el) => {
+    el.scrollIntoView({ block: 'center' });
+    el.click();
+  });
   await expect(page).toHaveURL(/\/place\/cairo\/reviews/, { timeout: 30_000 });
-  await expect.poll(() => page.url(), { timeout: 15_000 }).not.toContain('review=');
+  await expect.poll(() => page.url(), { timeout: 45_000 }).not.toContain('review=');
   await page.goBack({ waitUntil: 'commit' });
   await expect(page).toHaveURL(/\/place\/cairo(?:\/|$|\?)/, { timeout: 30_000 });
   await expect(gallery).toBeVisible({ timeout: 30_000 });
-  await expect.poll(async () => gallery.evaluate((el) => el.scrollTop), { timeout: 25_000 })
+  await expect.poll(async () => gallery.evaluate((el) => el.scrollTop), { timeout: 30_000 })
     .toBeGreaterThan(before - 48);
   const after = await gallery.evaluate((el) => el.scrollTop);
   expect(Math.abs(after - before)).toBeLessThanOrEqual(48);

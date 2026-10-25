@@ -438,7 +438,10 @@ const PlaceGalleryView = React.memo(({
       el.setAttribute('data-gallery-scroll-restored', String(top));
     }
     rememberPlaceGalleryScroll(galleryPlaceKey, top);
-    if (clearBack) clearPlaceGalleryScrollBack(galleryPlaceKey);
+    if (clearBack) {
+      const applied = el && Math.abs(el.scrollTop - top) <= 8;
+      if (applied) clearPlaceGalleryScrollBack(galleryPlaceKey);
+    }
   }, [galleryPlaceKey]);
   const galleryPlaceKeyRef = useRef(galleryPlaceKey);
   galleryPlaceKeyRef.current = galleryPlaceKey;
@@ -537,11 +540,18 @@ const PlaceGalleryView = React.memo(({
 
   useLayoutEffect(() => {
     if (navigationType !== 'POP') return undefined;
-    if (!galleryPlaceKey || /\/reviews\/?$/.test(routerLocation.pathname)) return undefined;
+    if (!isGalleryPanelActive || !galleryPlaceKey) return undefined;
+    if (/\/reviews\/?$/.test(routerLocation.pathname)) return undefined;
     const armed = armedGalleryBackScrollToRestore(galleryPlaceKey, navigationType);
     if (armed <= 0) return undefined;
-    applyGalleryScrollRestore(armed, { clearBack: true });
-  }, [navigationType, galleryPlaceKey, applyGalleryScrollRestore, routerLocation.pathname]);
+    applyGalleryScrollRestore(armed, { clearBack: false });
+  }, [
+    navigationType,
+    isGalleryPanelActive,
+    galleryPlaceKey,
+    applyGalleryScrollRestore,
+    routerLocation.pathname,
+  ]);
 
   useLayoutEffect(() => {
     const el = scrollContainerRef.current;
@@ -579,11 +589,14 @@ const PlaceGalleryView = React.memo(({
     if (
       navigationType === 'POP' &&
       !/\/reviews\/?$/.test(routerLocation.pathname) &&
-      (peekArmedGalleryBackScroll(galleryPlaceKey) > 0 || pendingPlaceScrollRestoreRef.current > 0)
+      (peekArmedGalleryBackScroll(galleryPlaceKey) > 0 ||
+        pendingPlaceScrollRestoreRef.current > 0 ||
+        popBackRealignTargetRef.current > 0)
     ) {
+      pendingPlaceScrollResetRef.current = false;
       return undefined;
     }
-    if (pendingPlaceScrollRestoreRef.current > 0) {
+    if (pendingPlaceScrollRestoreRef.current > 0 || popBackRealignTargetRef.current > 0) {
       pendingPlaceScrollResetRef.current = false;
       return undefined;
     }
@@ -599,58 +612,51 @@ const PlaceGalleryView = React.memo(({
       const node = scrollContainerRef.current;
       if (node && node.scrollTop > 0) rememberPlaceGalleryScroll(galleryPlaceKey, node.scrollTop);
     };
-  }, [galleryPlaceKey, navigationType, isGalleryPanelActive]);
+  }, [galleryPlaceKey, navigationType, isGalleryPanelActive, routerLocation.pathname]);
 
   useLayoutEffect(() => {
     if (navigationType !== 'POP') return undefined;
+    if (!isGalleryPanelActive || !galleryPlaceKey) return undefined;
+    if (/\/reviews\/?$/.test(routerLocation.pathname)) return undefined;
     const restore = placeGalleryScrollToRestore(galleryPlaceKey, navigationType);
     if (restore <= 0) return undefined;
-    pendingPlaceScrollResetRef.current = false;
-    pendingPlaceScrollRestoreRef.current = restore;
-    popBackRealignTargetRef.current = restore;
-    popBackRealignScheduledRef.current = false;
-    const apply = () => {
-      const el = scrollContainerRef.current;
-      if (el) {
-        el.scrollTop = restore;
-        el.setAttribute('data-gallery-scroll-restored', String(restore));
-      }
-    };
-    apply();
-    clearPlaceGalleryScrollBack(galleryPlaceKey);
-    const raf = window.requestAnimationFrame(apply);
-    const timer = window.setTimeout(apply, 150);
+    applyGalleryScrollRestore(restore, { clearBack: false });
+    const raf = window.requestAnimationFrame(() => {
+      applyGalleryScrollRestore(restore, { clearBack: false });
+    });
+    const timer = window.setTimeout(() => {
+      applyGalleryScrollRestore(restore, { clearBack: false });
+    }, 150);
     return () => {
       window.cancelAnimationFrame(raf);
       window.clearTimeout(timer);
     };
-  }, [navigationType, galleryPlaceKey]);
+  }, [navigationType, galleryPlaceKey, isGalleryPanelActive, routerLocation.pathname, applyGalleryScrollRestore]);
 
   useLayoutEffect(() => {
+    if (!isGalleryPanelActive) return undefined;
     if (/\/reviews\/?$/.test(routerLocation.pathname)) return undefined;
     if (!isGalleryBackRestoreDue(galleryPlaceKey, navigationType)) return undefined;
     const restore = peekGalleryScrollForPlaceBack(galleryPlaceKey);
     if (restore <= 0) return undefined;
-    pendingPlaceScrollResetRef.current = false;
-    pendingPlaceScrollRestoreRef.current = restore;
-    popBackRealignTargetRef.current = restore;
-    popBackRealignScheduledRef.current = false;
-    const apply = () => {
-      const el = scrollContainerRef.current;
-      if (el) {
-        el.scrollTop = restore;
-        el.setAttribute('data-gallery-scroll-restored', String(restore));
-      }
-    };
-    apply();
-    clearPlaceGalleryScrollBack(galleryPlaceKey);
-    const raf = window.requestAnimationFrame(apply);
-    const timer = window.setTimeout(apply, 200);
+    applyGalleryScrollRestore(restore, { clearBack: false });
+    const raf = window.requestAnimationFrame(() => {
+      applyGalleryScrollRestore(restore, { clearBack: false });
+    });
+    const timer = window.setTimeout(() => {
+      applyGalleryScrollRestore(restore, { clearBack: false });
+    }, 200);
     return () => {
       window.cancelAnimationFrame(raf);
       window.clearTimeout(timer);
     };
-  }, [routerLocation.pathname, navigationType, galleryPlaceKey]); // POP → gallery with snapshot only (PUSH in-app links skip)
+  }, [
+    routerLocation.pathname,
+    navigationType,
+    galleryPlaceKey,
+    isGalleryPanelActive,
+    applyGalleryScrollRestore,
+  ]);
 
   useEffect(() => {
     if (navigationType !== 'POP') {
@@ -669,6 +675,7 @@ const PlaceGalleryView = React.memo(({
       if (Math.abs(current - target) <= 8) {
         popBackRealignTargetRef.current = 0;
         pendingPlaceScrollRestoreRef.current = 0;
+        clearPlaceGalleryScrollBack(galleryPlaceKey);
       }
     });
   }, [

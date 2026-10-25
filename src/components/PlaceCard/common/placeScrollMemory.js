@@ -138,6 +138,21 @@ export function clearPlaceGalleryScrollBack(key) {
   clearBackArm(id);
 }
 
+function readGalleryScrollForBackSnapshot(el, placeKey) {
+  const id = String(placeKey || '').trim();
+  const liveTop = Number(el?.scrollTop);
+  const live = Number.isFinite(liveTop) && liveTop >= 0 ? liveTop : 0;
+  const remembered = id ? readStoredGalleryScroll(id) : 0;
+  const attrTop = Number(el?.getAttribute?.('data-gallery-last-scroll'));
+  const attr = Number.isFinite(attrTop) && attrTop > 0 ? attrTop : 0;
+  if (live <= 8) {
+    if (attr > 0 && (remembered <= 8 || attr <= remembered)) return attr;
+    if (remembered > 0) return remembered;
+    return live;
+  }
+  return Math.max(live, remembered, attr);
+}
+
 /** Before in-app route push to reviews — so browser Back restores gallery scroll. */
 export function snapshotGalleryScrollForPlaceBack(placeKey) {
   if (typeof document === 'undefined') return;
@@ -145,7 +160,7 @@ export function snapshotGalleryScrollForPlaceBack(placeKey) {
   if (!id) return;
   const el = document.querySelector('[data-place-gallery-scroll]');
   if (!el) return;
-  const n = readGalleryScrollSnapshotFromElement(el, id);
+  const n = readGalleryScrollForBackSnapshot(el, id);
   if (!Number.isFinite(n) || n <= 0) return;
   backTops.set(id, n);
   backRestoreLive.set(id, true);

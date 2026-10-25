@@ -46,6 +46,25 @@ test('back to a place restores its gallery scroll and a fresh open does not', ()
   dom.window.close();
 });
 
+test('snapshotGalleryScrollForPlaceBack uses data-gallery-last-scroll when live scrollTop was zeroed', () => {
+  const dom = withGalleryScrollDom(0);
+  const el = dom.window.document.querySelector('[data-place-gallery-scroll]');
+  el.setAttribute('data-gallery-last-scroll', '1500');
+  rememberPlaceGalleryScroll('cairo', 2000);
+  snapshotGalleryScrollForPlaceBack('cairo');
+  assert.equal(peekGalleryScrollForPlaceBack('cairo'), 1500);
+  dom.window.close();
+});
+
+test('snapshotGalleryScrollForPlaceBack ignores stale attr at top with no remembered scroll', () => {
+  const dom = withGalleryScrollDom(0);
+  const el = dom.window.document.querySelector('[data-place-gallery-scroll]');
+  el.setAttribute('data-gallery-last-scroll', '1500');
+  snapshotGalleryScrollForPlaceBack('cairo');
+  assert.equal(peekGalleryScrollForPlaceBack('cairo'), 0);
+  dom.window.close();
+});
+
 test('armedGalleryBackScrollToRestore is POP-only', () => {
   const dom = withGalleryScrollDom(512);
   snapshotGalleryScrollForPlaceBack('cairo');
