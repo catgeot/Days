@@ -101,7 +101,13 @@ import { FestivalDetailFirstSummary } from './FestivalDetailFirstSummary.jsx';
 import FestivalAccessCard from './FestivalAccessCard.jsx';
 import { FestivalRoadPanel } from './FestivalRoadPanel.jsx';
 import FestivalMooniInlineButton from './FestivalMooniInlineButton.jsx';
-import { isGateoFestivalRoadEnabled } from '../../shared/gateoFeatureFlags.js';
+import {
+  isGateoFestivalRoadEnabled,
+  isGateoNearbyCardsEnabled,
+} from '../../shared/gateoFeatureFlags.js';
+import FestivalNearbyCardsSection from './components/FestivalNearbyCardsSection.jsx';
+import { nearbyCardThumbUrls } from './components/FestivalNearbyPhotoCard.jsx';
+import { formatFestivalDistKm } from './lib/formatFestivalDistKm.js';
 import {
   beltForFestival,
   beltStopNearbyLabels,
@@ -353,10 +359,10 @@ function festivalSearchQuery(title) {
 }
 
 function formatDistKm(km) {
-  if (!Number.isFinite(km)) return '';
-  if (km < 1) return `${Math.max(1, Math.round(km * 1000))}m`;
-  return `${km < 10 ? km.toFixed(1) : Math.round(km)}km`;
+  return formatFestivalDistKm(km);
 }
+
+const festivalNearbyCardsEnabled = isGateoNearbyCardsEnabled();
 
 function nearbyPlaceLabel(spot) {
   return String(spot?.locality || spot?.region || '').trim();
@@ -2790,12 +2796,18 @@ export default function FestivalDetailSheet({
                   className="space-y-2 pt-1"
                   data-festival-section="nearAttractions"
                 >
-                  <p
-                    className="text-[11px] font-bold tracking-widest text-stone-400 uppercase"
-                    data-nearby-heading=""
-                  >
-                    {t('korea.festival.detail.nearbySights')}
-                  </p>
+                  {!(
+                    festivalNearbyCardsEnabled &&
+                    !nearbyPending &&
+                    nearbySights.items.length > 0
+                  ) ? (
+                    <p
+                      className="text-[11px] font-bold tracking-widest text-stone-400 uppercase"
+                      data-nearby-heading=""
+                    >
+                      {t('korea.festival.detail.nearbySights')}
+                    </p>
+                  ) : null}
                   {nearbyPending && (
                     <div className="flex items-center gap-2 text-sm text-stone-500 py-1">
                       <Loader2 size={16} className="animate-spin" aria-hidden="true" />
@@ -2814,7 +2826,52 @@ export default function FestivalDetailSheet({
                         {t('korea.festival.detail.nearbySightsEmpty')}
                       </p>
                     )}
-                  {!nearbyPending && nearbySights.items.length > 0 && (
+                  {!nearbyPending &&
+                    nearbySights.items.length > 0 &&
+                    festivalNearbyCardsEnabled && (
+                      <FestivalNearbyCardsSection
+                        sectionId="nearAttractions"
+                        title={t('korea.festival.detail.nearbySights')}
+                        ariaLabel={t('korea.festival.detail.nearbySightsAria')}
+                        variant="sights"
+                        blocks={nearbySights.blocks}
+                        headingAttr
+                        onSpotActivate={(row) => {
+                          const merged = mergeNearbyRowWithLocalScenicDetail(row);
+                          if (merged?.placeSlug && !merged?.localScenicListId) {
+                            setSelectedScenic(merged);
+                          } else {
+                            setSelectedNearby(merged);
+                          }
+                        }}
+                        renderSpotMeta={(spot) => {
+                          const merged = mergeNearbyItemImages([spot], nearbyThumbById)[0];
+                          const extraThumb = nearbyThumbById.get(
+                            String(merged.contentId || '').trim(),
+                          );
+                          const rankBlurb = String(merged?.rankBlurb || '').trim();
+                          const place = nearbyPlaceLabel(merged);
+                          const title = nearbySightTitle(merged);
+                          const clickable =
+                            Boolean(merged?.placeSlug) ||
+                            isNearbyAttractionRowClickable(merged);
+                          return {
+                            title,
+                            subtitleLines: rankBlurb
+                              ? [rankBlurb]
+                              : place
+                                ? [place]
+                                : [],
+                            thumbUrls: nearbyCardThumbUrls(merged, extraThumb),
+                            imagePending: nearbySightImagePending(merged, nearbyImageMiss),
+                            clickable,
+                          };
+                        }}
+                      />
+                    )}
+                  {!nearbyPending &&
+                    nearbySights.items.length > 0 &&
+                    !festivalNearbyCardsEnabled && (
                     <ul
                       className="space-y-2"
                       aria-label={t('korea.festival.detail.nearbySightsAria')}
@@ -2995,15 +3052,38 @@ export default function FestivalDetailSheet({
 
               {shouldShowFestivalNearbyListSection(nearbyFoodStatus, nearbyFood.length) && (
                 <div className="space-y-2 pt-1" data-festival-section="nearFood">
-                  <p className="text-[11px] font-bold tracking-widest text-stone-400 uppercase">
-                    {t('korea.festival.detail.nearFood')}
-                  </p>
+                  {!(festivalNearbyCardsEnabled && nearbyFood.length > 0) ? (
+                    <p className="text-[11px] font-bold tracking-widest text-stone-400 uppercase">
+                      {t('korea.festival.detail.nearFood')}
+                    </p>
+                  ) : null}
                   {nearbyFoodStatus === 'error' && nearbyFood.length === 0 && (
                     <p className="text-xs text-stone-500">
                       {t('korea.festival.detail.nearFoodError')}
                     </p>
                   )}
-                  {nearbyFood.length > 0 && (
+                  {nearbyFood.length > 0 && festivalNearbyCardsEnabled && (
+                    <FestivalNearbyCardsSection
+                      sectionId="nearFood"
+                      title={t('korea.festival.detail.nearFood')}
+                      ariaLabel={t('korea.festival.detail.nearFoodAria')}
+                      variant="food"
+                      items={nearbyFood}
+                      onSpotActivate={(spot) => setSelectedNearby(spot)}
+                      renderSpotMeta={(spot) => {
+                        const thumb = toHttps(spot.firstImage);
+                        const place = nearbyPlaceLabel(spot);
+                        return {
+                          title: String(spot.name || ''),
+                          subtitleLines: place ? [place] : [],
+                          thumbUrls: thumb ? [thumb] : [],
+                          imagePending: false,
+                          clickable: true,
+                        };
+                      }}
+                    />
+                  )}
+                  {nearbyFood.length > 0 && !festivalNearbyCardsEnabled && (
                     <ul
                       className="space-y-2"
                       aria-label={t('korea.festival.detail.nearFoodAria')}
