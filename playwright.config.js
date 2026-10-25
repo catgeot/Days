@@ -32,6 +32,7 @@ export default defineConfig({
         /place-local-info\.spec\.js/,
         /place-travelogue-card\.spec\.js/,
         /place-travelogue-card-qa-screenshots\.spec\.js/,
+        /place-visit-story-review-focus\.spec\.js/,
         /korea-festival-date-chip\.spec\.js/,
         /place-lightbox-history\.spec\.js/,
       ],
@@ -71,6 +72,17 @@ export default defineConfig({
     {
       name: 'webkit-place-travelogue-qa',
       testMatch: /place-travelogue-card-qa-screenshots\.spec\.js/,
+      use: {
+        ...devices['iPhone 13'],
+        locale: 'ko-KR',
+        viewport: { width: 390, height: 844 },
+        deviceScaleFactor: 1,
+        ignoreHTTPSErrors: true,
+      },
+    },
+    {
+      name: 'webkit-place-visit-story-review-focus',
+      testMatch: /place-visit-story-review-focus\.spec\.js/,
       use: {
         ...devices['iPhone 13'],
         locale: 'ko-KR',

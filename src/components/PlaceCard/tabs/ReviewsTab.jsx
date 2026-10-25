@@ -2,7 +2,7 @@ import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import { EditorialReviewText } from './EditorialReviewText.jsx';
 import { ReviewLinkChips } from './ReviewLinkChips.jsx';
 import { createPortal } from 'react-dom';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation, Trans } from 'react-i18next';
 import { PenSquare, Star, MessageSquare, Image as ImageIcon, MoreVertical, Trash2, Edit, X, ChevronLeft, ChevronRight, Heart, Eye, BookOpen } from 'lucide-react';
 import { usePlaceReviews } from '../../../hooks/usePlaceReviews';
@@ -34,6 +34,11 @@ import {
   shouldShowReviewExpandToggle,
 } from '../../../utils/placeReviewContentBlocks';
 import { reviewPlainTextForAccessibility } from '../../../utils/reviewInlineMarkdown.js';
+import {
+  parsePlaceReviewFocusId,
+  placeReviewDomId,
+  waitForPlaceReviewThenFocus,
+} from '../../../utils/placeReviewFocus.js';
 
 const RelatedBlogCardThumbnail = ({ src }) => {
   const [failed, setFailed] = useState(false);
@@ -320,9 +325,12 @@ const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onToggleLike
     );
   };
 
+  const reviewAnchorId = placeReviewDomId(review.id);
+
   return (
     <div
-      className="bg-white border border-gray-100 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow"
+      id={reviewAnchorId || undefined}
+      className="bg-white border border-gray-100 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow scroll-mt-4"
       data-review-id={review.id}
     >
       {/* 작성자 및 별점 정보 */}
@@ -512,8 +520,10 @@ const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onToggleLike
 const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const focusReviewId = parsePlaceReviewFocusId(searchParams);
   const scrollContainerRef = useRef(null);
-  usePlaceMediaScrollToTop('REVIEWS', scrollContainerRef, true);
+  usePlaceMediaScrollToTop('REVIEWS', scrollContainerRef, !focusReviewId);
   const [user, setUser] = useState(null);
 
   useEffect(() => {
@@ -540,8 +550,9 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null }) => {
       : (location.slug || idStr);
 
   useLayoutEffect(() => {
+    if (focusReviewId) return;
     resetPlaceMediaScrollInstant(scrollContainerRef.current);
-  }, [placeSlug]);
+  }, [placeSlug, focusReviewId]);
 
   const {
     reviews,
@@ -554,6 +565,20 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null }) => {
     incrementView,
     refetch
   } = usePlaceReviews(placeSlug, user);
+
+  useEffect(() => {
+    if (!focusReviewId) return undefined;
+    if (isLoading) return undefined;
+    let cancelled = false;
+    const run = async () => {
+      await waitForPlaceReviewThenFocus(focusReviewId, scrollContainerRef.current);
+      if (cancelled) return;
+    };
+    queueMicrotask(run);
+    return () => {
+      cancelled = true;
+    };
+  }, [focusReviewId, isLoading, reviews, placeSlug]);
 
   const { blogs, isLoading: blogsLoading } = useRelatedBlogs(location.name, placeSlug);
 
@@ -678,10 +703,16 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null }) => {
       <div className={mobilePlaceHeaderSpacerClass} aria-hidden="true" />
       <div
         ref={scrollContainerRef}
+        data-place-reviews-scroll-root=""
         className={`flex-1 min-h-0 overflow-y-auto overflow-x-hidden custom-scrollbar ${placeScrollSurfaceClass} ${mobilePlaceReviewsFooterScrollPadding} md:pb-4 md:pt-0`}
       >
         {mobileSecondaryNav && (
-          <div className={`md:hidden px-2 pb-2 shrink-0 ${mobileLandscapeChromeHidden}`}>{mobileSecondaryNav}</div>
+          <div
+            data-place-reviews-scroll-chrome=""
+            className={`md:hidden px-2 pb-2 shrink-0 ${mobileLandscapeChromeHidden}`}
+          >
+            {mobileSecondaryNav}
+          </div>
         )}
 
         {/* 모바일 전용 압축 헤더 — sticky 제거, 스크롤과 함께 이동 */}
