@@ -26,17 +26,18 @@ const cairoSafety = CAIRO_CITY_FACTS.slots.find((slot) => slot.id === 'safety');
 
 test('event freshness bands use KST calendar days (Paris safety)', () => {
   assert.equal(parisSafety.kind, 'event');
-  assert.equal(parisSafety.checkedOn, '2026-10-22');
+  assert.equal(parisSafety.checkedOn, '2026-10-26');
+  assert.equal(parisSafety.endsAt, '2026-11-05');
 
-  assert.equal(freshnessTier(parisSafety, '2026-10-22'), 'fresh');
-  assert.equal(freshnessTier(parisSafety, '2026-10-29'), 'fresh');
-  assert.equal(freshnessTier(parisSafety, '2026-10-30'), 'warn');
-  assert.equal(freshnessTier(parisSafety, '2026-11-12'), 'warn');
-  assert.equal(freshnessTier(parisSafety, '2026-11-13'), 'hidden');
+  assert.equal(freshnessTier(parisSafety, '2026-10-26'), 'fresh');
+  assert.equal(freshnessTier(parisSafety, '2026-11-02'), 'fresh');
+  assert.equal(freshnessTier(parisSafety, '2026-11-03'), 'warn');
+  assert.equal(freshnessTier(parisSafety, '2026-11-05'), 'warn');
+  assert.equal(freshnessTier(parisSafety, '2026-11-06'), 'hidden');
 
-  const warn = freshnessOf(parisSafety, '2026-11-01');
+  const warn = freshnessOf(parisSafety, '2026-11-03');
   assert.equal(warn.tier, 'warn');
-  assert.equal(warn.ageDays, 10);
+  assert.equal(warn.ageDays, 8);
 });
 
 test('standing freshness bands (Cairo safety row)', () => {
@@ -45,12 +46,12 @@ test('standing freshness bands (Cairo safety row)', () => {
   assert.equal(cairoMoney.checkedAt, '');
   assert.equal(freshnessTier(cairoMoney, '2027-06-01'), 'none');
   assert.equal(cairoSafety.kind, 'standing');
-  assert.equal(cairoSafety.checkedOn, '2026-10-11');
+  assert.equal(cairoSafety.checkedOn, '2026-10-26');
 
-  assert.equal(freshnessTier(cairoSafety, '2026-11-10'), 'fresh');
-  assert.equal(freshnessTier(cairoSafety, '2026-11-11'), 'warn');
-  assert.equal(freshnessTier(cairoSafety, '2027-01-09'), 'warn');
-  assert.equal(freshnessTier(cairoSafety, '2027-01-10'), 'hidden');
+  assert.equal(freshnessTier(cairoSafety, '2026-11-25'), 'fresh');
+  assert.equal(freshnessTier(cairoSafety, '2026-11-26'), 'warn');
+  assert.equal(freshnessTier(cairoSafety, '2027-01-24'), 'warn');
+  assert.equal(freshnessTier(cairoSafety, '2027-01-25'), 'hidden');
 });
 
 test('endsAt forces hidden even when checkedOn is fresh', () => {
