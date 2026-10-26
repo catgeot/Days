@@ -1142,6 +1142,10 @@ export default function FestivalDetailSheet({
     const sheet = sheetScrollRef.current;
     if (!sheet) return;
     const anchor = captureNearbyLoadMoreScrollAnchor(sheet);
+    const list = sheet.querySelector('[data-nearby-list]');
+    if (list instanceof HTMLElement) {
+      list.style.minHeight = `${list.offsetHeight}px`;
+    }
     nearbyLoadMoreScrollRestoreRef.current = {
       plannedScrollTop: sheet.scrollTop,
       scrollHeightAtPin: sheet.scrollHeight,
@@ -1193,12 +1197,18 @@ export default function FestivalDetailSheet({
     const sheet = sheetScrollRef.current;
     if (!sheet) return undefined;
     nearbyLoadMoreScrollPinCancelRef.current?.();
-    sheet.scrollTop = pin.plannedScrollTop;
+    sheet.scrollTop = resolveNearbyLoadMorePinTargetScrollTop(sheet, pin.plannedScrollTop, {
+      anchorKey: pin.anchorKey,
+      anchorDelta: pin.anchorDelta,
+      scrollHeightAtPin: pin.scrollHeightAtPin,
+    });
     const cancel = startNearbyLoadMoreScrollPin(sheet, pin.plannedScrollTop, {
       scrollHeightAtPin: pin.scrollHeightAtPin,
       anchorKey: pin.anchorKey,
       anchorDelta: pin.anchorDelta,
       onEnd: (ok) => {
+        const list = sheet.querySelector('[data-nearby-list]');
+        if (list instanceof HTMLElement) list.style.minHeight = '';
         if (ok) nearbyLoadMoreScrollRestoreRef.current = null;
       },
     });

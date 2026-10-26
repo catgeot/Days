@@ -132,6 +132,7 @@ test('load-more pin does not fight user scroll via scroll listener', () => {
     'utf8',
   );
   assert.match(pinSrc, /attachNearbyLoadMoreScrollPinUserRelease/);
+  assert.match(pinSrc, /graceMs/);
   assert.doesNotMatch(pinSrc, /addEventListener\('scroll'/);
 });
 

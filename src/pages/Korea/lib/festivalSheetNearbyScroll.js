@@ -53,11 +53,24 @@ export function isNearbyLoadMoreScrollPinInterruptKey(key) {
 /**
  * @param {HTMLElement} sheet
  * @param {() => void} release
+ * @param {{ graceMs?: number, ignoreFromSelector?: string, startedAt?: number }} [opts]
  * @returns {() => void} detach
  */
-export function attachNearbyLoadMoreScrollPinUserRelease(sheet, release) {
+export function attachNearbyLoadMoreScrollPinUserRelease(sheet, release, opts = {}) {
+  const graceMs = opts.graceMs ?? 220;
+  const ignoreFromSelector = opts.ignoreFromSelector ?? '[data-festival-near-scenic-more]';
+  const startedAt = opts.startedAt ?? performance.now();
   const passive = { passive: true, capture: true };
-  const onUserIntent = () => release();
+  const shouldIgnoreEvent = (event) => {
+    if (performance.now() - startedAt < graceMs) return true;
+    const target = event?.target;
+    if (!(target instanceof Element)) return false;
+    return Boolean(target.closest(ignoreFromSelector));
+  };
+  const onUserIntent = (event) => {
+    if (shouldIgnoreEvent(event)) return;
+    release();
+  };
   const onKey = (event) => {
     if (isNearbyLoadMoreScrollPinInterruptKey(event.key)) release();
   };
@@ -246,8 +259,11 @@ export function startNearbyLoadMoreScrollPin(sheet, plannedScrollTop, opts = {})
   };
 
   const releaseFromUser = () => finish(false);
+  const pinStartedAt = performance.now();
 
-  detachUserRelease = attachNearbyLoadMoreScrollPinUserRelease(sheet, releaseFromUser);
+  detachUserRelease = attachNearbyLoadMoreScrollPinUserRelease(sheet, releaseFromUser, {
+    startedAt: pinStartedAt,
+  });
 
   const tick = () => {
     if (cancelled) return;
