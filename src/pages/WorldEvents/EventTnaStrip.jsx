@@ -12,6 +12,7 @@ import {
 } from '../../utils/fetchMrtTnas';
 import { getKlookSearchUrl, getMrtDomesticRentalUrl, getTripcomTrainUrl } from '../../utils/affiliate';
 import StripListLargeToggle from './StripListLargeToggle';
+import { EVENT_STRIP_SCROLL_ROW_CLASS, eventStripCardShellClass } from './eventStripCardLayout';
 import { resolveListImageUrl } from '../../utils/listImageUrl';
 import PartnerBookingHandoff from '../../shared/affiliate/PartnerBookingHandoff.jsx';
 
@@ -79,9 +80,7 @@ function TnaStripCard({ item, locale, t, large = false }) {
   const price = formatTnaPrice(item, locale, t);
   if (!href) return null;
 
-  const shellClass = large
-    ? 'flex w-[220px] shrink-0 flex-col overflow-hidden rounded-xl border border-stone-200 bg-white shadow-sm sm:w-[252px]'
-    : 'flex w-[148px] shrink-0 flex-col overflow-hidden rounded-xl border border-stone-200 bg-white shadow-sm sm:w-[168px]';
+  const shellClass = eventStripCardShellClass({ large });
 
   return (
     <div className={shellClass}>
@@ -328,7 +327,7 @@ export default function EventTnaStrip({
       ) : null}
 
       {status === 'ready' && items?.length ? (
-        <div className="-mx-1 mt-3 flex gap-2 overflow-x-auto px-1 pb-1">
+        <div className={`mt-3 ${EVENT_STRIP_SCROLL_ROW_CLASS}`}>
           {items.map((item) => (
             <TnaStripCard
               key={item.gid || item.productUrl || item.itemName}
