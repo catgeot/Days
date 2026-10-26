@@ -126,6 +126,12 @@ import {
   contentIdsFromPromoCards,
 } from './socialPromoFestivals';
 import {
+  dismissSocialPromoRow,
+  isSocialPromoRowDismissed,
+  recordInstagramVisitIfLanding,
+  shouldShowInstagramSocialPromoStrip,
+} from './socialPromoInstagramSession.js';
+import {
   buildInitialManualPromoMap,
   getManualFestivalEntry,
   isManualFestivalContentId,
@@ -741,6 +747,26 @@ function FestivalThumbFallback({ large = false }) {
   );
 }
 
+function FestivalListLoadingSkeletons({ useGrid }) {
+  const { t } = useTranslation();
+  return (
+    <div
+      className={useGrid ? FESTIVAL_HUB_GRID_CLASS : 'space-y-2'}
+      data-festival-list-loading=""
+      aria-busy="true"
+      aria-label={t('korea.festival.loadingSchedule')}
+    >
+      {Array.from({ length: useGrid ? 6 : 5 }, (_, i) =>
+        useGrid ? (
+          <FestivalGridSkeleton key={`sk-${i}`} />
+        ) : (
+          <FestivalRowSkeleton key={`sk-${i}`} />
+        ),
+      )}
+    </div>
+  );
+}
+
 function FestivalRowSkeleton({ large = false }) {
   return (
     <div
@@ -1093,6 +1119,17 @@ export default function KoreaFestivalHub() {
     () => buildInitialManualPromoMap(),
   );
   socialPromoByIdRef.current = socialPromoById;
+  const [socialPromoDismissed, setSocialPromoDismissed] = useState(
+    () =>
+      typeof sessionStorage !== 'undefined'
+      && isSocialPromoRowDismissed(sessionStorage),
+  );
+  const handleSocialPromoDismiss = useCallback(() => {
+    if (typeof sessionStorage !== 'undefined') {
+      dismissSocialPromoRow(sessionStorage);
+    }
+    setSocialPromoDismissed(true);
+  }, []);
   const [locHintDismissed, setLocHintDismissed] = useState(() =>
     isHintDismissed(
       typeof localStorage !== 'undefined' ? localStorage : null,
@@ -1722,6 +1759,24 @@ export default function KoreaFestivalHub() {
   const searchActive = searchFilter.length > 0;
   const nearActive = Boolean(nearOrigin && nearLabel);
 
+  const instagramStripEligible = useMemo(() => {
+    const storage =
+      typeof sessionStorage !== 'undefined' ? sessionStorage : null;
+    if (storage) {
+      recordInstagramVisitIfLanding(storage, {
+        searchParams,
+        referrer: typeof document !== 'undefined' ? document.referrer : '',
+      });
+    }
+    return shouldShowInstagramSocialPromoStrip({
+      storage,
+      searchParams,
+      referrer: typeof document !== 'undefined' ? document.referrer : '',
+      dismissed: socialPromoDismissed,
+      regionDefault: isNationwideRegionFilter(areaCode, cityName),
+    });
+  }, [searchParams, socialPromoDismissed, areaCode, cityName]);
+
   const socialPromoPresentation = useMemo(
     () =>
       resolveSocialPromoPresentation(socialPromoRow, {
@@ -1731,8 +1786,18 @@ export default function KoreaFestivalHub() {
         timeTab,
         nearActive,
         nearOrigin,
+        instagramStripEligible,
       }),
-    [socialPromoRow, searchActive, areaCode, cityName, timeTab, nearActive, nearOrigin],
+    [
+      socialPromoRow,
+      searchActive,
+      areaCode,
+      cityName,
+      timeTab,
+      nearActive,
+      nearOrigin,
+      instagramStripEligible,
+    ],
   );
 
   const showSocialPromoRow = socialPromoPresentation.show;
@@ -2357,6 +2422,7 @@ export default function KoreaFestivalHub() {
   });
 
   const panelListMetaText = useMemo(() => {
+    if (loading) return null;
     if (nearBaseItems && nearLabel) {
       return t('korea.festival.nearPanelMeta', {
         km: NEAR_KM,
@@ -2365,7 +2431,7 @@ export default function KoreaFestivalHub() {
     }
     if (nearActive && nearMsg) return nearMsg;
     return null;
-  }, [nearBaseItems, nearLabel, nearActive, nearMsg, panelItemsForList.length, t]);
+  }, [loading, nearBaseItems, nearLabel, nearActive, nearMsg, panelItemsForList.length, t]);
 
   const panelListMetaSegments = useMemo(() => {
     if (panelListMetaText != null) return null;
@@ -3494,26 +3560,20 @@ export default function KoreaFestivalHub() {
                     </div>
                   ))
                 )
+              ) : loading ? (
+                <>
+                  {showSocialPromoRow ? (
+                    <SocialPromoFestivalRow
+                      cards={socialPromoPresentation.cards}
+                      loading={socialPromoPresentation.loading}
+                      onSelect={openItem}
+                      onDismiss={handleSocialPromoDismiss}
+                    />
+                  ) : null}
+                  <FestivalListLoadingSkeletons useGrid={useFestivalGrid} />
+                </>
               ) : panelItemsForList.length === 0 && !showSessionPinnedRow ? (
-                loading ? (
-                  <div
-                    className={
-                      useFestivalGrid ? FESTIVAL_HUB_GRID_CLASS : 'space-y-2'
-                    }
-                    aria-busy="true"
-                    aria-label={t('korea.festival.loadingSchedule')}
-                  >
-                    {Array.from(
-                      { length: useFestivalGrid ? 6 : 5 },
-                      (_, i) =>
-                        useFestivalGrid ? (
-                          <FestivalGridSkeleton key={`sk-${i}`} />
-                        ) : (
-                          <FestivalRowSkeleton key={`sk-${i}`} />
-                        ),
-                    )}
-                  </div>
-                ) : dateChipEnabled && !searchActive ? (
+                dateChipEnabled && !searchActive ? (
                   <div className="px-1 py-4" data-festival-period-empty="">
                     <p className="text-sm text-stone-500">
                       {t('korea.festival.emptyPeriod')}
@@ -3571,6 +3631,7 @@ export default function KoreaFestivalHub() {
                       cards={socialPromoPresentation.cards}
                       loading={socialPromoPresentation.loading}
                       onSelect={openItem}
+                      onDismiss={handleSocialPromoDismiss}
                     />
                   ) : null}
                   {useFestivalGrid ? (
