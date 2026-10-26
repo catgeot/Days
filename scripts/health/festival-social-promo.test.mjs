@@ -489,6 +489,18 @@ test('promo strip is this month only; 내 주변 is one nearest line', () => {
   assert.equal(nearHampyeong.show, false);
   assert.equal(nearHampyeong.nearLine.item.contentId, '638576');
 
+  const nearNoInstagram = resolveSocialPromoPresentation(ready, {
+    searchActive: false,
+    timeTab: 'thisMonth',
+    nearActive: true,
+    areaCode: '32',
+    cityName: 'all',
+    nearOrigin: { lat: 35.059, lng: 126.522 },
+    instagramStripEligible: false,
+  });
+  assert.equal(nearNoInstagram.show, false);
+  assert.equal(nearNoInstagram.nearLine, null);
+
   const nearMasan = pickSocialPromoNearRecommendation(ready.cards, {
     origin: { lat: 35.186, lng: 128.564 },
   });

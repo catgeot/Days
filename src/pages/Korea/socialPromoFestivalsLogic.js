@@ -347,6 +347,9 @@ export function resolveSocialPromoPresentation(row, ctx = {}) {
     return hiddenPromo();
   }
   if (!row || row.status === 'empty') return hiddenPromo();
+  if (!instagramStripEligible) {
+    return hiddenPromo();
+  }
   if (nearActive) {
     if (row.status !== 'ready') return hiddenPromo();
     return {
@@ -359,7 +362,7 @@ export function resolveSocialPromoPresentation(row, ctx = {}) {
       }),
     };
   }
-  if (!instagramStripEligible || !regionDefault) {
+  if (!regionDefault) {
     return hiddenPromo();
   }
   if (row.status === 'loading') {
