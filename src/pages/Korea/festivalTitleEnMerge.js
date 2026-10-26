@@ -4,6 +4,31 @@
  */
 
 /**
+ * Ko 목록 제목·Eng 괄호 힌트 매칭용 — 선행 연도(2026 )·공백 정규화.
+ * @param {string | null | undefined} title
+ */
+export function normalizeFestivalKoTitleForEnMatch(title) {
+  return String(title || '')
+    .trim()
+    .replace(/\s+/g, ' ')
+    .replace(/^\d{4}\s+/, '')
+    .trim();
+}
+
+/**
+ * @param {string} title
+ * @returns {string[]}
+ */
+function festivalKoTitleLookupKeys(title) {
+  const collapsed = String(title || '').trim().replace(/\s+/g, ' ');
+  if (!collapsed) return [];
+  const keys = [collapsed];
+  const stripped = normalizeFestivalKoTitleForEnMatch(collapsed);
+  if (stripped && stripped !== collapsed) keys.push(stripped);
+  return keys;
+}
+
+/**
  * @param {string | null | undefined} title
  * @returns {{ en: string, koHint: string }}
  */
@@ -37,9 +62,15 @@ export function buildFestivalEnTitleIndex(enItems) {
     const koHint = String(parsed.koHint || '').trim();
     if (!koHint) continue;
 
-    byKoTitle.set(koHint, en);
+    for (const key of festivalKoTitleLookupKeys(koHint)) {
+      byKoTitle.set(key, en);
+    }
     const date = String(item?.eventStartDate || '').trim();
-    if (date) byDateKoTitle.set(`${date}|${koHint}`, en);
+    if (date) {
+      for (const key of festivalKoTitleLookupKeys(koHint)) {
+        byDateKoTitle.set(`${date}|${key}`, en);
+      }
+    }
   }
 
   return { byContentId, byKoTitle, byDateKoTitle };
@@ -61,13 +92,19 @@ export function resolveFestivalTitleEn(koItem, index) {
   const koTitle = String(koItem?.title || '').trim();
   if (!koTitle) return '';
 
-  if (index.byKoTitle.has(koTitle)) {
-    return index.byKoTitle.get(koTitle) || '';
+  for (const key of festivalKoTitleLookupKeys(koTitle)) {
+    if (index.byKoTitle.has(key)) {
+      return index.byKoTitle.get(key) || '';
+    }
   }
 
   const date = String(koItem?.eventStartDate || '').trim();
-  if (date && index.byDateKoTitle.has(`${date}|${koTitle}`)) {
-    return index.byDateKoTitle.get(`${date}|${koTitle}`) || '';
+  if (date) {
+    for (const key of festivalKoTitleLookupKeys(koTitle)) {
+      if (index.byDateKoTitle.has(`${date}|${key}`)) {
+        return index.byDateKoTitle.get(`${date}|${key}`) || '';
+      }
+    }
   }
 
   return '';

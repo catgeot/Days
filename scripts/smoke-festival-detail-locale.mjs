@@ -171,6 +171,21 @@ assert(
   'mergeFestivalTitleEn matches ko title via parenthetical hint',
 );
 
+const yearPrefixed = mergeFestivalTitleEn(
+  [{ contentId: '3370452', title: '2026 수성국제비엔날레', eventStartDate: '20260401' }],
+  [
+    {
+      contentId: 'en-x',
+      title: 'Suseong International Biennale (수성국제비엔날레)',
+      eventStartDate: '20260401',
+    },
+  ],
+);
+assert(
+  yearPrefixed[0]?.titleEn === 'Suseong International Biennale',
+  'mergeFestivalTitleEn strips leading year from ko title when matching hint',
+);
+
 if (failed) {
   console.error(`\n${failed} check(s) failed`);
   process.exit(1);
