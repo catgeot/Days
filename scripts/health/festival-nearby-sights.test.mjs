@@ -47,6 +47,7 @@ import {
   writeTourApiProxyCache,
 } from '../../src/utils/tourApiProxyCache.js';
 import { isConfirmedEmptyDetailImage } from '../../src/utils/fetchTourApiAttractionDetail.js';
+import { resolveFestivalNearbyLoadMoreScrollTop } from '../../src/pages/Korea/lib/festivalSheetNearbyScroll.js';
 
 const origin = { lat: 35.06, lng: 126.52 };
 
@@ -80,6 +81,15 @@ test('mergeNearbyTourAttractionSpots keeps order and drops duplicates', () => {
     merged.map((row) => row.contentId),
     ['1', '2', '3'],
   );
+});
+
+test('resolveFestivalNearbyLoadMoreScrollTop keeps planned scroll under StrictMode double layout', () => {
+  const planned = 2000;
+  let top = resolveFestivalNearbyLoadMoreScrollTop(planned, 2606);
+  assert.equal(top, 2000);
+  top = resolveFestivalNearbyLoadMoreScrollTop(planned, top);
+  assert.equal(top, 2000);
+  assert.equal(resolveFestivalNearbyLoadMoreScrollTop(null, 120), 120);
 });
 
 test('nextNearbySightsBaseline survives strict-mode double collapsed commit', () => {

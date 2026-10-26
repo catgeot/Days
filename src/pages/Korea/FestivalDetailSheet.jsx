@@ -70,6 +70,7 @@ import {
   resolveFestivalNearbySightsPresentation,
   stripTrailingHubName,
 } from './lib/festivalNearbySights.js';
+import { resolveFestivalNearbyLoadMoreScrollTop } from './lib/festivalSheetNearbyScroll.js';
 import {
   fetchKoreaTourAttractionFirstImagesByIds,
   peekKoreaTourAttractionFirstImagesByIds,
@@ -836,6 +837,7 @@ export default function FestivalDetailSheet({
   const [courseDetail, setCourseDetail] = useState(null);
   const [courseDetailLoading, setCourseDetailLoading] = useState(false);
   const sheetScrollRef = useRef(null);
+  const nearbyLoadMoreScrollRestoreRef = useRef(null);
   const heroSwipeStartRef = useRef(null);
   const lightboxSwipeStartRef = useRef(null);
   const lightboxRootRef = useRef(null);
@@ -1127,10 +1129,26 @@ export default function FestivalDetailSheet({
     if (nearbySightsExpanded) return;
     setNearbySightsExpanded(true);
   }, [nearbySightsExpanded]);
+  const queueNearbyLoadMoreScrollRestore = useCallback(() => {
+    const sheet = sheetScrollRef.current;
+    if (!sheet) return;
+    nearbyLoadMoreScrollRestoreRef.current = sheet.scrollTop;
+  }, []);
+
   const loadMoreNearbySights = useCallback(() => {
+    queueNearbyLoadMoreScrollRestore();
     setNearbySightsVisibleCount((count) => count + NEARBY_SIGHTS_VISIBLE_STEP);
     if (!nearbySightsExpanded) setNearbySightsExpanded(true);
-  }, [nearbySightsExpanded]);
+  }, [nearbySightsExpanded, queueNearbyLoadMoreScrollRestore]);
+
+  useLayoutEffect(() => {
+    const planned = nearbyLoadMoreScrollRestoreRef.current;
+    if (planned == null) return;
+    const sheet = sheetScrollRef.current;
+    if (!sheet) return;
+    sheet.scrollTop = resolveFestivalNearbyLoadMoreScrollTop(planned, sheet.scrollTop);
+    nearbyLoadMoreScrollRestoreRef.current = null;
+  }, [visibleNearbySightRows.length, nearbyPending]);
 
   const coursesPageHref = useMemo(() => {
     if (!festivalAreaCode) return COURSES_PATH;
