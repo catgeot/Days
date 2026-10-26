@@ -493,9 +493,9 @@ test('nearby sights render without waiting for festival detail', () => {
   assert.match(sheet, /fetchNearbyTourAttractions\(/);
   assert.match(sheet, /readNearbyAttractionCache\(/);
   const cachedBlock = sheet.slice(sheet.indexOf('const cachedSpots = readNearbyAttractionCache'));
-  assert.ok(cachedBlock.indexOf('if (!cachedSpots)') >= 0);
+  assert.match(cachedBlock, /if \(cachedSpots\)/);
   assert.ok(
-    cachedBlock.indexOf('if (!cachedSpots)') < cachedBlock.indexOf('fetchNearbyTourAttractions({'),
+    cachedBlock.indexOf('if (cachedSpots)') < cachedBlock.indexOf('fetchNearbyTourAttractions({'),
   );
   const sightsEffectEnd = sheet.indexOf('nearbySectionsWaitForSights');
   const sightsEffect = sheet.slice(
@@ -584,6 +584,9 @@ test('settled no-photo nearby ids use landmark icon not grey pending', () => {
   );
   assert.match(sheet, /rememberKoreaTourAttractionFirstImageMiss/);
   assert.match(sheet, /nearbySightIdsWithoutDisplayableThumb/);
+  assert.match(sheet, /NEARBY_SIGHTS_RADIUS_EXPANDED_KM = 50/);
+  assert.match(sheet, /expandNearbySights/);
+  assert.doesNotMatch(sheet, /onClick=\{openScenicPage\}/);
   const rowThumb = sheet.slice(
     sheet.indexOf('function NearbyRowThumb'),
     sheet.indexOf('function nearbySightTitle'),

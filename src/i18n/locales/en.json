@@ -1582,6 +1582,8 @@
       "socialPromoNearLead": "GATEO pick",
       "sessionPinnedSectionTitle": "Recently viewed",
       "listAria": "Festival list",
+      "gridListView": "List view",
+      "gridCardView": "Card view",
       "myListAria": "My festivals",
       "nearLoad": "Load festivals near me",
       "nearOff": "Turn off near me · restore previous filters",
