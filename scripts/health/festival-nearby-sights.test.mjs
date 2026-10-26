@@ -493,9 +493,9 @@ test('nearby sights render without waiting for festival detail', () => {
   assert.match(sheet, /fetchNearbyTourAttractions\(/);
   assert.match(sheet, /readNearbyAttractionCache\(/);
   const cachedBlock = sheet.slice(sheet.indexOf('const cachedSpots = readNearbyAttractionCache'));
-  assert.ok(cachedBlock.indexOf('if (!cachedSpots)') >= 0);
+  assert.match(cachedBlock, /if \(cachedSpots\)/);
   assert.ok(
-    cachedBlock.indexOf('if (!cachedSpots)') < cachedBlock.indexOf('fetchNearbyTourAttractions({'),
+    cachedBlock.indexOf('if (cachedSpots)') < cachedBlock.indexOf('fetchNearbyTourAttractions({'),
   );
   const sightsEffectEnd = sheet.indexOf('nearbySectionsWaitForSights');
   const sightsEffect = sheet.slice(
