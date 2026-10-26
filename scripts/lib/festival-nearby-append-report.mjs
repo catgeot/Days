@@ -49,32 +49,33 @@ export function analyzeNearbyRestAppend(beforeRest, afterRest, visibleCountBefor
     actualAppended.length === step &&
     expectedAppended.every((row, i) => row.id === actualAppended[i]?.id);
 
-  const actualIds = new Set(actualAppended.map((row) => row.id));
-  const maxAppendedDist = Math.max(
-    ...actualAppended.map((row) => row.distanceKm).filter((n) => Number.isFinite(n)),
+  const expectedIds = new Set(expectedAppended.map((row) => row.id));
+  const maxExpectedDist = Math.max(
+    ...expectedAppended.map((row) => row.distanceKm).filter((n) => Number.isFinite(n)),
     -Infinity,
   );
 
   /** @type {Array<{ id: string, title: string, distanceKm: number | null, reason: string }>} */
   const skippedNearerCandidates = [];
-  for (const row of remainingSorted) {
-    if (actualIds.has(row.id)) continue;
-    if (!Number.isFinite(row.distanceKm)) continue;
-    if (Number.isFinite(maxAppendedDist) && row.distanceKm > maxAppendedDist + 0.05) break;
-    if (shownBefore.has(row.id)) {
+  if (!appendedNextNearestOk) {
+    for (const row of remainingSorted) {
+      if (expectedIds.has(row.id)) continue;
+      if (!Number.isFinite(row.distanceKm)) continue;
+      if (Number.isFinite(maxExpectedDist) && row.distanceKm > maxExpectedDist + 0.05) break;
+      if (shownBefore.has(row.id)) {
+        skippedNearerCandidates.push({
+          ...row,
+          reason: 'already visible in rest prefix before 더보기',
+        });
+        continue;
+      }
       skippedNearerCandidates.push({
         ...row,
-        reason: 'already visible in rest prefix before 더보기',
+        reason:
+          'closer than an appended row but not in the next-4 slice — rest tail order or expand merge',
       });
-      continue;
+      if (skippedNearerCandidates.length >= 12) break;
     }
-    skippedNearerCandidates.push({
-      ...row,
-      reason: appendedNextNearestOk
-        ? 'not selected (unexpected)'
-        : 'closer than an appended row but not in the next slice — rest tail order or expand merge',
-    });
-    if (skippedNearerCandidates.length >= 12) break;
   }
 
   return {
