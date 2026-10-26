@@ -167,6 +167,12 @@ import {
   searchParamsWithoutFestival,
   searchParamsWithFestival,
 } from './koreaFestivalDetailUrl';
+import { useFestivalSheetExternalReturnGuard } from './useFestivalSheetExternalReturnGuard.js';
+import {
+  clearFestivalSheetExternalReturnMark,
+  clearFestivalSheetPendingDeeplink,
+  markFestivalSheetPendingDeeplink,
+} from './lib/festivalHomepageProtocol.js';
 import {
   localizeCityChips,
   localizeSidoChips,
@@ -741,6 +747,26 @@ function FestivalThumbFallback({ large = false }) {
   );
 }
 
+function FestivalListLoadingSkeletons({ useGrid }) {
+  const { t } = useTranslation();
+  return (
+    <div
+      className={useGrid ? FESTIVAL_HUB_GRID_CLASS : 'space-y-2'}
+      data-festival-list-loading=""
+      aria-busy="true"
+      aria-label={t('korea.festival.loadingSchedule')}
+    >
+      {Array.from({ length: useGrid ? 6 : 5 }, (_, i) =>
+        useGrid ? (
+          <FestivalGridSkeleton key={`sk-${i}`} />
+        ) : (
+          <FestivalRowSkeleton key={`sk-${i}`} />
+        ),
+      )}
+    </div>
+  );
+}
+
 function FestivalRowSkeleton({ large = false }) {
   return (
     <div
@@ -1178,6 +1204,15 @@ export default function KoreaFestivalHub() {
       deepLinkDetailForId,
     ],
   );
+  useFestivalSheetExternalReturnGuard({
+    festivalId,
+    seededFestivalIdRef: festivalDeepLinkSeededForRef,
+  });
+  useEffect(() => {
+    if (!festivalId || festivalDeepLink.sheet !== 'open') return undefined;
+    markFestivalSheetPendingDeeplink(festivalId);
+    return undefined;
+  }, [festivalId, festivalDeepLink.sheet]);
   const selected = festivalDeepLink.selected;
   const promoDeeplinkIdSet = useMemo(
     () => new Set(socialPromoFestivals.map((entry) => String(entry.contentId))),
@@ -1218,6 +1253,7 @@ export default function KoreaFestivalHub() {
 
   const clearFestivalFromUrl = useCallback(() => {
     festivalDetailPushedRef.current = false;
+    clearFestivalSheetPendingDeeplink();
     const next = searchParamsWithoutFestival(searchParams);
     if (next.toString() !== searchParams.toString()) {
       setSearchParams(next, { replace: true });
@@ -1226,6 +1262,8 @@ export default function KoreaFestivalHub() {
 
   const closeFestivalDetail = useCallback(() => {
     resetIosZoomAfterInput();
+    clearFestivalSheetPendingDeeplink();
+    clearFestivalSheetExternalReturnMark();
     const pin = festivalItemForSessionPin(selected);
     if (pin) setSessionPinnedItem(pin);
     if (festivalDetailPushedRef.current) {
@@ -1396,7 +1434,7 @@ export default function KoreaFestivalHub() {
     return undefined;
   }, [festivalId, festivalDeepLink.clearUrl, clearFestivalFromUrl, t]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (loading) return undefined;
     if (!festivalId) return undefined;
 
@@ -1418,31 +1456,21 @@ export default function KoreaFestivalHub() {
       festivalDeepLinkSeededForRef.current !== festivalId
     ) {
       festivalDeepLinkSeededForRef.current = festivalId;
+      markFestivalSheetPendingDeeplink(festivalId);
       const listParams = searchParamsWithoutFestival(searchParams);
       const listQs = listParams.toString();
       const detailParams = searchParamsWithFestival(searchParams, festivalId);
       const detailQs = detailParams.toString();
       const lodgingHash = window.location.hash === '#festival-lodging' ? '#festival-lodging' : '';
-      navigate(
-        { pathname: location.pathname, search: listQs ? `?${listQs}` : '' },
-        { replace: true },
-      );
-      // Replace updates searchParams and re-runs this effect. Clearing the timer
-      // there drops the history push, so only a later id change or unmount cancels it.
-      if (festivalHistoryTimerRef.current != null) {
-        window.clearTimeout(festivalHistoryTimerRef.current);
+      const pathname = location.pathname || '/korea/';
+      const listHref = `${pathname}${listQs ? `?${listQs}` : ''}`;
+      const detailHref = `${pathname}${detailQs ? `?${detailQs}` : ''}${lodgingHash}`;
+      if (typeof window !== 'undefined' && window.history?.replaceState) {
+        const historyState = window.history.state;
+        window.history.replaceState(historyState, '', listHref);
+        window.history.pushState(historyState, '', detailHref);
       }
-      festivalHistoryTimerRef.current = window.setTimeout(() => {
-        festivalHistoryTimerRef.current = null;
-        navigate(
-          {
-            pathname: location.pathname,
-            search: detailQs ? `?${detailQs}` : '',
-            hash: lodgingHash,
-          },
-          { replace: false },
-        );
-      }, 0);
+      festivalDetailPushedRef.current = true;
     }
 
     return undefined;
@@ -2394,6 +2422,7 @@ export default function KoreaFestivalHub() {
   });
 
   const panelListMetaText = useMemo(() => {
+    if (loading) return null;
     if (nearBaseItems && nearLabel) {
       return t('korea.festival.nearPanelMeta', {
         km: NEAR_KM,
@@ -2402,7 +2431,7 @@ export default function KoreaFestivalHub() {
     }
     if (nearActive && nearMsg) return nearMsg;
     return null;
-  }, [nearBaseItems, nearLabel, nearActive, nearMsg, panelItemsForList.length, t]);
+  }, [loading, nearBaseItems, nearLabel, nearActive, nearMsg, panelItemsForList.length, t]);
 
   const panelListMetaSegments = useMemo(() => {
     if (panelListMetaText != null) return null;
@@ -3531,26 +3560,20 @@ export default function KoreaFestivalHub() {
                     </div>
                   ))
                 )
+              ) : loading ? (
+                <>
+                  {showSocialPromoRow ? (
+                    <SocialPromoFestivalRow
+                      cards={socialPromoPresentation.cards}
+                      loading={socialPromoPresentation.loading}
+                      onSelect={openItem}
+                      onDismiss={handleSocialPromoDismiss}
+                    />
+                  ) : null}
+                  <FestivalListLoadingSkeletons useGrid={useFestivalGrid} />
+                </>
               ) : panelItemsForList.length === 0 && !showSessionPinnedRow ? (
-                loading ? (
-                  <div
-                    className={
-                      useFestivalGrid ? FESTIVAL_HUB_GRID_CLASS : 'space-y-2'
-                    }
-                    aria-busy="true"
-                    aria-label={t('korea.festival.loadingSchedule')}
-                  >
-                    {Array.from(
-                      { length: useFestivalGrid ? 6 : 5 },
-                      (_, i) =>
-                        useFestivalGrid ? (
-                          <FestivalGridSkeleton key={`sk-${i}`} />
-                        ) : (
-                          <FestivalRowSkeleton key={`sk-${i}`} />
-                        ),
-                    )}
-                  </div>
-                ) : dateChipEnabled && !searchActive ? (
+                dateChipEnabled && !searchActive ? (
                   <div className="px-1 py-4" data-festival-period-empty="">
                     <p className="text-sm text-stone-500">
                       {t('korea.festival.emptyPeriod')}
