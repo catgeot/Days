@@ -15,7 +15,18 @@ export const GATEO_ENV_FLAG_NAMES = {
   LOCAL_INFO_ROLLOUT: 'VITE_GATEO_LOCAL_INFO_ROLLOUT',
   FESTIVAL_ROAD: 'VITE_GATEO_FESTIVAL_ROAD',
   NEARBY_CARDS: 'VITE_GATEO_NEARBY_CARDS',
+  FESTIVAL_GRID: 'VITE_GATEO_FESTIVAL_GRID',
 };
+
+const FESTIVAL_GRID_QUERY_KEY = 'festivalGrid';
+const FESTIVAL_GRID_LIST_LINK_QUERY_KEY = 'festivalGridListLink';
+
+/** @param {URLSearchParams | { get: (key: string) => string | null } | null | undefined} searchParams */
+function festivalGridQueryTruthy(searchParams, key) {
+  if (!searchParams) return false;
+  const raw = String(searchParams.get(key) || '').trim().toLowerCase();
+  return raw === '1' || raw === 'true' || raw === 'on';
+}
 
 /** @param {string} name */
 export function readGateoEnvFlag(name) {
@@ -79,4 +90,31 @@ export function isGateoFestivalRoadEnabled() {
 /** Festival nearby sights/food 2-column cards. Default off. */
 export function isGateoNearbyCardsEnabled() {
   return readGateoEnvFlag(GATEO_ENV_FLAG_NAMES.NEARBY_CARDS);
+}
+
+/** Festival hub 2-column poster grid mock. Env or `?festivalGrid=1`. Default off. */
+export function isGateoFestivalGridEnabled(searchParams) {
+  if (readGateoEnvFlag(GATEO_ENV_FLAG_NAMES.FESTIVAL_GRID)) return true;
+  if (festivalGridQueryTruthy(searchParams, FESTIVAL_GRID_QUERY_KEY)) return true;
+  if (typeof window !== 'undefined') {
+    return festivalGridQueryTruthy(
+      new URLSearchParams(window.location.search),
+      FESTIVAL_GRID_QUERY_KEY,
+    );
+  }
+  return false;
+}
+
+/** Mock variant: small «목록 보기» link to legacy list (`?festivalGridListLink=1`). */
+export function isGateoFestivalGridListLinkVariant(searchParams) {
+  if (festivalGridQueryTruthy(searchParams, FESTIVAL_GRID_LIST_LINK_QUERY_KEY)) {
+    return true;
+  }
+  if (typeof window !== 'undefined') {
+    return festivalGridQueryTruthy(
+      new URLSearchParams(window.location.search),
+      FESTIVAL_GRID_LIST_LINK_QUERY_KEY,
+    );
+  }
+  return false;
 }

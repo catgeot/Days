@@ -56,7 +56,15 @@ import {
   festivalHubTimeMajorLabel,
 } from './festivalHubDefaultPeriod.js';
 import FestivalDateSheet from './FestivalDateSheet';
-import { isGateoFestivalDateChipEnabled, isGateoFestivalRoadEnabled } from '../../shared/gateoFeatureFlags';
+import {
+  isGateoFestivalDateChipEnabled,
+  isGateoFestivalGridEnabled,
+  isGateoFestivalGridListLinkVariant,
+  isGateoFestivalRoadEnabled,
+} from '../../shared/gateoFeatureFlags';
+import FestivalGridPhotoCard, {
+  FestivalGridSkeleton,
+} from './components/FestivalGridPhotoCard.jsx';
 import { defaultFestivalHubTimeTab } from './festivalHubDefaultTimeTab.js';
 import {
   readFestivalHubListScrollOffsets,
@@ -887,6 +895,64 @@ function FestivalRow({
   );
 }
 
+function FestivalEntries({
+  useGrid,
+  listLarge,
+  items,
+  selected,
+  favoriteIds,
+  onToggleFavorite,
+  onSelect,
+  nearKmByContentId,
+  areaCode,
+  cityName,
+}) {
+  if (useGrid) {
+    return (
+      <div
+        className="grid grid-cols-2 gap-2"
+        data-festival-grid=""
+      >
+        {items.map((item) => (
+          <FestivalGridPhotoCard
+            key={festivalKey(item)}
+            item={item}
+            areaCode={areaCode}
+            cityName={cityName}
+            active={
+              selected?.contentId != null &&
+              String(selected.contentId) === String(item.contentId)
+            }
+            favorited={favoriteIds.has(String(item.contentId))}
+            onToggleFavorite={onToggleFavorite}
+            onSelect={onSelect}
+            distanceKm={
+              nearKmByContentId.get(String(item.contentId)) ?? undefined
+            }
+          />
+        ))}
+      </div>
+    );
+  }
+  return items.map((item) => (
+    <FestivalRow
+      key={festivalKey(item)}
+      item={item}
+      large={listLarge}
+      active={
+        selected?.contentId != null &&
+        String(selected.contentId) === String(item.contentId)
+      }
+      favorited={favoriteIds.has(String(item.contentId))}
+      onToggleFavorite={onToggleFavorite}
+      onSelect={onSelect}
+      distanceKm={
+        nearKmByContentId.get(String(item.contentId)) ?? undefined
+      }
+    />
+  ));
+}
+
 export default function KoreaFestivalHub() {
   const { t } = useTranslation();
   const { locale } = useLocale();
@@ -897,6 +963,11 @@ export default function KoreaFestivalHub() {
   /** 테마 크로스 레일 deep-link — 칩/지도 리팩터 없이 area만 수신 */
   const themeAreaParam = String(searchParams.get('area') || '').trim();
   const festivalId = festivalIdFromSearchParams(searchParams);
+  const festivalGridMock = isGateoFestivalGridEnabled(searchParams);
+  const festivalGridListLinkVariant =
+    isGateoFestivalGridListLinkVariant(searchParams);
+  const [festivalGridLegacyList, setFestivalGridLegacyList] = useState(false);
+  const useFestivalGrid = festivalGridMock && !festivalGridLegacyList;
   const festivalDetailPushedRef = useRef(false);
   const festivalDeepLinkSeededForRef = useRef('');
   const festivalHistoryTimerRef = useRef(null);
@@ -1867,6 +1938,11 @@ export default function KoreaFestivalHub() {
         label: localizeFestivalGroupLabel(locale, g),
       })),
     [panelGroups, locale],
+  );
+
+  const panelGridFlatItems = useMemo(
+    () => localizedPanelGroups.flatMap((g) => g.items),
+    [localizedPanelGroups],
   );
 
   const flapChildChips = useMemo(() => {
@@ -3157,33 +3233,62 @@ export default function KoreaFestivalHub() {
                     {t('korea.common.close')}
                   </button>
                 ) : null}
-                <button
-                  type="button"
-                  onClick={() => setListLarge((v) => !v)}
-                  aria-label={
-                    listLarge
-                      ? t('korea.common.listDefaultAria')
-                      : t('korea.common.listLargeAria')
-                  }
-                  title={
-                    listLarge
-                      ? t('korea.common.listDefaultTitle')
-                      : t('korea.common.listLargeTitle')
-                  }
-                  aria-pressed={listLarge}
-                  className={`flex h-9 items-center gap-1 rounded-full border px-2.5 text-[11px] font-bold ${
-                    listLarge
-                      ? 'border-amber-400 bg-amber-50 text-amber-900 hover:bg-amber-100'
-                      : 'border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100'
-                  }`}
-                >
-                  {listLarge ? (
-                    <Minimize2 size={14} aria-hidden="true" />
+                {festivalGridMock && festivalGridListLinkVariant ? (
+                  useFestivalGrid ? (
+                    <button
+                      type="button"
+                      onClick={() => setFestivalGridLegacyList(true)}
+                      className="h-9 shrink-0 px-1 text-[11px] font-semibold text-stone-600 underline-offset-2 hover:text-amber-900 hover:underline"
+                      data-festival-grid-list-link=""
+                    >
+                      {t('korea.festival.gridListView', {
+                        defaultValue: '목록 보기',
+                      })}
+                    </button>
                   ) : (
-                    <Maximize2 size={14} aria-hidden="true" />
-                  )}
-                  {listLarge ? t('korea.common.listDefault') : t('korea.common.listLarge')}
-                </button>
+                    <button
+                      type="button"
+                      onClick={() => setFestivalGridLegacyList(false)}
+                      className="h-9 shrink-0 px-1 text-[11px] font-semibold text-stone-600 underline-offset-2 hover:text-amber-900 hover:underline"
+                      data-festival-grid-card-link=""
+                    >
+                      {t('korea.festival.gridCardView', {
+                        defaultValue: '카드 보기',
+                      })}
+                    </button>
+                  )
+                ) : null}
+                {!festivalGridMock ? (
+                  <button
+                    type="button"
+                    onClick={() => setListLarge((v) => !v)}
+                    aria-label={
+                      listLarge
+                        ? t('korea.common.listDefaultAria')
+                        : t('korea.common.listLargeAria')
+                    }
+                    title={
+                      listLarge
+                        ? t('korea.common.listDefaultTitle')
+                        : t('korea.common.listLargeTitle')
+                    }
+                    aria-pressed={listLarge}
+                    className={`flex h-9 items-center gap-1 rounded-full border px-2.5 text-[11px] font-bold ${
+                      listLarge
+                        ? 'border-amber-400 bg-amber-50 text-amber-900 hover:bg-amber-100'
+                        : 'border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100'
+                    }`}
+                  >
+                    {listLarge ? (
+                      <Minimize2 size={14} aria-hidden="true" />
+                    ) : (
+                      <Maximize2 size={14} aria-hidden="true" />
+                    )}
+                    {listLarge
+                      ? t('korea.common.listDefault')
+                      : t('korea.common.listLarge')}
+                  </button>
+                ) : null}
                 <button
                   type="button"
                   onClick={() => (mapOpen ? closeMap() : openMap())}
@@ -3320,7 +3425,13 @@ export default function KoreaFestivalHub() {
             >
               <div
                 data-festival-list-scroll=""
-                className={`${listLarge ? 'space-y-3' : 'space-y-2'} page-scroll-end-pad px-3 pt-3 ${
+                className={`${
+                  useFestivalGrid
+                    ? 'space-y-4'
+                    : listLarge
+                      ? 'space-y-3'
+                      : 'space-y-2'
+                } page-scroll-end-pad px-3 ${useFestivalGrid ? 'pt-2' : 'pt-3'} ${
                   mapSplitActive
                     ? 'hidden lg:block lg:custom-scrollbar lg:min-h-0 lg:w-[min(26rem,38%)] lg:shrink-0 lg:overflow-y-auto lg:border-r lg:border-stone-200'
                     : mapOpen
@@ -3347,34 +3458,46 @@ export default function KoreaFestivalHub() {
                           {group.items.length}
                         </span>
                       </p>
-                      {group.items.map((item) => (
-                        <FestivalRow
-                          key={`p-${festivalKey(item)}`}
-                          item={item}
-                          large={listLarge}
-                          active={
-                            selected?.contentId != null &&
-                            String(selected.contentId) ===
-                              String(item.contentId)
-                          }
-                          favorited={favoriteIds.has(String(item.contentId))}
-                          onToggleFavorite={handleToggleFavorite}
-                          onSelect={openItem}
-                        />
-                      ))}
+                      <FestivalEntries
+                        useGrid={useFestivalGrid}
+                        listLarge={listLarge}
+                        items={group.items}
+                        selected={selected}
+                        favoriteIds={favoriteIds}
+                        onToggleFavorite={handleToggleFavorite}
+                        onSelect={openItem}
+                        nearKmByContentId={nearKmByContentId}
+                        areaCode={areaCode}
+                        cityName={cityName}
+                      />
                     </div>
                   ))
                 )
               ) : panelItemsForList.length === 0 && !showSessionPinnedRow ? (
                 loading ? (
                   <div
-                    className={listLarge ? 'space-y-3' : 'space-y-2'}
+                    className={
+                      useFestivalGrid
+                        ? 'grid grid-cols-2 gap-2.5'
+                        : listLarge
+                          ? 'space-y-3'
+                          : 'space-y-2'
+                    }
                     aria-busy="true"
                     aria-label={t('korea.festival.loadingSchedule')}
                   >
-                    {Array.from({ length: 5 }, (_, i) => (
-                      <FestivalRowSkeleton key={`sk-${i}`} large={listLarge} />
-                    ))}
+                    {Array.from(
+                      { length: useFestivalGrid ? 6 : 5 },
+                      (_, i) =>
+                        useFestivalGrid ? (
+                          <FestivalGridSkeleton key={`sk-${i}`} />
+                        ) : (
+                          <FestivalRowSkeleton
+                            key={`sk-${i}`}
+                            large={listLarge}
+                          />
+                        ),
+                    )}
                   </div>
                 ) : dateChipEnabled && !searchActive ? (
                   <div className="px-1 py-4" data-festival-period-empty="">
@@ -3423,56 +3546,57 @@ export default function KoreaFestivalHub() {
                         {t('korea.festival.sessionPinnedSectionTitle')}
                         <span className="ml-1 font-normal opacity-70">1</span>
                       </p>
-                      <FestivalRow
-                        item={sessionPinnedDisplay}
-                        large={listLarge}
-                        active={
-                          selected?.contentId != null &&
-                          String(selected.contentId) ===
-                            String(sessionPinnedDisplay.contentId)
-                        }
-                        favorited={favoriteIds.has(
-                          String(sessionPinnedDisplay.contentId),
-                        )}
+                      <FestivalEntries
+                        useGrid={useFestivalGrid}
+                        listLarge={listLarge}
+                        items={[sessionPinnedDisplay]}
+                        selected={selected}
+                        favoriteIds={favoriteIds}
                         onToggleFavorite={handleToggleFavorite}
                         onSelect={openItem}
-                        distanceKm={
-                          nearKmByContentId.get(
-                            String(sessionPinnedDisplay.contentId),
-                          ) ?? undefined
-                        }
+                        nearKmByContentId={nearKmByContentId}
+                        areaCode={areaCode}
+                        cityName={cityName}
                       />
                     </div>
                   ) : null}
-                  {localizedPanelGroups.map((group) => (
-                  <div key={group.id} className="space-y-2">
-                    <p className="px-1 py-1 text-[11px] font-bold tracking-wide text-stone-500">
-                      {group.label}
-                      <span className="ml-1 font-normal opacity-70">
-                        {group.items.length}
-                      </span>
-                    </p>
-                    {group.items.map((item) => (
-                      <FestivalRow
-                        key={festivalKey(item)}
-                        item={item}
-                        large={listLarge}
-                        active={
-                          selected?.contentId != null &&
-                          String(selected.contentId) ===
-                            String(item.contentId)
-                        }
-                        favorited={favoriteIds.has(String(item.contentId))}
-                        onToggleFavorite={handleToggleFavorite}
-                        onSelect={openItem}
-                        distanceKm={
-                          nearKmByContentId.get(String(item.contentId)) ??
-                          undefined
-                        }
-                      />
-                    ))}
-                  </div>
-                ))}
+                  {useFestivalGrid ? (
+                    <FestivalEntries
+                      useGrid
+                      listLarge={listLarge}
+                      items={panelGridFlatItems}
+                      selected={selected}
+                      favoriteIds={favoriteIds}
+                      onToggleFavorite={handleToggleFavorite}
+                      onSelect={openItem}
+                      nearKmByContentId={nearKmByContentId}
+                      areaCode={areaCode}
+                      cityName={cityName}
+                    />
+                  ) : (
+                    localizedPanelGroups.map((group) => (
+                      <div key={group.id} className="space-y-2">
+                        <p className="px-1 py-1 text-[11px] font-bold tracking-wide text-stone-500">
+                          {group.label}
+                          <span className="ml-1 font-normal opacity-70">
+                            {group.items.length}
+                          </span>
+                        </p>
+                        <FestivalEntries
+                          useGrid={false}
+                          listLarge={listLarge}
+                          items={group.items}
+                          selected={selected}
+                          favoriteIds={favoriteIds}
+                          onToggleFavorite={handleToggleFavorite}
+                          onSelect={openItem}
+                          nearKmByContentId={nearKmByContentId}
+                          areaCode={areaCode}
+                          cityName={cityName}
+                        />
+                      </div>
+                    ))
+                  )}
                 </>
               )}
               </div>
