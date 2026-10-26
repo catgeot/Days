@@ -85,6 +85,10 @@ test('festival grid card uses festivalListDisplayTitleLines for EN titles', () =
   assert.doesNotMatch(grid, /\{item\.title\}/);
   assert.match(grid, /FestivalPhotoFrame[\s\S]*object-contain/);
   assert.match(grid, /data-festival-grid-thumb-bg/);
+  assert.match(
+    grid,
+    /data-festival-grid-thumb-bg[\s\S]*<img[\s\S]*loading=\{priorityThumb \? 'eager' : 'lazy'\}/,
+  );
   assert.match(grid, /blur-\[16px\]/);
   assert.match(grid, /scale-110/);
 

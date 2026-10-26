@@ -118,6 +118,7 @@ export default function FestivalGridPhotoCard({
                   <img
                     src={activeUrl}
                     alt=""
+                    loading={priorityThumb ? 'eager' : 'lazy'}
                     decoding="async"
                     referrerPolicy="no-referrer"
                     className="h-full w-full scale-110 object-cover blur-[16px]"
