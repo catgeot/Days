@@ -182,10 +182,22 @@ const FESTIVAL_SHEET_OVERLAY_WRAP =
 const FESTIVAL_SHEET_SCRIM =
   'absolute inset-0 pointer-events-auto cursor-default border-0 bg-stone-900/30 backdrop-blur-sm';
 
-const SCENIC_PATH = '/korea/theme/scenic';
 const COURSES_PATH = '/korea/theme/courses';
 const FESTIVAL_RETURN = '/korea';
 const SCENIC_LIST_LIMIT = 8;
+const NEARBY_SIGHTS_RADIUS_KM = 8;
+const NEARBY_SIGHTS_RADIUS_EXPANDED_KM = 50;
+const NEARBY_SIGHTS_LIMIT = 8;
+const NEARBY_SIGHTS_LIMIT_EXPANDED = 40;
+
+function nearbySightsFetchOpts(expanded) {
+  return expanded
+    ? {
+        radiusKm: NEARBY_SIGHTS_RADIUS_EXPANDED_KM,
+        limit: NEARBY_SIGHTS_LIMIT_EXPANDED,
+      }
+    : { radiusKm: NEARBY_SIGHTS_RADIUS_KM, limit: NEARBY_SIGHTS_LIMIT };
+}
 const PHOTO_SWIPE_THRESHOLD_PX = 48;
 const PHOTO_SWIPE_DIRECTION_RATIO = 1.25;
 const LIGHTBOX_TAP_SLOP_PX = 18;
@@ -690,6 +702,7 @@ export default function FestivalDetailSheet({
   const [mooniOpen, setMooniOpen] = useState(false);
   const mooniWasOpenRef = useRef(false);
   const [nearbySpots, setNearbySpots] = useState([]);
+  const [nearbySightsExpanded, setNearbySightsExpanded] = useState(false);
   const [nearbyStatus, setNearbyStatus] = useState('idle');
   const [nearbyParking, setNearbyParking] = useState([]);
   const [nearbyParkingReady, setNearbyParkingReady] = useState(false);
@@ -702,8 +715,7 @@ export default function FestivalDetailSheet({
       ? readNearbyAttractionCache({
         lat: cachedPt.lat,
         lng: cachedPt.lng,
-        radiusKm: 8,
-        limit: 8,
+        ...nearbySightsFetchOpts(false),
       })
       : null;
     if (cachedSpots) {
@@ -787,11 +799,6 @@ export default function FestivalDetailSheet({
         km: Number.isFinite(km) ? km : null,
       }));
   }, [scenicRegion, item?.mapx, item?.mapy]);
-
-  const scenicPageHref = useMemo(() => {
-    if (!scenicRegion) return SCENIC_PATH;
-    return `${SCENIC_PATH}?region=${encodeURIComponent(scenicRegion)}`;
-  }, [scenicRegion]);
 
   const festivalCross = useMemo(
     () =>
@@ -999,18 +1006,10 @@ export default function FestivalDetailSheet({
     (showFestivalStayStrip && stayStripStatus === 'loading') ||
     (showFestivalTnaStrip && tnaStripStatus === 'loading');
 
-  const openScenicPage = () => {
-    const back = {
-      path: FESTIVAL_RETURN,
-      label:
-        String(item?.title || '').trim() ||
-        t('korea.festival.detail.fallbackTitle'),
-      moduleLabel: festivalModuleLabel,
-    };
-    pushThemeNavBack(back);
-    onClose();
-    navigate(scenicPageHref, { state: { themeBack: back } });
-  };
+  const expandNearbySights = useCallback(() => {
+    if (nearbySightsExpanded) return;
+    setNearbySightsExpanded(true);
+  }, [nearbySightsExpanded]);
 
   const coursesPageHref = useMemo(() => {
     if (!festivalAreaCode) return COURSES_PATH;
@@ -1183,20 +1182,19 @@ export default function FestivalDetailSheet({
     }
 
     const nearbyPt = festivalLngLat(item?.mapx, item?.mapy);
+    const nearbyOpts = nearbySightsFetchOpts(false);
     if (
       nearbyPt &&
       !readNearbyAttractionCache({
         lat: nearbyPt.lat,
         lng: nearbyPt.lng,
-        radiusKm: 8,
-        limit: 8,
+        ...nearbyOpts,
       })
     ) {
       fetchNearbyTourAttractions({
         lat: nearbyPt.lat,
         lng: nearbyPt.lng,
-        radiusKm: 8,
-        limit: 8,
+        ...nearbyOpts,
       });
     }
 
@@ -1612,6 +1610,10 @@ export default function FestivalDetailSheet({
   ]);
 
   useEffect(() => {
+    setNearbySightsExpanded(false);
+  }, [item?.contentId]);
+
+  useEffect(() => {
     if (!item?.contentId) return undefined;
     const pt = festivalLngLat(item?.mapx, item?.mapy);
     if (!pt) {
@@ -1625,24 +1627,21 @@ export default function FestivalDetailSheet({
       setNearbyCultureStatus('nocoords');
     } else {
       let cancelled = false;
+      const fetchOpts = nearbySightsFetchOpts(nearbySightsExpanded);
       const cachedSpots = readNearbyAttractionCache({
         lat: pt.lat,
         lng: pt.lng,
-        radiusKm: 8,
-        limit: 8,
+        ...fetchOpts,
       });
       if (cachedSpots) {
         setNearbySpots(cachedSpots);
         setNearbyStatus(cachedSpots.length ? 'ok' : 'empty');
       } else {
         setNearbyStatus('loading');
-      }
-      if (!cachedSpots) {
         fetchNearbyTourAttractions({
           lat: pt.lat,
           lng: pt.lng,
-          radiusKm: 8,
-          limit: 8,
+          ...fetchOpts,
         }).then((res) => {
           if (cancelled) return;
           const spots = Array.isArray(res?.spots) ? res.spots : [];
@@ -1658,7 +1657,7 @@ export default function FestivalDetailSheet({
       };
     }
     return undefined;
-  }, [item?.contentId, item?.mapx, item?.mapy]);
+  }, [item?.contentId, item?.mapx, item?.mapy, nearbySightsExpanded]);
 
   useEffect(() => {
     if (!item?.contentId) return undefined;
@@ -2925,16 +2924,16 @@ export default function FestivalDetailSheet({
                       })}
                     </ul>
                   )}
-                  {scenicRegion ? (
+                  {scenicRegion && !nearbySightsExpanded ? (
                     <button
                       type="button"
-                      onClick={openScenicPage}
+                      onClick={expandNearbySights}
+                      data-festival-near-scenic-more=""
                       className="inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-amber-400/90 bg-amber-50 px-3 py-2.5 text-sm font-bold text-amber-950 hover:bg-amber-100"
                     >
                       {t('korea.festival.detail.nearScenicMore', {
                         region: scenicRegionLabel || scenicRegion,
                       })}
-                      <ExternalLink size={14} aria-hidden="true" />
                     </button>
                   ) : null}
                 </div>

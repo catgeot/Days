@@ -1,3 +1,8 @@
+import {
+  localizedFestivalCityListLabel,
+  localizedSidoListPhrase,
+  localizedSubregionLabel,
+} from '../../i18n/koreaRegionLabels.js';
 import { SIDO_ADDR_HINTS, resolveFestivalItemSidoCode } from './koreaAreaFilter.js';
 import {
   cityListPhrase,
@@ -16,21 +21,30 @@ function shortSidoPhrase(areaCode) {
 /**
  * Grid card region line — city only when a sido is selected; «경남 진주» nationwide.
  * @param {Record<string, unknown> | null | undefined} item
- * @param {{ areaCode?: string, cityName?: string }} ctx
+ * @param {{ areaCode?: string, cityName?: string, locale?: string }} ctx
  */
 export function festivalGridPlaceLabel(item, ctx = {}) {
+  const locale = ctx.locale || 'ko';
   const filterCode = String(ctx.areaCode || 'all');
   const filterCity = String(ctx.cityName || 'all');
   const itemCode = resolveFestivalItemSidoCode(item) || filterCode;
   const subRaw = extractSubregionLabels(item?.addr1, itemCode)[0] || '';
-  const sub = subRaw ? cityListPhrase(subRaw) : '';
+  const subKo = subRaw ? cityListPhrase(subRaw) : '';
+  const sub = localizedSubregionLabel(locale, subKo);
 
   if (!isNationwideRegionFilter(filterCode, filterCity)) {
-    if (filterCity !== 'all' && filterCity) return sub || cityListPhrase(filterCity);
+    if (filterCity !== 'all' && filterCity) {
+      return (
+        sub ||
+        localizedFestivalCityListLabel(locale, filterCode, filterCity) ||
+        localizedSubregionLabel(locale, cityListPhrase(filterCity))
+      );
+    }
     return sub;
   }
 
-  const sido = shortSidoPhrase(itemCode);
+  const sidoKo = shortSidoPhrase(itemCode);
+  const sido = localizedSidoListPhrase(locale, itemCode, sidoKo);
   if (sub && sido) return `${sido} ${sub}`;
   return sub || sido;
 }

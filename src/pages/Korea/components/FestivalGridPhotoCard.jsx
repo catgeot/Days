@@ -10,6 +10,7 @@ import {
 import { FestivalListThumbFallback } from '../festivalListThumbBox.jsx';
 import { FestivalPhotoFrame } from '../festivalPhotoFrame.js';
 import { formatFestivalDistKm } from '../lib/formatFestivalDistKm.js';
+import { festivalListDisplayTitleLines } from '../festivalDisplayTitle.js';
 import { festivalGridPlaceLabel } from '../festivalGridPlaceLabel.js';
 import { hasFestivalThumbnail } from '../socialPromoFestivalsLogic.js';
 
@@ -38,7 +39,7 @@ export default function FestivalGridPhotoCard({
   priorityThumb = false,
 }) {
   const { t } = useTranslation();
-  const { isEnglish } = useLocale();
+  const { isEnglish, locale } = useLocale();
   const koText = koreanApiTextProps(isEnglish);
   const [urlIndex, setUrlIndex] = useState(0);
   const [thumbDecoded, setThumbDecoded] = useState(false);
@@ -65,7 +66,8 @@ export default function FestivalGridPhotoCard({
     undefined,
     isEnglish ? 'en' : 'ko',
   );
-  const place = festivalGridPlaceLabel(item, { areaCode, cityName });
+  const place = festivalGridPlaceLabel(item, { areaCode, cityName, locale });
+  const titleLines = festivalListDisplayTitleLines(item, locale);
   const distanceLabel = formatFestivalDistKm(distanceKm);
   const metaLine = [range, place].filter(Boolean).join(' · ');
 
@@ -132,12 +134,28 @@ export default function FestivalGridPhotoCard({
           ) : null}
         </div>
         <div className="flex min-w-0 flex-col gap-0.5 px-1.5 pb-1.5 pt-1">
-          <p
-            className="text-[11px] font-bold leading-[1.25] text-stone-900 line-clamp-2 break-keep"
-            {...koText}
-          >
-            {item.title}
-          </p>
+          {titleLines?.secondary ? (
+            <>
+              <p
+                className="text-[11px] font-bold leading-[1.25] text-stone-900 line-clamp-2 break-keep"
+              >
+                {titleLines.primary}
+              </p>
+              <p
+                className="text-[10px] font-semibold leading-snug text-stone-600 line-clamp-1 break-keep"
+                {...koText}
+              >
+                {titleLines.secondary}
+              </p>
+            </>
+          ) : (
+            <p
+              className="text-[11px] font-bold leading-[1.25] text-stone-900 line-clamp-2 break-keep"
+              {...koText}
+            >
+              {titleLines?.primary}
+            </p>
+          )}
           {metaLine ? (
             <p
               className="text-[10px] leading-snug text-stone-600 line-clamp-1 break-keep tabular-nums"

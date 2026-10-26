@@ -130,8 +130,16 @@ assert(
   'FestivalDetailSheet shows near scenic section (i18n)',
 );
 assert(
-  sheetSrc.includes('/korea/theme/scenic'),
-  'FestivalDetailSheet links to scenic page',
+  sheetSrc.includes('expandNearbySights'),
+  'FestivalDetailSheet expands nearby sights radius in-sheet',
+);
+assert(
+  sheetSrc.includes('data-festival-near-scenic-more'),
+  'FestivalDetailSheet near-scenic-more control is marked for QA',
+);
+assert(
+  !sheetSrc.includes('onClick={openScenicPage}'),
+  'FestivalDetailSheet does not navigate away on near-scenic-more',
 );
 assert(
   sheetSrc.includes('detectSidoCode'),

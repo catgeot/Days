@@ -584,6 +584,9 @@ test('settled no-photo nearby ids use landmark icon not grey pending', () => {
   );
   assert.match(sheet, /rememberKoreaTourAttractionFirstImageMiss/);
   assert.match(sheet, /nearbySightIdsWithoutDisplayableThumb/);
+  assert.match(sheet, /NEARBY_SIGHTS_RADIUS_EXPANDED_KM = 50/);
+  assert.match(sheet, /expandNearbySights/);
+  assert.doesNotMatch(sheet, /onClick=\{openScenicPage\}/);
   const rowThumb = sheet.slice(
     sheet.indexOf('function NearbyRowThumb'),
     sheet.indexOf('function nearbySightTitle'),

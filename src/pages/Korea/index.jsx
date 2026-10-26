@@ -3266,9 +3266,7 @@ export default function KoreaFestivalHub() {
                       className="h-9 shrink-0 px-1 text-[11px] font-semibold text-stone-600 underline-offset-2 hover:text-amber-900 hover:underline"
                       data-festival-grid-list-link=""
                     >
-                      {t('korea.festival.gridListView', {
-                        defaultValue: '목록 보기',
-                      })}
+                      {t('korea.festival.gridListView')}
                     </button>
                   ) : (
                     <button
@@ -3277,9 +3275,7 @@ export default function KoreaFestivalHub() {
                       className="h-9 shrink-0 px-1 text-[11px] font-semibold text-stone-600 underline-offset-2 hover:text-amber-900 hover:underline"
                       data-festival-grid-card-link=""
                     >
-                      {t('korea.festival.gridCardView', {
-                        defaultValue: '카드 보기',
-                      })}
+                      {t('korea.festival.gridCardView')}
                     </button>
                   )
                 ) : null}
@@ -3538,36 +3534,27 @@ export default function KoreaFestivalHub() {
                       />
                     </div>
                   ) : null}
+                  {showSocialPromoRow ? (
+                    <SocialPromoFestivalRow
+                      cards={socialPromoPresentation.cards}
+                      loading={socialPromoPresentation.loading}
+                      onSelect={openItem}
+                    />
+                  ) : null}
                   {useFestivalGrid ? (
-                    <>
-                      <FestivalEntries
-                        useGrid
-                        items={panelGridFlatItems}
-                        selected={selected}
-                        favoriteIds={favoriteIds}
-                        onToggleFavorite={handleToggleFavorite}
-                        onSelect={openItem}
-                        nearKmByContentId={nearKmByContentId}
-                        areaCode={areaCode}
-                        cityName={cityName}
-                      />
-                      {showSocialPromoRow ? (
-                        <SocialPromoFestivalRow
-                          cards={socialPromoPresentation.cards}
-                          loading={socialPromoPresentation.loading}
-                          onSelect={openItem}
-                        />
-                      ) : null}
-                    </>
+                    <FestivalEntries
+                      useGrid
+                      items={panelGridFlatItems}
+                      selected={selected}
+                      favoriteIds={favoriteIds}
+                      onToggleFavorite={handleToggleFavorite}
+                      onSelect={openItem}
+                      nearKmByContentId={nearKmByContentId}
+                      areaCode={areaCode}
+                      cityName={cityName}
+                    />
                   ) : (
                     <>
-                      {showSocialPromoRow ? (
-                        <SocialPromoFestivalRow
-                          cards={socialPromoPresentation.cards}
-                          loading={socialPromoPresentation.loading}
-                          onSelect={openItem}
-                        />
-                      ) : null}
                       {localizedPanelGroups.map((group) => (
                         <div key={group.id} className="space-y-2">
                           <p className="px-1 py-1 text-[11px] font-bold tracking-wide text-stone-500">

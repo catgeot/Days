@@ -25,6 +25,25 @@ test('festivalGridPlaceLabel — sido filter shows city only', () => {
   assert.equal(festivalGridPlaceLabel(item, { areaCode: '36', cityName: 'all' }), '진주');
 });
 
+test('festivalGridPlaceLabel — EN nationwide short sido + city', () => {
+  const item = { addr1: '대구광역시 수성구 범어동' };
+  const label = festivalGridPlaceLabel(item, {
+    areaCode: 'all',
+    cityName: 'all',
+    locale: 'en',
+  });
+  assert.match(label, /^Daegu /);
+  assert.equal(/[가-힣]/u.test(label), false);
+});
+
+test('festivalGridPlaceLabel — EN sido filter city only', () => {
+  const item = { addr1: '경상남도 진주시 중앙동' };
+  assert.equal(
+    festivalGridPlaceLabel(item, { areaCode: '36', cityName: 'all', locale: 'en' }),
+    'Jinju',
+  );
+});
+
 test('festivalItemThumbCandidateUrls upgrades http and dedupes', () => {
   const urls = festivalItemThumbCandidateUrls({
     firstimage: 'http://example.com/a.jpg',
