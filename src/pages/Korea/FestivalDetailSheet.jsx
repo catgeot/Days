@@ -70,7 +70,10 @@ import {
   resolveFestivalNearbySightsPresentation,
   stripTrailingHubName,
 } from './lib/festivalNearbySights.js';
-import { resolveFestivalNearbyLoadMoreScrollTop } from './lib/festivalSheetNearbyScroll.js';
+import {
+  captureNearbyLoadMoreScrollAnchor,
+  startNearbyLoadMoreScrollPin,
+} from './lib/festivalSheetNearbyScroll.js';
 import {
   fetchKoreaTourAttractionFirstImagesByIds,
   peekKoreaTourAttractionFirstImagesByIds,
@@ -562,7 +565,10 @@ function NearbyAttractionRow({ spot, extraThumb, imagePending = false, onSelect 
       }
     : {};
   return (
-    <li data-nearby-attraction-row="">
+    <li
+      data-nearby-attraction-row=""
+      data-nearby-row-key={String(spot?.contentId || spot?.id || title || '').trim()}
+    >
       <Inner
         {...innerProps}
         tabIndex={clickable ? undefined : -1}
@@ -838,6 +844,7 @@ export default function FestivalDetailSheet({
   const [courseDetailLoading, setCourseDetailLoading] = useState(false);
   const sheetScrollRef = useRef(null);
   const nearbyLoadMoreScrollRestoreRef = useRef(null);
+  const nearbyLoadMoreScrollPinCancelRef = useRef(null);
   const heroSwipeStartRef = useRef(null);
   const lightboxSwipeStartRef = useRef(null);
   const lightboxRootRef = useRef(null);
@@ -1132,41 +1139,57 @@ export default function FestivalDetailSheet({
   const queueNearbyLoadMoreScrollRestore = useCallback(() => {
     const sheet = sheetScrollRef.current;
     if (!sheet) return;
-    nearbyLoadMoreScrollRestoreRef.current = sheet.scrollTop;
+    const anchor = captureNearbyLoadMoreScrollAnchor(sheet);
+    nearbyLoadMoreScrollRestoreRef.current = {
+      plannedScrollTop: sheet.scrollTop,
+      scrollHeightAtPin: sheet.scrollHeight,
+      anchorKey: anchor?.anchorKey ?? '',
+      anchorDelta: anchor?.anchorDelta ?? null,
+    };
   }, []);
 
-  const loadMoreNearbySights = useCallback(() => {
-    queueNearbyLoadMoreScrollRestore();
-    setNearbySightsVisibleCount((count) => count + NEARBY_SIGHTS_VISIBLE_STEP);
-    if (!nearbySightsExpanded) setNearbySightsExpanded(true);
-  }, [nearbySightsExpanded, queueNearbyLoadMoreScrollRestore]);
+  const armNearbyLoadMoreScrollRestore = useCallback(
+    (event) => {
+      event.preventDefault();
+      queueNearbyLoadMoreScrollRestore();
+    },
+    [queueNearbyLoadMoreScrollRestore],
+  );
+
+  const loadMoreNearbySights = useCallback(
+    (event) => {
+      if (nearbyLoadMoreScrollRestoreRef.current == null) {
+        queueNearbyLoadMoreScrollRestore();
+      }
+      const btn = event?.currentTarget;
+      if (btn instanceof HTMLButtonElement) {
+        btn.blur();
+      }
+      setNearbySightsVisibleCount((count) => count + NEARBY_SIGHTS_VISIBLE_STEP);
+      if (!nearbySightsExpanded) setNearbySightsExpanded(true);
+    },
+    [nearbySightsExpanded, queueNearbyLoadMoreScrollRestore],
+  );
 
   useLayoutEffect(() => {
-    const planned = nearbyLoadMoreScrollRestoreRef.current;
-    if (planned == null) return;
+    const pin = nearbyLoadMoreScrollRestoreRef.current;
+    if (!pin || pin.plannedScrollTop == null) return undefined;
     const sheet = sheetScrollRef.current;
-    if (!sheet) return;
-    const apply = () => {
-      const live = sheetScrollRef.current;
-      const target = nearbyLoadMoreScrollRestoreRef.current;
-      if (!live || target == null) return;
-      live.scrollTop = resolveFestivalNearbyLoadMoreScrollTop(target, live.scrollTop);
-    };
-    apply();
-    requestAnimationFrame(apply);
-    const list = sheet.querySelector('[data-nearby-list]');
-    if (!(list instanceof HTMLElement)) return;
-    let frames = 0;
-    const ro = new ResizeObserver(() => {
-      apply();
-      frames += 1;
-      if (frames > 24) ro.disconnect();
+    if (!sheet) return undefined;
+    nearbyLoadMoreScrollPinCancelRef.current?.();
+    sheet.scrollTop = pin.plannedScrollTop;
+    const cancel = startNearbyLoadMoreScrollPin(sheet, pin.plannedScrollTop, {
+      scrollHeightAtPin: pin.scrollHeightAtPin,
+      anchorKey: pin.anchorKey,
+      anchorDelta: pin.anchorDelta,
+      onEnd: (ok) => {
+        if (ok) nearbyLoadMoreScrollRestoreRef.current = null;
+      },
     });
-    ro.observe(list);
-    const stop = window.setTimeout(() => ro.disconnect(), 400);
+    nearbyLoadMoreScrollPinCancelRef.current = cancel;
     return () => {
-      ro.disconnect();
-      window.clearTimeout(stop);
+      cancel();
+      nearbyLoadMoreScrollPinCancelRef.current = null;
     };
   }, [nearbySightsVisibleCount, nearbyStatus]);
 
@@ -3049,7 +3072,7 @@ export default function FestivalDetailSheet({
                     nearbySights.items.length > 0 &&
                     !festivalNearbyCardsEnabled && (
                     <ul
-                      className="space-y-2 [overflow-anchor:none]"
+                      className="space-y-2 [overflow-anchor:none] [&_*]:[overflow-anchor:none]"
                       aria-label={t('korea.festival.detail.nearbySightsAria')}
                       data-nearby-list=""
                     >
@@ -3144,15 +3167,20 @@ export default function FestivalDetailSheet({
                     </button>
                   ) : null}
                   {!festivalNearbyCardsEnabled &&
-                  !nearbyPending &&
                   nearbySights.items.length > 0 &&
                   canLoadMoreNearbySights ? (
                     <button
                       type="button"
                       onClick={loadMoreNearbySights}
+                      onMouseDown={armNearbyLoadMoreScrollRestore}
+                      onTouchStart={armNearbyLoadMoreScrollRestore}
+                      disabled={nearbyPending}
                       data-festival-near-scenic-more=""
-                      className="inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-amber-400/90 bg-amber-50 px-3 py-2.5 text-sm font-bold text-amber-950 hover:bg-amber-100"
+                      className="inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-amber-400/90 bg-amber-50 px-3 py-2.5 text-sm font-bold text-amber-950 hover:bg-amber-100 [overflow-anchor:none] disabled:opacity-60"
                     >
+                      {nearbySightsExpanded && nearbyPending ? (
+                        <Loader2 size={16} className="animate-spin shrink-0" aria-hidden="true" />
+                      ) : null}
                       {t('korea.festival.detail.nearbySightsMore')}
                     </button>
                   ) : null}

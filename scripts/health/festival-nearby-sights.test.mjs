@@ -49,9 +49,17 @@ import {
 import { isConfirmedEmptyDetailImage } from '../../src/utils/fetchTourApiAttractionDetail.js';
 import {
   captureNearbyListRowAnchorDelta,
+  computeNearbyLoadMorePinnedScrollTop,
+  correctNearbyLoadMoreScrollTopForHeightGrowth,
   nearbyListRowAnchorDrift,
+  nearbyLoadMoreScrollWithinTolerance,
   resolveFestivalNearbyLoadMoreScrollTop,
+  shouldEndNearbyLoadMoreScrollPin,
 } from '../../src/pages/Korea/lib/festivalSheetNearbyScroll.js';
+import {
+  nearbyLoadMoreScrollDeltaAcceptable,
+  NEARBY_LOAD_MORE_SCROLL_TOLERANCE_PX,
+} from '../lib/festival-nearby-load-more-qa.mjs';
 
 const origin = { lat: 35.06, lng: 126.52 };
 
@@ -95,6 +103,47 @@ test('festival nearby list disables scroll anchoring and restores load-more scro
   assert.match(sheet, /data-nearby-list=""/);
   assert.match(sheet, /\[overflow-anchor:none\]/);
   assert.match(sheet, /nearbyLoadMoreScrollRestoreRef/);
+  assert.match(sheet, /captureNearbyLoadMoreScrollAnchor/);
+  assert.match(sheet, /data-nearby-row-key/);
+  assert.match(sheet, /armNearbyLoadMoreScrollRestore/);
+  assert.match(sheet, /onTouchStart=\{armNearbyLoadMoreScrollRestore\}/);
+});
+
+test('computeNearbyLoadMorePinnedScrollTop keeps viewport on anchor row after insert', () => {
+  const planned = 1907;
+  const anchorDelta = 120;
+  assert.equal(computeNearbyLoadMorePinnedScrollTop(planned, anchorDelta, 926, 200), 2513);
+  assert.equal(computeNearbyLoadMorePinnedScrollTop(planned, anchorDelta, 320, 200), planned);
+  assert.equal(computeNearbyLoadMorePinnedScrollTop(planned, null, 926, 200), planned);
+});
+
+test('load-more scroll pin tolerance and stable-frame gate', () => {
+  assert.equal(nearbyLoadMoreScrollWithinTolerance(2000, 2015, 20), true);
+  assert.equal(nearbyLoadMoreScrollWithinTolerance(2000, 2030, 20), false);
+  assert.equal(shouldEndNearbyLoadMoreScrollPin(2513, 2512, 5), true);
+  assert.equal(shouldEndNearbyLoadMoreScrollPin(2513, 2600, 5), false);
+  assert.equal(shouldEndNearbyLoadMoreScrollPin(2513, 2512, 3), false);
+});
+
+test('nearby load-more QA scroll delta gate (Site QA ≤20px)', () => {
+  assert.equal(NEARBY_LOAD_MORE_SCROLL_TOLERANCE_PX, 20);
+  assert.equal(nearbyLoadMoreScrollDeltaAcceptable(1905, 1905), true);
+  assert.equal(nearbyLoadMoreScrollDeltaAcceptable(1905, 1924), true);
+  assert.equal(nearbyLoadMoreScrollDeltaAcceptable(1905, 2606), false);
+});
+
+test('correctNearbyLoadMoreScrollTopForHeightGrowth reverses WebKit append anchoring', () => {
+  const planned = 1905;
+  const heightBefore = 8000;
+  const heightAfter = 8606;
+  assert.equal(
+    correctNearbyLoadMoreScrollTopForHeightGrowth(planned, heightBefore, heightAfter, 2511),
+    planned,
+  );
+  assert.equal(
+    correctNearbyLoadMoreScrollTopForHeightGrowth(planned, heightBefore, heightAfter, 2000),
+    planned,
+  );
 });
 
 test('nearby list row anchor drift corrects scroll after inserted rows', () => {
