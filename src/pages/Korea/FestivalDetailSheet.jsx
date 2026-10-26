@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { flushSync } from 'react-dom';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -72,6 +73,7 @@ import {
 } from './lib/festivalNearbySights.js';
 import {
   captureNearbyLoadMoreScrollAnchor,
+  resolveNearbyLoadMorePinTargetScrollTop,
   startNearbyLoadMoreScrollPin,
 } from './lib/festivalSheetNearbyScroll.js';
 import {
@@ -1150,7 +1152,10 @@ export default function FestivalDetailSheet({
 
   const armNearbyLoadMoreScrollRestore = useCallback(
     (event) => {
-      event.preventDefault();
+      const type = event?.pointerType || event?.type;
+      if (type === 'mouse' || type === 'mousedown') {
+        event.preventDefault();
+      }
       queueNearbyLoadMoreScrollRestore();
     },
     [queueNearbyLoadMoreScrollRestore],
@@ -1165,8 +1170,19 @@ export default function FestivalDetailSheet({
       if (btn instanceof HTMLButtonElement) {
         btn.blur();
       }
-      setNearbySightsVisibleCount((count) => count + NEARBY_SIGHTS_VISIBLE_STEP);
-      if (!nearbySightsExpanded) setNearbySightsExpanded(true);
+      const sheet = sheetScrollRef.current;
+      flushSync(() => {
+        setNearbySightsVisibleCount((count) => count + NEARBY_SIGHTS_VISIBLE_STEP);
+        if (!nearbySightsExpanded) setNearbySightsExpanded(true);
+      });
+      const pin = nearbyLoadMoreScrollRestoreRef.current;
+      if (sheet && pin && pin.plannedScrollTop != null) {
+        sheet.scrollTop = resolveNearbyLoadMorePinTargetScrollTop(sheet, pin.plannedScrollTop, {
+          anchorKey: pin.anchorKey,
+          anchorDelta: pin.anchorDelta,
+          scrollHeightAtPin: pin.scrollHeightAtPin,
+        });
+      }
     },
     [nearbySightsExpanded, queueNearbyLoadMoreScrollRestore],
   );
@@ -3172,6 +3188,7 @@ export default function FestivalDetailSheet({
                     <button
                       type="button"
                       onClick={loadMoreNearbySights}
+                      onPointerDown={armNearbyLoadMoreScrollRestore}
                       onMouseDown={armNearbyLoadMoreScrollRestore}
                       onTouchStart={armNearbyLoadMoreScrollRestore}
                       disabled={nearbyPending}

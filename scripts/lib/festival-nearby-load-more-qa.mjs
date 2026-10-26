@@ -62,6 +62,7 @@ export async function tapFestivalNearbyLoadMore(page) {
   const coords = await page.evaluate(() => {
     const btn = document.querySelector('[data-festival-near-scenic-more]:not([disabled])');
     if (!btn) return null;
+    btn.dispatchEvent(new TouchEvent('touchstart', { bubbles: true, cancelable: true }));
     const r = btn.getBoundingClientRect();
     return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
   });

@@ -107,7 +107,9 @@ test('festival nearby list disables scroll anchoring and restores load-more scro
   assert.match(sheet, /captureNearbyLoadMoreScrollAnchor/);
   assert.match(sheet, /data-nearby-row-key/);
   assert.match(sheet, /armNearbyLoadMoreScrollRestore/);
+  assert.match(sheet, /onPointerDown=\{armNearbyLoadMoreScrollRestore\}/);
   assert.match(sheet, /onTouchStart=\{armNearbyLoadMoreScrollRestore\}/);
+  assert.match(sheet, /flushSync/);
 });
 
 test('computeNearbyLoadMorePinnedScrollTop keeps viewport on anchor row after insert', () => {
