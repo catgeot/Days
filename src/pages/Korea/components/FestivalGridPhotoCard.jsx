@@ -23,6 +23,7 @@ import { hasFestivalThumbnail } from '../socialPromoFestivalsLogic.js';
  *   distanceKm?: number,
  *   areaCode?: string,
  *   cityName?: string,
+ *   priorityThumb?: boolean,
  * }} props
  */
 export default function FestivalGridPhotoCard({
@@ -34,6 +35,7 @@ export default function FestivalGridPhotoCard({
   distanceKm,
   areaCode = 'all',
   cityName = 'all',
+  priorityThumb = false,
 }) {
   const { t } = useTranslation();
   const { isEnglish } = useLocale();
@@ -83,13 +85,22 @@ export default function FestivalGridPhotoCard({
               <FestivalListThumbFallback size="lg" />
             </span>
           ) : (
-            <FestivalPhotoFrame
+            <>
+              <span
+                className="absolute inset-0 z-0"
+                data-festival-grid-thumb-loading=""
+                aria-hidden="true"
+              >
+                <FestivalListThumbFallback size="lg" />
+              </span>
+              <FestivalPhotoFrame
               src={activeUrl}
               alt=""
-              loading="lazy"
+              loading={priorityThumb ? 'eager' : 'lazy'}
+              fetchPriority={priorityThumb ? 'high' : undefined}
               decoding="async"
               referrerPolicy="no-referrer"
-              className="absolute inset-0 h-full w-full object-cover"
+              className="absolute inset-0 z-[1] h-full w-full object-cover"
               pendingShimmer={false}
               fallback={
                 <span className="absolute inset-0" data-festival-grid-thumb-fallback="">
@@ -102,6 +113,7 @@ export default function FestivalGridPhotoCard({
                 }
               }}
             />
+            </>
           )}
           {distanceLabel ? (
             <span

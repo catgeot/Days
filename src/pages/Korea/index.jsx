@@ -62,6 +62,10 @@ import {
   readFestivalHubLegacyListFromSession,
   writeFestivalHubLegacyListToSession,
 } from './festivalListViewSession.js';
+import {
+  FESTIVAL_HUB_GRID_CLASS,
+  FESTIVAL_HUB_GRID_EAGER_THUMB_COUNT,
+} from './festivalHubGridLayout.js';
 import FestivalGridPhotoCard, {
   FestivalGridSkeleton,
 } from './components/FestivalGridPhotoCard.jsx';
@@ -908,14 +912,12 @@ function FestivalEntries({
 }) {
   if (useGrid) {
     return (
-      <div
-        className="grid grid-cols-2 gap-1.5"
-        data-festival-grid=""
-      >
-        {items.map((item) => (
+      <div className={FESTIVAL_HUB_GRID_CLASS} data-festival-grid="">
+        {items.map((item, index) => (
           <FestivalGridPhotoCard
             key={festivalKey(item)}
             item={item}
+            priorityThumb={index < FESTIVAL_HUB_GRID_EAGER_THUMB_COUNT}
             areaCode={areaCode}
             cityName={cityName}
             active={
@@ -3468,7 +3470,7 @@ export default function KoreaFestivalHub() {
                 loading ? (
                   <div
                     className={
-                      useFestivalGrid ? 'grid grid-cols-2 gap-2.5' : 'space-y-2'
+                      useFestivalGrid ? FESTIVAL_HUB_GRID_CLASS : 'space-y-2'
                     }
                     aria-busy="true"
                     aria-label={t('korea.festival.loadingSchedule')}

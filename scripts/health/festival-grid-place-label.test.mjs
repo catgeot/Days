@@ -3,10 +3,17 @@ import test from 'node:test';
 
 import { festivalItemThumbCandidateUrls } from '../../src/pages/Korea/festivalListThumb.js';
 import { festivalGridPlaceLabel } from '../../src/pages/Korea/festivalGridPlaceLabel.js';
+import { FESTIVAL_HUB_GRID_CLASS } from '../../src/pages/Korea/festivalHubGridLayout.js';
 import {
   readFestivalHubLegacyListFromSession,
   writeFestivalHubLegacyListToSession,
 } from '../../src/pages/Korea/festivalListViewSession.js';
+
+test('festival hub grid class — 2 col mobile, 3 md, 4 lg', () => {
+  assert.match(FESTIVAL_HUB_GRID_CLASS, /grid-cols-2/);
+  assert.match(FESTIVAL_HUB_GRID_CLASS, /md:grid-cols-3/);
+  assert.match(FESTIVAL_HUB_GRID_CLASS, /lg:grid-cols-4/);
+});
 
 test('festivalGridPlaceLabel — nationwide uses short sido + city', () => {
   const item = { addr1: '경상남도 진주시 중앙동' };
