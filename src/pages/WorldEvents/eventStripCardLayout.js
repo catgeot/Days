@@ -12,13 +12,16 @@ export function eventStripCardShellClass({ large = false } = {}) {
   if (large) {
     return `${base} w-[calc((100%-0.5rem)/1.55)] sm:w-[252px]`;
   }
-  return `${base} w-[calc((100%-0.5rem)/2.18)] sm:w-[168px]`;
+  return `${base} w-[calc((100%-0.5rem)/2.13)] sm:w-[168px]`;
 }
+
+/** Mobile strip row width at 390px viewport (festival dialog padding). */
+export const EVENT_STRIP_MOBILE_ROW_WIDTH_PX = 322;
 
 /** @param {number} containerWidthPx scroll row content width (px) */
 export function eventStripCardPeekMetrics(containerWidthPx, { large = false, gapPx = 8 } = {}) {
-  const divisor = large ? 1.55 : 2.18;
-  const cardWidth = (containerWidthPx - gapPx) / divisor;
+  const divisor = large ? 1.55 : 2.13;
+  const cardWidth = (containerWidthPx - gapPx * 2) / divisor;
   const peekPx = containerWidthPx - cardWidth * 2 - gapPx;
   const peekPercent = cardWidth > 0 ? (peekPx / cardWidth) * 100 : 0;
   return { cardWidth, peekPx, peekPercent };
