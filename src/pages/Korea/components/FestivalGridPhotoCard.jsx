@@ -43,6 +43,8 @@ export default function FestivalGridPhotoCard({
   const koText = koreanApiTextProps(isEnglish);
   const [urlIndex, setUrlIndex] = useState(0);
   const [thumbDecoded, setThumbDecoded] = useState(false);
+  const [thumbExhausted, setThumbExhausted] = useState(false);
+  const [bgBroken, setBgBroken] = useState(false);
 
   const thumbCandidates = React.useMemo(
     () => festivalItemThumbCandidateUrls(item),
@@ -58,7 +60,12 @@ export default function FestivalGridPhotoCard({
 
   useEffect(() => {
     setThumbDecoded(false);
+    setThumbExhausted(false);
+    setBgBroken(false);
   }, [activeUrl]);
+
+  const showThumbImage =
+    !showStaticFallback && activeUrl && !thumbExhausted;
 
   const range = formatFestivalDetailDateRange(
     item.eventStartDate,
@@ -102,27 +109,46 @@ export default function FestivalGridPhotoCard({
                   <FestivalListThumbFallback size="lg" />
                 </span>
               ) : null}
-              <FestivalPhotoFrame
-              src={activeUrl}
-              alt=""
-              loading={priorityThumb ? 'eager' : 'lazy'}
-              fetchPriority={priorityThumb ? 'high' : undefined}
-              decoding="async"
-              referrerPolicy="no-referrer"
-              className="absolute inset-0 z-[1] h-full w-full object-cover"
-              pendingShimmer={false}
-              fallback={
-                <span className="absolute inset-0" data-festival-grid-thumb-fallback="">
-                  <FestivalListThumbFallback size="lg" />
+              {showThumbImage && !bgBroken ? (
+                <span
+                  className="pointer-events-none absolute inset-0 z-0 overflow-hidden"
+                  aria-hidden="true"
+                  data-festival-grid-thumb-bg=""
+                >
+                  <img
+                    src={activeUrl}
+                    alt=""
+                    loading={priorityThumb ? 'eager' : 'lazy'}
+                    decoding="async"
+                    referrerPolicy="no-referrer"
+                    className="h-full w-full scale-110 object-cover blur-[16px]"
+                    onError={() => setBgBroken(true)}
+                  />
                 </span>
-              }
-              onLoaded={() => setThumbDecoded(true)}
-              onFailed={() => {
-                if (urlIndex + 1 < thumbCandidates.length) {
-                  setUrlIndex((i) => i + 1);
+              ) : null}
+              <FestivalPhotoFrame
+                src={activeUrl}
+                alt=""
+                loading={priorityThumb ? 'eager' : 'lazy'}
+                fetchPriority={priorityThumb ? 'high' : undefined}
+                decoding="async"
+                referrerPolicy="no-referrer"
+                className="absolute inset-0 z-[1] h-full w-full object-contain"
+                pendingShimmer={false}
+                fallback={
+                  <span className="absolute inset-0" data-festival-grid-thumb-fallback="">
+                    <FestivalListThumbFallback size="lg" />
+                  </span>
                 }
-              }}
-            />
+                onLoaded={() => setThumbDecoded(true)}
+                onFailed={() => {
+                  if (urlIndex + 1 < thumbCandidates.length) {
+                    setUrlIndex((i) => i + 1);
+                  } else {
+                    setThumbExhausted(true);
+                  }
+                }}
+              />
             </>
           )}
           {distanceLabel ? (
