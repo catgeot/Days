@@ -43,13 +43,29 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Playwright version
+        id: playwright-version
+        run: echo "version=$(node -p "require('./package-lock.json').packages['node_modules/@playwright/test'].version")" >> $GITHUB_OUTPUT
+
+      - name: Cache Playwright browsers
+        id: playwright-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.playwright-version.outputs.version }}
+
+      - name: Install Playwright browsers
+        timeout-minutes: 10
+        env:
+          PLAYWRIGHT_CACHE_HIT: ${{ steps.playwright-cache.outputs.cache-hit }}
+        run: bash .github/scripts/playwright-ci-install.sh webkit
+
       - name: Festival hero credit E2E (WebKit)
         env:
           VITE_SUPABASE_URL: https://example.supabase.co
           VITE_SUPABASE_ANON_KEY: e2e-anon-placeholder
           DEV_SSL: '0'
         run: |
-          npx playwright install --with-deps webkit
           npx vite --host 127.0.0.1 --port 5173 --strictPort > /tmp/vite-festival.log 2>&1 &
           ready=0
           for _ in $(seq 1 90); do
@@ -86,11 +102,22 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Playwright version
+        id: playwright-version
+        run: echo "version=$(node -p "require('./package-lock.json').packages['node_modules/@playwright/test'].version")" >> $GITHUB_OUTPUT
+
       - name: Cache Playwright browsers
+        id: playwright-cache
         uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}-webkit
+          key: playwright-${{ runner.os }}-${{ steps.playwright-version.outputs.version }}
+
+      - name: Install Playwright browsers
+        timeout-minutes: 10
+        env:
+          PLAYWRIGHT_CACHE_HIT: ${{ steps.playwright-cache.outputs.cache-hit }}
+        run: bash .github/scripts/playwright-ci-install.sh webkit
 
       - name: Playwright WebKit — korea-festival-back-overview
         env:
@@ -99,7 +126,6 @@ jobs:
           MOONI_TOURAPI_STUB_ONLY: '1'
           DEV_SSL: '0'
         run: |
-          npx playwright install --with-deps webkit
           npx vite --host 127.0.0.1 --port 5173 --strictPort > /tmp/vite-festival-back.log 2>&1 &
           ready=0
           for _ in $(seq 1 90); do
@@ -119,7 +145,7 @@ jobs:
     name: Festival region chip scroll E2E (WebKit 390, mocked)
     runs-on: ubuntu-latest
     needs: lint-and-build
-    timeout-minutes: 15
+    timeout-minutes: 30
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -133,20 +159,36 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Playwright version
+        id: playwright-version
+        run: echo "version=$(node -p "require('./package-lock.json').packages['node_modules/@playwright/test'].version")" >> $GITHUB_OUTPUT
+
+      - name: Cache Playwright browsers
+        id: playwright-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.playwright-version.outputs.version }}
+
+      - name: Install Playwright browsers
+        timeout-minutes: 10
+        env:
+          PLAYWRIGHT_CACHE_HIT: ${{ steps.playwright-cache.outputs.cache-hit }}
+        run: bash .github/scripts/playwright-ci-install.sh webkit
+
       - name: Playwright WebKit — korea-festival-region-chip-scroll
         env:
           VITE_SUPABASE_URL: https://example.supabase.co
           VITE_SUPABASE_ANON_KEY: e2e-anon-placeholder
           DEV_SSL: '0'
         run: |
-          npx playwright install --with-deps webkit
           npx playwright test -c playwright.config.festival-region-chip-scroll.js --project=webkit --reporter=line
 
   festival-external-return-e2e:
     name: Festival external return E2E (WebKit 390)
     runs-on: ubuntu-latest
     needs: lint-and-build
-    timeout-minutes: 15
+    timeout-minutes: 30
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -163,6 +205,23 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Playwright version
+        id: playwright-version
+        run: echo "version=$(node -p "require('./package-lock.json').packages['node_modules/@playwright/test'].version")" >> $GITHUB_OUTPUT
+
+      - name: Cache Playwright browsers
+        id: playwright-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.playwright-version.outputs.version }}
+
+      - name: Install Playwright browsers
+        timeout-minutes: 10
+        env:
+          PLAYWRIGHT_CACHE_HIT: ${{ steps.playwright-cache.outputs.cache-hit }}
+        run: bash .github/scripts/playwright-ci-install.sh webkit
+
       - name: Playwright WebKit — korea-festival-external-return
         env:
           VITE_SUPABASE_URL: https://example.supabase.co
@@ -170,7 +229,6 @@ jobs:
           MOONI_TOURAPI_STUB_ONLY: '1'
           DEV_SSL: '0'
         run: |
-          npx playwright install --with-deps webkit
           npx vite --host 127.0.0.1 --port 5173 --strictPort > /tmp/vite-festival-external.log 2>&1 &
           ready=0
           for _ in $(seq 1 90); do
@@ -190,7 +248,7 @@ jobs:
     name: Place travelogue card E2E (WebKit 390, fixtures)
     runs-on: ubuntu-latest
     needs: lint-and-build
-    timeout-minutes: 15
+    timeout-minutes: 30
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -211,11 +269,27 @@ jobs:
           VITE_SUPABASE_ANON_KEY: e2e-anon-placeholder
         run: npm run build
 
+      - name: Playwright version
+        id: playwright-version
+        run: echo "version=$(node -p "require('./package-lock.json').packages['node_modules/@playwright/test'].version")" >> $GITHUB_OUTPUT
+
+      - name: Cache Playwright browsers
+        id: playwright-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.playwright-version.outputs.version }}
+
+      - name: Install Playwright browsers
+        timeout-minutes: 10
+        env:
+          PLAYWRIGHT_CACHE_HIT: ${{ steps.playwright-cache.outputs.cache-hit }}
+        run: bash .github/scripts/playwright-ci-install.sh webkit
+
       - name: Playwright WebKit — place-travelogue-card
         env:
           DEV_SSL: '0'
         run: |
-          npx playwright install --with-deps webkit
           npx vite preview --host 127.0.0.1 --port 5173 --strictPort > /tmp/vite-travelogue.log 2>&1 &
           ready=0
           for _ in $(seq 1 90); do
@@ -234,7 +308,7 @@ jobs:
   # YouTube 탭 세션(더 보기). 프로덕션 일일 헬스(e2e-health)에서는 제외.
   e2e-youtube-session:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -248,8 +322,22 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Install Playwright Chromium and WebKit
-        run: npx playwright install --with-deps chromium webkit
+      - name: Playwright version
+        id: playwright-version
+        run: echo "version=$(node -p "require('./package-lock.json').packages['node_modules/@playwright/test'].version")" >> $GITHUB_OUTPUT
+
+      - name: Cache Playwright browsers
+        id: playwright-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.playwright-version.outputs.version }}
+
+      - name: Install Playwright browsers
+        timeout-minutes: 10
+        env:
+          PLAYWRIGHT_CACHE_HIT: ${{ steps.playwright-cache.outputs.cache-hit }}
+        run: bash .github/scripts/playwright-ci-install.sh chromium webkit
 
       - name: YouTube load-more session
         env:
