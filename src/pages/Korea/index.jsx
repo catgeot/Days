@@ -3566,27 +3566,27 @@ export default function KoreaFestivalHub() {
                           onSelect={openItem}
                         />
                       ) : null}
-                    localizedPanelGroups.map((group) => (
-                      <div key={group.id} className="space-y-2">
-                        <p className="px-1 py-1 text-[11px] font-bold tracking-wide text-stone-500">
-                          {group.label}
-                          <span className="ml-1 font-normal opacity-70">
-                            {group.items.length}
-                          </span>
-                        </p>
-                        <FestivalEntries
-                          useGrid={false}
-                          items={group.items}
-                          selected={selected}
-                          favoriteIds={favoriteIds}
-                          onToggleFavorite={handleToggleFavorite}
-                          onSelect={openItem}
-                          nearKmByContentId={nearKmByContentId}
-                          areaCode={areaCode}
-                          cityName={cityName}
-                        />
-                      </div>
-                    ))
+                      {localizedPanelGroups.map((group) => (
+                        <div key={group.id} className="space-y-2">
+                          <p className="px-1 py-1 text-[11px] font-bold tracking-wide text-stone-500">
+                            {group.label}
+                            <span className="ml-1 font-normal opacity-70">
+                              {group.items.length}
+                            </span>
+                          </p>
+                          <FestivalEntries
+                            useGrid={false}
+                            items={group.items}
+                            selected={selected}
+                            favoriteIds={favoriteIds}
+                            onToggleFavorite={handleToggleFavorite}
+                            onSelect={openItem}
+                            nearKmByContentId={nearKmByContentId}
+                            areaCode={areaCode}
+                            cityName={cityName}
+                          />
+                        </div>
+                      ))}
                     </>
                   )}
                 </>
