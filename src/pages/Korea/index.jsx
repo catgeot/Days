@@ -108,6 +108,7 @@ import { FESTIVAL_PAGE_EVENT } from '../../shared/korea/mooniKoreaFestivalAssist
 import {
   festivalItemForSessionPin,
 } from './festivalSessionPin';
+import { festivalListDisplayTitleLines } from './festivalDisplayTitle.js';
 import { festivalItemThumbSrc } from './festivalListThumb';
 import { FestivalPhotoFrame } from './festivalPhotoFrame';
 import SocialPromoFestivalRow, { SocialPromoNearLine } from './SocialPromoFestivalRow';
@@ -770,8 +771,9 @@ function FestivalRow({
   large = false,
 }) {
   const { t } = useTranslation();
-  const { isEnglish } = useLocale();
+  const { isEnglish, locale } = useLocale();
   const koText = koreanApiTextProps(isEnglish);
+  const titleLines = festivalListDisplayTitleLines(item, locale);
   const img = festivalImage(item);
   const range = formatFestivalDetailDateRange(
     item.eventStartDate,
@@ -819,16 +821,38 @@ function FestivalRow({
         </div>
         <div className={`min-w-0 flex-1 ${large ? 'space-y-1' : 'space-y-0.5'}`}>
           <div className="flex min-w-0 items-start justify-between gap-2">
-            <p
-              className={`min-w-0 flex-1 font-bold text-stone-900 break-keep ${
-                large
-                  ? 'text-[15px] leading-snug line-clamp-2 sm:text-base'
-                  : 'text-sm truncate'
-              }`}
-              {...koText}
-            >
-              {item.title}
-            </p>
+            {titleLines?.secondary ? (
+              <div className="min-w-0 flex-1">
+                <p
+                  className={`font-bold text-stone-900 break-keep ${
+                    large
+                      ? 'text-[15px] leading-snug line-clamp-2 sm:text-base'
+                      : 'text-sm line-clamp-2'
+                  }`}
+                >
+                  {titleLines.primary}
+                </p>
+                <p
+                  className={`font-semibold text-stone-600 break-keep ${
+                    large ? 'text-xs line-clamp-1' : 'text-[11px] line-clamp-1'
+                  }`}
+                  {...koText}
+                >
+                  {titleLines.secondary}
+                </p>
+              </div>
+            ) : (
+              <p
+                className={`min-w-0 flex-1 font-bold text-stone-900 break-keep ${
+                  large
+                    ? 'text-[15px] leading-snug line-clamp-2 sm:text-base'
+                    : 'text-sm truncate'
+                }`}
+                {...koText}
+              >
+                {titleLines?.primary || item.title}
+              </p>
+            )}
             {distanceLabel ? (
               <span
                 className={`shrink-0 rounded-full bg-stone-100 font-bold tabular-nums text-stone-600 ${

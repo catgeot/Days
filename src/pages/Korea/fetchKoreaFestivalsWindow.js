@@ -98,7 +98,6 @@ function itemsNeedTitleEn(items) {
 async function fetchKoreaFestivalsRolling12Uncached(opts = {}) {
   const now = opts.now instanceof Date ? opts.now : new Date();
   const range = rolling12MonthRangeYmd(now);
-  const wantTitleEn = String(opts.locale || '').startsWith('en');
   const data = await fetchTourApiFestivalWindow({
     eventStartDate: range.eventStartDate,
     eventEndDate: range.eventEndDate,
@@ -118,12 +117,10 @@ async function fetchKoreaFestivalsRolling12Uncached(opts = {}) {
   }
 
   const filtered = filterFestivalItems(data.items);
-  const items = wantTitleEn
-    ? await mergeTitleEnOntoItems(filtered, {
-        ...range,
-        force: Boolean(opts.force),
-      })
-    : filtered;
+  const items = await mergeTitleEnOntoItems(filtered, {
+    ...range,
+    force: Boolean(opts.force),
+  });
   writeCache(items);
   return {
     ok: true,
@@ -140,13 +137,11 @@ async function fetchKoreaFestivalsRolling12Uncached(opts = {}) {
  * @returns {Promise<{ ok: boolean, items: object[], fromCache: boolean, stale?: boolean, error?: string }>}
  */
 export async function fetchKoreaFestivalsRolling12(opts = {}) {
-  const wantTitleEn = String(opts.locale || '').startsWith('en');
-
   if (!opts.force) {
     const cached = readCache();
     if (cached) {
       let { items } = cached;
-      if (wantTitleEn && itemsNeedTitleEn(items)) {
+      if (itemsNeedTitleEn(items)) {
         const now = opts.now instanceof Date ? opts.now : new Date();
         const range = rolling12MonthRangeYmd(now);
         items = await mergeTitleEnOntoItems(items, range);

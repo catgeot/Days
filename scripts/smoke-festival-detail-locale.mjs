@@ -53,9 +53,9 @@ assert(
   'fetchKoreaFestivalsWindow merges titleEn via en festivalWindow',
 );
 assert(
-  windowJs.includes('wantTitleEn') &&
-    windowJs.includes('itemsNeedTitleEn'),
-  'fetchKoreaFestivalsWindow lazy-en merge on cache hit only when locale=en',
+  windowJs.includes('itemsNeedTitleEn') &&
+    windowJs.includes('mergeTitleEnOntoItems'),
+  'fetchKoreaFestivalsWindow merges titleEn on cache hit when any item lacks titleEn',
 );
 
 const spotCardJs = readFileSync(
