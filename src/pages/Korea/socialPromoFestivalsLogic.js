@@ -341,10 +341,15 @@ export function resolveSocialPromoPresentation(row, ctx = {}) {
   const searchActive = Boolean(ctx.searchActive);
   const nearActive = Boolean(ctx.nearActive);
   const timeTab = ctx.timeTab == null || ctx.timeTab === '' ? 'thisMonth' : String(ctx.timeTab);
+  const instagramStripEligible = Boolean(ctx.instagramStripEligible);
+  const regionDefault = isNationwideRegionFilter(ctx.areaCode, ctx.cityName);
   if (!shouldShowSocialPromoHomeRow(searchActive) || timeTab !== 'thisMonth') {
     return hiddenPromo();
   }
   if (!row || row.status === 'empty') return hiddenPromo();
+  if (!instagramStripEligible) {
+    return hiddenPromo();
+  }
   if (nearActive) {
     if (row.status !== 'ready') return hiddenPromo();
     return {
@@ -356,6 +361,9 @@ export function resolveSocialPromoPresentation(row, ctx = {}) {
         listedIds: ctx.nearListIds,
       }),
     };
+  }
+  if (!regionDefault) {
+    return hiddenPromo();
   }
   if (row.status === 'loading') {
     return { show: true, cards: row.cards, loading: true, nearLine: null };

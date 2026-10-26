@@ -126,6 +126,12 @@ import {
   contentIdsFromPromoCards,
 } from './socialPromoFestivals';
 import {
+  dismissSocialPromoRow,
+  isSocialPromoRowDismissed,
+  recordInstagramVisitIfLanding,
+  shouldShowInstagramSocialPromoStrip,
+} from './socialPromoInstagramSession.js';
+import {
   buildInitialManualPromoMap,
   getManualFestivalEntry,
   isManualFestivalContentId,
@@ -1087,6 +1093,17 @@ export default function KoreaFestivalHub() {
     () => buildInitialManualPromoMap(),
   );
   socialPromoByIdRef.current = socialPromoById;
+  const [socialPromoDismissed, setSocialPromoDismissed] = useState(
+    () =>
+      typeof sessionStorage !== 'undefined'
+      && isSocialPromoRowDismissed(sessionStorage),
+  );
+  const handleSocialPromoDismiss = useCallback(() => {
+    if (typeof sessionStorage !== 'undefined') {
+      dismissSocialPromoRow(sessionStorage);
+    }
+    setSocialPromoDismissed(true);
+  }, []);
   const [locHintDismissed, setLocHintDismissed] = useState(() =>
     isHintDismissed(
       typeof localStorage !== 'undefined' ? localStorage : null,
@@ -1714,6 +1731,24 @@ export default function KoreaFestivalHub() {
   const searchActive = searchFilter.length > 0;
   const nearActive = Boolean(nearOrigin && nearLabel);
 
+  const instagramStripEligible = useMemo(() => {
+    const storage =
+      typeof sessionStorage !== 'undefined' ? sessionStorage : null;
+    if (storage) {
+      recordInstagramVisitIfLanding(storage, {
+        searchParams,
+        referrer: typeof document !== 'undefined' ? document.referrer : '',
+      });
+    }
+    return shouldShowInstagramSocialPromoStrip({
+      storage,
+      searchParams,
+      referrer: typeof document !== 'undefined' ? document.referrer : '',
+      dismissed: socialPromoDismissed,
+      regionDefault: isNationwideRegionFilter(areaCode, cityName),
+    });
+  }, [searchParams, socialPromoDismissed, areaCode, cityName]);
+
   const socialPromoPresentation = useMemo(
     () =>
       resolveSocialPromoPresentation(socialPromoRow, {
@@ -1723,8 +1758,18 @@ export default function KoreaFestivalHub() {
         timeTab,
         nearActive,
         nearOrigin,
+        instagramStripEligible,
       }),
-    [socialPromoRow, searchActive, areaCode, cityName, timeTab, nearActive, nearOrigin],
+    [
+      socialPromoRow,
+      searchActive,
+      areaCode,
+      cityName,
+      timeTab,
+      nearActive,
+      nearOrigin,
+      instagramStripEligible,
+    ],
   );
 
   const showSocialPromoRow = socialPromoPresentation.show;
@@ -3563,6 +3608,7 @@ export default function KoreaFestivalHub() {
                       cards={socialPromoPresentation.cards}
                       loading={socialPromoPresentation.loading}
                       onSelect={openItem}
+                      onDismiss={handleSocialPromoDismiss}
                     />
                   ) : null}
                   {useFestivalGrid ? (

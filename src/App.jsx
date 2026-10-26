@@ -56,6 +56,18 @@ const PreviewDebugChrome = isPreviewDebugChromeBundled
 import { LocaleProvider } from './i18n/LocaleProvider';
 import AppHistoryRecorder from './shared/navigation/AppHistoryRecorder';
 import { installPersistedBlankPageReload } from './shared/lib/persistedBlankPageReload.js';
+import { recordInstagramVisitIfLanding } from './pages/Korea/socialPromoInstagramSession.js';
+
+function SocialPromoInstagramVisitCapture() {
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    recordInstagramVisitIfLanding(window.sessionStorage, {
+      searchParams: new URLSearchParams(window.location.search),
+      referrer: document.referrer,
+    });
+  }, []);
+  return null;
+}
 
 function PersistedBlankPageReload() {
   useEffect(() => installPersistedBlankPageReload(), []);
@@ -100,6 +112,7 @@ function App() {
         <LocaleProvider>
         <RouteTracker />
         <PersistedBlankPageReload />
+        <SocialPromoInstagramVisitCapture />
         <AppHistoryRecorder />
         <ReportProvider>
           <Analytics />
