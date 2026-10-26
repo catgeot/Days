@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
+import { festivalItemThumbCandidateUrls } from '../../src/pages/Korea/festivalListThumb.js';
 import { festivalGridPlaceLabel } from '../../src/pages/Korea/festivalGridPlaceLabel.js';
 import {
   readFestivalHubLegacyListFromSession,
@@ -15,6 +16,17 @@ test('festivalGridPlaceLabel — nationwide uses short sido + city', () => {
 test('festivalGridPlaceLabel — sido filter shows city only', () => {
   const item = { addr1: '경상남도 진주시 중앙동' };
   assert.equal(festivalGridPlaceLabel(item, { areaCode: '36', cityName: 'all' }), '진주');
+});
+
+test('festivalItemThumbCandidateUrls upgrades http and dedupes', () => {
+  const urls = festivalItemThumbCandidateUrls({
+    firstimage: 'http://example.com/a.jpg',
+    firstimage2: 'https://example.com/a.jpg',
+    imageUrl: 'https://example.com/b.jpg',
+  });
+  assert.equal(urls.length, 2);
+  assert.equal(urls[0], 'https://example.com/a.jpg');
+  assert.equal(urls[1], 'https://example.com/b.jpg');
 });
 
 test('festival hub list view session — grid default, legacy round-trip', () => {

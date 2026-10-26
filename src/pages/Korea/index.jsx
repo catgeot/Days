@@ -3514,13 +3514,6 @@ export default function KoreaFestivalHub() {
                 )
               ) : (
                 <>
-                  {showSocialPromoRow ? (
-                    <SocialPromoFestivalRow
-                      cards={socialPromoPresentation.cards}
-                      loading={socialPromoPresentation.loading}
-                      onSelect={openItem}
-                    />
-                  ) : null}
                   {showSessionPinnedRow ? (
                     <div
                       className="mb-2 space-y-2"
@@ -3544,18 +3537,35 @@ export default function KoreaFestivalHub() {
                     </div>
                   ) : null}
                   {useFestivalGrid ? (
-                    <FestivalEntries
-                      useGrid
-                      items={panelGridFlatItems}
-                      selected={selected}
-                      favoriteIds={favoriteIds}
-                      onToggleFavorite={handleToggleFavorite}
-                      onSelect={openItem}
-                      nearKmByContentId={nearKmByContentId}
-                      areaCode={areaCode}
-                      cityName={cityName}
-                    />
+                    <>
+                      <FestivalEntries
+                        useGrid
+                        items={panelGridFlatItems}
+                        selected={selected}
+                        favoriteIds={favoriteIds}
+                        onToggleFavorite={handleToggleFavorite}
+                        onSelect={openItem}
+                        nearKmByContentId={nearKmByContentId}
+                        areaCode={areaCode}
+                        cityName={cityName}
+                      />
+                      {showSocialPromoRow ? (
+                        <SocialPromoFestivalRow
+                          cards={socialPromoPresentation.cards}
+                          loading={socialPromoPresentation.loading}
+                          onSelect={openItem}
+                        />
+                      ) : null}
+                    </>
                   ) : (
+                    <>
+                      {showSocialPromoRow ? (
+                        <SocialPromoFestivalRow
+                          cards={socialPromoPresentation.cards}
+                          loading={socialPromoPresentation.loading}
+                          onSelect={openItem}
+                        />
+                      ) : null}
                     localizedPanelGroups.map((group) => (
                       <div key={group.id} className="space-y-2">
                         <p className="px-1 py-1 text-[11px] font-bold tracking-wide text-stone-500">
@@ -3577,6 +3587,7 @@ export default function KoreaFestivalHub() {
                         />
                       </div>
                     ))
+                    </>
                   )}
                 </>
               )}
