@@ -74,10 +74,11 @@ export default function FestivalGridPhotoCard({
   );
   const place = festivalGridPlaceLabel(item, { areaCode, cityName });
   const distanceLabel = formatFestivalDistKm(distanceKm);
+  const metaLine = [range, place].filter(Boolean).join(' · ');
 
   return (
     <article
-      className={`relative flex min-w-0 flex-col overflow-hidden rounded-2xl border bg-white text-left shadow-sm transition-colors ${
+      className={`relative flex min-w-0 flex-col overflow-hidden rounded-xl border bg-white text-left shadow-sm transition-colors ${
         active
           ? 'border-amber-400 ring-1 ring-amber-200'
           : 'border-stone-200 [@media(hover:hover)]:hover:border-amber-300'
@@ -90,7 +91,7 @@ export default function FestivalGridPhotoCard({
         onClick={() => onSelect(item)}
         className="flex min-w-0 flex-1 flex-col text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-300/90 focus-visible:ring-offset-1"
       >
-        <div className="relative aspect-[5/6] w-full overflow-hidden bg-stone-200">
+        <div className="relative aspect-[4/3] w-full overflow-hidden bg-stone-200">
           <FestivalPhotoFrame
             src={activeUrl}
             alt=""
@@ -114,21 +115,18 @@ export default function FestivalGridPhotoCard({
             </span>
           ) : null}
         </div>
-        <div className="flex min-w-0 flex-col gap-0.5 px-2 pb-2 pt-1.5">
+        <div className="flex min-w-0 flex-col gap-0.5 px-1.5 pb-1.5 pt-1">
           <p
-            className="text-[12px] font-bold leading-[1.28] text-stone-900 line-clamp-2 break-keep"
+            className="text-[11px] font-bold leading-[1.25] text-stone-900 line-clamp-2 break-keep"
             {...koText}
           >
             {item.title}
           </p>
-          {range ? (
-            <p className="text-[11px] font-bold leading-snug text-amber-700 tabular-nums">
-              {range}
-            </p>
-          ) : null}
-          {place ? (
-            <p className="text-[11px] leading-snug text-stone-500 line-clamp-1 break-keep">
-              {place}
+          {metaLine ? (
+            <p
+              className="text-[10px] leading-snug text-stone-600 line-clamp-1 break-keep tabular-nums"
+            >
+              {metaLine}
             </p>
           ) : null}
         </div>
@@ -146,10 +144,10 @@ export default function FestivalGridPhotoCard({
               : t('korea.common.favoriteAdd')
           }
           aria-pressed={favorited}
-          className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full border border-stone-200/90 bg-white/95 text-stone-500 shadow-sm hover:border-amber-300 hover:bg-amber-50"
+          className="absolute right-1.5 top-1.5 flex h-7 w-7 items-center justify-center rounded-full border border-stone-200/90 bg-white/95 text-stone-500 shadow-sm hover:border-amber-300 hover:bg-amber-50"
         >
           <Star
-            size={15}
+            size={14}
             className={
               favorited ? 'fill-amber-400 text-amber-500' : 'text-stone-400'
             }
@@ -164,8 +162,14 @@ export default function FestivalGridPhotoCard({
 export function FestivalGridSkeleton() {
   return (
     <div
-      className="aspect-[5/6] animate-pulse rounded-2xl border border-stone-200 bg-stone-100"
+      className="overflow-hidden rounded-xl border border-stone-200 bg-white"
       aria-hidden="true"
-    />
+    >
+      <div className="aspect-[4/3] animate-pulse bg-stone-200" />
+      <div className="space-y-1 px-1.5 py-1.5">
+        <div className="h-3 animate-pulse rounded bg-stone-200" />
+        <div className="h-2.5 w-4/5 animate-pulse rounded bg-stone-100" />
+      </div>
+    </div>
   );
 }

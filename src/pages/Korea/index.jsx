@@ -59,7 +59,6 @@ import FestivalDateSheet from './FestivalDateSheet';
 import {
   isGateoFestivalDateChipEnabled,
   isGateoFestivalGridEnabled,
-  isGateoFestivalGridListLinkVariant,
   isGateoFestivalRoadEnabled,
 } from '../../shared/gateoFeatureFlags';
 import FestivalGridPhotoCard, {
@@ -910,7 +909,7 @@ function FestivalEntries({
   if (useGrid) {
     return (
       <div
-        className="grid grid-cols-2 gap-2"
+        className="grid grid-cols-2 gap-1.5"
         data-festival-grid=""
       >
         {items.map((item) => (
@@ -964,10 +963,9 @@ export default function KoreaFestivalHub() {
   const themeAreaParam = String(searchParams.get('area') || '').trim();
   const festivalId = festivalIdFromSearchParams(searchParams);
   const festivalGridMock = isGateoFestivalGridEnabled(searchParams);
-  const festivalGridListLinkVariant =
-    isGateoFestivalGridListLinkVariant(searchParams);
   const [festivalGridLegacyList, setFestivalGridLegacyList] = useState(false);
   const useFestivalGrid = festivalGridMock && !festivalGridLegacyList;
+  const festivalGridCompactChrome = festivalGridMock && useFestivalGrid;
   const festivalDetailPushedRef = useRef(false);
   const festivalDeepLinkSeededForRef = useRef('');
   const festivalHistoryTimerRef = useRef(null);
@@ -2690,7 +2688,9 @@ export default function KoreaFestivalHub() {
         }`}
       >
         <div
-          className={`pointer-events-auto mx-auto w-full px-3 pb-2.5 ${
+          className={`pointer-events-auto mx-auto w-full px-3 ${
+            festivalGridCompactChrome ? 'pb-1.5' : 'pb-2.5'
+          } ${
             mapImmersive
               ? 'max-w-none md:px-5'
               : mapOpen
@@ -2699,7 +2699,9 @@ export default function KoreaFestivalHub() {
           }`}
         >
           <div
-            className={`min-w-0 rounded-2xl px-3 py-2.5 md:px-4 ${
+            className={`min-w-0 rounded-2xl md:px-4 ${
+              festivalGridCompactChrome ? 'px-2.5 py-2' : 'px-3 py-2.5'
+            } ${
               mapImmersive
                 ? 'border border-white/35 bg-white/45 shadow-[0_8px_32px_rgba(27,20,16,0.12)] backdrop-blur-xl'
                 : 'border border-stone-200/90 bg-white shadow-sm'
@@ -2710,7 +2712,13 @@ export default function KoreaFestivalHub() {
                 <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-amber-700">
                   Korea
                 </p>
-                <h1 className="truncate text-base font-extrabold tracking-tight md:text-lg lg:text-xl">
+                <h1
+                  className={`truncate font-extrabold tracking-tight ${
+                    festivalGridCompactChrome
+                      ? 'text-[15px]'
+                      : 'text-base md:text-lg lg:text-xl'
+                  }`}
+                >
                   {t('korea.festival.title')}
                 </h1>
               </div>
@@ -2949,7 +2957,11 @@ export default function KoreaFestivalHub() {
               </div>
             )}
 
-            <div className="mt-2.5 flex flex-col gap-1.5">
+            <div
+              className={`flex flex-col ${
+                festivalGridCompactChrome ? 'mt-1 gap-0.5' : 'mt-2.5 gap-1.5'
+              }`}
+            >
               <div className="flex items-center gap-3">
                 <div className="flex min-w-0 flex-1 items-center gap-1.5 overflow-x-auto pb-0.5 custom-scrollbar [scrollbar-gutter:stable]">
                   <button
@@ -3198,13 +3210,21 @@ export default function KoreaFestivalHub() {
             }`}
           >
             <div
-              className={`shrink-0 flex-col gap-1.5 border-b border-stone-200 px-4 py-3 lg:px-5 lg:py-3.5 ${
-                mapSplitActive ? 'hidden lg:flex' : mapOpen ? 'hidden' : 'flex'
-              }`}
+              className={`shrink-0 flex-col border-b border-stone-200 lg:px-5 ${
+                festivalGridCompactChrome
+                  ? 'gap-0.5 px-3 py-1.5 lg:py-2'
+                  : 'gap-1.5 px-4 py-3 lg:py-3.5'
+              } ${mapSplitActive ? 'hidden lg:flex' : mapOpen ? 'hidden' : 'flex'}`}
               data-festival-list-heading=""
             >
-              <div className="flex min-w-0 items-start justify-between gap-2">
-                <h2 className="min-w-0 flex-1 text-sm font-bold text-stone-900 break-keep leading-snug lg:text-[15px]">
+              <div className="flex min-w-0 items-start justify-between gap-1.5">
+                <h2
+                  className={`min-w-0 flex-1 font-bold text-stone-900 break-keep leading-snug ${
+                    festivalGridCompactChrome
+                      ? 'text-[13px]'
+                      : 'text-sm lg:text-[15px]'
+                  }`}
+                >
                   {personalTab != null
                     ? personalTab === 'favorites'
                       ? t('korea.common.favorites')
@@ -3233,7 +3253,7 @@ export default function KoreaFestivalHub() {
                     {t('korea.common.close')}
                   </button>
                 ) : null}
-                {festivalGridMock && festivalGridListLinkVariant ? (
+                {festivalGridMock ? (
                   useFestivalGrid ? (
                     <button
                       type="button"
@@ -3320,9 +3340,11 @@ export default function KoreaFestivalHub() {
               </div>
               <p
                 className={`w-full min-w-0 leading-snug ${
-                  dateChipEnabled
-                    ? 'text-xs font-medium text-stone-700'
-                    : 'text-[11px] text-stone-500'
+                  festivalGridCompactChrome
+                    ? 'text-[10px] text-stone-500'
+                    : dateChipEnabled
+                      ? 'text-xs font-medium text-stone-700'
+                      : 'text-[11px] text-stone-500'
                 }`}
                 data-festival-list-meta=""
               >
@@ -3431,7 +3453,9 @@ export default function KoreaFestivalHub() {
                     : listLarge
                       ? 'space-y-3'
                       : 'space-y-2'
-                } page-scroll-end-pad px-3 ${useFestivalGrid ? 'pt-2' : 'pt-3'} ${
+                } page-scroll-end-pad ${
+                  useFestivalGrid ? 'px-2.5 pt-1' : 'px-3 pt-3'
+                } ${
                   mapSplitActive
                     ? 'hidden lg:block lg:custom-scrollbar lg:min-h-0 lg:w-[min(26rem,38%)] lg:shrink-0 lg:overflow-y-auto lg:border-r lg:border-stone-200'
                     : mapOpen
