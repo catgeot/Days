@@ -1,13 +1,7 @@
 import { useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import {
-  markFestivalSheetExternalReturn,
-  peekFestivalSheetRestoreId,
-} from './lib/festivalHomepageProtocol.js';
-import {
-  festivalIdFromSearchParams,
-  searchParamsWithFestival,
-} from './koreaFestivalDetailUrl.js';
+import { markFestivalSheetExternalReturn } from './lib/festivalHomepageProtocol.js';
+import { restoreFestivalSheetQueryIfNeeded } from './lib/restoreFestivalSheetQuery.js';
 
 /**
  * Same-tab external leave (Safari HTTP interstitial) can restore a list URL without
@@ -38,20 +32,9 @@ export function useFestivalSheetExternalReturnGuard({
 
   useEffect(() => {
     const restoreFestivalQuery = () => {
-      if (typeof window === 'undefined' || typeof sessionStorage === 'undefined') {
-        return;
-      }
-      try {
-        const stored = peekFestivalSheetRestoreId();
-        if (!stored || !/^\d+$/.test(stored)) return;
-        const liveParams = new URLSearchParams(window.location.search);
-        if (festivalIdFromSearchParams(liveParams) === stored) return;
-        setSearchParams(searchParamsWithFestival(liveParams, stored), {
-          replace: true,
-        });
-      } catch {
-        /* quota */
-      }
+      restoreFestivalSheetQueryIfNeeded((next, opts) => {
+        setSearchParams(next, opts);
+      });
     };
     window.addEventListener('pageshow', restoreFestivalQuery);
     window.addEventListener('popstate', restoreFestivalQuery);

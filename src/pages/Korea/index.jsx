@@ -1170,6 +1170,11 @@ export default function KoreaFestivalHub() {
     festivalId,
     seededFestivalIdRef: festivalDeepLinkSeededForRef,
   });
+  useEffect(() => {
+    if (!festivalId || festivalDeepLink.sheet !== 'open') return undefined;
+    markFestivalSheetPendingDeeplink(festivalId);
+    return undefined;
+  }, [festivalId, festivalDeepLink.sheet]);
   const selected = festivalDeepLink.selected;
   const promoDeeplinkIdSet = useMemo(
     () => new Set(socialPromoFestivals.map((entry) => String(entry.contentId))),
@@ -1417,18 +1422,13 @@ export default function KoreaFestivalHub() {
       const detailParams = searchParamsWithFestival(searchParams, festivalId);
       const detailQs = detailParams.toString();
       const lodgingHash = window.location.hash === '#festival-lodging' ? '#festival-lodging' : '';
-      navigate(
-        { pathname: location.pathname, search: listQs ? `?${listQs}` : '' },
-        { replace: true },
-      );
-      navigate(
-        {
-          pathname: location.pathname,
-          search: detailQs ? `?${detailQs}` : '',
-          hash: lodgingHash,
-        },
-        { replace: false },
-      );
+      const pathname = location.pathname || '/korea/';
+      const listHref = `${pathname}${listQs ? `?${listQs}` : ''}`;
+      const detailHref = `${pathname}${detailQs ? `?${detailQs}` : ''}${lodgingHash}`;
+      if (typeof window !== 'undefined' && window.history?.pushState) {
+        window.history.pushState(window.history.state, '', listHref);
+        window.history.pushState(window.history.state, '', detailHref);
+      }
       festivalDetailPushedRef.current = true;
     }
 

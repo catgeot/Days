@@ -35,6 +35,7 @@ test.describe('festival external return — WebKit 390', () => {
 
   test.beforeEach(async ({ context, page }) => {
     await installFestivalExternalReturnFixtures(context);
+    await page.goto('about:blank');
     await page.goto('/korea/', { waitUntil: 'domcontentloaded' });
     await dismissLocHint(page);
   });
