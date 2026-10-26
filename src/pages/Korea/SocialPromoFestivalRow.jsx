@@ -58,22 +58,22 @@ export default function SocialPromoFestivalRow({
       aria-label={t('korea.festival.socialPromoTitle')}
       aria-busy={loading || undefined}
     >
-      <div className="flex items-start gap-2 pr-11">
+      <div className="mb-1 flex items-start justify-between gap-3">
         <h3 className="min-w-0 flex-1 px-0.5 text-[11px] font-bold tracking-wide text-amber-950 break-keep">
           {t('korea.festival.socialPromoTitle')}
         </h3>
+        {onDismiss ? (
+          <button
+            type="button"
+            data-social-promo-dismiss=""
+            className="-mr-1 -mt-0.5 flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-stone-600 transition-colors hover:bg-amber-100/80 hover:text-stone-900"
+            aria-label={t('korea.festival.socialPromoClose')}
+            onClick={onDismiss}
+          >
+            <X size={20} strokeWidth={2.25} aria-hidden="true" />
+          </button>
+        ) : null}
       </div>
-      {onDismiss ? (
-        <button
-          type="button"
-          data-social-promo-dismiss=""
-          className="absolute right-1 top-1 flex h-11 w-11 items-center justify-center rounded-full text-stone-600 transition-colors hover:bg-amber-100/80 hover:text-stone-900"
-          aria-label={t('korea.festival.socialPromoClose')}
-          onClick={onDismiss}
-        >
-          <X size={20} strokeWidth={2.25} aria-hidden="true" />
-        </button>
-      ) : null}
       <div
         className="mt-1.5 flex gap-2 overflow-x-auto overscroll-x-contain pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         data-social-promo-scroll=""
@@ -131,24 +131,25 @@ function SocialPromoCard({ item, onSelect }) {
       onClick={() => onSelect(item)}
       className="flex w-[110px] shrink-0 flex-col overflow-hidden rounded-lg border border-amber-100 bg-white text-left shadow-sm transition-colors hover:border-amber-300 hover:bg-amber-50/40"
     >
-      <div className="aspect-[8/3] w-full overflow-hidden bg-stone-100">
+      <div className="relative aspect-[8/3] w-full overflow-hidden bg-stone-100">
         <FestivalListThumbBox
           item={rowItem}
           isEnglish={isEnglish}
-          className="!h-full !w-full !rounded-none"
+          fill
+          className="absolute inset-0 rounded-none"
         />
       </div>
       <div className="flex min-h-[2.75rem] flex-col gap-0.5 p-1.5">
         {titleLines?.secondary ? (
           <>
             <p
-              className="line-clamp-1 text-[11px] font-bold leading-snug text-stone-900 break-keep"
+              className="line-clamp-2 text-[10px] font-bold leading-snug text-stone-900"
               data-social-promo-title-en=""
             >
               {titleLines.primary}
             </p>
             <p
-              className="line-clamp-1 text-[10px] font-semibold leading-snug text-stone-600 break-keep"
+              className="line-clamp-2 text-[9px] font-semibold leading-snug text-stone-600"
               data-social-promo-title-ko=""
             >
               {titleLines.secondary}
@@ -156,7 +157,7 @@ function SocialPromoCard({ item, onSelect }) {
           </>
         ) : (
           <p
-            className="line-clamp-2 text-[11px] font-bold leading-snug text-stone-900 break-keep"
+            className="line-clamp-2 text-[10px] font-bold leading-snug text-stone-900"
             data-social-promo-title=""
           >
             {titleLines?.primary}

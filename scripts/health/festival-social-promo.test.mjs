@@ -660,6 +660,14 @@ test('hub wires session pin, promo row, and merge', () => {
   assert.match(promoRow, /data-social-promo-dismiss/);
   assert.match(promoRow, /w-\[110px\]/);
   assert.match(promoRow, /md:w-fit/);
+  assert.match(promoRow, /line-clamp-2/);
+  assert.match(promoRow, /absolute inset-0/);
+  const thumbBox = readFileSync(
+    join(root, 'src/pages/Korea/festivalListThumbBox.jsx'),
+    'utf8',
+  );
+  assert.match(thumbBox, /fill = false/);
+  assert.match(thumbBox, /object-cover/);
   assert.match(hub, /instagramStripEligible/);
   assert.match(hub, /handleSocialPromoDismiss/);
   const app = readFileSync(join(root, 'src/App.jsx'), 'utf8');
