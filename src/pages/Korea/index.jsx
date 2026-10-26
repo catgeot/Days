@@ -17,8 +17,6 @@ import {
   LocateFixed,
   Map as MapIcon,
   MapPin,
-  Maximize2,
-  Minimize2,
   Search,
   Sparkles,
   Star,
@@ -58,9 +56,12 @@ import {
 import FestivalDateSheet from './FestivalDateSheet';
 import {
   isGateoFestivalDateChipEnabled,
-  isGateoFestivalGridEnabled,
   isGateoFestivalRoadEnabled,
 } from '../../shared/gateoFeatureFlags';
+import {
+  readFestivalHubLegacyListFromSession,
+  writeFestivalHubLegacyListToSession,
+} from './festivalListViewSession.js';
 import FestivalGridPhotoCard, {
   FestivalGridSkeleton,
 } from './components/FestivalGridPhotoCard.jsx';
@@ -896,7 +897,6 @@ function FestivalRow({
 
 function FestivalEntries({
   useGrid,
-  listLarge,
   items,
   selected,
   favoriteIds,
@@ -937,7 +937,7 @@ function FestivalEntries({
     <FestivalRow
       key={festivalKey(item)}
       item={item}
-      large={listLarge}
+      large={false}
       active={
         selected?.contentId != null &&
         String(selected.contentId) === String(item.contentId)
@@ -962,10 +962,15 @@ export default function KoreaFestivalHub() {
   /** 테마 크로스 레일 deep-link — 칩/지도 리팩터 없이 area만 수신 */
   const themeAreaParam = String(searchParams.get('area') || '').trim();
   const festivalId = festivalIdFromSearchParams(searchParams);
-  const festivalGridMock = isGateoFestivalGridEnabled(searchParams);
-  const [festivalGridLegacyList, setFestivalGridLegacyList] = useState(false);
-  const useFestivalGrid = festivalGridMock && !festivalGridLegacyList;
-  const festivalGridCompactChrome = festivalGridMock && useFestivalGrid;
+  const [festivalLegacyList, setFestivalLegacyList] = useState(
+    () => readFestivalHubLegacyListFromSession(),
+  );
+  const useFestivalGrid = !festivalLegacyList;
+  const festivalGridCompactChrome = useFestivalGrid;
+  const setFestivalHubListView = useCallback((legacy) => {
+    setFestivalLegacyList(legacy);
+    writeFestivalHubLegacyListToSession(legacy);
+  }, []);
   const festivalDetailPushedRef = useRef(false);
   const festivalDeepLinkSeededForRef = useRef('');
   const festivalHistoryTimerRef = useRef(null);
@@ -1016,8 +1021,6 @@ export default function KoreaFestivalHub() {
   const [nearOrigin, setNearOrigin] = useState(null);
   const [mapOpen, setMapOpen] = useState(false);
   const [mapFullscreen, setMapFullscreen] = useState(false);
-  /** 축제 리스트 행·썸네일 확대 */
-  const [listLarge, setListLarge] = useState(false);
   const [mapSessionKey, setMapSessionKey] = useState(0);
   /** PC 분할(lg+) — 리스트·지도 동기화 */
   const [isMapSplit, setIsMapSplit] = useState(() =>
@@ -3253,11 +3256,11 @@ export default function KoreaFestivalHub() {
                     {t('korea.common.close')}
                   </button>
                 ) : null}
-                {festivalGridMock ? (
+                {personalTab == null ? (
                   useFestivalGrid ? (
                     <button
                       type="button"
-                      onClick={() => setFestivalGridLegacyList(true)}
+                      onClick={() => setFestivalHubListView(true)}
                       className="h-9 shrink-0 px-1 text-[11px] font-semibold text-stone-600 underline-offset-2 hover:text-amber-900 hover:underline"
                       data-festival-grid-list-link=""
                     >
@@ -3268,7 +3271,7 @@ export default function KoreaFestivalHub() {
                   ) : (
                     <button
                       type="button"
-                      onClick={() => setFestivalGridLegacyList(false)}
+                      onClick={() => setFestivalHubListView(false)}
                       className="h-9 shrink-0 px-1 text-[11px] font-semibold text-stone-600 underline-offset-2 hover:text-amber-900 hover:underline"
                       data-festival-grid-card-link=""
                     >
@@ -3277,37 +3280,6 @@ export default function KoreaFestivalHub() {
                       })}
                     </button>
                   )
-                ) : null}
-                {!festivalGridMock ? (
-                  <button
-                    type="button"
-                    onClick={() => setListLarge((v) => !v)}
-                    aria-label={
-                      listLarge
-                        ? t('korea.common.listDefaultAria')
-                        : t('korea.common.listLargeAria')
-                    }
-                    title={
-                      listLarge
-                        ? t('korea.common.listDefaultTitle')
-                        : t('korea.common.listLargeTitle')
-                    }
-                    aria-pressed={listLarge}
-                    className={`flex h-9 items-center gap-1 rounded-full border px-2.5 text-[11px] font-bold ${
-                      listLarge
-                        ? 'border-amber-400 bg-amber-50 text-amber-900 hover:bg-amber-100'
-                        : 'border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100'
-                    }`}
-                  >
-                    {listLarge ? (
-                      <Minimize2 size={14} aria-hidden="true" />
-                    ) : (
-                      <Maximize2 size={14} aria-hidden="true" />
-                    )}
-                    {listLarge
-                      ? t('korea.common.listDefault')
-                      : t('korea.common.listLarge')}
-                  </button>
                 ) : null}
                 <button
                   type="button"
@@ -3448,11 +3420,7 @@ export default function KoreaFestivalHub() {
               <div
                 data-festival-list-scroll=""
                 className={`${
-                  useFestivalGrid
-                    ? 'space-y-4'
-                    : listLarge
-                      ? 'space-y-3'
-                      : 'space-y-2'
+                  useFestivalGrid ? 'space-y-4' : 'space-y-2'
                 } page-scroll-end-pad ${
                   useFestivalGrid ? 'px-2.5 pt-1' : 'px-3 pt-3'
                 } ${
@@ -3484,7 +3452,6 @@ export default function KoreaFestivalHub() {
                       </p>
                       <FestivalEntries
                         useGrid={useFestivalGrid}
-                        listLarge={listLarge}
                         items={group.items}
                         selected={selected}
                         favoriteIds={favoriteIds}
@@ -3501,11 +3468,7 @@ export default function KoreaFestivalHub() {
                 loading ? (
                   <div
                     className={
-                      useFestivalGrid
-                        ? 'grid grid-cols-2 gap-2.5'
-                        : listLarge
-                          ? 'space-y-3'
-                          : 'space-y-2'
+                      useFestivalGrid ? 'grid grid-cols-2 gap-2.5' : 'space-y-2'
                     }
                     aria-busy="true"
                     aria-label={t('korea.festival.loadingSchedule')}
@@ -3516,10 +3479,7 @@ export default function KoreaFestivalHub() {
                         useFestivalGrid ? (
                           <FestivalGridSkeleton key={`sk-${i}`} />
                         ) : (
-                          <FestivalRowSkeleton
-                            key={`sk-${i}`}
-                            large={listLarge}
-                          />
+                          <FestivalRowSkeleton key={`sk-${i}`} />
                         ),
                     )}
                   </div>
@@ -3572,7 +3532,6 @@ export default function KoreaFestivalHub() {
                       </p>
                       <FestivalEntries
                         useGrid={useFestivalGrid}
-                        listLarge={listLarge}
                         items={[sessionPinnedDisplay]}
                         selected={selected}
                         favoriteIds={favoriteIds}
@@ -3587,7 +3546,6 @@ export default function KoreaFestivalHub() {
                   {useFestivalGrid ? (
                     <FestivalEntries
                       useGrid
-                      listLarge={listLarge}
                       items={panelGridFlatItems}
                       selected={selected}
                       favoriteIds={favoriteIds}
@@ -3608,7 +3566,6 @@ export default function KoreaFestivalHub() {
                         </p>
                         <FestivalEntries
                           useGrid={false}
-                          listLarge={listLarge}
                           items={group.items}
                           selected={selected}
                           favoriteIds={favoriteIds}
