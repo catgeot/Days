@@ -242,8 +242,18 @@ function hideIdenticalCoordClusters(records) {
 
 function distOf(row, origin) {
   if (!row.point || !origin) return null;
-  const km = haversineKm(origin.lat, origin.lng, row.point.lat, row.point.lng);
+  const cos = Math.cos((origin.lat * Math.PI) / 180);
+  const dy = (row.point.lat - origin.lat) * 111;
+  const dx = (row.point.lng - origin.lng) * 111 * cos;
+  const km = Math.sqrt(dx * dx + dy * dy);
   return Number.isFinite(km) ? km : null;
+}
+
+function isAllowedNearbyContentType(spot) {
+  const type = String(spot?.contentTypeId || spot?.contenttypeid || '').trim();
+  if (type === '14' || type === '38') return false;
+  if (!type || type === '12') return true;
+  return Boolean(String(spot?.localScenicListId || '').trim());
 }
 
 function rankNumber(spot) {
@@ -386,6 +396,7 @@ export function mergeFestivalNearbySights(input = {}) {
   /** @type {Map<string, object[]>} */
   const venueExcludedByList = new Map();
   for (const row of pool) {
+    if (!isAllowedNearbyContentType(row)) continue;
     if (isNonTouristNearbyFacility(row)) continue;
     if (isFestivalOrEventSight(row)) continue;
     const distKm = distOf(row, originPt);
@@ -438,7 +449,7 @@ export function mergeFestivalNearbySights(input = {}) {
     return String(a.title || '').localeCompare(String(b.title || ''), 'ko');
   });
 
-  const blocks = rest.map((spot) => ({ kind: 'spot', spot }));
+  const blocks = [];
   for (const group of sectionGroups) {
     const venueNote = (venueExcludedByList.get(group.listId) || [])
       .map(venueExcludedNote)
@@ -452,6 +463,7 @@ export function mergeFestivalNearbySights(input = {}) {
     });
     for (const spot of group.items) blocks.push({ kind: 'spot', spot });
   }
+  for (const spot of rest) blocks.push({ kind: 'spot', spot });
 
   return { groups: sectionGroups, rest, items: kept, blocks };
 }

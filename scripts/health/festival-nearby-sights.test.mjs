@@ -198,9 +198,30 @@ test('multi-member 팔경 sits under a subheading in number order', () => {
   );
   assert.deepEqual(
     merged.blocks.map((block) => (block.kind === 'heading' ? block.title : block.spot.name)),
-    ['보광사', '함평 팔경', '함평자연생태공원', '삼호천', '청계산'],
+    ['함평 팔경', '함평자연생태공원', '삼호천', '청계산', '보광사'],
   );
   assert.equal(merged.groups[0].items[1].distKm, null);
+});
+
+test('nearby list keeps only attractions and uses the same planar distance as DB fetch', () => {
+  const lat = 35;
+  const lng = 126;
+  const cos = Math.cos((lat * Math.PI) / 180);
+  const oneKmEast = lng + 1 / (111 * cos);
+  const merged = mergeFestivalNearbySights({
+    scenicSpots: [],
+    grouped: {
+      groups: [],
+      rest: [
+        { name: '공원', contentId: '1', contentTypeId: '12', lat, lng: oneKmEast, cat3: 'A02020700' },
+        { name: '전시관', contentId: '2', contentTypeId: '14', lat: lat + 0.01, lng },
+        { name: '시장', contentId: '3', contentTypeId: '38', lat: lat + 0.02, lng },
+      ],
+    },
+    origin: { lat, lng },
+  });
+  assert.deepEqual(merged.items.map((spot) => spot.name), ['공원']);
+  assert.ok(Math.abs(merged.items[0].distKm - 1) < 0.001);
 });
 
 test('a single foreign 팔경 item stays in the general list', () => {
@@ -585,12 +606,18 @@ test('settled no-photo nearby ids use landmark icon not grey pending', () => {
   assert.match(sheet, /rememberKoreaTourAttractionFirstImageMiss/);
   assert.match(sheet, /nearbySightIdsWithoutDisplayableThumb/);
   assert.match(sheet, /NEARBY_SIGHTS_RADIUS_EXPANDED_KM = 50/);
-  assert.match(sheet, /expandNearbySights/);
+  assert.match(sheet, /NEARBY_SIGHTS_INITIAL_VISIBLE = 5/);
+  assert.match(sheet, /NEARBY_SIGHTS_VISIBLE_STEP = 4/);
+  assert.match(sheet, /loadMoreNearbySights/);
+  assert.match(sheet, /data-nearby-distance-band/);
+  assert.match(sheet, /nearbyAttractionTypeLabel/);
+  assert.match(sheet, /text-amber-700/);
   assert.doesNotMatch(sheet, /onClick=\{openScenicPage\}/);
   const rowThumb = sheet.slice(
     sheet.indexOf('function NearbyRowThumb'),
     sheet.indexOf('function nearbySightTitle'),
   );
+  assert.match(rowThumb, /h-\[72px\] w-\[72px\]/);
   assert.match(
     rowThumb,
     /thumbIndex >= urls\.length[\s\S]*if \(imagePending\) return <NearbyThumbSkeleton/,

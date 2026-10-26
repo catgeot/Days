@@ -80,7 +80,9 @@ async function queryNearbyTourAttractions({ lat, lng, radiusKm, limit, cacheOpts
     scored.push({ spot, distKm: Math.sqrt(dist2) });
   }
   scored.sort((a, b) => a.distKm - b.distKm);
-  const spots = scored.slice(0, limit).map((s) => ({ ...s.spot, distKm: s.distKm }));
+  const spots = scored
+    .slice(0, limit)
+    .map((s) => ({ ...s.spot, contentTypeId: '12', distKm: s.distKm }));
   writeNearbyAttractionCache(cacheOpts, spots);
   return { spots, error: null, fromCache: false };
 }

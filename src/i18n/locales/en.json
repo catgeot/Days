@@ -1710,6 +1710,7 @@
         "nearScenicMore": "More {{region}} scenic spots",
         "nearbySights": "Things to see nearby",
         "nearbySightsAria": "Things to see near this festival",
+        "nearbySightsMore": "More",
         "nearbySightsLoading": "Loading things to see nearby…",
         "nearSectionsLoading": "Loading nearby info…",
         "nearbySightsError": "Could not load things to see nearby.",

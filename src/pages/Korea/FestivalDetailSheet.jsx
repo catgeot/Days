@@ -106,7 +106,6 @@ import {
   isGateoNearbyCardsEnabled,
 } from '../../shared/gateoFeatureFlags.js';
 import FestivalNearbyCardsSection from './components/FestivalNearbyCardsSection.jsx';
-import { nearbyCardThumbUrls } from './components/FestivalNearbyPhotoCard.jsx';
 import { formatFestivalDistKm } from './lib/formatFestivalDistKm.js';
 import {
   beltForFestival,
@@ -189,6 +188,8 @@ const NEARBY_SIGHTS_RADIUS_KM = 8;
 const NEARBY_SIGHTS_RADIUS_EXPANDED_KM = 50;
 const NEARBY_SIGHTS_LIMIT = 8;
 const NEARBY_SIGHTS_LIMIT_EXPANDED = 40;
+const NEARBY_SIGHTS_INITIAL_VISIBLE = 5;
+const NEARBY_SIGHTS_VISIBLE_STEP = 4;
 
 function nearbySightsFetchOpts(expanded) {
   return expanded
@@ -376,6 +377,70 @@ function formatDistKm(km) {
 
 const festivalNearbyCardsEnabled = isGateoNearbyCardsEnabled();
 
+const NEARBY_ATTRACTION_TYPE_LABELS = new Map([
+  ['A02020700', '공원'],
+  ['A02020600', '테마파크'],
+  ['A02010800', '사찰'],
+  ['A02010700', '유적'],
+  ['A02010100', '고궁'],
+  ['A02010300', '성문'],
+  ['A02010900', '성지'],
+  ['A01011200', '해변'],
+  ['A01011100', '해안'],
+  ['A01010400', '산'],
+  ['A01011300', '섬'],
+  ['A01011400', '포구'],
+  ['A01011800', '강'],
+  ['A01010500', '생태'],
+  ['A01010700', '수목원'],
+  ['A01010600', '휴양림'],
+  ['A02030100', '체험'],
+  ['A02030200', '체험'],
+  ['A02030400', '체험'],
+  ['A02030600', '거리'],
+  ['A02050600', '건축'],
+  ['A02050200', '전망대'],
+  ['A02050100', '다리'],
+  ['A02050300', '분수'],
+  ['A02020200', '관광단지'],
+  ['A02020300', '온천'],
+  ['A02020800', '유람선'],
+]);
+
+function nearbyAttractionTypeLabel(spot) {
+  if (String(spot?.contentTypeId || spot?.contenttypeid || '').trim() !== '12') {
+    return '';
+  }
+  return NEARBY_ATTRACTION_TYPE_LABELS.get(String(spot?.cat3 || '').trim().toUpperCase()) || '';
+}
+
+function nearbyDistanceBandLimit(distKm) {
+  if (!Number.isFinite(distKm)) return 'unknown';
+  return Math.max(5, Math.ceil(distKm / 5) * 5);
+}
+
+function nearbyDistanceBandTitle(limit) {
+  return limit === 'unknown' ? '거리 미상' : `${limit}km 이내`;
+}
+
+function nearbyListRowsWithBands(items) {
+  const rows = [];
+  let lastBand = null;
+  for (const spot of items || []) {
+    const band = nearbyDistanceBandLimit(spot?.distKm);
+    if (band !== lastBand) {
+      rows.push({
+        kind: 'band',
+        key: `band-${band}-${rows.length}`,
+        title: nearbyDistanceBandTitle(band),
+      });
+      lastBand = band;
+    }
+    rows.push({ kind: 'spot', spot });
+  }
+  return rows;
+}
+
 function nearbyPlaceLabel(spot) {
   return String(spot?.locality || spot?.region || '').trim();
 }
@@ -387,7 +452,7 @@ function nearbyThumbUrls(spot, extraThumb) {
 function NearbyThumbPlaceholder() {
   return (
     <div
-      className="h-14 w-14 shrink-0 overflow-hidden rounded-xl"
+      className="h-[72px] w-[72px] shrink-0 overflow-hidden rounded-xl"
       data-nearby-thumb="empty"
     >
       <FestivalDetailPhotoFallback size="sm" />
@@ -398,7 +463,7 @@ function NearbyThumbPlaceholder() {
 function NearbyThumbSkeleton() {
   return (
     <div
-      className="h-14 w-14 shrink-0 rounded-xl bg-stone-200 animate-pulse"
+      className="h-[72px] w-[72px] shrink-0 rounded-xl bg-stone-200 animate-pulse"
       data-nearby-thumb="pending"
       data-nearby-thumb-pending=""
       aria-hidden="true"
@@ -428,7 +493,7 @@ function NearbyRowThumb({ spot, extraThumb, imagePending = false }) {
   const thumb = urls[thumbIndex];
   return (
     <span
-      className="relative block h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-stone-200"
+      className="relative block h-[72px] w-[72px] shrink-0 overflow-hidden rounded-xl bg-stone-200"
       data-nearby-thumb={ready ? 'photo' : 'pending'}
     >
       {ready ? null : (
@@ -446,7 +511,7 @@ function NearbyRowThumb({ spot, extraThumb, imagePending = false }) {
         loading="eager"
         decoding="async"
         referrerPolicy="no-referrer"
-        className="relative h-14 w-14 object-cover"
+        className="relative h-[72px] w-[72px] object-cover"
         fallback={
           thumbIndex + 1 < urls.length ? (
             <NearbyThumbSkeleton />
@@ -478,6 +543,7 @@ function NearbyAttractionRow({ spot, extraThumb, imagePending = false, onSelect 
   const place = nearbyPlaceLabel(spot);
   const rankBlurb = String(spot?.rankBlurb || '').trim();
   const title = nearbySightTitle(spot);
+  const typeLabel = nearbyAttractionTypeLabel(spot);
   const clickable =
     Boolean(spot?.placeSlug) || isNearbyAttractionRowClickable(spot);
   const Inner = clickable ? 'button' : 'div';
@@ -507,6 +573,11 @@ function NearbyAttractionRow({ spot, extraThumb, imagePending = false, onSelect 
             <span className="text-sm font-bold text-stone-800 leading-snug line-clamp-2 break-keep">
               {title}
             </span>
+            {typeLabel ? (
+              <span className="text-[11px] font-semibold text-amber-700 break-keep">
+                {typeLabel}
+              </span>
+            ) : null}
             {rankBlurb ? (
               <span className="text-[11px] font-semibold text-stone-500 break-keep">
                 {rankBlurb}
@@ -703,6 +774,9 @@ export default function FestivalDetailSheet({
   const mooniWasOpenRef = useRef(false);
   const [nearbySpots, setNearbySpots] = useState([]);
   const [nearbySightsExpanded, setNearbySightsExpanded] = useState(false);
+  const [nearbySightsVisibleCount, setNearbySightsVisibleCount] = useState(
+    NEARBY_SIGHTS_INITIAL_VISIBLE,
+  );
   const [nearbyStatus, setNearbyStatus] = useState('idle');
   const [nearbyParking, setNearbyParking] = useState([]);
   const [nearbyParkingReady, setNearbyParkingReady] = useState(false);
@@ -776,10 +850,6 @@ export default function FestivalDetailSheet({
   const scenicRegion = useMemo(
     () => scenicRegionForAreaCode(festivalAreaCode),
     [festivalAreaCode],
-  );
-  const scenicRegionLabel = useMemo(
-    () => localizedScenicMajorRegion(locale, scenicRegion),
-    [locale, scenicRegion],
   );
 
   const scenicSpotsRanked = useMemo(() => {
@@ -1006,9 +1076,31 @@ export default function FestivalDetailSheet({
     (showFestivalStayStrip && stayStripStatus === 'loading') ||
     (showFestivalTnaStrip && tnaStripStatus === 'loading');
 
-  const expandNearbySights = useCallback(() => {
-    if (nearbySightsExpanded) return;
-    setNearbySightsExpanded(true);
+  const representativeNearbyGroups = nearbySights.groups || [];
+  const representativeNearbyVenueNotes = useMemo(() => {
+    const notes = new Map();
+    for (const block of nearbySights.blocks || []) {
+      if (block?.kind === 'heading' && block.listId && block.venueNote) {
+        notes.set(block.listId, block.venueNote);
+      }
+    }
+    return notes;
+  }, [nearbySights.blocks]);
+  const nearbySightListItems = nearbySights.rest || [];
+  const visibleNearbySightListItems = useMemo(
+    () => nearbySightListItems.slice(0, nearbySightsVisibleCount),
+    [nearbySightListItems, nearbySightsVisibleCount],
+  );
+  const visibleNearbySightRows = useMemo(
+    () => nearbyListRowsWithBands(visibleNearbySightListItems),
+    [visibleNearbySightListItems],
+  );
+  const canLoadMoreNearbySights =
+    nearbySightListItems.length > nearbySightsVisibleCount ||
+    (!nearbySightsExpanded && Boolean(festivalLngLat(item?.mapx, item?.mapy)));
+  const loadMoreNearbySights = useCallback(() => {
+    setNearbySightsVisibleCount((count) => count + NEARBY_SIGHTS_VISIBLE_STEP);
+    if (!nearbySightsExpanded) setNearbySightsExpanded(true);
   }, [nearbySightsExpanded]);
 
   const coursesPageHref = useMemo(() => {
@@ -1611,6 +1703,7 @@ export default function FestivalDetailSheet({
 
   useEffect(() => {
     setNearbySightsExpanded(false);
+    setNearbySightsVisibleCount(NEARBY_SIGHTS_INITIAL_VISIBLE);
   }, [item?.contentId]);
 
   useEffect(() => {
@@ -2795,18 +2888,12 @@ export default function FestivalDetailSheet({
                   className="space-y-2 pt-1"
                   data-festival-section="nearAttractions"
                 >
-                  {!(
-                    festivalNearbyCardsEnabled &&
-                    !nearbyPending &&
-                    nearbySights.items.length > 0
-                  ) ? (
-                    <p
-                      className="text-[11px] font-bold tracking-widest text-stone-400 uppercase"
-                      data-nearby-heading=""
-                    >
-                      {t('korea.festival.detail.nearbySights')}
-                    </p>
-                  ) : null}
+                  <p
+                    className="text-[11px] font-bold tracking-widest text-stone-400 uppercase"
+                    data-nearby-heading=""
+                  >
+                    {t('korea.festival.detail.nearbySights')}
+                  </p>
                   {nearbyPending && (
                     <div className="flex items-center gap-2 text-sm text-stone-500 py-1">
                       <Loader2 size={16} className="animate-spin" aria-hidden="true" />
@@ -2827,83 +2914,70 @@ export default function FestivalDetailSheet({
                     )}
                   {!nearbyPending &&
                     nearbySights.items.length > 0 &&
-                    festivalNearbyCardsEnabled && (
-                      <FestivalNearbyCardsSection
-                        sectionId="nearAttractions"
-                        title={t('korea.festival.detail.nearbySights')}
-                        ariaLabel={t('korea.festival.detail.nearbySightsAria')}
-                        variant="sights"
-                        blocks={nearbySights.blocks}
-                        headingAttr
-                        spotHasPhoto={(spot) => {
-                          const merged = mergeNearbyItemImages([spot], nearbyThumbById)[0];
-                          const extraThumb = nearbyThumbById.get(
-                            String(merged.contentId || '').trim(),
-                          );
-                          if (nearbySightImagePending(merged, nearbyImageMiss)) return false;
-                          return nearbyRowThumbCandidateUrls(merged, extraThumb).length > 0;
-                        }}
-                        onSpotActivate={(row) => {
-                          const merged = mergeNearbyRowWithLocalScenicDetail(row);
-                          if (merged?.placeSlug && !merged?.localScenicListId) {
-                            setSelectedScenic(merged);
-                          } else {
-                            setSelectedNearby(merged);
-                          }
-                        }}
-                        renderSpotMeta={(spot) => {
-                          const merged = mergeNearbyItemImages([spot], nearbyThumbById)[0];
-                          const extraThumb = nearbyThumbById.get(
-                            String(merged.contentId || '').trim(),
-                          );
-                          const rankBlurb = String(merged?.rankBlurb || '').trim();
-                          const place = nearbyPlaceLabel(merged);
-                          const title = nearbySightTitle(merged);
-                          const clickable =
-                            Boolean(merged?.placeSlug) ||
-                            isNearbyAttractionRowClickable(merged);
-                          return {
-                            title,
-                            subtitleLines: rankBlurb
-                              ? [rankBlurb]
-                              : place
-                                ? [place]
-                                : [],
-                            thumbUrls: nearbyCardThumbUrls(merged, extraThumb),
-                            imagePending: nearbySightImagePending(merged, nearbyImageMiss),
-                            clickable,
-                          };
-                        }}
-                      />
-                    )}
-                  {!nearbyPending &&
-                    nearbySights.items.length > 0 &&
-                    !festivalNearbyCardsEnabled && (
+                    (
                     <ul
                       className="space-y-2"
                       aria-label={t('korea.festival.detail.nearbySightsAria')}
+                      data-nearby-list=""
                     >
-                      {nearbySights.blocks.map((block) => {
-                        if (block.kind === 'heading') {
+                      {representativeNearbyGroups.map((group) => (
+                        <li
+                          key={`group-${group.listId}`}
+                          className="list-none space-y-2 pt-1"
+                          data-nearby-representative-group=""
+                        >
+                          <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+                            <p className="text-base font-bold text-stone-800 break-keep">
+                              {group.title}
+                            </p>
+                            {representativeNearbyVenueNotes.get(group.listId) ? (
+                              <p
+                                data-scenic-venue-note=""
+                                className="min-w-0 text-[11px] leading-snug text-stone-500 break-keep whitespace-pre-line"
+                              >
+                                {representativeNearbyVenueNotes.get(group.listId)}
+                              </p>
+                            ) : null}
+                          </div>
+                          <ul className="space-y-2">
+                            {group.items.map((rawSpot) => {
+                              const spot = mergeNearbyItemImages([rawSpot], nearbyThumbById)[0];
+                              return (
+                                <NearbyAttractionRow
+                                  key={spot.contentId || spot.id || spot.name}
+                                  spot={spot}
+                                  imagePending={nearbySightImagePending(spot, nearbyImageMiss)}
+                                  extraThumb={nearbyThumbById.get(
+                                    String(spot.contentId || '').trim(),
+                                  )}
+                                  onSelect={(row) => {
+                                    if (row?.placeSlug && !row?.localScenicListId) {
+                                      setSelectedScenic(row);
+                                    } else {
+                                      setSelectedNearby(row);
+                                    }
+                                  }}
+                                />
+                              );
+                            })}
+                          </ul>
+                        </li>
+                      ))}
+                      {visibleNearbySightRows.map((row) => {
+                        if (row.kind === 'band') {
                           return (
-                            <li key={`heading-${block.listId}`} className="list-none pt-3">
-                              <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-                                <p className="text-base font-bold text-stone-800 break-keep">
-                                  {block.title}
-                                </p>
-                                {block.venueNote ? (
-                                  <p
-                                    data-scenic-venue-note=""
-                                    className="min-w-0 text-[11px] leading-snug text-stone-500 break-keep whitespace-pre-line"
-                                  >
-                                    {block.venueNote}
-                                  </p>
-                                ) : null}
-                              </div>
+                            <li
+                              key={row.key}
+                              className="list-none pt-2"
+                              data-nearby-distance-band=""
+                            >
+                              <p className="inline-flex rounded-full bg-stone-800 px-3 py-1 text-[11px] font-bold text-white break-keep">
+                                {row.title}
+                              </p>
                             </li>
                           );
                         }
-                        const spot = mergeNearbyItemImages([block.spot], nearbyThumbById)[0];
+                        const spot = mergeNearbyItemImages([row.spot], nearbyThumbById)[0];
                         return (
                           <NearbyAttractionRow
                             key={spot.contentId || spot.id || spot.name}
@@ -2924,16 +2998,14 @@ export default function FestivalDetailSheet({
                       })}
                     </ul>
                   )}
-                  {scenicRegion && !nearbySightsExpanded ? (
+                  {!nearbyPending && nearbySights.items.length > 0 && canLoadMoreNearbySights ? (
                     <button
                       type="button"
-                      onClick={expandNearbySights}
+                      onClick={loadMoreNearbySights}
                       data-festival-near-scenic-more=""
                       className="inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-amber-400/90 bg-amber-50 px-3 py-2.5 text-sm font-bold text-amber-950 hover:bg-amber-100"
                     >
-                      {t('korea.festival.detail.nearScenicMore', {
-                        region: scenicRegionLabel || scenicRegion,
-                      })}
+                      {t('korea.festival.detail.nearbySightsMore')}
                     </button>
                   ) : null}
                 </div>
