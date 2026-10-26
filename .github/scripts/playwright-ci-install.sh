@@ -6,6 +6,7 @@ if [[ $# -lt 1 ]]; then
 fi
 if [[ "${PLAYWRIGHT_CACHE_HIT:-false}" == "true" ]]; then
   npx playwright install-deps "$@"
+  npx playwright install "$@"
 else
   npx playwright install --with-deps "$@"
 fi
