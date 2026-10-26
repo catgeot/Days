@@ -242,10 +242,7 @@ function hideIdenticalCoordClusters(records) {
 
 function distOf(row, origin) {
   if (!row.point || !origin) return null;
-  const cos = Math.cos((origin.lat * Math.PI) / 180);
-  const dy = (row.point.lat - origin.lat) * 111;
-  const dx = (row.point.lng - origin.lng) * 111 * cos;
-  const km = Math.sqrt(dx * dx + dy * dy);
+  const km = haversineKm(origin.lat, origin.lng, row.point.lat, row.point.lng);
   return Number.isFinite(km) ? km : null;
 }
 
@@ -449,7 +446,7 @@ export function mergeFestivalNearbySights(input = {}) {
     return String(a.title || '').localeCompare(String(b.title || ''), 'ko');
   });
 
-  const blocks = [];
+  const blocks = rest.map((spot) => ({ kind: 'spot', spot }));
   for (const group of sectionGroups) {
     const venueNote = (venueExcludedByList.get(group.listId) || [])
       .map(venueExcludedNote)
@@ -463,7 +460,6 @@ export function mergeFestivalNearbySights(input = {}) {
     });
     for (const spot of group.items) blocks.push({ kind: 'spot', spot });
   }
-  for (const spot of rest) blocks.push({ kind: 'spot', spot });
 
   return { groups: sectionGroups, rest, items: kept, blocks };
 }

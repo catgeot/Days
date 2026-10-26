@@ -106,6 +106,7 @@ import {
   isGateoNearbyCardsEnabled,
 } from '../../shared/gateoFeatureFlags.js';
 import FestivalNearbyCardsSection from './components/FestivalNearbyCardsSection.jsx';
+import { nearbyCardThumbUrls } from './components/FestivalNearbyPhotoCard.jsx';
 import { formatFestivalDistKm } from './lib/formatFestivalDistKm.js';
 import {
   beltForFestival,
@@ -569,17 +570,17 @@ function NearbyAttractionRow({ spot, extraThumb, imagePending = false, onSelect 
       >
         <NearbyRowThumb spot={spot} extraThumb={extraThumb} imagePending={imagePending} />
         <span className="min-w-0 flex-1">
-          <span className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-            <span className="text-sm font-bold text-stone-800 leading-snug line-clamp-2 break-keep">
+          <span className="flex min-w-0 items-center gap-x-2">
+            <span className="min-w-0 flex-1 truncate text-sm font-bold text-stone-800 leading-snug break-keep">
               {title}
             </span>
             {typeLabel ? (
-              <span className="text-[11px] font-semibold text-amber-700 break-keep">
+              <span className="shrink-0 text-[11px] font-semibold text-amber-700 break-keep">
                 {typeLabel}
               </span>
             ) : null}
             {rankBlurb ? (
-              <span className="text-[11px] font-semibold text-stone-500 break-keep">
+              <span className="shrink-0 text-[11px] font-semibold text-stone-500 break-keep">
                 {rankBlurb}
               </span>
             ) : null}
@@ -851,6 +852,10 @@ export default function FestivalDetailSheet({
     () => scenicRegionForAreaCode(festivalAreaCode),
     [festivalAreaCode],
   );
+  const scenicRegionLabel = useMemo(
+    () => localizedScenicMajorRegion(locale, scenicRegion),
+    [locale, scenicRegion],
+  );
 
   const scenicSpotsRanked = useMemo(() => {
     if (!scenicRegion) return [];
@@ -1098,6 +1103,10 @@ export default function FestivalDetailSheet({
   const canLoadMoreNearbySights =
     nearbySightListItems.length > nearbySightsVisibleCount ||
     (!nearbySightsExpanded && Boolean(festivalLngLat(item?.mapx, item?.mapy)));
+  const expandNearbySights = useCallback(() => {
+    if (nearbySightsExpanded) return;
+    setNearbySightsExpanded(true);
+  }, [nearbySightsExpanded]);
   const loadMoreNearbySights = useCallback(() => {
     setNearbySightsVisibleCount((count) => count + NEARBY_SIGHTS_VISIBLE_STEP);
     if (!nearbySightsExpanded) setNearbySightsExpanded(true);
@@ -2888,12 +2897,18 @@ export default function FestivalDetailSheet({
                   className="space-y-2 pt-1"
                   data-festival-section="nearAttractions"
                 >
-                  <p
-                    className="text-[11px] font-bold tracking-widest text-stone-400 uppercase"
-                    data-nearby-heading=""
-                  >
-                    {t('korea.festival.detail.nearbySights')}
-                  </p>
+                  {!(
+                    festivalNearbyCardsEnabled &&
+                    !nearbyPending &&
+                    nearbySights.items.length > 0
+                  ) ? (
+                    <p
+                      className="text-[11px] font-bold tracking-widest text-stone-400 uppercase"
+                      data-nearby-heading=""
+                    >
+                      {t('korea.festival.detail.nearbySights')}
+                    </p>
+                  ) : null}
                   {nearbyPending && (
                     <div className="flex items-center gap-2 text-sm text-stone-500 py-1">
                       <Loader2 size={16} className="animate-spin" aria-hidden="true" />
@@ -2914,7 +2929,58 @@ export default function FestivalDetailSheet({
                     )}
                   {!nearbyPending &&
                     nearbySights.items.length > 0 &&
-                    (
+                    festivalNearbyCardsEnabled && (
+                      <FestivalNearbyCardsSection
+                        sectionId="nearAttractions"
+                        title={t('korea.festival.detail.nearbySights')}
+                        ariaLabel={t('korea.festival.detail.nearbySightsAria')}
+                        variant="sights"
+                        blocks={nearbySights.blocks}
+                        headingAttr
+                        spotHasPhoto={(spot) => {
+                          const merged = mergeNearbyItemImages([spot], nearbyThumbById)[0];
+                          const extraThumb = nearbyThumbById.get(
+                            String(merged.contentId || '').trim(),
+                          );
+                          if (nearbySightImagePending(merged, nearbyImageMiss)) return false;
+                          return nearbyRowThumbCandidateUrls(merged, extraThumb).length > 0;
+                        }}
+                        onSpotActivate={(row) => {
+                          const merged = mergeNearbyRowWithLocalScenicDetail(row);
+                          if (merged?.placeSlug && !merged?.localScenicListId) {
+                            setSelectedScenic(merged);
+                          } else {
+                            setSelectedNearby(merged);
+                          }
+                        }}
+                        renderSpotMeta={(spot) => {
+                          const merged = mergeNearbyItemImages([spot], nearbyThumbById)[0];
+                          const extraThumb = nearbyThumbById.get(
+                            String(merged.contentId || '').trim(),
+                          );
+                          const rankBlurb = String(merged?.rankBlurb || '').trim();
+                          const place = nearbyPlaceLabel(merged);
+                          const title = nearbySightTitle(merged);
+                          const clickable =
+                            Boolean(merged?.placeSlug) ||
+                            isNearbyAttractionRowClickable(merged);
+                          return {
+                            title,
+                            subtitleLines: rankBlurb
+                              ? [rankBlurb]
+                              : place
+                                ? [place]
+                                : [],
+                            thumbUrls: nearbyCardThumbUrls(merged, extraThumb),
+                            imagePending: nearbySightImagePending(merged, nearbyImageMiss),
+                            clickable,
+                          };
+                        }}
+                      />
+                    )}
+                  {!nearbyPending &&
+                    nearbySights.items.length > 0 &&
+                    !festivalNearbyCardsEnabled && (
                     <ul
                       className="space-y-2"
                       aria-label={t('korea.festival.detail.nearbySightsAria')}
@@ -2998,7 +3064,22 @@ export default function FestivalDetailSheet({
                       })}
                     </ul>
                   )}
-                  {!nearbyPending && nearbySights.items.length > 0 && canLoadMoreNearbySights ? (
+                  {festivalNearbyCardsEnabled && scenicRegion && !nearbySightsExpanded ? (
+                    <button
+                      type="button"
+                      onClick={expandNearbySights}
+                      data-festival-near-scenic-more=""
+                      className="inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-amber-400/90 bg-amber-50 px-3 py-2.5 text-sm font-bold text-amber-950 hover:bg-amber-100"
+                    >
+                      {t('korea.festival.detail.nearScenicMore', {
+                        region: scenicRegionLabel || scenicRegion,
+                      })}
+                    </button>
+                  ) : null}
+                  {!festivalNearbyCardsEnabled &&
+                  !nearbyPending &&
+                  nearbySights.items.length > 0 &&
+                  canLoadMoreNearbySights ? (
                     <button
                       type="button"
                       onClick={loadMoreNearbySights}
