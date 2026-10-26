@@ -3,9 +3,6 @@
  *
  *   npm run build && npx vite preview --host 127.0.0.1 --port 4173
  *   node scripts/capture-festival-nearby-append-390.mjs
- *
- * Env: CAPTURE_BASE_URL (default https://127.0.0.1:4173)
- *      FESTIVAL_IDS=comma-separated contentIds (optional; default discovers 양평 지평 + 2 fixtures)
  */
 import { mkdir, writeFile } from 'node:fs/promises';
 import { webkit, devices } from 'playwright';
@@ -18,50 +15,56 @@ import {
 
 const OUT_DIR = '/opt/cursor/artifacts/festival-nearby-append-390';
 const BASE = (process.env.CAPTURE_BASE_URL || 'https://127.0.0.1:4173').replace(/\/$/, '');
-const DEFAULT_IDS = (process.env.FESTIVAL_IDS || '')
+
+/** 양평·지평, 대전, 강원 — three distinct festivals */
+const CAPTURE_FESTIVALS = [
+  { id: '4134834', label: 'yangpyeong-jipyeong', titleHint: '지평' },
+  { id: '2770434', label: 'daejeon', titleHint: '대전' },
+  { id: '2930716', label: 'gangwon-gangneung', titleHint: '강릉' },
+  { id: '141105', label: 'gyeongnam-goseong', titleHint: '고성' },
+];
+
+const OVERRIDE_IDS = (process.env.FESTIVAL_IDS || '')
   .split(',')
   .map((s) => s.trim())
   .filter(Boolean);
 
-async function discoverFestivalIds(page) {
-  if (DEFAULT_IDS.length) return DEFAULT_IDS;
-  const ids = new Set();
-  await page.goto(`${BASE}/korea/`, { waitUntil: 'domcontentloaded', timeout: 120_000 });
-  const mobileSearch = page.locator('#korea-festival-search');
-  if (!(await mobileSearch.isVisible().catch(() => false))) {
-    await page.getByRole('button', { name: /검색/ }).first().click({ timeout: 15_000 }).catch(() => {});
-  }
-  const search = page.locator('#korea-festival-search').first();
-  await search.waitFor({ state: 'visible', timeout: 30_000 });
-  await search.fill('양평 지평');
-  await page.waitForTimeout(800);
-  const hrefs = await page.locator('a[href*="festival="]').evaluateAll((els) =>
-    els.map((a) => {
-      try {
-        const u = new URL(a.href);
-        return u.searchParams.get('festival') || '';
-      } catch {
-        return '';
-      }
-    }),
-  );
-  for (const id of hrefs) {
-    if (id) ids.add(id);
-  }
-  for (const fallback of ['4133567', '2930716', '8099001']) {
-    ids.add(fallback);
-  }
-  return [...ids].slice(0, 3);
-}
-
-async function rowNames(page) {
+async function rowSnapshots(page) {
   return page.evaluate(() => {
     const list = document.querySelector('[data-nearby-list]');
     if (!list) return [];
-    return [...list.querySelectorAll('[data-nearby-attraction-row]')].map(
-      (el) => el.getAttribute('data-nearby-row-key') || el.textContent?.trim()?.slice(0, 40) || '',
-    );
+    return [...list.querySelectorAll('[data-nearby-attraction-row]')].map((el) => {
+      const id = el.getAttribute('data-nearby-row-key') || '';
+      const title = el.querySelector('.text-sm.font-bold')?.textContent?.trim() || '';
+      const distChip = el.querySelector('.rounded-full.bg-stone-100');
+      const distText = distChip?.textContent?.trim() || '';
+      let distanceKm = null;
+      const kmMatch = distText.match(/([\d.]+)\s*km/i);
+      const mMatch = distText.match(/([\d.]+)\s*m\b/i);
+      if (kmMatch) distanceKm = Number(kmMatch[1]);
+      else if (mMatch) distanceKm = Number(mMatch[1]) / 1000;
+      return {
+        id,
+        title,
+        distanceKm,
+        distanceLabel: distText || null,
+      };
+    });
   });
+}
+
+async function openFestival(page, festivalId) {
+  await page.goto(`${BASE}/korea/?festival=${festivalId}`, {
+    waitUntil: 'load',
+    timeout: 120_000,
+  });
+  await page.waitForSelector('#korea-festival-sheet-title', { timeout: 120_000 });
+  await page.waitForFunction(
+    (id) => new URL(window.location.href).searchParams.get('festival') === id,
+    festivalId,
+    { timeout: 30_000 },
+  );
+  await page.waitForTimeout(800);
 }
 
 async function clipShot(page, path) {
@@ -69,6 +72,39 @@ async function clipShot(page, path) {
     path,
     clip: { x: 0, y: 0, width: 390, height: 844 },
   });
+}
+
+function analyzeAppend(before, after) {
+  const prefixLen = before.length;
+  const prefixOk =
+    prefixLen > 0 &&
+    after.length >= prefixLen &&
+    before.every((row, i) => after[i]?.id === row.id);
+  const appended = after.slice(prefixLen);
+  const appendedIds = new Set(appended.map((row) => row.id));
+  const noDupes =
+    appended.length === appendedIds.size &&
+    appended.every((row) => !before.some((prev) => prev.id === row.id));
+  const dists = appended.map((row) => row.distanceKm).filter((n) => Number.isFinite(n));
+  const distanceSorted =
+    dists.length === appended.length &&
+    dists.every((d, i) => i === 0 || d >= dists[i - 1] - 0.05);
+  const maxBefore = Math.max(
+    ...before.map((row) => row.distanceKm).filter((n) => Number.isFinite(n)),
+    -Infinity,
+  );
+  const nextNearestOk =
+    appended.length === 4 &&
+    dists.length === 4 &&
+    dists[0] >= maxBefore - 0.8;
+  return {
+    prefixOk,
+    appendedCount: appended.length,
+    noDuplicateAppended: noDupes,
+    appendedDistanceSorted: distanceSorted,
+    appendedNextNearestOk: nextNearestOk,
+    appendedItems: appended,
+  };
 }
 
 const browser = await webkit.launch({ headless: true });
@@ -81,31 +117,37 @@ const context = await browser.newContext({
   locale: 'ko-KR',
   ignoreHTTPSErrors: true,
 });
-const page = await context.newPage();
 await mkdir(OUT_DIR, { recursive: true });
 
-const festivalIds = await discoverFestivalIds(page);
-const report = { baseUrl: BASE, festivals: [] };
+const targets = OVERRIDE_IDS.length
+  ? OVERRIDE_IDS.map((id, i) => ({ id, label: `custom-${i + 1}` }))
+  : CAPTURE_FESTIVALS;
 
-for (const festivalId of festivalIds) {
-  const slug = festivalId;
-  const beforePath = `${OUT_DIR}/${slug}-before-more-390.png`;
-  const afterPath = `${OUT_DIR}/${slug}-after-more-390.png`;
+const report = {
+  gitHead: process.env.CAPTURE_GIT_HEAD || null,
+  baseUrl: BASE,
+  festivals: [],
+};
+
+for (const { id: festivalId, label, titleHint } of targets) {
+  const page = await context.newPage();
+  const fileSlug = `${label}-${festivalId}`;
+  const beforePath = `${OUT_DIR}/${fileSlug}-before-more-390.png`;
+  const afterPath = `${OUT_DIR}/${fileSlug}-after-more-390.png`;
   try {
-    await page.goto(`${BASE}/korea/?festival=${festivalId}`, {
-      waitUntil: 'domcontentloaded',
-      timeout: 120_000,
-    });
-    await page.waitForSelector('#korea-festival-sheet-title', { timeout: 120_000 });
+    await openFestival(page, festivalId);
     await waitFestivalNearbyAttractionsReady(page);
+    const title = await page.locator('#korea-festival-sheet-title').innerText();
+    if (titleHint && !title.includes(titleHint)) {
+      throw new Error(`title mismatch for ${festivalId}: got "${title}" expected "${titleHint}"`);
+    }
     const more = page.locator('[data-festival-near-scenic-more]:not([disabled])').first();
-    const hasMore = await more.count();
-    if (!hasMore) {
-      report.festivals.push({ festivalId, skipped: 'no 더보기' });
+    if (!(await more.count())) {
+      report.festivals.push({ id: festivalId, label, title, skipped: 'no 더보기 button' });
       continue;
     }
     await ensureFestivalNearbyMoreButtonVisible(page);
-    const namesBefore = await rowNames(page);
+    const itemsBefore = await rowSnapshots(page);
     await clipShot(page, beforePath);
     await waitFestivalNearbyMoreButtonEnabled(page);
     await tapFestivalNearbyLoadMore(page);
@@ -118,24 +160,24 @@ for (const festivalId of festivalIds) {
         { timeout: 60_000 },
       )
       .catch(() => {});
-    await page.waitForTimeout(400);
-    const namesAfter = await rowNames(page);
+    await page.waitForTimeout(500);
+    const itemsAfter = await rowSnapshots(page);
     await clipShot(page, afterPath);
-    const prefixOk =
-      namesBefore.length > 0 &&
-      namesAfter.length >= namesBefore.length &&
-      namesBefore.every((key, i) => namesAfter[i] === key);
+    const analysis = analyzeAppend(itemsBefore, itemsAfter);
     report.festivals.push({
-      festivalId,
-      title: await page.locator('#korea-festival-sheet-title').innerText().catch(() => ''),
+      id: festivalId,
+      label,
+      title,
       beforePath,
       afterPath,
-      namesBefore,
-      namesAfter,
-      appendPrefixOk: prefixOk,
+      itemsBefore,
+      itemsAfter,
+      ...analysis,
     });
   } catch (err) {
-    report.festivals.push({ festivalId, error: String(err?.message || err) });
+    report.festivals.push({ id: festivalId, label, error: String(err?.message || err) });
+  } finally {
+    await page.close();
   }
 }
 
