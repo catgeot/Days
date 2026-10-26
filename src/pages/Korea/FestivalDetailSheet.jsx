@@ -1148,7 +1148,7 @@ export default function FestivalDetailSheet({
     if (!sheet) return;
     sheet.scrollTop = resolveFestivalNearbyLoadMoreScrollTop(planned, sheet.scrollTop);
     nearbyLoadMoreScrollRestoreRef.current = null;
-  }, [visibleNearbySightRows.length, nearbyPending]);
+  }, [visibleNearbySightRows.length]);
 
   const coursesPageHref = useMemo(() => {
     if (!festivalAreaCode) return COURSES_PATH;
