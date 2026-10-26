@@ -95,6 +95,23 @@
 
 **다음 제시어 없음**.
 
+### 축제 주변 더보기 스크롤 (#571)
+
+| | |
+|--|--|
+| **상태** | **#3 WebKit 스크롤 고정** · tip `09c21c8a` (로직 `624d9c27`) · PR [#571](https://github.com/catgeot/Days/pull/571) · **병합 금지** |
+| **브랜치** | `cursor/festival-nearby-v2-fixes-fd42` |
+| **일지** | [`2026-10-26-project-log.md`](./2026-10-26-project-log.md) |
+| **Preview** | `https://www.gateo.kr/qa/festival` → `?festival=4133567` (메이커 플레이) |
+| **VERIFY** | `npm run test:health` · CI [40284781215](https://github.com/catgeot/Days/actions/runs/40284781215) |
+| **남은 일** | 사람 Preview: 더보기 연타 시 화면이 안 튀는지(≤20px). |
+
+```
+축제 주변 더보기 #4, PR 병합·PROD
+@plans/2026-10-26-project-log.md
+@plans/feature-handoff-index.md
+```
+
 ### 주변 볼거리 교통
 
 | | |
