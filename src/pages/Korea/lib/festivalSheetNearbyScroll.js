@@ -34,6 +34,49 @@ export function shouldEndNearbyLoadMoreScrollPin(
   );
 }
 
+/** @param {string} key */
+export function isNearbyLoadMoreScrollPinInterruptKey(key) {
+  return (
+    key === 'ArrowUp' ||
+    key === 'ArrowDown' ||
+    key === 'ArrowLeft' ||
+    key === 'ArrowRight' ||
+    key === 'PageUp' ||
+    key === 'PageDown' ||
+    key === 'Home' ||
+    key === 'End' ||
+    key === ' ' ||
+    key === 'Spacebar'
+  );
+}
+
+/**
+ * @param {HTMLElement} sheet
+ * @param {() => void} release
+ * @returns {() => void} detach
+ */
+export function attachNearbyLoadMoreScrollPinUserRelease(sheet, release) {
+  const passive = { passive: true, capture: true };
+  const onUserIntent = () => release();
+  const onKey = (event) => {
+    if (isNearbyLoadMoreScrollPinInterruptKey(event.key)) release();
+  };
+
+  sheet.addEventListener('wheel', onUserIntent, passive);
+  sheet.addEventListener('touchstart', onUserIntent, passive);
+  sheet.addEventListener('touchmove', onUserIntent, passive);
+  sheet.addEventListener('pointerdown', onUserIntent, passive);
+  sheet.addEventListener('keydown', onKey, true);
+
+  return () => {
+    sheet.removeEventListener('wheel', onUserIntent, passive);
+    sheet.removeEventListener('touchstart', onUserIntent, passive);
+    sheet.removeEventListener('touchmove', onUserIntent, passive);
+    sheet.removeEventListener('pointerdown', onUserIntent, passive);
+    sheet.removeEventListener('keydown', onKey, true);
+  };
+}
+
 /**
  * @param {number} rowTop
  * @param {number} sheetTop
@@ -163,14 +206,15 @@ export function resolveNearbyLoadMorePinTargetScrollTop(sheet, plannedScrollTop,
 }
 
 /**
- * Pin sheet scrollTop until stable or timeout (browser use only).
+ * Brief layout pin (browser only). Ends on user scroll intent, stable frames, or timeout.
+ * Does not listen to `scroll` — user wheel/touch must not be fought.
  * @param {HTMLElement} sheet
  * @param {number} plannedScrollTop
  * @param {{ maxMs?: number, scrollHeightAtPin?: number, anchorKey?: string, anchorDelta?: number | null, onEnd?: (ok: boolean) => void }} [opts]
  * @returns {() => void} cancel
  */
 export function startNearbyLoadMoreScrollPin(sheet, plannedScrollTop, opts = {}) {
-  const maxMs = opts.maxMs ?? 3500;
+  const maxMs = opts.maxMs ?? 1200;
   const pin = {
     anchorKey: opts.anchorKey ?? '',
     anchorDelta: opts.anchorDelta ?? null,
@@ -181,6 +225,7 @@ export function startNearbyLoadMoreScrollPin(sheet, plannedScrollTop, opts = {})
   let timeoutId = 0;
   let cancelled = false;
   let stableFrames = 0;
+  let detachUserRelease = () => {};
 
   const targetScrollTop = () =>
     resolveNearbyLoadMorePinTargetScrollTop(sheet, plannedScrollTop, pin);
@@ -190,21 +235,19 @@ export function startNearbyLoadMoreScrollPin(sheet, plannedScrollTop, opts = {})
     sheet.scrollTop = targetScrollTop();
   };
 
-  const onScroll = () => {
-    if (cancelled) return;
-    stableFrames = 0;
-    apply();
-  };
-
   const finish = (ok) => {
     if (cancelled) return;
     cancelled = true;
     cancelAnimationFrame(rafId);
     clearTimeout(timeoutId);
     ro?.disconnect();
-    sheet.removeEventListener('scroll', onScroll);
+    detachUserRelease();
     opts.onEnd?.(ok);
   };
+
+  const releaseFromUser = () => finish(false);
+
+  detachUserRelease = attachNearbyLoadMoreScrollPinUserRelease(sheet, releaseFromUser);
 
   const tick = () => {
     if (cancelled) return;
@@ -226,7 +269,6 @@ export function startNearbyLoadMoreScrollPin(sheet, plannedScrollTop, opts = {})
     rafId = requestAnimationFrame(tick);
   };
 
-  sheet.addEventListener('scroll', onScroll, { passive: true });
   apply();
   rafId = requestAnimationFrame(tick);
 
@@ -234,6 +276,7 @@ export function startNearbyLoadMoreScrollPin(sheet, plannedScrollTop, opts = {})
   let ro = null;
   if (list instanceof HTMLElement) {
     ro = new ResizeObserver(() => {
+      if (cancelled) return;
       stableFrames = 0;
       apply();
     });
@@ -241,6 +284,7 @@ export function startNearbyLoadMoreScrollPin(sheet, plannedScrollTop, opts = {})
   }
 
   const onImageLoad = () => {
+    if (cancelled) return;
     stableFrames = 0;
     apply();
   };
@@ -252,6 +296,7 @@ export function startNearbyLoadMoreScrollPin(sheet, plannedScrollTop, opts = {})
   }
 
   timeoutId = window.setTimeout(() => {
+    if (cancelled) return;
     apply();
     const target = targetScrollTop();
     finish(nearbyLoadMoreScrollWithinTolerance(target, sheet.scrollTop, 20));

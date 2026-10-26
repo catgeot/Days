@@ -55,6 +55,7 @@ import {
   nearbyLoadMoreScrollWithinTolerance,
   resolveFestivalNearbyLoadMoreScrollTop,
   shouldEndNearbyLoadMoreScrollPin,
+  isNearbyLoadMoreScrollPinInterruptKey,
 } from '../../src/pages/Korea/lib/festivalSheetNearbyScroll.js';
 import {
   nearbyLoadMoreScrollDeltaAcceptable,
@@ -115,6 +116,21 @@ test('computeNearbyLoadMorePinnedScrollTop keeps viewport on anchor row after in
   assert.equal(computeNearbyLoadMorePinnedScrollTop(planned, anchorDelta, 926, 200), 2513);
   assert.equal(computeNearbyLoadMorePinnedScrollTop(planned, anchorDelta, 320, 200), planned);
   assert.equal(computeNearbyLoadMorePinnedScrollTop(planned, null, 926, 200), planned);
+});
+
+test('load-more scroll pin releases on navigation keys', () => {
+  assert.equal(isNearbyLoadMoreScrollPinInterruptKey('PageDown'), true);
+  assert.equal(isNearbyLoadMoreScrollPinInterruptKey(' '), true);
+  assert.equal(isNearbyLoadMoreScrollPinInterruptKey('Enter'), false);
+});
+
+test('load-more pin does not fight user scroll via scroll listener', () => {
+  const pinSrc = readFileSync(
+    join(dirname(fileURLToPath(import.meta.url)), '../../src/pages/Korea/lib/festivalSheetNearbyScroll.js'),
+    'utf8',
+  );
+  assert.match(pinSrc, /attachNearbyLoadMoreScrollPinUserRelease/);
+  assert.doesNotMatch(pinSrc, /addEventListener\('scroll'/);
 });
 
 test('load-more scroll pin tolerance and stable-frame gate', () => {
