@@ -15,6 +15,7 @@ export const GATEO_ENV_FLAG_NAMES = {
   LOCAL_INFO_ROLLOUT: 'VITE_GATEO_LOCAL_INFO_ROLLOUT',
   FESTIVAL_ROAD: 'VITE_GATEO_FESTIVAL_ROAD',
   NEARBY_CARDS: 'VITE_GATEO_NEARBY_CARDS',
+  KOGL_REELS: 'VITE_GATEO_KOGL_REELS',
 };
 
 /** @param {string} name */
@@ -79,4 +80,9 @@ export function isGateoFestivalRoadEnabled() {
 /** Festival nearby sights/food 2-column cards. Default off. */
 export function isGateoNearbyCardsEnabled() {
   return readGateoEnvFlag(GATEO_ENV_FLAG_NAMES.NEARBY_CARDS);
+}
+
+/** Globe home KOGL reels section. Default off. */
+export function isGateoKoglReelsEnabled() {
+  return readGateoEnvFlag(GATEO_ENV_FLAG_NAMES.KOGL_REELS);
 }
