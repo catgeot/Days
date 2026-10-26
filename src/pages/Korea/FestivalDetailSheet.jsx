@@ -557,7 +557,7 @@ function NearbyAttractionRow({ spot, extraThumb, imagePending = false, onSelect 
       }
     : {};
   return (
-    <li>
+    <li data-nearby-attraction-row="">
       <Inner
         {...innerProps}
         tabIndex={clickable ? undefined : -1}
