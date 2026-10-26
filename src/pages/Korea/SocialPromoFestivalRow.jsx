@@ -1,14 +1,11 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { CalendarDays } from 'lucide-react';
+import { CalendarDays, X } from 'lucide-react';
 import { useLocale } from '../../i18n/LocaleProvider';
 import { localizedSocialPromoRegionPlaceLabel } from '../../i18n/koreaRegionLabels.js';
 import { festivalListDisplayTitleLines } from './festivalDisplayTitle.js';
 import { FestivalListThumbBox } from './festivalListThumbBox.jsx';
-import {
-  normalizeFestivalItemImages,
-  socialPromoPlaceLabel,
-} from './socialPromoFestivalsLogic.js';
+import { normalizeFestivalItemImages } from './socialPromoFestivalsLogic.js';
 import { formatFestivalDetailDateRange } from './festivalDateFilter.js';
 
 export function SocialPromoNearLine({ card, onSelect }) {
@@ -44,22 +41,43 @@ export function SocialPromoNearLine({ card, onSelect }) {
   );
 }
 
-export default function SocialPromoFestivalRow({ cards, loading = false, onSelect }) {
+export default function SocialPromoFestivalRow({
+  cards,
+  loading = false,
+  onSelect,
+  onDismiss,
+}) {
   const { t } = useTranslation();
   if (!cards?.length) return null;
 
   return (
     <section
-      className="mb-3 rounded-2xl border border-amber-200/80 bg-gradient-to-br from-amber-50/90 to-white px-3 py-2.5 shadow-sm"
+      className="relative mb-3 rounded-2xl border border-amber-200/80 bg-gradient-to-br from-amber-50/90 to-white px-3 pb-2.5 pt-2 shadow-sm"
       data-social-promo-festival-row=""
       data-social-promo-loading={loading ? 'true' : 'false'}
       aria-label={t('korea.festival.socialPromoTitle')}
       aria-busy={loading || undefined}
     >
-      <h3 className="px-0.5 text-[11px] font-bold tracking-wide text-amber-950 break-keep">
-        {t('korea.festival.socialPromoTitle')}
-      </h3>
-      <div className="mt-2 flex flex-col gap-1.5">
+      <div className="flex items-start gap-2 pr-11">
+        <h3 className="min-w-0 flex-1 px-0.5 text-[11px] font-bold tracking-wide text-amber-950 break-keep">
+          {t('korea.festival.socialPromoTitle')}
+        </h3>
+      </div>
+      {onDismiss ? (
+        <button
+          type="button"
+          data-social-promo-dismiss=""
+          className="absolute right-1 top-1 flex h-11 w-11 items-center justify-center rounded-full text-stone-600 transition-colors hover:bg-amber-100/80 hover:text-stone-900"
+          aria-label={t('korea.festival.socialPromoClose')}
+          onClick={onDismiss}
+        >
+          <X size={20} strokeWidth={2.25} aria-hidden="true" />
+        </button>
+      ) : null}
+      <div
+        className="mt-1.5 flex gap-2 overflow-x-auto overscroll-x-contain pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        data-social-promo-scroll=""
+      >
         {cards.map(({ item, entry }) =>
           loading || !item ? (
             <SocialPromoCardSkeleton
@@ -81,14 +99,14 @@ export default function SocialPromoFestivalRow({ cards, loading = false, onSelec
 function SocialPromoCardSkeleton() {
   return (
     <div
-      className="flex w-full items-center gap-2 rounded-xl border border-amber-100 bg-white p-2"
+      className="flex w-[132px] shrink-0 flex-col overflow-hidden rounded-xl border border-amber-100 bg-white"
       data-social-promo-card-skeleton=""
       aria-hidden="true"
     >
-      <div className="h-10 w-10 shrink-0 animate-pulse rounded-lg bg-stone-200" />
-      <div className="min-w-0 flex-1 space-y-1">
-        <div className="h-3.5 w-full max-w-[14rem] animate-pulse rounded bg-stone-200" />
-        <div className="h-2.5 w-20 animate-pulse rounded bg-amber-100" />
+      <div className="aspect-[4/3] w-full animate-pulse bg-stone-200" />
+      <div className="space-y-1 p-2">
+        <div className="h-3 w-full animate-pulse rounded bg-stone-200" />
+        <div className="h-2.5 w-16 animate-pulse rounded bg-amber-100" />
       </div>
     </div>
   );
@@ -105,48 +123,56 @@ function SocialPromoCard({ item, onSelect }) {
     locale,
   );
   const regionPlace = localizedSocialPromoRegionPlaceLabel(locale, item);
-
   return (
     <button
       type="button"
       data-social-promo-card=""
       data-festival-id={String(item?.contentId || '')}
       onClick={() => onSelect(item)}
-      className="flex w-full min-w-0 items-center gap-2 rounded-xl border border-amber-100 bg-white p-2 text-left shadow-sm transition-colors hover:border-amber-300 hover:bg-amber-50/40"
+      className="flex w-[132px] shrink-0 flex-col overflow-hidden rounded-xl border border-amber-100 bg-white text-left shadow-sm transition-colors hover:border-amber-300 hover:bg-amber-50/40"
     >
-      <FestivalListThumbBox item={rowItem} isEnglish={isEnglish} />
-      <div className="min-w-0 flex-1">
+      <div className="aspect-[4/3] w-full overflow-hidden bg-stone-100">
+        <FestivalListThumbBox
+          item={rowItem}
+          isEnglish={isEnglish}
+          className="!h-full !w-full !rounded-none"
+        />
+      </div>
+      <div className="flex min-h-[3.25rem] flex-col gap-0.5 p-2">
         {titleLines?.secondary ? (
           <>
             <p
-              className="text-[12px] font-bold leading-snug text-stone-900 break-keep"
+              className="line-clamp-1 text-[11px] font-bold leading-snug text-stone-900 break-keep"
               data-social-promo-title-en=""
             >
               {titleLines.primary}
             </p>
             <p
-              className="text-[11px] font-semibold leading-snug text-stone-600 break-keep"
+              className="line-clamp-1 text-[10px] font-semibold leading-snug text-stone-600 break-keep"
               data-social-promo-title-ko=""
             >
               {titleLines.secondary}
             </p>
           </>
         ) : (
-          <p className="text-[12px] font-bold leading-snug text-stone-900 break-keep">
+          <p
+            className="line-clamp-2 text-[11px] font-bold leading-snug text-stone-900 break-keep"
+            data-social-promo-title=""
+          >
             {titleLines?.primary}
           </p>
         )}
         {regionPlace ? (
           <p
-            className="mt-0.5 text-[10px] font-semibold text-stone-500 break-keep"
+            className="truncate text-[9px] font-semibold text-stone-500"
             data-social-promo-region=""
           >
             {regionPlace}
           </p>
         ) : null}
         {range ? (
-          <p className="mt-0.5 flex items-center gap-1 text-[10px] font-bold text-amber-800">
-            <CalendarDays size={10} className="shrink-0" aria-hidden="true" />
+          <p className="mt-auto flex items-center gap-0.5 text-[9px] font-bold text-amber-800">
+            <CalendarDays size={9} className="shrink-0" aria-hidden="true" />
             <span className="truncate">{range}</span>
           </p>
         ) : null}

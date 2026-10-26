@@ -36,6 +36,18 @@ import {
   excludeFestivalsByContentId,
   contentIdsFromPromoCards,
 } from '../../src/pages/Korea/socialPromoFestivalsLogic.js';
+import {
+  detectInstagramLandingSignal,
+  dismissSocialPromoRow,
+  hasInstagramVisitSession,
+  isInstagramReferrerHostname,
+  isInstagramUtmSource,
+  isSocialPromoRowDismissed,
+  recordInstagramVisitIfLanding,
+  shouldShowInstagramSocialPromoStrip,
+  SOCIAL_PROMO_INSTAGRAM_DISMISS_KEY,
+  SOCIAL_PROMO_INSTAGRAM_VISIT_KEY,
+} from '../../src/pages/Korea/socialPromoInstagramSession.js';
 import { manualFestivalListItem, getManualFestivalEntry } from '../../src/pages/Korea/manualFestivalEntries.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '../..');
@@ -290,7 +302,52 @@ test('chip counts match list groups when session pin stays in panel (no exclude)
   assert.equal(nationwide.ok, true, JSON.stringify(nationwide));
 });
 
-test('promo row shows on every region chip; filterSocialPromoCardsByRegion still filters', () => {
+test('instagram utm and referrer detection (case-insensitive)', () => {
+  assert.equal(isInstagramUtmSource('instagram'), true);
+  assert.equal(isInstagramUtmSource('Instagram'), true);
+  assert.equal(isInstagramUtmSource('ig'), true);
+  assert.equal(isInstagramUtmSource('IG'), true);
+  assert.equal(isInstagramUtmSource('facebook'), false);
+  assert.equal(isInstagramReferrerHostname('www.instagram.com'), true);
+  assert.equal(isInstagramReferrerHostname('l.instagram.com'), true);
+  assert.equal(isInstagramReferrerHostname('m.facebook.com'), false);
+  assert.equal(
+    detectInstagramLandingSignal({
+      searchParams: 'utm_source=instagram&utm_medium=social',
+    }),
+    true,
+  );
+  assert.equal(
+    detectInstagramLandingSignal({
+      referrer: 'https://www.instagram.com/p/abc/',
+    }),
+    true,
+  );
+  assert.equal(detectInstagramLandingSignal({ searchParams: '' }), false);
+});
+
+test('instagram session: record, dismiss, persistence', () => {
+  const storage = new Map();
+  const session = {
+    getItem: (k) => storage.get(k) ?? null,
+    setItem: (k, v) => storage.set(k, v),
+    removeItem: (k) => storage.delete(k),
+  };
+  assert.equal(recordInstagramVisitIfLanding(session, { searchParams: 'utm_source=ig' }), true);
+  assert.equal(hasInstagramVisitSession(session), true);
+  assert.equal(
+    recordInstagramVisitIfLanding(session, { searchParams: 'utm_source=ig' }),
+    true,
+  );
+  assert.equal(shouldShowInstagramSocialPromoStrip({ storage: session, regionDefault: true }), true);
+  dismissSocialPromoRow(session);
+  assert.equal(isSocialPromoRowDismissed(session), true);
+  assert.equal(shouldShowInstagramSocialPromoStrip({ storage: session, regionDefault: true }), false);
+  assert.equal(storage.get(SOCIAL_PROMO_INSTAGRAM_VISIT_KEY), '1');
+  assert.equal(storage.get(SOCIAL_PROMO_INSTAGRAM_DISMISS_KEY), '1');
+});
+
+test('promo strip only on default region chip for instagram; filterSocialPromoCardsByRegion still filters', () => {
   const ready = resolveSocialPromoRow(
     socialPromoFestivals,
     new Map([
@@ -314,6 +371,7 @@ test('promo row shows on every region chip; filterSocialPromoCardsByRegion still
     searchActive: false,
     areaCode: 'all',
     cityName: 'all',
+    instagramStripEligible: true,
   });
   assert.equal(nationwide.show, true);
   assert.equal(nationwide.cards.length, 2);
@@ -322,9 +380,18 @@ test('promo row shows on every region chip; filterSocialPromoCardsByRegion still
     searchActive: false,
     areaCode: '32',
     cityName: 'all',
+    instagramStripEligible: true,
   });
-  assert.equal(gangwon.show, true);
-  assert.equal(gangwon.cards.length, 2);
+  assert.equal(gangwon.show, false);
+  assert.equal(gangwon.cards.length, 0);
+
+  const gangwonNoInstagram = resolveSocialPromoPresentation(ready, {
+    searchActive: false,
+    areaCode: 'all',
+    cityName: 'all',
+    instagramStripEligible: false,
+  });
+  assert.equal(gangwonNoInstagram.show, false);
 
   const jeonnam = filterSocialPromoCardsByRegion(ready.cards, {
     areaCode: '38',
@@ -349,9 +416,15 @@ test('promo row shows on every region chip; filterSocialPromoCardsByRegion still
         },
       },
     ],
-  }, { searchActive: false, areaCode: '32', cityName: 'all', timeTab: 'thisMonth' });
-  assert.equal(liveLike.show, true);
-  assert.equal(liveLike.cards.length, 2);
+  }, {
+    searchActive: false,
+    areaCode: '32',
+    cityName: 'all',
+    timeTab: 'thisMonth',
+    instagramStripEligible: true,
+  });
+  assert.equal(liveLike.show, false);
+  assert.equal(liveLike.cards.length, 0);
   assert.equal(socialPromoPlaceLabel(GUKHYANG), '함평');
   assert.equal(socialPromoRegionPlaceLabel(GUKHYANG), '전남 함평');
   assert.equal(
@@ -389,6 +462,7 @@ test('promo strip is this month only; 내 주변 is one nearest line', () => {
     areaCode: 'all',
     cityName: 'all',
     timeTab: 'weekend',
+    instagramStripEligible: true,
   });
   assert.equal(otherTab.show, false);
   assert.equal(otherTab.nearLine, null);
@@ -398,6 +472,7 @@ test('promo strip is this month only; 내 주변 is one nearest line', () => {
     timeTab: 'thisMonth',
     nearActive: true,
     nearOrigin: { lat: 35.06, lng: 126.52 },
+    instagramStripEligible: true,
   });
   assert.equal(searching.show, false);
   assert.equal(searching.nearLine, null);
@@ -409,6 +484,7 @@ test('promo strip is this month only; 내 주변 is one nearest line', () => {
     areaCode: '32',
     cityName: 'all',
     nearOrigin: { lat: 35.059, lng: 126.522 },
+    instagramStripEligible: true,
   });
   assert.equal(nearHampyeong.show, false);
   assert.equal(nearHampyeong.nearLine.item.contentId, '638576');
@@ -568,10 +644,17 @@ test('hub wires session pin, promo row, and merge', () => {
   );
   assert.match(promoRow, /data-social-promo-loading/);
   assert.match(promoRow, /data-social-promo-region/);
-  assert.match(promoRow, /flex-col/);
+  assert.match(promoRow, /data-social-promo-scroll/);
+  assert.match(promoRow, /data-social-promo-dismiss/);
+  assert.match(promoRow, /w-\[132px\]/);
+  assert.match(hub, /instagramStripEligible/);
+  assert.match(hub, /handleSocialPromoDismiss/);
+  const app = readFileSync(join(root, 'src/App.jsx'), 'utf8');
+  assert.match(app, /SocialPromoInstagramVisitCapture/);
+  assert.match(app, /recordInstagramVisitIfLanding/);
 });
 
-test('promo title copy (GATEO, all visitors)', () => {
+test('promo title and close copy (ko/en, no login wording)', () => {
   const ko = JSON.parse(
     readFileSync(join(root, 'src/i18n/locales/ko.json'), 'utf8'),
   );
@@ -580,6 +663,10 @@ test('promo title copy (GATEO, all visitors)', () => {
   );
   assert.equal(ko.korea.festival.socialPromoTitle, 'GATEO가 소개하는 축제');
   assert.equal(en.korea.festival.socialPromoTitle, 'Festivals featured by GATEO');
+  assert.equal(ko.korea.festival.socialPromoClose, '닫기');
+  assert.equal(en.korea.festival.socialPromoClose, 'Close');
+  assert.equal(JSON.stringify(ko.korea.festival).includes('로그인'), false);
+  assert.equal(JSON.stringify(en.korea.festival).includes('log in'), false);
   assert.equal(ko.korea.festival.sessionPinnedSectionTitle, '최근 본 축제');
   assert.equal(en.korea.festival.sessionPinnedSectionTitle, 'Recently viewed');
 });
