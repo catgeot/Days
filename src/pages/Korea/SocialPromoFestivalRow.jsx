@@ -52,7 +52,7 @@ export default function SocialPromoFestivalRow({
 
   return (
     <section
-      className="relative mb-3 rounded-2xl border border-amber-200/80 bg-gradient-to-br from-amber-50/90 to-white px-3 pb-2.5 pt-2 shadow-sm"
+      className="relative mb-3 w-full max-w-full rounded-2xl border border-amber-200/80 bg-gradient-to-br from-amber-50/90 to-white px-3 pb-2.5 pt-2 shadow-sm md:w-fit"
       data-social-promo-festival-row=""
       data-social-promo-loading={loading ? 'true' : 'false'}
       aria-label={t('korea.festival.socialPromoTitle')}
@@ -99,12 +99,12 @@ export default function SocialPromoFestivalRow({
 function SocialPromoCardSkeleton() {
   return (
     <div
-      className="flex w-[132px] shrink-0 flex-col overflow-hidden rounded-xl border border-amber-100 bg-white"
+      className="flex w-[110px] shrink-0 flex-col overflow-hidden rounded-lg border border-amber-100 bg-white"
       data-social-promo-card-skeleton=""
       aria-hidden="true"
     >
-      <div className="aspect-[4/3] w-full animate-pulse bg-stone-200" />
-      <div className="space-y-1 p-2">
+      <div className="aspect-[8/3] w-full animate-pulse bg-stone-200" />
+      <div className="space-y-1 p-1.5">
         <div className="h-3 w-full animate-pulse rounded bg-stone-200" />
         <div className="h-2.5 w-16 animate-pulse rounded bg-amber-100" />
       </div>
@@ -129,16 +129,16 @@ function SocialPromoCard({ item, onSelect }) {
       data-social-promo-card=""
       data-festival-id={String(item?.contentId || '')}
       onClick={() => onSelect(item)}
-      className="flex w-[132px] shrink-0 flex-col overflow-hidden rounded-xl border border-amber-100 bg-white text-left shadow-sm transition-colors hover:border-amber-300 hover:bg-amber-50/40"
+      className="flex w-[110px] shrink-0 flex-col overflow-hidden rounded-lg border border-amber-100 bg-white text-left shadow-sm transition-colors hover:border-amber-300 hover:bg-amber-50/40"
     >
-      <div className="aspect-[4/3] w-full overflow-hidden bg-stone-100">
+      <div className="aspect-[8/3] w-full overflow-hidden bg-stone-100">
         <FestivalListThumbBox
           item={rowItem}
           isEnglish={isEnglish}
           className="!h-full !w-full !rounded-none"
         />
       </div>
-      <div className="flex min-h-[3.25rem] flex-col gap-0.5 p-2">
+      <div className="flex min-h-[2.75rem] flex-col gap-0.5 p-1.5">
         {titleLines?.secondary ? (
           <>
             <p

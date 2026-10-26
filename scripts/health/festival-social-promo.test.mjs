@@ -658,7 +658,8 @@ test('hub wires session pin, promo row, and merge', () => {
   assert.match(promoRow, /data-social-promo-region/);
   assert.match(promoRow, /data-social-promo-scroll/);
   assert.match(promoRow, /data-social-promo-dismiss/);
-  assert.match(promoRow, /w-\[132px\]/);
+  assert.match(promoRow, /w-\[110px\]/);
+  assert.match(promoRow, /md:w-fit/);
   assert.match(hub, /instagramStripEligible/);
   assert.match(hub, /handleSocialPromoDismiss/);
   const app = readFileSync(join(root, 'src/App.jsx'), 'utf8');
