@@ -7,10 +7,13 @@ import {
   isFestivalOrEventSight,
   isFestivalVenueSight,
   mergeFestivalNearbySights,
+  festivalNearbySightDuplicateCount,
   mergeNearbyTourAttractionSpots,
   nearbySightStableKey,
+  nextNearbySightsBaseline,
   normalizeNearbySightName,
   rankMooniNearbySights,
+  resolveFestivalNearbySightsPresentation,
   stabilizeFestivalNearbySightPresentation,
   stripTrailingHubName,
   stripTrailingRegionLabel,
@@ -77,6 +80,67 @@ test('mergeNearbyTourAttractionSpots keeps order and drops duplicates', () => {
     merged.map((row) => row.contentId),
     ['1', '2', '3'],
   );
+});
+
+test('nextNearbySightsBaseline survives strict-mode double collapsed commit', () => {
+  const collapsed = mergeFestivalNearbySights({
+    scenicSpots: [],
+    grouped: {
+      groups: [],
+      rest: [
+        { name: '아쿠아리움', contentId: '1001', distKm: 0.7 },
+        { name: '대전홍보관', contentId: '1002', distKm: 0.8 },
+      ],
+    },
+    origin: { lat: 36.376, lng: 127.38 },
+  });
+  let baseline = null;
+  baseline = nextNearbySightsBaseline(false, collapsed, baseline);
+  baseline = nextNearbySightsBaseline(false, collapsed, baseline);
+  const expanded = mergeFestivalNearbySights({
+    scenicSpots: [],
+    grouped: {
+      groups: [],
+      rest: [
+        { name: '한밭수목원', contentId: '2001', distKm: 1.4 },
+        { name: '아쿠아리움', contentId: '1001', distKm: 0.7 },
+        { name: '대전홍보관', contentId: '1002', distKm: 0.8 },
+      ],
+    },
+    origin: { lat: 36.376, lng: 127.38 },
+  });
+  const shown = resolveFestivalNearbySightsPresentation(true, expanded, baseline);
+  const priorNames = collapsed.blocks
+    .filter((block) => block.kind === 'spot')
+    .map((block) => block.spot.name);
+  const names = shown.blocks
+    .filter((block) => block.kind === 'spot')
+    .map((block) => block.spot.name);
+  assert.deepEqual(names.slice(0, priorNames.length), priorNames);
+  assert.equal(names[names.length - 1], '한밭수목원');
+});
+
+test('representative group and general list have zero duplicate keys (daejeon hub)', () => {
+  const grouped = groupNearbySpotsWithLocalScenic(
+    [
+      { name: '대전 엑스포 아쿠아리움', contentId: '128759', distKm: 0.67 },
+      { name: '꿀잼도시 대전홍보관', contentId: '250314', distKm: 0.68 },
+    ],
+    {
+      hubId: 'daejeon',
+      lat: 36.376,
+      lng: 127.38,
+      locale: 'ko',
+      areaCode: '3',
+    },
+  );
+  const merged = mergeFestivalNearbySights({
+    scenicSpots: [],
+    grouped,
+    origin: { lat: 36.376, lng: 127.38 },
+  });
+  assert.equal(merged.groups.some((g) => g.listId === 'daejeon-palgyeong'), true);
+  assert.equal(festivalNearbySightDuplicateCount(merged), 0);
 });
 
 test('stabilizeFestivalNearbySightPresentation is append-only for load-more', () => {
@@ -271,6 +335,25 @@ test('multi-member 팔경 sits under a subheading in number order', () => {
     ['보광사', '함평 팔경', '함평자연생태공원', '삼호천', '청계산'],
   );
   assert.equal(merged.groups[0].items[1].distKm, null);
+});
+
+test('nearby list keeps only attractions and preserves haversine distance near a band boundary', () => {
+  const lat = 35;
+  const lng = 126;
+  const merged = mergeFestivalNearbySights({
+    scenicSpots: [],
+    grouped: {
+      groups: [],
+      rest: [
+        { name: '공원', contentId: '1', contentTypeId: '12', lat: lat + 5 / 111.195, lng, cat3: 'A02020700' },
+        { name: '전시관', contentId: '2', contentTypeId: '14', lat: lat + 0.01, lng },
+        { name: '시장', contentId: '3', contentTypeId: '38', lat: lat + 0.02, lng },
+      ],
+    },
+    origin: { lat, lng },
+  });
+  assert.deepEqual(merged.items.map((spot) => spot.name), ['공원']);
+  assert.ok(merged.items[0].distKm > 4.99 && merged.items[0].distKm < 5.01);
 });
 
 test('a single foreign 팔경 item stays in the general list', () => {
@@ -507,6 +590,11 @@ test('drop terminals, stations, and offices but keep heritage landmarks', () => 
   assert.equal(isNearbyTourAttractionTitle('춘천지방법원'), false);
   assert.equal(isNearbyTourAttractionTitle('파주 법원리'), true);
   assert.equal(isNearbyTourAttractionTitle('강릉세무서'), false);
+  assert.equal(isNearbyTourAttractionTitle('주식회사감천아울'), false);
+  assert.equal(isNearbyTourAttractionTitle('(주)감천아울'), false);
+  assert.equal(isNearbyTourAttractionTitle('㈜감천아울'), false);
+  assert.equal(isNearbyTourAttractionTitle('제물포고등학교 강당'), false);
+  assert.equal(isNearbyTourAttractionTitle('송도초등학교'), false);
   assert.equal(isNearbyTourAttractionTitle('시흥시청소년수련관'), true);
   assert.equal(isNearbyTourAttractionTitle('여객터미널 전망대'), true);
   assert.equal(isNearbyTourAttractionTitle('낙산사'), true);
@@ -655,12 +743,18 @@ test('settled no-photo nearby ids use landmark icon not grey pending', () => {
   assert.match(sheet, /rememberKoreaTourAttractionFirstImageMiss/);
   assert.match(sheet, /nearbySightIdsWithoutDisplayableThumb/);
   assert.match(sheet, /NEARBY_SIGHTS_RADIUS_EXPANDED_KM = 50/);
-  assert.match(sheet, /expandNearbySights/);
+  assert.match(sheet, /NEARBY_SIGHTS_INITIAL_VISIBLE = 5/);
+  assert.match(sheet, /NEARBY_SIGHTS_VISIBLE_STEP = 4/);
+  assert.match(sheet, /loadMoreNearbySights/);
+  assert.match(sheet, /data-nearby-distance-band/);
+  assert.match(sheet, /nearbyAttractionTypeLabel/);
+  assert.match(sheet, /text-amber-700/);
   assert.doesNotMatch(sheet, /onClick=\{openScenicPage\}/);
   const rowThumb = sheet.slice(
     sheet.indexOf('function NearbyRowThumb'),
     sheet.indexOf('function nearbySightTitle'),
   );
+  assert.match(rowThumb, /h-\[72px\] w-\[72px\]/);
   assert.match(
     rowThumb,
     /thumbIndex >= urls\.length[\s\S]*if \(imagePending\) return <NearbyThumbSkeleton/,

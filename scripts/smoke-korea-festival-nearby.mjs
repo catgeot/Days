@@ -130,8 +130,8 @@ assert(
   'FestivalDetailSheet shows near scenic section (i18n)',
 );
 assert(
-  sheetSrc.includes('expandNearbySights'),
-  'FestivalDetailSheet expands nearby sights radius in-sheet',
+  sheetSrc.includes('loadMoreNearbySights'),
+  'FestivalDetailSheet expands nearby sights in-sheet with one more-button flow',
 );
 assert(
   sheetSrc.includes('data-festival-near-scenic-more'),
@@ -173,6 +173,7 @@ assert(
   'nearby reads tourapi_attraction',
 );
 assert(nearbySrc.includes('content_type_id'), 'nearby filters type12');
+assert(nearbySrc.includes("contentTypeId: '12'"), 'nearby maps type12 onto list rows');
 assert(
   nearbySrc.includes('isNearbyTourAttractionCandidate'),
   'nearby applies curation filter',

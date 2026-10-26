@@ -196,6 +196,49 @@ export function stabilizeFestivalNearbySightPresentation(prior, next) {
 }
 
 /**
+ * Collapsed-sheet baseline for load-more stabilization (no render-phase mutation).
+ * @param {boolean} expanded
+ * @param {ReturnType<typeof mergeFestivalNearbySights> | null} merged
+ * @param {ReturnType<typeof mergeFestivalNearbySights> | null} currentBaseline
+ */
+export function nextNearbySightsBaseline(expanded, merged, currentBaseline) {
+  if (expanded) return currentBaseline;
+  return merged ?? null;
+}
+
+/**
+ * @param {boolean} expanded
+ * @param {ReturnType<typeof mergeFestivalNearbySights>} merged
+ * @param {ReturnType<typeof mergeFestivalNearbySights> | null} baseline
+ */
+export function resolveFestivalNearbySightsPresentation(expanded, merged, baseline) {
+  if (expanded && baseline) {
+    return stabilizeFestivalNearbySightPresentation(baseline, merged);
+  }
+  return merged;
+}
+
+/**
+ * Duplicate keys across representative groups and the general distance-sorted list.
+ * @param {ReturnType<typeof mergeFestivalNearbySights>} nearbySights
+ */
+export function festivalNearbySightDuplicateCount(nearbySights) {
+  const seen = new Set();
+  let duplicates = 0;
+  const track = (spot) => {
+    const key = nearbySightStableKey(spot);
+    if (!key) return;
+    if (seen.has(key)) duplicates += 1;
+    else seen.add(key);
+  };
+  for (const group of nearbySights?.groups || []) {
+    for (const spot of group.items || []) track(spot);
+  }
+  for (const spot of nearbySights?.rest || []) track(spot);
+  return duplicates;
+}
+
+/**
  * @param {object | null | undefined} spot
  */
 export function isNonTouristNearbyFacility(spot) {
@@ -410,6 +453,13 @@ function distOf(row, origin) {
   return Number.isFinite(km) ? km : null;
 }
 
+function isAllowedNearbyContentType(spot) {
+  const type = String(spot?.contentTypeId || spot?.contenttypeid || '').trim();
+  if (type === '14' || type === '38') return false;
+  if (!type || type === '12') return true;
+  return Boolean(String(spot?.localScenicListId || '').trim());
+}
+
 function rankNumber(spot) {
   const match = String(spot?.rankBlurb || '').match(/(\d+)\s*경/);
   return match ? Number(match[1]) : null;
@@ -550,6 +600,7 @@ export function mergeFestivalNearbySights(input = {}) {
   /** @type {Map<string, object[]>} */
   const venueExcludedByList = new Map();
   for (const row of pool) {
+    if (!isAllowedNearbyContentType(row)) continue;
     if (isNonTouristNearbyFacility(row)) continue;
     if (isFestivalOrEventSight(row)) continue;
     const distKm = distOf(row, originPt);
