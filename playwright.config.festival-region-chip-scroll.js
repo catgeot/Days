@@ -2,7 +2,8 @@ import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
   testDir: './e2e',
-  testMatch: /korea-festival-region-chip-scroll\.spec\.js/,
+  testMatch:
+    /korea-festival-region-chip-scroll\.spec\.js|festival-nearby-load-more-append\.spec\.js/,
   fullyParallel: false,
   workers: 1,
   timeout: 120_000,

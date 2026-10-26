@@ -31,6 +31,282 @@ export function normalizeNearbySightName(name) {
     .toLowerCase();
 }
 
+function contentIdKey(spot) {
+  const id = String(spot?.contentId || '').trim();
+  return /^\d{1,32}$/.test(id) ? id : '';
+}
+
+/**
+ * Stable row key for append-only nearby list merges.
+ * @param {object | null | undefined} spot
+ */
+export function nearbySightStableKey(spot) {
+  const id = contentIdKey(spot);
+  if (id) return `id:${id}`;
+  const name = normalizeNearbySightName(spot?.name);
+  if (name) return `n:${name}`;
+  const listId = String(spot?.localScenicListId || '').trim();
+  const rank = String(spot?.rankBlurb || '').trim();
+  if (listId && rank) return `ls:${listId}:${rank}`;
+  return '';
+}
+
+/**
+ * Tour locationBasedList pages — keep prior order, append only new rows.
+ * @param {object[]} prior
+ * @param {object[]} incoming
+ */
+export function mergeNearbyTourAttractionSpots(prior, incoming) {
+  /** @type {object[]} */
+  const out = [];
+  const seen = new Set();
+  for (const spot of [...(prior || []), ...(incoming || [])]) {
+    const key = nearbySightStableKey(spot);
+    if (!key || seen.has(key)) continue;
+    seen.add(key);
+    out.push(spot);
+  }
+  return out;
+}
+
+/**
+ * @param {Array<{ kind: string, spot?: object, title?: string, listId?: string, venueNote?: string }>} blocks
+ */
+function parseNearbySightBlockSegments(blocks) {
+  /** @type {object[]} */
+  const general = [];
+  /** @type {Array<{ heading: object, spots: object[] }>} */
+  const groups = [];
+  /** @type {{ heading: object, spots: object[] } | null} */
+  let current = null;
+  for (const block of blocks || []) {
+    if (block?.kind === 'heading') {
+      current = { heading: block, spots: [] };
+      groups.push(current);
+      continue;
+    }
+    if (block?.kind === 'spot' && block.spot) {
+      if (current) current.spots.push(block.spot);
+      else general.push(block.spot);
+    }
+  }
+  return { general, groups };
+}
+
+function stabilizeNearbySpotList(priorSpots, nextSpots, nextSpotByKey, used, options = {}) {
+  const frozen = Math.max(0, Number(options.frozenPrefixCount) || 0);
+  if (frozen > 0 && (priorSpots?.length || 0) > 0) {
+    /** @type {object[]} */
+    const prefix = [];
+    const priorPrefixKeys = new Set();
+    for (let i = 0; i < Math.min(frozen, priorSpots.length); i += 1) {
+      const spot = priorSpots[i];
+      const key = nearbySightStableKey(spot);
+      if (!key || used.has(key)) continue;
+      priorPrefixKeys.add(key);
+      used.add(key);
+      prefix.push(nextSpotByKey.get(key) || spot);
+    }
+    /** @type {object[]} */
+    const priorTail = [];
+    const priorTailKeys = new Set();
+    for (let i = frozen; i < priorSpots.length; i += 1) {
+      const spot = priorSpots[i];
+      const key = nearbySightStableKey(spot);
+      if (!key || used.has(key)) continue;
+      priorTailKeys.add(key);
+      used.add(key);
+      priorTail.push(nextSpotByKey.get(key) || spot);
+    }
+    /** @type {object[]} */
+    const newcomers = [];
+    for (const spot of nextSpots || []) {
+      const key = nearbySightStableKey(spot);
+      if (!key || priorPrefixKeys.has(key) || priorTailKeys.has(key)) continue;
+      newcomers.push(nextSpotByKey.get(key) || spot);
+    }
+    const mergedTail = sortNearbyRestSpots([...priorTail, ...newcomers]);
+    const seenTail = new Set();
+    /** @type {object[]} */
+    const tail = [];
+    for (const spot of mergedTail) {
+      const key = nearbySightStableKey(spot);
+      if (!key || seenTail.has(key)) continue;
+      seenTail.add(key);
+      used.add(key);
+      tail.push(spot);
+    }
+    return [...prefix, ...tail];
+  }
+
+  /** @type {object[]} */
+  const out = [];
+  for (const spot of priorSpots || []) {
+    const key = nearbySightStableKey(spot);
+    if (!key || used.has(key)) continue;
+    const fresh = nextSpotByKey.get(key) || spot;
+    used.add(key);
+    out.push(fresh);
+  }
+  for (const spot of nextSpots || []) {
+    const key = nearbySightStableKey(spot);
+    if (!key || used.has(key)) continue;
+    used.add(key);
+    out.push(spot);
+  }
+  return out;
+}
+
+/**
+ * After load-more, keep visible block/spot order and append new rows only.
+ * @param {ReturnType<typeof mergeFestivalNearbySights>} prior
+ * @param {ReturnType<typeof mergeFestivalNearbySights>} next
+ */
+export function stabilizeFestivalNearbySightPresentation(prior, next, options = {}) {
+  if (!prior?.blocks?.length) return next;
+
+  const nextSpotByKey = new Map();
+  for (const block of next.blocks || []) {
+    if (block?.kind === 'spot' && block.spot) {
+      const key = nearbySightStableKey(block.spot);
+      if (key) nextSpotByKey.set(key, block.spot);
+    }
+  }
+
+  const priorSeg = parseNearbySightBlockSegments(prior.blocks);
+  const nextSeg = parseNearbySightBlockSegments(next.blocks);
+  const used = new Set();
+  /** @type {typeof next.blocks} */
+  const blocks = [];
+
+  const generalRest = stabilizeNearbySpotList(
+    priorSeg.general,
+    nextSeg.general,
+    nextSpotByKey,
+    used,
+    options,
+  );
+  for (const spot of generalRest) {
+    blocks.push({ kind: 'spot', spot });
+  }
+
+  const nextGroupById = new Map(
+    nextSeg.groups.map((group) => [String(group.heading.listId || '').trim(), group]),
+  );
+  const seenHeadingIds = new Set();
+  /** @type {typeof next.groups} */
+  const groups = [];
+  for (const group of priorSeg.groups) {
+    const listId = String(group.heading.listId || '').trim();
+    seenHeadingIds.add(listId);
+    const nextGroup = nextGroupById.get(listId);
+    const heading = nextGroup?.heading || group.heading;
+    const groupItems = stabilizeNearbySpotList(
+      group.spots,
+      nextGroup?.spots || [],
+      nextSpotByKey,
+      used,
+    );
+    groups.push({
+      title: String(heading.title || '').trim() || listId,
+      listId,
+      items: groupItems,
+    });
+    blocks.push({
+      kind: 'heading',
+      title: heading.title,
+      listId,
+      ...(heading.venueNote ? { venueNote: heading.venueNote } : {}),
+    });
+    for (const spot of groupItems) {
+      blocks.push({ kind: 'spot', spot });
+    }
+  }
+
+  for (const group of nextSeg.groups) {
+    const listId = String(group.heading.listId || '').trim();
+    if (seenHeadingIds.has(listId)) continue;
+    const groupItems = stabilizeNearbySpotList([], group.spots, nextSpotByKey, used);
+    groups.push({
+      title: String(group.heading.title || '').trim() || listId,
+      listId,
+      items: groupItems,
+    });
+    blocks.push({
+      kind: 'heading',
+      title: group.heading.title,
+      listId,
+      ...(group.heading.venueNote ? { venueNote: group.heading.venueNote } : {}),
+    });
+    for (const spot of groupItems) {
+      blocks.push({ kind: 'spot', spot });
+    }
+  }
+
+  for (const spot of next.items || []) {
+    const key = nearbySightStableKey(spot);
+    if (!key || used.has(key)) continue;
+    used.add(key);
+    blocks.push({ kind: 'spot', spot });
+  }
+
+  const items = blocks
+    .filter((block) => block.kind === 'spot' && block.spot)
+    .map((block) => block.spot);
+
+  return { ...next, blocks, items, rest: generalRest, groups };
+}
+
+/**
+ * Collapsed-sheet baseline for load-more stabilization (no render-phase mutation).
+ * @param {boolean} expanded
+ * @param {ReturnType<typeof mergeFestivalNearbySights> | null} merged
+ * @param {ReturnType<typeof mergeFestivalNearbySights> | null} currentBaseline
+ */
+export function nextNearbySightsBaseline(expanded, merged, currentBaseline) {
+  if (expanded) return currentBaseline;
+  return merged ?? null;
+}
+
+/**
+ * @param {boolean} expanded
+ * @param {ReturnType<typeof mergeFestivalNearbySights>} merged
+ * @param {ReturnType<typeof mergeFestivalNearbySights> | null} baseline
+ */
+export function resolveFestivalNearbySightsPresentation(
+  expanded,
+  merged,
+  baseline,
+  visibleRestCount = 0,
+) {
+  if (expanded && baseline) {
+    return stabilizeFestivalNearbySightPresentation(baseline, merged, {
+      frozenPrefixCount: visibleRestCount,
+    });
+  }
+  return merged;
+}
+
+/**
+ * Duplicate keys across representative groups and the general distance-sorted list.
+ * @param {ReturnType<typeof mergeFestivalNearbySights>} nearbySights
+ */
+export function festivalNearbySightDuplicateCount(nearbySights) {
+  const seen = new Set();
+  let duplicates = 0;
+  const track = (spot) => {
+    const key = nearbySightStableKey(spot);
+    if (!key) return;
+    if (seen.has(key)) duplicates += 1;
+    else seen.add(key);
+  };
+  for (const group of nearbySights?.groups || []) {
+    for (const spot of group.items || []) track(spot);
+  }
+  for (const spot of nearbySights?.rest || []) track(spot);
+  return duplicates;
+}
+
 /**
  * @param {object | null | undefined} spot
  */
@@ -258,6 +534,26 @@ function rankNumber(spot) {
   return match ? Number(match[1]) : null;
 }
 
+function representativeSpotIdentityKeys(sectionGroups) {
+  const keys = new Set();
+  for (const group of sectionGroups || []) {
+    for (const spot of group.items || []) {
+      const key = nearbySightStableKey(spot);
+      if (key) keys.add(key);
+      const name = normalizeNearbySightName(spot.name);
+      if (name) keys.add(`n:${name}`);
+    }
+  }
+  return keys;
+}
+
+function isRepresentativeSpotDuplicate(spot, repKeys) {
+  const key = nearbySightStableKey(spot);
+  if (key && repKeys.has(key)) return true;
+  const name = normalizeNearbySightName(spot.name);
+  return Boolean(name && repKeys.has(`n:${name}`));
+}
+
 function hasBatchim(name) {
   const chars = [...String(name || '').trim()];
   const ch = chars[chars.length - 1];
@@ -285,6 +581,30 @@ function byDistance(a, b) {
   const rb = rankNumber(b);
   if (ra != null && rb != null && ra !== rb) return ra - rb;
   return String(a.name || '').localeCompare(String(b.name || ''), 'ko');
+}
+
+/**
+ * General «rest» list: finite distance first; 팔경 null-dist by 경 번호; other nulls last.
+ * @param {object} a
+ * @param {object} b
+ */
+export function compareNearbyRestSpots(a, b) {
+  const da = Number.isFinite(a?.distKm) ? a.distKm : null;
+  const db = Number.isFinite(b?.distKm) ? b.distKm : null;
+  if (da != null && db != null) return byDistance(a, b);
+  if (da != null && db == null) return -1;
+  if (da == null && db != null) return 1;
+  const pa = String(a?.localScenicListId || '').trim();
+  const pb = String(b?.localScenicListId || '').trim();
+  if (pa && pb) return byRank(a, b);
+  if (pa && !pb) return -1;
+  if (!pa && pb) return 1;
+  return byDistance(a, b);
+}
+
+/** @param {object[]} spots */
+export function sortNearbyRestSpots(spots) {
+  return [...(spots || [])].sort(compareNearbyRestSpots);
 }
 
 function byRank(a, b) {
@@ -436,7 +756,9 @@ export function mergeFestivalNearbySights(input = {}) {
     if (group.items.length >= 2) sectionGroups.push(group);
     else rest.push(...group.items);
   }
-  rest.sort(byDistance);
+  rest.splice(0, rest.length, ...sortNearbyRestSpots(rest));
+  const repKeys = representativeSpotIdentityKeys(sectionGroups);
+  const generalRest = rest.filter((spot) => !isRepresentativeSpotDuplicate(spot, repKeys));
   sectionGroups.sort((a, b) => {
     const ra = rankNumber(a.items[0]);
     const rb = rankNumber(b.items[0]);
@@ -446,7 +768,7 @@ export function mergeFestivalNearbySights(input = {}) {
     return String(a.title || '').localeCompare(String(b.title || ''), 'ko');
   });
 
-  const blocks = rest.map((spot) => ({ kind: 'spot', spot }));
+  const blocks = generalRest.map((spot) => ({ kind: 'spot', spot }));
   for (const group of sectionGroups) {
     const venueNote = (venueExcludedByList.get(group.listId) || [])
       .map(venueExcludedNote)
@@ -461,7 +783,7 @@ export function mergeFestivalNearbySights(input = {}) {
     for (const spot of group.items) blocks.push({ kind: 'spot', spot });
   }
 
-  return { groups: sectionGroups, rest, items: kept, blocks };
+  return { groups: sectionGroups, rest: generalRest, items: kept, blocks };
 }
 
 /**

@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { flushSync } from 'react-dom';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -64,9 +65,17 @@ import {
 import { resolveCityAttractionHub } from '../Home/lib/cityAttractionHubs.js';
 import {
   mergeFestivalNearbySights,
+  mergeNearbyTourAttractionSpots,
+  nextNearbySightsBaseline,
   rankMooniNearbySights,
+  resolveFestivalNearbySightsPresentation,
   stripTrailingHubName,
 } from './lib/festivalNearbySights.js';
+import {
+  captureNearbyLoadMoreScrollAnchor,
+  resolveNearbyLoadMorePinTargetScrollTop,
+  startNearbyLoadMoreScrollPin,
+} from './lib/festivalSheetNearbyScroll.js';
 import {
   fetchKoreaTourAttractionFirstImagesByIds,
   peekKoreaTourAttractionFirstImagesByIds,
@@ -558,7 +567,10 @@ function NearbyAttractionRow({ spot, extraThumb, imagePending = false, onSelect 
       }
     : {};
   return (
-    <li data-nearby-attraction-row="">
+    <li
+      data-nearby-attraction-row=""
+      data-nearby-row-key={String(spot?.contentId || spot?.id || title || '').trim()}
+    >
       <Inner
         {...innerProps}
         tabIndex={clickable ? undefined : -1}
@@ -774,10 +786,13 @@ export default function FestivalDetailSheet({
   const [mooniOpen, setMooniOpen] = useState(false);
   const mooniWasOpenRef = useRef(false);
   const [nearbySpots, setNearbySpots] = useState([]);
+  const nearbySpotsRef = useRef(nearbySpots);
+  nearbySpotsRef.current = nearbySpots;
   const [nearbySightsExpanded, setNearbySightsExpanded] = useState(false);
   const [nearbySightsVisibleCount, setNearbySightsVisibleCount] = useState(
     NEARBY_SIGHTS_INITIAL_VISIBLE,
   );
+  const [nearbySightsBaseline, setNearbySightsBaseline] = useState(null);
   const [nearbyStatus, setNearbyStatus] = useState('idle');
   const [nearbyParking, setNearbyParking] = useState([]);
   const [nearbyParkingReady, setNearbyParkingReady] = useState(false);
@@ -832,6 +847,8 @@ export default function FestivalDetailSheet({
   const [courseDetail, setCourseDetail] = useState(null);
   const [courseDetailLoading, setCourseDetailLoading] = useState(false);
   const sheetScrollRef = useRef(null);
+  const nearbyLoadMoreScrollRestoreRef = useRef(null);
+  const nearbyLoadMoreScrollPinCancelRef = useRef(null);
   const heroSwipeStartRef = useRef(null);
   const lightboxSwipeStartRef = useRef(null);
   const lightboxRootRef = useRef(null);
@@ -906,7 +923,7 @@ export default function FestivalDetailSheet({
     if (!Number.isFinite(lat) || !Number.isFinite(lng)) return [];
     return [{ lat, lng }];
   }, [nearestHub?.hubId]);
-  const nearbySights = useMemo(() => {
+  const nearbySightsMerged = useMemo(() => {
     const origin = festivalLngLat(item?.mapx, item?.mapy);
     return mergeFestivalNearbySights({
       scenicSpots: scenicSpotsRanked.map(({ spot }) => ({
@@ -940,6 +957,28 @@ export default function FestivalDetailSheet({
     intro?.venueContentId,
     locale,
   ]);
+
+  useLayoutEffect(() => {
+    setNearbySightsBaseline((prev) =>
+      nextNearbySightsBaseline(nearbySightsExpanded, nearbySightsMerged, prev),
+    );
+  }, [nearbySightsExpanded, nearbySightsMerged]);
+
+  const nearbySights = useMemo(
+    () =>
+      resolveFestivalNearbySightsPresentation(
+        nearbySightsExpanded,
+        nearbySightsMerged,
+        nearbySightsBaseline,
+        nearbySightsVisibleCount,
+      ),
+    [
+      nearbySightsExpanded,
+      nearbySightsMerged,
+      nearbySightsBaseline,
+      nearbySightsVisibleCount,
+    ],
+  );
   const nearbyMissingImageKey = useMemo(() => {
     if (nearbyStatus === 'loading' || nearbyStatus === 'idle') return '';
     return missingNearbySightImageIds(nearbySights.items).join(',');
@@ -1100,6 +1139,24 @@ export default function FestivalDetailSheet({
     () => nearbyListRowsWithBands(visibleNearbySightListItems),
     [visibleNearbySightListItems],
   );
+  useEffect(() => {
+    const sheet = sheetScrollRef.current;
+    if (!sheet) return;
+    try {
+      sheet.dataset.nearbyRestJson = JSON.stringify(
+        nearbySightListItems.map((spot) => ({
+          id: String(spot?.contentId || spot?.id || '').trim(),
+          title: nearbySightTitle(spot),
+          distanceKm: Number.isFinite(Number(spot?.distKm)) ? Number(spot.distKm) : null,
+          localScenicListId: String(spot?.localScenicListId || '').trim(),
+        })),
+      );
+      sheet.dataset.nearbyRestVisible = String(nearbySightsVisibleCount);
+    } catch {
+      /* dataset quota */
+    }
+  }, [nearbySightListItems, nearbySightsVisibleCount]);
+
   const canLoadMoreNearbySights =
     nearbySightListItems.length > nearbySightsVisibleCount ||
     (!nearbySightsExpanded && Boolean(festivalLngLat(item?.mapx, item?.mapy)));
@@ -1107,10 +1164,86 @@ export default function FestivalDetailSheet({
     if (nearbySightsExpanded) return;
     setNearbySightsExpanded(true);
   }, [nearbySightsExpanded]);
-  const loadMoreNearbySights = useCallback(() => {
-    setNearbySightsVisibleCount((count) => count + NEARBY_SIGHTS_VISIBLE_STEP);
-    if (!nearbySightsExpanded) setNearbySightsExpanded(true);
-  }, [nearbySightsExpanded]);
+  const queueNearbyLoadMoreScrollRestore = useCallback(() => {
+    const sheet = sheetScrollRef.current;
+    if (!sheet) return;
+    const anchor = captureNearbyLoadMoreScrollAnchor(sheet);
+    const list = sheet.querySelector('[data-nearby-list]');
+    if (list instanceof HTMLElement) {
+      list.style.minHeight = `${list.offsetHeight}px`;
+    }
+    nearbyLoadMoreScrollRestoreRef.current = {
+      plannedScrollTop: sheet.scrollTop,
+      scrollHeightAtPin: sheet.scrollHeight,
+      anchorKey: anchor?.anchorKey ?? '',
+      anchorDelta: anchor?.anchorDelta ?? null,
+    };
+  }, []);
+
+  const armNearbyLoadMoreScrollRestore = useCallback(
+    (event) => {
+      const type = event?.pointerType || event?.type;
+      if (type === 'mouse' || type === 'mousedown') {
+        event.preventDefault();
+      }
+      queueNearbyLoadMoreScrollRestore();
+    },
+    [queueNearbyLoadMoreScrollRestore],
+  );
+
+  const loadMoreNearbySights = useCallback(
+    (event) => {
+      if (nearbyLoadMoreScrollRestoreRef.current == null) {
+        queueNearbyLoadMoreScrollRestore();
+      }
+      const btn = event?.currentTarget;
+      if (btn instanceof HTMLButtonElement) {
+        btn.blur();
+      }
+      const sheet = sheetScrollRef.current;
+      flushSync(() => {
+        setNearbySightsVisibleCount((count) => count + NEARBY_SIGHTS_VISIBLE_STEP);
+        if (!nearbySightsExpanded) setNearbySightsExpanded(true);
+      });
+      const pin = nearbyLoadMoreScrollRestoreRef.current;
+      if (sheet && pin && pin.plannedScrollTop != null) {
+        sheet.scrollTop = resolveNearbyLoadMorePinTargetScrollTop(sheet, pin.plannedScrollTop, {
+          anchorKey: pin.anchorKey,
+          anchorDelta: pin.anchorDelta,
+          scrollHeightAtPin: pin.scrollHeightAtPin,
+        });
+      }
+    },
+    [nearbySightsExpanded, queueNearbyLoadMoreScrollRestore],
+  );
+
+  useLayoutEffect(() => {
+    const pin = nearbyLoadMoreScrollRestoreRef.current;
+    if (!pin || pin.plannedScrollTop == null) return undefined;
+    const sheet = sheetScrollRef.current;
+    if (!sheet) return undefined;
+    nearbyLoadMoreScrollPinCancelRef.current?.();
+    sheet.scrollTop = resolveNearbyLoadMorePinTargetScrollTop(sheet, pin.plannedScrollTop, {
+      anchorKey: pin.anchorKey,
+      anchorDelta: pin.anchorDelta,
+      scrollHeightAtPin: pin.scrollHeightAtPin,
+    });
+    const cancel = startNearbyLoadMoreScrollPin(sheet, pin.plannedScrollTop, {
+      scrollHeightAtPin: pin.scrollHeightAtPin,
+      anchorKey: pin.anchorKey,
+      anchorDelta: pin.anchorDelta,
+      onEnd: (ok) => {
+        const list = sheet.querySelector('[data-nearby-list]');
+        if (list instanceof HTMLElement) list.style.minHeight = '';
+        if (ok) nearbyLoadMoreScrollRestoreRef.current = null;
+      },
+    });
+    nearbyLoadMoreScrollPinCancelRef.current = cancel;
+    return () => {
+      cancel();
+      nearbyLoadMoreScrollPinCancelRef.current = null;
+    };
+  }, [nearbySightsVisibleCount, nearbyStatus]);
 
   const coursesPageHref = useMemo(() => {
     if (!festivalAreaCode) return COURSES_PATH;
@@ -1713,6 +1846,8 @@ export default function FestivalDetailSheet({
   useEffect(() => {
     setNearbySightsExpanded(false);
     setNearbySightsVisibleCount(NEARBY_SIGHTS_INITIAL_VISIBLE);
+    setNearbySightsBaseline(null);
+    nearbyLoadMoreScrollRestoreRef.current = null;
   }, [item?.contentId]);
 
   useEffect(() => {
@@ -1735,11 +1870,22 @@ export default function FestivalDetailSheet({
         lng: pt.lng,
         ...fetchOpts,
       });
+      const applyNearbySpots = (spots) => {
+        setNearbySpots((prev) =>
+          nearbySightsExpanded && prev.length
+            ? mergeNearbyTourAttractionSpots(prev, spots)
+            : spots,
+        );
+        setNearbyStatus(spots.length ? 'ok' : 'empty');
+      };
       if (cachedSpots) {
-        setNearbySpots(cachedSpots);
-        setNearbyStatus(cachedSpots.length ? 'ok' : 'empty');
+        applyNearbySpots(cachedSpots);
       } else {
-        setNearbyStatus('loading');
+        const retainVisibleList =
+          nearbySightsExpanded && (nearbySpotsRef.current?.length ?? 0) > 0;
+        if (!retainVisibleList) {
+          setNearbyStatus('loading');
+        }
         fetchNearbyTourAttractions({
           lat: pt.lat,
           lng: pt.lng,
@@ -1747,7 +1893,7 @@ export default function FestivalDetailSheet({
         }).then((res) => {
           if (cancelled) return;
           const spots = Array.isArray(res?.spots) ? res.spots : [];
-          setNearbySpots(spots);
+          applyNearbySpots(spots);
           if (res?.error) setNearbyStatus('error');
           else if (!spots.length) setNearbyStatus('empty');
           else setNearbyStatus('ok');
@@ -2439,7 +2585,7 @@ export default function FestivalDetailSheet({
       <div
         ref={sheetScrollRef}
         inert={lightboxOpen ? true : undefined}
-        className="relative z-10 pointer-events-auto flex w-full max-w-lg md:max-w-6xl xl:max-w-7xl max-h-[100dvh] md:my-0 md:h-full md:max-h-none flex-col md:flex-row overflow-y-auto overscroll-contain md:overflow-hidden rounded-t-3xl md:rounded-3xl border border-stone-200 bg-white text-stone-900 shadow-2xl custom-scrollbar"
+        className="relative z-10 pointer-events-auto flex w-full max-w-lg md:max-w-6xl xl:max-w-7xl max-h-[100dvh] md:my-0 md:h-full md:max-h-none flex-col md:flex-row overflow-y-auto overscroll-contain [overflow-anchor:none] md:overflow-hidden rounded-t-3xl md:rounded-3xl border border-stone-200 bg-white text-stone-900 shadow-2xl custom-scrollbar"
         role="dialog"
         aria-modal={lightboxOpen ? undefined : 'true'}
         aria-labelledby="korea-festival-sheet-title"
@@ -2982,7 +3128,7 @@ export default function FestivalDetailSheet({
                     nearbySights.items.length > 0 &&
                     !festivalNearbyCardsEnabled && (
                     <ul
-                      className="space-y-2"
+                      className="space-y-2 [overflow-anchor:none] [&_*]:[overflow-anchor:none]"
                       aria-label={t('korea.festival.detail.nearbySightsAria')}
                       data-nearby-list=""
                     >
@@ -3077,15 +3223,21 @@ export default function FestivalDetailSheet({
                     </button>
                   ) : null}
                   {!festivalNearbyCardsEnabled &&
-                  !nearbyPending &&
                   nearbySights.items.length > 0 &&
                   canLoadMoreNearbySights ? (
                     <button
                       type="button"
                       onClick={loadMoreNearbySights}
+                      onPointerDown={armNearbyLoadMoreScrollRestore}
+                      onMouseDown={armNearbyLoadMoreScrollRestore}
+                      onTouchStart={armNearbyLoadMoreScrollRestore}
+                      disabled={nearbyPending}
                       data-festival-near-scenic-more=""
-                      className="inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-amber-400/90 bg-amber-50 px-3 py-2.5 text-sm font-bold text-amber-950 hover:bg-amber-100"
+                      className="inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-amber-400/90 bg-amber-50 px-3 py-2.5 text-sm font-bold text-amber-950 hover:bg-amber-100 [overflow-anchor:none] disabled:opacity-60"
                     >
+                      {nearbySightsExpanded && nearbyPending ? (
+                        <Loader2 size={16} className="animate-spin shrink-0" aria-hidden="true" />
+                      ) : null}
                       {t('korea.festival.detail.nearbySightsMore')}
                     </button>
                   ) : null}

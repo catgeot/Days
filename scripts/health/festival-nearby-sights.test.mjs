@@ -7,11 +7,19 @@ import {
   isFestivalOrEventSight,
   isFestivalVenueSight,
   mergeFestivalNearbySights,
+  festivalNearbySightDuplicateCount,
+  mergeNearbyTourAttractionSpots,
+  nearbySightStableKey,
+  nextNearbySightsBaseline,
   normalizeNearbySightName,
   rankMooniNearbySights,
+  resolveFestivalNearbySightsPresentation,
+  sortNearbyRestSpots,
+  stabilizeFestivalNearbySightPresentation,
   stripTrailingHubName,
   stripTrailingRegionLabel,
 } from '../../src/pages/Korea/lib/festivalNearbySights.js';
+import { groupNearbySpotsWithLocalScenic } from '../../src/pages/Home/lib/koreaLocalScenicLists.js';
 import {
   mergeNearbyItemImages,
   missingNearbySightImageIds,
@@ -40,11 +48,379 @@ import {
   writeTourApiProxyCache,
 } from '../../src/utils/tourApiProxyCache.js';
 import { isConfirmedEmptyDetailImage } from '../../src/utils/fetchTourApiAttractionDetail.js';
+import {
+  captureNearbyListRowAnchorDelta,
+  computeNearbyLoadMorePinnedScrollTop,
+  correctNearbyLoadMoreScrollTopForHeightGrowth,
+  nearbyListRowAnchorDrift,
+  nearbyLoadMoreScrollWithinTolerance,
+  resolveFestivalNearbyLoadMoreScrollTop,
+  shouldEndNearbyLoadMoreScrollPin,
+  isNearbyLoadMoreScrollPinInterruptKey,
+} from '../../src/pages/Korea/lib/festivalSheetNearbyScroll.js';
+import {
+  nearbyLoadMoreScrollDeltaAcceptable,
+  NEARBY_LOAD_MORE_SCROLL_TOLERANCE_PX,
+} from '../lib/festival-nearby-load-more-qa.mjs';
 
 const origin = { lat: 35.06, lng: 126.52 };
 
 test('normalize nearby sight names', () => {
   assert.equal(normalizeNearbySightName('돌머리 해수욕장'), normalizeNearbySightName('돌머리해수욕장'));
+});
+
+test('daejeon 팔경 lists all members when festival is in hub without nearestHub hint', () => {
+  const grouped = groupNearbySpotsWithLocalScenic([], {
+    hubId: '',
+    lat: 36.376,
+    lng: 127.38,
+    locale: 'ko',
+    areaCode: '3',
+  });
+  const pal = grouped.groups.find((g) => g.listId === 'daejeon-palgyeong');
+  assert.equal(pal?.items?.length, 8);
+});
+
+test('mergeNearbyTourAttractionSpots keeps order and drops duplicates', () => {
+  const prior = [
+    { contentId: '1', name: '아쿠아리움', distKm: 2 },
+    { contentId: '2', name: '대전홍보관', distKm: 3 },
+  ];
+  const incoming = [
+    { contentId: '2', name: '대전홍보관', distKm: 3.1 },
+    { contentId: '3', name: '한밭수목원', distKm: 4 },
+  ];
+  const merged = mergeNearbyTourAttractionSpots(prior, incoming);
+  assert.deepEqual(
+    merged.map((row) => row.contentId),
+    ['1', '2', '3'],
+  );
+});
+
+test('festival nearby list disables scroll anchoring and restores load-more scroll', () => {
+  const sheet = readFileSync(
+    join(dirname(fileURLToPath(import.meta.url)), '../../src/pages/Korea/FestivalDetailSheet.jsx'),
+    'utf8',
+  );
+  assert.match(sheet, /data-nearby-list=""/);
+  assert.match(sheet, /\[overflow-anchor:none\]/);
+  assert.match(sheet, /nearbyLoadMoreScrollRestoreRef/);
+  assert.match(sheet, /captureNearbyLoadMoreScrollAnchor/);
+  assert.match(sheet, /data-nearby-row-key/);
+  assert.match(sheet, /armNearbyLoadMoreScrollRestore/);
+  assert.match(sheet, /onPointerDown=\{armNearbyLoadMoreScrollRestore\}/);
+  assert.match(sheet, /onTouchStart=\{armNearbyLoadMoreScrollRestore\}/);
+  assert.match(sheet, /flushSync/);
+});
+
+test('computeNearbyLoadMorePinnedScrollTop keeps viewport on anchor row after insert', () => {
+  const planned = 1907;
+  const anchorDelta = 120;
+  assert.equal(computeNearbyLoadMorePinnedScrollTop(planned, anchorDelta, 926, 200), 2513);
+  assert.equal(computeNearbyLoadMorePinnedScrollTop(planned, anchorDelta, 320, 200), planned);
+  assert.equal(computeNearbyLoadMorePinnedScrollTop(planned, null, 926, 200), planned);
+});
+
+test('load-more scroll pin releases on navigation keys', () => {
+  assert.equal(isNearbyLoadMoreScrollPinInterruptKey('PageDown'), true);
+  assert.equal(isNearbyLoadMoreScrollPinInterruptKey(' '), true);
+  assert.equal(isNearbyLoadMoreScrollPinInterruptKey('Enter'), false);
+});
+
+test('load-more expanded fetch keeps list mounted (no loading gate flash)', () => {
+  const sheetSrc = readFileSync(
+    join(dirname(fileURLToPath(import.meta.url)), '../../src/pages/Korea/FestivalDetailSheet.jsx'),
+    'utf8',
+  );
+  assert.match(sheetSrc, /retainVisibleList/);
+  assert.match(sheetSrc, /nearbySightsExpanded && \(nearbySpotsRef\.current/);
+});
+
+test('load-more pin does not fight user scroll via scroll listener', () => {
+  const pinSrc = readFileSync(
+    join(dirname(fileURLToPath(import.meta.url)), '../../src/pages/Korea/lib/festivalSheetNearbyScroll.js'),
+    'utf8',
+  );
+  assert.match(pinSrc, /attachNearbyLoadMoreScrollPinUserRelease/);
+  assert.match(pinSrc, /graceMs/);
+  assert.doesNotMatch(pinSrc, /addEventListener\('scroll'/);
+});
+
+test('load-more scroll pin tolerance and stable-frame gate', () => {
+  assert.equal(nearbyLoadMoreScrollWithinTolerance(2000, 2015, 20), true);
+  assert.equal(nearbyLoadMoreScrollWithinTolerance(2000, 2030, 20), false);
+  assert.equal(shouldEndNearbyLoadMoreScrollPin(2513, 2512, 5), true);
+  assert.equal(shouldEndNearbyLoadMoreScrollPin(2513, 2600, 5), false);
+  assert.equal(shouldEndNearbyLoadMoreScrollPin(2513, 2512, 3), false);
+});
+
+test('nearby load-more QA scroll delta gate (Site QA ≤20px)', () => {
+  assert.equal(NEARBY_LOAD_MORE_SCROLL_TOLERANCE_PX, 20);
+  assert.equal(nearbyLoadMoreScrollDeltaAcceptable(1905, 1905), true);
+  assert.equal(nearbyLoadMoreScrollDeltaAcceptable(1905, 1924), true);
+  assert.equal(nearbyLoadMoreScrollDeltaAcceptable(1905, 2606), false);
+});
+
+test('correctNearbyLoadMoreScrollTopForHeightGrowth reverses WebKit append anchoring', () => {
+  const planned = 1905;
+  const heightBefore = 8000;
+  const heightAfter = 8606;
+  assert.equal(
+    correctNearbyLoadMoreScrollTopForHeightGrowth(planned, heightBefore, heightAfter, 2511),
+    planned,
+  );
+  assert.equal(
+    correctNearbyLoadMoreScrollTopForHeightGrowth(planned, heightBefore, heightAfter, 2000),
+    planned,
+  );
+});
+
+test('nearby list row anchor drift corrects scroll after inserted rows', () => {
+  const delta = captureNearbyListRowAnchorDelta(320, 200);
+  assert.equal(delta, 120);
+  assert.equal(nearbyListRowAnchorDrift(926, 200, delta), 606);
+  assert.equal(nearbyListRowAnchorDrift(320, 200, delta), 0);
+});
+
+test('resolveFestivalNearbyLoadMoreScrollTop keeps planned scroll under StrictMode double layout', () => {
+  const planned = 2000;
+  let top = resolveFestivalNearbyLoadMoreScrollTop(planned, 2606);
+  assert.equal(top, 2000);
+  top = resolveFestivalNearbyLoadMoreScrollTop(planned, top);
+  assert.equal(top, 2000);
+  assert.equal(resolveFestivalNearbyLoadMoreScrollTop(null, 120), 120);
+});
+
+test('nextNearbySightsBaseline survives strict-mode double collapsed commit', () => {
+  const collapsed = mergeFestivalNearbySights({
+    scenicSpots: [],
+    grouped: {
+      groups: [],
+      rest: [
+        { name: '아쿠아리움', contentId: '1001', distKm: 0.7 },
+        { name: '대전홍보관', contentId: '1002', distKm: 0.8 },
+      ],
+    },
+    origin: { lat: 36.376, lng: 127.38 },
+  });
+  let baseline = null;
+  baseline = nextNearbySightsBaseline(false, collapsed, baseline);
+  baseline = nextNearbySightsBaseline(false, collapsed, baseline);
+  const expanded = mergeFestivalNearbySights({
+    scenicSpots: [],
+    grouped: {
+      groups: [],
+      rest: [
+        { name: '한밭수목원', contentId: '2001', distKm: 1.4 },
+        { name: '아쿠아리움', contentId: '1001', distKm: 0.7 },
+        { name: '대전홍보관', contentId: '1002', distKm: 0.8 },
+      ],
+    },
+    origin: { lat: 36.376, lng: 127.38 },
+  });
+  const shown = resolveFestivalNearbySightsPresentation(true, expanded, baseline);
+  const priorNames = collapsed.blocks
+    .filter((block) => block.kind === 'spot')
+    .map((block) => block.spot.name);
+  const names = shown.blocks
+    .filter((block) => block.kind === 'spot')
+    .map((block) => block.spot.name);
+  assert.deepEqual(names.slice(0, priorNames.length), priorNames);
+  assert.equal(names[names.length - 1], '한밭수목원');
+  assert.deepEqual(
+    shown.rest.map((spot) => spot.name),
+    [...baseline.rest.map((spot) => spot.name), '한밭수목원'],
+  );
+});
+
+test('tour row matching a representative 팔경 name stays out of the general list', () => {
+  const merged = mergeFestivalNearbySights({
+    scenicSpots: [],
+    grouped: {
+      groups: [
+        {
+          title: '대전 팔경',
+          listId: 'daejeon-palgyeong',
+          items: [
+            {
+              name: '유성온천',
+              rankBlurb: '대전 1경',
+              localScenicListId: 'daejeon-palgyeong',
+              contentId: 'pal-1',
+              lat: 36.362,
+              lng: 127.345,
+            },
+            {
+              name: '대전 구봉산',
+              rankBlurb: '대전 2경',
+              localScenicListId: 'daejeon-palgyeong',
+              contentId: 'pal-2',
+              lat: 36.365,
+              lng: 127.35,
+            },
+          ],
+        },
+      ],
+      rest: [
+        {
+          name: '유성온천',
+          contentId: '999',
+          contentTypeId: '12',
+          lat: 36.362,
+          lng: 127.345,
+        },
+        { name: '대전 엑스포 아쿠아리움', contentId: '100', lat: 36.38, lng: 127.36 },
+      ],
+    },
+    origin: { lat: 36.376, lng: 127.38 },
+  });
+  assert.equal(merged.rest.some((spot) => spot.name === '유성온천'), false);
+  assert.equal(festivalNearbySightDuplicateCount(merged), 0);
+});
+
+test('representative group and general list have zero duplicate keys (daejeon hub)', () => {
+  const grouped = groupNearbySpotsWithLocalScenic(
+    [
+      { name: '대전 엑스포 아쿠아리움', contentId: '128759', distKm: 0.67 },
+      { name: '꿀잼도시 대전홍보관', contentId: '250314', distKm: 0.68 },
+    ],
+    {
+      hubId: 'daejeon',
+      lat: 36.376,
+      lng: 127.38,
+      locale: 'ko',
+      areaCode: '3',
+    },
+  );
+  const merged = mergeFestivalNearbySights({
+    scenicSpots: [],
+    grouped,
+    origin: { lat: 36.376, lng: 127.38 },
+  });
+  assert.equal(merged.groups.some((g) => g.listId === 'daejeon-palgyeong'), true);
+  assert.equal(festivalNearbySightDuplicateCount(merged), 0);
+});
+
+test('stabilizeFestivalNearbySightPresentation keeps append-only rest for visible slice', () => {
+  const collapsed = mergeFestivalNearbySights({
+    scenicSpots: [],
+    grouped: {
+      groups: [],
+      rest: [
+        { name: '근처A', contentId: 'a', distKm: 2, lat: 36.377, lng: 127.381, contentTypeId: '12' },
+        { name: '근처B', contentId: 'b', distKm: 4, lat: 36.378, lng: 127.382, contentTypeId: '12' },
+      ],
+    },
+    origin: { lat: 36.376, lng: 127.38 },
+  });
+  const expanded = mergeFestivalNearbySights({
+    scenicSpots: [],
+    grouped: {
+      groups: [],
+      rest: [
+        { name: '멀리C', contentId: 'c', distKm: 16, lat: 37.1, lng: 128.2, contentTypeId: '12' },
+        { name: '근처A', contentId: 'a', distKm: 2, lat: 36.377, lng: 127.381, contentTypeId: '12' },
+        { name: '근처B', contentId: 'b', distKm: 4, lat: 36.378, lng: 127.382, contentTypeId: '12' },
+      ],
+    },
+    origin: { lat: 36.376, lng: 127.38 },
+  });
+  const farFirst = {
+    ...expanded,
+    rest: [expanded.rest.find((spot) => spot.name === '멀리C'), ...collapsed.rest],
+  };
+  assert.deepEqual(farFirst.rest.slice(0, 2).map((spot) => spot.name), ['멀리C', '근처A']);
+  const stable = stabilizeFestivalNearbySightPresentation(collapsed, farFirst, {
+    frozenPrefixCount: 2,
+  });
+  const visible = stable.rest.slice(0, 4).map((spot) => spot.name);
+  assert.deepEqual(visible.slice(0, collapsed.rest.length), collapsed.rest.map((s) => s.name));
+  assert.equal(visible[collapsed.rest.length], '멀리C');
+});
+
+test('stabilize merges expanded newcomers into distance order after frozen rest prefix', () => {
+  const mk = (name, contentId, distKm) => ({
+    name,
+    contentId,
+    distKm,
+    lat: 36.376 + distKm / 111,
+    lng: 127.38,
+    contentTypeId: '12',
+  });
+  const collapsed = mergeFestivalNearbySights({
+    scenicSpots: [],
+    grouped: {
+      groups: [],
+      rest: [mk('A', 'a', 2), mk('B', 'b', 4), mk('C', 'c', 6), mk('D', 'd', 8), mk('E', 'e', 10), mk('F', 'f', 12), mk('G', 'g', 14)],
+    },
+    origin: { lat: 36.376, lng: 127.38 },
+  });
+  const expanded = mergeFestivalNearbySights({
+    scenicSpots: [],
+    grouped: {
+      groups: [],
+      rest: [
+        mk('J', 'j', 3),
+        mk('K', 'k', 5),
+        mk('A', 'a', 2),
+        mk('B', 'b', 4),
+        mk('C', 'c', 6),
+        mk('D', 'd', 8),
+        mk('E', 'e', 10),
+        mk('F', 'f', 12),
+        mk('G', 'g', 14),
+        mk('H', 'h', 16),
+      ],
+    },
+    origin: { lat: 36.376, lng: 127.38 },
+  });
+  const stable = resolveFestivalNearbySightsPresentation(true, expanded, collapsed, 5);
+  assert.deepEqual(
+    stable.rest.slice(5, 9).map((spot) => spot.name),
+    ['J', 'K', 'F', 'G'],
+  );
+});
+
+test('stabilizeFestivalNearbySightPresentation is append-only for load-more', () => {
+  const collapsed = mergeFestivalNearbySights({
+    scenicSpots: [],
+    grouped: {
+      groups: [],
+      rest: [
+        { name: '아쿠아리움', contentId: '1001', distKm: 2.1 },
+        { name: '대전홍보관', contentId: '1002', distKm: 3.2 },
+        { name: '발명교육센터', contentId: '1003', distKm: 4.1 },
+      ],
+    },
+    origin: { lat: 36.376, lng: 127.38 },
+  });
+  const expanded = mergeFestivalNearbySights({
+    scenicSpots: [],
+    grouped: {
+      groups: [],
+      rest: [
+        { name: '한밭수목원', contentId: '2001', distKm: 4.8 },
+        { name: '아쿠아리움', contentId: '1001', distKm: 2.1 },
+      ],
+    },
+    origin: { lat: 36.376, lng: 127.38 },
+  });
+  const stable = stabilizeFestivalNearbySightPresentation(collapsed, expanded);
+  const priorNames = collapsed.blocks
+    .filter((block) => block.kind === 'spot')
+    .map((block) => block.spot.name);
+  const names = stable.blocks
+    .filter((block) => block.kind === 'spot')
+    .map((block) => block.spot.name);
+  assert.deepEqual(names.slice(0, priorNames.length), priorNames);
+  assert.equal(names.length, priorNames.length + 1);
+  assert.equal(names[names.length - 1], '한밭수목원');
+  const keys = names.map((name) => nearbySightStableKey({ name }));
+  assert.equal(new Set(keys).size, keys.length);
+  assert.deepEqual(
+    stable.rest.map((spot) => spot.name),
+    [...collapsed.rest.map((spot) => spot.name), '한밭수목원'],
+  );
 });
 
 test('dedupe by contentId then normalized name', () => {
