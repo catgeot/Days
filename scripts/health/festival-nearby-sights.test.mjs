@@ -120,6 +120,51 @@ test('nextNearbySightsBaseline survives strict-mode double collapsed commit', ()
   assert.equal(names[names.length - 1], '한밭수목원');
 });
 
+test('tour row matching a representative 팔경 name stays out of the general list', () => {
+  const merged = mergeFestivalNearbySights({
+    scenicSpots: [],
+    grouped: {
+      groups: [
+        {
+          title: '대전 팔경',
+          listId: 'daejeon-palgyeong',
+          items: [
+            {
+              name: '유성온천',
+              rankBlurb: '대전 1경',
+              localScenicListId: 'daejeon-palgyeong',
+              contentId: 'pal-1',
+              lat: 36.362,
+              lng: 127.345,
+            },
+            {
+              name: '대전 구봉산',
+              rankBlurb: '대전 2경',
+              localScenicListId: 'daejeon-palgyeong',
+              contentId: 'pal-2',
+              lat: 36.365,
+              lng: 127.35,
+            },
+          ],
+        },
+      ],
+      rest: [
+        {
+          name: '유성온천',
+          contentId: '999',
+          contentTypeId: '12',
+          lat: 36.362,
+          lng: 127.345,
+        },
+        { name: '대전 엑스포 아쿠아리움', contentId: '100', lat: 36.38, lng: 127.36 },
+      ],
+    },
+    origin: { lat: 36.376, lng: 127.38 },
+  });
+  assert.equal(merged.rest.some((spot) => spot.name === '유성온천'), false);
+  assert.equal(festivalNearbySightDuplicateCount(merged), 0);
+});
+
 test('representative group and general list have zero duplicate keys (daejeon hub)', () => {
   const grouped = groupNearbySpotsWithLocalScenic(
     [

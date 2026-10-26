@@ -465,6 +465,26 @@ function rankNumber(spot) {
   return match ? Number(match[1]) : null;
 }
 
+function representativeSpotIdentityKeys(sectionGroups) {
+  const keys = new Set();
+  for (const group of sectionGroups || []) {
+    for (const spot of group.items || []) {
+      const key = nearbySightStableKey(spot);
+      if (key) keys.add(key);
+      const name = normalizeNearbySightName(spot.name);
+      if (name) keys.add(`n:${name}`);
+    }
+  }
+  return keys;
+}
+
+function isRepresentativeSpotDuplicate(spot, repKeys) {
+  const key = nearbySightStableKey(spot);
+  if (key && repKeys.has(key)) return true;
+  const name = normalizeNearbySightName(spot.name);
+  return Boolean(name && repKeys.has(`n:${name}`));
+}
+
 function hasBatchim(name) {
   const chars = [...String(name || '').trim()];
   const ch = chars[chars.length - 1];
@@ -644,6 +664,8 @@ export function mergeFestivalNearbySights(input = {}) {
     else rest.push(...group.items);
   }
   rest.sort(byDistance);
+  const repKeys = representativeSpotIdentityKeys(sectionGroups);
+  const generalRest = rest.filter((spot) => !isRepresentativeSpotDuplicate(spot, repKeys));
   sectionGroups.sort((a, b) => {
     const ra = rankNumber(a.items[0]);
     const rb = rankNumber(b.items[0]);
@@ -653,7 +675,7 @@ export function mergeFestivalNearbySights(input = {}) {
     return String(a.title || '').localeCompare(String(b.title || ''), 'ko');
   });
 
-  const blocks = rest.map((spot) => ({ kind: 'spot', spot }));
+  const blocks = generalRest.map((spot) => ({ kind: 'spot', spot }));
   for (const group of sectionGroups) {
     const venueNote = (venueExcludedByList.get(group.listId) || [])
       .map(venueExcludedNote)
@@ -668,7 +690,7 @@ export function mergeFestivalNearbySights(input = {}) {
     for (const spot of group.items) blocks.push({ kind: 'spot', spot });
   }
 
-  return { groups: sectionGroups, rest, items: kept, blocks };
+  return { groups: sectionGroups, rest: generalRest, items: kept, blocks };
 }
 
 /**
