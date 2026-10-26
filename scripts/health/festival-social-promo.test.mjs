@@ -649,6 +649,8 @@ test('hub wires session pin, promo row, and merge', () => {
   assert.match(hub, /excludeFestivalsByContentId/);
   assert.match(hub, /panelItemsForList/);
   assert.match(hub, /count: panelItemsForList\.length/);
+  assert.match(hub, /data-festival-list-loading/);
+  assert.match(hub, /FestivalListLoadingSkeletons/);
   assert.match(hub, /manualFestivalEntries/);
   const promoRow = readFileSync(
     join(root, 'src/pages/Korea/SocialPromoFestivalRow.jsx'),
