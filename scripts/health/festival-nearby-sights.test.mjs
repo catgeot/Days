@@ -126,6 +126,15 @@ test('load-more scroll pin releases on navigation keys', () => {
   assert.equal(isNearbyLoadMoreScrollPinInterruptKey('Enter'), false);
 });
 
+test('load-more expanded fetch keeps list mounted (no loading gate flash)', () => {
+  const sheetSrc = readFileSync(
+    join(dirname(fileURLToPath(import.meta.url)), '../../src/pages/Korea/FestivalDetailSheet.jsx'),
+    'utf8',
+  );
+  assert.match(sheetSrc, /retainVisibleList/);
+  assert.match(sheetSrc, /nearbySightsExpanded && \(nearbySpotsRef\.current/);
+});
+
 test('load-more pin does not fight user scroll via scroll listener', () => {
   const pinSrc = readFileSync(
     join(dirname(fileURLToPath(import.meta.url)), '../../src/pages/Korea/lib/festivalSheetNearbyScroll.js'),
@@ -217,6 +226,10 @@ test('nextNearbySightsBaseline survives strict-mode double collapsed commit', ()
     .map((block) => block.spot.name);
   assert.deepEqual(names.slice(0, priorNames.length), priorNames);
   assert.equal(names[names.length - 1], '한밭수목원');
+  assert.deepEqual(
+    shown.rest.map((spot) => spot.name),
+    [...baseline.rest.map((spot) => spot.name), '한밭수목원'],
+  );
 });
 
 test('tour row matching a representative 팔경 name stays out of the general list', () => {
@@ -287,6 +300,41 @@ test('representative group and general list have zero duplicate keys (daejeon hu
   assert.equal(festivalNearbySightDuplicateCount(merged), 0);
 });
 
+test('stabilizeFestivalNearbySightPresentation keeps append-only rest for visible slice', () => {
+  const collapsed = mergeFestivalNearbySights({
+    scenicSpots: [],
+    grouped: {
+      groups: [],
+      rest: [
+        { name: '근처A', contentId: 'a', distKm: 2, lat: 36.377, lng: 127.381, contentTypeId: '12' },
+        { name: '근처B', contentId: 'b', distKm: 4, lat: 36.378, lng: 127.382, contentTypeId: '12' },
+      ],
+    },
+    origin: { lat: 36.376, lng: 127.38 },
+  });
+  const expanded = mergeFestivalNearbySights({
+    scenicSpots: [],
+    grouped: {
+      groups: [],
+      rest: [
+        { name: '멀리C', contentId: 'c', distKm: 16, lat: 37.1, lng: 128.2, contentTypeId: '12' },
+        { name: '근처A', contentId: 'a', distKm: 2, lat: 36.377, lng: 127.381, contentTypeId: '12' },
+        { name: '근처B', contentId: 'b', distKm: 4, lat: 36.378, lng: 127.382, contentTypeId: '12' },
+      ],
+    },
+    origin: { lat: 36.376, lng: 127.38 },
+  });
+  const farFirst = {
+    ...expanded,
+    rest: [expanded.rest.find((spot) => spot.name === '멀리C'), ...collapsed.rest],
+  };
+  assert.deepEqual(farFirst.rest.slice(0, 2).map((spot) => spot.name), ['멀리C', '근처A']);
+  const stable = stabilizeFestivalNearbySightPresentation(collapsed, farFirst);
+  const visible = stable.rest.slice(0, 4).map((spot) => spot.name);
+  assert.deepEqual(visible.slice(0, collapsed.rest.length), collapsed.rest.map((s) => s.name));
+  assert.equal(visible[collapsed.rest.length], '멀리C');
+});
+
 test('stabilizeFestivalNearbySightPresentation is append-only for load-more', () => {
   const collapsed = mergeFestivalNearbySights({
     scenicSpots: [],
@@ -323,6 +371,10 @@ test('stabilizeFestivalNearbySightPresentation is append-only for load-more', ()
   assert.equal(names[names.length - 1], '한밭수목원');
   const keys = names.map((name) => nearbySightStableKey({ name }));
   assert.equal(new Set(keys).size, keys.length);
+  assert.deepEqual(
+    stable.rest.map((spot) => spot.name),
+    [...collapsed.rest.map((spot) => spot.name), '한밭수목원'],
+  );
 });
 
 test('dedupe by contentId then normalized name', () => {

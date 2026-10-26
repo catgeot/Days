@@ -786,6 +786,8 @@ export default function FestivalDetailSheet({
   const [mooniOpen, setMooniOpen] = useState(false);
   const mooniWasOpenRef = useRef(false);
   const [nearbySpots, setNearbySpots] = useState([]);
+  const nearbySpotsRef = useRef(nearbySpots);
+  nearbySpotsRef.current = nearbySpots;
   const [nearbySightsExpanded, setNearbySightsExpanded] = useState(false);
   const [nearbySightsVisibleCount, setNearbySightsVisibleCount] = useState(
     NEARBY_SIGHTS_INITIAL_VISIBLE,
@@ -1855,7 +1857,11 @@ export default function FestivalDetailSheet({
       if (cachedSpots) {
         applyNearbySpots(cachedSpots);
       } else {
-        setNearbyStatus('loading');
+        const retainVisibleList =
+          nearbySightsExpanded && (nearbySpotsRef.current?.length ?? 0) > 0;
+        if (!retainVisibleList) {
+          setNearbyStatus('loading');
+        }
         fetchNearbyTourAttractions({
           lat: pt.lat,
           lng: pt.lng,

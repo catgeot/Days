@@ -134,12 +134,13 @@ export function stabilizeFestivalNearbySightPresentation(prior, next) {
   /** @type {typeof next.blocks} */
   const blocks = [];
 
-  for (const spot of stabilizeNearbySpotList(
+  const generalRest = stabilizeNearbySpotList(
     priorSeg.general,
     nextSeg.general,
     nextSpotByKey,
     used,
-  )) {
+  );
+  for (const spot of generalRest) {
     blocks.push({ kind: 'spot', spot });
   }
 
@@ -147,23 +148,31 @@ export function stabilizeFestivalNearbySightPresentation(prior, next) {
     nextSeg.groups.map((group) => [String(group.heading.listId || '').trim(), group]),
   );
   const seenHeadingIds = new Set();
+  /** @type {typeof next.groups} */
+  const groups = [];
   for (const group of priorSeg.groups) {
     const listId = String(group.heading.listId || '').trim();
     seenHeadingIds.add(listId);
     const nextGroup = nextGroupById.get(listId);
     const heading = nextGroup?.heading || group.heading;
+    const groupItems = stabilizeNearbySpotList(
+      group.spots,
+      nextGroup?.spots || [],
+      nextSpotByKey,
+      used,
+    );
+    groups.push({
+      title: String(heading.title || '').trim() || listId,
+      listId,
+      items: groupItems,
+    });
     blocks.push({
       kind: 'heading',
       title: heading.title,
       listId,
       ...(heading.venueNote ? { venueNote: heading.venueNote } : {}),
     });
-    for (const spot of stabilizeNearbySpotList(
-      group.spots,
-      nextGroup?.spots || [],
-      nextSpotByKey,
-      used,
-    )) {
+    for (const spot of groupItems) {
       blocks.push({ kind: 'spot', spot });
     }
   }
@@ -171,13 +180,19 @@ export function stabilizeFestivalNearbySightPresentation(prior, next) {
   for (const group of nextSeg.groups) {
     const listId = String(group.heading.listId || '').trim();
     if (seenHeadingIds.has(listId)) continue;
+    const groupItems = stabilizeNearbySpotList([], group.spots, nextSpotByKey, used);
+    groups.push({
+      title: String(group.heading.title || '').trim() || listId,
+      listId,
+      items: groupItems,
+    });
     blocks.push({
       kind: 'heading',
       title: group.heading.title,
       listId,
       ...(group.heading.venueNote ? { venueNote: group.heading.venueNote } : {}),
     });
-    for (const spot of stabilizeNearbySpotList([], group.spots, nextSpotByKey, used)) {
+    for (const spot of groupItems) {
       blocks.push({ kind: 'spot', spot });
     }
   }
@@ -192,7 +207,8 @@ export function stabilizeFestivalNearbySightPresentation(prior, next) {
   const items = blocks
     .filter((block) => block.kind === 'spot' && block.spot)
     .map((block) => block.spot);
-  return { ...next, blocks, items };
+
+  return { ...next, blocks, items, rest: generalRest, groups };
 }
 
 /**
