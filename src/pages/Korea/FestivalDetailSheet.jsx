@@ -1146,9 +1146,29 @@ export default function FestivalDetailSheet({
     if (planned == null) return;
     const sheet = sheetScrollRef.current;
     if (!sheet) return;
-    sheet.scrollTop = resolveFestivalNearbyLoadMoreScrollTop(planned, sheet.scrollTop);
-    nearbyLoadMoreScrollRestoreRef.current = null;
-  }, [visibleNearbySightRows.length]);
+    const apply = () => {
+      const live = sheetScrollRef.current;
+      const target = nearbyLoadMoreScrollRestoreRef.current;
+      if (!live || target == null) return;
+      live.scrollTop = resolveFestivalNearbyLoadMoreScrollTop(target, live.scrollTop);
+    };
+    apply();
+    requestAnimationFrame(apply);
+    const list = sheet.querySelector('[data-nearby-list]');
+    if (!(list instanceof HTMLElement)) return;
+    let frames = 0;
+    const ro = new ResizeObserver(() => {
+      apply();
+      frames += 1;
+      if (frames > 24) ro.disconnect();
+    });
+    ro.observe(list);
+    const stop = window.setTimeout(() => ro.disconnect(), 400);
+    return () => {
+      ro.disconnect();
+      window.clearTimeout(stop);
+    };
+  }, [nearbySightsVisibleCount, nearbyStatus]);
 
   const coursesPageHref = useMemo(() => {
     if (!festivalAreaCode) return COURSES_PATH;
@@ -1752,6 +1772,7 @@ export default function FestivalDetailSheet({
     setNearbySightsExpanded(false);
     setNearbySightsVisibleCount(NEARBY_SIGHTS_INITIAL_VISIBLE);
     setNearbySightsBaseline(null);
+    nearbyLoadMoreScrollRestoreRef.current = null;
   }, [item?.contentId]);
 
   useEffect(() => {
@@ -2485,7 +2506,7 @@ export default function FestivalDetailSheet({
       <div
         ref={sheetScrollRef}
         inert={lightboxOpen ? true : undefined}
-        className="relative z-10 pointer-events-auto flex w-full max-w-lg md:max-w-6xl xl:max-w-7xl max-h-[100dvh] md:my-0 md:h-full md:max-h-none flex-col md:flex-row overflow-y-auto overscroll-contain md:overflow-hidden rounded-t-3xl md:rounded-3xl border border-stone-200 bg-white text-stone-900 shadow-2xl custom-scrollbar"
+        className="relative z-10 pointer-events-auto flex w-full max-w-lg md:max-w-6xl xl:max-w-7xl max-h-[100dvh] md:my-0 md:h-full md:max-h-none flex-col md:flex-row overflow-y-auto overscroll-contain [overflow-anchor:none] md:overflow-hidden rounded-t-3xl md:rounded-3xl border border-stone-200 bg-white text-stone-900 shadow-2xl custom-scrollbar"
         role="dialog"
         aria-modal={lightboxOpen ? undefined : 'true'}
         aria-labelledby="korea-festival-sheet-title"
@@ -3028,7 +3049,7 @@ export default function FestivalDetailSheet({
                     nearbySights.items.length > 0 &&
                     !festivalNearbyCardsEnabled && (
                     <ul
-                      className="space-y-2"
+                      className="space-y-2 [overflow-anchor:none]"
                       aria-label={t('korea.festival.detail.nearbySightsAria')}
                       data-nearby-list=""
                     >

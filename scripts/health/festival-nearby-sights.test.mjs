@@ -47,7 +47,11 @@ import {
   writeTourApiProxyCache,
 } from '../../src/utils/tourApiProxyCache.js';
 import { isConfirmedEmptyDetailImage } from '../../src/utils/fetchTourApiAttractionDetail.js';
-import { resolveFestivalNearbyLoadMoreScrollTop } from '../../src/pages/Korea/lib/festivalSheetNearbyScroll.js';
+import {
+  captureNearbyListRowAnchorDelta,
+  nearbyListRowAnchorDrift,
+  resolveFestivalNearbyLoadMoreScrollTop,
+} from '../../src/pages/Korea/lib/festivalSheetNearbyScroll.js';
 
 const origin = { lat: 35.06, lng: 126.52 };
 
@@ -81,6 +85,23 @@ test('mergeNearbyTourAttractionSpots keeps order and drops duplicates', () => {
     merged.map((row) => row.contentId),
     ['1', '2', '3'],
   );
+});
+
+test('festival nearby list disables scroll anchoring and restores load-more scroll', () => {
+  const sheet = readFileSync(
+    join(dirname(fileURLToPath(import.meta.url)), '../../src/pages/Korea/FestivalDetailSheet.jsx'),
+    'utf8',
+  );
+  assert.match(sheet, /data-nearby-list=""/);
+  assert.match(sheet, /\[overflow-anchor:none\]/);
+  assert.match(sheet, /nearbyLoadMoreScrollRestoreRef/);
+});
+
+test('nearby list row anchor drift corrects scroll after inserted rows', () => {
+  const delta = captureNearbyListRowAnchorDelta(320, 200);
+  assert.equal(delta, 120);
+  assert.equal(nearbyListRowAnchorDrift(926, 200, delta), 606);
+  assert.equal(nearbyListRowAnchorDrift(320, 200, delta), 0);
 });
 
 test('resolveFestivalNearbyLoadMoreScrollTop keeps planned scroll under StrictMode double layout', () => {

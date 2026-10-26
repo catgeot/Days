@@ -9,3 +9,20 @@ export function resolveFestivalNearbyLoadMoreScrollTop(plannedScrollTop, measure
   }
   return plannedScrollTop;
 }
+
+/**
+ * @param {number} rowTop
+ * @param {number} sheetTop
+ */
+export function captureNearbyListRowAnchorDelta(rowTop, sheetTop) {
+  return rowTop - sheetTop;
+}
+
+/**
+ * @param {number} rowTop
+ * @param {number} sheetTop
+ * @param {number} anchorDelta
+ */
+export function nearbyListRowAnchorDrift(rowTop, sheetTop, anchorDelta) {
+  return rowTop - sheetTop - anchorDelta;
+}
