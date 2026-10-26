@@ -83,6 +83,10 @@ test('festival grid card uses festivalListDisplayTitleLines for EN titles', () =
   );
   assert.match(grid, /festivalListDisplayTitleLines/);
   assert.doesNotMatch(grid, /\{item\.title\}/);
+  assert.match(grid, /FestivalPhotoFrame[\s\S]*object-contain/);
+  assert.match(grid, /data-festival-grid-thumb-bg/);
+  assert.match(grid, /blur-\[16px\]/);
+  assert.match(grid, /scale-110/);
 
   const lines = festivalListDisplayTitleLines(
     {
