@@ -84,14 +84,14 @@
 
 | | |
 |--|--|
-| **상태** | **#1 리스트 v2** · tip `b8a5e216` · draft PR [#569](https://github.com/catgeot/Days/pull/569) · **병합 금지** |
+| **상태** | **#2 QA 반영** · tip `f92cf077` · draft PR [#569](https://github.com/catgeot/Days/pull/569) · **병합 금지** |
 | **브랜치** | `cursor/festival-nearby-v2-c213` |
 | **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
 | **일지** | [`2026-10-26-project-log.md`](./2026-10-26-project-log.md) |
-| **Preview** | `vercel.json`에서 `cursor/*` 배포 꺼짐. WebKit 390 증거 `/opt/cursor/artifacts/*_nearby_*_390_webkit_v2c.png` · JSON `/opt/cursor/artifacts/festival_nearby_v2_counts_v2c.json` |
+| **Preview** | `vercel.json`에서 `cursor/*` 배포 꺼짐. WebKit 증거 `/opt/cursor/artifacts/incheon_3522322_before_more_landmark_group_390x1600_webkit_pr569_fix.png` · `/opt/cursor/artifacts/incheon_3522322_desktop_1280_webkit_pr569_fix.png` · `/opt/cursor/artifacts/busan_1399532_after_fix_390_webkit_pr569_fix.png` · JSON `/opt/cursor/artifacts/festival_nearby_v2_counts_pr569_fix_v2.json` |
 | **금지** | PR 병합 · 코드를 `origin/main`에 push · feature에 `plans/**` 커밋 · 카드 그리드로 주변 볼거리 회귀 · 대표 경관 그룹을 일반 목록에 중복 노출 |
 | **VERIFY** | `npm run lint:ci` · `npm run test:health` · `npm run smoke:korea-festival-nearby` |
-| **남은 일** | 사람이 draft #569만 본다. `3522322` 오슬로 빈티지 마켓은 인천 구경 1–9경이 상단 별도이고 일반 목록 중복 0인지, `1399532` 부산고등어축제는 5→9→25개 더보기와 5/10km 밴드가 자연스러운지 확인. |
+| **남은 일** | 사람이 draft #569만 본다. 카드 flag ON 경로가 기존 카드 UI인지, flag OFF에서 `3522322` 인천 구경 1–9경이 상단 별도·일반 목록 중복 0인지, `1399532` 송도반도 긴 제목이 말줄임+거리 같은 줄인지 확인. |
 
 **다음 제시어 없음**.
 

@@ -4,6 +4,6 @@
 
 ## 축제 주변 볼거리 v2
 
-- draft [#569](https://github.com/catgeot/Days/pull/569) `cursor/festival-nearby-v2-c213` tip `b8a5e216`. 축제 상세 «주변 볼거리»를 리스트 스타일로 고정하고 5개→더보기마다 +4 인시트 확장, 대표 경관 그룹은 상단 별도 유지, 나머지는 축제 좌표 기준 거리순·5km 밴드로 정리. type12만 유지(14/38 제외), 72px 썸네일, cat3 타입 라벨.
-- 검증: `npm run lint:ci` PASS(기존 unused-disable warning 12) · `npm run test:health` PASS(675) · `npm run smoke:korea-festival-nearby` PASS · WebKit 390 캡처 `3522322`/`1399532` + JSON `/opt/cursor/artifacts/festival_nearby_v2_counts_v2c.json`.
-- 사람 체크: draft #569에서 오슬로 빈티지 마켓(인천 구경 중복 0)과 부산고등어축제(5→9→25 리스트) 더보기 탭 때 URL·스크롤이 유지되는지 본다. PR 병합 전까지 코드 `origin/main` push 금지.
+- draft [#569](https://github.com/catgeot/Days/pull/569) `cursor/festival-nearby-v2-c213` tip `f92cf077`. 카드 flag ON 경로는 main `FestivalNearbyCardsSection`으로 복구, non-cards만 5개→더보기 +4 리스트 v2. 거리 계산은 haversine, type12 중 회사·학교·강당류 제외, 모바일 긴 제목은 말줄임으로 거리 배지 같은 줄 유지.
+- 검증: `npm run lint:ci` PASS(기존 unused-disable warning 12) · `npm run test:health` PASS(675) · `npm run smoke:korea-festival-nearby` PASS · WebKit 캡처 `3522322` 390/1280, `1399532` 390 + JSON `/opt/cursor/artifacts/festival_nearby_v2_counts_pr569_fix_v2.json`.
+- 사람 체크: draft #569에서 인천 구경(차이나타운~백령도)은 계획대로 상단 대표 그룹이고 일반 목록 중복 0인지, 부산고등어축제 긴 제목(송도반도)이 말줄임+거리 같은 줄인지 본다. PR 병합 전까지 코드 `origin/main` push 금지.
