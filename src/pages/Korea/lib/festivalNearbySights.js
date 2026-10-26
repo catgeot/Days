@@ -31,6 +31,170 @@ export function normalizeNearbySightName(name) {
     .toLowerCase();
 }
 
+function contentIdKey(spot) {
+  const id = String(spot?.contentId || '').trim();
+  return /^\d{1,32}$/.test(id) ? id : '';
+}
+
+/**
+ * Stable row key for append-only nearby list merges.
+ * @param {object | null | undefined} spot
+ */
+export function nearbySightStableKey(spot) {
+  const id = contentIdKey(spot);
+  if (id) return `id:${id}`;
+  const name = normalizeNearbySightName(spot?.name);
+  if (name) return `n:${name}`;
+  const listId = String(spot?.localScenicListId || '').trim();
+  const rank = String(spot?.rankBlurb || '').trim();
+  if (listId && rank) return `ls:${listId}:${rank}`;
+  return '';
+}
+
+/**
+ * Tour locationBasedList pages — keep prior order, append only new rows.
+ * @param {object[]} prior
+ * @param {object[]} incoming
+ */
+export function mergeNearbyTourAttractionSpots(prior, incoming) {
+  /** @type {object[]} */
+  const out = [];
+  const seen = new Set();
+  for (const spot of [...(prior || []), ...(incoming || [])]) {
+    const key = nearbySightStableKey(spot);
+    if (!key || seen.has(key)) continue;
+    seen.add(key);
+    out.push(spot);
+  }
+  return out;
+}
+
+/**
+ * @param {Array<{ kind: string, spot?: object, title?: string, listId?: string, venueNote?: string }>} blocks
+ */
+function parseNearbySightBlockSegments(blocks) {
+  /** @type {object[]} */
+  const general = [];
+  /** @type {Array<{ heading: object, spots: object[] }>} */
+  const groups = [];
+  /** @type {{ heading: object, spots: object[] } | null} */
+  let current = null;
+  for (const block of blocks || []) {
+    if (block?.kind === 'heading') {
+      current = { heading: block, spots: [] };
+      groups.push(current);
+      continue;
+    }
+    if (block?.kind === 'spot' && block.spot) {
+      if (current) current.spots.push(block.spot);
+      else general.push(block.spot);
+    }
+  }
+  return { general, groups };
+}
+
+function stabilizeNearbySpotList(priorSpots, nextSpots, nextSpotByKey, used) {
+  /** @type {object[]} */
+  const out = [];
+  for (const spot of priorSpots || []) {
+    const key = nearbySightStableKey(spot);
+    if (!key || used.has(key)) continue;
+    const fresh = nextSpotByKey.get(key) || spot;
+    used.add(key);
+    out.push(fresh);
+  }
+  for (const spot of nextSpots || []) {
+    const key = nearbySightStableKey(spot);
+    if (!key || used.has(key)) continue;
+    used.add(key);
+    out.push(spot);
+  }
+  return out;
+}
+
+/**
+ * After load-more, keep visible block/spot order and append new rows only.
+ * @param {ReturnType<typeof mergeFestivalNearbySights>} prior
+ * @param {ReturnType<typeof mergeFestivalNearbySights>} next
+ */
+export function stabilizeFestivalNearbySightPresentation(prior, next) {
+  if (!prior?.blocks?.length) return next;
+
+  const nextSpotByKey = new Map();
+  for (const block of next.blocks || []) {
+    if (block?.kind === 'spot' && block.spot) {
+      const key = nearbySightStableKey(block.spot);
+      if (key) nextSpotByKey.set(key, block.spot);
+    }
+  }
+
+  const priorSeg = parseNearbySightBlockSegments(prior.blocks);
+  const nextSeg = parseNearbySightBlockSegments(next.blocks);
+  const used = new Set();
+  /** @type {typeof next.blocks} */
+  const blocks = [];
+
+  for (const spot of stabilizeNearbySpotList(
+    priorSeg.general,
+    nextSeg.general,
+    nextSpotByKey,
+    used,
+  )) {
+    blocks.push({ kind: 'spot', spot });
+  }
+
+  const nextGroupById = new Map(
+    nextSeg.groups.map((group) => [String(group.heading.listId || '').trim(), group]),
+  );
+  const seenHeadingIds = new Set();
+  for (const group of priorSeg.groups) {
+    const listId = String(group.heading.listId || '').trim();
+    seenHeadingIds.add(listId);
+    const nextGroup = nextGroupById.get(listId);
+    const heading = nextGroup?.heading || group.heading;
+    blocks.push({
+      kind: 'heading',
+      title: heading.title,
+      listId,
+      ...(heading.venueNote ? { venueNote: heading.venueNote } : {}),
+    });
+    for (const spot of stabilizeNearbySpotList(
+      group.spots,
+      nextGroup?.spots || [],
+      nextSpotByKey,
+      used,
+    )) {
+      blocks.push({ kind: 'spot', spot });
+    }
+  }
+
+  for (const group of nextSeg.groups) {
+    const listId = String(group.heading.listId || '').trim();
+    if (seenHeadingIds.has(listId)) continue;
+    blocks.push({
+      kind: 'heading',
+      title: group.heading.title,
+      listId,
+      ...(group.heading.venueNote ? { venueNote: group.heading.venueNote } : {}),
+    });
+    for (const spot of stabilizeNearbySpotList([], group.spots, nextSpotByKey, used)) {
+      blocks.push({ kind: 'spot', spot });
+    }
+  }
+
+  for (const spot of next.items || []) {
+    const key = nearbySightStableKey(spot);
+    if (!key || used.has(key)) continue;
+    used.add(key);
+    blocks.push({ kind: 'spot', spot });
+  }
+
+  const items = blocks
+    .filter((block) => block.kind === 'spot' && block.spot)
+    .map((block) => block.spot);
+  return { ...next, blocks, items };
+}
+
 /**
  * @param {object | null | undefined} spot
  */

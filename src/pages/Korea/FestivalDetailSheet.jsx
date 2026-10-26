@@ -64,7 +64,9 @@ import {
 import { resolveCityAttractionHub } from '../Home/lib/cityAttractionHubs.js';
 import {
   mergeFestivalNearbySights,
+  mergeNearbyTourAttractionSpots,
   rankMooniNearbySights,
+  stabilizeFestivalNearbySightPresentation,
   stripTrailingHubName,
 } from './lib/festivalNearbySights.js';
 import {
@@ -707,6 +709,7 @@ export default function FestivalDetailSheet({
   const [nearbyParking, setNearbyParking] = useState([]);
   const [nearbyParkingReady, setNearbyParkingReady] = useState(false);
   const nearbyCacheOwnerRef = useRef('');
+  const nearbySightsBaselineRef = useRef(null);
   const nearbyCacheKey = `${item?.contentId || ''}:${item?.mapx || ''}:${item?.mapy || ''}`;
   if (nearbyCacheOwnerRef.current !== nearbyCacheKey) {
     nearbyCacheOwnerRef.current = nearbyCacheKey;
@@ -833,7 +836,7 @@ export default function FestivalDetailSheet({
   }, [nearestHub?.hubId]);
   const nearbySights = useMemo(() => {
     const origin = festivalLngLat(item?.mapx, item?.mapy);
-    return mergeFestivalNearbySights({
+    const merged = mergeFestivalNearbySights({
       scenicSpots: scenicSpotsRanked.map(({ spot }) => ({
         ...spot,
         locality:
@@ -851,6 +854,13 @@ export default function FestivalDetailSheet({
       },
       fallbackCenters: nearbyFallbackCenters,
     });
+    if (nearbySightsExpanded && nearbySightsBaselineRef.current) {
+      return stabilizeFestivalNearbySightPresentation(nearbySightsBaselineRef.current, merged);
+    }
+    if (!nearbySightsExpanded) {
+      nearbySightsBaselineRef.current = merged;
+    }
+    return merged;
   }, [
     scenicSpotsRanked,
     nearbyGrouped,
@@ -864,6 +874,7 @@ export default function FestivalDetailSheet({
     intro?.addr1,
     intro?.venueContentId,
     locale,
+    nearbySightsExpanded,
   ]);
   const nearbyMissingImageKey = useMemo(() => {
     if (nearbyStatus === 'loading' || nearbyStatus === 'idle') return '';
@@ -1611,6 +1622,7 @@ export default function FestivalDetailSheet({
 
   useEffect(() => {
     setNearbySightsExpanded(false);
+    nearbySightsBaselineRef.current = null;
   }, [item?.contentId]);
 
   useEffect(() => {
@@ -1633,9 +1645,16 @@ export default function FestivalDetailSheet({
         lng: pt.lng,
         ...fetchOpts,
       });
+      const applyNearbySpots = (spots) => {
+        setNearbySpots((prev) =>
+          nearbySightsExpanded && prev.length
+            ? mergeNearbyTourAttractionSpots(prev, spots)
+            : spots,
+        );
+        setNearbyStatus(spots.length ? 'ok' : 'empty');
+      };
       if (cachedSpots) {
-        setNearbySpots(cachedSpots);
-        setNearbyStatus(cachedSpots.length ? 'ok' : 'empty');
+        applyNearbySpots(cachedSpots);
       } else {
         setNearbyStatus('loading');
         fetchNearbyTourAttractions({
@@ -1645,7 +1664,7 @@ export default function FestivalDetailSheet({
         }).then((res) => {
           if (cancelled) return;
           const spots = Array.isArray(res?.spots) ? res.spots : [];
-          setNearbySpots(spots);
+          applyNearbySpots(spots);
           if (res?.error) setNearbyStatus('error');
           else if (!spots.length) setNearbyStatus('empty');
           else setNearbyStatus('ok');

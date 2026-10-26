@@ -7,11 +7,15 @@ import {
   isFestivalOrEventSight,
   isFestivalVenueSight,
   mergeFestivalNearbySights,
+  mergeNearbyTourAttractionSpots,
+  nearbySightStableKey,
   normalizeNearbySightName,
   rankMooniNearbySights,
+  stabilizeFestivalNearbySightPresentation,
   stripTrailingHubName,
   stripTrailingRegionLabel,
 } from '../../src/pages/Korea/lib/festivalNearbySights.js';
+import { groupNearbySpotsWithLocalScenic } from '../../src/pages/Home/lib/koreaLocalScenicLists.js';
 import {
   mergeNearbyItemImages,
   missingNearbySightImageIds,
@@ -45,6 +49,72 @@ const origin = { lat: 35.06, lng: 126.52 };
 
 test('normalize nearby sight names', () => {
   assert.equal(normalizeNearbySightName('돌머리 해수욕장'), normalizeNearbySightName('돌머리해수욕장'));
+});
+
+test('daejeon 팔경 lists all members when festival is in hub without nearestHub hint', () => {
+  const grouped = groupNearbySpotsWithLocalScenic([], {
+    hubId: '',
+    lat: 36.376,
+    lng: 127.38,
+    locale: 'ko',
+    areaCode: '3',
+  });
+  const pal = grouped.groups.find((g) => g.listId === 'daejeon-palgyeong');
+  assert.equal(pal?.items?.length, 8);
+});
+
+test('mergeNearbyTourAttractionSpots keeps order and drops duplicates', () => {
+  const prior = [
+    { contentId: '1', name: '아쿠아리움', distKm: 2 },
+    { contentId: '2', name: '대전홍보관', distKm: 3 },
+  ];
+  const incoming = [
+    { contentId: '2', name: '대전홍보관', distKm: 3.1 },
+    { contentId: '3', name: '한밭수목원', distKm: 4 },
+  ];
+  const merged = mergeNearbyTourAttractionSpots(prior, incoming);
+  assert.deepEqual(
+    merged.map((row) => row.contentId),
+    ['1', '2', '3'],
+  );
+});
+
+test('stabilizeFestivalNearbySightPresentation is append-only for load-more', () => {
+  const collapsed = mergeFestivalNearbySights({
+    scenicSpots: [],
+    grouped: {
+      groups: [],
+      rest: [
+        { name: '아쿠아리움', contentId: '1001', distKm: 2.1 },
+        { name: '대전홍보관', contentId: '1002', distKm: 3.2 },
+        { name: '발명교육센터', contentId: '1003', distKm: 4.1 },
+      ],
+    },
+    origin: { lat: 36.376, lng: 127.38 },
+  });
+  const expanded = mergeFestivalNearbySights({
+    scenicSpots: [],
+    grouped: {
+      groups: [],
+      rest: [
+        { name: '한밭수목원', contentId: '2001', distKm: 4.8 },
+        { name: '아쿠아리움', contentId: '1001', distKm: 2.1 },
+      ],
+    },
+    origin: { lat: 36.376, lng: 127.38 },
+  });
+  const stable = stabilizeFestivalNearbySightPresentation(collapsed, expanded);
+  const priorNames = collapsed.blocks
+    .filter((block) => block.kind === 'spot')
+    .map((block) => block.spot.name);
+  const names = stable.blocks
+    .filter((block) => block.kind === 'spot')
+    .map((block) => block.spot.name);
+  assert.deepEqual(names.slice(0, priorNames.length), priorNames);
+  assert.equal(names.length, priorNames.length + 1);
+  assert.equal(names[names.length - 1], '한밭수목원');
+  const keys = names.map((name) => nearbySightStableKey({ name }));
+  assert.equal(new Set(keys).size, keys.length);
 });
 
 test('dedupe by contentId then normalized name', () => {
