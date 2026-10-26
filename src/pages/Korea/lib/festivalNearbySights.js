@@ -246,6 +246,13 @@ function distOf(row, origin) {
   return Number.isFinite(km) ? km : null;
 }
 
+function isAllowedNearbyContentType(spot) {
+  const type = String(spot?.contentTypeId || spot?.contenttypeid || '').trim();
+  if (type === '14' || type === '38') return false;
+  if (!type || type === '12') return true;
+  return Boolean(String(spot?.localScenicListId || '').trim());
+}
+
 function rankNumber(spot) {
   const match = String(spot?.rankBlurb || '').match(/(\d+)\s*경/);
   return match ? Number(match[1]) : null;
@@ -386,6 +393,7 @@ export function mergeFestivalNearbySights(input = {}) {
   /** @type {Map<string, object[]>} */
   const venueExcludedByList = new Map();
   for (const row of pool) {
+    if (!isAllowedNearbyContentType(row)) continue;
     if (isNonTouristNearbyFacility(row)) continue;
     if (isFestivalOrEventSight(row)) continue;
     const distKm = distOf(row, originPt);
