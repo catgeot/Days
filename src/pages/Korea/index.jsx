@@ -161,6 +161,7 @@ import {
   searchParamsWithoutFestival,
   searchParamsWithFestival,
 } from './koreaFestivalDetailUrl';
+import { useFestivalSheetExternalReturnGuard } from './useFestivalSheetExternalReturnGuard.js';
 import {
   localizeCityChips,
   localizeSidoChips,
@@ -1161,6 +1162,10 @@ export default function KoreaFestivalHub() {
       deepLinkDetailForId,
     ],
   );
+  useFestivalSheetExternalReturnGuard({
+    festivalId,
+    seededFestivalIdRef: festivalDeepLinkSeededForRef,
+  });
   const selected = festivalDeepLink.selected;
   const promoDeeplinkIdSet = useMemo(
     () => new Set(socialPromoFestivals.map((entry) => String(entry.contentId))),
@@ -1425,6 +1430,7 @@ export default function KoreaFestivalHub() {
           },
           { replace: false },
         );
+        festivalDetailPushedRef.current = true;
       }, 0);
     }
 

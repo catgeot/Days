@@ -109,7 +109,7 @@ export default function FestivalGridPhotoCard({
                   <FestivalListThumbFallback size="lg" />
                 </span>
               ) : null}
-              {showThumbImage && !bgBroken ? (
+              {showThumbImage && !bgBroken && thumbDecoded ? (
                 <span
                   className="pointer-events-none absolute inset-0 z-0 overflow-hidden"
                   aria-hidden="true"
