@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Star } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from '../../../i18n/LocaleProvider';
@@ -41,6 +41,7 @@ export default function FestivalGridPhotoCard({
   const { isEnglish } = useLocale();
   const koText = koreanApiTextProps(isEnglish);
   const [urlIndex, setUrlIndex] = useState(0);
+  const [thumbDecoded, setThumbDecoded] = useState(false);
 
   const thumbCandidates = React.useMemo(
     () => festivalItemThumbCandidateUrls(item),
@@ -53,6 +54,10 @@ export default function FestivalGridPhotoCard({
       ? thumbCandidates[urlIndex]
       : '';
   const showStaticFallback = !canTryImage || !activeUrl;
+
+  useEffect(() => {
+    setThumbDecoded(false);
+  }, [activeUrl]);
 
   const range = formatFestivalDetailDateRange(
     item.eventStartDate,
@@ -86,13 +91,15 @@ export default function FestivalGridPhotoCard({
             </span>
           ) : (
             <>
-              <span
-                className="absolute inset-0 z-0"
-                data-festival-grid-thumb-loading=""
-                aria-hidden="true"
-              >
-                <FestivalListThumbFallback size="lg" />
-              </span>
+              {!thumbDecoded ? (
+                <span
+                  className="absolute inset-0 z-0"
+                  data-festival-grid-thumb-loading=""
+                  aria-hidden="true"
+                >
+                  <FestivalListThumbFallback size="lg" />
+                </span>
+              ) : null}
               <FestivalPhotoFrame
               src={activeUrl}
               alt=""
@@ -107,6 +114,7 @@ export default function FestivalGridPhotoCard({
                   <FestivalListThumbFallback size="lg" />
                 </span>
               }
+              onLoaded={() => setThumbDecoded(true)}
               onFailed={() => {
                 if (urlIndex + 1 < thumbCandidates.length) {
                   setUrlIndex((i) => i + 1);
