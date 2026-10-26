@@ -84,7 +84,7 @@
 
 | | |
 |--|--|
-| **상태** | **#1 리스트 v2** · tip `86d750fc` · draft PR [#569](https://github.com/catgeot/Days/pull/569) · **병합 금지** |
+| **상태** | **#1 리스트 v2** · tip `b8a5e216` · draft PR [#569](https://github.com/catgeot/Days/pull/569) · **병합 금지** |
 | **브랜치** | `cursor/festival-nearby-v2-c213` |
 | **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
 | **일지** | [`2026-10-26-project-log.md`](./2026-10-26-project-log.md) |
