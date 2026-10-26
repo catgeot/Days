@@ -93,7 +93,52 @@ function parseNearbySightBlockSegments(blocks) {
   return { general, groups };
 }
 
-function stabilizeNearbySpotList(priorSpots, nextSpots, nextSpotByKey, used) {
+function stabilizeNearbySpotList(priorSpots, nextSpots, nextSpotByKey, used, options = {}) {
+  const frozen = Math.max(0, Number(options.frozenPrefixCount) || 0);
+  if (frozen > 0 && (priorSpots?.length || 0) > 0) {
+    /** @type {object[]} */
+    const prefix = [];
+    const priorPrefixKeys = new Set();
+    for (let i = 0; i < Math.min(frozen, priorSpots.length); i += 1) {
+      const spot = priorSpots[i];
+      const key = nearbySightStableKey(spot);
+      if (!key || used.has(key)) continue;
+      priorPrefixKeys.add(key);
+      used.add(key);
+      prefix.push(nextSpotByKey.get(key) || spot);
+    }
+    /** @type {object[]} */
+    const priorTail = [];
+    const priorTailKeys = new Set();
+    for (let i = frozen; i < priorSpots.length; i += 1) {
+      const spot = priorSpots[i];
+      const key = nearbySightStableKey(spot);
+      if (!key || used.has(key)) continue;
+      priorTailKeys.add(key);
+      used.add(key);
+      priorTail.push(nextSpotByKey.get(key) || spot);
+    }
+    /** @type {object[]} */
+    const newcomers = [];
+    for (const spot of nextSpots || []) {
+      const key = nearbySightStableKey(spot);
+      if (!key || priorPrefixKeys.has(key) || priorTailKeys.has(key)) continue;
+      newcomers.push(nextSpotByKey.get(key) || spot);
+    }
+    const mergedTail = sortNearbyRestSpots([...priorTail, ...newcomers]);
+    const seenTail = new Set();
+    /** @type {object[]} */
+    const tail = [];
+    for (const spot of mergedTail) {
+      const key = nearbySightStableKey(spot);
+      if (!key || seenTail.has(key)) continue;
+      seenTail.add(key);
+      used.add(key);
+      tail.push(spot);
+    }
+    return [...prefix, ...tail];
+  }
+
   /** @type {object[]} */
   const out = [];
   for (const spot of priorSpots || []) {
@@ -117,7 +162,7 @@ function stabilizeNearbySpotList(priorSpots, nextSpots, nextSpotByKey, used) {
  * @param {ReturnType<typeof mergeFestivalNearbySights>} prior
  * @param {ReturnType<typeof mergeFestivalNearbySights>} next
  */
-export function stabilizeFestivalNearbySightPresentation(prior, next) {
+export function stabilizeFestivalNearbySightPresentation(prior, next, options = {}) {
   if (!prior?.blocks?.length) return next;
 
   const nextSpotByKey = new Map();
@@ -139,6 +184,7 @@ export function stabilizeFestivalNearbySightPresentation(prior, next) {
     nextSeg.general,
     nextSpotByKey,
     used,
+    options,
   );
   for (const spot of generalRest) {
     blocks.push({ kind: 'spot', spot });
@@ -227,9 +273,16 @@ export function nextNearbySightsBaseline(expanded, merged, currentBaseline) {
  * @param {ReturnType<typeof mergeFestivalNearbySights>} merged
  * @param {ReturnType<typeof mergeFestivalNearbySights> | null} baseline
  */
-export function resolveFestivalNearbySightsPresentation(expanded, merged, baseline) {
+export function resolveFestivalNearbySightsPresentation(
+  expanded,
+  merged,
+  baseline,
+  visibleRestCount = 0,
+) {
   if (expanded && baseline) {
-    return stabilizeFestivalNearbySightPresentation(baseline, merged);
+    return stabilizeFestivalNearbySightPresentation(baseline, merged, {
+      frozenPrefixCount: visibleRestCount,
+    });
   }
   return merged;
 }
@@ -530,6 +583,30 @@ function byDistance(a, b) {
   return String(a.name || '').localeCompare(String(b.name || ''), 'ko');
 }
 
+/**
+ * General «rest» list: finite distance first; 팔경 null-dist by 경 번호; other nulls last.
+ * @param {object} a
+ * @param {object} b
+ */
+export function compareNearbyRestSpots(a, b) {
+  const da = Number.isFinite(a?.distKm) ? a.distKm : null;
+  const db = Number.isFinite(b?.distKm) ? b.distKm : null;
+  if (da != null && db != null) return byDistance(a, b);
+  if (da != null && db == null) return -1;
+  if (da == null && db != null) return 1;
+  const pa = String(a?.localScenicListId || '').trim();
+  const pb = String(b?.localScenicListId || '').trim();
+  if (pa && pb) return byRank(a, b);
+  if (pa && !pb) return -1;
+  if (!pa && pb) return 1;
+  return byDistance(a, b);
+}
+
+/** @param {object[]} spots */
+export function sortNearbyRestSpots(spots) {
+  return [...(spots || [])].sort(compareNearbyRestSpots);
+}
+
 function byRank(a, b) {
   const ra = rankNumber(a);
   const rb = rankNumber(b);
@@ -679,7 +756,7 @@ export function mergeFestivalNearbySights(input = {}) {
     if (group.items.length >= 2) sectionGroups.push(group);
     else rest.push(...group.items);
   }
-  rest.sort(byDistance);
+  rest.splice(0, rest.length, ...sortNearbyRestSpots(rest));
   const repKeys = representativeSpotIdentityKeys(sectionGroups);
   const generalRest = rest.filter((spot) => !isRepresentativeSpotDuplicate(spot, repKeys));
   sectionGroups.sort((a, b) => {

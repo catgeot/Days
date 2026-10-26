@@ -5,28 +5,22 @@ import {
   waitFestivalNearbyAttractionsReady,
   waitFestivalNearbyMoreButtonEnabled,
 } from '../scripts/lib/festival-nearby-load-more-qa.mjs';
+import { analyzeNearbyRestAppend } from '../scripts/lib/festival-nearby-append-report.mjs';
 import {
   E2E_NEARBY_APPEND_FESTIVAL_ID,
   installFestivalNearbyLoadMoreAppendFixtures,
 } from './festival-nearby-load-more-append-fixture.js';
 
-async function nearbyRowSnapshots(page) {
+async function readNearbyRestQa(page) {
   return page.evaluate(() => {
-    const list = document.querySelector('[data-nearby-list]');
-    if (!list) return [];
-    return [...list.querySelectorAll('[data-nearby-attraction-row]')].map((el) => {
-      const id = el.getAttribute('data-nearby-row-key') || '';
-      const title = el.querySelector('.text-sm.font-bold')?.textContent?.trim() || '';
-      const distChip = el.querySelector('.rounded-full.bg-stone-100');
-      const distText = distChip?.textContent?.trim() || '';
-      const m = distText.match(/([\d.]+)\s*km/i);
-      return {
-        id,
-        title,
-        distanceKm: m ? Number(m[1]) : null,
-        distanceLabel: distText,
-      };
-    });
+    const sheet = document.querySelector('[role="dialog"]');
+    if (!sheet?.dataset?.nearbyRestJson) {
+      return { rest: [], visibleCount: 5 };
+    }
+    return {
+      rest: JSON.parse(sheet.dataset.nearbyRestJson),
+      visibleCount: Number(sheet.dataset.nearbyRestVisible) || 5,
+    };
   });
 }
 
@@ -45,7 +39,7 @@ test.describe('Festival nearby load-more append — WebKit 390 mocked', () => {
     await installFestivalNearbyLoadMoreAppendFixtures(context);
   });
 
-  test('더보기 keeps list prefix and appends 4 nearest-by-distance rows', async ({ page }) => {
+  test('더보기 next-nearest: keeps rest prefix and appends 4 by distance', async ({ page }) => {
     await page.goto(`/korea/?festival=${E2E_NEARBY_APPEND_FESTIVAL_ID}`, {
       waitUntil: 'domcontentloaded',
       timeout: 120_000,
@@ -54,41 +48,27 @@ test.describe('Festival nearby load-more append — WebKit 390 mocked', () => {
     await waitFestivalNearbyAttractionsReady(page);
     await ensureFestivalNearbyMoreButtonVisible(page);
 
-    const before = await nearbyRowSnapshots(page);
-    expect(before.length).toBe(5);
-
-    const beforeIds = before.map((row) => row.id);
+    const beforeQa = await readNearbyRestQa(page);
+    expect(beforeQa.rest.length).toBeGreaterThanOrEqual(5);
 
     await waitFestivalNearbyMoreButtonEnabled(page);
     await tapFestivalNearbyLoadMore(page);
 
-    await expect
-      .poll(async () => (await nearbyRowSnapshots(page)).length, { timeout: 15_000 })
-      .toBe(9);
-
-    const after = await nearbyRowSnapshots(page);
-    expect(after.length).toBe(9);
-
-    for (let i = 0; i < before.length; i += 1) {
-      expect(after[i].id).toBe(beforeIds[i]);
-      expect(after[i].distanceKm).toBe(before[i].distanceKm);
-    }
-
-    const appended = after.slice(before.length);
-    expect(appended).toHaveLength(4);
-
-    const newFixtureRows = appended.filter(
-      (row) => row.id.startsWith('e2e-near-') && !beforeIds.includes(row.id),
-    );
-    expect(newFixtureRows.length).toBeGreaterThanOrEqual(3);
-    expect(Number(newFixtureRows[0].id.replace('e2e-near-', ''))).toBeGreaterThanOrEqual(
-      before.length + 1,
+    await page.waitForFunction(
+      () => Number(document.querySelector('[role="dialog"]')?.dataset?.nearbyRestVisible || 0) >= 9,
+      { timeout: 15_000 },
     );
 
-    const dists = appended.map((row) => row.distanceKm).filter((n) => Number.isFinite(n));
-    expect(dists).toHaveLength(4);
-    for (let i = 1; i < dists.length; i += 1) {
-      expect(dists[i]).toBeGreaterThanOrEqual(dists[i - 1] - 0.05);
-    }
+    const afterQa = await readNearbyRestQa(page);
+    const analysis = analyzeNearbyRestAppend(
+      beforeQa.rest,
+      afterQa.rest,
+      beforeQa.visibleCount,
+    );
+
+    expect(analysis.prefixOk).toBe(true);
+    expect(analysis.appendedNextNearestOk).toBe(true);
+    expect(analysis.actualAppended).toHaveLength(4);
+    expect(analysis.skippedNearerCandidates).toHaveLength(0);
   });
 });

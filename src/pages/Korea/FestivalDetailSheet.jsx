@@ -970,8 +970,14 @@ export default function FestivalDetailSheet({
         nearbySightsExpanded,
         nearbySightsMerged,
         nearbySightsBaseline,
+        nearbySightsVisibleCount,
       ),
-    [nearbySightsExpanded, nearbySightsMerged, nearbySightsBaseline],
+    [
+      nearbySightsExpanded,
+      nearbySightsMerged,
+      nearbySightsBaseline,
+      nearbySightsVisibleCount,
+    ],
   );
   const nearbyMissingImageKey = useMemo(() => {
     if (nearbyStatus === 'loading' || nearbyStatus === 'idle') return '';
@@ -1133,6 +1139,24 @@ export default function FestivalDetailSheet({
     () => nearbyListRowsWithBands(visibleNearbySightListItems),
     [visibleNearbySightListItems],
   );
+  useEffect(() => {
+    const sheet = sheetScrollRef.current;
+    if (!sheet) return;
+    try {
+      sheet.dataset.nearbyRestJson = JSON.stringify(
+        nearbySightListItems.map((spot) => ({
+          id: String(spot?.contentId || spot?.id || '').trim(),
+          title: nearbySightTitle(spot),
+          distanceKm: Number.isFinite(Number(spot?.distKm)) ? Number(spot.distKm) : null,
+          localScenicListId: String(spot?.localScenicListId || '').trim(),
+        })),
+      );
+      sheet.dataset.nearbyRestVisible = String(nearbySightsVisibleCount);
+    } catch {
+      /* dataset quota */
+    }
+  }, [nearbySightListItems, nearbySightsVisibleCount]);
+
   const canLoadMoreNearbySights =
     nearbySightListItems.length > nearbySightsVisibleCount ||
     (!nearbySightsExpanded && Boolean(festivalLngLat(item?.mapx, item?.mapy)));

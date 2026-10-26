@@ -14,6 +14,7 @@ import {
   normalizeNearbySightName,
   rankMooniNearbySights,
   resolveFestivalNearbySightsPresentation,
+  sortNearbyRestSpots,
   stabilizeFestivalNearbySightPresentation,
   stripTrailingHubName,
   stripTrailingRegionLabel,
@@ -329,10 +330,55 @@ test('stabilizeFestivalNearbySightPresentation keeps append-only rest for visibl
     rest: [expanded.rest.find((spot) => spot.name === '멀리C'), ...collapsed.rest],
   };
   assert.deepEqual(farFirst.rest.slice(0, 2).map((spot) => spot.name), ['멀리C', '근처A']);
-  const stable = stabilizeFestivalNearbySightPresentation(collapsed, farFirst);
+  const stable = stabilizeFestivalNearbySightPresentation(collapsed, farFirst, {
+    frozenPrefixCount: 2,
+  });
   const visible = stable.rest.slice(0, 4).map((spot) => spot.name);
   assert.deepEqual(visible.slice(0, collapsed.rest.length), collapsed.rest.map((s) => s.name));
   assert.equal(visible[collapsed.rest.length], '멀리C');
+});
+
+test('stabilize merges expanded newcomers into distance order after frozen rest prefix', () => {
+  const mk = (name, contentId, distKm) => ({
+    name,
+    contentId,
+    distKm,
+    lat: 36.376 + distKm / 111,
+    lng: 127.38,
+    contentTypeId: '12',
+  });
+  const collapsed = mergeFestivalNearbySights({
+    scenicSpots: [],
+    grouped: {
+      groups: [],
+      rest: [mk('A', 'a', 2), mk('B', 'b', 4), mk('C', 'c', 6), mk('D', 'd', 8), mk('E', 'e', 10), mk('F', 'f', 12), mk('G', 'g', 14)],
+    },
+    origin: { lat: 36.376, lng: 127.38 },
+  });
+  const expanded = mergeFestivalNearbySights({
+    scenicSpots: [],
+    grouped: {
+      groups: [],
+      rest: [
+        mk('J', 'j', 3),
+        mk('K', 'k', 5),
+        mk('A', 'a', 2),
+        mk('B', 'b', 4),
+        mk('C', 'c', 6),
+        mk('D', 'd', 8),
+        mk('E', 'e', 10),
+        mk('F', 'f', 12),
+        mk('G', 'g', 14),
+        mk('H', 'h', 16),
+      ],
+    },
+    origin: { lat: 36.376, lng: 127.38 },
+  });
+  const stable = resolveFestivalNearbySightsPresentation(true, expanded, collapsed, 5);
+  assert.deepEqual(
+    stable.rest.slice(5, 9).map((spot) => spot.name),
+    ['J', 'K', 'F', 'G'],
+  );
 });
 
 test('stabilizeFestivalNearbySightPresentation is append-only for load-more', () => {

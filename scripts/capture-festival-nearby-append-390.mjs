@@ -12,6 +12,11 @@ import {
   waitFestivalNearbyAttractionsReady,
   waitFestivalNearbyMoreButtonEnabled,
 } from './lib/festival-nearby-load-more-qa.mjs';
+import {
+  analyzeNearbyRestAppend,
+  INITIAL_VISIBLE,
+  VISIBLE_STEP,
+} from './lib/festival-nearby-append-report.mjs';
 
 const OUT_DIR = '/opt/cursor/artifacts/festival-nearby-append-390';
 const BASE = (process.env.CAPTURE_BASE_URL || 'https://127.0.0.1:4173').replace(/\/$/, '');
@@ -74,37 +79,17 @@ async function clipShot(page, path) {
   });
 }
 
-function analyzeAppend(before, after) {
-  const prefixLen = before.length;
-  const prefixOk =
-    prefixLen > 0 &&
-    after.length >= prefixLen &&
-    before.every((row, i) => after[i]?.id === row.id);
-  const appended = after.slice(prefixLen);
-  const appendedIds = new Set(appended.map((row) => row.id));
-  const noDupes =
-    appended.length === appendedIds.size &&
-    appended.every((row) => !before.some((prev) => prev.id === row.id));
-  const dists = appended.map((row) => row.distanceKm).filter((n) => Number.isFinite(n));
-  const distanceSorted =
-    dists.length === appended.length &&
-    dists.every((d, i) => i === 0 || d >= dists[i - 1] - 0.05);
-  const maxBefore = Math.max(
-    ...before.map((row) => row.distanceKm).filter((n) => Number.isFinite(n)),
-    -Infinity,
-  );
-  const nextNearestOk =
-    appended.length === 4 &&
-    dists.length === 4 &&
-    dists[0] >= maxBefore - 0.8;
-  return {
-    prefixOk,
-    appendedCount: appended.length,
-    noDuplicateAppended: noDupes,
-    appendedDistanceSorted: distanceSorted,
-    appendedNextNearestOk: nextNearestOk,
-    appendedItems: appended,
-  };
+async function readNearbyRestQa(page) {
+  return page.evaluate(() => {
+    const sheet = document.querySelector('[role="dialog"]');
+    if (!sheet?.dataset?.nearbyRestJson) {
+      return { rest: [], visibleCount: 5 };
+    }
+    return {
+      rest: JSON.parse(sheet.dataset.nearbyRestJson),
+      visibleCount: Number(sheet.dataset.nearbyRestVisible) || INITIAL_VISIBLE,
+    };
+  });
 }
 
 const browser = await webkit.launch({ headless: true });
@@ -147,23 +132,33 @@ for (const { id: festivalId, label, titleHint } of targets) {
       continue;
     }
     await ensureFestivalNearbyMoreButtonVisible(page);
+    const restBeforeQa = await readNearbyRestQa(page);
     const itemsBefore = await rowSnapshots(page);
     await clipShot(page, beforePath);
     await waitFestivalNearbyMoreButtonEnabled(page);
     await tapFestivalNearbyLoadMore(page);
-    await page
-      .waitForFunction(
-        () => {
-          const list = document.querySelector('[data-nearby-list]');
-          return list && list.querySelectorAll('[data-nearby-attraction-row]').length > 0;
-        },
-        { timeout: 60_000 },
-      )
-      .catch(() => {});
-    await page.waitForTimeout(500);
+    await page.waitForFunction(
+      () => {
+        const sheet = document.querySelector('[role="dialog"]');
+        const visible = Number(sheet?.dataset?.nearbyRestVisible || 0);
+        return visible >= 9;
+      },
+      { timeout: 60_000 },
+    );
+    await page.waitForTimeout(600);
+    const restAfterQa = await readNearbyRestQa(page);
     const itemsAfter = await rowSnapshots(page);
     await clipShot(page, afterPath);
-    const analysis = analyzeAppend(itemsBefore, itemsAfter);
+    const restAnalysis = analyzeNearbyRestAppend(
+      restBeforeQa.rest,
+      restAfterQa.rest,
+      restBeforeQa.visibleCount,
+    );
+    const prefixLen = itemsBefore.length;
+    const prefixOk =
+      prefixLen > 0 &&
+      itemsAfter.length >= prefixLen &&
+      itemsBefore.every((row, i) => itemsAfter[i]?.id === row.id);
     report.festivals.push({
       id: festivalId,
       label,
@@ -172,7 +167,15 @@ for (const { id: festivalId, label, titleHint } of targets) {
       afterPath,
       itemsBefore,
       itemsAfter,
-      ...analysis,
+      restBefore: restBeforeQa.rest,
+      restAfter: restAfterQa.rest,
+      prefixOk,
+      appendedCount: restAnalysis.actualAppended.length,
+      appendedItems: restAnalysis.actualAppended,
+      expectedAppended: restAnalysis.expectedAppended,
+      appendedNextNearestOk: restAnalysis.appendedNextNearestOk,
+      skippedNearerCandidates: restAnalysis.skippedNearerCandidates,
+      remainingSortedHead: restAnalysis.remainingSortedHead,
     });
   } catch (err) {
     report.festivals.push({ id: festivalId, label, error: String(err?.message || err) });
