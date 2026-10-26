@@ -1020,7 +1020,8 @@ export const WORLD_EVENT_OVERRIDES = [
     recurrenceNoteEn: 'Apr 13–15',
     venue: { name: 'Silom · Khao San · citywide' },
     source: 'curated',
-    sourceUrl: 'https://www.bot.or.th/',
+    sourceUrl:
+      'https://www.bot.or.th/content/dam/bot/fipcs/documents/FPG/2569/EngPDF/25690175.pdf',
     bookingHints: '실롬·카오산 근처 — 방수 가방·의류 준비',
     detailOverview:
       '4월 13~15일 태국 설(송크란)로, 방콕 전역에서 물 축제·거리 파티가 이어집니다. 실롬·카오산 등 핵심 구역은 교통 통제·전면 젖음을 전제로 하며, 2~3박 일정으로 핵심 날짜를 커버하는 방문이 일반적입니다.',
@@ -1844,7 +1845,7 @@ export const WORLD_EVENT_OVERRIDES = [
     recurrenceNoteEn: 'Late May–mid Jun',
     venue: { name: 'Sydney Harbour · Circular Quay' },
     source: 'official_url',
-    sourceUrl: 'https://www.vividsydney.com/',
+    sourceUrl: 'https://www.vividsydney.com/info/about-vivid-sydney',
     bookingHints: '서큘러 키·더 록스 — 항구 뷰 숙소·페리 예약',
     detailOverview:
       '시드니 하버·오페라 하우스 일대를 조명으로 물드는 겨울 빛 축제입니다. 개막 주말·중순 주말 2~4박으로 서큘러 키·더 록스 기점을 잡아 야간 설치·라이트쇼를 둘러보는 방문이 일반적입니다.',
