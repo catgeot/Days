@@ -163,6 +163,10 @@ import {
 } from './koreaFestivalDetailUrl';
 import { useFestivalSheetExternalReturnGuard } from './useFestivalSheetExternalReturnGuard.js';
 import {
+  clearFestivalSheetPendingDeeplink,
+  markFestivalSheetPendingDeeplink,
+} from './lib/festivalHomepageProtocol.js';
+import {
   localizeCityChips,
   localizeSidoChips,
   localizedAreaCodeLabel,
@@ -1214,6 +1218,7 @@ export default function KoreaFestivalHub() {
 
   const closeFestivalDetail = useCallback(() => {
     resetIosZoomAfterInput();
+    clearFestivalSheetPendingDeeplink();
     const pin = festivalItemForSessionPin(selected);
     if (pin) setSessionPinnedItem(pin);
     if (festivalDetailPushedRef.current) {
@@ -1406,6 +1411,7 @@ export default function KoreaFestivalHub() {
       festivalDeepLinkSeededForRef.current !== festivalId
     ) {
       festivalDeepLinkSeededForRef.current = festivalId;
+      markFestivalSheetPendingDeeplink(festivalId);
       const listParams = searchParamsWithoutFestival(searchParams);
       const listQs = listParams.toString();
       const detailParams = searchParamsWithFestival(searchParams, festivalId);
@@ -1415,23 +1421,15 @@ export default function KoreaFestivalHub() {
         { pathname: location.pathname, search: listQs ? `?${listQs}` : '' },
         { replace: true },
       );
-      // Replace updates searchParams and re-runs this effect. Clearing the timer
-      // there drops the history push, so only a later id change or unmount cancels it.
-      if (festivalHistoryTimerRef.current != null) {
-        window.clearTimeout(festivalHistoryTimerRef.current);
-      }
-      festivalHistoryTimerRef.current = window.setTimeout(() => {
-        festivalHistoryTimerRef.current = null;
-        navigate(
-          {
-            pathname: location.pathname,
-            search: detailQs ? `?${detailQs}` : '',
-            hash: lodgingHash,
-          },
-          { replace: false },
-        );
-        festivalDetailPushedRef.current = true;
-      }, 0);
+      navigate(
+        {
+          pathname: location.pathname,
+          search: detailQs ? `?${detailQs}` : '',
+          hash: lodgingHash,
+        },
+        { replace: false },
+      );
+      festivalDetailPushedRef.current = true;
     }
 
     return undefined;

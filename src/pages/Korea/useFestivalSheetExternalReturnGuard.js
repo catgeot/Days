@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import {
-  FESTIVAL_SHEET_EXTERNAL_RETURN_KEY,
   markFestivalSheetExternalReturn,
+  peekFestivalSheetRestoreId,
 } from './lib/festivalHomepageProtocol.js';
 import {
   festivalIdFromSearchParams,
@@ -22,7 +22,7 @@ export function useFestivalSheetExternalReturnGuard({
   festivalId,
   seededFestivalIdRef,
 }) {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [, setSearchParams] = useSearchParams();
 
   useEffect(() => {
     const onPageHide = () => {
@@ -38,12 +38,15 @@ export function useFestivalSheetExternalReturnGuard({
 
   useEffect(() => {
     const restoreFestivalQuery = () => {
-      if (typeof sessionStorage === 'undefined') return;
+      if (typeof window === 'undefined' || typeof sessionStorage === 'undefined') {
+        return;
+      }
       try {
-        const stored = sessionStorage.getItem(FESTIVAL_SHEET_EXTERNAL_RETURN_KEY);
+        const stored = peekFestivalSheetRestoreId();
         if (!stored || !/^\d+$/.test(stored)) return;
-        if (festivalIdFromSearchParams(searchParams) === stored) return;
-        setSearchParams(searchParamsWithFestival(searchParams, stored), {
+        const liveParams = new URLSearchParams(window.location.search);
+        if (festivalIdFromSearchParams(liveParams) === stored) return;
+        setSearchParams(searchParamsWithFestival(liveParams, stored), {
           replace: true,
         });
       } catch {
@@ -51,6 +54,10 @@ export function useFestivalSheetExternalReturnGuard({
       }
     };
     window.addEventListener('pageshow', restoreFestivalQuery);
-    return () => window.removeEventListener('pageshow', restoreFestivalQuery);
-  }, [searchParams, setSearchParams]);
+    window.addEventListener('popstate', restoreFestivalQuery);
+    return () => {
+      window.removeEventListener('pageshow', restoreFestivalQuery);
+      window.removeEventListener('popstate', restoreFestivalQuery);
+    };
+  }, [setSearchParams]);
 }

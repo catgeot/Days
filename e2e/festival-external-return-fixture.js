@@ -264,6 +264,27 @@ function payloadForTourAction(action, contentId) {
 }
 
 export async function installFestivalExternalReturnFixtures(context) {
+  await context.addInitScript(() => {
+    const clearStaleFestivalRestoreKeys = () => {
+      const nav = performance.getEntriesByType('navigation')[0];
+      if (nav?.type === 'back_forward') return;
+      if (/\bfestival=/.test(window.location.search)) return;
+      try {
+        sessionStorage.removeItem('gateo:festival-sheet-external-return');
+        sessionStorage.removeItem('gateo:festival-sheet-pending-deeplink');
+      } catch {
+        /* quota */
+      }
+    };
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', clearStaleFestivalRestoreKeys, {
+        once: true,
+      });
+    } else {
+      clearStaleFestivalRestoreKeys();
+    }
+  });
+
   await context.route(new RegExp(E2E_IMAGE_ORIGIN.replace(/\./g, '\\.'), 'i'), async (route) => {
     const url = route.request().url();
     if (/\/official\//i.test(url)) {
