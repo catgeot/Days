@@ -1,4 +1,6 @@
 import {
+  clearFestivalSheetExternalReturnMark,
+  clearFestivalSheetPendingDeeplink,
   peekFestivalSheetRestoreId,
 } from './festivalHomepageProtocol.js';
 import {
@@ -18,8 +20,14 @@ export function restoreFestivalSheetQueryIfNeeded(applySearchParams) {
     const stored = peekFestivalSheetRestoreId();
     if (!stored || !/^\d+$/.test(stored)) return false;
     const liveParams = new URLSearchParams(window.location.search);
-    if (festivalIdFromSearchParams(liveParams) === stored) return false;
+    if (festivalIdFromSearchParams(liveParams) === stored) {
+      clearFestivalSheetPendingDeeplink();
+      clearFestivalSheetExternalReturnMark();
+      return false;
+    }
     applySearchParams(searchParamsWithFestival(liveParams, stored), { replace: true });
+    clearFestivalSheetPendingDeeplink();
+    clearFestivalSheetExternalReturnMark();
     return true;
   } catch {
     return false;

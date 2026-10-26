@@ -163,6 +163,7 @@ import {
 } from './koreaFestivalDetailUrl';
 import { useFestivalSheetExternalReturnGuard } from './useFestivalSheetExternalReturnGuard.js';
 import {
+  clearFestivalSheetExternalReturnMark,
   clearFestivalSheetPendingDeeplink,
   markFestivalSheetPendingDeeplink,
 } from './lib/festivalHomepageProtocol.js';
@@ -1215,6 +1216,7 @@ export default function KoreaFestivalHub() {
 
   const clearFestivalFromUrl = useCallback(() => {
     festivalDetailPushedRef.current = false;
+    clearFestivalSheetPendingDeeplink();
     const next = searchParamsWithoutFestival(searchParams);
     if (next.toString() !== searchParams.toString()) {
       setSearchParams(next, { replace: true });
@@ -1224,6 +1226,7 @@ export default function KoreaFestivalHub() {
   const closeFestivalDetail = useCallback(() => {
     resetIosZoomAfterInput();
     clearFestivalSheetPendingDeeplink();
+    clearFestivalSheetExternalReturnMark();
     const pin = festivalItemForSessionPin(selected);
     if (pin) setSessionPinnedItem(pin);
     if (festivalDetailPushedRef.current) {
@@ -1394,7 +1397,7 @@ export default function KoreaFestivalHub() {
     return undefined;
   }, [festivalId, festivalDeepLink.clearUrl, clearFestivalFromUrl, t]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (loading) return undefined;
     if (!festivalId) return undefined;
 
@@ -1425,9 +1428,10 @@ export default function KoreaFestivalHub() {
       const pathname = location.pathname || '/korea/';
       const listHref = `${pathname}${listQs ? `?${listQs}` : ''}`;
       const detailHref = `${pathname}${detailQs ? `?${detailQs}` : ''}${lodgingHash}`;
-      if (typeof window !== 'undefined' && window.history?.pushState) {
-        window.history.pushState(window.history.state, '', listHref);
-        window.history.pushState(window.history.state, '', detailHref);
+      if (typeof window !== 'undefined' && window.history?.replaceState) {
+        const historyState = window.history.state;
+        window.history.replaceState(historyState, '', listHref);
+        window.history.pushState(historyState, '', detailHref);
       }
       festivalDetailPushedRef.current = true;
     }

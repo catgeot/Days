@@ -22,6 +22,7 @@ export function isHttpOnlyHomepage(url) {
 
 export const FESTIVAL_SHEET_EXTERNAL_RETURN_KEY = 'gateo:festival-sheet-external-return';
 export const FESTIVAL_SHEET_PENDING_DEEPLINK_KEY = 'gateo:festival-sheet-pending-deeplink';
+export const FESTIVAL_SHEET_EXTERNAL_LEAVE_FLAG = 'gateo:festival-sheet-external-leave';
 
 /** @param {string} contentId */
 export function markFestivalSheetExternalReturn(contentId) {
@@ -30,8 +31,28 @@ export function markFestivalSheetExternalReturn(contentId) {
   if (!id) return;
   try {
     sessionStorage.setItem(FESTIVAL_SHEET_EXTERNAL_RETURN_KEY, id);
+    sessionStorage.setItem(FESTIVAL_SHEET_EXTERNAL_LEAVE_FLAG, '1');
   } catch {
     /* quota */
+  }
+}
+
+export function clearFestivalSheetExternalReturnMark() {
+  if (typeof sessionStorage === 'undefined') return;
+  try {
+    sessionStorage.removeItem(FESTIVAL_SHEET_EXTERNAL_RETURN_KEY);
+    sessionStorage.removeItem(FESTIVAL_SHEET_EXTERNAL_LEAVE_FLAG);
+  } catch {
+    /* quota */
+  }
+}
+
+export function hasFestivalSheetExternalLeavePending() {
+  if (typeof sessionStorage === 'undefined') return false;
+  try {
+    return sessionStorage.getItem(FESTIVAL_SHEET_EXTERNAL_LEAVE_FLAG) === '1';
+  } catch {
+    return false;
   }
 }
 

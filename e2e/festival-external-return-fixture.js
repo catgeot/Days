@@ -272,6 +272,7 @@ export async function installFestivalExternalReturnFixtures(context) {
       try {
         sessionStorage.removeItem('gateo:festival-sheet-external-return');
         sessionStorage.removeItem('gateo:festival-sheet-pending-deeplink');
+        sessionStorage.removeItem('gateo:festival-sheet-external-leave');
       } catch {
         /* quota */
       }
