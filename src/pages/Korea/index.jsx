@@ -975,16 +975,20 @@ function FestivalEntries({
   if (useGrid) {
     return (
       <div className={FESTIVAL_HUB_GRID_CLASS} data-festival-grid="">
-        {items.map((item, index) => (
+        {items.map((item, index) => {
+          const priorityThumb = isFestivalHubGridEagerThumb(index);
+          const cardKey = priorityThumb
+            ? festivalHubGridThumbLoadKey({
+                listEpoch: thumbListEpoch,
+                index,
+                contentId: item?.contentId,
+              })
+            : festivalKey(item);
+          return (
           <FestivalGridPhotoCard
-            key={festivalKey(item)}
+            key={cardKey}
             item={item}
-            priorityThumb={isFestivalHubGridEagerThumb(index)}
-            thumbLoadKey={festivalHubGridThumbLoadKey({
-              listEpoch: thumbListEpoch,
-              index,
-              contentId: item?.contentId,
-            })}
+            priorityThumb={priorityThumb}
             areaCode={areaCode}
             cityName={cityName}
             active={
@@ -998,7 +1002,8 @@ function FestivalEntries({
               nearKmByContentId.get(String(item.contentId)) ?? undefined
             }
           />
-        ))}
+          );
+        })}
       </div>
     );
   }

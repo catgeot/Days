@@ -42,7 +42,6 @@ function FestivalGridThumbLoadingShimmer() {
  *   areaCode?: string,
  *   cityName?: string,
  *   priorityThumb?: boolean,
- *   thumbLoadKey?: string,
  * }} props
  */
 export default function FestivalGridPhotoCard({
@@ -55,7 +54,6 @@ export default function FestivalGridPhotoCard({
   areaCode = 'all',
   cityName = 'all',
   priorityThumb = false,
-  thumbLoadKey = '',
 }) {
   const { t } = useTranslation();
   const { isEnglish, locale } = useLocale();
@@ -138,7 +136,6 @@ export default function FestivalGridPhotoCard({
                 </span>
               ) : null}
               <FestivalPhotoFrame
-                key={thumbLoadKey || activeUrl}
                 src={activeUrl}
                 alt=""
                 loading={priorityThumb ? 'eager' : 'lazy'}
