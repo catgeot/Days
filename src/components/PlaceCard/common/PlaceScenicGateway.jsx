@@ -15,7 +15,7 @@ function ScenicSpotThumb({ imageUrl }) {
 
   const placeholder = (
     <div
-      className="absolute inset-0 flex items-center justify-center rounded-lg bg-amber-500/15 text-amber-200/80"
+      className="absolute inset-0 flex items-center justify-center rounded-lg bg-amber-500/25 text-amber-100"
       aria-hidden
     >
       <MapPin size={18} />
@@ -25,7 +25,7 @@ function ScenicSpotThumb({ imageUrl }) {
   if (showFallback) {
     return (
       <div
-        className="relative aspect-[4/3] w-full overflow-hidden rounded-lg bg-amber-500/10"
+        className="relative aspect-[4/3] w-full overflow-hidden rounded-lg bg-amber-500/15 ring-1 ring-amber-400/40"
         data-scenic-thumb-state="fallback"
       >
         {placeholder}
