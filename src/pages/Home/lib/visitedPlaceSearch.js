@@ -7,6 +7,7 @@ import { getPlaceStatsId, isPlaceholderCountry } from '../../../utils/travelSpot
 import {
   placeUrlSlug,
   resolveCityAttractionHub,
+  resolveHubAttraction,
   resolveHubParentCityForPoiName,
   resolveHubPlaceFromSlug,
 } from './cityAttractionHubs.js';
@@ -231,6 +232,76 @@ export function visitedRowToSearchSpot(row, extras = {}) {
   };
 }
 
+const VISITED_HUB_NEAR_KM = 42;
+
+function haversineKm(lat1, lng1, lat2, lng2) {
+  const toRad = (d) => (d * Math.PI) / 180;
+  const dLat = toRad(lat2 - lat1);
+  const dLng = toRad(lng2 - lng1);
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
+  return 6371 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+function coordsPlausiblyInHub(hub, lat, lng) {
+  const latN = Number(lat);
+  const lngN = Number(lng);
+  if (!hub || !Number.isFinite(latN) || !Number.isFinite(lngN)) return false;
+  const points = [];
+  const hlat = Number(hub.lat);
+  const hlng = Number(hub.lng);
+  if (Number.isFinite(hlat) && Number.isFinite(hlng)) points.push([hlat, hlng]);
+  for (const attraction of hub.attractions || []) {
+    const alat = Number(attraction?.lat);
+    const alng = Number(attraction?.lng);
+    if (Number.isFinite(alat) && Number.isFinite(alng)) points.push([alat, alng]);
+  }
+  if (!points.length) return false;
+  let minKm = Infinity;
+  for (const [plat, plng] of points) {
+    minKm = Math.min(minKm, haversineKm(latN, lngN, plat, plng));
+  }
+  return minKm <= VISITED_HUB_NEAR_KM;
+}
+
+function visitedNameMatchesHubAttraction(hub, nameKo) {
+  const ko = String(nameKo || '').trim();
+  if (!hub || !ko) return false;
+  const hit = resolveHubAttraction(ko);
+  return hit?.hub?.hubId === hub.hubId;
+}
+
+function visitedPoiPlausiblyInHub(hub, nameKo, coords = {}) {
+  if (!hub) return false;
+  if (visitedNameMatchesHubAttraction(hub, nameKo)) return true;
+  return coordsPlausiblyInHub(hub, coords.lat, coords.lng);
+}
+
+function parentCityWhenHubSlugMismatchesName(known, nameKo, nameEn, coords = {}) {
+  const ko = String(nameKo || '').trim();
+  const enIsCounty = [known.name, known.name_en, known.slug]
+    .map(normalizeVisitedSearchKey)
+    .includes(normalizeVisitedSearchKey(nameEn));
+  const poiParent = resolveHubParentCityForPoiName(ko, {
+    lat: coords.lat,
+    lng: coords.lng,
+  });
+  if (poiParent) {
+    return {
+      parentCity: poiParent,
+      enIsCounty,
+    };
+  }
+  if (visitedPoiPlausiblyInHub(known, ko, coords)) {
+    return {
+      parentCity: enIsCounty ? '' : known.name || '',
+      enIsCounty,
+    };
+  }
+  return { parentCity: '', enIsCounty };
+}
+
 /**
  * place_stats.place_id가 시군 허브여도 표시명이 그 시군이 아니면 슬러그를 옮기지 않는다.
  * 평창 통계 행은 그대로 두고, 흥정계곡 카드만 한글 이름 슬러그를 쓴다.
@@ -254,15 +325,16 @@ function visitedIdentityForRow(placeId, nameKo, nameEn, coords = {}) {
     const knownTokens = [known.name, known.name_en, known.slug].map(normalizeVisitedSearchKey);
     const koToken = normalizeVisitedSearchKey(ko);
     if (koToken && !knownTokens.includes(koToken)) {
-      const enIsCounty = knownTokens.includes(normalizeVisitedSearchKey(nameEn));
-      const poiParent = resolveHubParentCityForPoiName(ko, {
-        lat: coords.lat,
-        lng: coords.lng,
-      });
+      const { parentCity, enIsCounty } = parentCityWhenHubSlugMismatchesName(
+        known,
+        ko,
+        nameEn,
+        coords,
+      );
       return {
         slug: placeUrlSlug(enIsCounty ? '' : nameEn, ko),
         nameEn: enIsCounty ? '' : nameEn,
-        parentCity: poiParent || '',
+        parentCity,
       };
     }
   }

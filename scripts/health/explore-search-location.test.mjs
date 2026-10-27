@@ -53,6 +53,19 @@ test('visited place_id seoul + 오대산 short name does not inherit Seoul paren
   assert.doesNotMatch(line, /서울|Seoul/i);
 });
 
+test('visited place_id seoul + 경복궁 keeps 서울 / Seoul parentCity', () => {
+  const spot = visitedRowToSearchSpot({
+    place_id: 'seoul',
+    name_ko: '경복궁',
+    name_en: 'Gyeongbokgung Palace',
+    lat: 37.5796,
+    lng: 126.977,
+  });
+  assert.equal(spot?.parentCity, '서울');
+  assert.match(buildExploreSearchLocationLine(spot, 'ko'), /서울/);
+  assert.match(buildExploreSearchLocationLine(spot, 'en'), /Seoul/i);
+});
+
 test('buildExploreSearchLocationLine — GATEO 오대산 선재길 shows 강원 평창 (ko)', () => {
   const hub = resolveCityAttractionHub('pyeongchang');
   const attraction = hub.attractions.find((a) => a.name === '오대산 선재길');

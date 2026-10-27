@@ -255,17 +255,19 @@ function SearchResultThumb({ item, sizeClass, kind, iconSize = 16, selectionCard
       return;
     }
     setFallbackTried(true);
-    fetchTourApiFirstImage(contentId).then((url) => {
-      const next = String(url || '').trim();
-      if (!next) {
-        setFailed(true);
-        return;
-      }
-      rememberKoreaTourAttractionFirstImage(contentId, next);
-      setLoaded(false);
-      setFailed(false);
-      setSrc(next);
-    });
+    fetchTourApiFirstImage(contentId)
+      .then((url) => {
+        const next = String(url || '').trim();
+        if (!next) {
+          setFailed(true);
+          return;
+        }
+        rememberKoreaTourAttractionFirstImage(contentId, next);
+        setLoaded(false);
+        setFailed(false);
+        setSrc(next);
+      })
+      .catch(() => setFailed(true));
   };
 
   if (!src || failed) {
