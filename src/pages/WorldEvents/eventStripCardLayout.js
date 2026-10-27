@@ -6,7 +6,7 @@ export const EVENT_STRIP_ROW_PADDING_X_PX = 4;
 
 /** Shared with CSS literal `w-[calc((100vw-76px)/DIVISOR)]` (Tailwind must see a static string). */
 export const EVENT_STRIP_MOBILE_VIEWPORT_OFFSET_PX = 76;
-export const EVENT_STRIP_MOBILE_CARD_DIVISOR = 2.24;
+export const EVENT_STRIP_MOBILE_CARD_DIVISOR = 2.29;
 
 /** Main scroll row — no snap / touch / scrollbar overrides. */
 export const EVENT_STRIP_SCROLL_ROW_CLASS = '-mx-1 flex gap-2 overflow-x-auto px-1 pb-1';
@@ -22,7 +22,7 @@ export function eventStripCardShellClass({ large = false } = {}) {
   if (large) {
     return `${CARD_SHELL_BASE} w-[220px] sm:w-[252px]`;
   }
-  return `${CARD_SHELL_BASE} w-[calc((100vw-76px)/2.24)] sm:w-[168px]`;
+  return `${CARD_SHELL_BASE} w-[calc((100vw-76px)/2.29)] sm:w-[168px]`;
 }
 
 /** @param {number} viewportWidthPx */
@@ -62,7 +62,7 @@ export function eventStripCardPeekMetrics(rowOuterWidthPx, opts = {}) {
   const pl = EVENT_STRIP_ROW_PADDING_X_PX;
   const pr = EVENT_STRIP_ROW_PADDING_X_PX;
   const rowRect = { left: 0, right: rowOuterWidthPx };
-  const thirdLeft = pl + cardWidth * 2 + EVENT_STRIP_INTER_CARD_GAP_PX;
+  const thirdLeft = pl + cardWidth * 2 + EVENT_STRIP_INTER_CARD_GAP_PX * 2;
   const thirdCardRect = {
     left: thirdLeft,
     right: thirdLeft + cardWidth,

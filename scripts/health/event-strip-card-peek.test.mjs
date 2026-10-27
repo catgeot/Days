@@ -47,7 +47,7 @@ test('third-card peek uses row.right minus padding-right', () => {
 
 test('peek at 390px row is between 15% and 20%', () => {
   const { peekPercent, cardWidth } = eventStripCardPeekMetrics(EVENT_STRIP_MOBILE_ROW_WIDTH_PX);
-  assert.ok(cardWidth > 138 && cardWidth < 142, `cardWidth ${cardWidth}`);
+  assert.ok(cardWidth > 135 && cardWidth < 140, `cardWidth ${cardWidth}`);
   assert.ok(
     peekPercent >= 15 && peekPercent <= 20,
     `peek ${peekPercent.toFixed(1)}%`,
