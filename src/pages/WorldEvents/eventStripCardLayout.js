@@ -1,30 +1,15 @@
-/** Horizontal MRT stay/tour strip — mobile ~2 cards + third-card peek (one gap in width calc). */
-export const EVENT_STRIP_INTER_CARD_GAP_REM = 0.5;
+/** Horizontal MRT stay/tour strip — mobile card width only (scroll row matches main). */
 export const EVENT_STRIP_INTER_CARD_GAP_PX = 8;
 
-/**
- * Mobile card width (max-sm): calc((100vw - inset - 0.5rem) / divisor).
- * Avoids flex % sizing against the scroll track; inset matches festival dialog at 390px.
- * Peek (px) = rowWidth - 2×cardWidth - gap.
- */
+/** Shared with CSS literal `w-[calc((100vw-76px)/DIVISOR)]` (Tailwind must see a static string). */
+export const EVENT_STRIP_MOBILE_VIEWPORT_OFFSET_PX = 76;
 export const EVENT_STRIP_MOBILE_CARD_DIVISOR = 2.24;
-/** 390px viewport → ~322px strip row (dialog horizontal inset). */
-export const EVENT_STRIP_MOBILE_VIEWPORT_INSET_PX = 68;
-/** inset + one inter-card gap (px) — single calc term for WebKit. */
-export const EVENT_STRIP_MOBILE_VIEWPORT_OFFSET_PX =
-  EVENT_STRIP_MOBILE_VIEWPORT_INSET_PX + EVENT_STRIP_INTER_CARD_GAP_PX;
 
-/** @returns {string} Tailwind arbitrary width value (no brackets). */
-/** Must match the literal in `eventStripCardShellClass` (Tailwind scans static class strings only). */
-export function eventStripMobileCardWidthCalcCss() {
-  return `calc((100vw-${EVENT_STRIP_MOBILE_VIEWPORT_OFFSET_PX}px)/${EVENT_STRIP_MOBILE_CARD_DIVISOR})`;
-}
-
-export const EVENT_STRIP_SCROLL_ROW_CLASS =
-  '-mx-1 flex w-full min-w-0 max-w-full snap-x snap-proximity gap-2 overflow-x-auto overscroll-x-contain px-1 pb-1 max-sm:[-ms-overflow-style:none] max-sm:[scrollbar-width:none] max-sm:[&::-webkit-scrollbar]:hidden';
+/** Main scroll row — no snap / touch / scrollbar overrides. */
+export const EVENT_STRIP_SCROLL_ROW_CLASS = '-mx-1 flex gap-2 overflow-x-auto px-1 pb-1';
 
 const CARD_SHELL_BASE =
-  'flex min-w-0 max-w-full shrink-0 snap-start flex-col overflow-hidden rounded-xl border border-stone-200 bg-white shadow-sm';
+  'flex shrink-0 flex-col overflow-hidden rounded-xl border border-stone-200 bg-white shadow-sm';
 
 /**
  * @param {{ large?: boolean }} [opts]
@@ -37,14 +22,7 @@ export function eventStripCardShellClass({ large = false } = {}) {
   return `${CARD_SHELL_BASE} w-[calc((100vw-76px)/2.24)] sm:w-[168px]`;
 }
 
-/** Mobile strip row width at 390px viewport (festival dialog padding). */
-export const EVENT_STRIP_MOBILE_ROW_WIDTH_PX = 314;
-
-/**
- * @param {number} rowWidthPx scroll row client width (px)
- * @param {{ large?: boolean; gapPx?: number; divisor?: number }} [opts]
- */
-/** Card width from CSS `calc((100vw - offset) / divisor)` at a given viewport. */
+/** @param {number} viewportWidthPx */
 export function eventStripCardWidthPx(
   viewportWidthPx,
   { large = false, divisor = EVENT_STRIP_MOBILE_CARD_DIVISOR } = {},
@@ -56,32 +34,38 @@ export function eventStripCardWidthPx(
 }
 
 /**
- * @param {number} rowWidthPx scroll row client width (px)
- * @param {{ large?: boolean; gapPx?: number; divisor?: number; viewportWidthPx?: number }} [opts]
+ * Third-card peek % at scroll start (390 WebKit convention).
+ * peek% = visiblePeekPx / card3.width, visiblePeekPx = clamp(row.right - card3.left, card3 visible band).
  */
-export function eventStripCardPeekMetrics(rowWidthPx, opts = {}) {
-  const gapPx = opts.gapPx ?? EVENT_STRIP_INTER_CARD_GAP_PX;
-  const viewportWidthPx = opts.viewportWidthPx ?? 390;
-  const cardWidth = eventStripCardWidthPx(viewportWidthPx, opts);
-  const peekPx = rowWidthPx - cardWidth * 2 - gapPx;
-  const peekPercent = cardWidth > 0 ? (peekPx / cardWidth) * 100 : 0;
-  return { cardWidth, peekPx, peekPercent };
-}
-
-/** Third-card visible width inside the row viewport (getBoundingClientRect). */
-export function eventStripThirdCardPeekPx(rowRect, thirdCardRect) {
+export function eventStripThirdCardPeekPercent(rowRect, thirdCardRect) {
   const visibleLeft = Math.max(rowRect.left, thirdCardRect.left);
   const visibleRight = Math.min(rowRect.right, thirdCardRect.right);
-  return Math.max(0, visibleRight - visibleLeft);
+  const visibleBand = Math.max(0, visibleRight - visibleLeft);
+  const fromRowRight = Math.max(0, rowRect.right - thirdCardRect.left);
+  const peekPx = Math.min(thirdCardRect.width, fromRowRight, visibleBand);
+  return thirdCardRect.width > 0 ? (peekPx / thirdCardRect.width) * 100 : 0;
 }
 
 /**
- * Peek as % of full card width (third card).
- * @param {{ left: number; right: number }} rowRect
- * @param {{ left: number; right: number; width: number }} thirdCardRect
+ * Analytical peek% for health gate (viewport card width + measured row width at 390).
+ * @param {number} rowWidthPx
+ * @param {{ viewportWidthPx?: number; divisor?: number }} [opts]
  */
-export function eventStripThirdCardPeekPercent(rowRect, thirdCardRect) {
-  const peekPx = eventStripThirdCardPeekPx(rowRect, thirdCardRect);
-  const fullWidth = thirdCardRect.width;
-  return fullWidth > 0 ? (peekPx / fullWidth) * 100 : 0;
+export function eventStripCardPeekMetrics(rowWidthPx, opts = {}) {
+  const viewportWidthPx = opts.viewportWidthPx ?? 390;
+  const divisor = opts.divisor ?? EVENT_STRIP_MOBILE_CARD_DIVISOR;
+  const cardWidth = eventStripCardWidthPx(viewportWidthPx, { divisor });
+  const rowRect = { left: 0, right: rowWidthPx };
+  const thirdLeft = cardWidth * 2 + EVENT_STRIP_INTER_CARD_GAP_PX;
+  const thirdCardRect = {
+    left: thirdLeft,
+    right: thirdLeft + cardWidth,
+    width: cardWidth,
+  };
+  const peekPercent = eventStripThirdCardPeekPercent(rowRect, thirdCardRect);
+  const peekPx = (peekPercent / 100) * cardWidth;
+  return { cardWidth, peekPx, peekPercent };
 }
+
+/** Measured strip row width at 390px (festival dialog). */
+export const EVENT_STRIP_MOBILE_ROW_WIDTH_PX = 314;

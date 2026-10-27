@@ -1,7 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
-  EVENT_STRIP_INTER_CARD_GAP_PX,
   EVENT_STRIP_MOBILE_CARD_DIVISOR,
   EVENT_STRIP_MOBILE_ROW_WIDTH_PX,
   EVENT_STRIP_MOBILE_VIEWPORT_OFFSET_PX,
@@ -10,51 +9,45 @@ import {
   eventStripCardWidthPx,
   EVENT_STRIP_SCROLL_ROW_CLASS,
   eventStripThirdCardPeekPercent,
-  eventStripThirdCardPeekPx,
 } from '../../src/pages/WorldEvents/eventStripCardLayout.js';
 
-test('scroll row hides scrollbar on mobile only', () => {
-  assert.match(EVENT_STRIP_SCROLL_ROW_CLASS, /max-sm:\[scrollbar-width:none\]/);
-  assert.doesNotMatch(EVENT_STRIP_SCROLL_ROW_CLASS, /touch-pan-x/);
-  assert.doesNotMatch(EVENT_STRIP_SCROLL_ROW_CLASS, /snap-mandatory/);
-  assert.match(EVENT_STRIP_SCROLL_ROW_CLASS, /snap-proximity/);
+test('scroll row matches main (no snap / scrollbar hiding)', () => {
+  assert.equal(EVENT_STRIP_SCROLL_ROW_CLASS, '-mx-1 flex gap-2 overflow-x-auto px-1 pb-1');
 });
 
-test('eventStripCardShellClass matches shared divisor and desktop/large widths', () => {
-  assert.match(eventStripCardShellClass(), /w-\[calc\(\(100vw-76px\)\/2\.24\)\]/);
+test('mobile card width CSS and metrics share viewport offset and divisor', () => {
+  assert.match(
+    eventStripCardShellClass(),
+    new RegExp(
+      `calc\\(\\(100vw-${EVENT_STRIP_MOBILE_VIEWPORT_OFFSET_PX}px\\)/${EVENT_STRIP_MOBILE_CARD_DIVISOR}\\)`,
+    ),
+  );
+  const viewport = 390;
+  assert.equal(
+    eventStripCardWidthPx(viewport),
+    (viewport - EVENT_STRIP_MOBILE_VIEWPORT_OFFSET_PX) / EVENT_STRIP_MOBILE_CARD_DIVISOR,
+  );
+});
+
+test('desktop and large widths match main', () => {
   assert.match(eventStripCardShellClass(), /sm:w-\[168px\]/);
   assert.match(eventStripCardShellClass({ large: true }), /w-\[220px\]/);
   assert.match(eventStripCardShellClass({ large: true }), /sm:w-\[252px\]/);
+  assert.doesNotMatch(eventStripCardShellClass(), /snap-start/);
 });
 
-test('card width matches CSS viewport calc (100vw - offset) / divisor', () => {
-  const viewport = 390;
-  const expected =
-    (viewport - EVENT_STRIP_MOBILE_VIEWPORT_OFFSET_PX) / EVENT_STRIP_MOBILE_CARD_DIVISOR;
-  assert.equal(eventStripCardWidthPx(viewport), expected);
+test('third-card peek formula (row.right - card3.left) clamped', () => {
+  const row = { left: 0, right: 314 };
+  const card3 = { left: 290, right: 430, width: 140 };
+  const pct = eventStripThirdCardPeekPercent(row, card3);
+  assert.ok(Math.abs(pct - ((314 - 290) / 140) * 100) < 0.01);
 });
 
-test('default strip peek at 390px viewport / ~314px row is between 15% and 20%', () => {
-  const rowWidth = EVENT_STRIP_MOBILE_ROW_WIDTH_PX;
-  const { peekPercent, cardWidth, peekPx } = eventStripCardPeekMetrics(rowWidth, {
-    viewportWidthPx: 390,
-  });
-  assert.equal(
-    peekPx,
-    rowWidth - cardWidth * 2 - EVENT_STRIP_INTER_CARD_GAP_PX,
-    'peek formula matches CSS layout',
-  );
-  assert.ok(cardWidth > 140 && cardWidth < 143, `cardWidth ${cardWidth}`);
+test('peek at 390px row is between 15% and 20%', () => {
+  const { peekPercent, cardWidth } = eventStripCardPeekMetrics(EVENT_STRIP_MOBILE_ROW_WIDTH_PX);
+  assert.ok(cardWidth > 138 && cardWidth < 142, `cardWidth ${cardWidth}`);
   assert.ok(
     peekPercent >= 15 && peekPercent <= 20,
-    `peek ${peekPercent.toFixed(1)}% of card (row ${rowWidth}px)`,
+    `peek ${peekPercent.toFixed(1)}%`,
   );
-});
-
-test('third-card DOM peek helper matches row clip', () => {
-  const row = { left: 10, right: 332 };
-  const third = { left: 300, right: 445, width: 145 };
-  const peekPx = eventStripThirdCardPeekPx(row, third);
-  assert.equal(peekPx, 32);
-  assert.ok(Math.abs(eventStripThirdCardPeekPercent(row, third) - (32 / 145) * 100) < 0.01);
 });
