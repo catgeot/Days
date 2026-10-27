@@ -966,6 +966,12 @@
       "stayCta": "Stays in {{keyword}}",
       "official": "Official schedule"
     },
+    "crossLinks": {
+      "aria": "Related festivals and scenic spots",
+      "festivalsTitle": "Festivals nearby",
+      "collectionsTitle": "Scenic & theme spots",
+      "count": "{{count}}"
+    },
     "scenicGateway": {
       "badgeHeritage": "National Heritage Scenic Site",
       "badgeHub": "Regional Attraction Collection",

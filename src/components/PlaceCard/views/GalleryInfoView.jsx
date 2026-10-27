@@ -6,6 +6,7 @@ import GalleryAttributionLink from '../common/GalleryAttributionLink';
 import { splitPlaceOverview } from '../common/placeOverviewText';
 import PlaceOverviewProse from '../common/PlaceOverviewProse';
 import PlaceScenicGateway from '../common/PlaceScenicGateway';
+import PlaceCrossLinksSection from '../common/PlaceCrossLinksSection';
 import { getLocalizedPlaceName } from '../common/locationDisplay';
 import { getLocalizedPlaceKeywords, isPlaceDescKoreanOnly } from '../../../pages/Home/lib/placeSeoText.js';
 import { useLocale } from '../../../i18n/LocaleProvider';
@@ -141,6 +142,8 @@ const GalleryInfoView = React.memo(({ selectedPlace, selectedImg, relatedPlaces 
                         </div>
 
                         <PlaceScenicGateway location={selectedPlace} variant="dark" />
+
+                        <PlaceCrossLinksSection location={selectedPlace} variant="dark" />
 
                         {overviewKeywords.length > 0 && (
                             <div className="flex flex-wrap gap-2 border-t border-white/5 pt-4">

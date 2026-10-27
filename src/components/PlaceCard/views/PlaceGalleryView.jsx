@@ -38,6 +38,7 @@ import PlaceWorldEventsSection from '../common/PlaceWorldEventsSection';
 import PlaceVerifiedFacts, { PlaceVisitStories } from '../common/PlaceVerifiedFacts';
 import PlaceEditorialTravelogueCard from '../common/PlaceEditorialTravelogueCard';
 import PlaceScenicGateway from '../common/PlaceScenicGateway';
+import PlaceCrossLinksSection from '../common/PlaceCrossLinksSection';
 import { useLocale } from '../../../i18n/LocaleProvider';
 import { useGalleryLongPress } from '../common/galleryLongPress';
 import { GALLERY_REPORT_REASONS } from '../../../shared/api/placeGalleryPersist';
@@ -1422,6 +1423,12 @@ const PlaceGalleryView = React.memo(({
             <PlaceEditorialTravelogueCard location={location} />
 
             <PlaceScenicGateway
+              location={location}
+              variant="dark"
+              className={`md:hidden mb-4 ${mobileLandscapeChromeHidden}`}
+            />
+
+            <PlaceCrossLinksSection
               location={location}
               variant="dark"
               className={`md:hidden mb-4 ${mobileLandscapeChromeHidden}`}

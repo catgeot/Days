@@ -736,6 +736,12 @@
       "stayCta": "{{keyword}} 숙소",
       "official": "공식 일정"
     },
+    "crossLinks": {
+      "aria": "연관 축제·명소",
+      "festivalsTitle": "이 지역 축제",
+      "collectionsTitle": "명승·테마 명소",
+      "count": "{{count}}건"
+    },
     "scenicGateway": {
       "badgeHeritage": "국가지정 명승",
       "badgeHub": "지역 명소 컬렉션",

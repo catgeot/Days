@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import { GATEO_ENV_FLAG_NAMES } from '../src/shared/gateoFeatureFlags.js';
+import { resolvePlaceCrossLinksIfEnabled } from '../src/pages/Home/lib/placeCrosslinkRollout.js';
 import {
   isDomesticKoreaForCrosslink,
   listRegionalScenicPlaceCardsForLocation,
@@ -32,6 +33,8 @@ test('flag off returns empty bundles', () => {
   withCrosslinkFlag(false, () => {
     const bundle = resolvePlaceCrossLinks({ slug: 'dubai', country: 'UAE' });
     assert.deepEqual(bundle, { festivals: [], events: [], collections: [] });
+    const gated = resolvePlaceCrossLinksIfEnabled({ slug: 'gangneung', country: '대한민국' });
+    assert.deepEqual(gated, { festivals: [], events: [], collections: [] });
   });
 });
 
