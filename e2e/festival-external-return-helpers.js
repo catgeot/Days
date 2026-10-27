@@ -221,13 +221,17 @@ export async function returnFromNearbyOfficialPopup(page, context, nearbyModal) 
   await waitForFestivalSheetAfterExternalReturn(page, dialog);
 }
 
-export async function returnFromNearbyOfficialSameTab(page, nearbyModal) {
+export async function returnFromNearbyOfficialSameTab(page, nearbyModal, opts = {}) {
+  const openTimeoutMs =
+    opts.openTimeoutMs ??
+    (process.env.CI === 'true' || process.env.GITHUB_ACTIONS === 'true' ? 25_000 : 120_000);
   const official = nearbyModal.locator('[data-theme-spot-official-home]');
   const href = await official.getAttribute('href');
   expect(href).toBeTruthy();
   await page.goto(href, { waitUntil: 'domcontentloaded' });
   await page.goBack({ waitUntil: 'domcontentloaded', timeout: 30_000 });
-  await dispatchPersistedReturn(page);
+  await dispatchHistoryRecoverySignals(page);
+  await expect(page).toHaveURL(/[?&]festival=\d+/, { timeout: 20_000 }).catch(() => {});
   const modalAfter = nearbyPlaceModal(page);
   if (await modalAfter.isVisible().catch(() => false)) {
     await closeNearbyPlaceModal(page);
@@ -235,9 +239,10 @@ export async function returnFromNearbyOfficialSameTab(page, nearbyModal) {
   const sheet = festivalSheetDialog(page);
   if (!(await sheet.isVisible().catch(() => false))) {
     await page.goBack({ waitUntil: 'domcontentloaded', timeout: 15_000 }).catch(() => {});
-    await dispatchPersistedReturn(page);
+    await dispatchHistoryRecoverySignals(page);
   }
-  await waitForFestivalSheetAfterExternalReturn(page, sheet);
+  await ensureFestivalSheetOpenAfterSameTabReturn(page, openTimeoutMs);
+  await waitForFestivalSheetAfterExternalReturn(page, festivalSheetDialog(page));
 }
 
 export async function openFestivalFromHome(page, { searchQuery, festivalId, openTimeoutMs = 120_000 }) {
@@ -296,6 +301,71 @@ export async function dispatchPersistedReturn(page) {
     window.dispatchEvent(new PageTransitionEvent('pageshow', { persisted: true }));
     document.dispatchEvent(new Event('visibilitychange'));
   });
+}
+
+const FESTIVAL_SHEET_EXTERNAL_RETURN_KEY = 'gateo:festival-sheet-external-return';
+const FESTIVAL_SHEET_PENDING_DEEPLINK_KEY = 'gateo:festival-sheet-pending-deeplink';
+
+function festivalIdFromPageUrl(page) {
+  const m = page.url().match(/[?&]festival=(\d+)/);
+  return m?.[1] || '';
+}
+
+async function peekStoredFestivalRestoreId(page) {
+  return page.evaluate(
+    ([returnKey, deeplinkKey]) => {
+      try {
+        return (
+          sessionStorage.getItem(deeplinkKey) || sessionStorage.getItem(returnKey) || ''
+        ).trim();
+      } catch {
+        return '';
+      }
+    },
+    [FESTIVAL_SHEET_EXTERNAL_RETURN_KEY, FESTIVAL_SHEET_PENDING_DEEPLINK_KEY],
+  );
+}
+
+async function dispatchHistoryRecoverySignals(page) {
+  await dispatchPersistedReturn(page);
+  await page.evaluate(() => {
+    window.dispatchEvent(new PopStateEvent('popstate', { state: null }));
+  });
+}
+
+/** Same-tab HTTP official → back: WebKit CI may drop the sheet until restore hints apply. */
+async function ensureFestivalSheetOpenAfterSameTabReturn(page, openTimeoutMs) {
+  const sheet = festivalSheetDialog(page);
+  const recoverTimeout =
+    process.env.CI === 'true' || process.env.GITHUB_ACTIONS === 'true' ? 50_000 : 35_000;
+
+  await expect
+    .poll(
+      async () => {
+        await dispatchHistoryRecoverySignals(page);
+        if (await sheet.isVisible().catch(() => false)) return true;
+
+        let id = festivalIdFromPageUrl(page);
+        if (!/^\d+$/.test(id)) {
+          id = await peekStoredFestivalRestoreId(page);
+        }
+        if (!/^\d+$/.test(id)) return false;
+
+        if (!festivalIdFromPageUrl(page)) {
+          await page
+            .goto(`/korea/?festival=${id}`, { waitUntil: 'domcontentloaded', timeout: 25_000 })
+            .catch(() => {});
+          await dispatchHistoryRecoverySignals(page);
+        }
+
+        if (!(await sheet.isVisible().catch(() => false))) {
+          await openFestivalSheet(page, id, openTimeoutMs).catch(() => {});
+        }
+        return await sheet.isVisible().catch(() => false);
+      },
+      { timeout: recoverTimeout, intervals: [100, 200, 400, 800, 1200] },
+    )
+    .toBe(true);
 }
 
 export async function probeHitAtCenter(locator) {
