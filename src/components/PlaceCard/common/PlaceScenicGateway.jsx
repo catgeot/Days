@@ -8,24 +8,52 @@ import { resolveListImageUrl } from '../../../utils/listImageUrl';
 
 function ScenicSpotThumb({ imageUrl }) {
   const [broken, setBroken] = useState(false);
+  const [loaded, setLoaded] = useState(false);
+  const resolvedSrc = imageUrl ? resolveListImageUrl(imageUrl, { role: 'list' }) : '';
+  const showFallback = !resolvedSrc || broken;
+  const showLoading = Boolean(resolvedSrc) && !broken && !loaded;
+
   const placeholder = (
     <div
-      className="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg bg-amber-500/15 text-amber-200/80"
+      className="absolute inset-0 flex items-center justify-center rounded-lg bg-amber-500/15 text-amber-200/80"
       aria-hidden
     >
       <MapPin size={18} />
     </div>
   );
-  if (!imageUrl || broken) return placeholder;
+
+  if (showFallback) {
+    return (
+      <div
+        className="relative aspect-[4/3] w-full overflow-hidden rounded-lg bg-amber-500/10"
+        data-scenic-thumb-state="fallback"
+      >
+        {placeholder}
+      </div>
+    );
+  }
+
   return (
-    <img
-      src={resolveListImageUrl(imageUrl, { role: 'list' })}
-      alt=""
-      className="h-14 w-14 shrink-0 rounded-lg object-cover bg-stone-800"
-      loading="lazy"
-      decoding="async"
-      onError={() => setBroken(true)}
-    />
+    <div
+      className="relative aspect-[4/3] w-full overflow-hidden rounded-lg bg-amber-500/10"
+      data-scenic-thumb-state={showLoading ? 'loading' : 'ok'}
+    >
+      {showLoading ? placeholder : null}
+      <img
+        src={resolvedSrc}
+        alt=""
+        className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-200 ${
+          loaded ? 'opacity-100' : 'opacity-0'
+        }`}
+        loading="eager"
+        decoding="async"
+        onLoad={() => setLoaded(true)}
+        onError={() => {
+          setBroken(true);
+          setLoaded(false);
+        }}
+      />
+    </div>
   );
 }
 
@@ -136,18 +164,15 @@ export default function PlaceScenicGateway({
             <span className="truncate">{hubTitle}</span>
           </h4>
 
-          <ul
-            className="grid grid-cols-2 gap-2 lg:grid-cols-3"
-            aria-label={hubTitle}
-          >
+          <ul className="grid grid-cols-2 gap-2" aria-label={hubTitle}>
             {regionalCards.spots.map((spot) => (
               <li key={spot.id || spot.placeSlug}>
                 <Link
                   to={spot.href}
-                  className="group flex gap-2 rounded-xl border border-white/10 bg-black/30 p-2 hover:border-amber-400/35 hover:bg-amber-500/10 transition-colors"
+                  className="group flex flex-col gap-1.5 rounded-xl border border-white/10 bg-black/30 p-2 hover:border-amber-400/35 hover:bg-amber-500/10 transition-colors"
                 >
                   <ScenicSpotThumb imageUrl={spot.imageUrl} />
-                  <span className="min-w-0 flex-1 self-center text-[12px] font-semibold leading-snug text-gray-100 line-clamp-3 group-hover:text-amber-50 break-keep">
+                  <span className="text-[12px] font-semibold leading-snug text-gray-100 group-hover:text-amber-50 break-keep text-center">
                     {spot.name}
                   </span>
                 </Link>
