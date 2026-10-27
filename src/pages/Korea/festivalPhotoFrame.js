@@ -10,6 +10,18 @@ export function isFestivalPhotoDecoded(img) {
   return Boolean(img && img.complete && img.naturalWidth > 0);
 }
 
+/**
+ * Lazy thumbs can report complete+0px before the network starts (WebKit grid scroll).
+ * Treat as broken only on eager loads or after error/timeout — not while pending.
+ * @param {HTMLImageElement | null | undefined} img
+ * @param {{ loading?: 'eager' | 'lazy' }} [opts]
+ */
+export function shouldSyncMarkFestivalPhotoBroken(img, opts = {}) {
+  const loading = opts.loading === 'eager' ? 'eager' : 'lazy';
+  if (!img || !img.complete || img.naturalWidth > 0) return false;
+  return loading !== 'lazy';
+}
+
 /** Wrap must not use w-full in flex rows when the img has fixed Tailwind size (Safari squeezes labels). */
 export function festivalPhotoWrapClassName(imgClassName = '') {
   const c = String(imgClassName);
@@ -136,7 +148,7 @@ export function FestivalPhotoFrame({
         markLoaded(img);
         return;
       }
-      if (img.complete && img.naturalWidth === 0) {
+      if (shouldSyncMarkFestivalPhotoBroken(img, { loading })) {
         markBroken(img);
         return;
       }
@@ -184,7 +196,7 @@ export function FestivalPhotoFrame({
           markLoaded(el);
           return;
         }
-        if (el?.complete && el.naturalWidth === 0) markBroken(el);
+        if (shouldSyncMarkFestivalPhotoBroken(el, { loading })) markBroken(el);
       },
       onError(event) {
         if (loadedRef.current) return;
