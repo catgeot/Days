@@ -8,3 +8,7 @@ export const FESTIVAL_HUB_GRID_EAGER_THUMB_COUNT = 12;
 /** Extra list bottom pad on mobile so fixed 「위로」 does not cover grid meta lines. */
 export const FESTIVAL_HUB_GRID_MOBILE_SCROLL_PAD_CLASS =
   'festival-hub-grid-list-scroll-pad';
+
+/** Mobile-only: shift 「위로」 left of 2-col grid right-column meta (md:hidden button). */
+export const FESTIVAL_HUB_GRID_SCROLL_TOP_BOTTOM_CLASS =
+  'bottom-[max(3.6rem,calc(env(safe-area-inset-bottom)+2.85rem))] right-[4.75rem]';

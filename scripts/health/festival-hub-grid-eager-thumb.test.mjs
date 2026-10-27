@@ -62,4 +62,5 @@ test('Korea hub wires eager thumb helper and list epoch', () => {
   assert.match(indexJs, /isFestivalHubGridEagerThumb/);
   assert.match(indexJs, /festivalHubGridThumbLoadKey/);
   assert.match(indexJs, /thumbListEpoch=\{listFilterScrollKey\}/);
+  assert.match(indexJs, /FESTIVAL_HUB_GRID_SCROLL_TOP_BOTTOM_CLASS/);
 });
