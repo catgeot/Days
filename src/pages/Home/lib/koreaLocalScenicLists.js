@@ -149,7 +149,7 @@ for (const spot of Array.isArray(scenicJson?.spots) ? scenicJson.spots : []) {
   if (!curatedScenicByHubName.has(key)) curatedScenicByHubName.set(key, spot);
 }
 
-function lookupCuratedScenicSpot(hubId, attractionName) {
+export function lookupCuratedScenicSpot(hubId, attractionName) {
   const key = `${normalizeKey(hubId)}:${normalizeKey(attractionName)}`;
   return curatedScenicByHubName.get(key) || null;
 }

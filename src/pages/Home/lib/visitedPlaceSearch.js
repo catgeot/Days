@@ -7,6 +7,7 @@ import { getPlaceStatsId, isPlaceholderCountry } from '../../../utils/travelSpot
 import {
   placeUrlSlug,
   resolveCityAttractionHub,
+  resolveHubParentCityForPoiName,
   resolveHubPlaceFromSlug,
 } from './cityAttractionHubs.js';
 import {
@@ -195,7 +196,7 @@ export function visitedRowToSearchSpot(row, extras = {}) {
   if (!name) return null;
 
   const desc = String(extras.desc || '').trim();
-  const identity = visitedIdentityForRow(placeId, nameKo, nameEn);
+  const identity = visitedIdentityForRow(placeId, nameKo, nameEn, { lat, lng });
   let latinName = identity.nameEn
     ? pickLatinPlaceNameFromLocation({ name_en: identity.nameEn, name })
     : '';
@@ -234,7 +235,7 @@ export function visitedRowToSearchSpot(row, extras = {}) {
  * place_stats.place_id가 시군 허브여도 표시명이 그 시군이 아니면 슬러그를 옮기지 않는다.
  * 평창 통계 행은 그대로 두고, 흥정계곡 카드만 한글 이름 슬러그를 쓴다.
  */
-function visitedIdentityForRow(placeId, nameKo, nameEn) {
+function visitedIdentityForRow(placeId, nameKo, nameEn, coords = {}) {
   const id = String(placeId || '').trim();
   const ko = String(nameKo || '').trim();
   const legacy = id ? resolveLegacyMishealPlace(id) : null;
@@ -254,10 +255,14 @@ function visitedIdentityForRow(placeId, nameKo, nameEn) {
     const koToken = normalizeVisitedSearchKey(ko);
     if (koToken && !knownTokens.includes(koToken)) {
       const enIsCounty = knownTokens.includes(normalizeVisitedSearchKey(nameEn));
+      const poiParent = resolveHubParentCityForPoiName(ko, {
+        lat: coords.lat,
+        lng: coords.lng,
+      });
       return {
         slug: placeUrlSlug(enIsCounty ? '' : nameEn, ko),
         nameEn: enIsCounty ? '' : nameEn,
-        parentCity: known.name || '',
+        parentCity: poiParent || (enIsCounty ? '' : known.name || ''),
       };
     }
   }

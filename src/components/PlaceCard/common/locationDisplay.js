@@ -1,5 +1,8 @@
 import { resolveCityAttractionHub } from '../../../pages/Home/lib/cityAttractionHubs.js';
+import { lookupCuratedScenicSpot } from '../../../pages/Home/lib/koreaLocalScenicLists.js';
+import { formatScenicSpotPlaceLabel } from '../../../pages/Home/lib/scenicSpotPlaceLabel.js';
 import { citiesData } from '../../../pages/Home/data/citiesData.js';
+import { isPlaceholderCountry } from '../../../utils/travelSpotResolve.js';
 import { latinFromVisitedSlug } from '../../../pages/Home/lib/visitedPlaceSearch.js';
 import { TRAVEL_SPOT_TOOLKIT_SYNONYMS } from '../../../../scripts/data/travel-spot-place-id-aliases.mjs';
 
@@ -158,6 +161,53 @@ export function getLocalizedCountryName(location, locale = 'ko') {
   }
   if (isKoreaCountryLabel(korean) || isKoreaCountryLabel(english)) return '대한민국';
   return korean || '';
+}
+
+function exploreLocationParts(item, locale) {
+  const name = getLocalizedPlaceName(item, locale) || String(item?.name || '').trim();
+  const hubId = String(item?.hubId || '').trim();
+  const hub = hubId ? resolveCityAttractionHub(hubId) : null;
+  let parentCity = String(item?.parentCity || '').trim();
+  if (hub?.name) {
+    const parentHub = resolveCityAttractionHub(parentCity);
+    if (!parentCity || (parentHub && parentHub.hubId !== hub.hubId)) {
+      parentCity = hub.name;
+    }
+  }
+  const parent = getLocalizedParentCityLabel(parentCity, locale);
+  const country = getLocalizedCountryName(item, locale) || String(item?.country || '').trim();
+  const parts = [];
+  if (parent && parent !== name && !name.includes(parent)) {
+    parts.push(parent);
+  }
+  if (country && country !== name && country !== parent && !isPlaceholderCountry(country)) {
+    parts.push(country);
+  }
+  return parts.join(' · ');
+}
+
+/**
+ * Explore 검색 제안 위치 줄 — hubId·GATEO 명승 권역 우선, 잘못된 parentCity(예: 서울) 보정.
+ */
+export function buildExploreSearchLocationLine(item, locale = 'ko') {
+  if (!item) return '';
+  const hubId = String(item?.hubId || '').trim();
+  const name = String(item?.name || '').trim();
+  if (hubId && name && (item.kind === 'attraction' || item.uiPlace)) {
+    const hub = resolveCityAttractionHub(hubId);
+    const curated = lookupCuratedScenicSpot(hubId, name);
+    const scenicLine = formatScenicSpotPlaceLabel(
+      {
+        hubId,
+        region: curated?.region,
+        hubName: hub?.name,
+        addr1: curated?.addr1,
+      },
+      locale,
+    );
+    if (scenicLine) return scenicLine;
+  }
+  return exploreLocationParts(item, locale);
 }
 
 export function getPlaceTitleLinesForLocale(location, locale = 'ko') {

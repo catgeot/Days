@@ -93,6 +93,7 @@ import {
   formatScenicSpotPlaceLabel,
   scenicSpotMapTitle,
 } from '../Home/lib/scenicSpotPlaceLabel.js';
+import { usePrunedImageGallery } from './themeSpotGalleryImages.js';
 import { localizedHubLabel, localizedScenicMajorRegion } from '../../i18n/koreaRegionLabels';
 import { localizedPackageCtaLabel } from '../../i18n/exploreUi';
 import { fetchNearbyFestivals } from '../../utils/fetchNearbyFestivals';
@@ -1059,6 +1060,9 @@ export default function ThemeSpotDetailModal({
     return out;
   }, [detail, spot?.imageUrl, spot?.firstImage, spot?.galleryUrls]);
 
+  const { visibleUrls: galleryUrls, markBroken: markGalleryImageBroken } =
+    usePrunedImageGallery(imageUrls, spot?.id);
+
   const {
     transformStyle: lightboxTransformStyle,
     isZoomed: isLightboxZoomed,
@@ -1078,25 +1082,25 @@ export default function ThemeSpotDetailModal({
 
   const openLightboxAt = useCallback(
     (index) => {
-      if (!imageUrls.length) return;
-      const next = Math.max(0, Math.min(imageUrls.length - 1, Number(index) || 0));
+      if (!galleryUrls.length) return;
+      const next = Math.max(0, Math.min(galleryUrls.length - 1, Number(index) || 0));
       setActiveImage(next);
       setLightboxOpen(true);
     },
-    [imageUrls.length],
+    [galleryUrls.length],
   );
 
   const stepLightbox = useCallback(
     (delta) => {
-      if (imageUrls.length < 2) return;
-      setActiveImage((i) => (i + delta + imageUrls.length) % imageUrls.length);
+      if (galleryUrls.length < 2) return;
+      setActiveImage((i) => (i + delta + galleryUrls.length) % galleryUrls.length);
     },
-    [imageUrls.length],
+    [galleryUrls.length],
   );
 
   const consumeHorizontalSwipe = useCallback(
     (start, endX, endY) => {
-      if (!start || imageUrls.length < 2) return false;
+      if (!start || galleryUrls.length < 2) return false;
       const dx = endX - start.x;
       const dy = endY - start.y;
       if (Math.abs(dx) < PHOTO_SWIPE_THRESHOLD_PX) return false;
@@ -1104,7 +1108,7 @@ export default function ThemeSpotDetailModal({
       stepLightbox(dx > 0 ? -1 : 1);
       return true;
     },
-    [imageUrls.length, stepLightbox],
+    [galleryUrls.length, stepLightbox],
   );
 
   const onHeroTouchStart = useCallback((e) => {
@@ -1189,7 +1193,7 @@ export default function ThemeSpotDetailModal({
         onClose();
         return;
       }
-      if (!lightboxOpen || imageUrls.length < 2) return;
+      if (!lightboxOpen || galleryUrls.length < 2) return;
       if (event.key === 'ArrowLeft') stepLightbox(-1);
       else if (event.key === 'ArrowRight') stepLightbox(1);
     };
@@ -1206,7 +1210,7 @@ export default function ThemeSpotDetailModal({
     lightboxOpen,
     closeLightbox,
     videosOpen,
-    imageUrls.length,
+    galleryUrls.length,
     stepLightbox,
     selectedFood,
     selectedLeports,
@@ -1241,10 +1245,10 @@ export default function ThemeSpotDetailModal({
   }, [spot?.id]);
 
   useEffect(() => {
-    if (activeImage >= imageUrls.length) {
+    if (activeImage >= galleryUrls.length) {
       setActiveImage(0);
     }
-  }, [activeImage, imageUrls.length]);
+  }, [activeImage, galleryUrls.length]);
 
   useEffect(() => {
     if (!spot) {
@@ -1786,8 +1790,8 @@ export default function ThemeSpotDetailModal({
     t('korea.theme.spotDetail.fallbackTitle');
   const displaySubtitle = localizedSpotModalSubtitle(spot, locale);
   const hasContentId = /^\d{1,32}$/.test(String(spot.contentId || '').trim());
-  const hero = imageUrls[activeImage] || imageUrls[0] || '';
-  const galleryList = imageUrls;
+  const hero = galleryUrls[activeImage] || galleryUrls[0] || '';
+  const galleryList = galleryUrls;
 
   const openFestival = (fest) => {
     const festId = String(fest?.contentId || '').trim();
@@ -1968,7 +1972,7 @@ export default function ThemeSpotDetailModal({
               onTouchCancel={onHeroTouchCancel}
               className="group relative block w-full touch-pan-y text-left"
               aria-label={
-                imageUrls.length > 1
+                galleryUrls.length > 1
                   ? t('korea.theme.spotDetail.heroExpandSwipe')
                   : t('korea.theme.spotDetail.heroExpand')
               }
@@ -1979,15 +1983,16 @@ export default function ThemeSpotDetailModal({
                 draggable={false}
                 fetchPriority="high"
                 decoding="async"
+                onError={() => markGalleryImageBroken(hero)}
                 className="aspect-[16/9] w-full object-cover pointer-events-none select-none sm:aspect-[2/1]"
               />
               <span className="absolute bottom-3 left-3 inline-flex items-center gap-1.5 rounded-full border border-white/30 bg-stone-900/55 px-2.5 py-1 text-[11px] font-bold text-white opacity-95 group-hover:bg-stone-900/70">
                 <Expand size={13} aria-hidden="true" />
                 {t('korea.theme.spotDetail.expandView')}
               </span>
-              {imageUrls.length > 1 ? (
+              {galleryUrls.length > 1 ? (
                 <span className="absolute bottom-3 right-3 rounded-full bg-stone-900/55 px-2 py-0.5 text-[10px] font-bold text-white tabular-nums">
-                  {activeImage + 1}/{imageUrls.length}
+                  {activeImage + 1}/{galleryUrls.length}
                 </span>
               ) : null}
             </button>
@@ -2178,6 +2183,7 @@ export default function ThemeSpotDetailModal({
                         className="absolute inset-0 h-full w-full object-cover"
                         loading="lazy"
                         decoding="async"
+                        onError={() => markGalleryImageBroken(url)}
                       />
                     </button>
                   ))}
@@ -2728,8 +2734,8 @@ export default function ThemeSpotDetailModal({
           >
             <div className="flex shrink-0 items-center justify-between gap-3 pb-3">
               <p className="text-sm font-bold text-white/90 tabular-nums">
-                {imageUrls.length > 1
-                  ? `${activeImage + 1} / ${imageUrls.length}`
+                {galleryUrls.length > 1
+                  ? `${activeImage + 1} / ${galleryUrls.length}`
                   : t('korea.theme.spotDetail.lightboxPhoto')}
               </p>
               <button
@@ -2754,10 +2760,11 @@ export default function ThemeSpotDetailModal({
                   alt=""
                   draggable={false}
                   style={lightboxTransformStyle}
+                  onError={() => markGalleryImageBroken(hero)}
                   className="max-h-full max-w-full object-contain select-none"
                 />
               </div>
-              {imageUrls.length > 1 ? (
+              {galleryUrls.length > 1 ? (
                 <>
                   <button
                     type="button"

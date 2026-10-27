@@ -10,7 +10,6 @@ import {
   EXPLORE_BADGE_REGION,
   localizedExploreBadgeLabel,
 } from '../../../../i18n/exploreUi';
-import { isPlaceholderCountry } from '../../../../utils/travelSpotResolve.js';
 import { fetchKoreaTourAttractionFirstImagesByIds, rememberKoreaTourAttractionFirstImage } from '../../lib/koreaTourAttractions';
 import { fetchTourApiFirstImage } from '../../../../utils/fetchTourApiAttractionDetail';
 import { resolveSearchScenicMedia } from '../../lib/koreaLocalScenicLists';
@@ -19,6 +18,7 @@ import {
   getLocalizedParentCityLabel,
   getLocalizedPlaceName,
   getPlaceTitleLinesForLocale,
+  buildExploreSearchLocationLine,
 } from '../../../../components/PlaceCard/common/locationDisplay';
 import {
   isKoreaHomonymChoiceSet,
@@ -64,20 +64,6 @@ function localizeExploreGroupTitle(groupTitle, locale = 'ko') {
     return localized ? `${localized}${suffix}` : raw;
   }
   return getLocalizedParentCityLabel(raw, locale) || raw;
-}
-
-function buildLocationLine(item, locale = 'ko') {
-  const name = getLocalizedPlaceName(item, locale) || String(item?.name || '').trim();
-  const parent = getLocalizedParentCityLabel(item?.parentCity, locale);
-  const country = getLocalizedCountryName(item, locale) || String(item?.country || '').trim();
-  const parts = [];
-  if (parent && parent !== name && !name.includes(parent)) {
-    parts.push(parent);
-  }
-  if (country && country !== name && country !== parent && !isPlaceholderCountry(country)) {
-    parts.push(country);
-  }
-  return parts.join(' · ');
 }
 
 /**
@@ -341,7 +327,7 @@ export function SearchSuggestionList({
             const { primaryName, secondaryName } = getPlaceTitleLinesForLocale(item, i18n.language);
             const displayName =
               primaryName || getLocalizedPlaceName(item, i18n.language) || String(item?.name || '').trim();
-            const locationLine = buildLocationLine(item, i18n.language);
+            const locationLine = buildExploreSearchLocationLine(item, i18n.language);
             const desc = resolveCardDesc(item, locationLine, i18n.language);
             const subtitle = [locationLine, desc]
               .filter(Boolean)
@@ -565,7 +551,7 @@ export function SearchDisambiguationCards({
           const badge = localizedExploreBadgeLabel(t, badgeKey);
           const badgeClass = BADGE_STYLES[badgeKey] || BADGE_STYLES[EXPLORE_BADGE_PLACE];
           const { primaryName, secondaryName } = getPlaceTitleLinesForLocale(item, i18n.language);
-          const locationLine = buildLocationLine(item, i18n.language);
+          const locationLine = buildExploreSearchLocationLine(item, i18n.language);
           const hydrated = introByKey[index]
             ? { ...item, desc: introByKey[index], placeChatIntroApplied: true }
             : item;
