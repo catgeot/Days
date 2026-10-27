@@ -1915,6 +1915,17 @@ export default function ThemeSpotDetailModal({
             >
               {displayTitle}
             </h2>
+            {placeCardHref ? (
+              <Link
+                to={placeCardHref}
+                onClick={() => onClose?.()}
+                data-theme-spot-place-card-cta=""
+                className="mt-2.5 inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-amber-500/90 bg-amber-50 px-3 py-2 text-sm font-bold text-amber-950 shadow-sm hover:bg-amber-100 sm:py-2.5"
+              >
+                <MapPin size={15} aria-hidden="true" />
+                {t('korea.theme.spotDetail.viewPlaceCard', '장소 카드 보기')}
+              </Link>
+            ) : null}
           </div>
           <div className="flex shrink-0 items-center gap-1.5">
             {onToggleFavorite ? (
@@ -2221,16 +2232,6 @@ export default function ThemeSpotDetailModal({
                 {t('korea.theme.spotDetail.readMore')}
               </h3>
               <div className="flex flex-col gap-1.5 sm:flex-row sm:flex-wrap">
-                {placeCardHref ? (
-                  <Link
-                    to={placeCardHref}
-                    onClick={() => onClose?.()}
-                    className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-full border border-stone-300 bg-white px-3 py-2.5 text-sm font-bold text-stone-900 hover:border-amber-400/80 hover:bg-amber-50"
-                  >
-                    <MapPin size={15} aria-hidden="true" />
-                    {t('korea.theme.spotDetail.viewPlaceCard', '장소 카드 보기')}
-                  </Link>
-                ) : null}
                 {!mooniFab ? (
                   <button
                     type="button"
