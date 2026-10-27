@@ -9,6 +9,6 @@ export const FESTIVAL_HUB_GRID_EAGER_THUMB_COUNT = 12;
 export const FESTIVAL_HUB_GRID_MOBILE_SCROLL_PAD_CLASS =
   'festival-hub-grid-list-scroll-pad';
 
-/** Mobile-only: shift 「위로」 left of 2-col grid right-column meta (md:hidden button). */
+/** Mobile-only: center 「위로」 below grid so right-column meta stays readable. */
 export const FESTIVAL_HUB_GRID_SCROLL_TOP_BOTTOM_CLASS =
-  'bottom-[max(3.6rem,calc(env(safe-area-inset-bottom)+2.85rem))] right-[4.75rem]';
+  'bottom-[max(3rem,calc(env(safe-area-inset-bottom)+2.35rem))] left-1/2 right-auto -translate-x-1/2';
