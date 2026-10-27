@@ -70,8 +70,8 @@ test('grid photo card shows pin fallback only after thumb exhausted', () => {
     join(root, 'src/pages/Korea/components/FestivalGridPhotoCard.jsx'),
     'utf8',
   );
-  assert.match(card, /thumbExhausted \?/);
   assert.match(card, /data-festival-grid-thumb-fallback/);
+  assert.doesNotMatch(card, /thumbExhausted \?\s*\(/);
   assert.match(card, /pendingShimmer=\{!thumbDecoded\}/);
 });
 
