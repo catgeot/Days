@@ -35,6 +35,7 @@ import {
   lookupLocalScenicMemberOverlayForSpot,
   lookupLocalScenicPhotoByContentId,
 } from '../../../pages/Home/lib/koreaLocalScenicLists';
+import { resolveKoreaScenicGalleryUrlsForPlace } from '../../../pages/Home/lib/placeScenicGateway';
 import { fetchTourApiGallery } from '../../../utils/fetchTourApiGallery';
 import { isSparseTourApiGallery } from '../../../utils/tourApiPhotoRank';
 import { filterOutSinglePersonPortraits, pickPlaceStatsGalleryRow } from '../../../utils/galleryPortraitFilter';
@@ -677,13 +678,16 @@ export const usePlaceGallery = (locationSource, options = {}) => {
       tourMapping?.contentId ||
         (typeof locationSource === 'object' ? locationSource?.contentId : null),
     );
+    const koreaScenicSpotGallery = resolveKoreaScenicGalleryUrlsForPlace(locationSource);
     const localScenicOfficialGallery =
       Array.isArray(localScenicOverlay?.galleryUrls) &&
       localScenicOverlay.galleryUrls.length >= 1
         ? localScenicOverlay.galleryUrls
         : Array.isArray(contentThumb?.galleryUrls) && contentThumb.galleryUrls.length >= 1
           ? contentThumb.galleryUrls
-          : null;
+          : koreaScenicSpotGallery.length >= 1
+            ? koreaScenicSpotGallery
+            : null;
 
     const clearSafety = () => {
       if (safetyTimer != null) {
@@ -1256,10 +1260,25 @@ export const usePlaceGallery = (locationSource, options = {}) => {
           setLoadFailed(true);
         }
       } else {
-        console.warn(`⚠️ 검색 최종 실패. 네트워크 재시도 안내.`);
-        if (!isStale()) {
-          processAndSetImages([]);
-          setLoadFailed(true);
+        const scenicFallbackUrls = resolveKoreaScenicGalleryUrlsForPlace(locationSource);
+        if (!isStale() && scenicFallbackUrls.length > 0) {
+          const scenicImages = scenicFallbackUrls.map((url, idx) => ({
+            id: `korea-scenic-ssot-${stablePlaceKey}-${idx}`,
+            urls: { small: url, regular: url },
+            alt_description: koreanName,
+            source: 'korea-scenic-ssot',
+          }));
+          processAndSetImages(scenicImages);
+          saveToSmartCache(CACHE_KEY, allImagesRef.current);
+          markFetchDone();
+          finishLoading();
+          writeGallerySwrAt(stablePlaceKey);
+        } else {
+          console.warn(`⚠️ 검색 최종 실패. 네트워크 재시도 안내.`);
+          if (!isStale()) {
+            processAndSetImages([]);
+            setLoadFailed(true);
+          }
         }
       }
     } catch (error) {

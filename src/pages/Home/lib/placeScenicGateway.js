@@ -377,3 +377,58 @@ export function resolveScenicSpotForPlace(loc, options = {}) {
 
   return null;
 }
+
+/** @param {string} slug */
+export function getVisibleKoreaScenicSpotByPlaceSlug(slug) {
+  const key = String(slug || '').trim().toLowerCase();
+  if (!key) return null;
+  const spot = spotByPlaceSlug.get(key);
+  if (!spot || isScenicSpotHidden(spot)) return null;
+  return spot;
+}
+
+/** @param {object | null | undefined} spot */
+export function listKoreaScenicGalleryUrlsFromSpot(spot) {
+  if (!spot || typeof spot !== 'object') return [];
+  const out = [];
+  const seen = new Set();
+  const push = (url) => {
+    const trimmed = String(url || '').trim();
+    if (!trimmed || seen.has(trimmed)) return;
+    seen.add(trimmed);
+    out.push(trimmed);
+  };
+  push(spot.imageUrl);
+  if (Array.isArray(spot.galleryUrls)) {
+    for (const url of spot.galleryUrls) push(url);
+  }
+  return out;
+}
+
+/**
+ * GATEO scenic SSOT photos for place-card gallery when Tour/stock are empty.
+ * @param {object | null | undefined} loc
+ * @returns {string[]}
+ */
+export function resolveKoreaScenicGalleryUrlsForPlace(loc) {
+  if (!loc || typeof loc !== 'object') return [];
+  if (!isDomesticKoreaLocation(loc)) return [];
+
+  const slug = String(loc.slug || loc.canonical_slug || loc.placeSlug || '')
+    .trim()
+    .toLowerCase();
+  let spot = slug ? getVisibleKoreaScenicSpotByPlaceSlug(slug) : null;
+
+  if (!spot) {
+    const contentId = loc.contentId ? String(loc.contentId).trim() : '';
+    if (contentId && spotByContentId.has(contentId)) {
+      spot = spotByContentId.get(contentId);
+    }
+  }
+  if (!spot && slug && spotById.has(slug)) {
+    spot = spotById.get(slug);
+  }
+  if (spot && isScenicSpotHidden(spot)) spot = null;
+
+  return listKoreaScenicGalleryUrlsFromSpot(spot);
+}

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import AppOutlineBackButton from '../../shared/navigation/AppOutlineBackButton';
 import { OutboundSearchButtons } from '../../shared/outbound/OutboundSearchButtons.jsx';
@@ -1792,6 +1792,8 @@ export default function ThemeSpotDetailModal({
   const hasContentId = /^\d{1,32}$/.test(String(spot.contentId || '').trim());
   const hero = galleryUrls[activeImage] || galleryUrls[0] || '';
   const galleryList = galleryUrls;
+  const placeCardSlug = String(spot.placeSlug || '').trim().toLowerCase();
+  const placeCardHref = placeCardSlug ? `/place/${placeCardSlug}` : '';
 
   const openFestival = (fest) => {
     const festId = String(fest?.contentId || '').trim();
@@ -2217,6 +2219,16 @@ export default function ThemeSpotDetailModal({
                 {t('korea.theme.spotDetail.readMore')}
               </h3>
               <div className="flex flex-col gap-1.5 sm:flex-row sm:flex-wrap">
+                {placeCardHref ? (
+                  <Link
+                    to={placeCardHref}
+                    onClick={() => onClose?.()}
+                    className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-full border border-stone-300 bg-white px-3 py-2.5 text-sm font-bold text-stone-900 hover:border-amber-400/80 hover:bg-amber-50"
+                  >
+                    <MapPin size={15} aria-hidden="true" />
+                    {t('korea.theme.spotDetail.viewPlaceCard', '장소 카드 보기')}
+                  </Link>
+                ) : null}
                 {!mooniFab ? (
                   <button
                     type="button"

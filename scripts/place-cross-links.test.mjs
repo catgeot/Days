@@ -4,7 +4,10 @@ import test from 'node:test';
 import { GATEO_ENV_FLAG_NAMES } from '../src/shared/gateoFeatureFlags.js';
 import {
   isDomesticKoreaForCrosslink,
+  listRegionalScenicPlaceCardsForLocation,
   resolvePlaceCrossLinks,
+  scenicSpotHasDisplayPhoto,
+  sortScenicSpotRowsPreferPhotos,
 } from '../src/pages/Home/lib/resolvePlaceCrossLinks.js';
 
 function withCrosslinkFlag(enabled, fn) {
@@ -110,6 +113,33 @@ test('Japan coords inside coarse bbox are not domestic (Fukuoka, Tsushima)', () 
   assert.equal(
     isDomesticKoreaForCrosslink({ lat: 37.57, lng: 126.98, country: '대한민국' }),
     true,
+  );
+});
+
+test('regional scenic place cards prefer photos and link to /place', () => {
+  const pyeongchang = listRegionalScenicPlaceCardsForLocation({
+    slug: 'pyeongchang',
+    name: '평창',
+    country: '대한민국',
+  });
+  assert.ok(pyeongchang);
+  assert.equal(pyeongchang.hubId, 'pyeongchang');
+  assert.ok(pyeongchang.spots.length >= 1 && pyeongchang.spots.length <= 6);
+  assert.match(pyeongchang.viewAllHref, /hub=pyeongchang/);
+  for (const row of pyeongchang.spots) {
+    assert.match(row.href, /^\/place\/[a-z0-9-]+$/);
+    assert.ok(row.name);
+  }
+  const seonjae = pyeongchang.spots.find((row) => row.id === 'odaesan-seonjae-trail');
+  assert.ok(seonjae, 'odaesan-seonjae-trail in regional cards');
+  assert.equal(seonjae.href, '/place/odaesan-seonjae-trail');
+  assert.ok(scenicSpotHasDisplayPhoto({ imageUrl: 'https://example.com/a.jpg' }));
+  assert.equal(
+    sortScenicSpotRowsPreferPhotos([
+      { spot: { order: 2, imageUrl: null }, spotHubId: 'x' },
+      { spot: { order: 1, imageUrl: 'https://example.com/b.jpg' }, spotHubId: 'x' },
+    ])[0].spot.order,
+    1,
   );
 });
 
