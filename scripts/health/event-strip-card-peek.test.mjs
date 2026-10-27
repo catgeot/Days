@@ -36,11 +36,13 @@ test('desktop and large widths match main', () => {
   assert.doesNotMatch(eventStripCardShellClass(), /snap-start/);
 });
 
-test('third-card peek formula (row.right - card3.left) clamped', () => {
-  const row = { left: 0, right: 314 };
-  const card3 = { left: 290, right: 430, width: 140 };
-  const pct = eventStripThirdCardPeekPercent(row, card3);
-  assert.ok(Math.abs(pct - ((314 - 290) / 140) * 100) < 0.01);
+test('third-card peek uses row.right minus padding-right', () => {
+  const pr = 4;
+  const row = { left: 0, right: 322 };
+  const card3 = { left: 298, right: 438, width: 140 };
+  const visibleRight = 322 - pr;
+  const pct = eventStripThirdCardPeekPercent(row, card3, pr);
+  assert.ok(Math.abs(pct - ((visibleRight - 298) / 140) * 100) < 0.01);
 });
 
 test('peek at 390px row is between 15% and 20%', () => {
