@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { MapPin, Landmark, Building2, Compass, Loader2, ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
 import {
@@ -222,37 +222,49 @@ function useMissingTourAttractionThumbs(items) {
 function SearchResultThumb({ item, sizeClass, kind, iconSize = 16, selectionCard = false }) {
   const resolvedUrl = resolveSearchCandidateThumbUrl(item);
   const [src, setSrc] = useState(resolvedUrl);
-  const [pending, setPending] = useState(Boolean(resolvedUrl));
+  const [loaded, setLoaded] = useState(false);
   const [failed, setFailed] = useState(false);
   const [fallbackTried, setFallbackTried] = useState(false);
+  const imgRef = useRef(null);
 
   useEffect(() => {
     setSrc(resolvedUrl);
-    setPending(Boolean(resolvedUrl));
+    setLoaded(false);
     setFailed(false);
     setFallbackTried(false);
   }, [resolvedUrl, item?.id, item?.contentId]);
 
+  useLayoutEffect(() => {
+    const el = imgRef.current;
+    if (!el || !src || failed) return;
+    if (el.complete && el.naturalWidth > 0) setLoaded(true);
+  }, [src, failed]);
+
+  useEffect(() => {
+    if (!src || loaded || failed) return undefined;
+    const timer = window.setTimeout(() => setFailed(true), 6000);
+    return () => window.clearTimeout(timer);
+  }, [src, loaded, failed]);
+
   const contentId = String(item?.contentId || '').trim();
+  const pending = Boolean(src) && !loaded && !failed;
 
   const handleError = () => {
     if (fallbackTried || !/^\d{1,32}$/.test(contentId)) {
-      setPending(false);
       setFailed(true);
       return;
     }
     setFallbackTried(true);
-    setPending(true);
     fetchTourApiFirstImage(contentId).then((url) => {
       const next = String(url || '').trim();
       if (!next) {
-        setPending(false);
         setFailed(true);
         return;
       }
       rememberKoreaTourAttractionFirstImage(contentId, next);
-      setSrc(next);
+      setLoaded(false);
       setFailed(false);
+      setSrc(next);
     });
   };
 
@@ -270,23 +282,22 @@ function SearchResultThumb({ item, sizeClass, kind, iconSize = 16, selectionCard
   const eager = selectionCard;
 
   return (
-    <div className={`relative shrink-0 ${sizeClass}`} aria-hidden="true">
-      {pending ? (
-        <div
-          className={`absolute inset-0 z-[1] flex items-center justify-center rounded-xl bg-white/[0.08] ${sizeClass}`}
-        >
-          <MapPin size={iconSize} className="shrink-0 text-white/45" />
-        </div>
-      ) : null}
+    <div className={`relative shrink-0 overflow-hidden rounded-xl ${sizeClass}`} aria-hidden="true">
+      <div
+        className={`absolute inset-0 z-0 flex items-center justify-center rounded-xl bg-white/[0.08] ${sizeClass}`}
+      >
+        <SuggestionIcon kind={kind} size={iconSize} />
+      </div>
       <img
+        ref={imgRef}
         src={src}
         alt=""
         loading={eager ? 'eager' : 'lazy'}
         fetchPriority={eager ? 'high' : 'auto'}
         decoding="async"
-        onLoad={() => setPending(false)}
+        onLoad={() => setLoaded(true)}
         onError={handleError}
-        className={`rounded-xl object-cover bg-white/10 ${sizeClass} transition-opacity duration-150 ${
+        className={`relative z-[1] rounded-xl object-cover bg-transparent ${sizeClass} transition-opacity duration-150 ${
           pending ? 'opacity-0' : 'opacity-100'
         }`}
       />

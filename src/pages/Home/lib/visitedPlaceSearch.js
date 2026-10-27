@@ -262,7 +262,7 @@ function visitedIdentityForRow(placeId, nameKo, nameEn, coords = {}) {
       return {
         slug: placeUrlSlug(enIsCounty ? '' : nameEn, ko),
         nameEn: enIsCounty ? '' : nameEn,
-        parentCity: poiParent || (enIsCounty ? '' : known.name || ''),
+        parentCity: poiParent || '',
       };
     }
   }
