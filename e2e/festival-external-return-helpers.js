@@ -237,7 +237,7 @@ export async function returnFromNearbyOfficialSameTab(page, nearbyModal) {
     await page.goBack({ waitUntil: 'domcontentloaded', timeout: 15_000 }).catch(() => {});
     await dispatchPersistedReturn(page);
   }
-  await expect(festivalSheetDialog(page)).toBeVisible({ timeout: 30_000 });
+  await waitForFestivalSheetAfterExternalReturn(page, sheet);
 }
 
 export async function openFestivalFromHome(page, { searchQuery, festivalId, openTimeoutMs = 120_000 }) {
