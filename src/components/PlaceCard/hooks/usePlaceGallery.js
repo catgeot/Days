@@ -35,7 +35,7 @@ import {
   lookupLocalScenicMemberOverlayForSpot,
   lookupLocalScenicPhotoByContentId,
 } from '../../../pages/Home/lib/koreaLocalScenicLists';
-import { resolveKoreaScenicGalleryUrlsForPlace } from '../../../pages/Home/lib/placeScenicGateway';
+import { resolveScenicGalleryUrlsIfEnabled } from '../../../pages/Home/lib/placeScenicPlaceLinksRollout';
 import { fetchTourApiGallery } from '../../../utils/fetchTourApiGallery';
 import { isSparseTourApiGallery } from '../../../utils/tourApiPhotoRank';
 import { filterOutSinglePersonPortraits, pickPlaceStatsGalleryRow } from '../../../utils/galleryPortraitFilter';
@@ -133,6 +133,40 @@ const GALLERY_REFRESH_COOLDOWN_MS = 30_000;
 /** place_stats / Unsplash 등 TourAPI 이후 단계 hang 시 스켈레톤 고착 방지 */
 const GALLERY_LOAD_SAFETY_MS = 28_000;
 const PLACE_STATS_QUERY_MS = 8_000;
+const SCENIC_GALLERY_URL_VERIFY_MS = 8_000;
+
+/** SSOT scenic URLs — load probe before gallery cache (broken CDN links). */
+function probeLoadableImageUrl(url, timeoutMs = SCENIC_GALLERY_URL_VERIFY_MS) {
+  return new Promise((resolve) => {
+    const src = String(url || '').trim();
+    if (!src) {
+      resolve(null);
+      return;
+    }
+    const img = new Image();
+    let settled = false;
+    const done = (ok) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      img.onload = null;
+      img.onerror = null;
+      img.src = '';
+      resolve(ok ? src : null);
+    };
+    const timer = setTimeout(() => done(false), timeoutMs);
+    img.onload = () => done(true);
+    img.onerror = () => done(false);
+    img.src = src;
+  });
+}
+
+async function filterLoadableScenicGalleryUrls(urls) {
+  const list = Array.isArray(urls) ? urls : [];
+  if (!list.length) return [];
+  const probed = await Promise.all(list.map((url) => probeLoadableImageUrl(url)));
+  return probed.filter(Boolean);
+}
 
 function withTimeout(promise, ms, label) {
   let timer;
@@ -678,7 +712,7 @@ export const usePlaceGallery = (locationSource, options = {}) => {
       tourMapping?.contentId ||
         (typeof locationSource === 'object' ? locationSource?.contentId : null),
     );
-    const koreaScenicSpotGallery = resolveKoreaScenicGalleryUrlsForPlace(locationSource);
+    const koreaScenicSpotGallery = resolveScenicGalleryUrlsIfEnabled(locationSource);
     const localScenicOfficialGallery =
       Array.isArray(localScenicOverlay?.galleryUrls) &&
       localScenicOverlay.galleryUrls.length >= 1
@@ -850,19 +884,30 @@ export const usePlaceGallery = (locationSource, options = {}) => {
     /** sparse/thin DB Tour — live refetch 실패 시 최소 1장 복구(흥정계곡 등) */
     let dbGallerySliceFallback = null;
 
+    const scenicSsotGalleryOnly =
+      koreaScenicSpotGallery.length >= 1 &&
+      !(Array.isArray(localScenicOverlay?.galleryUrls) && localScenicOverlay.galleryUrls.length >= 1) &&
+      !(Array.isArray(contentThumb?.galleryUrls) && contentThumb.galleryUrls.length >= 1);
+
     if (!forceRefresh && localScenicOfficialGallery) {
-      const officialImages = localScenicOfficialGallery.map((url, idx) => ({
-        id: `local-scenic-official-${stablePlaceKey}-${idx}`,
-        urls: { small: url, regular: url },
-        alt_description: koreanName,
-        source: 'local-scenic-official',
-      }));
-      processAndSetImages(officialImages);
-      saveToSmartCache(CACHE_KEY, allImagesRef.current);
-      markFetchDone();
-      finishLoading();
-      writeGallerySwrAt(stablePlaceKey);
-      return undefined;
+      let officialUrls = localScenicOfficialGallery;
+      if (scenicSsotGalleryOnly) {
+        officialUrls = await filterLoadableScenicGalleryUrls(localScenicOfficialGallery);
+      }
+      if (officialUrls.length >= 1) {
+        const officialImages = officialUrls.map((url, idx) => ({
+          id: `local-scenic-official-${stablePlaceKey}-${idx}`,
+          urls: { small: url, regular: url },
+          alt_description: koreanName,
+          source: scenicSsotGalleryOnly ? 'korea-scenic-ssot' : 'local-scenic-official',
+        }));
+        processAndSetImages(officialImages);
+        saveToSmartCache(CACHE_KEY, allImagesRef.current);
+        markFetchDone();
+        finishLoading();
+        writeGallerySwrAt(stablePlaceKey);
+        return undefined;
+      }
     }
 
     if (!forceRefresh) {
@@ -1260,7 +1305,9 @@ export const usePlaceGallery = (locationSource, options = {}) => {
           setLoadFailed(true);
         }
       } else {
-        const scenicFallbackUrls = resolveKoreaScenicGalleryUrlsForPlace(locationSource);
+        const scenicFallbackUrls = await filterLoadableScenicGalleryUrls(
+          resolveScenicGalleryUrlsIfEnabled(locationSource),
+        );
         if (!isStale() && scenicFallbackUrls.length > 0) {
           const scenicImages = scenicFallbackUrls.map((url, idx) => ({
             id: `korea-scenic-ssot-${stablePlaceKey}-${idx}`,

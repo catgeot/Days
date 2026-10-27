@@ -44,6 +44,7 @@ import { resolveListImageUrl } from '../../utils/listImageUrl';
 import { useLightboxPinchTransform } from '../../components/PlaceCard/common/useLightboxPinchTransform';
 import { resetIosZoomAfterInput } from '../../shared/lib/mobileViewport';
 import { fetchTourApiAttractionDetail } from '../../utils/fetchTourApiAttractionDetail';
+import { showThemeSpotPlaceCardLink } from '../Home/lib/placeScenicPlaceLinksRollout';
 
 const THEME_SPOT_MODAL_SAFE_PAD =
   'p-2.5 pt-[max(0.625rem,env(safe-area-inset-top))] pb-[max(0.625rem,env(safe-area-inset-bottom))] pl-[max(0.625rem,env(safe-area-inset-left))] pr-[max(0.625rem,env(safe-area-inset-right))] md:items-center md:p-5';
@@ -1793,7 +1794,8 @@ export default function ThemeSpotDetailModal({
   const hero = galleryUrls[activeImage] || galleryUrls[0] || '';
   const galleryList = galleryUrls;
   const placeCardSlug = String(spot.placeSlug || '').trim().toLowerCase();
-  const placeCardHref = placeCardSlug ? `/place/${placeCardSlug}` : '';
+  const placeCardHref =
+    showThemeSpotPlaceCardLink(placeCardSlug) ? `/place/${placeCardSlug}` : '';
 
   const openFestival = (fest) => {
     const festId = String(fest?.contentId || '').trim();

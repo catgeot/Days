@@ -1,10 +1,33 @@
-import React, { useMemo, useCallback } from 'react';
+import React, { useMemo, useCallback, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Landmark, ChevronRight, Sparkles, Compass, MapPin } from 'lucide-react';
 import { resolveScenicSpotForPlace } from '../../../pages/Home/lib/placeScenicGateway';
-import { listRegionalScenicPlaceCardsForLocation } from '../../../pages/Home/lib/resolvePlaceCrossLinks';
+import { listRegionalScenicPlaceCardsIfEnabled } from '../../../pages/Home/lib/placeScenicPlaceLinksRollout';
 import { resolveListImageUrl } from '../../../utils/listImageUrl';
+
+function ScenicSpotThumb({ imageUrl }) {
+  const [broken, setBroken] = useState(false);
+  const placeholder = (
+    <div
+      className="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg bg-amber-500/15 text-amber-200/80"
+      aria-hidden
+    >
+      <MapPin size={18} />
+    </div>
+  );
+  if (!imageUrl || broken) return placeholder;
+  return (
+    <img
+      src={resolveListImageUrl(imageUrl, { role: 'list' })}
+      alt=""
+      className="h-14 w-14 shrink-0 rounded-lg object-cover bg-stone-800"
+      loading="lazy"
+      decoding="async"
+      onError={() => setBroken(true)}
+    />
+  );
+}
 
 /**
  * 장소카드 갤러리(기본 홈)에서 한국 테마 명승/명소 본문 상세 페이지로 자연스럽게 연결하는 게이트웨이 카드.
@@ -47,7 +70,7 @@ export default function PlaceScenicGateway({
 
   const regionalCards = useMemo(() => {
     if (!location || scenicInfo?.type !== 'hub') return null;
-    return listRegionalScenicPlaceCardsForLocation(location);
+    return listRegionalScenicPlaceCardsIfEnabled(location);
   }, [location, scenicInfo?.type]);
 
   const handleHubListClick = useCallback(() => {
@@ -113,29 +136,17 @@ export default function PlaceScenicGateway({
             <span className="truncate">{hubTitle}</span>
           </h4>
 
-          <ul className="grid grid-cols-2 gap-2" aria-label={hubTitle}>
+          <ul
+            className="grid grid-cols-2 gap-2 lg:grid-cols-3"
+            aria-label={hubTitle}
+          >
             {regionalCards.spots.map((spot) => (
               <li key={spot.id || spot.placeSlug}>
                 <Link
                   to={spot.href}
                   className="group flex gap-2 rounded-xl border border-white/10 bg-black/30 p-2 hover:border-amber-400/35 hover:bg-amber-500/10 transition-colors"
                 >
-                  {spot.imageUrl ? (
-                    <img
-                      src={resolveListImageUrl(spot.imageUrl, { role: 'list' })}
-                      alt=""
-                      className="h-14 w-14 shrink-0 rounded-lg object-cover bg-stone-800"
-                      loading="lazy"
-                      decoding="async"
-                    />
-                  ) : (
-                    <div
-                      className="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg bg-amber-500/15 text-amber-200/80"
-                      aria-hidden
-                    >
-                      <MapPin size={18} />
-                    </div>
-                  )}
+                  <ScenicSpotThumb imageUrl={spot.imageUrl} />
                   <span className="min-w-0 flex-1 self-center text-[12px] font-semibold leading-snug text-gray-100 line-clamp-3 group-hover:text-amber-50 break-keep">
                     {spot.name}
                   </span>

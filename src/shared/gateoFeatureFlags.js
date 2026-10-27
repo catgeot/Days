@@ -16,6 +16,7 @@ export const GATEO_ENV_FLAG_NAMES = {
   FESTIVAL_ROAD: 'VITE_GATEO_FESTIVAL_ROAD',
   NEARBY_CARDS: 'VITE_GATEO_NEARBY_CARDS',
   KOGL_REELS: 'VITE_GATEO_KOGL_REELS',
+  SCENIC_PLACE_LINKS: 'VITE_GATEO_SCENIC_PLACE_LINKS',
 };
 
 /** @param {string} name */
@@ -85,4 +86,9 @@ export function isGateoNearbyCardsEnabled() {
 /** Globe home KOGL reels section. Default off. */
 export function isGateoKoglReelsEnabled() {
   return readGateoEnvFlag(GATEO_ENV_FLAG_NAMES.KOGL_REELS);
+}
+
+/** Scenic modal place-card CTA, hub regional grid, SSOT scenic gallery fallback. Default off. */
+export function isGateoScenicPlaceLinksEnabled() {
+  return readGateoEnvFlag(GATEO_ENV_FLAG_NAMES.SCENIC_PLACE_LINKS);
 }
