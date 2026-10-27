@@ -1,4 +1,8 @@
-import { resolveScenicSpotForPlace, isDomesticKoreaLocation } from '../src/pages/Home/lib/placeScenicGateway.js';
+import {
+  resolveScenicSpotForPlace,
+  isDomesticKoreaLocation,
+  resolveKoreaScenicGalleryUrlsForPlace,
+} from '../src/pages/Home/lib/placeScenicGateway.js';
 import { isHiddenKoreaScenicSpotId } from '../src/pages/Home/lib/koreaScenicSpotVisibility.js';
 
 let passed = 0;
@@ -150,6 +154,18 @@ function assert(cond, msg) {
     country: '대한민국',
   });
   assert(hiddenPlace === null, 'hidden scenic does not resolve in gateway');
+}
+
+{
+  const seonjaeGallery = resolveKoreaScenicGalleryUrlsForPlace({
+    slug: 'odaesan-seonjae-trail',
+    country: '대한민국',
+  });
+  assert(seonjaeGallery.length >= 1, 'odaesan-seonjae-trail scenic gallery urls');
+  assert(
+    seonjaeGallery[0].includes('visitkorea'),
+    'odaesan scenic gallery uses Tour SSOT image',
+  );
 }
 
 console.log(`Smoke test completed: ${passed} passed, ${failed} failed.`);

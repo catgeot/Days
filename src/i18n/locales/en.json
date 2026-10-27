@@ -974,7 +974,9 @@
       "actionSpot": "View Story & Details",
       "titleSuffix": "Overview & Story",
       "tagStory": "Overview & Photos",
-      "tagSurroundings": "Nearby Stays & Food"
+      "tagSurroundings": "Nearby Stays & Food",
+      "viewAll": "View all",
+      "hubSectionTitle": "Scenic spots in {{hub}}"
     },
     "planner": {
       "title": "Smart travel toolkit",
@@ -1961,6 +1963,7 @@
         "photosCount": "{{count}} photos",
         "photoExpandAria": "Expand photo {{index}}",
         "readMore": "Explore more",
+        "viewPlaceCard": "View place card",
         "askMooni": "Ask MOONi",
         "youtubeVideos": "YouTube videos",
         "nearFood": "Nearby dining",

@@ -1,8 +1,69 @@
-import React, { useMemo, useCallback } from 'react';
+import React, { useMemo, useCallback, useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Landmark, ChevronRight, Sparkles, Compass } from 'lucide-react';
+import { Landmark, ChevronRight, Sparkles, Compass, MapPin } from 'lucide-react';
 import { resolveScenicSpotForPlace } from '../../../pages/Home/lib/placeScenicGateway';
+import { listRegionalScenicPlaceCardsIfEnabled } from '../../../pages/Home/lib/placeScenicPlaceLinksRollout';
+import { resolveListImageUrl } from '../../../utils/listImageUrl';
+
+const SCENIC_THUMB_LOAD_TIMEOUT_MS = 8000;
+
+function ScenicSpotThumb({ imageUrl }) {
+  const [broken, setBroken] = useState(false);
+  const [loaded, setLoaded] = useState(false);
+  const resolvedSrc = imageUrl ? resolveListImageUrl(imageUrl, { role: 'list' }) : '';
+  const showFallback = !resolvedSrc || broken;
+  const showLoading = Boolean(resolvedSrc) && !broken && !loaded;
+
+  useEffect(() => {
+    if (!resolvedSrc || broken || loaded) return undefined;
+    const timer = setTimeout(() => setBroken(true), SCENIC_THUMB_LOAD_TIMEOUT_MS);
+    return () => clearTimeout(timer);
+  }, [resolvedSrc, broken, loaded]);
+
+  const placeholder = (
+    <div
+      className="absolute inset-0 flex items-center justify-center rounded-lg bg-amber-500/25 text-amber-100"
+      aria-hidden
+    >
+      <MapPin size={18} />
+    </div>
+  );
+
+  if (showFallback) {
+    return (
+      <div
+        className="relative aspect-[4/3] w-full overflow-hidden rounded-lg bg-amber-500/15 ring-1 ring-amber-400/40"
+        data-scenic-thumb-state="fallback"
+      >
+        {placeholder}
+      </div>
+    );
+  }
+
+  return (
+    <div
+      className="relative aspect-[4/3] w-full overflow-hidden rounded-lg bg-amber-500/10"
+      data-scenic-thumb-state={showLoading ? 'loading' : 'ok'}
+    >
+      {showLoading ? placeholder : null}
+      <img
+        src={resolvedSrc}
+        alt=""
+        className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-200 ${
+          loaded ? 'opacity-100' : 'opacity-0'
+        }`}
+        loading="eager"
+        decoding="async"
+        onLoad={() => setLoaded(true)}
+        onError={() => {
+          setBroken(true);
+          setLoaded(false);
+        }}
+      />
+    </div>
+  );
+}
 
 /**
  * 장소카드 갤러리(기본 홈)에서 한국 테마 명승/명소 본문 상세 페이지로 자연스럽게 연결하는 게이트웨이 카드.
@@ -43,7 +104,12 @@ export default function PlaceScenicGateway({
     return resolveScenicSpotForPlace(location, { returnTo: returnPath });
   }, [location, returnPath]);
 
-  const handleClick = useCallback(() => {
+  const regionalCards = useMemo(() => {
+    if (!location || scenicInfo?.type !== 'hub') return null;
+    return listRegionalScenicPlaceCardsIfEnabled(location);
+  }, [location, scenicInfo?.type]);
+
+  const handleHubListClick = useCallback(() => {
     if (!returnPath) return;
     try {
       sessionStorage.setItem('gateo:scenic-gateway-return-to', returnPath);
@@ -51,6 +117,10 @@ export default function PlaceScenicGateway({
       /* private mode */
     }
   }, [returnPath]);
+
+  const handleClick = useCallback(() => {
+    handleHubListClick();
+  }, [handleHubListClick]);
 
   if (!scenicInfo) return null;
 
@@ -64,13 +134,66 @@ export default function PlaceScenicGateway({
     scenicInfo.type === 'heritage'
       ? t('place.scenicGateway.badgeHeritage', '국가지정 명승')
       : scenicInfo.type === 'hub'
-      ? t('place.scenicGateway.badgeHub', '지역 명소 컬렉션')
-      : t('place.scenicGateway.badgeTheme', '한국의 명승 · 테마 명소');
+        ? t('place.scenicGateway.badgeHub', '지역 명소 컬렉션')
+        : t('place.scenicGateway.badgeTheme', '한국의 명승 · 테마 명소');
 
   const actionText =
     scenicInfo.type === 'hub'
       ? t('place.scenicGateway.actionHub', '명소 목록 보기')
       : t('place.scenicGateway.actionSpot', '명소 본문 보기');
+
+  if (scenicInfo.type === 'hub' && regionalCards?.spots?.length) {
+    const hubTitle = t('place.scenicGateway.hubSectionTitle', {
+      hub: regionalCards.hubName,
+      defaultValue: `${regionalCards.hubName} 지역 명소`,
+    });
+
+    return (
+      <div className={`animate-fade-in ${className}`.trim()}>
+        <div className={shellClass}>
+          <div className="flex items-center justify-between gap-2 mb-3">
+            <div className="inline-flex items-center gap-1.5 rounded-full border border-amber-400/30 bg-amber-400/10 px-2.5 py-0.5 text-[11px] font-semibold text-amber-300">
+              <Landmark size={12} className="shrink-0 text-amber-300" aria-hidden />
+              <span>{badgeText}</span>
+            </div>
+            <Link
+              to={regionalCards.viewAllHref}
+              state={returnPath ? { returnTo: returnPath } : undefined}
+              onClick={handleHubListClick}
+              className="inline-flex items-center gap-1 text-[12px] font-semibold text-amber-200/90 hover:text-amber-100"
+            >
+              {t('place.scenicGateway.viewAll', '전체 보기')}
+              <ChevronRight size={14} className="shrink-0" aria-hidden />
+            </Link>
+          </div>
+
+          <h4 className="mb-2.5 flex items-center gap-1.5 text-[14px] font-bold text-white">
+            <Sparkles size={13} className="shrink-0 text-amber-400/90" aria-hidden />
+            <span className="truncate">{hubTitle}</span>
+          </h4>
+
+          <ul className="grid grid-cols-2 gap-2" aria-label={hubTitle}>
+            {regionalCards.spots.map((spot) => (
+              <li key={spot.id || spot.placeSlug}>
+                <Link
+                  to={spot.href}
+                  className="group flex flex-col gap-1.5 rounded-xl border border-white/10 bg-black/30 p-2 hover:border-amber-400/35 hover:bg-amber-500/10 transition-colors"
+                >
+                  <ScenicSpotThumb
+                    key={spot.imageUrl || spot.id || spot.placeSlug}
+                    imageUrl={spot.imageUrl}
+                  />
+                  <span className="text-[12px] font-semibold leading-snug text-gray-100 group-hover:text-amber-50 break-keep text-center">
+                    {spot.name}
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={`animate-fade-in ${className}`.trim()}>
@@ -81,7 +204,6 @@ export default function PlaceScenicGateway({
         className={`group block w-full text-left ${shellClass}`}
         aria-label={`${scenicInfo.name} ${actionText}`}
       >
-        {/* 상단 뱃지 및 액션 안내 */}
         <div className="flex items-center justify-between gap-2 mb-2">
           <div className="inline-flex items-center gap-1.5 rounded-full border border-amber-400/30 bg-amber-400/10 px-2.5 py-0.5 text-[11px] font-semibold text-amber-300">
             <Landmark size={12} className="shrink-0 text-amber-300" aria-hidden />
@@ -94,7 +216,6 @@ export default function PlaceScenicGateway({
           </div>
         </div>
 
-        {/* 메인 명소명 & 한 줄 소개 */}
         <div className="space-y-1">
           <h4 className="flex items-center gap-1.5 text-[14px] font-bold text-white group-hover:text-amber-100 transition-colors">
             <Sparkles size={13} className="shrink-0 text-amber-400/90" aria-hidden />
@@ -110,7 +231,6 @@ export default function PlaceScenicGateway({
           )}
         </div>
 
-        {/* 하단 안내 태그들 */}
         <div className="mt-2.5 flex flex-wrap items-center gap-1.5 pt-2 border-t border-white/5">
           <span className="inline-flex items-center gap-1 rounded bg-white/5 px-2 py-0.5 text-[10px] font-medium text-gray-300/80">
             <Compass size={10} className="text-amber-300/70" aria-hidden />

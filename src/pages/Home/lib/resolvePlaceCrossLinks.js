@@ -156,6 +156,87 @@ function scenicSpotsForSingleHub(hubId) {
   return ordered;
 }
 
+export function scenicSpotHasDisplayPhoto(spot) {
+  if (!spot || typeof spot !== 'object') return false;
+  if (String(spot.imageUrl || '').trim()) return true;
+  const gallery = spot.galleryUrls;
+  return Array.isArray(gallery) && gallery.some((url) => String(url || '').trim());
+}
+
+/** @param {Array<{ spot: object, spotHubId: string }>} rows */
+export function sortScenicSpotRowsPreferPhotos(rows) {
+  return rows.slice().sort((a, b) => {
+    const pa = scenicSpotHasDisplayPhoto(a.spot) ? 1 : 0;
+    const pb = scenicSpotHasDisplayPhoto(b.spot) ? 1 : 0;
+    if (pb !== pa) return pb - pa;
+    return (a.spot?.order ?? 0) - (b.spot?.order ?? 0);
+  });
+}
+
+function scenicSpotPlaceCardHref(spot) {
+  const placeSlug = String(spot?.placeSlug || '').trim().toLowerCase();
+  if (!placeSlug) return null;
+  return `/place/${placeSlug}`;
+}
+
+function scenicSpotCardThumb(spot) {
+  const imageUrl = String(spot?.imageUrl || '').trim();
+  if (imageUrl) return imageUrl;
+  const gallery = Array.isArray(spot?.galleryUrls) ? spot.galleryUrls : [];
+  for (const url of gallery) {
+    const trimmed = String(url || '').trim();
+    if (trimmed) return trimmed;
+  }
+  return null;
+}
+
+/**
+ * Up to 6 regional scenic spots as place-card links (photos first). Not gated on PLACE_CROSSLINK.
+ * @param {object | null | undefined} location
+ * @param {{ cap?: number }} [options]
+ */
+export function listRegionalScenicPlaceCardsForLocation(location, options = {}) {
+  if (!location || typeof location !== 'object') return null;
+  if (!isDomesticKorea(location)) return null;
+  const hubId = resolveHubIdForPlace(location);
+  if (!hubId) return null;
+
+  const cap = Math.max(0, Number(options.cap) || SCENIC_COLLECTION_SPOT_CAP);
+  const hubIds = crosslinkHubIdsForPlaceHub(hubId);
+  const lists = hubIds.map((hid) =>
+    sortScenicSpotRowsPreferPhotos(scenicSpotsForSingleHub(hid)),
+  );
+  const totalSpots = lists.reduce((n, list) => n + list.length, 0);
+  if (!totalSpots) return null;
+
+  const rows =
+    hubIds.length > 1
+      ? interleaveScenicSpotRows(lists, cap)
+      : lists[0].slice(0, cap);
+
+  const hub = resolveCityAttractionHub(hubId);
+  const spots = [];
+  for (const row of rows) {
+    const href = scenicSpotPlaceCardHref(row.spot);
+    if (!href) continue;
+    spots.push({
+      id: String(row.spot.id || '').trim(),
+      name: String(row.spot.name || row.spot.attractionName || '').trim(),
+      placeSlug: String(row.spot.placeSlug || '').trim().toLowerCase(),
+      imageUrl: scenicSpotCardThumb(row.spot),
+      href,
+    });
+  }
+  if (!spots.length) return null;
+
+  return {
+    hubId,
+    hubName: hub?.name || hubId,
+    viewAllHref: scenicHomePathForHubId(hubId),
+    spots,
+  };
+}
+
 /**
  * Round-robin across hub spot lists (e.g. 3 jeju + 3 seogwipo within cap).
  * @param {Array<Array<{ spot: object, spotHubId: string }>>} hubSpotLists

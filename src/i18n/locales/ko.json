@@ -744,7 +744,9 @@
       "actionSpot": "명소 본문 보기",
       "titleSuffix": "상세 해설 & 스토리",
       "tagStory": "개요 & 사진",
-      "tagSurroundings": "주변 맛집·숙소"
+      "tagSurroundings": "주변 맛집·숙소",
+      "viewAll": "전체 보기",
+      "hubSectionTitle": "{{hub}} 지역 명소"
     },
     "planner": {
       "title": "스마트 트래블 툴킷",
@@ -1724,6 +1726,7 @@
         "photosCount": "사진 {{count}}장",
         "photoExpandAria": "사진 {{index}} 확대보기",
         "readMore": "더 알아보기",
+        "viewPlaceCard": "장소 카드 보기",
         "askMooni": "무니에게 묻기",
         "youtubeVideos": "유튜브 영상",
         "nearFood": "주변 맛집",
