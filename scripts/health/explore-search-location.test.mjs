@@ -5,13 +5,28 @@ import { attractionToSuggestion } from '../../src/pages/Home/lib/cityAttractionH
 import {
   resolveHubParentCityForPoiName,
   resolveCityAttractionHub,
+  hubParentCityFromExactAttractionMatches,
 } from '../../src/pages/Home/lib/cityAttractionHubs.js';
 import { buildExploreSearchLocationLine } from '../../src/components/PlaceCard/common/locationDisplay.js';
 import { visitedRowToSearchSpot } from '../../src/pages/Home/lib/visitedPlaceSearch.js';
 
-test('resolveHubParentCityForPoiName — 오대산 prefix → 평창', () => {
-  assert.equal(resolveHubParentCityForPoiName('오대산'), '평창');
+test('resolveHubParentCityForPoiName — exact 명칭만 (prefix 스냅 없음)', () => {
+  assert.equal(resolveHubParentCityForPoiName('오대산'), '');
   assert.equal(resolveHubParentCityForPoiName('오대산 선재길'), '평창');
+});
+
+test('hubParentCityFromExactAttractionMatches — 동명이인은 좌표로 허브 선택', () => {
+  const hubNear = { hubId: 'near', name: '가까운시', lat: 37, lng: 128 };
+  const hubFar = { hubId: 'far', name: '먼시', lat: 33, lng: 126 };
+  const matches = [
+    { hub: hubNear, attraction: { name: '중앙시장', lat: 37.01, lng: 128.01 } },
+    { hub: hubFar, attraction: { name: '중앙시장', lat: 33.01, lng: 126.01 } },
+  ];
+  assert.equal(
+    hubParentCityFromExactAttractionMatches(matches, { lat: 37.05, lng: 128.05 }),
+    '가까운시',
+  );
+  assert.equal(hubParentCityFromExactAttractionMatches(matches, {}), '');
 });
 
 test('visited place_id seoul + 오대산 선재길 name uses 평창 parentCity', () => {

@@ -1,20 +1,29 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 /**
  * Drops URLs that fail to load in the hero/lightbox carousel (blank slot prevention).
+ * Failed URLs stay dropped when Tour detail expands the URL list (same galleryKey).
  * @param {string[]} sourceUrls
+ * @param {string} [galleryKey] — resets dropped set when this changes (e.g. spot id)
  */
-export function usePrunedImageGallery(sourceUrls) {
+export function usePrunedImageGallery(sourceUrls, galleryKey = '') {
   const seed = useMemo(
-    () => (Array.isArray(sourceUrls) ? sourceUrls.map((u) => String(u || '').trim()).filter(Boolean) : []),
+    () =>
+      Array.isArray(sourceUrls)
+        ? sourceUrls.map((u) => String(u || '').trim()).filter(Boolean)
+        : [],
     [sourceUrls],
   );
-  const seedKey = seed.join('\n');
+  const scopeKey = String(galleryKey || '');
+  const scopeRef = useRef(scopeKey);
   const [dropped, setDropped] = useState(() => new Set());
 
   useEffect(() => {
-    setDropped(new Set());
-  }, [seedKey]);
+    if (scopeRef.current !== scopeKey) {
+      scopeRef.current = scopeKey;
+      setDropped(new Set());
+    }
+  }, [scopeKey]);
 
   const markBroken = useCallback((url) => {
     const u = String(url || '').trim();

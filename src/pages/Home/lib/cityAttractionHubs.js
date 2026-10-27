@@ -141,27 +141,60 @@ export function resolveHubAttraction(query) {
   return hit;
 }
 
-/** POI 표시명 → 허브 시군명 (방문 place_id 오탐·prefix 검색용). */
-export function resolveHubParentCityForPoiName(query) {
+function haversineKm(lat1, lng1, lat2, lng2) {
+  const toRad = (d) => (d * Math.PI) / 180;
+  const dLat = toRad(lat2 - lat1);
+  const dLng = toRad(lng2 - lng1);
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
+  return 6371 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+/**
+ * @param {{ hub: object, attraction: object }[]} matches
+ * @param {{ lat?: number, lng?: number }} [opts]
+ */
+export function hubParentCityFromExactAttractionMatches(matches, opts = {}) {
+  const list = Array.isArray(matches) ? matches.filter(Boolean) : [];
+  if (!list.length) return '';
+  if (list.length === 1) return list[0].hub?.name || '';
+  const lat = Number(opts.lat);
+  const lng = Number(opts.lng);
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) return '';
+  let bestHub = null;
+  let bestKm = Infinity;
+  for (const { hub, attraction } of list) {
+    const alat = Number(attraction?.lat ?? hub?.lat);
+    const alng = Number(attraction?.lng ?? hub?.lng);
+    if (!Number.isFinite(alat) || !Number.isFinite(alng)) continue;
+    const km = haversineKm(lat, lng, alat, alng);
+    if (km < bestKm) {
+      bestKm = km;
+      bestHub = hub;
+    }
+  }
+  return bestHub?.name || '';
+}
+
+/** POI 표시명 → 허브 시군명 (방문 place_id 오탐). exact 명칭만 — prefix 스냅 금지. */
+export function resolveHubParentCityForPoiName(query, opts = {}) {
   const exact = resolveHubAttraction(query);
   if (exact?.hub?.name) return exact.hub.name;
   const key = normalizeKey(query);
   if (!key) return '';
+  const matches = [];
   for (const hub of HUBS) {
     for (const attraction of hub.attractions || []) {
       if (isHiddenHubScenicAttraction(hub.hubId, attraction.name)) continue;
       const names = [attraction.name, attraction.name_en, ...(attraction.aliases || [])].filter(
         Boolean,
       );
-      const hit = names.some((n) => {
-        const nk = normalizeKey(n);
-        if (!nk) return false;
-        return nk === key || nk.startsWith(key) || (key.length >= 2 && key.startsWith(nk));
-      });
-      if (hit) return hub.name;
+      const hit = names.some((n) => normalizeKey(n) === key);
+      if (hit) matches.push({ hub, attraction });
     }
   }
-  return '';
+  return hubParentCityFromExactAttractionMatches(matches, opts);
 }
 
 /**

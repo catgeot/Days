@@ -1061,7 +1061,7 @@ export default function ThemeSpotDetailModal({
   }, [detail, spot?.imageUrl, spot?.firstImage, spot?.galleryUrls]);
 
   const { visibleUrls: galleryUrls, markBroken: markGalleryImageBroken } =
-    usePrunedImageGallery(imageUrls);
+    usePrunedImageGallery(imageUrls, spot?.id);
 
   const {
     transformStyle: lightboxTransformStyle,
