@@ -145,9 +145,11 @@ export default function FestivalGridPhotoCard({
                 className="absolute inset-0 z-[1] h-full w-full object-contain"
                 pendingShimmer={!thumbDecoded}
                 fallback={
-                  <span className="absolute inset-0" data-festival-grid-thumb-fallback="">
-                    <FestivalListThumbFallback size="lg" />
-                  </span>
+                  thumbExhausted ? (
+                    <span className="absolute inset-0" data-festival-grid-thumb-fallback="">
+                      <FestivalListThumbFallback size="lg" />
+                    </span>
+                  ) : null
                 }
                 onLoaded={() => setThumbDecoded(true)}
                 onFailed={() => {

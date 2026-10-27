@@ -10,5 +10,6 @@ export const FESTIVAL_HUB_GRID_MOBILE_SCROLL_PAD_CLASS =
   'festival-hub-grid-list-scroll-pad';
 
 /** Mobile-only: center 「위로」 below grid so right-column meta stays readable. */
+/** Center with inset+mx-auto so translate-y show/hide does not cancel -translate-x-1/2. */
 export const FESTIVAL_HUB_GRID_SCROLL_TOP_BOTTOM_CLASS =
-  'bottom-[max(3rem,calc(env(safe-area-inset-bottom)+2.35rem))] left-1/2 right-auto -translate-x-1/2';
+  'bottom-[max(3rem,calc(env(safe-area-inset-bottom)+2.35rem))] left-0 right-0 mx-auto w-max';

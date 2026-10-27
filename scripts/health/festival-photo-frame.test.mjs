@@ -11,6 +11,7 @@ import {
   FestivalPhotoFrame,
   festivalPhotoWrapClassName,
   isFestivalPhotoDecoded,
+  shouldSyncMarkFestivalPhotoBroken,
 } from '../../src/pages/Korea/festivalPhotoFrame.js';
 import { FestivalHeroPhoto } from '../../src/pages/Korea/festivalHeroPhoto.js';
 import {
@@ -170,6 +171,7 @@ test('cached zero-width festival photo swaps to fallback at mount', async () => 
     src: 'https://example.test/zero.jpg',
     alt: '',
     className: 'h-14 w-14',
+    loading: 'eager',
     fallback: React.createElement('div', { 'data-festival-photo-fallback': '' }),
   });
 
@@ -226,6 +228,55 @@ test('late load after timeout restores the photo', async () => {
   } finally {
     globalThis.setTimeout = originalSetTimeout;
   }
+});
+
+test('shouldSyncMarkFestivalPhotoBroken skips lazy complete+0 until error or timeout', () => {
+  const lazyZero = { complete: true, naturalWidth: 0 };
+  assert.equal(shouldSyncMarkFestivalPhotoBroken(lazyZero, { loading: 'lazy' }), false);
+  assert.equal(shouldSyncMarkFestivalPhotoBroken(lazyZero, { loading: 'eager' }), true);
+  assert.equal(
+    shouldSyncMarkFestivalPhotoBroken({ complete: false, naturalWidth: 0 }, { loading: 'lazy' }),
+    false,
+  );
+});
+
+test('lazy load event with zero width does not mark broken before timeout', async () => {
+  await mount({
+    src: 'https://example.test/lazy-load-zero.jpg',
+    alt: '',
+    className: 'h-full w-full object-cover',
+    loading: 'lazy',
+    pendingShimmer: true,
+    fallback: React.createElement('div', { 'data-festival-photo-fallback': '' }),
+  });
+  const img = container.querySelector('img[data-festival-photo]');
+  Object.defineProperty(img, 'complete', { value: true, configurable: true });
+  Object.defineProperty(img, 'naturalWidth', { value: 0, configurable: true });
+  await act(async () => {
+    img.dispatchEvent(new window.Event('load'));
+  });
+  assert.equal(container.querySelector('[data-festival-photo-fallback-slot]'), null);
+  assert.ok(container.querySelector('[data-festival-photo-pending]'));
+});
+
+test('lazy pending image with complete+0 does not show pin fallback before timeout', async () => {
+  await mount({
+    src: 'https://example.test/lazy-pending.jpg',
+    alt: '',
+    className: 'h-full w-full object-cover',
+    loading: 'lazy',
+    pendingShimmer: true,
+    fallback: React.createElement('div', { 'data-festival-photo-fallback': '' }),
+  });
+  const img = container.querySelector('img[data-festival-photo]');
+  assert.ok(img);
+  Object.defineProperty(img, 'complete', { value: true, configurable: true });
+  Object.defineProperty(img, 'naturalWidth', { value: 0, configurable: true });
+  await act(async () => {
+    await new Promise((r) => setTimeout(r, 20));
+  });
+  assert.ok(container.querySelector('[data-festival-photo-pending]'));
+  assert.equal(container.querySelector('[data-festival-photo-fallback-slot]'), null);
 });
 
 test('pending shimmer covers the thumb until decode, then the timeout fallback replaces it', async () => {

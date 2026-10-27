@@ -64,3 +64,30 @@ test('Korea hub wires eager thumb helper and list epoch', () => {
   assert.match(indexJs, /thumbListEpoch=\{listFilterScrollKey\}/);
   assert.match(indexJs, /FESTIVAL_HUB_GRID_SCROLL_TOP_BOTTOM_CLASS/);
 });
+
+test('grid photo card shows pin fallback only after thumb exhausted', () => {
+  const card = readFileSync(
+    join(root, 'src/pages/Korea/components/FestivalGridPhotoCard.jsx'),
+    'utf8',
+  );
+  assert.match(card, /thumbExhausted \?/);
+  assert.match(card, /data-festival-grid-thumb-fallback/);
+  assert.match(card, /pendingShimmer=\{!thumbDecoded\}/);
+});
+
+test('grid scroll-top button centers without translate-x (translate-y safe)', () => {
+  const layout = readFileSync(
+    join(root, 'src/pages/Korea/festivalHubGridLayout.js'),
+    'utf8',
+  );
+  assert.match(layout, /left-0 right-0 mx-auto w-max/);
+  assert.doesNotMatch(layout, /-translate-x-1\/2/);
+});
+
+test('festival photo frame defers lazy complete+0 broken sync', () => {
+  const frame = readFileSync(
+    join(root, 'src/pages/Korea/festivalPhotoFrame.js'),
+    'utf8',
+  );
+  assert.match(frame, /shouldSyncMarkFestivalPhotoBroken/);
+});
