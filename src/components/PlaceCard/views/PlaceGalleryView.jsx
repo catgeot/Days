@@ -18,9 +18,11 @@ import {
   armedGalleryBackScrollToRestore,
   peekArmedGalleryBackScroll,
   peekGalleryScrollForPlaceBack,
+  placeGalleryBackScrollKey,
   placeGalleryScrollToRestore,
   rememberPlaceGalleryScroll,
   scheduleOneGalleryScrollRealignAfterImages,
+  snapshotGalleryScrollForPlaceBack,
   snapshotScrollBeforeOverlay,
 } from '../common/placeScrollMemory';
 import { usePlaceMediaScrollToTop } from '../common/usePlaceMediaScrollToTop';
@@ -383,6 +385,10 @@ const PlaceGalleryView = React.memo(({
   const popBackRealignScheduledRef = useRef(false);
   const navigationType = useNavigationType();
   const routerLocation = useLocation();
+  const galleryRoutePathname =
+    navigationType === 'POP' && typeof window !== 'undefined'
+      ? window.location.pathname
+      : routerLocation.pathname;
   const scrollGalleryToTop = usePlaceMediaScrollToTop('GALLERY', scrollContainerRef, !selectedImg);
   const currentIndex = useMemo(() => {
     if (!selectedImg || images.length === 0) return -1;
@@ -417,7 +423,7 @@ const PlaceGalleryView = React.memo(({
   const [paintedCount, setPaintedCount] = useState(0);
   const [galleryVisuallyReady, setGalleryVisuallyReady] = useState(false);
   const galleryPlaceKey = useMemo(
-    () => location?.slug || location?.id || location?.name || '',
+    () => placeGalleryBackScrollKey(location),
     [location?.slug, location?.id, location?.name],
   );
   const galleryOverlayKey = useMemo(
@@ -445,6 +451,8 @@ const PlaceGalleryView = React.memo(({
   }, [galleryPlaceKey]);
   const galleryPlaceKeyRef = useRef(galleryPlaceKey);
   galleryPlaceKeyRef.current = galleryPlaceKey;
+  const wasGalleryPanelActiveRef = useRef(isGalleryPanelActive);
+  const prevGalleryRoutePathRef = useRef('');
   const paintTarget = Math.min(2, images?.length || 0);
   const hasImages = images.length > 0;
   /** 초기 로드만 전체 스켈레톤 — 더보기(isRefreshing) 중에는 기존 그리드 유지 */
@@ -470,6 +478,21 @@ const PlaceGalleryView = React.memo(({
     setPaintedCount(0);
     setGalleryVisuallyReady(false);
   }, [galleryPlaceKey]);
+
+  useEffect(() => {
+    return () => {
+      const key = galleryPlaceKeyRef.current;
+      if (key) snapshotGalleryScrollForPlaceBack(key);
+    };
+  }, []);
+
+  useLayoutEffect(() => {
+    const wasActive = wasGalleryPanelActiveRef.current;
+    if (wasActive && !isGalleryPanelActive) {
+      snapshotGalleryScrollForPlaceBack(galleryPlaceKey);
+    }
+    wasGalleryPanelActiveRef.current = isGalleryPanelActive;
+  }, [isGalleryPanelActive, galleryPlaceKey]);
 
   /** 모바일 그리드 출처 같은 탭 복귀 — 라이트박스 없이 갤러리 스크롤만 복원 */
   useLayoutEffect(() => {
@@ -541,7 +564,7 @@ const PlaceGalleryView = React.memo(({
   useLayoutEffect(() => {
     if (navigationType !== 'POP') return undefined;
     if (!isGalleryPanelActive || !galleryPlaceKey) return undefined;
-    if (/\/reviews\/?$/.test(routerLocation.pathname)) return undefined;
+    if (/\/reviews\/?$/.test(galleryRoutePathname)) return undefined;
     const armed = armedGalleryBackScrollToRestore(galleryPlaceKey, navigationType);
     if (armed <= 0) return undefined;
     applyGalleryScrollRestore(armed, { clearBack: false });
@@ -550,18 +573,38 @@ const PlaceGalleryView = React.memo(({
     isGalleryPanelActive,
     galleryPlaceKey,
     applyGalleryScrollRestore,
-    routerLocation.pathname,
+    galleryRoutePathname,
   ]);
 
   useLayoutEffect(() => {
     const el = scrollContainerRef.current;
+    const prevPath = prevGalleryRoutePathRef.current;
+    const nextPath = galleryRoutePathname;
+    prevGalleryRoutePathRef.current = nextPath;
+    const enteringReviews =
+      /\/reviews\/?$/.test(nextPath) && !/\/reviews\/?$/.test(prevPath);
+    if (enteringReviews) {
+      snapshotGalleryScrollForPlaceBack(galleryPlaceKey);
+    }
+
+    const onReviewsRoute = /\/reviews\/?$/.test(nextPath);
+    if (onReviewsRoute) {
+      pendingPlaceScrollResetRef.current = false;
+      return undefined;
+    }
+
     const gridPending = readGalleryAttributionReturnState();
     const gridScrollPending =
       gridPending?.context === 'gallery-grid' &&
       gridPending.placeKey === galleryPlaceKey &&
       Number(gridPending.galleryScrollTop) > 0;
 
-    const restore = placeGalleryScrollToRestore(galleryPlaceKey, navigationTypeRef.current);
+    const onGalleryRoute = true;
+    let restore = placeGalleryScrollToRestore(galleryPlaceKey, navigationTypeRef.current);
+    if (restore <= 0 && onGalleryRoute && navigationTypeRef.current === 'POP') {
+      const armedPeek = peekArmedGalleryBackScroll(galleryPlaceKey);
+      if (armedPeek > 0) restore = armedPeek;
+    }
     if (restore > 0) {
       pendingPlaceScrollResetRef.current = false;
       pendingPlaceScrollRestoreRef.current = restore;
@@ -587,8 +630,7 @@ const PlaceGalleryView = React.memo(({
     }
 
     if (
-      navigationType === 'POP' &&
-      !/\/reviews\/?$/.test(routerLocation.pathname) &&
+      !/\/reviews\/?$/.test(galleryRoutePathname) &&
       (peekArmedGalleryBackScroll(galleryPlaceKey) > 0 ||
         pendingPlaceScrollRestoreRef.current > 0 ||
         popBackRealignTargetRef.current > 0)
@@ -612,12 +654,12 @@ const PlaceGalleryView = React.memo(({
       const node = scrollContainerRef.current;
       if (node && node.scrollTop > 0) rememberPlaceGalleryScroll(galleryPlaceKey, node.scrollTop);
     };
-  }, [galleryPlaceKey, navigationType, isGalleryPanelActive, routerLocation.pathname]);
+  }, [galleryPlaceKey, navigationType, isGalleryPanelActive, galleryRoutePathname]);
 
   useLayoutEffect(() => {
     if (navigationType !== 'POP') return undefined;
     if (!isGalleryPanelActive || !galleryPlaceKey) return undefined;
-    if (/\/reviews\/?$/.test(routerLocation.pathname)) return undefined;
+    if (/\/reviews\/?$/.test(galleryRoutePathname)) return undefined;
     const restore = placeGalleryScrollToRestore(galleryPlaceKey, navigationType);
     if (restore <= 0) return undefined;
     applyGalleryScrollRestore(restore, { clearBack: false });
@@ -631,11 +673,11 @@ const PlaceGalleryView = React.memo(({
       window.cancelAnimationFrame(raf);
       window.clearTimeout(timer);
     };
-  }, [navigationType, galleryPlaceKey, isGalleryPanelActive, routerLocation.pathname, applyGalleryScrollRestore]);
+  }, [navigationType, galleryPlaceKey, isGalleryPanelActive, galleryRoutePathname, applyGalleryScrollRestore]);
 
   useLayoutEffect(() => {
     if (!isGalleryPanelActive) return undefined;
-    if (/\/reviews\/?$/.test(routerLocation.pathname)) return undefined;
+    if (/\/reviews\/?$/.test(galleryRoutePathname)) return undefined;
     if (!isGalleryBackRestoreDue(galleryPlaceKey, navigationType)) return undefined;
     const restore = peekGalleryScrollForPlaceBack(galleryPlaceKey);
     if (restore <= 0) return undefined;
@@ -651,7 +693,7 @@ const PlaceGalleryView = React.memo(({
       window.clearTimeout(timer);
     };
   }, [
-    routerLocation.pathname,
+    galleryRoutePathname,
     navigationType,
     galleryPlaceKey,
     isGalleryPanelActive,

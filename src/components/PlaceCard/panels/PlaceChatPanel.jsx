@@ -15,6 +15,7 @@ import { getPlaceTitleLinesForLocale, getLocalizedCountryName, getLocalizedPlace
 import { useLocale } from '../../../i18n/LocaleProvider';
 import { copyToClipboard } from '../common/copyToClipboard';
 import PlaceMobileSecondaryNav from '../common/PlaceMobileSecondaryNav';
+import { placeGalleryBackScrollKey } from '../common/placeScrollMemory.js';
 import { dispatchPlaceScrollToTop } from '../common/placeScrollSurface';
 import { relatedPlacePathSuffix, relatedPlaceTabForMediaMode } from '../common/relatedPlaceTab';
 import { mobileLandscapeChromeHidden } from '../common/mobilePlaceHeaderInset';
@@ -314,6 +315,7 @@ const PlaceChatPanel = React.memo(({
              matchedPackage={matchedPackage}
              onOpenPackage={onOpenPackage}
              placeSlug={getPlaceUrlParam(location)}
+             galleryBackScrollKey={placeGalleryBackScrollKey(location)}
            />
          </div>
       </div>

@@ -41,7 +41,7 @@ import {
   scrollPlaceGallerySectionIntoView,
 } from '../../../utils/placeGallerySectionFocus.js';
 import { buildPlaceReviewsHref } from '../../../utils/placeReviewFocus.js';
-import { snapshotGalleryScrollForPlaceBack } from './placeScrollMemory.js';
+import { placeGalleryBackScrollKey, snapshotGalleryScrollForPlaceBack } from './placeScrollMemory.js';
 import { getPlaceStableKey } from '../../../utils/travelSpotResolve.js';
 import { useVisitStories } from '../hooks/useVisitStories';
 
@@ -682,7 +682,7 @@ export function PlaceVisitStories({ location, className = '' }) {
                 onClick={(event) => {
                   event.stopPropagation();
                   if (!placePath) return;
-                  const galleryKey = location?.slug || location?.id || location?.name || placeKey;
+                  const galleryKey = placeGalleryBackScrollKey(location) || placeKey;
                   snapshotGalleryScrollForPlaceBack(galleryKey);
                   navigate(buildPlaceReviewsHref(placePath, story.id));
                 }}

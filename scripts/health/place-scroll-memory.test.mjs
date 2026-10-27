@@ -14,6 +14,7 @@ import {
   consumeScrollAfterOverlay,
   scheduleOneGalleryScrollRealignAfterImages,
   resetPlaceGalleryScrollMemoryForTests,
+  placeGalleryBackScrollKey,
   snapshotGalleryScrollForPlaceBack,
   snapshotScrollBeforeOverlay,
 } from '../../src/components/PlaceCard/common/placeScrollMemory.js';
@@ -35,6 +36,14 @@ function withGalleryScrollDom(scrollTop) {
   dom.window.document.body.appendChild(el);
   return dom;
 }
+
+test('placeGalleryBackScrollKey prefers search loc id over slug', () => {
+  assert.equal(
+    placeGalleryBackScrollKey({ id: 'search-abc', slug: 'cairo' }),
+    'search-abc',
+  );
+  assert.equal(placeGalleryBackScrollKey({ id: 'cairo', slug: 'cairo' }), 'cairo');
+});
 
 test('back to a place restores its gallery scroll and a fresh open does not', () => {
   const dom = withGalleryScrollDom(416);

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ImageIcon, Play, PenTool, BookOpen, Briefcase, ArrowLeft } from 'lucide-react';
 import { shouldHandlePlaceSpaNavClick } from './placeSpaNavClick.js';
+import { clearPlaceGalleryScrollBack, snapshotGalleryScrollForPlaceBack } from './placeScrollMemory.js';
 
 /**
  * placement="header": 데스크톱 PlaceChatPanel 2행 (리뷰 탭 포함).
@@ -15,10 +16,16 @@ const PlaceMobileSecondaryNav = ({
   onOpenPackage,
   placement = 'scroll',
   placeSlug = '',
+  galleryBackScrollKey = '',
 }) => {
   const { t } = useTranslation();
   const galleryHref = placeSlug ? `/place/${placeSlug}` : '';
   const reviewsHref = placeSlug ? `/place/${placeSlug}/reviews` : '';
+
+  const armGalleryScrollBeforeReviewsNav = () => {
+    const key = String(galleryBackScrollKey || '').trim();
+    if (key) snapshotGalleryScrollForPlaceBack(key);
+  };
 
   if (mediaMode === 'PLANNER') {
     if (placement === 'header') return null;
@@ -65,6 +72,7 @@ const PlaceMobileSecondaryNav = ({
           onClick={(event) => {
             if (!shouldHandlePlaceSpaNavClick(event)) return;
             event.preventDefault();
+            if (placeSlug) clearPlaceGalleryScrollBack(placeSlug);
             setMediaMode('GALLERY');
           }}
         >
@@ -75,6 +83,14 @@ const PlaceMobileSecondaryNav = ({
         <Link
           to={reviewsHref}
           className={reviewsPillClass}
+          onMouseDownCapture={(event) => {
+            if (!shouldHandlePlaceSpaNavClick(event)) return;
+            armGalleryScrollBeforeReviewsNav();
+          }}
+          onClickCapture={(event) => {
+            if (!shouldHandlePlaceSpaNavClick(event)) return;
+            armGalleryScrollBeforeReviewsNav();
+          }}
           onClick={(event) => {
             if (!shouldHandlePlaceSpaNavClick(event)) return;
             event.preventDefault();
@@ -90,6 +106,9 @@ const PlaceMobileSecondaryNav = ({
     ) : (
       <button
         type="button"
+        onMouseDownCapture={() => {
+          if (mediaMode !== 'REVIEWS') armGalleryScrollBeforeReviewsNav();
+        }}
         onClick={() => setMediaMode(mediaMode === 'REVIEWS' ? 'GALLERY' : 'REVIEWS')}
         className={reviewsPillClass}
       >
