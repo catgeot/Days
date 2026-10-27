@@ -231,6 +231,8 @@ export const TRAVEL_SPOT_TOOLKIT_SYNONYMS = {
   chuuk: ['Chuuk', '추크', 'Truk'],
   kosrae: ['Kosrae', '코스라에', 'Utwe', 'Utwe Bay', 'Kosrae (Utwe)'],
   pohnpei: ['Pohnpei', '폰페이', 'Nan Madol', '나난마돌'],
+  tinian: ['티니안', 'Tinian', 'san-jose-tinian', 'San Jose', 'san jose'],
+  'san-jose-tinian': ['티니안', 'tinian', 'Tinian'],
 };
 
 /**

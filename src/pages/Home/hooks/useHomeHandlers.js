@@ -97,7 +97,6 @@ import {
 } from '../lib/visitedPlaceSearch.js';
 import {
   isSiteSearchOpenEnabled,
-  awaitSiteSearchEnterSinglePoi,
   resolveSiteSearchEnterSinglePoi,
   siteSearchFallbackLinkHref,
 } from '../lib/siteSearchOpen.js';
@@ -829,11 +828,6 @@ export function useHomeHandlers({
     if (requireChoice && !skipEnterDirectForQa) {
       const dictChoice = dictHomonymResult();
       if (dictChoice) return dictChoice;
-
-      if (isSiteSearchOpenEnabled()) {
-        const enterDirect = await awaitSiteSearchEnterSinglePoi(query);
-        if (enterDirect) return enterDirect;
-      }
 
       const curated = await buildCuratedEnterDisambiguation(query);
       if (curated) return curated;

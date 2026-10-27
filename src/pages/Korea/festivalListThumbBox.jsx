@@ -29,14 +29,22 @@ export function FestivalDetailPhotoFallback({ size = 'md', className = '' }) {
 /**
  * @param {{ item: Record<string, unknown>, isEnglish?: boolean, className?: string }} props
  */
-export function FestivalListThumbBox({ item, isEnglish = false, className = '' }) {
+export function FestivalListThumbBox({
+  item,
+  isEnglish = false,
+  className = '',
+  fill = false,
+}) {
   const koText = koreanApiTextProps(isEnglish);
   const src = festivalItemThumbSrc(item);
   const canTryImage = Boolean(src) && hasFestivalThumbnail(item);
+  const sizeClass = fill
+    ? 'h-full w-full min-h-0 min-w-0'
+    : 'h-10 w-10 shrink-0';
 
   return (
     <div
-      className={`h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-stone-100 ${className}`.trim()}
+      className={`${sizeClass} overflow-hidden rounded-lg bg-stone-100 ${className}`.trim()}
     >
       {canTryImage ? (
         <FestivalPhotoFrame

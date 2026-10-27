@@ -6,13 +6,14 @@ export const SKETCH_SLOT_KEYWORDS = {
   airport: ['공항', '택시', '도착', '리무진', 'airport', 'taxi', 'limousine'],
   itinerary: ['일째', '첫날', '이튿날', 'D1', 'day 1', 'first day'],
   'money-safety': ['환전', '현금', '치안', '소매치기', 'pickpocket', 'currency exchange'],
+  safety: ['치안', '시위', '소매치기', 'protest', 'safety'],
 };
 
 /** 플래너 ToolkitCard type → 사실 슬롯. 동선은 일자 본문이 생기기 전에는 넣지 않는다. */
 export const PLANNER_FACT_BY_TOOLKIT = {
   visa: 'entry',
   airport_transfer: 'airport',
-  safety: 'money-safety',
+  safety: 'safety',
   accommodation: 'stay-area',
 };
 
@@ -62,7 +63,10 @@ export function assignSketchLocalInfo(sections, card) {
 export function plannerSlotForToolkit(card, toolkitType) {
   const slotId = PLANNER_FACT_BY_TOOLKIT[toolkitType];
   if (!card || !slotId) return null;
-  const slot = (card.slots || []).find((item) => item.id === slotId);
+  const ids = toolkitType === 'safety' ? ['safety', 'money-safety'] : [slotId];
+  const slot = toolkitType === 'safety'
+    ? ids.map((id) => (card.slots || []).find((item) => item.id === id)).find(Boolean)
+    : (card.slots || []).find((item) => ids.includes(item.id));
   if (!slot || slotLooksEmpty(slot)) return null;
   return slot;
 }

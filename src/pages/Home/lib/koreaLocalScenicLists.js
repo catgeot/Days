@@ -939,8 +939,21 @@ export function groupNearbySpotsWithLocalScenic(spots, opts = {}) {
   });
   const requestedResolved =
     resolveCityAttractionHub(requestedHubId)?.hubId || requestedHubId;
+  const resolvedHub = hubId ? resolveCityAttractionHub(hubId) : null;
+  const festivalNearResolvedHub = (() => {
+    if (!hubId || !listsForHub(hubId).length) return false;
+    if (!Number.isFinite(originLat) || !Number.isFinite(originLng)) return true;
+    const hubLat = Number(resolvedHub?.lat);
+    const hubLng = Number(resolvedHub?.lng);
+    if (!Number.isFinite(hubLat) || !Number.isFinite(hubLng)) {
+      return requestedResolved === hubId;
+    }
+    return haversineKm(originLat, originLng, hubLat, hubLng) <= LOCAL_SCENIC_MEMBER_NEAR_KM;
+  })();
   const includeUnlocated = Boolean(
-    hubId && requestedResolved === hubId && listsForHub(hubId).length,
+    hubId &&
+      listsForHub(hubId).length &&
+      (requestedResolved === hubId || festivalNearResolvedHub),
   );
   const lists = listsForHub(hubId);
   if (!lists.length) return { groups: [], rest: incoming };

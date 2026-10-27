@@ -18,6 +18,7 @@ import {
   buildHubDisambiguationCandidates,
   makeDisambiguationResult,
 } from './cityAttractionHubs';
+import { resolveEnglishPlaceLabel } from '../../../components/PlaceCard/common/locationDisplay.js';
 import { isHiddenHubScenicAttraction } from './koreaScenicSpotVisibility.js';
 import { resolveExploreCityHubExact } from './exploreHubResolve.js';
 import {
@@ -540,7 +541,7 @@ export function locationToChoiceCandidate(loc) {
     kind: loc.kind || (loc.uiPlace ? 'city' : 'spot'),
     badge: loc.badge || (loc.uiPlace ? '장소' : '여행지'),
     name: loc.name,
-    name_en: loc.name_en || loc.name,
+    name_en: resolveEnglishPlaceLabel(loc) || String(loc.name_en || '').trim(),
     country: loc.country || 'Explore',
     country_en: loc.country_en || 'Explore',
     lat,

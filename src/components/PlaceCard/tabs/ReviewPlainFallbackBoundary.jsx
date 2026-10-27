@@ -1,6 +1,7 @@
 import React from 'react';
+import { reviewPlainTextForAccessibility } from '../../../utils/reviewInlineMarkdown.js';
 
-/** Eager boundary so a failed lazy markdown chunk still shows the raw review text. */
+/** Eager boundary so a failed lazy markdown chunk still shows plain review text. */
 export class ReviewPlainFallbackBoundary extends React.Component {
   constructor(props) {
     super(props);
@@ -19,7 +20,8 @@ export class ReviewPlainFallbackBoundary extends React.Component {
 
   render() {
     if (this.state.failed) {
-      return <div className={this.props.className || 'whitespace-pre-wrap'}>{this.props.text}</div>;
+      const plain = reviewPlainTextForAccessibility(this.props.text);
+      return <div className={this.props.className || 'whitespace-pre-wrap'}>{plain}</div>;
     }
     return this.props.children;
   }

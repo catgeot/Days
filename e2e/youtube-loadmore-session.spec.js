@@ -121,6 +121,16 @@ async function closePlaylist(page) {
   await expect(heading).toBeHidden();
 }
 
+/** Place secondary nav: reviews / gallery-back are `<Link>` (PR #544); other tabs stay buttons. */
+async function clickSecondaryNavItem(page, name) {
+  const tab = page
+    .getByRole('link', { name, exact: true })
+    .or(page.getByRole('button', { name, exact: true }))
+    .locator('visible=true')
+    .first();
+  await tab.click();
+}
+
 async function clientNavigate(page, path) {
   await page.evaluate((href) => {
     const url = new URL(href, window.location.origin);
@@ -164,8 +174,8 @@ test.describe('YouTube load-more session', () => {
     expect(await openPlaylist(page)).toBe(15);
     await closePlaylist(page);
 
-    await page.getByRole('button', { name: '리뷰' }).click();
-    await page.getByRole('button', { name: '사진 보기' }).click();
+    await clickSecondaryNavItem(page, '리뷰');
+    await clickSecondaryNavItem(page, '사진 보기');
     await page.getByRole('button', { name: '유튜브 영상' }).click();
     expect(await openPlaylist(page)).toBe(15);
     await closePlaylist(page);

@@ -6,6 +6,13 @@ const siteUrl =
   process.env.PLAYWRIGHT_BASE_URL ||
   'https://www.gateo.kr/';
 
+const nearbyCardsArgv = process.argv.join(' ');
+const nearbyCardsE2e =
+  process.env.NEARBY_CARDS_E2E === '1' || /festival-nearby-cards/.test(nearbyCardsArgv);
+const nearbyCardsFlag = process.env.NEARBY_CARDS_FLAG === '0' ? '0' : '1';
+const nearbyCardsPort = nearbyCardsFlag === '0' ? 5197 : 5196;
+const nearbyCardsLocalBase = `http://127.0.0.1:${nearbyCardsPort}`;
+
 export default defineConfig({
   testDir: './e2e',
   fullyParallel: false,
@@ -15,6 +22,16 @@ export default defineConfig({
   timeout: 120_000,
   expect: { timeout: 45_000 },
   reporter: process.env.CI ? [['line']] : [['list']],
+  ...(nearbyCardsE2e
+    ? {
+        webServer: {
+          command: `BROWSER=none DEV_SSL=0 VITE_GATEO_NEARBY_CARDS=${nearbyCardsFlag} npx vite --host 127.0.0.1 --port ${nearbyCardsPort}`,
+          url: `${nearbyCardsLocalBase}/korea/`,
+          reuseExistingServer: !process.env.CI,
+          timeout: 120_000,
+        },
+      }
+    : {}),
   use: {
     baseURL: siteUrl,
     trace: process.env.CI ? 'off' : 'on-first-retry',
@@ -32,8 +49,10 @@ export default defineConfig({
         /place-local-info\.spec\.js/,
         /place-travelogue-card\.spec\.js/,
         /place-travelogue-card-qa-screenshots\.spec\.js/,
+        /place-visit-story-review-focus\.spec\.js/,
         /korea-festival-date-chip\.spec\.js/,
         /place-lightbox-history\.spec\.js/,
+        /tinian-search-planner-390\.spec\.js/,
       ],
       use: { ...devices['Desktop Chrome'], viewport: { width: 1280, height: 720 } },
     },
@@ -80,12 +99,34 @@ export default defineConfig({
       },
     },
     {
+      name: 'webkit-place-visit-story-review-focus',
+      testMatch: /place-visit-story-review-focus\.spec\.js/,
+      use: {
+        ...devices['iPhone 13'],
+        locale: 'ko-KR',
+        viewport: { width: 390, height: 844 },
+        deviceScaleFactor: 1,
+        ignoreHTTPSErrors: true,
+      },
+    },
+    {
       name: 'webkit-place-local-info',
       testMatch: /place-local-info\.spec\.js/,
       use: {
         ...devices['iPhone 13'],
         locale: 'ko-KR',
         viewport: { width: 390, height: 844 },
+      },
+    },
+    {
+      name: 'webkit-place-local-info-freshness',
+      testMatch: /place-local-info-freshness-screenshots\.spec\.js/,
+      use: {
+        ...devices['iPhone 13'],
+        locale: 'ko-KR',
+        viewport: { width: 390, height: 844 },
+        deviceScaleFactor: 1,
+        ignoreHTTPSErrors: true,
       },
     },
     {
@@ -165,6 +206,7 @@ export default defineConfig({
     {
       name: 'webkit-festival-back-overview',
       testMatch: /korea-festival-back-overview\.spec\.js/,
+      timeout: process.env.CI ? 120_000 : 240_000,
       use: {
         ...devices['iPhone 13'],
         viewport: { width: 390, height: 844 },
@@ -200,6 +242,54 @@ export default defineConfig({
         viewport: { width: 390, height: 844 },
         deviceScaleFactor: 1,
         ignoreHTTPSErrors: true,
+      },
+    },
+    {
+      name: 'webkit-festival-nearby-cards',
+      testMatch: /festival-nearby-cards\.spec\.js/,
+      grepInvert: /@flagOff|@mainBaseline|@desktop1280/,
+      timeout: 180_000,
+      expect: { timeout: 60_000 },
+      use: {
+        ...devices['iPhone 13'],
+        viewport: { width: 390, height: 844 },
+        deviceScaleFactor: 1,
+        ...(nearbyCardsE2e ? { baseURL: nearbyCardsLocalBase } : {}),
+      },
+    },
+    {
+      name: 'webkit-festival-nearby-cards-off',
+      testMatch: /festival-nearby-cards\.spec\.js/,
+      grep: /@flagOff/,
+      timeout: 180_000,
+      use: {
+        ...devices['iPhone 13'],
+        viewport: { width: 390, height: 844 },
+        deviceScaleFactor: 1,
+        ...(nearbyCardsE2e ? { baseURL: nearbyCardsLocalBase } : {}),
+      },
+    },
+    {
+      name: 'chromium-festival-nearby-cards-1280',
+      testMatch: /festival-nearby-cards\.spec\.js/,
+      grep: /@desktop1280/,
+      timeout: 180_000,
+      use: {
+        ...devices['Desktop Chrome'],
+        viewport: { width: 1280, height: 720 },
+        deviceScaleFactor: 1,
+        ...(nearbyCardsE2e ? { baseURL: nearbyCardsLocalBase } : {}),
+      },
+    },
+    {
+      name: 'webkit-festival-nearby-main-baseline',
+      testMatch: /festival-nearby-cards\.spec\.js/,
+      grep: /@mainBaseline/,
+      timeout: 180_000,
+      use: {
+        ...devices['iPhone 13'],
+        viewport: { width: 390, height: 844 },
+        deviceScaleFactor: 1,
       },
     },
   ],

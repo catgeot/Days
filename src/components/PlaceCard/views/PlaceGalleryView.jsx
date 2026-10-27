@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useLayoutEffect, useState, useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
-import { useNavigationType } from 'react-router-dom';
+import { useLocation, useNavigationType } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Maximize2, Minimize2, ChevronLeft, ChevronRight, X, ImageIcon, Download, RefreshCw, Sparkles, ArrowUp, Trash2, EyeOff, Flag } from 'lucide-react';
 import { i18n } from '../../../i18n/config';
@@ -11,7 +11,18 @@ import {
   readGalleryAttributionReturnState,
   clearGalleryAttributionReturnState,
 } from '../common/galleryAttributionNavigation';
-import { placeGalleryScrollToRestore, rememberPlaceGalleryScroll } from '../common/placeScrollMemory';
+import {
+  clearPlaceGalleryScrollBack,
+  consumeScrollAfterOverlay,
+  isGalleryBackRestoreDue,
+  armedGalleryBackScrollToRestore,
+  peekArmedGalleryBackScroll,
+  peekGalleryScrollForPlaceBack,
+  placeGalleryScrollToRestore,
+  rememberPlaceGalleryScroll,
+  scheduleOneGalleryScrollRealignAfterImages,
+  snapshotScrollBeforeOverlay,
+} from '../common/placeScrollMemory';
 import { usePlaceMediaScrollToTop } from '../common/usePlaceMediaScrollToTop';
 import { useLightboxPinchTransform } from '../common/useLightboxPinchTransform';
 import {
@@ -351,7 +362,8 @@ const PlaceGalleryView = React.memo(({
   handleDropBrokenImage,
   loadFailed = false,
   handleRetryLoad,
-  mobileSecondaryNav = null
+  mobileSecondaryNav = null,
+  isGalleryPanelActive = true,
 }) => {
   const { t } = useTranslation();
   const { locale } = useLocale();
@@ -367,7 +379,10 @@ const PlaceGalleryView = React.memo(({
   const [reportLoginPrompt, setReportLoginPrompt] = useState(false);
   const pendingPlaceScrollResetRef = useRef(false);
   const pendingPlaceScrollRestoreRef = useRef(0);
+  const popBackRealignTargetRef = useRef(0);
+  const popBackRealignScheduledRef = useRef(false);
   const navigationType = useNavigationType();
+  const routerLocation = useLocation();
   const scrollGalleryToTop = usePlaceMediaScrollToTop('GALLERY', scrollContainerRef, !selectedImg);
   const currentIndex = useMemo(() => {
     if (!selectedImg || images.length === 0) return -1;
@@ -405,6 +420,29 @@ const PlaceGalleryView = React.memo(({
     () => location?.slug || location?.id || location?.name || '',
     [location?.slug, location?.id, location?.name],
   );
+  const galleryOverlayKey = useMemo(
+    () => (galleryPlaceKey ? `gallery:${galleryPlaceKey}` : ''),
+    [galleryPlaceKey],
+  );
+  const applyGalleryScrollRestore = useCallback((target, { clearBack = false } = {}) => {
+    const top = Number(target);
+    if (!Number.isFinite(top) || top <= 0) return;
+    pendingPlaceScrollResetRef.current = false;
+    pendingPlaceScrollRestoreRef.current = top;
+    popBackRealignTargetRef.current = top;
+    popBackRealignScheduledRef.current = false;
+    const el = scrollContainerRef.current;
+    if (el) {
+      el.scrollTop = top;
+      el.setAttribute('data-gallery-last-scroll', String(top));
+      el.setAttribute('data-gallery-scroll-restored', String(top));
+    }
+    rememberPlaceGalleryScroll(galleryPlaceKey, top);
+    if (clearBack) {
+      const applied = el && Math.abs(el.scrollTop - top) <= 8;
+      if (applied) clearPlaceGalleryScrollBack(galleryPlaceKey);
+    }
+  }, [galleryPlaceKey]);
   const galleryPlaceKeyRef = useRef(galleryPlaceKey);
   galleryPlaceKeyRef.current = galleryPlaceKey;
   const paintTarget = Math.min(2, images?.length || 0);
@@ -482,6 +520,40 @@ const PlaceGalleryView = React.memo(({
   navigationTypeRef.current = navigationType;
 
   useLayoutEffect(() => {
+    if (selectedImg || !galleryOverlayKey) return undefined;
+    const top = consumeScrollAfterOverlay(galleryOverlayKey);
+    if (top <= 0) return undefined;
+    applyGalleryScrollRestore(top);
+    const el = scrollContainerRef.current;
+    if (!el) return undefined;
+    popBackRealignTargetRef.current = top;
+    popBackRealignScheduledRef.current = true;
+    return scheduleOneGalleryScrollRealignAfterImages(el, top, () => {
+      popBackRealignScheduledRef.current = false;
+      const current = scrollContainerRef.current?.scrollTop ?? 0;
+      if (Math.abs(current - top) <= 8) {
+        popBackRealignTargetRef.current = 0;
+        pendingPlaceScrollRestoreRef.current = 0;
+      }
+    });
+  }, [selectedImg, galleryOverlayKey, applyGalleryScrollRestore]);
+
+  useLayoutEffect(() => {
+    if (navigationType !== 'POP') return undefined;
+    if (!isGalleryPanelActive || !galleryPlaceKey) return undefined;
+    if (/\/reviews\/?$/.test(routerLocation.pathname)) return undefined;
+    const armed = armedGalleryBackScrollToRestore(galleryPlaceKey, navigationType);
+    if (armed <= 0) return undefined;
+    applyGalleryScrollRestore(armed, { clearBack: false });
+  }, [
+    navigationType,
+    isGalleryPanelActive,
+    galleryPlaceKey,
+    applyGalleryScrollRestore,
+    routerLocation.pathname,
+  ]);
+
+  useLayoutEffect(() => {
     const el = scrollContainerRef.current;
     const gridPending = readGalleryAttributionReturnState();
     const gridScrollPending =
@@ -493,6 +565,8 @@ const PlaceGalleryView = React.memo(({
     if (restore > 0) {
       pendingPlaceScrollResetRef.current = false;
       pendingPlaceScrollRestoreRef.current = restore;
+      popBackRealignTargetRef.current = restore;
+      popBackRealignScheduledRef.current = false;
       if (el) el.scrollTop = restore;
       const raf = window.requestAnimationFrame(() => {
         const node = scrollContainerRef.current;
@@ -512,6 +586,20 @@ const PlaceGalleryView = React.memo(({
       return undefined;
     }
 
+    if (
+      navigationType === 'POP' &&
+      !/\/reviews\/?$/.test(routerLocation.pathname) &&
+      (peekArmedGalleryBackScroll(galleryPlaceKey) > 0 ||
+        pendingPlaceScrollRestoreRef.current > 0 ||
+        popBackRealignTargetRef.current > 0)
+    ) {
+      pendingPlaceScrollResetRef.current = false;
+      return undefined;
+    }
+    if (pendingPlaceScrollRestoreRef.current > 0 || popBackRealignTargetRef.current > 0) {
+      pendingPlaceScrollResetRef.current = false;
+      return undefined;
+    }
     pendingPlaceScrollRestoreRef.current = 0;
     pendingPlaceScrollResetRef.current = true;
     resetPlaceMediaScrollInstant(el);
@@ -524,18 +612,93 @@ const PlaceGalleryView = React.memo(({
       const node = scrollContainerRef.current;
       if (node && node.scrollTop > 0) rememberPlaceGalleryScroll(galleryPlaceKey, node.scrollTop);
     };
-  }, [galleryPlaceKey]);
+  }, [galleryPlaceKey, navigationType, isGalleryPanelActive, routerLocation.pathname]);
+
+  useLayoutEffect(() => {
+    if (navigationType !== 'POP') return undefined;
+    if (!isGalleryPanelActive || !galleryPlaceKey) return undefined;
+    if (/\/reviews\/?$/.test(routerLocation.pathname)) return undefined;
+    const restore = placeGalleryScrollToRestore(galleryPlaceKey, navigationType);
+    if (restore <= 0) return undefined;
+    applyGalleryScrollRestore(restore, { clearBack: false });
+    const raf = window.requestAnimationFrame(() => {
+      applyGalleryScrollRestore(restore, { clearBack: false });
+    });
+    const timer = window.setTimeout(() => {
+      applyGalleryScrollRestore(restore, { clearBack: false });
+    }, 150);
+    return () => {
+      window.cancelAnimationFrame(raf);
+      window.clearTimeout(timer);
+    };
+  }, [navigationType, galleryPlaceKey, isGalleryPanelActive, routerLocation.pathname, applyGalleryScrollRestore]);
+
+  useLayoutEffect(() => {
+    if (!isGalleryPanelActive) return undefined;
+    if (/\/reviews\/?$/.test(routerLocation.pathname)) return undefined;
+    if (!isGalleryBackRestoreDue(galleryPlaceKey, navigationType)) return undefined;
+    const restore = peekGalleryScrollForPlaceBack(galleryPlaceKey);
+    if (restore <= 0) return undefined;
+    applyGalleryScrollRestore(restore, { clearBack: false });
+    const raf = window.requestAnimationFrame(() => {
+      applyGalleryScrollRestore(restore, { clearBack: false });
+    });
+    const timer = window.setTimeout(() => {
+      applyGalleryScrollRestore(restore, { clearBack: false });
+    }, 200);
+    return () => {
+      window.cancelAnimationFrame(raf);
+      window.clearTimeout(timer);
+    };
+  }, [
+    routerLocation.pathname,
+    navigationType,
+    galleryPlaceKey,
+    isGalleryPanelActive,
+    applyGalleryScrollRestore,
+  ]);
+
+  useEffect(() => {
+    if (navigationType !== 'POP') {
+      popBackRealignScheduledRef.current = false;
+      return undefined;
+    }
+    const target = popBackRealignTargetRef.current;
+    if (target <= 0 || popBackRealignScheduledRef.current) return undefined;
+    if (isImgLoading || isRefreshing) return undefined;
+    const el = scrollContainerRef.current;
+    if (!el) return undefined;
+    popBackRealignScheduledRef.current = true;
+    return scheduleOneGalleryScrollRealignAfterImages(el, target, () => {
+      popBackRealignScheduledRef.current = false;
+      const current = scrollContainerRef.current?.scrollTop ?? 0;
+      if (Math.abs(current - target) <= 8) {
+        popBackRealignTargetRef.current = 0;
+        pendingPlaceScrollRestoreRef.current = 0;
+        clearPlaceGalleryScrollBack(galleryPlaceKey);
+      }
+    });
+  }, [
+    navigationType,
+    galleryPlaceKey,
+    images.length,
+    galleryVisuallyReady,
+    isImgLoading,
+    isRefreshing,
+  ]);
 
   useLayoutEffect(() => {
     const restore = pendingPlaceScrollRestoreRef.current;
     if (restore > 0) {
-      if (isImgLoading || isRefreshing) return;
+      if (isImgLoading || isRefreshing) return undefined;
       const el = scrollContainerRef.current;
-      if (el) el.scrollTop = restore;
-      const applied = !el || el.scrollTop >= restore - 2;
-      if (applied) pendingPlaceScrollRestoreRef.current = 0;
+      if (!el) return undefined;
+      el.scrollTop = restore;
+      if (Math.abs(el.scrollTop - restore) <= 8) {
+        pendingPlaceScrollRestoreRef.current = 0;
+      }
       setShowScrollToTop(restore > 280);
-      return;
+      return undefined;
     }
     if (!pendingPlaceScrollResetRef.current || isImgLoading || isRefreshing) return;
     resetPlaceMediaScrollInstant(scrollContainerRef.current);
@@ -685,13 +848,11 @@ const PlaceGalleryView = React.memo(({
 
   useEffect(() => {
     if (!shouldUseMobilePortal) return undefined;
-    const prevOverflow = document.body.style.overflow;
-    const prevTouchAction = document.body.style.touchAction;
     document.body.style.overflow = 'hidden';
     document.body.style.touchAction = 'none';
     return () => {
-      document.body.style.overflow = prevOverflow;
-      document.body.style.touchAction = prevTouchAction;
+      document.body.style.removeProperty('overflow');
+      document.body.style.removeProperty('touch-action');
     };
   }, [shouldUseMobilePortal]);
 
@@ -1213,19 +1374,15 @@ const PlaceGalleryView = React.memo(({
       ref={fullScreenContainerRef}
       className={`flex-1 h-full bg-[#05070a]/80 backdrop-blur-xl rounded-[2rem] border border-white/5 overflow-hidden relative shadow-2xl transition-all duration-500 ${isFullScreen ? 'fixed inset-0 z-[200] w-screen h-screen rounded-none border-none' : ''}`}
     >
-      {selectedImg ? (
-        shouldUseMobilePortal
-          ? createPortal(renderPhotoViewer(null, { mobilePortal: true }), document.body)
-          : renderPhotoViewer(
-              'w-full h-full relative animate-fade-in bg-black flex items-center justify-center overflow-hidden'
-            )
-      ) : (
-        <div className="w-full h-full flex flex-col min-h-0">
-          <div className={mobilePlaceHeaderSpacerClass} aria-hidden="true" />
+      <div className="w-full h-full flex flex-col min-h-0 relative">
+          {!selectedImg && <div className={mobilePlaceHeaderSpacerClass} aria-hidden="true" />}
           <div
             ref={scrollContainerRef}
             data-place-gallery-scroll=""
-            className={`flex-1 min-h-0 w-full overflow-y-auto overflow-x-hidden custom-scrollbar-blue relative ${placeScrollSurfaceClass} md:pt-10 ${mobilePlaceGalleryFooterScrollPadding} md:pb-6`}
+            aria-hidden={selectedImg ? true : undefined}
+            className={`flex-1 min-h-0 w-full overflow-y-auto overflow-x-hidden custom-scrollbar-blue relative ${placeScrollSurfaceClass} md:pt-10 ${mobilePlaceGalleryFooterScrollPadding} md:pb-6 ${
+              selectedImg ? 'invisible pointer-events-none' : ''
+            }`}
           >
 
           {mobileSecondaryNav && (
@@ -1303,6 +1460,14 @@ const PlaceGalleryView = React.memo(({
                       onPainted={onTilePainted}
                       onOpen={() => {
                         suppressOpenClickRef.current = true;
+                        clearPlaceGalleryScrollBack(galleryPlaceKey);
+                        popBackRealignTargetRef.current = 0;
+                        popBackRealignScheduledRef.current = false;
+                        snapshotScrollBeforeOverlay(
+                          galleryOverlayKey,
+                          scrollContainerRef.current,
+                          galleryPlaceKey,
+                        );
                         setSelectedImg(img);
                         window.requestAnimationFrame(() => {
                           suppressOpenClickRef.current = false;
@@ -1378,8 +1543,18 @@ const PlaceGalleryView = React.memo(({
             </div>
           </div>
         </div>
-        </div>
-      )}
+      {selectedImg ? (
+        shouldUseMobilePortal
+          ? createPortal(renderPhotoViewer(null, { mobilePortal: true }), document.body)
+          : (
+            <div className="absolute inset-0 z-[210]">
+              {renderPhotoViewer(
+                'w-full h-full relative animate-fade-in bg-black flex items-center justify-center overflow-hidden'
+              )}
+            </div>
+          )
+      ) : null}
+      </div>
       {manageTarget && (
         <GalleryManageSheet
           img={manageTarget}

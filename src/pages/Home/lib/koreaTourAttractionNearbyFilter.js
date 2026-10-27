@@ -9,7 +9,9 @@ const AMENITY_TITLE_RE =
 
 /** 복지·목욕·생활문화 — 관광 볼거리가 아닌 시설 */
 const FACILITY_TITLE_RE =
-  /사우나|찜질|해수찜|목욕탕|공중목욕|복지관|사회복지|복지센터|노인회|생활문화|주민센터|경로당|행정복지|노인정|마을회관|주민자치/u;
+  /사우나|찜질|해수찜|목욕탕|공중목욕|복지관|사회복지|복지센터|노인회|생활문화|주민센터|경로당|행정복지|노인정|마을회관|주민자치|고등학교|중학교|초등학교|강당|학교/u;
+
+const COMPANY_TITLE_RE = /주식회사|㈜|(?:\(|（)주(?:\)|）)/u;
 
 /**
  * TourAPI contentType 12 cat3 — 이색찜질방·터널.
@@ -71,6 +73,7 @@ export function isNearbyTourAttractionTitle(title) {
   const t = String(title || '').trim();
   if (!t) return false;
   if (AMENITY_TITLE_RE.test(t)) return false;
+  if (COMPANY_TITLE_RE.test(t)) return false;
   if (FACILITY_TITLE_RE.test(t)) return false;
   if (isTransportOrGovernmentTitle(t) && !TRANSPORT_LANDMARK_RE.test(t)) {
     return false;

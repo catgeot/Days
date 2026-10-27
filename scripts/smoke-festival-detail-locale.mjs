@@ -53,9 +53,9 @@ assert(
   'fetchKoreaFestivalsWindow merges titleEn via en festivalWindow',
 );
 assert(
-  windowJs.includes('wantTitleEn') &&
-    windowJs.includes('itemsNeedTitleEn'),
-  'fetchKoreaFestivalsWindow lazy-en merge on cache hit only when locale=en',
+  windowJs.includes('itemsNeedTitleEn') &&
+    windowJs.includes('mergeTitleEnOntoItems'),
+  'fetchKoreaFestivalsWindow merges titleEn on cache hit when any item lacks titleEn',
 );
 
 const spotCardJs = readFileSync(
@@ -169,6 +169,21 @@ const merged = mergeFestivalTitleEn(
 assert(
   merged[0]?.titleEn === 'Garden Night Market',
   'mergeFestivalTitleEn matches ko title via parenthetical hint',
+);
+
+const yearPrefixed = mergeFestivalTitleEn(
+  [{ contentId: '3370452', title: '2026 수성국제비엔날레', eventStartDate: '20260401' }],
+  [
+    {
+      contentId: 'en-x',
+      title: 'Suseong International Biennale (수성국제비엔날레)',
+      eventStartDate: '20260401',
+    },
+  ],
+);
+assert(
+  yearPrefixed[0]?.titleEn === 'Suseong International Biennale',
+  'mergeFestivalTitleEn strips leading year from ko title when matching hint',
 );
 
 if (failed) {

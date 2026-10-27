@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useRef, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import PlaceChatPanel from '../panels/PlaceChatPanel';
@@ -45,10 +45,9 @@ const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, onOpenM
       setMediaModeState(newMode);
   }, [navigate, location]);
 
-  // props로 받은 initialTab이 변경되면 동기화
-  useEffect(() => {
+  useLayoutEffect(() => {
       if (['GALLERY', 'VIDEO', 'WIKI', 'REVIEWS', 'PLANNER'].includes(initialTab)) {
-          queueMicrotask(() => setMediaModeState(initialTab));
+          setMediaModeState(initialTab);
       }
   }, [initialTab]);
 

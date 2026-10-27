@@ -30,7 +30,7 @@ export function buildFestivalPanelListMetaSegments({
   /** @type {{ id: string, text: string, wrap?: boolean, nowrap?: boolean }[]} */
   const segments = [];
 
-  const showCount = !(listLoading && count === 0);
+  const showCount = !listLoading;
 
   if (isNationwideRegionFilter(code, cityName)) {
     segments.push({

@@ -18,6 +18,15 @@ import {
   verifiedFactSlots,
 } from '../../../data/placeVerifiedFacts/localInfoLayout.js';
 import {
+  CONSULAR_CALL_CENTER_DISPLAY,
+  CONSULAR_CALL_CENTER_TEL,
+  formatCheckedChipDate,
+  freshnessOf,
+  getFreshnessToday,
+  mofaOverseasSafetyUrl,
+  splitConsularCallCenter,
+} from '../../../data/placeVerifiedFacts/freshness.js';
+import {
   AI_GENERATED_LABEL,
   presentFactText,
   publicSourceName,
@@ -31,6 +40,8 @@ import {
   peekPlaceGallerySectionAfterReview,
   scrollPlaceGallerySectionIntoView,
 } from '../../../utils/placeGallerySectionFocus.js';
+import { buildPlaceReviewsHref } from '../../../utils/placeReviewFocus.js';
+import { snapshotGalleryScrollForPlaceBack } from './placeScrollMemory.js';
 import { getPlaceStableKey } from '../../../utils/travelSpotResolve.js';
 import { useVisitStories } from '../hooks/useVisitStories';
 
@@ -74,7 +85,8 @@ function usePlaceGallerySectionOpen(sectionId, placeKey) {
 }
 
 function slotHeading(slot, t) {
-  return t(`place.facts.slots.${slot.id}`, { defaultValue: slot.label });
+  const key = slot.headingKey || slot.id;
+  return t(`place.facts.slots.${key}`, { defaultValue: slot.label });
 }
 
 function unverifiedLine(slots, t) {
@@ -134,12 +146,41 @@ function SourceLine({ sources, locale, light }) {
   );
 }
 
-function FactRuns({ text }) {
+function consularPhoneLinkClass(light) {
+  return light
+    ? 'font-semibold text-sky-800 underline underline-offset-2'
+    : 'font-semibold text-sky-200 underline underline-offset-2';
+}
+
+function ConsularPhoneLink({ light }) {
+  return (
+    <a
+      href={CONSULAR_CALL_CENTER_TEL}
+      data-fact-consular-phone=""
+      className={consularPhoneLinkClass(light)}
+      onClick={(event) => event.stopPropagation()}
+    >
+      {CONSULAR_CALL_CENTER_DISPLAY}
+    </a>
+  );
+}
+
+function FactTextWithConsularPhone({ text, light }) {
+  return splitConsularCallCenter(text).map((part, index) => (
+    part.type === 'phone' ? (
+      <ConsularPhoneLink key={`phone-${index}`} light={light} />
+    ) : (
+      <React.Fragment key={`text-${index}`}>{part.text}</React.Fragment>
+    )
+  ));
+}
+
+function FactRuns({ text, light = false }) {
   return splitFactTimeRanges(text).map((part, index) => (
     part.type === 'time' ? (
       <span key={`time-${index}`} className={TIME_RANGE_CLASS}>{part.text}</span>
     ) : (
-      <React.Fragment key={`text-${index}`}>{part.text}</React.Fragment>
+      <FactTextWithConsularPhone key={`text-${index}`} text={part.text} light={light} />
     )
   ));
 }
@@ -189,7 +230,7 @@ function FactValue({ slot, slug, locale, light }) {
               {part.text}
             </Link>
           ) : (
-            <FactRuns key={`t-${index}`} text={part.text} />
+            <FactRuns key={`t-${index}`} text={part.text} light={light} />
           )
         ))}
       </p>
@@ -197,12 +238,12 @@ function FactValue({ slot, slug, locale, light }) {
   }
   return (
     <p data-fact-value="" className={valueClass}>
-      <FactRuns text={text} />
+      <FactRuns text={text} light={light} />
     </p>
   );
 }
 
-function FactMeta({ slot, locale, light }) {
+function FactMeta({ slot, locale, light, showCheckedDate = true }) {
   const { t } = useTranslation();
   const date = checkedAtForLocale(slot.checkedAt, locale);
   return (
@@ -213,9 +254,118 @@ function FactMeta({ slot, locale, light }) {
         : 'mt-1.5 text-[11px] leading-snug text-[#9ca3af] break-keep'}
     >
       {t('place.facts.source')} <SourceLine sources={slot.sources} locale={locale} light={light} />
-      {' · '}
-      {t('place.facts.checked', { date })}
+      {showCheckedDate ? (
+        <>
+          {' · '}
+          {t('place.facts.checked', { date })}
+        </>
+      ) : null}
     </p>
+  );
+}
+
+function FreshnessCheckedChip({ slot, locale, light }) {
+  const { t } = useTranslation();
+  const chipDate = formatCheckedChipDate(slot.checkedOn, locale);
+  const chipClass = light
+    ? 'mb-2 inline-flex rounded-full border border-[#92400e]/40 bg-amber-100 px-2.5 py-1 text-xs font-bold text-[#92400e]'
+    : 'mb-2 inline-flex rounded-full border border-amber-300/50 bg-amber-500/25 px-2.5 py-1 text-xs font-bold text-amber-50';
+  return (
+    <p data-fact-freshness-chip="" className="break-keep">
+      <span className={chipClass}>
+        {t('place.facts.freshness.checkedChip', { date: chipDate })}
+      </span>
+    </p>
+  );
+}
+
+function MofaSafetyLink({ light, labelKey = 'place.facts.freshness.mofaLink' }) {
+  const { t } = useTranslation();
+  const href = mofaOverseasSafetyUrl();
+  const linkClass = light
+    ? 'font-semibold text-sky-800 underline underline-offset-2'
+    : 'font-semibold text-sky-200 underline underline-offset-2';
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      data-fact-mofa-link=""
+      className={`${linkClass} break-keep`}
+      onClick={(event) => event.stopPropagation()}
+    >
+      {t(labelKey)}
+    </a>
+  );
+}
+
+function FreshnessWarnBanner({ slot, locale, light }) {
+  const { t } = useTranslation();
+  const bannerClass = light
+    ? 'mt-2 rounded-lg border border-amber-500/50 bg-amber-50 px-3 py-2 text-xs leading-relaxed text-amber-950'
+    : 'mt-2 rounded-lg border border-amber-400/40 bg-amber-500/15 px-3 py-2 text-xs leading-relaxed text-amber-50';
+  return (
+    <p data-fact-freshness-warn="" className={bannerClass}>
+      {t('place.facts.freshness.warn')}{' '}
+      <MofaSafetyLink light={light} />
+    </p>
+  );
+}
+
+function FreshnessHiddenFallback({ slot, locale, light }) {
+  const { t } = useTranslation();
+  const textClass = light
+    ? 'text-sm leading-relaxed text-[#111827] break-keep'
+    : 'text-sm leading-relaxed text-[#e5e7eb] break-keep';
+  return (
+    <div data-fact-freshness-hidden="" className="space-y-2">
+      <p className={textClass}>
+        {t('place.facts.freshness.hiddenLead')}{' '}
+        <MofaSafetyLink light={light} />
+      </p>
+      <p className={textClass}>
+        {t('place.facts.freshness.consularLabel')}{' '}
+        <ConsularPhoneLink light={light} />
+      </p>
+    </div>
+  );
+}
+
+function FactSlotBody({ slot, slug, locale, light }) {
+  const freshness = freshnessOf(slot, getFreshnessToday());
+  const showCheckedChip = freshness.tier === 'fresh' && slot.checkedOn;
+  const showWarn = freshness.tier === 'warn';
+  const showHidden = freshness.tier === 'hidden';
+  const showCheckedInMeta = (() => {
+    if (freshness.tier === 'fresh' || freshness.tier === 'warn' || freshness.tier === 'hidden') {
+      return false;
+    }
+    if (slot.kind && !slot.checkedOn) return false;
+    return Boolean(String(slot.checkedAt || '').trim());
+  })();
+
+  return (
+    <div data-fact-freshness-tier={freshness.tier}>
+      {showHidden ? (
+        <FreshnessHiddenFallback slot={slot} locale={locale} light={light} />
+      ) : (
+        <>
+          {showCheckedChip ? (
+            <FreshnessCheckedChip slot={slot} locale={locale} light={light} />
+          ) : null}
+          <FactValue slot={slot} slug={slug} locale={locale} light={light} />
+          {showWarn ? (
+            <FreshnessWarnBanner slot={slot} locale={locale} light={light} />
+          ) : null}
+          <FactMeta
+            slot={slot}
+            locale={locale}
+            light={light}
+            showCheckedDate={showCheckedInMeta}
+          />
+        </>
+      )}
+    </div>
   );
 }
 
@@ -356,8 +506,7 @@ function FactTopicRow({ slot, slug, locale, light }) {
       </button>
       {open ? (
         <div id={panelId} className="px-3.5 pb-3.5">
-          <FactValue slot={slot} slug={slug} locale={locale} light={light} />
-          <FactMeta slot={slot} locale={locale} light={light} />
+          <FactSlotBody slot={slot} slug={slug} locale={locale} light={light} />
         </div>
       ) : null}
     </div>
@@ -435,6 +584,7 @@ export function PlaceLocalInfoInline({
     entry: 'place.facts.confirmed.entry',
     airport: 'place.facts.confirmed.airport',
     'money-safety': 'place.facts.confirmed.moneySafety',
+    safety: 'place.facts.confirmed.safety',
     'stay-area': 'place.facts.confirmed.stayArea',
   }[slot.id];
   const title = presentation === 'planner'
@@ -458,8 +608,7 @@ export function PlaceLocalInfoInline({
       />
       {open ? (
         <div id={panelId} className={light ? 'px-4 pb-4 text-[#111827]' : 'px-4 pb-4'}>
-          <FactValue slot={slot} slug={card.slug} locale={locale} light={light} />
-          <FactMeta slot={slot} locale={locale} light={light} />
+          <FactSlotBody slot={slot} slug={card.slug} locale={locale} light={light} />
         </div>
       ) : null}
     </section>
@@ -532,7 +681,10 @@ export function PlaceVisitStories({ location, className = '' }) {
                 className={rowClass}
                 onClick={(event) => {
                   event.stopPropagation();
-                  if (placePath) navigate(`${placePath}/reviews`);
+                  if (!placePath) return;
+                  const galleryKey = location?.slug || location?.id || location?.name || placeKey;
+                  snapshotGalleryScrollForPlaceBack(galleryKey);
+                  navigate(buildPlaceReviewsHref(placePath, story.id));
                 }}
               >
                 {body}

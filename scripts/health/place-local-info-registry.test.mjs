@@ -5,10 +5,16 @@ import { fileURLToPath } from 'node:url';
 import test from 'node:test';
 import { CAIRO_ATTRACTION_FACTS, mentionScore } from '../../src/data/placeVerifiedFacts/cairo.js';
 import {
+  extractFactTokens,
+  factValueForLocale,
+  hangulOutsideEnglishProperNounParens,
+} from '../../src/data/placeVerifiedFacts/cairoEn.js';
+import {
   localInfoRegistry,
   resolveRegisteredCard,
   resolveVerifiedFacts,
 } from '../../src/data/placeVerifiedFacts/index.js';
+import { slotLooksEmpty } from '../../src/data/placeVerifiedFacts/schema.js';
 import { GATEO_ENV_FLAG_NAMES } from '../../src/shared/gateoFeatureFlags.js';
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 
@@ -16,8 +22,8 @@ const giza = CAIRO_ATTRACTION_FACTS.find((card) => card.slug === 'giza-pyramids'
 const gem = CAIRO_ATTRACTION_FACTS.find((card) => card.slug === 'grand-egyptian-museum');
 const museum = CAIRO_ATTRACTION_FACTS.find((card) => card.slug === 'egyptian-museum-cairo');
 
-test('registry maps cairo only and keeps ko and en card data', () => {
-  assert.deepEqual(Object.keys(localInfoRegistry), ['cairo']);
+test('registry maps cairo and paris and keeps ko and en card data', () => {
+  assert.deepEqual(Object.keys(localInfoRegistry), ['cairo', 'paris']);
   assert.equal(localInfoRegistry.cairo.ko.city.slug, 'cairo');
   assert.equal(localInfoRegistry.cairo.en.city.name, 'Cairo');
   assert.equal(localInfoRegistry.cairo.ko.attractions.length, 4);
@@ -50,7 +56,8 @@ test('registry lookup keeps cairo when the rollout flag is off and renders nothi
     assert.equal(resolveVerifiedFacts('paris'), null);
     assert.equal(resolveVerifiedFacts({ slug: 'gangneung', name: '강릉' }), null);
     globalThis.__VITE_ENV__[flag] = '1';
-    assert.equal(resolveVerifiedFacts('paris'), null);
+    assert.equal(resolveVerifiedFacts('paris').slug, 'paris');
+    assert.equal(resolveVerifiedFacts({ slug: 'paris', name: '파리' }).kind, 'city');
     assert.equal(resolveVerifiedFacts('cairo').kind, 'city');
   } finally {
     globalThis.__VITE_ENV__[flag] = prev;
@@ -75,6 +82,70 @@ test('registry lookup keeps cairo when the rollout flag is off and renders nothi
     }], false).slug,
     'cairo',
   );
+});
+
+test('paris rollout hides the money row and does not call ETIAS required', () => {
+  const city = localInfoRegistry.paris.ko.city;
+  const en = localInfoRegistry.paris.en.city;
+  assert.equal(city.slots.some((slot) => slot.id === 'money-safety'), false);
+  assert.equal(en.slots.some((slot) => slot.id === 'money-safety'), false);
+  const safety = city.slots.find((slot) => slot.id === 'safety');
+  const enSafety = en.slots.find((slot) => slot.id === 'safety');
+  assert.equal(slotLooksEmpty(safety), false);
+  assert.match(safety.value, /10\.17\(금\) 전국 시위/);
+  assert.match(safety.value, /\+82-2-3210-0404/);
+  assert.match(safety.value, /\+33-6-8028-5396/);
+  assert.equal(/유로|환전|카드|통화|Banque/i.test(safety.value), false);
+  assert.equal(/\beuro\b|currency|exchange|\bcard\b/i.test(enSafety.value), false);
+  assert.equal(safety.sources[0].url, 'https://www.0404.go.kr/bbs/safetyNtc/1335041/detail2?ntnCd=248');
+  assert.equal(safety.checkedAt, '2026-10-26');
+  assert.equal(safety.kind, 'event');
+  assert.equal(safety.checkedOn, '2026-10-26');
+  assert.equal(safety.endsAt, '2026-11-05');
+  assert.equal(enSafety.sources[0].name, 'MOFA safety notice (Embassy of Korea in France)');
+
+  const airport = city.slots.find((slot) => slot.id === 'airport');
+  assert.equal(slotLooksEmpty(airport), true);
+
+  const entry = city.slots.find((slot) => slot.id === 'entry');
+  const enEntry = en.slots.find((slot) => slot.id === 'entry');
+  assert.match(entry.value, /ETIAS는 아직 운영되지 않아요/);
+  assert.match(enEntry.value, /ETIAS is not in operation yet/);
+  assert.equal(/ETIAS.{0,30}(필수|필요해요|받아야)/.test(entry.value), false);
+  assert.equal(/mandatory|currently required|need an ETIAS|ETIAS is required/i.test(enEntry.value), false);
+  assert.equal(entry.sources.some((source) => source.url === 'https://france-visas.gouv.fr/'), true);
+  assert.equal(entry.sources.some((source) => source.url === 'https://travel-europe.europa.eu/etias_en'), true);
+  assert.equal(
+    entry.sources.some((source) => source.url === 'https://travel-europe.europa.eu/en/ees/what-is-the-ees'),
+    true,
+  );
+
+  const itinerary = city.slots.find((slot) => slot.id === 'itinerary');
+  assert.equal(itinerary.sources[0].url, 'https://www.louvre.fr/en/visit');
+  assert.equal(/D[123] /.test(itinerary.value), false);
+  assert.equal(itinerary.headingKey, 'louvre-visit');
+  assert.equal(/22유로|32유로|18세 미만/.test(itinerary.value), false);
+  assert.equal(/EUR 22|EUR 32|under 18/i.test(factValueForLocale('paris', itinerary, 'en')), false);
+  for (const slot of city.slots) {
+    const ko = factValueForLocale('paris', slot, 'ko');
+    const translated = factValueForLocale('paris', slot, 'en');
+    assert.equal(ko, slot.value);
+    assert.deepEqual(extractFactTokens(translated), extractFactTokens(ko));
+    assert.deepEqual(hangulOutsideEnglishProperNounParens(translated), []);
+  }
+  assert.equal(localInfoRegistry.paris.ko.attractions.length, 0);
+  assert.equal(en.name, 'Paris');
+
+  const cairoMoney = localInfoRegistry.cairo.ko.city.slots.find((slot) => slot.id === 'money-safety');
+  const cairoSafety = localInfoRegistry.cairo.ko.city.slots.find((slot) => slot.id === 'safety');
+  assert.equal(cairoMoney.kind, 'standing');
+  assert.equal(cairoMoney.checkedOn, null);
+  assert.equal(cairoMoney.checkedAt, '');
+  assert.match(cairoMoney.value, /EGP/);
+  assert.equal(cairoSafety.kind, 'standing');
+  assert.equal(cairoSafety.checkedOn, '2026-10-26');
+  assert.match(cairoSafety.value, /여행유의/);
+  assert.equal(/EGP/.test(cairoSafety.value), false);
 });
 
 test('mention matching is whole-token exact and ignores short or partial keys', () => {

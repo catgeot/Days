@@ -338,8 +338,9 @@ export function SearchSuggestionList({
             const badgeKey = item.badge || EXPLORE_BADGE_PLACE;
             const badge = localizedExploreBadgeLabel(t, badgeKey);
             const badgeClass = BADGE_STYLES[badgeKey] || BADGE_STYLES[EXPLORE_BADGE_PLACE];
+            const { primaryName, secondaryName } = getPlaceTitleLinesForLocale(item, i18n.language);
             const displayName =
-              getLocalizedPlaceName(item, i18n.language) || String(item?.name || '').trim();
+              primaryName || getLocalizedPlaceName(item, i18n.language) || String(item?.name || '').trim();
             const locationLine = buildLocationLine(item, i18n.language);
             const desc = resolveCardDesc(item, locationLine, i18n.language);
             const subtitle = [locationLine, desc]
@@ -381,6 +382,9 @@ export function SearchSuggestionList({
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className="text-sm font-semibold text-white truncate">{displayName}</span>
+                      {secondaryName ? (
+                        <span className="text-xs font-medium text-white/85 shrink-0">{secondaryName}</span>
+                      ) : null}
                       {rankBlurb ? (
                         <span className="shrink-0 rounded-md border border-amber-300/50 bg-amber-400/15 px-1.5 py-0.5 text-[10px] font-extrabold text-amber-100">
                           {rankBlurb}

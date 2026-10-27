@@ -59,6 +59,10 @@ const EMBASSY_NOTICES = {
   name: '대사관 공지',
   url: 'https://www.0404.go.kr/bbs/embsyNtc/list?ntnCd=178',
 };
+const EMBASSY_SAFETY_OCT25 = {
+  name: '대사관 공지',
+  url: 'https://www.0404.go.kr/bbs/embsyNtc/1345774/detail?ntnCd=178',
+};
 const LOGBOOK = {
   name: 'GATEO 로그북 (2026-10-03)',
   url: '',
@@ -101,11 +105,18 @@ export const CAIRO_CITY_FACTS = {
       { id: 'itinerary' },
     ),
     verifiedSlot(
-      '돈·치안',
-      '통화는 이집트 파운드(EGP)예요.\n외교부 여행경보에서 카이로 등 나일강 유역 도시지역은 여행유의예요.\n서부사막과 시나이 남부 일부는 여행자제, 중·북부 시나이와 리비아 국경 30km는 출국권고예요.\n대사관 최근 공지(2026-09-22)는 중동 군사적 긴장에 안전을 유의하고, 개인 간 환전 사기를 조심하라고 해요.\n영사콜센터는 +82-2-3210-0404예요.',
-      [LOGBOOK, SAFETY, EMBASSY_NOTICES],
-      DAY,
-      { id: 'money-safety' },
+      '돈',
+      '통화는 이집트 파운드(EGP)예요.',
+      [LOGBOOK],
+      '',
+      { id: 'money-safety', kind: 'standing' },
+    ),
+    verifiedSlot(
+      '치안',
+      '외교부 여행경보에서 카이로 등 나일강 유역 도시지역은 여행유의예요.\n서부사막과 시나이 남부 일부는 여행자제, 중·북부 시나이와 리비아 국경 30km는 출국권고예요.\n대사관 공지(2026-10-25)는 사우디–후티 교전이 계속되고 미·이란 비핵화 협상이 지연돼 중동 군사적 긴장이 고조됐지만, 이집트 전역이 곧바로 위험한 것은 아니라고 해요.\n중동 경유 항공편은 운항·경유 공항 상황을 확인하고, 취소·지연에 대비하라고 해요.\n미국 관련 시설·군사기지·에너지·항만 시설 근처에서는 머무르거나 사진을 찍지 않는 편이 좋고, 시위·집회 장소는 빨리 떠나라고 해요.\n대사관 공지(2026-09-22)는 개인 간 환전 사기를 조심하라고 해요.\n대사관 공지(2026-10-12)는 우천 시 감전·침수 피해에 유의하라고 해요.\n주이집트대사관 야간 긴급연락은 +20-(0)12-8333-3236이고, 영사콜센터는 +82-2-3210-0404예요.',
+      [SAFETY, EMBASSY_SAFETY_OCT25, EMBASSY_NOTICES, LOGBOOK],
+      '2026-10-26',
+      { id: 'safety', kind: 'standing', checkedOn: '2026-10-26' },
     ),
     emptySlot('season', '시즌'),
   ],

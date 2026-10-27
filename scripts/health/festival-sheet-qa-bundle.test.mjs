@@ -42,6 +42,20 @@ test('nationwide panel meta omits zero count while list is loading', () => {
   assert.equal(text.includes('0'), false);
 });
 
+test('nationwide panel meta omits seeded manual count while list is loading', () => {
+  const segments = buildFestivalPanelListMetaSegments({
+    areaCode: 'all',
+    cityName: 'all',
+    count: 2,
+    listLoading: true,
+    t: tMock,
+    locale: 'ko',
+  });
+  const text = segments.map((s) => s.text).join(' · ');
+  assert.equal(text.includes('2'), false);
+  assert.equal(text.includes('건'), false);
+});
+
 test('EN nationwide panel meta avoids raw all and city/county grouping', () => {
   const segments = buildFestivalPanelListMetaSegments({
     areaCode: 'all',

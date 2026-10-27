@@ -5,6 +5,7 @@ import PlaceWikiDetailsView from '../views/PlaceWikiDetailsView';
 import ReviewsTab from '../tabs/ReviewsTab';
 import PlannerTab from '../tabs/PlannerTab';
 import PlaceMobileSecondaryNav from '../common/PlaceMobileSecondaryNav';
+import { getPlaceUrlParam } from '../../../pages/Home/lib/formatUrlName';
 
 const PlaceMediaPanel = React.memo(({
     galleryData,
@@ -46,6 +47,7 @@ const PlaceMediaPanel = React.memo(({
     onOpenPackage,
     onNavigateToPlace,
 }) => {
+  const placeSlug = getPlaceUrlParam(location);
   const mobileSecondaryNav = useMemo(
     () => (
       <PlaceMobileSecondaryNav
@@ -54,9 +56,10 @@ const PlaceMediaPanel = React.memo(({
         setMediaMode={setMediaMode}
         matchedPackage={matchedPackage}
         onOpenPackage={onOpenPackage}
+        placeSlug={placeSlug}
       />
     ),
-    [mediaMode, setMediaMode, matchedPackage, onOpenPackage]
+    [mediaMode, setMediaMode, matchedPackage, onOpenPackage, placeSlug]
   );
 
   return (
@@ -87,6 +90,7 @@ const PlaceMediaPanel = React.memo(({
                 loadFailed={galleryData.loadFailed}
                 handleRetryLoad={galleryData.handleRetryLoad}
                 mobileSecondaryNav={mobileSecondaryNav}
+                isGalleryPanelActive={mediaMode === 'GALLERY'}
             />
         </div>
 
@@ -154,6 +158,7 @@ const PlaceMediaPanel = React.memo(({
               location={location}
               setMediaMode={setMediaMode}
               mobileSecondaryNav={mobileSecondaryNav}
+              isActive={mediaMode === 'REVIEWS'}
             />
         </div>
 

@@ -1,6 +1,8 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ImageIcon, Play, PenTool, BookOpen, Briefcase, ArrowLeft } from 'lucide-react';
+import { shouldHandlePlaceSpaNavClick } from './placeSpaNavClick.js';
 
 /**
  * placement="header": 데스크톱 PlaceChatPanel 2행 (리뷰 탭 포함).
@@ -11,9 +13,12 @@ const PlaceMobileSecondaryNav = ({
   setMediaMode,
   matchedPackage,
   onOpenPackage,
-  placement = 'scroll'
+  placement = 'scroll',
+  placeSlug = '',
 }) => {
   const { t } = useTranslation();
+  const galleryHref = placeSlug ? `/place/${placeSlug}` : '';
+  const reviewsHref = placeSlug ? `/place/${placeSlug}/reviews` : '';
 
   if (mediaMode === 'PLANNER') {
     if (placement === 'header') return null;
@@ -46,6 +51,60 @@ const PlaceMobileSecondaryNav = ({
   const galleryBackGhostPill = isLightScrollChrome
     ? 'bg-transparent text-gray-600 font-semibold border border-transparent hover:bg-gray-100 hover:text-gray-900'
     : 'bg-transparent text-gray-300 font-medium border border-transparent hover:bg-white/10 hover:text-white';
+
+  const reviewsPillClass = `px-3 py-1.5 rounded-full transition-all duration-300 flex items-center gap-1.5 group shrink-0 active:scale-95 ${
+    mediaMode === 'REVIEWS' ? activePill : inactivePill
+  }`;
+
+  const reviewsNav =
+    reviewsHref && galleryHref ? (
+      mediaMode === 'REVIEWS' ? (
+        <Link
+          to={galleryHref}
+          className={reviewsPillClass}
+          onClick={(event) => {
+            if (!shouldHandlePlaceSpaNavClick(event)) return;
+            event.preventDefault();
+            setMediaMode('GALLERY');
+          }}
+        >
+          <ImageIcon className="w-4 h-4 group-hover:scale-110 transition-transform" />
+          <span className="text-xs font-bold whitespace-nowrap">{t('place.nav.galleryBack')}</span>
+        </Link>
+      ) : (
+        <Link
+          to={reviewsHref}
+          className={reviewsPillClass}
+          onClick={(event) => {
+            if (!shouldHandlePlaceSpaNavClick(event)) return;
+            event.preventDefault();
+            setMediaMode('REVIEWS');
+          }}
+        >
+          <PenTool
+            className={`w-4 h-4 group-hover:scale-110 transition-transform ${isLightScrollChrome ? 'text-purple-600' : 'text-purple-400'}`}
+          />
+          <span className="text-xs font-bold whitespace-nowrap">{t('place.nav.reviews')}</span>
+        </Link>
+      )
+    ) : (
+      <button
+        type="button"
+        onClick={() => setMediaMode(mediaMode === 'REVIEWS' ? 'GALLERY' : 'REVIEWS')}
+        className={reviewsPillClass}
+      >
+        {mediaMode === 'REVIEWS' ? (
+          <ImageIcon className="w-4 h-4 group-hover:scale-110 transition-transform" />
+        ) : (
+          <PenTool
+            className={`w-4 h-4 group-hover:scale-110 transition-transform ${isLightScrollChrome ? 'text-purple-600' : 'text-purple-400'}`}
+          />
+        )}
+        <span className="text-xs font-bold whitespace-nowrap">
+          {mediaMode === 'REVIEWS' ? t('place.nav.galleryBack') : t('place.nav.reviews')}
+        </span>
+      </button>
+    );
 
   return (
     <div
@@ -93,24 +152,7 @@ const PlaceMobileSecondaryNav = ({
           {mediaMode === 'VIDEO' ? t('place.nav.galleryBack') : t('place.nav.youtube')}
         </span>
       </button>
-      <button
-        type="button"
-        onClick={() => setMediaMode(mediaMode === 'REVIEWS' ? 'GALLERY' : 'REVIEWS')}
-        className={`px-3 py-1.5 rounded-full transition-all duration-300 flex items-center gap-1.5 group shrink-0 active:scale-95 ${
-          mediaMode === 'REVIEWS' ? activePill : inactivePill
-        }`}
-      >
-        {mediaMode === 'REVIEWS' ? (
-          <ImageIcon className="w-4 h-4 group-hover:scale-110 transition-transform" />
-        ) : (
-          <PenTool
-            className={`w-4 h-4 group-hover:scale-110 transition-transform ${isLightScrollChrome ? 'text-purple-600' : 'text-purple-400'}`}
-          />
-        )}
-        <span className="text-xs font-bold whitespace-nowrap">
-          {mediaMode === 'REVIEWS' ? t('place.nav.galleryBack') : t('place.nav.reviews')}
-        </span>
-      </button>
+      {reviewsNav}
     </div>
   );
 };

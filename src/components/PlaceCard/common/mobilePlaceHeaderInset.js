@@ -24,6 +24,10 @@ export const mobilePlaceHeaderScrollPadding =
 export const mobilePlaceFooterScrollPadding =
   'pb-24 max-md:landscape:pb-[env(safe-area-inset-bottom,0px)]';
 
+/** 리뷰 — 하단 연관 칩(pb-8)에 빈 목록 문구가 가리지 않게 */
+export const mobilePlaceReviewsFooterScrollPadding =
+  'pb-40 max-md:landscape:pb-[env(safe-area-inset-bottom,0px)]';
+
 /** 갤러리 그리드 — 연관바가 조금 더 높음 */
 export const mobilePlaceGalleryFooterScrollPadding =
   'pb-28 max-md:landscape:pb-[env(safe-area-inset-bottom,0px)]';

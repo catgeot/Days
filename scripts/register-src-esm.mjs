@@ -12,6 +12,8 @@ globalThis.__VITE_ENV__ = {
   VITE_GATEO_FESTIVAL_DATE_CHIP: process.env.VITE_GATEO_FESTIVAL_DATE_CHIP || '',
   VITE_GATEO_LOCAL_INFO_ROLLOUT: process.env.VITE_GATEO_LOCAL_INFO_ROLLOUT || '',
   VITE_GATEO_FESTIVAL_ROAD: process.env.VITE_GATEO_FESTIVAL_ROAD || '',
+  VITE_GATEO_KOGL_REELS: process.env.VITE_GATEO_KOGL_REELS || '',
+  VITE_GATEO_REELS_BASE_URL: process.env.VITE_GATEO_REELS_BASE_URL || '',
 };
 
 register('./src-resolve-loader.mjs', import.meta.url);

@@ -13,7 +13,7 @@ import PreTravelChecklist from './planner/components/PreTravelChecklist';
 import JourneyTimeline from './planner/components/JourneyTimeline';
 import ToolkitCard from './planner/components/ToolkitCard';
 import { AiGeneratedBanner } from '../common/PlaceVerifiedFacts';
-import { resolveVerifiedFacts } from '../../../data/placeVerifiedFacts/cairo.js';
+import { resolveVerifiedFacts } from '../../../data/placeVerifiedFacts/index.js';
 import AiraloBannerWidget from './planner/components/AiraloBannerWidget';
 import HolaflyBannerWidget from './planner/components/HolaflyBannerWidget';
 import RentalPickupBanner from './planner/components/RentalPickupBanner';
@@ -27,7 +27,6 @@ import {
 
 const TOOLKIT_ERROR_MESSAGE_KEY = {
     badRequest: 'place.planner.toolkit.errorBadRequest',
-    unauthorized: 'place.planner.toolkit.errorUnauthorized',
     forbidden: 'place.planner.toolkit.errorForbidden',
     rateLimit: 'place.planner.toolkit.errorRateLimit',
     generic: 'place.planner.toolkit.errorGeneric',
@@ -37,7 +36,11 @@ import PlannerStageNav from './planner/components/PlannerStageNav';
 import { TripcomFlightSearchProvider } from './planner/TripcomFlightSearchContext';
 import RelatedTravelSpots from '../RelatedTravelSpots';
 import TravelAgencyDirectory from '../../travelAgencies/TravelAgencyDirectory';
-import { getEssentialGuide, isToolkitLocationMismatch } from '../../../utils/toolkitPlaceIdResolve';
+import { isToolkitLocationMismatch } from '../../../utils/toolkitPlaceIdResolve';
+import {
+    hasStoredToolkitRow,
+    resolvePlannerGuideForDisplay,
+} from './planner/plannerGuideDisplay.js';
 import { shouldShowFerryCard } from '../../../utils/ferryBookingMatch';
 import { mergeCanonicalTravelSpot, getPlaceStableKey } from '../../../utils/travelSpotResolve';
 import {
@@ -111,10 +114,11 @@ const PlannerTab = ({
 
     const canonicalLocation = useMemo(() => mergeCanonicalTravelSpot(location), [location]);
 
-    // essential_guide가 {} 등 빈 객체여도 UI에 내용이 없도록 정규화
-    const guideData = getEssentialGuide(plannerData, canonicalLocation, locale);
+    const guideData = resolvePlannerGuideForDisplay(plannerData, canonicalLocation, locale);
+    const storedToolkit = hasStoredToolkitRow(plannerData, canonicalLocation, locale);
     const showFerryCard = shouldShowFerryCard(canonicalLocation?.slug);
     const toolkitMismatch = isToolkitLocationMismatch(plannerData, canonicalLocation, locale);
+    const showRunToolkitCta = !storedToolkit;
     const isUpdatingExisting = !!guideData;
     const localizedPlaceName = getLocalizedPlaceName(canonicalLocation, locale) || canonicalLocation?.name || '';
     const loadingMessagesNew = t('place.planner.loading.new', { returnObjects: true });
@@ -433,14 +437,16 @@ const PlannerTab = ({
                     )}
                 </p>
                 <div className="mb-6 w-full max-w-sm">{rentalPickupBanner}</div>
+                {showRunToolkitCta ? (
                 <button
                     type="button"
-                    onClick={handleRemoteUpdate}
+                    onClick={() => handleRequestToolkitInfo(location?.name, false)}
                     className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-full font-bold shadow-lg transition-colors text-sm"
                 >
                     <Sparkles size={16} />
                     <span>{t('place.planner.runToolkit')}</span>
                 </button>
+                ) : null}
                 {toolkitErrorNotice}
                 <div className="mt-8 w-full text-left">
                     <TravelAgencyDirectory variant="planner" />

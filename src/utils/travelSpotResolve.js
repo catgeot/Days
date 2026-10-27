@@ -464,16 +464,22 @@ function softMergeUiPlaceCountry(location, spot) {
   const needsCountry =
     isPlaceholderCountry(location.country) || isPlaceholderCountry(location.country_en);
   if (!needsCountry) return location;
-  return {
+  const visitorKey = normalizePlaceKey(location.name_ko || location.name);
+  const spotKeys = [spot.slug, spot.name, spot.name_en].map((v) => normalizePlaceKey(v)).filter(Boolean);
+  const distinctVisitor = visitorKey && spotKeys.length > 0 && !spotKeys.includes(visitorKey);
+  const next = {
     ...location,
     country: preferConcreteCountry(location.country, spot.country),
     country_en: preferConcreteCountry(location.country_en, spot.country_en),
-    galleryRegionSpot: location.galleryRegionSpot || {
+  };
+  if (!distinctVisitor) {
+    next.galleryRegionSpot = location.galleryRegionSpot || {
       slug: spot.slug,
       name: spot.name,
       name_en: spot.name_en,
-    },
-  };
+    };
+  }
+  return next;
 }
 
 /** 검색·핀·지오코딩 location을 SSOT travelSpots 행으로 병합 */

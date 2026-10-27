@@ -37,6 +37,7 @@ test('recommended strip uses thisMonth default; window30 pre-filter hides it', (
     areaCode: 'all',
     cityName: 'all',
     timeTab: defaultFestivalHubTimeTab(),
+    instagramStripEligible: true,
   });
   assert.equal(landing.show, true);
   const prefiltered = resolveSocialPromoPresentation(row, {
@@ -44,6 +45,7 @@ test('recommended strip uses thisMonth default; window30 pre-filter hides it', (
     areaCode: 'all',
     cityName: 'all',
     timeTab: 'window30',
+    instagramStripEligible: true,
   });
   assert.equal(prefiltered.show, false);
 });
