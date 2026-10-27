@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback, useState } from 'react';
+import React, { useMemo, useCallback, useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Landmark, ChevronRight, Sparkles, Compass, MapPin } from 'lucide-react';
@@ -6,12 +6,20 @@ import { resolveScenicSpotForPlace } from '../../../pages/Home/lib/placeScenicGa
 import { listRegionalScenicPlaceCardsIfEnabled } from '../../../pages/Home/lib/placeScenicPlaceLinksRollout';
 import { resolveListImageUrl } from '../../../utils/listImageUrl';
 
+const SCENIC_THUMB_LOAD_TIMEOUT_MS = 8000;
+
 function ScenicSpotThumb({ imageUrl }) {
   const [broken, setBroken] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const resolvedSrc = imageUrl ? resolveListImageUrl(imageUrl, { role: 'list' }) : '';
   const showFallback = !resolvedSrc || broken;
   const showLoading = Boolean(resolvedSrc) && !broken && !loaded;
+
+  useEffect(() => {
+    if (!resolvedSrc || broken || loaded) return undefined;
+    const timer = setTimeout(() => setBroken(true), SCENIC_THUMB_LOAD_TIMEOUT_MS);
+    return () => clearTimeout(timer);
+  }, [resolvedSrc, broken, loaded]);
 
   const placeholder = (
     <div
@@ -171,7 +179,10 @@ export default function PlaceScenicGateway({
                   to={spot.href}
                   className="group flex flex-col gap-1.5 rounded-xl border border-white/10 bg-black/30 p-2 hover:border-amber-400/35 hover:bg-amber-500/10 transition-colors"
                 >
-                  <ScenicSpotThumb imageUrl={spot.imageUrl} />
+                  <ScenicSpotThumb
+                    key={spot.imageUrl || spot.id || spot.placeSlug}
+                    imageUrl={spot.imageUrl}
+                  />
                   <span className="text-[12px] font-semibold leading-snug text-gray-100 group-hover:text-amber-50 break-keep text-center">
                     {spot.name}
                   </span>
