@@ -141,6 +141,29 @@ export function resolveHubAttraction(query) {
   return hit;
 }
 
+/** POI 표시명 → 허브 시군명 (방문 place_id 오탐·prefix 검색용). */
+export function resolveHubParentCityForPoiName(query) {
+  const exact = resolveHubAttraction(query);
+  if (exact?.hub?.name) return exact.hub.name;
+  const key = normalizeKey(query);
+  if (!key) return '';
+  for (const hub of HUBS) {
+    for (const attraction of hub.attractions || []) {
+      if (isHiddenHubScenicAttraction(hub.hubId, attraction.name)) continue;
+      const names = [attraction.name, attraction.name_en, ...(attraction.aliases || [])].filter(
+        Boolean,
+      );
+      const hit = names.some((n) => {
+        const nk = normalizeKey(n);
+        if (!nk) return false;
+        return nk === key || nk.startsWith(key) || (key.length >= 2 && key.startsWith(nk));
+      });
+      if (hit) return hub.name;
+    }
+  }
+  return '';
+}
+
 /**
  * 타이핑 prefix — hub name/alias 또는 명소명 시작.
  * @param {string} query

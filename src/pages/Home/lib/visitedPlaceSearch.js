@@ -7,6 +7,7 @@ import { getPlaceStatsId, isPlaceholderCountry } from '../../../utils/travelSpot
 import {
   placeUrlSlug,
   resolveCityAttractionHub,
+  resolveHubParentCityForPoiName,
   resolveHubPlaceFromSlug,
 } from './cityAttractionHubs.js';
 import {
@@ -254,10 +255,11 @@ function visitedIdentityForRow(placeId, nameKo, nameEn) {
     const koToken = normalizeVisitedSearchKey(ko);
     if (koToken && !knownTokens.includes(koToken)) {
       const enIsCounty = knownTokens.includes(normalizeVisitedSearchKey(nameEn));
+      const poiParent = resolveHubParentCityForPoiName(ko);
       return {
         slug: placeUrlSlug(enIsCounty ? '' : nameEn, ko),
         nameEn: enIsCounty ? '' : nameEn,
-        parentCity: known.name || '',
+        parentCity: poiParent || (enIsCounty ? '' : known.name || ''),
       };
     }
   }
