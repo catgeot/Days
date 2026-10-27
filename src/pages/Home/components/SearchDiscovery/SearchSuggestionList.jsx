@@ -152,8 +152,14 @@ function SuggestionIcon({ kind, size = 16 }) {
   return <MapPin size={size} className="text-white/70 shrink-0" />;
 }
 
-function searchCandidateThumbUrl(item) {
+function resolveSearchCandidateThumbUrl(item) {
+  const direct = String(item?.thumbUrl || item?.imageUrl || '').trim();
+  if (direct) return direct;
   return String(resolveSearchScenicMedia(item).imageUrl || '').trim();
+}
+
+function searchCandidateThumbUrl(item) {
+  return resolveSearchCandidateThumbUrl(item);
 }
 
 function useMissingTourAttractionThumbs(items) {
@@ -213,28 +219,78 @@ function useMissingTourAttractionThumbs(items) {
   return thumbByIndex;
 }
 
-function SearchResultThumb({ item, sizeClass, kind, iconSize = 16 }) {
-  const url = searchCandidateThumbUrl(item);
+function SearchResultThumb({ item, sizeClass, kind, iconSize = 16, selectionCard = false }) {
+  const resolvedUrl = resolveSearchCandidateThumbUrl(item);
+  const [src, setSrc] = useState(resolvedUrl);
+  const [pending, setPending] = useState(Boolean(resolvedUrl));
   const [failed, setFailed] = useState(false);
-  if (!url || failed) {
+  const [fallbackTried, setFallbackTried] = useState(false);
+
+  useEffect(() => {
+    setSrc(resolvedUrl);
+    setPending(Boolean(resolvedUrl));
+    setFailed(false);
+    setFallbackTried(false);
+  }, [resolvedUrl, item?.id, item?.contentId]);
+
+  const contentId = String(item?.contentId || '').trim();
+
+  const handleError = () => {
+    if (fallbackTried || !/^\d{1,32}$/.test(contentId)) {
+      setPending(false);
+      setFailed(true);
+      return;
+    }
+    setFallbackTried(true);
+    setPending(true);
+    fetchTourApiFirstImage(contentId).then((url) => {
+      const next = String(url || '').trim();
+      if (!next) {
+        setPending(false);
+        setFailed(true);
+        return;
+      }
+      rememberKoreaTourAttractionFirstImage(contentId, next);
+      setSrc(next);
+      setFailed(false);
+    });
+  };
+
+  if (!src || failed) {
     return (
       <div
-        className={`flex shrink-0 items-center justify-center rounded-xl bg-white/10 ${sizeClass}`}
+        className={`flex shrink-0 items-center justify-center rounded-xl bg-white/[0.08] ${sizeClass}`}
         aria-hidden="true"
       >
         <SuggestionIcon kind={kind} size={iconSize} />
       </div>
     );
   }
+
+  const eager = selectionCard;
+
   return (
-    <img
-      src={url}
-      alt=""
-      loading="lazy"
-      decoding="async"
-      onError={() => setFailed(true)}
-      className={`shrink-0 rounded-xl object-cover bg-white/10 ${sizeClass}`}
-    />
+    <div className={`relative shrink-0 ${sizeClass}`} aria-hidden="true">
+      {pending ? (
+        <div
+          className={`absolute inset-0 z-[1] flex items-center justify-center rounded-xl bg-white/[0.08] ${sizeClass}`}
+        >
+          <MapPin size={iconSize} className="shrink-0 text-white/45" />
+        </div>
+      ) : null}
+      <img
+        src={src}
+        alt=""
+        loading={eager ? 'eager' : 'lazy'}
+        fetchPriority={eager ? 'high' : 'auto'}
+        decoding="async"
+        onLoad={() => setPending(false)}
+        onError={handleError}
+        className={`rounded-xl object-cover bg-white/10 ${sizeClass} transition-opacity duration-150 ${
+          pending ? 'opacity-0' : 'opacity-100'
+        }`}
+      />
+    </div>
   );
 }
 
@@ -587,6 +643,7 @@ export function SearchDisambiguationCards({
                 kind={item.kind}
                 iconSize={22}
                 sizeClass="h-20 w-20 sm:h-24 sm:w-24"
+                selectionCard
               />
               <div className="min-w-0 flex-1 py-0.5">
               <div className="flex items-center gap-2 mb-1 flex-wrap">
