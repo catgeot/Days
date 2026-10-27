@@ -14,15 +14,17 @@ const HAS_LIVE =
   Boolean(process.env.VITE_SUPABASE_URL) &&
   !String(process.env.VITE_SUPABASE_URL).includes('example.supabase.co');
 
+const { defaultBrowserType: _iphone12Browser, ...iphone12 } = devices['iPhone 12'];
+
+test.use({
+  ...iphone12,
+  viewport: { width: 390, height: 844 },
+  deviceScaleFactor: 1,
+  locale: 'ko-KR',
+});
+
 test.describe('Festival nearby load-more scroll — WebKit 390 touch', () => {
   test.skip(!HAS_LIVE, 'needs production VITE_SUPABASE_* at build time (not CI placeholder)');
-
-  test.use({
-    ...devices['iPhone 12'],
-    viewport: { width: 390, height: 844 },
-    deviceScaleFactor: 1,
-    locale: 'ko-KR',
-  });
 
   test('tap 더보기 ×3 keeps scrollTop within 20px after settle', async ({ page }) => {
     await page.goto(`/korea/?festival=${FESTIVAL_ID}`, { waitUntil: 'domcontentloaded', timeout: 120_000 });
