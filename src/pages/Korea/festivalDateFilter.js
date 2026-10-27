@@ -263,18 +263,25 @@ export function pickLatestFestivalInterval(intervals) {
  * @param {string} [todayYmd]
  * @param {string} [locale] accepted so list/detail callers can pass UI locale
  */
+function festivalEndedMark(endYmd, todayYmd, locale) {
+  if (!isYmd(endYmd) || !isYmd(todayYmd) || endYmd >= todayYmd) return '';
+  return String(locale || '').startsWith('en') ? 'Ended' : '종료';
+}
+
 export function formatFestivalDetailDateRange(
   startYmd,
   endYmd,
   todayYmd = seoulTodayYmd(),
   locale = 'ko',
 ) {
-  void locale;
   const start = String(startYmd || '');
   const endRaw = String(endYmd || '');
   if (!isYmd(start) && !isYmd(endRaw)) return '';
-  return formatFestivalRangeLabel(start, endRaw || start, todayYmd)
+  const label = formatFestivalRangeLabel(start, endRaw || start, todayYmd)
     || formatFestivalMonthDay(isYmd(start) ? start : endRaw, todayYmd);
+  if (!label) return '';
+  const mark = festivalEndedMark(endRaw, todayYmd, locale);
+  return mark ? `${label} \u00b7 ${mark}` : label;
 }
 
 /**

@@ -899,12 +899,13 @@ function FestivalRow({
           </div>
           {range && (
             <p
-              className={`text-amber-700 font-bold flex items-center gap-1 ${
+              data-festival-row-date=""
+              className={`min-w-0 whitespace-nowrap text-amber-700 font-bold flex items-center gap-1 ${
                 large ? 'text-xs' : 'text-[11px]'
               }`}
             >
-              <CalendarDays size={large ? 13 : 11} aria-hidden="true" />
-              {range}
+              <CalendarDays size={large ? 13 : 11} className="shrink-0" aria-hidden="true" />
+              <span className="min-w-0 truncate">{range}</span>
             </p>
           )}
           {item.addr1 && (
