@@ -14,6 +14,23 @@ import { festivalListDisplayTitleLines } from '../festivalDisplayTitle.js';
 import { festivalGridPlaceLabel } from '../festivalGridPlaceLabel.js';
 import { hasFestivalThumbnail } from '../socialPromoFestivalsLogic.js';
 
+function FestivalGridThumbLoadingShimmer() {
+  return (
+    <span
+      className="pointer-events-none absolute inset-0 overflow-hidden"
+      data-festival-grid-thumb-loading=""
+      aria-hidden="true"
+    >
+      <span
+        className="absolute inset-[-12%] bg-gradient-to-br from-amber-50 via-stone-200/80 to-orange-100 blur-md"
+      />
+      <span
+        className="absolute inset-0 animate-pulse bg-gradient-to-r from-white/0 via-white/80 to-white/0"
+      />
+    </span>
+  );
+}
+
 /**
  * @param {{
  *   item: Record<string, unknown>,
@@ -25,6 +42,7 @@ import { hasFestivalThumbnail } from '../socialPromoFestivalsLogic.js';
  *   areaCode?: string,
  *   cityName?: string,
  *   priorityThumb?: boolean,
+ *   thumbLoadKey?: string,
  * }} props
  */
 export default function FestivalGridPhotoCard({
@@ -37,6 +55,7 @@ export default function FestivalGridPhotoCard({
   areaCode = 'all',
   cityName = 'all',
   priorityThumb = false,
+  thumbLoadKey = '',
 }) {
   const { t } = useTranslation();
   const { isEnglish, locale } = useLocale();
@@ -100,16 +119,8 @@ export default function FestivalGridPhotoCard({
             </span>
           ) : (
             <>
-              {!thumbDecoded ? (
-                <span
-                  className="absolute inset-0 z-0"
-                  data-festival-grid-thumb-loading=""
-                  aria-hidden="true"
-                >
-                  <FestivalListThumbFallback size="lg" />
-                </span>
-              ) : null}
-              {showThumbImage && !bgBroken ? (
+              {!thumbDecoded ? <FestivalGridThumbLoadingShimmer /> : null}
+              {showThumbImage && !bgBroken && thumbDecoded ? (
                 <span
                   className="pointer-events-none absolute inset-0 z-0 overflow-hidden"
                   aria-hidden="true"
@@ -127,6 +138,7 @@ export default function FestivalGridPhotoCard({
                 </span>
               ) : null}
               <FestivalPhotoFrame
+                key={thumbLoadKey || activeUrl}
                 src={activeUrl}
                 alt=""
                 loading={priorityThumb ? 'eager' : 'lazy'}
@@ -134,7 +146,7 @@ export default function FestivalGridPhotoCard({
                 decoding="async"
                 referrerPolicy="no-referrer"
                 className="absolute inset-0 z-[1] h-full w-full object-contain"
-                pendingShimmer={false}
+                pendingShimmer={!thumbDecoded}
                 fallback={
                   <span className="absolute inset-0" data-festival-grid-thumb-fallback="">
                     <FestivalListThumbFallback size="lg" />

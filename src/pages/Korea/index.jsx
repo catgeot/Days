@@ -64,8 +64,12 @@ import {
 } from './festivalListViewSession.js';
 import {
   FESTIVAL_HUB_GRID_CLASS,
-  FESTIVAL_HUB_GRID_EAGER_THUMB_COUNT,
+  FESTIVAL_HUB_GRID_MOBILE_SCROLL_PAD_CLASS,
 } from './festivalHubGridLayout.js';
+import {
+  festivalHubGridThumbLoadKey,
+  isFestivalHubGridEagerThumb,
+} from './festivalHubGridEagerThumb.js';
 import FestivalGridPhotoCard, {
   FestivalGridSkeleton,
 } from './components/FestivalGridPhotoCard.jsx';
@@ -966,6 +970,7 @@ function FestivalEntries({
   nearKmByContentId,
   areaCode,
   cityName,
+  thumbListEpoch = '',
 }) {
   if (useGrid) {
     return (
@@ -974,7 +979,12 @@ function FestivalEntries({
           <FestivalGridPhotoCard
             key={festivalKey(item)}
             item={item}
-            priorityThumb={index < FESTIVAL_HUB_GRID_EAGER_THUMB_COUNT}
+            priorityThumb={isFestivalHubGridEagerThumb(index)}
+            thumbLoadKey={festivalHubGridThumbLoadKey({
+              listEpoch: thumbListEpoch,
+              index,
+              contentId: item?.contentId,
+            })}
             areaCode={areaCode}
             cityName={cityName}
             active={
@@ -3519,6 +3529,8 @@ export default function KoreaFestivalHub() {
                 className={`${
                   useFestivalGrid ? 'space-y-4' : 'space-y-2'
                 } page-scroll-end-pad ${
+                  useFestivalGrid ? FESTIVAL_HUB_GRID_MOBILE_SCROLL_PAD_CLASS : ''
+                } ${
                   useFestivalGrid ? 'px-2.5 pt-1' : 'px-3 pt-3'
                 } ${
                   mapSplitActive
@@ -3557,6 +3569,7 @@ export default function KoreaFestivalHub() {
                         nearKmByContentId={nearKmByContentId}
                         areaCode={areaCode}
                         cityName={cityName}
+                        thumbListEpoch={listFilterScrollKey}
                       />
                     </div>
                   ))
@@ -3624,6 +3637,7 @@ export default function KoreaFestivalHub() {
                         nearKmByContentId={nearKmByContentId}
                         areaCode={areaCode}
                         cityName={cityName}
+                        thumbListEpoch={listFilterScrollKey}
                       />
                     </div>
                   ) : null}
@@ -3646,6 +3660,7 @@ export default function KoreaFestivalHub() {
                       nearKmByContentId={nearKmByContentId}
                       areaCode={areaCode}
                       cityName={cityName}
+                      thumbListEpoch={listFilterScrollKey}
                     />
                   ) : (
                     <>

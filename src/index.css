@@ -20,6 +20,16 @@ body {
   );
 }
 
+@media (max-width: 767px) {
+  .festival-hub-grid-list-scroll-pad.page-scroll-end-pad {
+    padding-bottom: max(
+      12rem,
+      calc(50vh + 3.5rem),
+      calc(env(safe-area-inset-bottom, 0px) + 12rem)
+    );
+  }
+}
+
 /* PlaceCard 탭별 touch-action SSOT */
 .place-scroll-pan-y {
   touch-action: pan-y;

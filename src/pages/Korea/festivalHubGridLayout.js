@@ -4,3 +4,7 @@ export const FESTIVAL_HUB_GRID_CLASS =
 
 /** Flat nationwide grid: eager-load thumbs for first screen (2× mobile · up to 4× desktop). */
 export const FESTIVAL_HUB_GRID_EAGER_THUMB_COUNT = 12;
+
+/** Extra list bottom pad on mobile so fixed 「위로」 does not cover grid meta lines. */
+export const FESTIVAL_HUB_GRID_MOBILE_SCROLL_PAD_CLASS =
+  'festival-hub-grid-list-scroll-pad';
