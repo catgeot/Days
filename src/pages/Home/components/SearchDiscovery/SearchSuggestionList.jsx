@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { MapPin, Landmark, Building2, Compass, Loader2, ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
 import {
@@ -152,8 +152,14 @@ function SuggestionIcon({ kind, size = 16 }) {
   return <MapPin size={size} className="text-white/70 shrink-0" />;
 }
 
-function searchCandidateThumbUrl(item) {
+function resolveSearchCandidateThumbUrl(item) {
+  const direct = String(item?.thumbUrl || item?.imageUrl || '').trim();
+  if (direct) return direct;
   return String(resolveSearchScenicMedia(item).imageUrl || '').trim();
+}
+
+function searchCandidateThumbUrl(item) {
+  return resolveSearchCandidateThumbUrl(item);
 }
 
 function useMissingTourAttractionThumbs(items) {
@@ -213,28 +219,91 @@ function useMissingTourAttractionThumbs(items) {
   return thumbByIndex;
 }
 
-function SearchResultThumb({ item, sizeClass, kind, iconSize = 16 }) {
-  const url = searchCandidateThumbUrl(item);
+function SearchResultThumb({ item, sizeClass, kind, iconSize = 16, selectionCard = false }) {
+  const resolvedUrl = resolveSearchCandidateThumbUrl(item);
+  const [src, setSrc] = useState(resolvedUrl);
+  const [loaded, setLoaded] = useState(false);
   const [failed, setFailed] = useState(false);
-  if (!url || failed) {
+  const [fallbackTried, setFallbackTried] = useState(false);
+  const imgRef = useRef(null);
+
+  useEffect(() => {
+    setSrc(resolvedUrl);
+    setLoaded(false);
+    setFailed(false);
+    setFallbackTried(false);
+  }, [resolvedUrl, item?.id, item?.contentId]);
+
+  useLayoutEffect(() => {
+    const el = imgRef.current;
+    if (!el || !src || failed) return;
+    if (el.complete && el.naturalWidth > 0) setLoaded(true);
+  }, [src, failed]);
+
+  useEffect(() => {
+    if (!src || loaded || failed) return undefined;
+    const timer = window.setTimeout(() => setFailed(true), 6000);
+    return () => window.clearTimeout(timer);
+  }, [src, loaded, failed]);
+
+  const contentId = String(item?.contentId || '').trim();
+  const pending = Boolean(src) && !loaded && !failed;
+
+  const handleError = () => {
+    if (fallbackTried || !/^\d{1,32}$/.test(contentId)) {
+      setFailed(true);
+      return;
+    }
+    setFallbackTried(true);
+    fetchTourApiFirstImage(contentId)
+      .then((url) => {
+        const next = String(url || '').trim();
+        if (!next) {
+          setFailed(true);
+          return;
+        }
+        rememberKoreaTourAttractionFirstImage(contentId, next);
+        setLoaded(false);
+        setFailed(false);
+        setSrc(next);
+      })
+      .catch(() => setFailed(true));
+  };
+
+  if (!src || failed) {
     return (
       <div
-        className={`flex shrink-0 items-center justify-center rounded-xl bg-white/10 ${sizeClass}`}
+        className={`flex shrink-0 items-center justify-center rounded-xl bg-white/[0.08] ${sizeClass}`}
         aria-hidden="true"
       >
         <SuggestionIcon kind={kind} size={iconSize} />
       </div>
     );
   }
+
+  const eager = selectionCard;
+
   return (
-    <img
-      src={url}
-      alt=""
-      loading="lazy"
-      decoding="async"
-      onError={() => setFailed(true)}
-      className={`shrink-0 rounded-xl object-cover bg-white/10 ${sizeClass}`}
-    />
+    <div className={`relative shrink-0 overflow-hidden rounded-xl ${sizeClass}`} aria-hidden="true">
+      <div
+        className={`absolute inset-0 z-0 flex items-center justify-center rounded-xl bg-white/[0.08] ${sizeClass}`}
+      >
+        <SuggestionIcon kind={kind} size={iconSize} />
+      </div>
+      <img
+        ref={imgRef}
+        src={src}
+        alt=""
+        loading={eager ? 'eager' : 'lazy'}
+        fetchPriority={eager ? 'high' : 'auto'}
+        decoding="async"
+        onLoad={() => setLoaded(true)}
+        onError={handleError}
+        className={`relative z-[1] rounded-xl object-cover bg-transparent ${sizeClass} transition-opacity duration-150 ${
+          pending ? 'opacity-0' : 'opacity-100'
+        }`}
+      />
+    </div>
   );
 }
 
@@ -587,6 +656,7 @@ export function SearchDisambiguationCards({
                 kind={item.kind}
                 iconSize={22}
                 sizeClass="h-20 w-20 sm:h-24 sm:w-24"
+                selectionCard
               />
               <div className="min-w-0 flex-1 py-0.5">
               <div className="flex items-center gap-2 mb-1 flex-wrap">
