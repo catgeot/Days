@@ -32,6 +32,7 @@ import {
   normalizeMrtStayDates,
 } from '../../utils/fetchMrtStays';
 import StripListLargeToggle from './StripListLargeToggle';
+import { EVENT_STRIP_SCROLL_ROW_CLASS, eventStripCardShellClass } from './eventStripCardLayout';
 import { resolveListImageUrl } from '../../utils/listImageUrl';
 import { MRT_HOME_MYLINK_ID } from '../Home/data/mrtPackageThemeLinks';
 import { resolveFlightDepartureIataForTrip } from '../Home/lib/flightOriginPreference.js';
@@ -109,9 +110,7 @@ function StayCard({ item, price, large = false }) {
   const productHref = item.productUrl ? buildMrtMylinkUrl(item.productUrl) : null;
   if (!productHref) return null;
 
-  const shellClass = large
-    ? 'flex w-[220px] shrink-0 flex-col overflow-hidden rounded-xl border border-stone-200 bg-white shadow-sm sm:w-[252px]'
-    : 'flex w-[148px] shrink-0 flex-col overflow-hidden rounded-xl border border-stone-200 bg-white shadow-sm sm:w-[168px]';
+  const shellClass = eventStripCardShellClass({ large });
 
   return (
     <div className={shellClass}>
@@ -596,7 +595,7 @@ export default function EventStayStrip({
         ) : null}
 
         {status === 'ready' && items?.length ? (
-          <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
+          <div className={EVENT_STRIP_SCROLL_ROW_CLASS}>
             {items.map((item) => (
               <StayCard
                 key={item.itemId || item.productUrl || item.itemName}
