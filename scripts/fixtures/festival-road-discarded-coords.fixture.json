@@ -1,0 +1,11 @@
+{
+  "description": "Expected discards when in-period festival coords are >60km from hub center (see festivalRoadMapPoints).",
+  "samples": [
+    {
+      "hubId": "wonju",
+      "mapx": "126.45",
+      "mapy": "37.45",
+      "reason": "festival_coord_too_far"
+    }
+  ]
+}

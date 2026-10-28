@@ -3,6 +3,7 @@ import { resolveCityAttractionHub } from '../../Home/lib/cityAttractionHubs.js';
 import { listsForHub } from '../../Home/lib/koreaLocalScenicLists.js';
 import { areaCodeForHubId } from '../koreaHubSeeds.js';
 import { matchSigungu, resolveFestivalItemSidoCode } from '../koreaAreaFilter.js';
+import { festivalLngLat } from '../koreaFestivalCorridors.js';
 import {
   festivalDateSheetWeekRangeFromYmd,
   isYmd,
@@ -10,8 +11,11 @@ import {
 } from '../festivalDateFilter.js';
 import { rangesOverlap } from '../festivalTimeFilter.js';
 
-/** Fixed map slot height. The line is drawn in a later pass, not here. */
+/** Fixed map slot height. The line is a separate chunk, drawn only with 2+ points. */
 export const FESTIVAL_ROAD_MAP_SLOT_PX = 160;
+
+/** Fewer points than this: the slot is not rendered. */
+export const FESTIVAL_ROAD_MAP_MIN_POINTS = 2;
 
 const NEARBY_LABEL_LIMIT = 4;
 
@@ -137,7 +141,7 @@ export function beltForFestival(item, belts = FESTIVAL_ROAD_BELTS) {
 }
 
 /**
- * Numbered stops in belt order. Empty stops stay. Out-of-period festivals stay, marked dim.
+ * Numbered stops in belt order. Empty stops stay; out-of-period rows stay in data but UI/map ignore them.
  * @param {object | null | undefined} belt
  * @param {object[]} festivals
  * @param {{ startYmd?: string, endYmd?: string }} [range]
@@ -191,23 +195,75 @@ export function festivalRoadAllEmpty(legs) {
 }
 
 /**
+ * Month/day of a festival start, for an out-of-period row. Null when the date is missing.
+ * @param {object | null | undefined} item
+ * @returns {{ month: number, day: number } | null}
+ */
+export function festivalRoadStartMonthDay(item) {
+  const ymd = String(item?.eventStartDate || '');
+  if (!isYmd(ymd)) return null;
+  return {
+    month: Number(ymd.slice(4, 6)),
+    day: Number(ymd.slice(6, 8)),
+  };
+}
+
+/**
+ * Local scenic sights for a gray stop. contentId opens place detail; lat/lng is the map fallback.
+ * @param {string} hubId
+ * @param {number} [limit]
+ */
+export function beltStopNearbySights(hubId, limit = NEARBY_LABEL_LIMIT) {
+  const cap = Math.max(0, Number(limit) || 0);
+  const id = String(hubId || '').trim();
+  /** @type {{ name: string, hubId: string, listId: string, contentId: string, lat: number | null, lng: number | null }[]} */
+  const sights = [];
+  const seen = new Set();
+  for (const list of listsForHub(id)) {
+    for (const member of list?.members || []) {
+      const name = String(member?.attractionName || '').trim();
+      if (!name || seen.has(name)) continue;
+      seen.add(name);
+      const lat = Number(member?.lat);
+      const lng = Number(member?.lng);
+      sights.push({
+        name,
+        hubId: id,
+        listId: String(list?.listId || ''),
+        contentId: String(member?.contentId || '').trim(),
+        lat: Number.isFinite(lat) ? lat : null,
+        lng: Number.isFinite(lng) ? lng : null,
+      });
+      if (sights.length >= cap) return sights;
+    }
+  }
+  return sights;
+}
+
+/**
  * Local scenic names already used as 주변 볼거리. No extra empty row when none exist.
  * @param {string} hubId
  * @param {number} [limit]
  * @returns {string[]}
  */
 export function beltStopNearbyLabels(hubId, limit = NEARBY_LABEL_LIMIT) {
-  const cap = Math.max(0, Number(limit) || 0);
-  const names = [];
-  for (const list of listsForHub(hubId)) {
-    for (const member of list?.members || []) {
-      const name = String(member?.attractionName || '').trim();
-      if (!name || names.includes(name)) continue;
-      names.push(name);
-      if (names.length >= cap) return names;
-    }
+  return beltStopNearbySights(hubId, limit).map((sight) => sight.name);
+}
+
+/**
+ * Map link when a sight has no place detail id.
+ * @param {{ name?: string, lat?: number | null, lng?: number | null }} sight
+ * @returns {string}
+ */
+export function festivalRoadNearbyMapHref(sight) {
+  const lat = Number(sight?.lat);
+  const lng = Number(sight?.lng);
+  if (Number.isFinite(lat) && Number.isFinite(lng)) {
+    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${lat},${lng}`)}`;
   }
-  return names;
+  const name = String(sight?.name || '').trim();
+  if (!name) return '';
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(name)}`;
 }
 
 /**
@@ -215,28 +271,377 @@ export function beltStopNearbyLabels(hubId, limit = NEARBY_LABEL_LIMIT) {
  * @param {{ empty?: boolean, items?: { item: object, inPeriod: boolean }[] } | null | undefined} leg
  * @param {string[]} nearbyLabels
  */
-export function festivalRoadFill(leg, nearbyLabels) {
+export function festivalRoadFill(
+  leg,
+  nearbyLabels,
+  sheetFestivalContentId = '',
+  sheetOriginHubId = '',
+) {
   const labels = (Array.isArray(nearbyLabels) ? nearbyLabels : []).filter(Boolean);
+  const sheetId = String(sheetFestivalContentId || '').trim();
+  const originHubId = String(sheetOriginHubId || '').trim();
   if (!leg) {
     return { showNearby: false, showAccess: false, accessItem: null, nearbyLabels: [] };
   }
   const inPeriod = (leg.items || []).find((row) => row.inPeriod)?.item || null;
   const anyItem = leg.items?.[0]?.item || null;
+  const accessItem = leg.empty ? anyItem : inPeriod;
+  const accessId = String(accessItem?.contentId || '').trim();
+  const duplicateSheetAccess = Boolean(
+    (sheetId && accessId && sheetId === accessId)
+    || (originHubId && leg.hubId === originHubId),
+  );
   if (leg.empty) {
     if (labels.length) {
       return { showNearby: true, showAccess: false, accessItem: null, nearbyLabels: labels };
     }
     return {
       showNearby: false,
-      showAccess: Boolean(anyItem),
-      accessItem: anyItem,
+      showAccess: Boolean(accessItem) && !duplicateSheetAccess,
+      accessItem: duplicateSheetAccess ? null : accessItem,
       nearbyLabels: [],
     };
   }
   return {
     showNearby: labels.length > 0,
-    showAccess: Boolean(inPeriod),
-    accessItem: inPeriod,
+    showAccess: Boolean(inPeriod) && !duplicateSheetAccess,
+    accessItem: duplicateSheetAccess ? null : inPeriod,
     nearbyLabels: labels,
   };
+}
+
+/**
+ * @param {object | null | undefined} item
+ * @returns {{ lng: number, lat: number } | null}
+ */
+function festivalItemPoint(item) {
+  return festivalLngLat(item?.mapx, item?.mapy);
+}
+
+/** ~0.55° ≈ 60 km — discard in-period festival coords beyond this from the hub. */
+export const FESTIVAL_ROAD_MAX_HUB_FESTIVAL_DEG = 0.55;
+
+/** @type {object[]} */
+let festivalRoadDiscardedCoordLog = [];
+
+/** @returns {object[]} */
+export function festivalRoadTakeDiscardedCoords() {
+  const copy = [...festivalRoadDiscardedCoordLog];
+  festivalRoadDiscardedCoordLog = [];
+  return copy;
+}
+
+/**
+ * @param {object} entry
+ */
+function logDiscardedCoord(entry) {
+  festivalRoadDiscardedCoordLog.push(entry);
+  if (typeof console !== 'undefined' && console.warn) {
+    console.warn('[festival-road] discarded map coord', entry);
+  }
+}
+
+/**
+ * @param {{ lng: number, lat: number }} point
+ * @param {{ lng: number, lat: number } | null} hubPoint
+ */
+function festivalCoordWithinHub(point, hubPoint) {
+  if (!point || !hubPoint) return true;
+  const dLng = point.lng - hubPoint.lng;
+  const dLat = point.lat - hubPoint.lat;
+  return Math.hypot(dLng, dLat) <= FESTIVAL_ROAD_MAX_HUB_FESTIVAL_DEG;
+}
+
+/**
+ * @param {string} hubId
+ * @returns {{ lng: number, lat: number } | null}
+ */
+function hubCenterPoint(hubId) {
+  const hub = hubId ? resolveCityAttractionHub(hubId) : null;
+  return hub ? festivalLngLat(hub.lng, hub.lat) : null;
+}
+
+/**
+ * First scenic member on this stop that has a Korea coordinate.
+ * @param {string} hubId
+ * @returns {{ lng: number, lat: number, label: string } | null}
+ */
+function firstSightPoint(hubId) {
+  const hubPoint = hubCenterPoint(hubId);
+  for (const list of listsForHub(hubId)) {
+    for (const member of list?.members || []) {
+      const point = festivalLngLat(member?.lng, member?.lat);
+      if (!point) continue;
+      if (hubPoint && !festivalCoordWithinHub(point, hubPoint)) continue;
+      return { ...point, label: String(member?.attractionName || '').trim() };
+    }
+  }
+  return null;
+}
+
+/**
+ * Numbered pins in stop order. In-period festival, else any festival, else a sight, else the hub.
+ * @param {{ stopIndex?: number, hubId?: string, label?: string, items?: { item: object, inPeriod: boolean }[] }[]} legs
+ * @returns {{ stopIndex: number, hubId: string, label: string, kind: 'festival' | 'sight' | 'hub' | 'stop', lng: number, lat: number }[]}
+ */
+export function festivalRoadMapPoints(legs) {
+  /** @type {{ stopIndex: number, hubId: string, label: string, kind: 'festival' | 'sight' | 'hub' | 'stop', lng: number, lat: number }[]} */
+  const points = [];
+  for (const leg of legs || []) {
+    const rows = Array.isArray(leg?.items) ? leg.items : [];
+    const inPeriodRow = rows.find((row) => row?.inPeriod && festivalItemPoint(row.item));
+    const hubId = String(leg?.hubId || '');
+    const stopIndex = Number(leg?.stopIndex);
+    if (!Number.isFinite(stopIndex)) continue;
+    const hubPoint = hubCenterPoint(hubId);
+    if (inPeriodRow) {
+      const festivalPoint = festivalItemPoint(inPeriodRow.item);
+      if (festivalPoint && festivalCoordWithinHub(festivalPoint, hubPoint)) {
+        points.push({
+          stopIndex,
+          hubId,
+          label: String(inPeriodRow.item?.title || leg?.label || ''),
+          kind: 'festival',
+          lng: festivalPoint.lng,
+          lat: festivalPoint.lat,
+        });
+        continue;
+      }
+      if (festivalPoint && hubPoint) {
+        logDiscardedCoord({
+          hubId,
+          stopIndex,
+          reason: 'festival_coord_too_far',
+          lng: festivalPoint.lng,
+          lat: festivalPoint.lat,
+          hubLng: hubPoint.lng,
+          hubLat: hubPoint.lat,
+          contentId: String(inPeriodRow.item?.contentId || ''),
+        });
+      }
+      if (hubPoint) {
+        points.push({
+          stopIndex,
+          hubId,
+          label: String(leg?.label || ''),
+          kind: 'stop',
+          lng: hubPoint.lng,
+          lat: hubPoint.lat,
+        });
+        continue;
+      }
+    }
+    const sight = firstSightPoint(hubId);
+    if (sight) {
+      points.push({
+        stopIndex,
+        hubId,
+        label: sight.label || String(leg?.label || ''),
+        kind: 'sight',
+        lng: sight.lng,
+        lat: sight.lat,
+      });
+      continue;
+    }
+    if (!hubPoint) continue;
+    points.push({
+      stopIndex,
+      hubId,
+      label: String(leg?.label || hubId),
+      kind: 'hub',
+      lng: hubPoint.lng,
+      lat: hubPoint.lat,
+    });
+  }
+  return points;
+}
+
+/** Line and pins share belt stop order (1…n). */
+export function festivalRoadLineOrder(points) {
+  if (!Array.isArray(points) || points.length < 2) return points || [];
+  return [...points].sort((a, b) => a.stopIndex - b.stopIndex);
+}
+
+/**
+ * LineString vertices — only {@link festivalRoadMapPoints} display coordinates.
+ * @param {{ lng: number, lat: number, stopIndex?: number }[]} points
+ * @returns {[number, number][]}
+ */
+export function festivalRoadLineCoordinates(points) {
+  return festivalRoadLineOrder(points).map((point) => [point.lng, point.lat]);
+}
+
+/**
+ * GeoJSON line — vertices are exactly the numbered pin coordinates (no extra vertices).
+ * @param {{ lng: number, lat: number, stopIndex?: number }[]} points
+ */
+export function festivalRoadLineGeoJson(points) {
+  const ordered = festivalRoadLineOrder(points);
+  return {
+    type: 'Feature',
+    properties: {
+      stopIndexes: ordered.map((point) => point.stopIndex),
+    },
+    geometry: {
+      type: 'LineString',
+      coordinates: ordered.map((point) => [point.lng, point.lat]),
+    },
+  };
+}
+
+const EMPTY_LINE_GEOJSON = {
+  type: 'Feature',
+  properties: {},
+  geometry: { type: 'LineString', coordinates: [] },
+};
+
+/** @returns {typeof EMPTY_LINE_GEOJSON} */
+export function festivalRoadEmptyLineGeoJson() {
+  return EMPTY_LINE_GEOJSON;
+}
+
+/** Max pixel offset from the route anchor when separating overlapping pins. */
+export const FESTIVAL_ROAD_PIN_MAX_OFFSET_PX = 26;
+
+/** Screen gap between pin centers when they would overlap. */
+export const FESTIVAL_ROAD_PIN_MIN_GAP_PX = 42;
+
+/**
+ * Minimal pixel offsets — only when projected centers are closer than minGapPx.
+ * @param {{ stopIndex: number, x: number, y: number }[]} projections
+ * @param {number} [minGapPx]
+ * @param {number} [maxOffsetPx]
+ */
+export function festivalRoadMarkerOffsetsFromProjections(
+  projections,
+  minGapPx = FESTIVAL_ROAD_PIN_MIN_GAP_PX,
+  maxOffsetPx = FESTIVAL_ROAD_PIN_MAX_OFFSET_PX,
+) {
+  /** @type {Map<number, { x: number, y: number }>} */
+  const offsets = new Map();
+  if (!Array.isArray(projections) || projections.length < 2) return offsets;
+  const gap = minGapPx;
+  const maxOff = Math.max(12, maxOffsetPx);
+  const items = projections.map((point) => ({
+    stopIndex: point.stopIndex,
+    x: point.x,
+    y: point.y,
+    ox: 0,
+    oy: 0,
+  }));
+  for (let pass = 0; pass < 6; pass += 1) {
+    for (let i = 0; i < items.length; i += 1) {
+      for (let j = i + 1; j < items.length; j += 1) {
+        const a = items[i];
+        const b = items[j];
+        const baseDist = Math.hypot(b.x - a.x, b.y - a.y);
+        if (baseDist >= gap) continue;
+        const dx = b.x + b.ox - (a.x + a.ox);
+        const dy = b.y + b.oy - (a.y + a.oy);
+        const dist = Math.hypot(dx, dy);
+        if (dist >= gap) continue;
+        const push = dist > 0.01 ? (gap - dist) / 2 : gap / 2;
+        const ux = dist > 0.01 ? dx / dist : 1;
+        const uy = dist > 0.01 ? dy / dist : 0;
+        a.ox -= ux * push;
+        a.oy -= uy * push;
+        b.ox += ux * push;
+        b.oy += uy * push;
+      }
+    }
+  }
+  for (const item of items) {
+    const len = Math.hypot(item.ox, item.oy);
+    if (len > maxOff) {
+      const scale = maxOff / len;
+      item.ox *= scale;
+      item.oy *= scale;
+    }
+    const x = Math.round(item.ox);
+    const y = Math.round(item.oy);
+    if (x !== 0 || y !== 0) {
+      offsets.set(item.stopIndex, { x, y });
+    }
+  }
+  return offsets;
+}
+
+/**
+ * Short leader segments from route anchor to displaced pin (screen offset).
+ * @param {{ lng: number, lat: number, stopIndex: number }[]} points
+ * @param {Map<number, { x: number, y: number }>} offsets
+ * @param {(lng: number, lat: number) => { x: number, y: number }} project
+ * @param {(x: number, y: number) => { lng: number, lat: number }} unproject
+ */
+export function festivalRoadPinLeaderGeoJson(points, offsets, project, unproject) {
+  /** @type {import('geojson').Feature[]} */
+  const features = [];
+  for (const point of festivalRoadLineOrder(points)) {
+    const off = offsets.get(point.stopIndex);
+    if (!off || (off.x === 0 && off.y === 0)) continue;
+    const pixel = project(point.lng, point.lat);
+    const tip = unproject(pixel.x + off.x, pixel.y + off.y);
+    features.push({
+      type: 'Feature',
+      properties: { stopIndex: point.stopIndex },
+      geometry: {
+        type: 'LineString',
+        coordinates: [[point.lng, point.lat], [tip.lng, tip.lat]],
+      },
+    });
+  }
+  return { type: 'FeatureCollection', features };
+}
+
+/**
+ * Pixel offsets when stops share nearly the same coordinate.
+ * @param {{ stopIndex: number, lng: number, lat: number }[]} points
+ */
+export function festivalRoadPinOffsets(points) {
+  /** @type {Map<number, { x: number, y: number }>} */
+  const offsets = new Map();
+  const sorted = festivalRoadLineOrder(points);
+  const threshold = 0.06;
+  /** @type {number[][]} */
+  const clusters = [];
+  for (let i = 0; i < sorted.length; i += 1) {
+    const point = sorted[i];
+    let cluster = clusters.find((group) =>
+      group.some((index) => {
+        const other = sorted[index];
+        const dLng = point.lng - other.lng;
+        const dLat = point.lat - other.lat;
+        return Math.hypot(dLng, dLat) < threshold;
+      }),
+    );
+    if (!cluster) {
+      cluster = [];
+      clusters.push(cluster);
+    }
+    cluster.push(i);
+  }
+  for (const cluster of clusters) {
+    if (cluster.length < 2) continue;
+    const ordered = [...cluster].sort(
+      (a, b) => sorted[a].stopIndex - sorted[b].stopIndex,
+    );
+    if (ordered.length === 2) {
+      const [a, b] = ordered.map((index) => sorted[index]);
+      offsets.set(a.stopIndex, { x: -16, y: -4 });
+      offsets.set(b.stopIndex, { x: 16, y: 4 });
+      continue;
+    }
+    const baseRadius = 30;
+    const step = 360 / ordered.length;
+    ordered.forEach((pointIndex, ringIndex) => {
+      const point = sorted[pointIndex];
+      const angle = ((ringIndex * step) - 90) * (Math.PI / 180);
+      const radius = baseRadius + ringIndex * 9;
+      offsets.set(point.stopIndex, {
+        x: Math.round(Math.cos(angle) * radius),
+        y: Math.round(Math.sin(angle) * radius),
+      });
+    });
+  }
+  return offsets;
 }
