@@ -35,7 +35,6 @@ function md5File(path) {
 
 /** QA-only — keep WebKit from waiting on ads / TourAPI image hosts. */
 async function blockSlowExternals(context) {
-  await context.route(/emrld\.ltd/i, (route) => route.abort());
   await context.route(/visitkorea\.or\.kr/i, (route) => route.abort());
 }
 
