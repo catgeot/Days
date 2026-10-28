@@ -60,7 +60,10 @@ import {
 } from '../lib/resolveKoreaDestinationFirstPass.js';
 import { resolveSettlement, settlementToPlacePin } from '../lib/mapboxSettlementPlaces.js';
 import { resolveExploreCityHubExact } from '../lib/exploreHubResolve.js';
-import { buildExploreSubmitParityDisambiguation } from '../lib/exploreSearchSubmitParity.js';
+import {
+  buildExploreSubmitParityBroadDisambiguation,
+  buildExploreSubmitParityDisambiguation,
+} from '../lib/exploreSearchSubmitParity.js';
 import { isGateoExploreSearchSubmitParityEnabled } from '../../../shared/gateoFeatureFlags.js';
 import { pickSeaBasinCurationSpot } from '../lib/seaBasinResolve.js';
 import { findCityBySearchQuery, cityToSuggestion } from '../lib/citiesSearch.js';
@@ -831,9 +834,14 @@ export function useHomeHandlers({
       const dictChoice = dictHomonymResult();
       if (dictChoice) return dictChoice;
 
-      if (isGateoExploreSearchSubmitParityEnabled() && resolveExploreCityHubExact(query)) {
-        const parityChoice = await buildExploreSubmitParityDisambiguation(query);
-        if (parityChoice) return parityChoice;
+      if (isGateoExploreSearchSubmitParityEnabled()) {
+        if (resolveExploreCityHubExact(query)) {
+          const parityChoice = await buildExploreSubmitParityDisambiguation(query);
+          if (parityChoice) return parityChoice;
+        } else {
+          const broadParity = await buildExploreSubmitParityBroadDisambiguation(query);
+          if (broadParity) return broadParity;
+        }
       }
 
       const curated = await buildCuratedEnterDisambiguation(query);

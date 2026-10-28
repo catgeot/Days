@@ -35,3 +35,32 @@ export async function buildExploreSubmitParityDisambiguation(query, opts = {}) {
     pageSize: SEARCH_DISAMBIGUATION_PALGYEONG_PAGE_SIZE,
   };
 }
+
+/**
+ * Non-hub queries: Enter list matches autocomplete hybrid (+ festivals/reviews) when 2+ rows.
+ */
+export async function buildExploreSubmitParityBroadDisambiguation(query, opts = {}) {
+  const q = String(query || '').trim();
+  if (!q || resolveExploreCityHubExact(q)) return null;
+
+  const items = await buildExploreSiteSearchHybridSuggestions(q, {
+    locale: opts.locale || 'ko',
+    festPool: opts.festPool,
+    reviewPool: opts.reviewPool,
+    now: opts.now,
+  });
+  const normalized = normalizeSearchSuggestions(q, items, {
+    hub: null,
+    locale: opts.locale || 'ko',
+  });
+  if (normalized.length < 2) return null;
+
+  const title = `'${q}' → 도시·명소·여행지`;
+  const result = makeDisambiguationResult(q, normalized, { title });
+  return {
+    ...result,
+    submitParity: true,
+    showMooni: true,
+    pageSize: SEARCH_DISAMBIGUATION_PALGYEONG_PAGE_SIZE,
+  };
+}
