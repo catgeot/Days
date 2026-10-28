@@ -101,7 +101,7 @@ test('hub exact «빈» drops weak substring festivals and puts Vienna city firs
   assert.ok(attrIdx > 0);
 });
 
-test('«산천어» keeps festival matches and lists them before generic cities', () => {
+test('«산천어» keeps festival in hub-exact results (hwacheon alias)', () => {
   const fest = {
     id: 'fest-sancheoneo',
     name: '화천산천어축제',
@@ -120,10 +120,19 @@ test('«산천어» keeps festival matches and lists them before generic cities'
   };
   const normalized = normalizeSearchSuggestions('산천어', [city, fest]);
   assert.ok(normalized.some((row) => row.id === 'fest-sancheoneo'));
-  assert.ok(
-    normalized.findIndex((row) => row.id === 'fest-sancheoneo') <
-      normalized.findIndex((row) => row.id === 'city-other'),
-  );
+});
+
+test('non-hub «A» and «바다» parity ON preserves hybrid order (matches OFF)', async () => {
+  for (const query of ['A', '바다']) {
+    assert.equal(resolveExploreCityHubExact(query), null, `${query} must not be hub-exact`);
+    const raw = await buildHybridSearchSuggestions(query);
+    const rawIds = raw.map((row) => row.id);
+    const normIds = normalizeSearchSuggestions(query, raw).map((row) => row.id);
+    assert.deepEqual(normIds, rawIds, `normalize must not reorder «${query}»`);
+    const paintedOff = await hybridPaintIds(query, false);
+    const paintedOn = await hybridPaintIds(query, true);
+    assert.deepEqual(paintedOn, paintedOff, `flag ON paint must match OFF for «${query}»`);
+  }
 });
 
 test('pickEnterSuggestionMatches still drops festivals from auto-nav', () => {
@@ -236,30 +245,6 @@ test('mergeHubAliasSuggestions — hub row wins over settlement (파리 · 베�
   ]);
   assert.ok(merged.find((row) => row.id === 'hub-paris'));
   assert.equal(merged.some((row) => row.id === 'spot-paris'), false);
-});
-
-test('non-hub query preserves hybrid relevance order within group (prefix «A»)', () => {
-  const aFirst = {
-    id: 'spot-a-first',
-    kind: 'spot',
-    badge: '여행지',
-    name: 'Auckland',
-    lat: -36.8,
-    lng: 174.7,
-  };
-  const aSecond = {
-    id: 'spot-a-second',
-    kind: 'spot',
-    badge: '여행지',
-    name: 'Amsterdam',
-    lat: 52.3,
-    lng: 4.9,
-  };
-  const normalized = normalizeSearchSuggestions('A', [aFirst, aSecond], { hub: null });
-  assert.deepEqual(
-    normalized.filter((row) => row.kind === 'spot').map((row) => row.id),
-    ['spot-a-first', 'spot-a-second'],
-  );
 });
 
 test('Enter disambiguation keeps hub marketing desc for «빈» alias merge', () => {

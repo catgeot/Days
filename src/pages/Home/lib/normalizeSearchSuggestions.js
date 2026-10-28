@@ -245,13 +245,7 @@ export function normalizeSearchSuggestions(query, rawItems, opts = {}) {
   }
 
   if (!hub?.hubId) {
-    deduped.sort((a, b) => {
-      const ga = groupSortIndex(a.suggestionGroup);
-      const gb = groupSortIndex(b.suggestionGroup);
-      if (ga !== gb) return ga - gb;
-      return (a._suggestOrder ?? 0) - (b._suggestOrder ?? 0);
-    });
-    return deduped.map(({ _suggestOrder, ...item }) => item);
+    return deduped.map(({ _suggestOrder, suggestionGroup, ...item }) => item);
   }
 
   return reorderHubExactSuggestions(
