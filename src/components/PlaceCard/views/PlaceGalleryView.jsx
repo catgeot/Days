@@ -1394,7 +1394,7 @@ const PlaceGalleryView = React.memo(({
             </div>
           )}
 
-          <div className="px-6 max-lg:landscape:px-3">
+          <div className="px-6 landscape-phone:px-3">
             {hasPlaceOverview && (
               <div className={`lg:hidden mb-4 ${mobileLandscapeChromeHidden}`}>
                 <div className="rounded-2xl border border-white/10 bg-black/35 px-4 py-4 backdrop-blur-md shadow-inner space-y-3.5">
@@ -1444,7 +1444,7 @@ const PlaceGalleryView = React.memo(({
               />
             ) : null}
 
-            <div className={`${hasPlaceOverview ? 'mt-4' : 'mt-12'} max-lg:landscape:mt-0 lg:mt-0`}>
+            <div className={`${hasPlaceOverview ? 'mt-4' : 'mt-12'} landscape-phone:mt-0 lg:mt-0`}>
               {showLoadingChrome && <GalleryLoadingChrome />}
 
               {showInitialSkeleton ? (

@@ -79,8 +79,8 @@ test('PlaceCard maps URL tabKey to expanded media mode (no invalid EVENTS when f
   const index = read('src/components/PlaceCard/index.jsx');
   assert.match(index, /initialTabForExpanded/);
   assert.match(index, /tabKey === 'events' \? 'WORLD_EVENTS' : mediaModeFromUrlTab\(tabKey\)/);
-  assert.match(index, /currentTab === tabKey/);
   assert.doesNotMatch(index, /currentTab\.toUpperCase\(\)/);
+  assert.doesNotMatch(index, /currentTab === tabKey/);
 });
 
 test('secondary nav flag gates scroll chrome (off matches main justify-center)', () => {

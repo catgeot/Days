@@ -20,10 +20,13 @@ test('mobile header spacer stays until lg (PlaceCard column layout)', () => {
   );
 });
 
-test('landscape immersive chrome hidden until lg (tablet landscape phones)', () => {
+test('landscape immersive chrome uses landscape-phone variant (short height only)', () => {
   const inset = read('src/components/PlaceCard/common/mobilePlaceHeaderInset.js');
-  assert.match(inset, /mobileLandscapeChromeHidden = 'max-lg:landscape:hidden'/);
-  assert.doesNotMatch(inset, /max-md:landscape:hidden/);
+  assert.match(inset, /mobileLandscapeChromeHidden = 'landscape-phone:hidden'/);
+  assert.doesNotMatch(inset, /max-lg:landscape:hidden/);
+  const tw = read('tailwind.config.js');
+  assert.match(tw, /landscape-phone/);
+  assert.match(tw, /max-height: 500px/);
 });
 
 test('PlaceChatPanel fixed header matches spacer lg breakpoint', () => {

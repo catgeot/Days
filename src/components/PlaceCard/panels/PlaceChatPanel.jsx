@@ -192,7 +192,7 @@ const PlaceChatPanel = React.memo(({
   return (
     <div className={`flex flex-col transition-all duration-500
         ${isFullScreen ? 'opacity-0 pointer-events-none lg:pointer-events-auto lg:translate-x-[-100%]' : 'opacity-100 translate-x-0 pointer-events-auto'}
-        absolute top-0 left-0 w-full z-[180] h-auto bg-[#05070a]/90 backdrop-blur-md border-b border-white/10 pb-1.5 max-lg:landscape:pb-0 max-lg:landscape:border-b-0 max-lg:landscape:bg-transparent max-lg:landscape:backdrop-blur-none lg:pb-0 lg:border-none lg:rounded-none
+        absolute top-0 left-0 w-full z-[180] h-auto bg-[#05070a]/90 backdrop-blur-md border-b border-white/10 pb-1.5 landscape-phone:pb-0 landscape-phone:border-b-0 landscape-phone:bg-transparent landscape-phone:backdrop-blur-none lg:pb-0 lg:border-none lg:rounded-none
         lg:relative lg:w-[35%] lg:h-full lg:backdrop-blur-xl lg:border lg:border-white/10 lg:rounded-[2rem] lg:shadow-2xl lg:overflow-hidden lg:bg-[#05070a]/80 lg:z-auto`}>
 
       {/* Header — 갤러리·위키·리뷰·플래너: 지명 영역 탭 시 스크롤 맨 위 (뒤로/홈 버튼과 분리) */}

@@ -738,7 +738,7 @@ const PlaceWikiDetailsView = ({
         {/* Hero Section */}
         {heroImage && (
             <div className="relative w-full overflow-hidden flex-shrink-0">
-                <div className={`${mobileSecondaryNav ? 'h-0' : 'h-16 max-lg:landscape:h-0'} lg:h-0 bg-[#05070a]`} />
+                <div className={`${mobileSecondaryNav ? 'h-0' : 'h-16 landscape-phone:h-0'} lg:h-0 bg-[#05070a]`} />
 
                 <div className="relative w-full h-[40vh] md:h-[50vh]">
                     <img
@@ -758,7 +758,7 @@ const PlaceWikiDetailsView = ({
             </div>
         )}
 
-        <div className={`max-w-3xl mx-auto w-full px-6 lg:px-0 pb-8 lg:pb-32 max-lg:landscape:px-4 max-lg:landscape:pb-4 ${!heroImage ? (mobileSecondaryNav ? 'pt-6 lg:pt-0' : 'pt-[96px] max-lg:landscape:pt-4') : 'pt-8'}`}>
+        <div className={`max-w-3xl mx-auto w-full px-6 lg:px-0 pb-8 lg:pb-32 landscape-phone:px-4 landscape-phone:pb-4 ${!heroImage ? (mobileSecondaryNav ? 'pt-6 lg:pt-0' : 'pt-[96px] landscape-phone:pt-4') : 'pt-8'}`}>
 
             {/* 타이틀이 Hero 이미지 없는 경우를 대비한 Fallback */}
             {!heroImage && (

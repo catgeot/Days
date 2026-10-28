@@ -392,7 +392,7 @@ const PlannerTab = ({
         );
     }
 
-    const plannerBodyScrollClass = `flex-1 min-h-0 w-full flex flex-col overflow-y-auto overflow-x-hidden custom-scrollbar bg-[#f8f9fa] px-3 sm:px-4 ${mobilePlaceFooterScrollPadding} lg:p-6 lg:pt-4 lg:pb-8 ${plannerScrollSurfaceClass}`;
+    const plannerBodyScrollClass = `flex-1 min-h-0 w-full flex flex-col overflow-y-auto overflow-x-hidden custom-scrollbar bg-[#f8f9fa] px-3 sm:px-4 ${mobilePlaceFooterScrollPadding} lg:p-6 lg:pt-10 lg:pb-8 ${plannerScrollSurfaceClass}`;
     const toolkitErrorNotice = (
         <PlannerToolkitErrorNotice
             message={toolkitErrorKey ? t(TOOLKIT_ERROR_MESSAGE_KEY[toolkitErrorKey] || TOOLKIT_ERROR_MESSAGE_KEY.generic) : ''}

@@ -54,13 +54,6 @@ const PlaceCard = () => {
   );
 
   useEffect(() => {
-    if (!contextLocation || !slug) return;
-    if (currentTab === tabKey) return;
-    const path = tabKey === 'gallery' ? `/place/${slug}` : `/place/${slug}/${tabKey}`;
-    navigate({ pathname: path, search: window.location.search }, { replace: true });
-  }, [contextLocation, slug, currentTab, tabKey, navigate]);
-
-  useEffect(() => {
     let timeoutId;
     if (!contextLocation && slug) {
       timeoutId = setTimeout(() => {
