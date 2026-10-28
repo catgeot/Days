@@ -226,6 +226,7 @@ export function normalizeSearchSuggestions(query, rawItems, opts = {}) {
   if (hub?.hubId) {
     items = items.filter((item) => {
       if (resolveSearchSuggestionGroup(item) !== 'festival') return true;
+      if (item?.source === 'korea-festival') return true;
       return !isWeakFestivalSubstringMatch(query, item, locale);
     });
   }

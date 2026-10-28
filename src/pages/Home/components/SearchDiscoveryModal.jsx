@@ -544,6 +544,12 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, onAskMooni,
       return;
     }
 
+    if (item.kind === 'review' && item.exploreHref) {
+      captureExploreReturn();
+      navigate(item.exploreHref);
+      return;
+    }
+
     let place = item;
     const needsLatinHydrate = Boolean(
       item.mapboxId && (item.needsRetrieve || needsLatinPlaceName(item)),
@@ -799,6 +805,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, onAskMooni,
           title={disambiguation.title}
           query={disambiguation.query}
           candidates={disambiguation.candidates}
+          pageSize={disambiguation.pageSize}
           onSelect={handleSuggestionSelect}
           onCancel={() => setDisambiguation(null)}
           onPageChange={() => scrollContainerRef.current?.scrollTo({ top: 0 })}

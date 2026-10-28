@@ -1,12 +1,8 @@
 import { makeDisambiguationResult } from './cityAttractionHubs.js';
-import { buildHybridSearchSuggestions } from './searchSuggestions.js';
-import {
-  appendExploreFestivalBelowPlaceBlock,
-  buildExploreFestivalSearchSuggestions,
-} from './exploreFestivalSearchSuggestions.js';
 import { resolveExploreCityHubExact } from './exploreHubResolve.js';
 import { normalizeSearchSuggestions } from './normalizeSearchSuggestions.js';
-import { isGateoSiteSearchEnabled } from '../../../shared/gateoFeatureFlags.js';
+import { buildExploreSiteSearchHybridSuggestions } from './exploreSiteSearchHybrid.js';
+import { SEARCH_DISAMBIGUATION_PALGYEONG_PAGE_SIZE } from './searchDisambiguationPaging.js';
 
 /**
  * Enter panel model aligned with autocomplete (hub exact + submit parity flag).
@@ -20,13 +16,12 @@ export async function buildExploreSubmitParityDisambiguation(query, opts = {}) {
   const hub = opts.hub || resolveExploreCityHubExact(q);
   if (!hub) return null;
 
-  let items = await buildHybridSearchSuggestions(q);
-  if (isGateoSiteSearchEnabled()) {
-    const fest = await buildExploreFestivalSearchSuggestions(q, {
-      locale: opts.locale || 'ko',
-    }).catch(() => []);
-    items = appendExploreFestivalBelowPlaceBlock(fest, items);
-  }
+  let items = await buildExploreSiteSearchHybridSuggestions(q, {
+    locale: opts.locale || 'ko',
+    festPool: opts.festPool,
+    reviewPool: opts.reviewPool,
+    now: opts.now,
+  });
 
   const normalized = normalizeSearchSuggestions(q, items, { hub, locale: opts.locale || 'ko' });
   if (!normalized.length) return null;
@@ -37,5 +32,6 @@ export async function buildExploreSubmitParityDisambiguation(query, opts = {}) {
     ...result,
     submitParity: true,
     showMooni: true,
+    pageSize: SEARCH_DISAMBIGUATION_PALGYEONG_PAGE_SIZE,
   };
 }

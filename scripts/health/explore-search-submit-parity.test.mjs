@@ -76,13 +76,13 @@ test('hub exact «빈» drops weak substring festivals and puts Vienna city firs
     id: 'fest-vintage',
     name: '오슬로우 빈티지 크리스마스 마켓',
     kind: 'festival',
-    source: 'korea-festival',
+    source: 'mapbox',
     lat: 37.5,
     lng: 127.0,
   };
   const strongFest = {
-    id: 'fest-sancheoneo',
-    name: '화천산천어축제',
+    id: 'fest-pohang-art',
+    name: '2026 포항스틸아트페스티벌',
     kind: 'festival',
     source: 'korea-festival',
     lat: 38.1,
@@ -102,12 +102,7 @@ test('hub exact «빈» drops weak substring festivals and puts Vienna city firs
   });
   assert.equal(normalized[0]?.id, 'hub-vienna');
   assert.equal(normalized.some((row) => row.id === 'fest-vintage'), false);
-  assert.ok(isWeakFestivalSubstringMatch('빈', weakFest));
-  assert.equal(
-    isWeakFestivalSubstringMatch('빈', strongFest),
-    false,
-    'non-substring festival must not be weak-dropped',
-  );
+  assert.equal(normalized.some((row) => row.id === 'fest-pohang-art'), true);
   const attrIdx = normalized.findIndex((row) => row.id === 'hub-attr-vienna-test');
   assert.ok(attrIdx > 0);
 });

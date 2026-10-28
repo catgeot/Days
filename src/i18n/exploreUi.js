@@ -5,6 +5,7 @@ import { getLocalizedParentCityLabel } from '../components/PlaceCard/common/loca
 export const EXPLORE_BADGE_PLACE = '장소';
 export const EXPLORE_BADGE_REGION = '지역';
 export const EXPLORE_BADGE_FESTIVAL = '축제';
+export const EXPLORE_BADGE_REVIEW = '리뷰';
 
 /** Raw KO group header suffix in SSOT (`cityAttractionHubs`, `koreaPoiTypeSearch`). */
 export const EXPLORE_GROUP_TITLE_ATTRACTIONS_SUFFIX = ' 명소';
@@ -92,6 +93,9 @@ export function localizedExploreBadgeLabel(t, badgeKo) {
   const key = String(badgeKo || '장소').trim();
   if (key === EXPLORE_BADGE_FESTIVAL) {
     return localizedExploreFestivalBadge(t);
+  }
+  if (key === EXPLORE_BADGE_REVIEW) {
+    return t('home.explore.reviewBadge', { defaultValue: '리뷰' });
   }
   return t(`home.explore.badge.${key}`, { defaultValue: key });
 }
