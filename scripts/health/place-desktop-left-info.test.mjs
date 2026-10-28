@@ -18,7 +18,7 @@ test('single mount — PlaceGalleryFactsAndStories gates empty wrapper', () => {
     join(root, 'src/components/PlaceCard/common/PlaceGalleryFactsAndStories.jsx'),
     'utf8',
   );
-  assert.match(bundle, /if \(!hasFacts && !hasStories\) return null/);
+  assert.match(bundle, /if \(!hasFacts && !showStoriesBlock\) return null/);
   assert.match(bundle, /PlaceVerifiedFacts/);
   assert.match(bundle, /PlaceVisitStories/);
 });
@@ -51,11 +51,21 @@ test('PlaceVisitStories receives visit stories from PlaceGalleryFactsAndStories 
     join(root, 'src/components/PlaceCard/common/PlaceGalleryFactsAndStories.jsx'),
     'utf8',
   );
+  const overview = readFileSync(
+    join(root, 'src/components/PlaceCard/views/GalleryInfoOverviewScrollContent.jsx'),
+    'utf8',
+  );
+  const gallery = readFileSync(join(root, 'src/components/PlaceCard/views/PlaceGalleryView.jsx'), 'utf8');
   const storiesUi = readFileSync(
     join(root, 'src/components/PlaceCard/common/PlaceVerifiedFacts.jsx'),
     'utf8',
   );
   assert.match(bundle, /useVisitStories\(location\)/);
   assert.doesNotMatch(storiesUi, /useVisitStories/);
-  assert.match(bundle, /stories=\{stories\}/);
+  assert.match(bundle, /storiesLoadingShellInLeftOverview/);
+  assert.match(overview, /storiesLoadingShellInLeftOverview/);
+  assert.doesNotMatch(gallery, /storiesLoadingShellInLeftOverview/);
+  assert.match(bundle, /showStoriesLoadingShell/);
+  assert.match(bundle, /showLoadingShell=\{showStoriesLoadingShell\}/);
+  assert.match(storiesUi, /if \(isLoading && !showLoadingShell\) return null/);
 });

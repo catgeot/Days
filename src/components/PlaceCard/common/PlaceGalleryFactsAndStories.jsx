@@ -13,26 +13,33 @@ export default function PlaceGalleryFactsAndStories({
   className = '',
   sectionClassName = '',
   wrapperClassName = '',
+  /** Flag ON + lg left overview only — gallery/mobile stay main (no row while loading). */
+  storiesLoadingShellInLeftOverview = false,
 }) {
   const card = resolveVerifiedFacts(location);
   const filled = card ? verifiedFactSlots(card) : [];
   const hasFacts = filled.length > 0;
   const { stories, isLoading } = useVisitStories(location);
   const hasStories = Boolean(card && !isLoading && stories.length > 0);
+  const showStoriesLoadingShell = Boolean(
+    storiesLoadingShellInLeftOverview && card && isLoading,
+  );
+  const showStoriesBlock = hasStories || showStoriesLoadingShell;
 
-  if (!hasFacts && !hasStories) return null;
+  if (!hasFacts && !showStoriesBlock) return null;
 
   const sections = (
     <>
       {hasFacts ? (
         <PlaceVerifiedFacts location={location} className={sectionClassName} />
       ) : null}
-      {hasStories || (card && isLoading) ? (
+      {showStoriesBlock ? (
         <PlaceVisitStories
           location={location}
           className={sectionClassName}
           stories={stories}
           isLoading={isLoading}
+          showLoadingShell={showStoriesLoadingShell}
         />
       ) : null}
     </>

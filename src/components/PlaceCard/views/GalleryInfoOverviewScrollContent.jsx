@@ -117,6 +117,7 @@ export default function GalleryInfoOverviewScrollContent({
           location={selectedPlace}
           wrapperClassName="border-t border-white/5 pt-2 mt-2 space-y-2"
           sectionClassName="!mb-0 scroll-mt-2"
+          storiesLoadingShellInLeftOverview
         />
       ) : null}
     </div>

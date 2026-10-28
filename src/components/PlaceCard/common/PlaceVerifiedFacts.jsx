@@ -619,6 +619,7 @@ export function PlaceVisitStories({
   className = '',
   stories,
   isLoading,
+  showLoadingShell = false,
 }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -627,9 +628,10 @@ export function PlaceVisitStories({
   const [open, setOpen] = usePlaceGallerySectionOpen(PLACE_GALLERY_SECTION.STORIES, placeKey);
   const card = resolveVerifiedFacts(location);
   if (!card) return null;
+  if (isLoading && !showLoadingShell) return null;
   if (!isLoading && !stories?.length) return null;
   const placePath = buildPlacePath(location?.slug || location?.id);
-  const countLabel = isLoading
+  const countLabel = isLoading && showLoadingShell
     ? '…'
     : t('place.facts.storyCount', { count: stories.length });
 
@@ -638,24 +640,24 @@ export function PlaceVisitStories({
       id={PLACE_GALLERY_SECTION.STORIES}
       data-visit-stories=""
       data-local-info="stories"
-      data-visit-stories-loading={isLoading ? 'true' : undefined}
+      data-visit-stories-loading={isLoading && showLoadingShell ? 'true' : undefined}
       aria-label={t('place.facts.storiesTitle')}
-      aria-busy={isLoading || undefined}
+      aria-busy={isLoading && showLoadingShell ? true : undefined}
       className={`scroll-mt-6 ${galleryFactsSectionClass()} ${className}`.trim()}
     >
       <PlaceSectionToggleHeader
         title={t('place.facts.storiesTitle')}
         count={countLabel}
-        open={open && !isLoading}
+        open={open && !(isLoading && showLoadingShell)}
         controls={panelId}
         onClick={() => {
-          if (isLoading) return;
+          if (isLoading && showLoadingShell) return;
           setOpen((value) => !value);
         }}
         light={false}
         icon={PenLine}
       />
-      {open && !isLoading ? (
+      {open && !(isLoading && showLoadingShell) ? (
         <div id={panelId} className="mt-2 space-y-2 px-0.5 pb-1">
           {stories.map((story) => {
             const kindLabel = story.kind === 'review'
