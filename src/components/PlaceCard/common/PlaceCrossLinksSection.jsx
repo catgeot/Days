@@ -5,25 +5,30 @@ import { ChevronDown, ChevronRight, CalendarDays, Landmark, Sparkles } from 'luc
 import { resolvePlaceCrossLinksIfEnabled } from '../../../pages/Home/lib/placeCrosslinkRollout.js';
 
 /**
- * @param {{ location?: object | null, variant?: 'dark' | 'summary', className?: string }} props
+ * @param {{ location?: object | null, variant?: 'dark' | 'summary', className?: string, bucketFilter?: 'all' | 'eventsOnly' | 'festivalsCollections' }} props
  */
 export default function PlaceCrossLinksSection({
   location = null,
   variant = 'dark',
   className = '',
+  bucketFilter = 'all',
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const panelFestivalsId = useId();
   const panelCollectionsId = useId();
   const panelEventsId = useId();
   const [festivalsOpen, setFestivalsOpen] = useState(true);
   const [collectionsOpen, setCollectionsOpen] = useState(true);
-  const [eventsOpen, setEventsOpen] = useState(true);
+  const [eventsOpen, setEventsOpen] = useState(false);
 
-  const bundle = useMemo(() => resolvePlaceCrossLinksIfEnabled(location), [location]);
-  const festivals = bundle.festivals || [];
-  const collections = bundle.collections || [];
-  const events = bundle.events || [];
+  const locale = i18n.language || 'ko';
+  const bundle = useMemo(
+    () => resolvePlaceCrossLinksIfEnabled(location, { locale }),
+    [location, locale],
+  );
+  const festivals = bucketFilter === 'eventsOnly' ? [] : bundle.festivals || [];
+  const collections = bucketFilter === 'eventsOnly' ? [] : bundle.collections || [];
+  const events = bucketFilter === 'festivalsCollections' ? [] : bundle.events || [];
   if (!festivals.length && !collections.length && !events.length) return null;
 
   const isSummary = variant === 'summary';

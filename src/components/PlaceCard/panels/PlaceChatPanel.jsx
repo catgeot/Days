@@ -62,6 +62,10 @@ const PlaceChatPanel = React.memo(({
   const { t } = useTranslation();
   const { locale } = useLocale();
   const crosslinkWorldEventsRail = isPlaceCrosslinkWorldEventsRailEnabled();
+  /** Crosslink events replace WorldEvents only in desktop gallery info (not VIDEO/WIKI). */
+  const crosslinkEventsInGalleryInfo =
+    crosslinkWorldEventsRail && mediaMode !== 'WIKI' && activeInfo.mode !== 'VIDEO';
+  const showWorldEventsSection = !crosslinkEventsInGalleryInfo;
   const [copiedType, setCopiedType] = useState('');
   const scrollRef = useRef(null);
   const navigate = useNavigate();
@@ -335,6 +339,10 @@ const PlaceChatPanel = React.memo(({
         `}</style>
 
         {mediaMode === 'WIKI' ? (
+            <>
+                {crosslinkWorldEventsRail ? (
+                  <PlaceWorldEventsSection location={location} variant="dark" className="shrink-0 mx-6 mt-6" />
+                ) : null}
             <PlaceWikiNavView
                 wikiData={wikiData}
                 isWikiLoading={isWikiLoading}
@@ -343,6 +351,7 @@ const PlaceChatPanel = React.memo(({
                 matchedPackage={matchedPackage}
                 onOpenPackage={onOpenPackage}
             />
+            </>
         ) : (
             <div
                 className={`animate-fade-in flex flex-col ${
@@ -351,8 +360,16 @@ const PlaceChatPanel = React.memo(({
                         : 'min-h-0 flex-1 gap-4 px-6 pt-6 pb-3'
                 }`}
             >
-                {!crosslinkWorldEventsRail ? (
+                {!showWorldEventsSection ? null : (
                   <PlaceWorldEventsSection location={location} variant="dark" className="shrink-0" />
+                )}
+                {crosslinkEventsInGalleryInfo ? (
+                  <PlaceCrossLinksSection
+                    location={location}
+                    variant="dark"
+                    bucketFilter="eventsOnly"
+                    className="shrink-0"
+                  />
                 ) : null}
                 {activeInfo.mode === 'VIDEO' ? (
                     <VideoInfoView

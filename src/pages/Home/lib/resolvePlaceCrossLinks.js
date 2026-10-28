@@ -111,26 +111,31 @@ function resolveHubIdForPlace(loc) {
   return slug;
 }
 
-function festivalCrosslinkDateLabel(row) {
+function resolveCrosslinkLocale(options = {}) {
+  const raw = String(options.locale || 'ko').trim().toLowerCase();
+  return raw.startsWith('en') ? 'en' : 'ko';
+}
+
+function festivalCrosslinkDateLabel(row, locale) {
   const start = row?.eventStartDate || row?.eventstartdate;
   const end = row?.eventEndDate || row?.eventenddate;
   if (!start && !end) return '';
-  return formatFestivalDetailDateRange(start, end, undefined, 'ko') || '';
+  return formatFestivalDetailDateRange(start, end, undefined, locale) || '';
 }
 
-function listEventsForSlug(slug) {
+function listEventsForSlug(slug, locale) {
   const key = String(slug || '').trim().toLowerCase();
   if (!key) return [];
   return getWorldEventsForSlug(key).map((event) => ({
     id: String(event.id || ''),
     kind: 'event',
-    title: getWorldEventTitle(event, 'ko'),
-    dateLabel: formatWorldEventDateRange(event, 'ko') || '',
+    title: getWorldEventTitle(event, locale),
+    dateLabel: formatWorldEventDateRange(event, locale) || '',
     href: resolveEventHref(event),
   }));
 }
 
-function listFestivalsForHub(hubId, { now = new Date() } = {}) {
+function listFestivalsForHub(hubId, { now = new Date(), locale = 'ko' } = {}) {
   const target = String(hubId || '').toLowerCase();
   if (!target) return [];
   const hubs = koreaHubListForFestivals();
@@ -144,7 +149,7 @@ function listFestivalsForHub(hubId, { now = new Date() } = {}) {
       id: `festival:${contentId}`,
       kind: 'festival',
       title: crosslinkFestivalDisplayTitle(row),
-      dateLabel: festivalCrosslinkDateLabel(row),
+      dateLabel: festivalCrosslinkDateLabel(row, locale),
       href: gateoKoreaFestivalDetailUrl(contentId),
     });
   }
@@ -329,15 +334,16 @@ export function resolvePlaceCrossLinks(location, options = {}) {
   if (!location || typeof location !== 'object') return emptyBundle();
 
   const now = options.now instanceof Date ? options.now : new Date();
+  const locale = resolveCrosslinkLocale(options);
   const hubId = resolveHubIdForPlace(location);
   const slug = String(location.slug || location.canonical_slug || hubId || '').toLowerCase();
-  const events = listEventsForSlug(slug);
+  const events = listEventsForSlug(slug, locale);
 
   if (!isDomesticKorea(location)) {
     return { festivals: [], events, collections: [] };
   }
 
-  const festivals = listFestivalsForHub(hubId, { now });
+  const festivals = listFestivalsForHub(hubId, { now, locale });
   const collections = listScenicCollectionsForHub(hubId);
   return { festivals, events, collections };
 }
