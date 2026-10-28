@@ -26,6 +26,8 @@ import { buildPlacePlannerPath } from '../../../utils/placePlannerPath.js';
 import GlobeStayStrip from './GlobeStayStrip.jsx';
 import GlobeTourStrip from './GlobeTourStrip.jsx';
 import PlaceWorldEventsSection from '../../../components/PlaceCard/common/PlaceWorldEventsSection.jsx';
+import PlaceCrossLinksSection from '../../../components/PlaceCard/common/PlaceCrossLinksSection.jsx';
+import { isPlaceCrosslinkWorldEventsRailEnabled } from '../lib/placeCrosslinkRollout.js';
 
 /** 연속 not-ready 폴링 횟수 — 250ms×4 ≈ 1s (일시적 레이어 공백·style idle 깜박임 흡수) */
 const FLIGHT_ROUTE_NOT_READY_STREAK = 4;
@@ -44,6 +46,7 @@ export default function HomePlaceCardSummary({
     browserOriginHint,
   } = useFlightCinema();
   const { location } = props;
+  const crosslinkWorldEventsRail = isPlaceCrosslinkWorldEventsRailEnabled();
 
   const slug = location?.slug ? String(location.slug).trim().toLowerCase() : null;
   const essentialGuide = useChatEssentialGuide(slug, location?.name ?? '');
@@ -409,7 +412,11 @@ export default function HomePlaceCardSummary({
                 tourTab={tourTab}
                 tourExpanded={tourExpanded}
                 eventsSection={
-                  <PlaceWorldEventsSection location={location} variant="summary" />
+                  crosslinkWorldEventsRail ? (
+                    <PlaceCrossLinksSection location={location} variant="summary" />
+                  ) : (
+                    <PlaceWorldEventsSection location={location} variant="summary" />
+                  )
                 }
                 belowCard={mobilePanel}
               />
