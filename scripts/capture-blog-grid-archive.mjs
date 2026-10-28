@@ -21,17 +21,16 @@ const BLOG_PATH = process.env.CAPTURE_BLOG_PATH || '/blog?tab=public&lang=ko';
 const SUMMARY_PATH = join(OUT_DIR, 'capture-summary.json');
 
 async function waitForFeed(page) {
-  await page.waitForFunction(
-    () => !/동기화하는 중|Syncing/i.test(document.body?.innerText || ''),
-    null,
-    { timeout: 120_000 },
-  );
   const feed = page.locator(
     '[data-logbook-main-scroll] [data-logbook-feed-grid], [data-logbook-main-scroll] .max-w-7xl div.flex-1 > div.grid, [data-logbook-main-scroll] .max-w-7xl div.flex-1 > div.flex.flex-col.gap-3, [data-logbook-main-scroll] .max-w-7xl div.flex-1 > div.flex.flex-col.gap-5',
   ).first();
-  await feed.waitFor({ state: 'attached', timeout: 120_000 });
+  await page
+    .locator('[data-logbook-main-scroll]')
+    .getByText(/기록 보관소|Recent stories|Recent logs/i)
+    .first()
+    .waitFor({ state: 'visible', timeout: 120_000 });
+  await feed.waitFor({ state: 'visible', timeout: 120_000 });
   await feed.scrollIntoViewIfNeeded();
-  await page.waitForTimeout(800);
 }
 
 async function collectMetrics(page, width) {
