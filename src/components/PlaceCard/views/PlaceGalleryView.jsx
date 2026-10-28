@@ -1389,7 +1389,7 @@ const PlaceGalleryView = React.memo(({
           >
 
           {mobileSecondaryNav && (
-            <div className={`md:hidden shrink-0 px-2 pb-2 ${mobileLandscapeChromeHidden}`}>
+            <div className={`lg:hidden shrink-0 px-2 pb-2 ${mobileLandscapeChromeHidden}`}>
               {mobileSecondaryNav}
             </div>
           )}
