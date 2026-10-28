@@ -340,10 +340,6 @@ const PlaceChatPanel = React.memo(({
         `}</style>
 
         {mediaMode === 'WIKI' ? (
-            <>
-                {crosslinkWorldEventsRail ? (
-                  <PlaceWorldEventsSection location={location} variant="dark" className="shrink-0 mx-6 mt-6" />
-                ) : null}
             <PlaceWikiNavView
                 wikiData={wikiData}
                 isWikiLoading={isWikiLoading}
@@ -352,7 +348,6 @@ const PlaceChatPanel = React.memo(({
                 matchedPackage={matchedPackage}
                 onOpenPackage={onOpenPackage}
             />
-            </>
         ) : (
             <div
                 className={`animate-fade-in flex flex-col ${
