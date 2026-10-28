@@ -73,9 +73,10 @@ function placeFromSearchItem(item) {
   return rest;
 }
 
-function resolveCardDesc(item, locationLine, locale = 'ko', t) {
+function resolveCardDesc(item, locationLine, locale = 'ko', t, isPopover = false) {
   const overlayDesc = scenicSearchOverlayDesc(item);
-  if (overlayDesc) return overlayDesc;
+  const useOverlay = overlayDesc && !(item?.mergedDestinationId && !isPopover);
+  if (useOverlay) return overlayDesc;
   let desc = String(item?.desc || '').trim();
   if (!desc) return '';
   desc = localizeExploreSearchDesc(desc, locale, t, item?.parentCity || item?.name);
@@ -391,7 +392,7 @@ export function SearchSuggestionList({
             const displayName =
               primaryName || getLocalizedPlaceName(item, i18n.language) || String(item?.name || '').trim();
             const locationLine = buildExploreSearchLocationLine(item, i18n.language);
-            const desc = resolveCardDesc(item, locationLine, i18n.language, t);
+            const desc = resolveCardDesc(item, locationLine, i18n.language, t, isPopover);
             const subtitle = [locationLine, desc]
               .filter(Boolean)
               .filter((v, i, arr) => arr.indexOf(v) === i)

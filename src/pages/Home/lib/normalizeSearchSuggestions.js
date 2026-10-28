@@ -172,7 +172,7 @@ export function mergeHubAliasSuggestions(items) {
   const patchByKey = new Map();
 
   for (const [hubId, bucket] of groups) {
-    const cityRow = bucket.find((row) => resolveSearchSuggestionGroup(row) === 'city');
+    const cityRow = bucket.find((row) => isPrimaryHubCityRow(row, hubId));
     const destRow = bucket.find(
       (row) =>
         resolveSearchSuggestionGroup(row) === 'destination' &&
@@ -213,7 +213,7 @@ export function normalizeSearchSuggestions(query, rawItems, opts = {}) {
   if (hub?.hubId) {
     items = items.filter((item) => {
       if (resolveSearchSuggestionGroup(item) !== 'festival') return true;
-      return festivalMatchesQueryStrongly(query, item, locale);
+      return !isWeakFestivalSubstringMatch(query, item, locale);
     });
   }
 
@@ -227,6 +227,7 @@ export function normalizeSearchSuggestions(query, rawItems, opts = {}) {
     deduped.push({
       ...item,
       suggestionGroup: resolveSearchSuggestionGroup(item),
+      _suggestOrder: deduped.length,
     });
   }
 
@@ -235,10 +236,27 @@ export function normalizeSearchSuggestions(query, rawItems, opts = {}) {
       const ga = groupSortIndex(a.suggestionGroup);
       const gb = groupSortIndex(b.suggestionGroup);
       if (ga !== gb) return ga - gb;
-      return String(a.name || '').localeCompare(String(b.name || ''), 'ko');
+      return (a._suggestOrder ?? 0) - (b._suggestOrder ?? 0);
     });
-    return deduped;
+    return deduped.map(({ _suggestOrder, ...item }) => item);
   }
 
-  return reorderHubExactSuggestions(deduped, hub);
+  return reorderHubExactSuggestions(
+    deduped.map(({ _suggestOrder, ...item }) => item),
+    hub,
+  );
+}
+
+/**
+ * Disambiguation cards keep hub marketing desc; autocomplete popover may show alias overlay.
+ * @param {object} item
+ * @param {{ isPopover?: boolean }} [opts]
+ */
+export function resolveExploreSearchCardDesc(item, opts = {}) {
+  const overlay = String(item?.searchOverlayDesc || '').trim();
+  const desc = String(item?.desc || '').trim();
+  if (overlay && item?.mergedDestinationId && !opts.isPopover) {
+    return desc;
+  }
+  return overlay || desc;
 }

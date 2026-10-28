@@ -11,6 +11,8 @@ import {
   mergeHubAliasSuggestions,
   normalizeSearchSuggestions,
   resolveSearchSuggestionGroup,
+  isWeakFestivalSubstringMatch,
+  resolveExploreSearchCardDesc,
 } from '../../src/pages/Home/lib/normalizeSearchSuggestions.js';
 import { buildLocalSearchSuggestions } from '../../src/pages/Home/lib/searchSuggestions.js';
 import { pickEnterSuggestionMatches } from '../../src/pages/Home/lib/searchEnterMatch.js';
@@ -88,7 +90,12 @@ test('hub exact «빈» drops weak substring festivals and puts Vienna city firs
   });
   assert.equal(normalized[0]?.id, 'hub-vienna');
   assert.equal(normalized.some((row) => row.id === 'fest-vintage'), false);
-  assert.equal(normalized.some((row) => row.id === 'fest-sancheoneo'), false);
+  assert.ok(isWeakFestivalSubstringMatch('빈', weakFest));
+  assert.equal(
+    isWeakFestivalSubstringMatch('빈', strongFest),
+    false,
+    'non-substring festival must not be weak-dropped',
+  );
   const attrIdx = normalized.findIndex((row) => row.id === 'hub-attr-vienna-test');
   assert.ok(attrIdx > 0);
 });
@@ -131,6 +138,124 @@ test('pickEnterSuggestionMatches still drops festivals from auto-nav', () => {
   const matches = pickEnterSuggestionMatches('비엔나', [fest, place]);
   assert.equal(matches.length, 1);
   assert.equal(matches[0].hubId, 'vienna');
+});
+
+test('mergeHubAliasSuggestions — hub row wins over settlement «실롬» (방콕)', () => {
+  const hub = resolveCityAttractionHub('bangkok');
+  assert.ok(hub);
+  const merged = mergeHubAliasSuggestions([
+    {
+      id: 'settlement-silom',
+      kind: 'settlement',
+      badge: '지역',
+      name: '실롬',
+      hubId: 'bangkok',
+      slug: 'bangkok',
+      lat: 13.7,
+      lng: 100.5,
+    },
+    hubToSuggestion(hub),
+    {
+      id: 'spot-bangkok',
+      kind: 'spot',
+      badge: '여행지',
+      name: '방콕',
+      slug: 'bangkok',
+      hubId: 'bangkok',
+      lat: 13.75,
+      lng: 100.52,
+    },
+  ]);
+  const hubRow = merged.find((row) => row.id === 'hub-bangkok');
+  assert.ok(hubRow, 'primary hub-bangkok row must survive merge');
+  assert.equal(merged.some((row) => row.id === 'spot-bangkok'), false);
+  assert.equal(hubRow.searchOverlayDesc, 'Bangkok');
+  assert.ok(merged.some((row) => row.id === 'settlement-silom'));
+});
+
+test('mergeHubAliasSuggestions — hub row wins over settlement (파리 · 베르사유)', () => {
+  const hub = resolveCityAttractionHub('paris');
+  assert.ok(hub);
+  const merged = mergeHubAliasSuggestions([
+    {
+      id: 'attr-versailles',
+      kind: 'attraction',
+      badge: '명소',
+      name: '베르사유',
+      hubId: 'paris',
+      lat: 48.8,
+      lng: 2.1,
+    },
+    {
+      id: 'settlement-versailles',
+      kind: 'settlement',
+      badge: '지역',
+      name: '베르사유',
+      hubId: 'paris',
+      slug: 'paris',
+      lat: 48.8,
+      lng: 2.1,
+    },
+    hubToSuggestion(hub),
+    {
+      id: 'spot-paris',
+      kind: 'spot',
+      badge: '여행지',
+      name: '파리',
+      slug: 'paris',
+      lat: 48.85,
+      lng: 2.35,
+    },
+  ]);
+  assert.ok(merged.find((row) => row.id === 'hub-paris'));
+  assert.equal(merged.some((row) => row.id === 'spot-paris'), false);
+});
+
+test('non-hub query preserves hybrid relevance order within group (prefix «A»)', () => {
+  const aFirst = {
+    id: 'spot-a-first',
+    kind: 'spot',
+    badge: '여행지',
+    name: 'Auckland',
+    lat: -36.8,
+    lng: 174.7,
+  };
+  const aSecond = {
+    id: 'spot-a-second',
+    kind: 'spot',
+    badge: '여행지',
+    name: 'Amsterdam',
+    lat: 52.3,
+    lng: 4.9,
+  };
+  const normalized = normalizeSearchSuggestions('A', [aFirst, aSecond], { hub: null });
+  assert.deepEqual(
+    normalized.filter((row) => row.kind === 'spot').map((row) => row.id),
+    ['spot-a-first', 'spot-a-second'],
+  );
+});
+
+test('Enter disambiguation keeps hub marketing desc for «빈» alias merge', () => {
+  const hub = hubToSuggestion(resolveCityAttractionHub('vienna'));
+  const merged = mergeHubAliasSuggestions([
+    hub,
+    {
+      id: 'spot-vienna',
+      kind: 'spot',
+      badge: '여행지',
+      name: '빈',
+      slug: 'vienna',
+      lat: 48.2,
+      lng: 16.3,
+    },
+  ]);
+  const row = merged[0];
+  assert.equal(row.searchOverlayDesc, '빈');
+  assert.equal(
+    resolveExploreSearchCardDesc(row, { isPopover: false }),
+    '비엔나의 명소·명물을 둘러보세요.',
+  );
+  assert.equal(resolveExploreSearchCardDesc(row, { isPopover: true }), '빈');
 });
 
 test('mergeHubAliasSuggestions fixture — single canonical hub row', () => {
