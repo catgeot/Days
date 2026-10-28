@@ -37,6 +37,24 @@ test.describe('place desktop left info (flag-on build)', () => {
     expect(layout.pageScroll).toBe(true);
   });
 
+  test('390 after starting at 1440 — single #facts/#stories in gallery', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await expectPlaceTitle(page, '카이로');
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.waitForFunction(
+      () => !window.matchMedia('(min-width: 1024px)').matches,
+    );
+    await expect(page.locator('#facts')).toHaveCount(1);
+    await expect(page.getByRole('button', { name: /다녀온 이야기/ })).toBeVisible({ timeout: 30_000 });
+    await expect(page.getByRole('button', { name: /뒤로|Back/i })).toBeVisible();
+    const inGallery = await page.evaluate(() => {
+      const facts = document.querySelector('#facts');
+      const galleryScroll = document.querySelector('[data-place-gallery-scroll]');
+      return Boolean(facts && galleryScroll && galleryScroll.contains(facts));
+    });
+    expect(inGallery).toBe(true);
+  });
+
   test('390 — #facts above first gallery image (mobile regression)', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await expectPlaceTitle(page, '카이로');

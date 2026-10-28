@@ -30,7 +30,7 @@ test('desktop left panel wiring — single mount via viewport hook', () => {
     join(root, 'src/components/PlaceCard/common/usePlaceDesktopLeftInfoLayout.js'),
     'utf8',
   );
-  assert.match(hook, /mountInLeftOverview/);
+  assert.match(hook, /useSyncExternalStore/);
   assert.match(hook, /mountInGallery/);
   assert.match(gallery, /mountInGallery/);
   assert.match(info, /mountInLeftOverview/);
