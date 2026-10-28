@@ -19,12 +19,14 @@ export default function PlaceWorldEventsSection({
   slug,
   location = null,
   variant = 'dark',
+  layout = 'accordion',
   className = '',
 }) {
   const { t } = useTranslation();
   const { locale } = useLocale();
   const panelId = useId();
-  const [expanded, setExpanded] = useState(false);
+  const isTabLayout = layout === 'tab';
+  const [expanded, setExpanded] = useState(isTabLayout);
 
   const placeSlug = useMemo(() => {
     const fromProp = String(slug || '').trim().toLowerCase();
@@ -53,39 +55,47 @@ export default function PlaceWorldEventsSection({
 
   const bodyClass = isSummary ? 'px-3 pb-3 pt-0 space-y-2' : 'px-4 pb-4 pt-0 space-y-3';
 
-  return (
-    <section
-      data-place-world-events=""
-      className={`${shellClass} ${className}`.trim()}
-      aria-label={t('place.worldEvents.title')}
-    >
-      <button
-        type="button"
-        className={headerClass}
-        aria-expanded={expanded}
-        aria-controls={panelId}
-        onClick={(event) => {
-          event.stopPropagation();
-          setExpanded((open) => !open);
-        }}
-      >
-        <CalendarDays
-          size={isSummary ? 15 : 16}
-          className={`shrink-0 ${isSummary ? 'text-amber-300' : 'text-amber-200'}`}
-          aria-hidden
-        />
-        <span className={`min-w-0 flex-1 font-bold ${isSummary ? 'text-xs text-white' : 'text-sm text-white'}`}>
-          {t('place.worldEvents.title')}
-        </span>
-        <span className={`shrink-0 text-[10px] font-semibold ${isSummary ? 'text-white/50' : 'text-white/45'}`}>
-          {t('place.worldEvents.count', { count: events.length })}
-        </span>
+  const headerInner = (
+    <>
+      <CalendarDays
+        size={isSummary ? 15 : 16}
+        className={`shrink-0 ${isSummary ? 'text-amber-300' : 'text-amber-200'}`}
+        aria-hidden
+      />
+      <span className={`min-w-0 flex-1 font-bold ${isSummary ? 'text-xs text-white' : 'text-sm text-white'}`}>
+        {t('place.worldEvents.title')}
+      </span>
+      <span className={`shrink-0 text-[10px] font-semibold ${isSummary ? 'text-white/50' : 'text-white/45'}`}>
+        {t('place.worldEvents.count', { count: events.length })}
+      </span>
+      {!isTabLayout ? (
         <ChevronDown
           size={16}
           className={`shrink-0 text-white/60 transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`}
           aria-hidden
         />
-      </button>
+      ) : null}
+    </>
+  );
+
+  return (
+    <section className={`${shellClass} ${className}`.trim()} aria-label={t('place.worldEvents.title')}>
+      {isTabLayout ? (
+        <div className={headerClass}>{headerInner}</div>
+      ) : (
+        <button
+          type="button"
+          className={headerClass}
+          aria-expanded={expanded}
+          aria-controls={panelId}
+          onClick={(event) => {
+            event.stopPropagation();
+            setExpanded((open) => !open);
+          }}
+        >
+          {headerInner}
+        </button>
+      )}
 
       {expanded ? (
         <div id={panelId} className={bodyClass}>

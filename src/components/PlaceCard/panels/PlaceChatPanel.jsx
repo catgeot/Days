@@ -27,8 +27,11 @@ import {
   peekPlaceReturnTo,
 } from '../../../pages/Home/lib/placeReturnTo';
 import PlaceWorldEventsSection from '../common/PlaceWorldEventsSection';
+import PlaceWorldEventsChatPreview from '../common/PlaceWorldEventsChatPreview';
 import PlaceCrossLinksSection from '../common/PlaceCrossLinksSection';
+import { isGateoPlaceWorldEventsTabEnabled } from '../../../shared/gateoFeatureFlags';
 import { isPlaceCrosslinkWorldEventsRailEnabled } from '../../../pages/Home/lib/placeCrosslinkRollout.js';
+import { getWorldEventsForSlug } from '../../../utils/worldEvents';
 
 const HEADER_SCROLL_TOP_MODES = ['PLANNER', 'GALLERY', 'WIKI', 'REVIEWS'];
 
@@ -37,6 +40,7 @@ const HEADER_SCROLL_TOP_TITLE_KEYS = {
   GALLERY: 'place.nav.scrollTopGallery',
   WIKI: 'place.nav.scrollTopWiki',
   REVIEWS: 'place.nav.scrollTopReviews',
+  WORLD_EVENTS: 'place.nav.scrollTopWorldEvents',
 };
 
 const PlaceChatPanel = React.memo(({
@@ -77,6 +81,17 @@ const PlaceChatPanel = React.memo(({
   const { primaryName, secondaryName } = getPlaceTitleLinesForLocale(location, locale);
   const rawCountry = getLocalizedCountryName(location, locale);
   const countryLabel = isPlaceholderCountry(rawCountry) ? '' : rawCountry;
+
+  const placeSlugKey = String(getPlaceUrlParam(location) || location?.slug || '')
+    .trim()
+    .toLowerCase();
+  const showWorldEventsTab =
+    isGateoPlaceWorldEventsTabEnabled() &&
+    placeSlugKey &&
+    getWorldEventsForSlug(placeSlugKey).length > 0;
+  const headerScrollModes = showWorldEventsTab
+    ? [...HEADER_SCROLL_TOP_MODES, 'WORLD_EVENTS']
+    : HEADER_SCROLL_TOP_MODES;
 
   const getPlaceKey = (place) => `${place?.id ?? ''}:${place?.name ?? ''}`;
 
@@ -153,7 +168,7 @@ const PlaceChatPanel = React.memo(({
   };
 
   /** 모바일: 고정 헤더 탭 → 미디어 패널 스크롤 맨 위 (iOS 상태바 탭은 중첩 스크롤에서 동작하지 않음) */
-  const supportsHeaderScrollTop = HEADER_SCROLL_TOP_MODES.includes(mediaMode);
+  const supportsHeaderScrollTop = headerScrollModes.includes(mediaMode);
 
   const handleHeaderScrollTap = (event) => {
       if (!supportsHeaderScrollTop) return;
@@ -186,11 +201,12 @@ const PlaceChatPanel = React.memo(({
       >
          {/* Row 1: Home, Location Info, Bookmark, Toolkit (Killer Tab) */}
          <div
-           className="flex items-center gap-2.5 overflow-hidden w-full min-w-0 pointer-events-auto touch-manipulation"
+           className="flex flex-col gap-1.5 max-md:flex-row max-md:items-center md:max-xl:gap-2 xl:flex-row xl:items-center xl:gap-x-2.5 overflow-hidden w-full min-w-0 pointer-events-auto touch-manipulation"
            data-place-chrome-hit
            onPointerDown={(e) => e.stopPropagation()}
            onClick={(e) => e.stopPropagation()}
          >
+             <div className="flex items-center gap-2.5 min-w-0 flex-1">
              <button
                 type="button"
                 onClick={(event) => {
@@ -234,7 +250,7 @@ const PlaceChatPanel = React.memo(({
                 <Globe className="w-4 h-4 md:w-4 md:h-4 pointer-events-none" />
              </button>
              <div
-                className={`flex flex-col flex-1 min-w-0 justify-center overflow-hidden ${supportsHeaderScrollTop ? 'max-md:cursor-pointer' : ''}`}
+                className={`flex flex-col flex-1 min-w-[8rem] basis-[45%] justify-center overflow-hidden ${supportsHeaderScrollTop ? 'max-md:cursor-pointer' : ''}`}
                 onClick={handleHeaderScrollTap}
                 onKeyDown={(event) => {
                     if (supportsHeaderScrollTop && (event.key === 'Enter' || event.key === ' ')) {
@@ -264,7 +280,7 @@ const PlaceChatPanel = React.memo(({
                      <button
                         type="button"
                         onClick={(event) => handleCopyName(event, secondaryName, 'secondary')}
-                        className="mt-1 block w-full min-w-0 text-left text-xs leading-snug text-gray-200/90 font-semibold tracking-normal line-clamp-2 whitespace-normal [word-break:keep-all] [overflow-wrap:break-word] hover:text-white"
+                        className="mt-1 block w-full min-w-0 max-w-full text-left text-xs leading-snug text-gray-200/90 font-semibold tracking-normal truncate whitespace-nowrap hover:text-white"
                         title={t('place.nav.copySecondary')}
                      >
                         ({secondaryName})
@@ -276,11 +292,12 @@ const PlaceChatPanel = React.memo(({
                     </span>
                  )}
              </div>
-             <div className="shrink-0 flex items-center gap-1.5 md:gap-2">
+             </div>
+             <div className="flex shrink-0 items-center gap-1.5 md:gap-2 justify-end w-auto md:w-full xl:w-auto xl:ml-auto max-md:pointer-events-auto">
                  <button
                     type="button"
                     onClick={openMooni}
-                    className="place-header-mooni-btn flex h-8 w-8 md:h-auto md:w-auto items-center justify-center gap-1 rounded-full border border-cyan-400/45 bg-cyan-500/25 px-0 md:px-2.5 md:py-1.5 text-cyan-50 ring-1 ring-cyan-300/30 ring-inset transition-all shrink-0 touch-manipulation hover:border-cyan-300/70 hover:bg-cyan-500/35 active:scale-95"
+                    className="place-header-mooni-btn flex h-8 w-8 xl:h-auto xl:w-auto items-center justify-center gap-1 rounded-full border border-cyan-400/45 bg-cyan-500/25 px-0 xl:px-2.5 xl:py-1.5 text-cyan-50 ring-1 ring-cyan-300/30 ring-inset transition-all shrink-0 touch-manipulation hover:border-cyan-300/70 hover:bg-cyan-500/35 active:scale-95"
                     title={t('place.nav.askMooni')}
                     aria-label={t('place.nav.askMooni')}
                  >
@@ -290,7 +307,7 @@ const PlaceChatPanel = React.memo(({
                       className="h-6 w-6 object-contain drop-shadow-[0_2px_10px_rgba(34,211,238,0.65)] brightness-110 contrast-[1.08] saturate-110"
                       draggable={false}
                     />
-                    <span className="hidden md:inline text-xs font-bold whitespace-nowrap text-cyan-50 drop-shadow-[0_1px_2px_rgba(0,0,0,0.45)]">MOONi</span>
+                    <span className="hidden xl:inline text-xs font-bold whitespace-nowrap text-cyan-50 drop-shadow-[0_1px_2px_rgba(0,0,0,0.45)]">MOONi</span>
                  </button>
                  {mediaMode === 'PLANNER' ? (
                     <button
@@ -321,6 +338,7 @@ const PlaceChatPanel = React.memo(({
              matchedPackage={matchedPackage}
              onOpenPackage={onOpenPackage}
              placeSlug={getPlaceUrlParam(location)}
+             showWorldEventsTab={showWorldEventsTab}
            />
          </div>
       </div>
@@ -356,9 +374,14 @@ const PlaceChatPanel = React.memo(({
                         : 'min-h-0 flex-1 gap-4 px-6 pt-6 pb-3'
                 }`}
             >
-                {!showWorldEventsSection ? null : (
+                {showWorldEventsTab && mediaMode !== 'WORLD_EVENTS' ? (
+                  <PlaceWorldEventsChatPreview
+                    location={location}
+                    onViewAllTab={() => setMediaMode('WORLD_EVENTS')}
+                  />
+                ) : !showWorldEventsTab && showWorldEventsSection ? (
                   <PlaceWorldEventsSection location={location} variant="dark" className="shrink-0" />
-                )}
+                ) : null}
                 {crosslinkEventsInGalleryInfo ? (
                   <PlaceCrossLinksSection
                     location={location}

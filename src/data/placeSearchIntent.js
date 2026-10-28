@@ -3,7 +3,7 @@
  * @see plans/en-seo-followup-plan.md §1.2 · #2
  */
 
-/** @typedef {'gallery'|'video'|'planner'|'wiki'|'reviews'} PlaceSearchTab */
+/** @typedef {'gallery'|'video'|'planner'|'wiki'|'reviews'|'events'} PlaceSearchTab */
 
 /**
  * @typedef {Object} PlaceSearchIntent
@@ -89,6 +89,17 @@ export const PLACE_SEARCH_INTENTS = [
     koDescLead: '{name} 여행 스케치·로컬 왓슨 현지 팁·자유여행 가이드.',
     enDescLead: '{name} travel sketch, Local Watson tips, and independent travel guide.',
     sitemapPriorityOffset: -0.12,
+  },
+  {
+    intentId: 'world-events',
+    tab: 'events',
+    koQuerySuffix: ['행사', '축제', '이벤트', '축제 일정'],
+    enQuerySuffix: ['events', 'festivals', 'event calendar'],
+    koTitle: '{name} 행사·축제',
+    enTitle: '{name} events & festivals',
+    koDescLead: '{name}에서 열리는 행사·축제 일정과 여행 준비.',
+    enDescLead: 'Events and festivals in {name} — dates, stays, and trip planning.',
+    sitemapPriorityOffset: -0.08,
   },
 ];
 
