@@ -185,5 +185,5 @@ test('PlaceVerifiedFacts resolves through the registry and keeps unverified item
     join(root, 'src/components/PlaceCard/views/PlaceGalleryView.jsx'),
     'utf8',
   );
-  assert.match(gallery, /<PlaceVerifiedFacts/);
+  assert.match(gallery, /PlaceGalleryFactsAndStories/);
 });

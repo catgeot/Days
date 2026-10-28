@@ -21,6 +21,8 @@ export const GATEO_ENV_FLAG_NAMES = {
   PLACE_WORLD_EVENTS_TAB: 'VITE_GATEO_PLACE_WORLD_EVENTS_TAB',
   /** Explore Enter panel matches autocomplete groups (hub exact). Default off until QA. */
   EXPLORE_SEARCH_SUBMIT_PARITY: 'VITE_GATEO_EXPLORE_SEARCH_SUBMIT_PARITY',
+  /** Desktop (lg+) — move gallery #facts/#stories into left overview scroll. Default off. */
+  PLACE_DESKTOP_LEFT_INFO: 'VITE_GATEO_PLACE_DESKTOP_LEFT_INFO',
 };
 
 /** @param {string} name */
@@ -105,4 +107,9 @@ export function isGateoPlaceWorldEventsTabEnabled() {
 /** Hub-exact Enter uses autocomplete-normalized suggestion groups. Default off. */
 export function isGateoExploreSearchSubmitParityEnabled() {
   return readGateoEnvFlag(GATEO_ENV_FLAG_NAMES.EXPLORE_SEARCH_SUBMIT_PARITY);
+}
+
+/** /place/* desktop two-column — facts/stories in left overview panel (lg+). Default off. */
+export function isGateoPlaceDesktopLeftInfoEnabled() {
+  return readGateoEnvFlag(GATEO_ENV_FLAG_NAMES.PLACE_DESKTOP_LEFT_INFO);
 }

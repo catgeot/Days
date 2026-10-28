@@ -43,7 +43,6 @@ import {
 import { buildPlaceReviewsHref } from '../../../utils/placeReviewFocus.js';
 import { snapshotGalleryScrollForPlaceBack } from './placeScrollMemory.js';
 import { getPlaceStableKey } from '../../../utils/travelSpotResolve.js';
-import { useVisitStories } from '../hooks/useVisitStories';
 
 function usePlaceGallerySectionOpen(sectionId, placeKey) {
   const routeLocation = useLocation();
@@ -615,35 +614,50 @@ export function PlaceLocalInfoInline({
   );
 }
 
-export function PlaceVisitStories({ location, className = '' }) {
+export function PlaceVisitStories({
+  location,
+  className = '',
+  stories,
+  isLoading,
+  showLoadingShell = false,
+}) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const panelId = useId();
   const placeKey = getPlaceStableKey(location) || location?.slug || location?.id || '';
   const [open, setOpen] = usePlaceGallerySectionOpen(PLACE_GALLERY_SECTION.STORIES, placeKey);
   const card = resolveVerifiedFacts(location);
-  const { stories, isLoading } = useVisitStories(location);
-  if (!card || isLoading || !stories.length) return null;
+  if (!card) return null;
+  if (isLoading && !showLoadingShell) return null;
+  if (!isLoading && !stories?.length) return null;
   const placePath = buildPlacePath(location?.slug || location?.id);
+  const countLabel = isLoading && showLoadingShell
+    ? '…'
+    : t('place.facts.storyCount', { count: stories.length });
 
   return (
     <section
       id={PLACE_GALLERY_SECTION.STORIES}
       data-visit-stories=""
       data-local-info="stories"
+      data-visit-stories-loading={isLoading && showLoadingShell ? 'true' : undefined}
       aria-label={t('place.facts.storiesTitle')}
+      aria-busy={isLoading && showLoadingShell ? true : undefined}
       className={`scroll-mt-6 ${galleryFactsSectionClass()} ${className}`.trim()}
     >
       <PlaceSectionToggleHeader
         title={t('place.facts.storiesTitle')}
-        count={t('place.facts.storyCount', { count: stories.length })}
-        open={open}
+        count={countLabel}
+        open={open && !(isLoading && showLoadingShell)}
         controls={panelId}
-        onClick={() => setOpen((value) => !value)}
+        onClick={() => {
+          if (isLoading && showLoadingShell) return;
+          setOpen((value) => !value);
+        }}
         light={false}
         icon={PenLine}
       />
-      {open ? (
+      {open && !(isLoading && showLoadingShell) ? (
         <div id={panelId} className="mt-2 space-y-2 px-0.5 pb-1">
           {stories.map((story) => {
             const kindLabel = story.kind === 'review'
