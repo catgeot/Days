@@ -13,7 +13,7 @@
 ### 추가 (같은 날 · ESLint 세션)
 
 - **ESLint**: `npm run lint` **error 0**; 당시 `exhaustive-deps` **12건** 잔여(후속 exhaustive-deps 세션에서 0까지 정리). `eslint.config.js`에 `scripts/**`·Node 전역, `argsIgnorePattern`(`^_`) 등. 미사용 변수/일부 `set-state-in-effect`·`planner/utils` `no-case-declarations`·DailyReport·Home·PlaceCard 일괄 반영. `formatUrlName.js`, `common/device.js` 추가.
-- **emrld**(`index.html` 하단): Travel Payouts 사이트 소유자 확인용 — **삭제하지 말 것**(운영 측 요청·로그인 연동).
+- **emrld**(`index.html` 하단): Travel Payouts 사이트 소유자 확인용 — **삭제하지 말 것**(운영 측 요청·로그인 연동). → **2026-10-28 운영자 결정으로 `index.html` 인라인 로더 제거**(본 PR). MRT·Klook 링크는 유지.
 - **다음(당시)**: (선택) `emrld`, 제휴 링크/DF 노선; CI `max-warnings` 정책 합의(선택).
 
 ### 추가 (같은 날 · exhaustive-deps 세션)
