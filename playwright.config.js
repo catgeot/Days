@@ -290,7 +290,6 @@ export default defineConfig({
         ...devices['iPhone 13'],
         viewport: { width: 390, height: 844 },
         deviceScaleFactor: 1,
-        ...(nearbyCardsE2e ? { baseURL: nearbyCardsLocalBase } : {}),
       },
     },
     {
