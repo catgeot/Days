@@ -91,6 +91,7 @@ function hasUsableCoords(item) {
 export function pickEnterSuggestionMatches(query, suggestions) {
   return (suggestions || []).filter((item) => {
     if (!item?.name || item.source === 'mood') return false;
+    if (item.kind === 'festival' || item.source === 'korea-festival') return false;
     if (!hasUsableCoords(item)) return false;
     return placeNameMatchesSearchQuery(query, item);
   });

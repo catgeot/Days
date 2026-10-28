@@ -3,6 +3,7 @@ import { CATEGORY_LABELS } from '../pages/Home/components/SearchDiscovery/consta
 /** SSOT explore badge keys — BADGE_STYLES·localizedExploreBadgeLabel lookup */
 export const EXPLORE_BADGE_PLACE = '장소';
 export const EXPLORE_BADGE_REGION = '지역';
+export const EXPLORE_BADGE_FESTIVAL = '축제';
 
 /**
  * @param {import('i18next').TFunction} t
@@ -43,7 +44,15 @@ export function localizedExploreCategoryLabel(t, id) {
  */
 export function localizedExploreBadgeLabel(t, badgeKo) {
   const key = String(badgeKo || '장소').trim();
+  if (key === EXPLORE_BADGE_FESTIVAL) {
+    return localizedExploreFestivalBadge(t);
+  }
   return t(`home.explore.badge.${key}`, { defaultValue: key });
+}
+
+/** Explore search — Korea festival row badge (KO/EN via korea.theme.festivalsLink). */
+export function localizedExploreFestivalBadge(t) {
+  return t('korea.theme.festivalsLink', { defaultValue: '축제' });
 }
 
 /**

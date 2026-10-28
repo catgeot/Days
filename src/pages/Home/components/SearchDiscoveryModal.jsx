@@ -33,7 +33,8 @@ import {
   destinationLabel,
   resolveDestinationToSpot,
 } from '../lib/exploreRecentHistory';
-import { buildHybridSearchSuggestions, buildLocalSearchSuggestions } from '../lib/searchSuggestions';
+import { buildLocalSearchSuggestions } from '../lib/searchSuggestions';
+import { runExploreHybridSuggestUpdate } from '../lib/exploreHybridSuggestUpdate';
 import { hasUsableVisitedCoords } from '../lib/visitedPlaceSearch';
 import { isSearchDisambiguation } from '../lib/cityAttractionHubs';
 import {
@@ -86,7 +87,7 @@ const HistoryPopoverHeader = ({ title, onClearAll, clearAllLabel }) => (
 );
 
 const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, onAskMooni, initialQuery = '', isFromPlaceCard = false }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -277,10 +278,22 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, onAskMooni,
     // 허브 exact면 Mapbox 스킵 (이미 local에 명소 포함)
     setSuggestionsLoading(true);
     const timer = setTimeout(async () => {
+      const mergeStartedAt = Date.now();
       try {
-        const items = await buildHybridSearchSuggestions(q);
-        if (suggestRequestIdRef.current !== requestId) return;
-        setHybridSuggestions(items);
+        const { stale } = await runExploreHybridSuggestUpdate(
+          q,
+          requestId,
+          () => suggestRequestIdRef.current,
+          {
+            locale: i18n.language,
+            mergeStartedAt,
+            onPaint: (paint) => {
+              if (suggestRequestIdRef.current !== requestId) return;
+              setHybridSuggestions(paint);
+            },
+          },
+        );
+        if (stale || suggestRequestIdRef.current !== requestId) return;
       } catch {
         if (suggestRequestIdRef.current !== requestId) return;
         // local 유지
@@ -291,7 +304,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, onAskMooni,
       }
     }, 120);
     return () => clearTimeout(timer);
-  }, [isOpen, query]);
+  }, [isOpen, query, i18n.language]);
 
   /** 선택 카드·Enter 검색 후 키보드가 남아 리스트를 가리지 않게 */
   useEffect(() => {
@@ -520,6 +533,15 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, onAskMooni,
     const recentKeyword = typedKeyword || String(item.name || '').trim();
     if (recentKeyword) {
       setRecentSearches(pushRecentSearch(recentKeyword));
+    }
+
+    if (item.kind === 'festival' && item.festivalContentId) {
+      captureExploreReturn();
+      navigate(
+        item.exploreHref ||
+          `/korea?festival=${encodeURIComponent(String(item.festivalContentId))}`,
+      );
+      return;
     }
 
     let place = item;
