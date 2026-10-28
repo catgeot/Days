@@ -971,6 +971,7 @@
     },
     "crossLinks": {
       "aria": "Related festivals and scenic spots",
+      "eventsTitle": "Events in this city",
       "festivalsTitle": "Festivals nearby",
       "collectionsTitle": "Scenic & theme spots",
       "count": "{{count}}"

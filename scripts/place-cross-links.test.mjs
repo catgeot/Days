@@ -164,3 +164,25 @@ test('overseas slugs attach world events only', () => {
     assert.equal(vienna.collections.length, 0);
   });
 });
+
+test('crosslink event titles follow locale option', () => {
+  withCrosslinkFlag(true, () => {
+    const ko = resolvePlaceCrossLinks({ slug: 'vienna', name: 'Vienna', country: 'Austria' }, { locale: 'ko' });
+    const en = resolvePlaceCrossLinks({ slug: 'vienna', name: 'Vienna', country: 'Austria' }, { locale: 'en' });
+    assert.ok(ko.events.length >= 1);
+    assert.ok(en.events.length >= 1);
+    assert.notEqual(ko.events[0].title, en.events[0].title);
+  });
+});
+
+test('isPlaceCrosslinkWorldEventsRailEnabled follows flag', async () => {
+  const { isPlaceCrosslinkWorldEventsRailEnabled } = await import(
+    '../src/pages/Home/lib/placeCrosslinkRollout.js'
+  );
+  withCrosslinkFlag(false, () => {
+    assert.equal(isPlaceCrosslinkWorldEventsRailEnabled(), false);
+  });
+  withCrosslinkFlag(true, () => {
+    assert.equal(isPlaceCrosslinkWorldEventsRailEnabled(), true);
+  });
+});

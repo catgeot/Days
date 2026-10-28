@@ -143,7 +143,11 @@ const GalleryInfoView = React.memo(({ selectedPlace, selectedImg, relatedPlaces 
 
                         <PlaceScenicGateway location={selectedPlace} variant="dark" />
 
-                        <PlaceCrossLinksSection location={selectedPlace} variant="dark" />
+                        <PlaceCrossLinksSection
+                          location={selectedPlace}
+                          variant="dark"
+                          bucketFilter="festivalsCollections"
+                        />
 
                         {overviewKeywords.length > 0 && (
                             <div className="flex flex-wrap gap-2 border-t border-white/5 pt-4">

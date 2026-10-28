@@ -27,6 +27,8 @@ import {
   peekPlaceReturnTo,
 } from '../../../pages/Home/lib/placeReturnTo';
 import PlaceWorldEventsSection from '../common/PlaceWorldEventsSection';
+import PlaceCrossLinksSection from '../common/PlaceCrossLinksSection';
+import { isPlaceCrosslinkWorldEventsRailEnabled } from '../../../pages/Home/lib/placeCrosslinkRollout.js';
 
 const HEADER_SCROLL_TOP_MODES = ['PLANNER', 'GALLERY', 'WIKI', 'REVIEWS'];
 
@@ -60,6 +62,11 @@ const PlaceChatPanel = React.memo(({
 }) => {
   const { t } = useTranslation();
   const { locale } = useLocale();
+  const crosslinkWorldEventsRail = isPlaceCrosslinkWorldEventsRailEnabled();
+  /** Crosslink events replace WorldEvents only in desktop gallery info (not VIDEO/WIKI). */
+  const crosslinkEventsInGalleryInfo =
+    crosslinkWorldEventsRail && mediaMode !== 'WIKI' && activeInfo.mode !== 'VIDEO';
+  const showWorldEventsSection = !crosslinkEventsInGalleryInfo;
   const [copiedType, setCopiedType] = useState('');
   const scrollRef = useRef(null);
   const navigate = useNavigate();
@@ -349,7 +356,17 @@ const PlaceChatPanel = React.memo(({
                         : 'min-h-0 flex-1 gap-4 px-6 pt-6 pb-3'
                 }`}
             >
-                <PlaceWorldEventsSection location={location} variant="dark" className="shrink-0" />
+                {!showWorldEventsSection ? null : (
+                  <PlaceWorldEventsSection location={location} variant="dark" className="shrink-0" />
+                )}
+                {crosslinkEventsInGalleryInfo ? (
+                  <PlaceCrossLinksSection
+                    location={location}
+                    variant="dark"
+                    bucketFilter="eventsOnly"
+                    className="shrink-0"
+                  />
+                ) : null}
                 {activeInfo.mode === 'VIDEO' ? (
                     <VideoInfoView
                         videoData={activeInfo}

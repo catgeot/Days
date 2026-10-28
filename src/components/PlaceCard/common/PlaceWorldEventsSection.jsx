@@ -54,7 +54,11 @@ export default function PlaceWorldEventsSection({
   const bodyClass = isSummary ? 'px-3 pb-3 pt-0 space-y-2' : 'px-4 pb-4 pt-0 space-y-3';
 
   return (
-    <section className={`${shellClass} ${className}`.trim()} aria-label={t('place.worldEvents.title')}>
+    <section
+      data-place-world-events=""
+      className={`${shellClass} ${className}`.trim()}
+      aria-label={t('place.worldEvents.title')}
+    >
       <button
         type="button"
         className={headerClass}

@@ -1,27 +1,35 @@
 import React, { useId, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ChevronDown, ChevronRight, Landmark, Sparkles } from 'lucide-react';
+import { ChevronDown, ChevronRight, CalendarDays, Landmark, Sparkles } from 'lucide-react';
 import { resolvePlaceCrossLinksIfEnabled } from '../../../pages/Home/lib/placeCrosslinkRollout.js';
 
 /**
- * @param {{ location?: object | null, variant?: 'dark' | 'summary', className?: string }} props
+ * @param {{ location?: object | null, variant?: 'dark' | 'summary', className?: string, bucketFilter?: 'all' | 'eventsOnly' | 'festivalsCollections' }} props
  */
 export default function PlaceCrossLinksSection({
   location = null,
   variant = 'dark',
   className = '',
+  bucketFilter = 'all',
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const panelFestivalsId = useId();
   const panelCollectionsId = useId();
+  const panelEventsId = useId();
   const [festivalsOpen, setFestivalsOpen] = useState(true);
   const [collectionsOpen, setCollectionsOpen] = useState(true);
+  const [eventsOpen, setEventsOpen] = useState(false);
 
-  const bundle = useMemo(() => resolvePlaceCrossLinksIfEnabled(location), [location]);
-  const festivals = bundle.festivals || [];
-  const collections = bundle.collections || [];
-  if (!festivals.length && !collections.length) return null;
+  const locale = i18n.language || 'ko';
+  const bundle = useMemo(
+    () => resolvePlaceCrossLinksIfEnabled(location, { locale }),
+    [location, locale],
+  );
+  const festivals = bucketFilter === 'eventsOnly' ? [] : bundle.festivals || [];
+  const collections = bucketFilter === 'eventsOnly' ? [] : bundle.collections || [];
+  const events = bucketFilter === 'festivalsCollections' ? [] : bundle.events || [];
+  if (!festivals.length && !collections.length && !events.length) return null;
 
   const isSummary = variant === 'summary';
   const shellClass = isSummary
@@ -69,9 +77,18 @@ export default function PlaceCrossLinksSection({
           <ul id={panelId} className={`${listClass} list-none m-0`}>
             {rows.map((row) => (
               <li key={row.id || row.href}>
-                <Link to={row.href} className={rowClass} onClick={(e) => e.stopPropagation()}>
-                  <span className="min-w-0 flex-1 leading-snug break-keep">{row.title}</span>
-                  <ChevronRight size={14} className="shrink-0 text-white/40" aria-hidden />
+                <Link to={row.href} className={`${rowClass} !items-start`} onClick={(e) => e.stopPropagation()}>
+                  <span className="min-w-0 flex-1">
+                    <span className="block leading-snug break-keep">{row.title}</span>
+                    {row.dateLabel ? (
+                      <span
+                        className={`mt-0.5 block ${isSummary ? 'text-[10px]' : 'text-[11px]'} text-white/55`}
+                      >
+                        {row.dateLabel}
+                      </span>
+                    ) : null}
+                  </span>
+                  <ChevronRight size={14} className="shrink-0 text-white/40 mt-0.5" aria-hidden />
                 </Link>
               </li>
             ))}
@@ -87,6 +104,15 @@ export default function PlaceCrossLinksSection({
       data-place-crosslinks=""
       aria-label={t('place.crossLinks.aria')}
     >
+      {renderBucket(
+        'events',
+        events,
+        eventsOpen,
+        setEventsOpen,
+        panelEventsId,
+        <CalendarDays size={isSummary ? 15 : 16} className="shrink-0 text-amber-200" aria-hidden />,
+        'place.crossLinks.eventsTitle',
+      )}
       {renderBucket(
         'festivals',
         festivals,

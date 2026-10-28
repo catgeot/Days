@@ -39,6 +39,7 @@ import PlaceVerifiedFacts, { PlaceVisitStories } from '../common/PlaceVerifiedFa
 import PlaceEditorialTravelogueCard from '../common/PlaceEditorialTravelogueCard';
 import PlaceScenicGateway from '../common/PlaceScenicGateway';
 import PlaceCrossLinksSection from '../common/PlaceCrossLinksSection';
+import { isPlaceCrosslinkWorldEventsRailEnabled } from '../../../pages/Home/lib/placeCrosslinkRollout.js';
 import { useLocale } from '../../../i18n/LocaleProvider';
 import { useGalleryLongPress } from '../common/galleryLongPress';
 import { GALLERY_REPORT_REASONS } from '../../../shared/api/placeGalleryPersist';
@@ -368,6 +369,7 @@ const PlaceGalleryView = React.memo(({
 }) => {
   const { t } = useTranslation();
   const { locale } = useLocale();
+  const crosslinkWorldEventsRail = isPlaceCrosslinkWorldEventsRailEnabled();
   const fullScreenContainerRef = useRef(null);
   const scrollContainerRef = useRef(null);
   const lightboxRootRef = useRef(null);
@@ -1434,11 +1436,13 @@ const PlaceGalleryView = React.memo(({
               className={`md:hidden mb-4 ${mobileLandscapeChromeHidden}`}
             />
 
-            <PlaceWorldEventsSection
-              location={location}
-              variant="dark"
-              className={`md:hidden mb-4 ${mobileLandscapeChromeHidden}`}
-            />
+            {!crosslinkWorldEventsRail ? (
+              <PlaceWorldEventsSection
+                location={location}
+                variant="dark"
+                className={`md:hidden mb-4 ${mobileLandscapeChromeHidden}`}
+              />
+            ) : null}
 
             <div className={`${hasPlaceOverview ? 'mt-4' : 'mt-12'} max-md:landscape:mt-0 md:mt-0`}>
               {showLoadingChrome && <GalleryLoadingChrome />}
