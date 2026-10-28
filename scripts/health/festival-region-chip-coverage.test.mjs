@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { test } from 'node:test';
-import { resolveFestivalItemSidoCode } from '../../src/pages/Korea/koreaAreaFilter.js';
+import { resolveFestivalItemSidoCode, normalizeTourApiSidoAreaCode } from '../../src/pages/Korea/koreaAreaFilter.js';
 import { filterByRegion, buildSidoTags, REGION_MIN_COUNT, LIST_SIDO_CHIP_MIN_COUNT } from '../../src/pages/Korea/festivalRegionTags.js';
 import {
   auditNationwideSidoChipsMatchList,
@@ -128,6 +128,25 @@ test('addr fixture — every festival resolves to a sido (unmapped === 0)', () =
     }
   }
   assert.equal(unmapped, 0, `unresolved sido: ${unmapped} e.g. ${samples.join(' | ')}`);
+});
+
+test('zero-padded areacode 04 → Daegu (4) and nationwide chips sum to list', () => {
+  assert.equal(normalizeTourApiSidoAreaCode('04'), '4');
+  const daegu = {
+    contentId: 'daegu-padded',
+    areacode: '04',
+    addr1: '대구광역시 중구 동성로2길 80',
+  };
+  assert.equal(resolveFestivalItemSidoCode(daegu), '4');
+  const panel = [
+    daegu,
+    { contentId: 'seoul-1', areacode: '01', addr1: '서울특별시 종로구' },
+  ];
+  assert.equal(resolveFestivalItemSidoCode(panel[1]), '1');
+  const chips = buildSidoTags(panel, { minCount: LIST_SIDO_CHIP_MIN_COUNT });
+  assert.equal(chips.reduce((a, c) => a + c.count, 0), 2);
+  assert.ok(chips.some((c) => c.id === '4' && c.label.includes('대구')));
+  assertAuditClean(auditNationwideSidoChipsMatchList(panel), 'padded areacode panel');
 });
 
 function assertAuditClean(audit, label) {
