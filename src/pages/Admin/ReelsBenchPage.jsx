@@ -3,6 +3,7 @@ import { Helmet } from 'react-helmet-async';
 import { Link, useLocation } from 'react-router-dom';
 import {
   REELS_BENCH_INDICES,
+  getVerifiedReelByteSize,
   reelOriginalMp4Url,
   reelPosterUrl,
   reelWebMp4Url,
@@ -16,18 +17,6 @@ function formatBytes(length) {
   if (length < 1024) return `${length} B`;
   if (length < 1024 * 1024) return `${(length / 1024).toFixed(1)} KB`;
   return `${(length / (1024 * 1024)).toFixed(2)} MB`;
-}
-
-async function headContentLength(url) {
-  try {
-    const res = await fetch(url, { method: 'HEAD', mode: 'cors' });
-    if (!res.ok) return { ok: false, bytes: null };
-    const raw = res.headers.get('content-length');
-    const bytes = raw ? Number.parseInt(raw, 10) : null;
-    return { ok: true, bytes: Number.isFinite(bytes) ? bytes : null };
-  } catch {
-    return { ok: false, bytes: null };
-  }
 }
 
 function resolveActiveKind(globalUseWeb, perIndexOverride) {
@@ -73,12 +62,12 @@ function ReelBenchCard({
   const [inView, setInView] = useState(false);
   const [loadedSrc, setLoadedSrc] = useState('');
   const [playError, setPlayError] = useState(false);
-  const [sizeLabel, setSizeLabel] = useState('');
-  const [sizePending, setSizePending] = useState(false);
 
   const activeKind = resolveActiveKind(globalUseWeb, perOverride);
   const targetSrc = activeKind === 'web' ? reelWebMp4Url(index) : reelOriginalMp4Url(index);
   const sourceLabel = activeKind === 'web' ? '웹 버전' : '원본';
+  const verifiedBytes = getVerifiedReelByteSize(index, activeKind);
+  const sizeLabel = formatBytes(verifiedBytes) ?? '크기 알 수 없음';
 
   useEffect(() => {
     const node = wrapRef.current;
@@ -99,22 +88,6 @@ function ReelBenchCard({
     setPlayError(false);
     setLoadedSrc(targetSrc);
   }, [inView, targetSrc]);
-
-  useEffect(() => {
-    if (!loadedSrc) return;
-    let cancel = false;
-    setSizePending(true);
-    setSizeLabel('');
-    headContentLength(loadedSrc).then(({ bytes }) => {
-      if (cancel) return;
-      setSizePending(false);
-      const formatted = formatBytes(bytes);
-      setSizeLabel(formatted ? formatted : '크기 알 수 없음');
-    });
-    return () => {
-      cancel = true;
-    };
-  }, [loadedSrc]);
 
   useEffect(() => {
     const el = videoRef.current;
@@ -141,7 +114,9 @@ function ReelBenchCard({
           <h2 className="text-sm font-semibold text-white">릴스 #{String(index).padStart(2, '0')}</h2>
           <p className="mt-1 text-xs text-white/55">
             활성: <span className="text-white/85">{sourceLabel}</span>
-            {sizePending ? ' · 용량 확인 중…' : sizeLabel ? ` · ${sizeLabel}` : null}
+            {' · '}
+            {sizeLabel}
+            <span className="text-white/40"> (CDN 검증)</span>
           </p>
         </div>
         <button
@@ -165,7 +140,7 @@ function ReelBenchCard({
             onError={() => setPlayError(true)}
             onLoadedData={() => setPlayError(false)}
           />
-          {playError ? (
+          {playError && loadedSrc ? (
             <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/80 px-4 text-center text-sm text-white/90">
               <p className="font-medium">재생할 수 없습니다</p>
               <p className="mt-1 text-xs text-white/60">

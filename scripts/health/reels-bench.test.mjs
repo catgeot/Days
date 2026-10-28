@@ -44,8 +44,12 @@ test('sitemap excludes admin reels bench', () => {
   assert.doesNotMatch(sitemap, /\/admin\/gallery/);
 });
 
-test('reels URL SSOT count and external host only', () => {
+test('reels URL SSOT count and verified byte table', () => {
   const urls = readFileSync(join(root, 'src/pages/Admin/reelsBenchUrls.js'), 'utf8');
   assert.match(urls, /REELS_BENCH_COUNT = 7/);
   assert.match(urls, /reels\.findable\.kr/);
+  assert.match(urls, /REELS_BENCH_VERIFIED_BYTES/);
+  const page = readFileSync(join(root, 'src/pages/Admin/ReelsBenchPage.jsx'), 'utf8');
+  assert.doesNotMatch(page, /fetch\(.*HEAD/);
+  assert.match(page, /getVerifiedReelByteSize/);
 });
