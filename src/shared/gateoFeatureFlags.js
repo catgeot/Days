@@ -111,7 +111,7 @@ export function isGateoExploreSearchSubmitParityEnabled() {
   if (raw == null || String(raw).trim() === '') return true;
   const value = String(raw).trim().toLowerCase();
   if (value === '0' || value === 'false' || value === 'off') return false;
-  return value === '1';
+  return true;
 }
 
 /** /place/* desktop two-column — facts/stories in left overview panel (lg+). Default off. */
