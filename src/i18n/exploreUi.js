@@ -50,9 +50,9 @@ export function localizedExploreBadgeLabel(t, badgeKo) {
   return t(`home.explore.badge.${key}`, { defaultValue: key });
 }
 
-/** Explore search — Korea festival row badge (KO/EN via existing korea.landing keys). */
+/** Explore search — Korea festival row badge (KO/EN via korea.theme.festivalsLink). */
 export function localizedExploreFestivalBadge(t) {
-  return t('korea.landing.festivalsLink', { defaultValue: '축제' });
+  return t('korea.theme.festivalsLink', { defaultValue: '축제' });
 }
 
 /**

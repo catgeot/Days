@@ -280,17 +280,20 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, onAskMooni,
     const timer = setTimeout(async () => {
       const mergeStartedAt = Date.now();
       try {
-        const { stale, paints } = await runExploreHybridSuggestUpdate(
+        const { stale } = await runExploreHybridSuggestUpdate(
           q,
           requestId,
           () => suggestRequestIdRef.current,
-          { locale: i18n.language, mergeStartedAt },
+          {
+            locale: i18n.language,
+            mergeStartedAt,
+            onPaint: (paint) => {
+              if (suggestRequestIdRef.current !== requestId) return;
+              setHybridSuggestions(paint);
+            },
+          },
         );
         if (stale || suggestRequestIdRef.current !== requestId) return;
-        for (const paint of paints) {
-          if (suggestRequestIdRef.current !== requestId) return;
-          setHybridSuggestions(paint);
-        }
       } catch {
         if (suggestRequestIdRef.current !== requestId) return;
         // local 유지
