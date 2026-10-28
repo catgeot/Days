@@ -11,6 +11,7 @@ import {
   getPlaceTabSeoDescription,
   getPlaceTabSeoTitle,
 } from '../../pages/Home/lib/placeSeoText.js';
+import { isGateoPlaceWorldEventsTabEnabled } from '../../shared/gateoFeatureFlags';
 
 const PlaceCard = () => {
   const { slug, tab } = useParams();
@@ -33,9 +34,14 @@ const PlaceCard = () => {
   const galleryData = usePlaceGallery(contextLocation);
 
   const currentTab = tab || 'gallery';
-  const tabKey = ['wiki', 'reviews', 'gallery', 'video', 'planner'].includes(currentTab)
-    ? currentTab
-    : 'gallery';
+  const allowedUrlTabs = ['wiki', 'reviews', 'gallery', 'video', 'planner'];
+  if (isGateoPlaceWorldEventsTabEnabled()) {
+    allowedUrlTabs.push('events');
+  }
+  const tabKey = allowedUrlTabs.includes(currentTab) ? currentTab : 'gallery';
+  const worldEventsTabFlagOn = isGateoPlaceWorldEventsTabEnabled();
+  const initialTabForExpanded =
+    currentTab === 'events' && worldEventsTabFlagOn ? 'WORLD_EVENTS' : currentTab.toUpperCase();
 
   const reviewPlaceSlug =
     contextLocation?.id != null &&
@@ -87,7 +93,7 @@ const PlaceCard = () => {
         isMooniChatOpen={isMooniChatOpen}
         galleryData={galleryData}
         onToggleBookmark={onToggleBookmark}
-        initialTab={currentTab.toUpperCase()}
+        initialTab={initialTabForExpanded}
       />
     </>
   );

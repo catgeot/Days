@@ -628,6 +628,8 @@
       "scrollTopGallery": "탭하면 갤러리 맨 위로",
       "scrollTopWiki": "탭하면 여행 스케치 맨 위로",
       "scrollTopReviews": "탭하면 리뷰 맨 위로",
+      "worldEvents": "세계 행사",
+      "scrollTopWorldEvents": "탭하면 세계 행사 맨 위로",
       "plannerTop": "플래너 맨 위로",
       "scrollTopShort": "맨 위"
     },
@@ -700,6 +702,10 @@
       "planner": {
         "suffix": "여행 준비 가이드",
         "desc": "{{name}} 여행에 필요한 모든 정보와 팁을 확인하세요."
+      },
+      "events": {
+        "suffix": "행사·축제",
+        "desc": "{{name}}에서 열리는 행사·축제 일정과 여행 준비 정보를 확인하세요."
       }
     },
     "summary": {
@@ -737,7 +743,8 @@
       "count": "{{count}}건",
       "plannerCta": "행사 맞춤 플래너",
       "stayCta": "{{keyword}} 숙소",
-      "official": "공식 일정"
+      "official": "공식 일정",
+      "viewAllTab": "전체 보기"
     },
     "crossLinks": {
       "aria": "연관 축제·명소",

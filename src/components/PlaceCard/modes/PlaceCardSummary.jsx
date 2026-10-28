@@ -47,6 +47,7 @@ const PlaceCardSummary = ({
   stayExpanded = false,
   tourTab = null,
   tourExpanded = false,
+  worldEventsTab = null,
 }) => {
   const { t } = useTranslation();
   const { locale } = useLocale();
@@ -143,7 +144,8 @@ const PlaceCardSummary = ({
     (showPlannerLink || showImmerseControls ? 1 : 0) +
     (canPreviewFlightRoute ? 1 : 0) +
     (canStartTour ? 1 : 0) +
-    (stayToggle ? 1 : 0);
+    (stayToggle ? 1 : 0) +
+    (worldEventsTab ? 1 : 0);
 
   const immerseStepChipClass =
     'border-white/20 bg-white/10 text-white/90 hover:border-emerald-400/40 hover:bg-emerald-500/20';
@@ -409,6 +411,10 @@ const PlaceCardSummary = ({
                   <div className="col-span-1 min-w-0">
                     {stayToggle}
                   </div>
+                ) : null}
+
+                {worldEventsTab ? (
+                  <div className="col-span-1 min-w-0">{worldEventsTab}</div>
                 ) : null}
 
                 {canPreviewFlightRoute && (

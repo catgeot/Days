@@ -2,10 +2,13 @@ import React, { useMemo } from 'react';
 import PlaceGalleryView from '../views/PlaceGalleryView';
 import YouTubePlayerView from '../views/YouTubePlayerView';
 import PlaceWikiDetailsView from '../views/PlaceWikiDetailsView';
+import PlaceWorldEventsTabView from '../views/PlaceWorldEventsTabView';
 import ReviewsTab from '../tabs/ReviewsTab';
 import PlannerTab from '../tabs/PlannerTab';
 import PlaceMobileSecondaryNav from '../common/PlaceMobileSecondaryNav';
 import { getPlaceUrlParam } from '../../../pages/Home/lib/formatUrlName';
+import { isGateoPlaceWorldEventsTabEnabled } from '../../../shared/gateoFeatureFlags';
+import { getWorldEventsForSlug } from '../../../utils/worldEvents';
 
 const PlaceMediaPanel = React.memo(({
     galleryData,
@@ -48,6 +51,15 @@ const PlaceMediaPanel = React.memo(({
     onNavigateToPlace,
 }) => {
   const placeSlug = getPlaceUrlParam(location);
+  const worldEventsTabOn = isGateoPlaceWorldEventsTabEnabled();
+  const showWorldEventsTab = useMemo(() => {
+    if (!worldEventsTabOn) return false;
+    const slugKey = String(placeSlug || location?.slug || '')
+      .trim()
+      .toLowerCase();
+    return slugKey ? getWorldEventsForSlug(slugKey).length > 0 : false;
+  }, [worldEventsTabOn, placeSlug, location?.slug]);
+
   const mobileSecondaryNav = useMemo(
     () => (
       <PlaceMobileSecondaryNav
@@ -57,9 +69,10 @@ const PlaceMediaPanel = React.memo(({
         matchedPackage={matchedPackage}
         onOpenPackage={onOpenPackage}
         placeSlug={placeSlug}
+        showWorldEventsTab={showWorldEventsTab}
       />
     ),
-    [mediaMode, setMediaMode, matchedPackage, onOpenPackage, placeSlug]
+    [mediaMode, setMediaMode, matchedPackage, onOpenPackage, placeSlug, showWorldEventsTab]
   );
 
   return (
@@ -161,6 +174,12 @@ const PlaceMediaPanel = React.memo(({
               isActive={mediaMode === 'REVIEWS'}
             />
         </div>
+
+        {showWorldEventsTab ? (
+          <div className={`w-full h-full ${mediaMode === 'WORLD_EVENTS' ? 'block' : 'hidden'}`}>
+            <PlaceWorldEventsTabView location={location} mobileSecondaryNav={mobileSecondaryNav} />
+          </div>
+        ) : null}
 
     </div>
   );

@@ -858,6 +858,8 @@
       "scrollTopGallery": "Tap to scroll gallery to top",
       "scrollTopWiki": "Tap to scroll travel sketch to top",
       "scrollTopReviews": "Tap to scroll reviews to top",
+      "worldEvents": "World events",
+      "scrollTopWorldEvents": "Tap to scroll world events to top",
       "plannerTop": "Scroll planner to top",
       "scrollTopShort": "Top"
     },
@@ -930,6 +932,10 @@
       "planner": {
         "suffix": "Trip prep guide",
         "desc": "Everything you need to plan a trip to {{name}}."
+      },
+      "events": {
+        "suffix": "Events & festivals",
+        "desc": "See events and festivals in {{name}} and plan your trip around them."
       }
     },
     "summary": {
@@ -967,7 +973,8 @@
       "count": "{{count}}",
       "plannerCta": "Planner for this event",
       "stayCta": "Stays in {{keyword}}",
-      "official": "Official schedule"
+      "official": "Official schedule",
+      "viewAllTab": "View all"
     },
     "crossLinks": {
       "aria": "Related festivals and scenic spots",

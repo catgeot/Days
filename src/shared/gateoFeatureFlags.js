@@ -1,5 +1,4 @@
-/** Gateo rollout flags — `VITE_GATEO_*` env, value `'1'` enables. Most default off unless noted below.
- *  `VITE_GATEO_SITE_SEARCH` is `'1'` on production (live site search + explore festival hits ship on merge).
+/** Gateo rollout flags — `VITE_GATEO_*` env, value `'1'` enables. Default off in prod.
  *  Exception: `VITE_GATEO_LIGHTBOX_HISTORY` defaults on for the place gallery.
  *  Set `0` to disable that step only. Festival lightbox history stays on (#531).
  */
@@ -18,6 +17,7 @@ export const GATEO_ENV_FLAG_NAMES = {
   NEARBY_CARDS: 'VITE_GATEO_NEARBY_CARDS',
   KOGL_REELS: 'VITE_GATEO_KOGL_REELS',
   SCENIC_PLACE_LINKS: 'VITE_GATEO_SCENIC_PLACE_LINKS',
+  PLACE_WORLD_EVENTS_TAB: 'VITE_GATEO_PLACE_WORLD_EVENTS_TAB',
 };
 
 /** @param {string} name */
@@ -92,4 +92,9 @@ export function isGateoKoglReelsEnabled() {
 /** Scenic modal place-card CTA, hub regional grid, SSOT scenic gallery fallback. Default off. */
 export function isGateoScenicPlaceLinksEnabled() {
   return readGateoEnvFlag(GATEO_ENV_FLAG_NAMES.SCENIC_PLACE_LINKS);
+}
+
+/** PlaceCard / home summary — dedicated 「세계 행사」 tab instead of inline accordion. Default off. */
+export function isGateoPlaceWorldEventsTabEnabled() {
+  return readGateoEnvFlag(GATEO_ENV_FLAG_NAMES.PLACE_WORLD_EVENTS_TAB);
 }
