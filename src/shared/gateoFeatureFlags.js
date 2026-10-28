@@ -1,4 +1,5 @@
-/** Gateo rollout flags — `VITE_GATEO_*` env, value `'1'` enables. Default off in prod.
+/** Gateo rollout flags — `VITE_GATEO_*` env, value `'1'` enables. Most default off unless noted below.
+ *  `VITE_GATEO_SITE_SEARCH` is `'1'` on production (live site search + explore festival hits ship on merge).
  *  Exception: `VITE_GATEO_LIGHTBOX_HISTORY` defaults on for the place gallery.
  *  Set `0` to disable that step only. Festival lightbox history stays on (#531).
  */

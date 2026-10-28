@@ -38,25 +38,49 @@ export function exploreFestivalSearchTokens(query) {
 }
 
 /**
+ * Normalized search fields for explore festival matching (KO title/addr + EN title/region labels).
+ * @param {object} item
+ * @param {string} [locale]
+ */
+export function exploreFestivalSearchFields(item, locale = 'ko') {
+  const chunks = [
+    item?.title,
+    item?.titleEn,
+    item?.addr1,
+    festivalGridPlaceLabel(item, { areaCode: 'all', cityName: 'all', locale: 'ko' }),
+    festivalGridPlaceLabel(item, { areaCode: 'all', cityName: 'all', locale: 'en' }),
+  ];
+  if (String(locale || '').startsWith('en')) {
+    chunks.push(
+      festivalGridPlaceLabel(item, { areaCode: 'all', cityName: 'all', locale }),
+    );
+  }
+  const seen = new Set();
+  const out = [];
+  for (const chunk of chunks) {
+    const norm = normalizeFestivalQuery(chunk);
+    if (!norm || seen.has(norm)) continue;
+    seen.add(norm);
+    out.push(norm);
+  }
+  return out;
+}
+
+function exploreItemMatchesTokens(item, tokens, locale) {
+  const fields = exploreFestivalSearchFields(item, locale);
+  return tokens.every((tok) => fields.some((field) => field.includes(tok)));
+}
+
+/**
  * @param {object[]} items
  * @param {string} query
+ * @param {{ locale?: string }} [opts]
  */
-export function filterExploreFestivalSearchQuery(items, query) {
+export function filterExploreFestivalSearchQuery(items, query, opts = {}) {
   const tokens = exploreFestivalSearchTokens(query);
   if (!tokens.length) return [];
-  if (tokens.length === 1) {
-    const q = tokens[0];
-    return (items || []).filter((item) => {
-      const title = normalizeFestivalQuery(item?.title);
-      const addr = normalizeFestivalQuery(item?.addr1);
-      return title.includes(q) || addr.includes(q);
-    });
-  }
-  return (items || []).filter((item) => {
-    const title = normalizeFestivalQuery(item?.title);
-    const addr = normalizeFestivalQuery(item?.addr1);
-    return tokens.every((tok) => title.includes(tok) || addr.includes(tok));
-  });
+  const locale = opts.locale || 'ko';
+  return (items || []).filter((item) => exploreItemMatchesTokens(item, tokens, locale));
 }
 
 /**
@@ -155,7 +179,7 @@ export function buildExploreFestivalSuggestionsFromPool(pool, query, opts = {}) 
   const locale = opts.locale || 'ko';
   const now = opts.now instanceof Date ? opts.now : new Date();
   const hits = rankExploreFestivalSearchHits(
-    filterExploreFestivalSearchQuery(pool || [], q),
+    filterExploreFestivalSearchQuery(pool || [], q, { locale }),
     now,
     opts,
   );

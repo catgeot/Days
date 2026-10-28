@@ -35,7 +35,8 @@ import {
 } from '../lib/exploreRecentHistory';
 import { buildHybridSearchSuggestions, buildLocalSearchSuggestions } from '../lib/searchSuggestions';
 import {
-  mergeExploreFestivalIntoHybridSuggestions,
+  buildExploreFestivalSearchSuggestions,
+  prependExploreFestivalSuggestions,
 } from '../lib/exploreFestivalSearchSuggestions';
 import { isGateoSiteSearchEnabled } from '../../../shared/gateoFeatureFlags';
 import { hasUsableVisitedCoords } from '../lib/visitedPlaceSearch';
@@ -282,14 +283,19 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, onAskMooni,
     setSuggestionsLoading(true);
     const timer = setTimeout(async () => {
       try {
-        let items = await buildHybridSearchSuggestions(q);
-        if (isGateoSiteSearchEnabled()) {
-          items = await mergeExploreFestivalIntoHybridSuggestions(q, items, {
-            locale: i18n.language,
-          });
-        }
+        const items = await buildHybridSearchSuggestions(q);
         if (suggestRequestIdRef.current !== requestId) return;
         setHybridSuggestions(items);
+
+        if (isGateoSiteSearchEnabled()) {
+          const festivals = await buildExploreFestivalSearchSuggestions(q, {
+            locale: i18n.language,
+          }).catch(() => []);
+          if (suggestRequestIdRef.current !== requestId) return;
+          if (festivals.length) {
+            setHybridSuggestions(prependExploreFestivalSuggestions(festivals, items));
+          }
+        }
       } catch {
         if (suggestRequestIdRef.current !== requestId) return;
         // local 유지

@@ -103,8 +103,32 @@ test('buildExploreFestivalSuggestionsFromPool matches acceptance queries', () =>
   }
 });
 
+test('filterExploreFestivalSearchQuery matches English titleEn (Gangneung)', () => {
+  const pool = [
+    {
+      contentId: '444',
+      title: '강릉커피축제',
+      titleEn: 'Gangneung Coffee Festival',
+      eventStartDate: '20261109',
+      eventEndDate: '20261113',
+      addr1: '강원특별자치도 강릉시',
+    },
+    {
+      contentId: '999',
+      title: '서울빛초롱축제',
+      titleEn: 'Seoul Lantern Festival',
+      eventStartDate: '20261101',
+      eventEndDate: '20261103',
+      addr1: '서울특별시 중구',
+    },
+  ];
+  const hits = filterExploreFestivalSearchQuery(pool, 'Gangneung', { locale: 'en' });
+  assert.equal(hits.length, 1);
+  assert.equal(hits[0].contentId, '444');
+});
+
 test('rankExploreFestivalSearchHits caps ended festivals and ranks active first', () => {
-  const hits = filterExploreFestivalSearchQuery(FIXTURE_POOL, '강릉');
+  const hits = filterExploreFestivalSearchQuery(FIXTURE_POOL, '강릉', { locale: 'ko' });
   const ranked = rankExploreFestivalSearchHits(hits, NOW, { maxActive: 3, maxEnded: 2 });
   assert.equal(ranked[0].contentId, '444');
   const endedIds = ranked.filter((r) => ['901', '902', '903'].includes(r.contentId));
