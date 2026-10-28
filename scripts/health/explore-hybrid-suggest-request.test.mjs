@@ -21,7 +21,7 @@ test('runExploreHybridSuggestUpdate onPaint when requestId still current', async
     },
     {
       isSiteSearchEnabled: () => true,
-      buildHybrid: async () => [{ id: 'city-1', source: 'ssot' }],
+      buildHybrid: async () => [{ id: 'city-1', name: '테스트', source: 'ssot' }],
       buildFest: async () => [],
       applyMerge: async (_q, items) => ({ items, late: null }),
     },
@@ -45,7 +45,7 @@ test('onPaint fires firstPaint before late merge resolves', async () => {
     items,
     late: async () => {
       await lateGate;
-      return [...items, { id: 'fest-late', kind: 'festival' }];
+      return [...items, { id: 'fest-late', name: '축제', kind: 'festival' }];
     },
   });
 
@@ -59,7 +59,7 @@ test('onPaint fires firstPaint before late merge resolves', async () => {
     },
     {
       isSiteSearchEnabled: () => true,
-      buildHybrid: async () => [{ id: 'city-1', source: 'ssot' }],
+      buildHybrid: async () => [{ id: 'city-1', name: '테스트', source: 'ssot' }],
       buildFest: async () => [],
       applyMerge,
     },
@@ -83,7 +83,7 @@ test('runExploreHybridSuggestUpdate skips onPaint when requestId stale after mer
     await new Promise((resolve) => {
       setTimeout(resolve, 120);
     });
-    return { items: [{ id: 'fest-1', kind: 'festival' }, ...items], late: null };
+    return { items: [{ id: 'fest-1', name: '축제', kind: 'festival' }, ...items], late: null };
   };
 
   const runPromise = runExploreHybridSuggestUpdate(
@@ -93,7 +93,7 @@ test('runExploreHybridSuggestUpdate skips onPaint when requestId stale after mer
     { mergeStartedAt: Date.now(), onPaint: (items) => painted.push(items) },
     {
       isSiteSearchEnabled: () => true,
-      buildHybrid: async () => [{ id: 'city-1', source: 'ssot' }],
+      buildHybrid: async () => [{ id: 'city-1', name: '테스트', source: 'ssot' }],
       buildFest: async () => [],
       applyMerge,
     },
@@ -117,7 +117,7 @@ test('runExploreHybridSuggestUpdate skips late onPaint when requestId stale afte
       await new Promise((resolve) => {
         setTimeout(resolve, 80);
       });
-      return [{ id: 'city-1' }, { id: 'fest-late', kind: 'festival' }];
+      return [{ id: 'city-1', name: '테스트' }, { id: 'fest-late', name: '늦은축제', kind: 'festival' }];
     },
   });
 
@@ -128,8 +128,8 @@ test('runExploreHybridSuggestUpdate skips late onPaint when requestId stale afte
     { mergeStartedAt: Date.now() - 400, onPaint: (items) => painted.push(items) },
     {
       isSiteSearchEnabled: () => true,
-      buildHybrid: async () => [{ id: 'city-1', source: 'ssot' }],
-      buildFest: async () => [{ id: 'f1', kind: 'festival' }],
+      buildHybrid: async () => [{ id: 'city-1', name: '테스트', source: 'ssot' }],
+      buildFest: async () => [{ id: 'f1', name: '축제', kind: 'festival' }],
       applyMerge,
     },
   );
