@@ -14,7 +14,7 @@ export const mobilePlaceHeaderInsetHeight =
  * overflow-y-auto 요소에는 mobilePlaceHeaderScrollPadding 대신 본 클래스 + flex-1 스크롤 영역 사용.
  */
 export const mobilePlaceHeaderSpacerClass =
-  'shrink-0 md:hidden max-md:landscape:hidden h-[calc(6.25rem+env(safe-area-inset-top,0px))] pointer-events-none select-none';
+  'shrink-0 lg:hidden max-md:landscape:hidden h-[calc(6.25rem+env(safe-area-inset-top,0px))] pointer-events-none select-none';
 
 /** 비스크롤·로딩 레이아웃용 — 스크롤 surface에는 spacer 사용 */
 export const mobilePlaceHeaderScrollPadding =
