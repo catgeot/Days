@@ -35,10 +35,6 @@ async function waitForFeed(page) {
 async function collectMetrics(page, width) {
   return page.evaluate((viewportWidth) => {
     const de = document.documentElement;
-<<<<<<< HEAD
-    const grid = document.querySelector('[data-logbook-feed-grid]');
-    const sticky = document.querySelector('[data-logbook-feed-grid]')?.closest('.overflow-hidden')?.querySelector('.sticky');
-=======
     const grid =
       document.querySelector('[data-logbook-main-scroll] [data-logbook-feed-grid]') ||
       document.querySelector('[data-logbook-main-scroll] .max-w-7xl div.flex-1 > div.grid');
@@ -46,7 +42,6 @@ async function collectMetrics(page, width) {
       .querySelector('[data-logbook-main-scroll] [data-logbook-feed-grid]')
       ?.closest('.overflow-hidden')
       ?.querySelector('.sticky');
->>>>>>> c06e4ed1 (fix(qa): scope blog archive capture to main scroll feed)
     const hub = document.querySelector('[data-testid="logbook-official-review-hub"]');
     const rect = (el) => {
       if (!el) return null;
