@@ -19,6 +19,7 @@ import QaShareIndex from './pages/QaShare';
 import QaShareRedirect from './pages/QaShare/QaShareRedirect';
 import { isQaMooniMarkdownFixtureEnabled } from './shared/cloudPreview/isQaMooniMarkdownFixtureEnabled.js';
 import { isGateoFestivalRoadEnabled } from './shared/gateoFeatureFlags.js';
+import { isQaFestivalRoadFixtureEnabled } from './shared/cloudPreview/isQaFestivalRoadFixtureEnabled.js';
 const MooniChatMarkdownFixturePage = isQaMooniMarkdownFixtureEnabled
   ? lazy(() => import('./pages/Qa/MooniChatMarkdownFixturePage.jsx'))
   : null;
@@ -29,7 +30,9 @@ const galleryWriterHarnessOn = import.meta.env.VITE_GALLERY_WRITER_HARNESS === '
 const GallerySingleWriterHarness = galleryWriterHarnessOn
   ? lazy(() => import('./pages/Qa/GallerySingleWriterHarness.jsx'))
   : null;
-const FestivalRoadFixturePage = isGateoFestivalRoadEnabled()
+const festivalRoadFixtureOn =
+  isQaFestivalRoadFixtureEnabled && isGateoFestivalRoadEnabled();
+const FestivalRoadFixturePage = festivalRoadFixtureOn
   ? lazy(() => import('./pages/Qa/FestivalRoadFixturePage.jsx'))
   : null;
 import AboutPage from './pages/AboutPage';
@@ -182,7 +185,7 @@ function App() {
                   }
                 />
               ) : null}
-              {isGateoFestivalRoadEnabled() && FestivalRoadFixturePage ? (
+              {festivalRoadFixtureOn && FestivalRoadFixturePage ? (
                 <Route
                   path="/qa/festival-road"
                   element={

@@ -292,5 +292,15 @@ export default defineConfig({
         deviceScaleFactor: 1,
       },
     },
+    {
+      name: 'webkit-festival-road-wonju',
+      testMatch: /korea-festival-road-wonju-390\.spec\.js/,
+      use: {
+        ...devices['iPhone 13'],
+        viewport: { width: 390, height: 844 },
+        deviceScaleFactor: 1,
+        ignoreHTTPSErrors: true,
+      },
+    },
   ],
 });
