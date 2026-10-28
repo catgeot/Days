@@ -75,11 +75,12 @@ test('PlaceWorldEventsTabView reserves mobile fixed header space', () => {
   assert.match(view, /mobileLandscapeChromeHidden/);
 });
 
-test('PlaceCard keeps main initialTab for unknown URL segments', () => {
+test('PlaceCard maps URL tabKey to expanded media mode (no invalid EVENTS when flag off)', () => {
   const index = read('src/components/PlaceCard/index.jsx');
   assert.match(index, /initialTabForExpanded/);
-  assert.match(index, /currentTab\.toUpperCase\(\)/);
-  assert.doesNotMatch(index, /initialMediaMode/);
+  assert.match(index, /tabKey === 'events' \? 'WORLD_EVENTS' : mediaModeFromUrlTab\(tabKey\)/);
+  assert.match(index, /currentTab === tabKey/);
+  assert.doesNotMatch(index, /currentTab\.toUpperCase\(\)/);
 });
 
 test('secondary nav flag gates scroll chrome (off matches main justify-center)', () => {
