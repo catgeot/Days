@@ -61,10 +61,6 @@ import {
   parseKoreaPoiTypeQuery,
   shouldExpandKoreaPoiTypeSearch,
 } from './koreaPoiTypeSearch.js';
-import {
-  buildExploreFestivalSearchSuggestions,
-  prependExploreFestivalSuggestions,
-} from './exploreFestivalSearchSuggestions.js';
 
 const normalizeKey = (s) =>
   String(s ?? '')
@@ -417,14 +413,6 @@ export async function buildHybridSearchSuggestions(query, opts = {}) {
   const q = String(query || '').trim();
   if (!q) return [];
 
-  const festivalPromise = buildExploreFestivalSearchSuggestions(q, opts);
-  const withFestivals = async (items) => {
-    const festivals = await festivalPromise.catch(() => []);
-    return prependExploreFestivalSuggestions(festivals, items, {
-      maxItems: opts.totalLimit ?? 24,
-    });
-  };
-
   const local = buildLocalSearchSuggestions(q, { spotLimit: opts.spotLimit ?? 5 });
   const includeMapbox = opts.includeMapbox !== false;
   const exactListHit = resolveLocalScenicListFromSearchQuery(q);
@@ -443,7 +431,7 @@ export async function buildHybridSearchSuggestions(query, opts = {}) {
     for (const item of [...poi, ...local]) {
       pushUnique(merged, seenPoi, enrichSearchCandidateScenicMedia(item));
     }
-    if (merged.length >= 1) return withFestivals(merged.slice(0, 180));
+    if (merged.length >= 1) return merged.slice(0, 180);
   }
 
   // 허브/명소/정착지/지자체리스트 exact는 큐레이션만 — Mapbox 대기로 지연시키지 않음
@@ -457,7 +445,7 @@ export async function buildHybridSearchSuggestions(query, opts = {}) {
     shouldSkipGeocodeForMood(q) ||
     shouldOfferKoreaHomonymDisambiguation(q)
   ) {
-    return withFestivals(local);
+    return local;
   }
 
   const out = [...local];
@@ -492,9 +480,9 @@ export async function buildHybridSearchSuggestions(query, opts = {}) {
       pushUnique(withVisited, visitedSeen, item);
     }
     for (const item of out) pushUnique(withVisited, visitedSeen, item);
-    return withFestivals(withVisited.slice(0, 24));
+    return withVisited.slice(0, 24);
   } catch {
-    return withFestivals(out.slice(0, 24));
+    return out.slice(0, 24);
   }
 }
 

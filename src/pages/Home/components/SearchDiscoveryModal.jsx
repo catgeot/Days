@@ -34,6 +34,10 @@ import {
   resolveDestinationToSpot,
 } from '../lib/exploreRecentHistory';
 import { buildHybridSearchSuggestions, buildLocalSearchSuggestions } from '../lib/searchSuggestions';
+import {
+  mergeExploreFestivalIntoHybridSuggestions,
+} from '../lib/exploreFestivalSearchSuggestions';
+import { isGateoSiteSearchEnabled } from '../../../shared/gateoFeatureFlags';
 import { hasUsableVisitedCoords } from '../lib/visitedPlaceSearch';
 import { isSearchDisambiguation } from '../lib/cityAttractionHubs';
 import {
@@ -86,7 +90,7 @@ const HistoryPopoverHeader = ({ title, onClearAll, clearAllLabel }) => (
 );
 
 const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, onAskMooni, initialQuery = '', isFromPlaceCard = false }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -278,7 +282,12 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, onAskMooni,
     setSuggestionsLoading(true);
     const timer = setTimeout(async () => {
       try {
-        const items = await buildHybridSearchSuggestions(q);
+        let items = await buildHybridSearchSuggestions(q);
+        if (isGateoSiteSearchEnabled()) {
+          items = await mergeExploreFestivalIntoHybridSuggestions(q, items, {
+            locale: i18n.language,
+          });
+        }
         if (suggestRequestIdRef.current !== requestId) return;
         setHybridSuggestions(items);
       } catch {
@@ -291,7 +300,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, onAskMooni,
       }
     }, 120);
     return () => clearTimeout(timer);
-  }, [isOpen, query]);
+  }, [isOpen, query, i18n.language]);
 
   /** 선택 카드·Enter 검색 후 키보드가 남아 리스트를 가리지 않게 */
   useEffect(() => {

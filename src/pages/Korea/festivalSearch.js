@@ -14,34 +14,15 @@ export function normalizeFestivalQuery(value) {
 }
 
 /**
- * @param {string} query
- * @returns {string[]}
- */
-export function festivalSearchQueryTokens(query) {
-  const raw = String(query || '').trim();
-  if (!raw) return [];
-  if (/\s/.test(raw)) {
-    const spaced = raw.split(/\s+/).map((part) => normalizeFestivalQuery(part)).filter(Boolean);
-    if (spaced.length > 1 && spaced.every((tok) => tok.length >= 2)) {
-      return spaced;
-    }
-  }
-  const single = normalizeFestivalQuery(raw);
-  return single ? [single] : [];
-}
-
-/**
  * @param {object[]} items
  * @param {string} query
  */
 export function filterBySearchQuery(items, query) {
-  const tokens = festivalSearchQueryTokens(query);
-  if (!tokens.length) return Array.isArray(items) ? items : [];
+  const q = normalizeFestivalQuery(query);
+  if (!q) return Array.isArray(items) ? items : [];
   return (items || []).filter((item) => {
     const title = normalizeFestivalQuery(item?.title);
     const addr = normalizeFestivalQuery(item?.addr1);
-    return tokens.every(
-      (tok) => title.includes(tok) || addr.includes(tok),
-    );
+    return title.includes(q) || addr.includes(q);
   });
 }
