@@ -107,8 +107,12 @@ async function captureScenario(page, base, { flagLabel, query, stage, width, fil
     await page.waitForTimeout(800);
   } else {
     await input.press('Enter');
-    await page.getByRole('heading').first().waitFor({ state: 'visible', timeout: 120_000 });
-    await page.waitForTimeout(600);
+    await page
+      .getByText(/도시·명소·여행지|도시와 명소를 골라주세요|choose a city and attraction/i)
+      .first()
+      .waitFor({ state: 'visible', timeout: 120_000 });
+    await page.getByText(/Finding this place|Checking the map/i).waitFor({ state: 'hidden', timeout: 120_000 }).catch(() => {});
+    await page.waitForTimeout(900);
   }
   await injectBanner(page, [flagLabel, query.label, stage, `${width}px`, page.url()]);
   const path = join(OUT, fileName);
