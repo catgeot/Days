@@ -29,7 +29,9 @@ async function waitForFeed(page) {
   const feed = page.locator(
     '[data-logbook-main-scroll] [data-logbook-feed-grid], [data-logbook-main-scroll] .max-w-7xl div.flex-1 > div.grid, [data-logbook-main-scroll] .max-w-7xl div.flex-1 > div.flex.flex-col.gap-3, [data-logbook-main-scroll] .max-w-7xl div.flex-1 > div.flex.flex-col.gap-5',
   ).first();
-  await feed.waitFor({ state: 'visible', timeout: 120_000 });
+  await feed.waitFor({ state: 'attached', timeout: 120_000 });
+  await feed.scrollIntoViewIfNeeded();
+  await page.waitForTimeout(800);
 }
 
 async function collectMetrics(page, width) {
@@ -91,9 +93,10 @@ async function captureWidth(width) {
   });
   const page = await context.newPage();
   await page.goto(`${BASE}${BLOG_PATH.startsWith('/') ? '' : '/'}${BLOG_PATH}`, {
-    waitUntil: 'networkidle',
+    waitUntil: 'domcontentloaded',
     timeout: 120_000,
   });
+  await page.waitForLoadState('networkidle', { timeout: 60_000 }).catch(() => {});
   await waitForFeed(page);
   await page.waitForTimeout(1200);
 
