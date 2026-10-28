@@ -65,7 +65,7 @@ test('PlaceChatPanel secondary title truncates on narrow desktop header', () => 
   const panel = read('src/components/PlaceCard/panels/PlaceChatPanel.jsx');
   assert.match(panel, /min-w-\[8rem\]/);
   assert.match(panel, /truncate whitespace-nowrap/);
-  assert.match(panel, /md:w-full xl:w-auto/);
+  assert.match(panel, /lg:w-full xl:w-auto/);
   assert.doesNotMatch(panel, /justify-end w-full xl:w-auto/);
 });
 
