@@ -13,6 +13,8 @@ import {
 } from './koreaAreaFilter.js';
 import { stripKoreaTourAddrSidoPrefixes } from '../Home/lib/koreaTourAddrNormalize.js';
 const MIN_COUNT = 2;
+/** 전국 리스트와 동기화되는 시·도 칩 — 1건도 노출 */
+export const LIST_SIDO_CHIP_MIN_COUNT = 1;
 /** 시·군·구 칩 — 시도로 이미 좁힌 뒤라 1건도 노출 */
 const CITY_MIN_COUNT = 1;
 
