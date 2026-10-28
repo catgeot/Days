@@ -125,7 +125,7 @@ export function auditCityChipCountsMatchGroups(panelItems, areaCode) {
 /**
  * @param {object[]} panelItems
  * @param {{ minCount?: number }} [opts]
- * @returns {{ ok: true, chipSum: number, list: number } | { ok: false, list: number, chipSum: number, unmapped: number, hidden?: Array<{ id: string, listCount: number, chipCount: number | null }> }}
+ * @returns {{ ok: true, chipSum: number, list: number, unmapped: number } | { ok: false, list: number, chipSum: number, unmapped: number, reason?: string, hidden?: Array<{ id: string, listCount: number, chipCount: number | null }> }}
  */
 export function auditNationwideSidoChipsMatchList(panelItems, opts = {}) {
   const list = panelItems || [];
@@ -143,9 +143,17 @@ export function auditNationwideSidoChipsMatchList(panelItems, opts = {}) {
     }
     bySido.set(code, (bySido.get(code) || 0) + 1);
   }
-  const mappedTotal = list.length - unmapped;
-  if (chipSum !== mappedTotal) {
-    return { ok: false, list: list.length, chipSum, unmapped };
+  if (unmapped > 0) {
+    return {
+      ok: false,
+      list: list.length,
+      chipSum,
+      unmapped,
+      reason: 'unresolvedSido',
+    };
+  }
+  if (chipSum !== list.length) {
+    return { ok: false, list: list.length, chipSum, unmapped, reason: 'chipSum' };
   }
   const hidden = [];
   for (const [id, listCount] of bySido) {
@@ -156,9 +164,16 @@ export function auditNationwideSidoChipsMatchList(panelItems, opts = {}) {
     }
   }
   if (hidden.length) {
-    return { ok: false, list: list.length, chipSum, unmapped, hidden };
+    return {
+      ok: false,
+      list: list.length,
+      chipSum,
+      unmapped,
+      reason: 'coverage',
+      hidden,
+    };
   }
-  return { ok: true, chipSum, list: list.length };
+  return { ok: true, chipSum, list: list.length, unmapped: 0 };
 }
 
 /**

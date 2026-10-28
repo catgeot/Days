@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { test } from 'node:test';
+import { resolveFestivalItemSidoCode } from '../../src/pages/Korea/koreaAreaFilter.js';
 import { filterByRegion, buildSidoTags, REGION_MIN_COUNT, LIST_SIDO_CHIP_MIN_COUNT } from '../../src/pages/Korea/festivalRegionTags.js';
 import {
   auditNationwideSidoChipsMatchList,
@@ -59,7 +60,7 @@ test('legacy MIN_COUNT=2 hides single-sido rows — chip sum < list (regression 
 test('LIST_SIDO_CHIP_MIN_COUNT keeps every sido on the panel and chip sum === list', () => {
   const panel = winterLikePanel();
   const audit = auditNationwideSidoChipsMatchList(panel);
-  assert.equal(audit.ok, true, JSON.stringify(audit));
+  assertAuditClean(audit, 'winter-like panel');
   assert.equal(audit.chipSum, 28);
   const chips = buildSidoTags(panel, { minCount: LIST_SIDO_CHIP_MIN_COUNT });
   assert.equal(chips.reduce((a, c) => a + c.count, 0), 28);
@@ -69,7 +70,7 @@ test('LIST_SIDO_CHIP_MIN_COUNT keeps every sido on the panel and chip sum === li
 
 test('nationwide filter leaves chip/list sync for winter-like panel', () => {
   const panel = filterByRegion(winterLikePanel(), { areaCode: 'all', cityName: 'all' });
-  assert.equal(auditNationwideSidoChipsMatchList(panel).ok, true);
+  assertAuditClean(auditNationwideSidoChipsMatchList(panel), 'nationwide filter');
 });
 
 const SEASON_IDS = ['spring', 'summer', 'autumn', 'winter'];
@@ -94,11 +95,7 @@ test('season tabs — nationwide chip sum matches filtered list for each season'
   for (const seasonId of SEASON_IDS) {
     const filtered = filterByTimeTab(seasonId, items, SEOUL_NOON);
     const audit = auditNationwideSidoChipsMatchList(filtered);
-    assert.equal(
-      audit.ok,
-      true,
-      `${seasonId}: ${JSON.stringify(audit)} list=${filtered.length}`,
-    );
+    assertAuditClean(audit, `${seasonId} season`);
   }
 });
 
@@ -110,11 +107,30 @@ test('window30 date chip pool — nationwide chip sum matches list', () => {
     range.eventStartDate,
     range.eventEndDate,
   );
-  const audit = auditNationwideSidoChipsMatchList(filtered);
-  assert.equal(audit.ok, true, JSON.stringify(audit));
+  assertAuditClean(auditNationwideSidoChipsMatchList(filtered), 'window30');
 });
 
 test('addr fixture — each sido city-chip sums still match list', () => {
   const audit = auditAllSidoCityChipSumsMatchList(addrFixture);
   assert.equal(audit.ok, true, JSON.stringify(audit));
 });
+
+test('addr fixture — every festival resolves to a sido (unmapped === 0)', () => {
+  let unmapped = 0;
+  /** @type {string[]} */
+  const samples = [];
+  for (const item of addrFixture) {
+    if (!resolveFestivalItemSidoCode(item)) {
+      unmapped += 1;
+      if (samples.length < 5) {
+        samples.push(String(item?.addr1 || item?.title || '?'));
+      }
+    }
+  }
+  assert.equal(unmapped, 0, `unresolved sido: ${unmapped} e.g. ${samples.join(' | ')}`);
+});
+
+function assertAuditClean(audit, label) {
+  assert.equal(audit.unmapped ?? 0, 0, `${label} unmapped: ${JSON.stringify(audit)}`);
+  assert.equal(audit.ok, true, `${label}: ${JSON.stringify(audit)}`);
+}
