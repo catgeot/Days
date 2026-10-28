@@ -345,6 +345,9 @@
         "resortTitle": "일상의 탈출, 에어텔/올인클루시브",
         "resortSubtitle": "비행·숙소·픽업 포함 {{cta}}"
       },
+      "festivalBadge": "축제",
+      "groupTitleSightsSuffix": " 명소",
+      "hubBrowseBlurb": "{{name}}의 명소·명물을 둘러보세요.",
       "badge": {
         "여행지": "여행지",
         "도시": "도시",

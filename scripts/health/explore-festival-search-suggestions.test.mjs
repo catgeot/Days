@@ -19,6 +19,7 @@ const {
   rankExploreFestivalSearchHits,
   filterExploreFestivalSearchQuery,
 } = await import('../../src/pages/Home/lib/exploreFestivalSearchSuggestions.js');
+const { isFestivalEnded } = await import('../../src/pages/Korea/festivalDeepLinkItem.js');
 const { buildLocalSearchSuggestions } = await import('../../src/pages/Home/lib/searchSuggestions.js');
 const { pickEnterSuggestionMatches } = await import('../../src/pages/Home/lib/searchEnterMatch.js');
 const { EXPLORE_BADGE_FESTIVAL } = await import('../../src/i18n/exploreUi.js');
@@ -203,4 +204,40 @@ test('pickEnterSuggestionMatches skips festival rows without coords', () => {
     pickEnterSuggestionMatches('진주남강유등축제', [fest]).length,
     0,
   );
+});
+
+function assertActiveFestivalsBeforeEndedInList(merged, pool, now) {
+  const festRows = (merged || []).filter((row) => row.kind === 'festival');
+  let seenEnded = false;
+  for (const row of festRows) {
+    const poolItem = pool.find((p) => p.contentId === row.festivalContentId);
+    const ended = poolItem ? isFestivalEnded(poolItem.eventEndDate, now) : false;
+    if (ended) seenEnded = true;
+    else if (seenEnded) {
+      assert.fail(`active festival ${row.festivalContentId} after ended row`);
+    }
+  }
+}
+
+test('merged explore list keeps active festivals before ended (prepend path)', () => {
+  const festivals = buildExploreFestivalSuggestionsFromPool(FIXTURE_POOL, '강릉', { now: NOW });
+  const local = buildLocalSearchSuggestions('강릉');
+  const merged = prependExploreFestivalSuggestions(festivals, local);
+  assertActiveFestivalsBeforeEndedInList(merged, FIXTURE_POOL, NOW);
+});
+
+test('merged explore list keeps active festivals before ended (late-append path)', async () => {
+  const hybrid = [
+    { id: 'city-1', kind: 'city', source: 'ssot', name: '강릉' },
+    { id: 'map-1', source: 'mapbox' },
+  ];
+  const festivals = buildExploreFestivalSuggestionsFromPool(FIXTURE_POOL, '강릉', { now: NOW });
+  const festPromise = Promise.resolve(festivals);
+  const { late } = await applyExploreFestivalMergeStrategy('강릉', hybrid, {
+    startedAt: Date.now() - 301,
+    festPromise,
+  });
+  assert.ok(late);
+  const merged = await late();
+  assertActiveFestivalsBeforeEndedInList(merged, FIXTURE_POOL, NOW);
 });
