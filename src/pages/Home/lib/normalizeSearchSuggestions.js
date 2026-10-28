@@ -68,12 +68,12 @@ function groupSortIndex(group) {
 
 function buildMergedHubAliasSubtitle(cityRow, destRow) {
   const cityName = String(cityRow?.name || '').trim();
-  const cityEn = String(cityRow?.name_en || '').trim();
   const destAlias = String(destRow?.name || '').trim();
-  const chips = [];
-  if (cityEn) chips.push(cityEn);
-  if (destAlias && normalizeKey(destAlias) !== normalizeKey(cityName)) chips.push(destAlias);
-  return chips.join(' · ');
+  if (destAlias && normalizeKey(destAlias) !== normalizeKey(cityName)) {
+    return destAlias;
+  }
+  const cityEn = String(cityRow?.name_en || '').trim();
+  return cityEn || '';
 }
 
 function festivalSearchFieldsIncludingName(item, locale) {

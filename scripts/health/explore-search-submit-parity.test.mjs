@@ -51,7 +51,7 @@ test('normalizeSearchSuggestions — vienna alias «빈» merges destination + c
     ),
     false,
   );
-  assert.equal(hubCity.searchOverlayDesc, 'Vienna · 빈');
+  assert.equal(hubCity.searchOverlayDesc, '빈');
 });
 
 test('hub exact «빈» drops weak substring festivals and puts Vienna city first', () => {
@@ -148,5 +148,5 @@ test('mergeHubAliasSuggestions fixture — single canonical hub row', () => {
     },
   ]);
   assert.equal(merged.length, 1);
-  assert.equal(merged[0].searchOverlayDesc, 'Vienna · 빈');
+  assert.equal(merged[0].searchOverlayDesc, '빈');
 });
