@@ -8,7 +8,8 @@ import {
 } from '../../../shared/hooks/useMobileInputViewport';
 import { resolveLogbookFeedExcerpt } from '../../../utils/logbookDek.js';
 import { isEditorialLogbook, publicLogbookDetailPath } from '../../../utils/logbookEditorial';
-import { logbookHeroImageUrl } from '../../../utils/logbookImageSrc';
+import { logbookFeedThumbImageProps } from '../../../utils/logbookImageSrc';
+import { useLogbookFeedViewMode } from '../hooks/useLogbookFeedViewMode';
 import { profileAvatarUrl } from '../../../shared/Auth/profileAvatar';
 import { formatLogbookDisplayDate } from '../../../utils/logbookDisplayDate';
 import { readLogbookViewCount } from '../../../utils/logbookViewCount';
@@ -46,7 +47,7 @@ const RecentList = ({ reports, loading, isPublicMode }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const [viewMode, setViewMode] = useState('column');
+  const { viewMode, setViewMode } = useLogbookFeedViewMode();
   const [searchTerm, setSearchTerm] = useState('');
   const handleSearchBlur = useDeferredViewportSyncOnBlur();
   const placeFilter = searchParams.get('location') || '';
@@ -80,6 +81,14 @@ const RecentList = ({ reports, loading, isPublicMode }) => {
   const isCompact = filteredReports.length > 5;
   const cardLayout = viewMode !== 'list';
   const cardDense = viewMode === 'grid' && isCompact;
+  const feedGridCols =
+    viewMode === 'column'
+      ? '1'
+      : viewMode === 'grid'
+        ? isCompact
+          ? '2-4'
+          : '1-2'
+        : 'list';
 
   if (loading) {
     return (
@@ -229,17 +238,22 @@ const RecentList = ({ reports, loading, isPublicMode }) => {
             </button>
           </div>
         ) : (
-          <div className={
+          <div
+            data-logbook-feed-grid
+            data-logbook-feed-view={viewMode}
+            data-logbook-feed-cols={feedGridCols}
+            className={
             viewMode === 'column'
               ? 'grid grid-cols-1 gap-5'
               : viewMode === 'grid'
                 ? (isCompact ? 'grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4' : 'grid grid-cols-1 sm:grid-cols-2 gap-5')
                 : `flex flex-col ${isCompact ? 'gap-3' : 'gap-5'}`
-          }>
+          }
+          >
 
             {filteredReports.map((report) => {
               const editorial = isEditorialLogbook(report);
-              const thumbUrl = logbookHeroImageUrl(report.images, { thumbnail: true });
+              const thumb = logbookFeedThumbImageProps(report.images, { viewMode, isCompact });
               const detailPath = isPublicMode
                 ? publicLogbookDetailPath(report)
                 : `/blog/${report.id}`;
@@ -278,8 +292,16 @@ const RecentList = ({ reports, loading, isPublicMode }) => {
                           : 'w-24 h-24 rounded-2xl border border-gray-200'
                   }
                 `}>
-                  {thumbUrl ? (
-                    <img src={thumbUrl} alt="thumbnail" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-90 group-hover:opacity-100" />
+                  {thumb.src ? (
+                    <img
+                      src={thumb.src}
+                      srcSet={thumb.srcSet}
+                      sizes={thumb.sizes}
+                      alt=""
+                      loading="lazy"
+                      decoding="async"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-90 group-hover:opacity-100"
+                    />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-gray-400 bg-gray-50">
                       <ImageIcon size={cardLayout ? (cardDense ? 24 : 32) : (isCompact ? 16 : 24)} />

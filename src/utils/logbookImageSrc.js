@@ -65,6 +65,53 @@ export function logbookHeroImageUrl(images, opts = {}) {
   return resolveLogbookDisplaySrc(images[0], { maxWidth: 1200 });
 }
 
+function buildUnsplashThumbSrcSet(baseSrc, widths) {
+  if (!isUnsplashSrc(baseSrc)) return null;
+  return widths
+    .map((w) => `${withUnsplashSizing(baseSrc, { width: w, forceWidth: true })} ${w}w`)
+    .join(', ');
+}
+
+/**
+ * Feed card thumbnail `src` / `srcSet` / `sizes` for archive layouts.
+ *
+ * @param {unknown[] | null | undefined} images
+ * @param {{ viewMode: 'list' | 'column' | 'grid'; isCompact: boolean }} opts
+ */
+export function logbookFeedThumbImageProps(images, { viewMode, isCompact }) {
+  const base = logbookHeroImageUrl(images, { thumbnail: true });
+  if (!base) return { src: null, srcSet: undefined, sizes: undefined };
+
+  const cardDense = viewMode === 'grid' && isCompact;
+  let widths;
+  let sizes;
+
+  if (viewMode === 'list') {
+    widths = [128, 256];
+    sizes = '112px';
+  } else if (viewMode === 'column') {
+    widths = [400, 640, 960];
+    sizes = '(min-width: 1024px) 680px, 100vw';
+  } else if (cardDense) {
+    widths = [320, 480, 640];
+    sizes = '(min-width: 1024px) 24vw, (min-width: 640px) 32vw, 50vw';
+  } else {
+    widths = [480, 640, 800];
+    sizes = '(min-width: 1024px) 48vw, 100vw';
+  }
+
+  const srcSet = buildUnsplashThumbSrcSet(base, widths);
+  const src = srcSet
+    ? withUnsplashSizing(base, { width: widths[widths.length - 1], forceWidth: true })
+    : base;
+
+  return {
+    src,
+    srcSet: srcSet || undefined,
+    sizes: srcSet ? sizes : undefined,
+  };
+}
+
 export function logbookImageUrlList(images, opts = {}) {
   if (!Array.isArray(images)) return [];
   const maxWidth = opts.maxWidth ?? 1200;
