@@ -802,6 +802,14 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, onAskMooni,
           onSelect={handleSuggestionSelect}
           onCancel={() => setDisambiguation(null)}
           onPageChange={() => scrollContainerRef.current?.scrollTo({ top: 0 })}
+          onAskMooni={
+            disambiguation.showMooni && onAskMooni
+              ? (askQuery) => {
+                  captureExploreReturn();
+                  onAskMooni(askQuery);
+                }
+              : undefined
+          }
         />
       );
     }

@@ -503,6 +503,7 @@ export function SearchDisambiguationCards({
   onSelect,
   onCancel,
   onPageChange,
+  onAskMooni,
 }) {
   const { t, i18n } = useTranslation();
   const [page, setPage] = useState(1);
@@ -609,6 +610,12 @@ export function SearchDisambiguationCards({
             onPrev={() => goPage(paging.page - 1)}
             onNext={() => goPage(paging.page + 1)}
           />
+        </div>
+      ) : null}
+
+      {onAskMooni ? (
+        <div className="mb-3 border-b border-white/10 pb-2">
+          <MooniAskRow query={String(query || '').trim()} isPopover={false} onAsk={onAskMooni} />
         </div>
       ) : null}
 

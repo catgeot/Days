@@ -19,6 +19,8 @@ export const GATEO_ENV_FLAG_NAMES = {
   KOGL_REELS: 'VITE_GATEO_KOGL_REELS',
   SCENIC_PLACE_LINKS: 'VITE_GATEO_SCENIC_PLACE_LINKS',
   PLACE_WORLD_EVENTS_TAB: 'VITE_GATEO_PLACE_WORLD_EVENTS_TAB',
+  /** Explore Enter panel matches autocomplete groups (hub exact). Default off until QA. */
+  EXPLORE_SEARCH_SUBMIT_PARITY: 'VITE_GATEO_EXPLORE_SEARCH_SUBMIT_PARITY',
 };
 
 /** @param {string} name */
@@ -98,4 +100,9 @@ export function isGateoScenicPlaceLinksEnabled() {
 /** PlaceCard / home summary — dedicated 「세계 행사」 tab instead of inline accordion. Default off. */
 export function isGateoPlaceWorldEventsTabEnabled() {
   return readGateoEnvFlag(GATEO_ENV_FLAG_NAMES.PLACE_WORLD_EVENTS_TAB);
+}
+
+/** Hub-exact Enter uses autocomplete-normalized suggestion groups. Default off. */
+export function isGateoExploreSearchSubmitParityEnabled() {
+  return readGateoEnvFlag(GATEO_ENV_FLAG_NAMES.EXPLORE_SEARCH_SUBMIT_PARITY);
 }

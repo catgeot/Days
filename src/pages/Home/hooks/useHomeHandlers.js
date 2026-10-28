@@ -60,6 +60,8 @@ import {
 } from '../lib/resolveKoreaDestinationFirstPass.js';
 import { resolveSettlement, settlementToPlacePin } from '../lib/mapboxSettlementPlaces.js';
 import { resolveExploreCityHubExact } from '../lib/exploreHubResolve.js';
+import { buildExploreSubmitParityDisambiguation } from '../lib/exploreSearchSubmitParity.js';
+import { isGateoExploreSearchSubmitParityEnabled } from '../../../shared/gateoFeatureFlags.js';
 import { pickSeaBasinCurationSpot } from '../lib/seaBasinResolve.js';
 import { findCityBySearchQuery, cityToSuggestion } from '../lib/citiesSearch.js';
 import {
@@ -828,6 +830,11 @@ export function useHomeHandlers({
     if (requireChoice && !skipEnterDirectForQa) {
       const dictChoice = dictHomonymResult();
       if (dictChoice) return dictChoice;
+
+      if (isGateoExploreSearchSubmitParityEnabled() && resolveExploreCityHubExact(query)) {
+        const parityChoice = await buildExploreSubmitParityDisambiguation(query);
+        if (parityChoice) return parityChoice;
+      }
 
       const curated = await buildCuratedEnterDisambiguation(query);
       if (curated) return curated;
