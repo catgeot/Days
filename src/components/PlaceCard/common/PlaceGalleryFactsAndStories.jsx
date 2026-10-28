@@ -27,7 +27,7 @@ export default function PlaceGalleryFactsAndStories({
       {hasFacts ? (
         <PlaceVerifiedFacts location={location} className={sectionClassName} />
       ) : null}
-      {hasStories ? (
+      {hasStories || (card && isLoading) ? (
         <PlaceVisitStories
           location={location}
           className={sectionClassName}
