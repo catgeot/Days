@@ -28,7 +28,7 @@ export async function buildExploreSubmitParityDisambiguation(query, opts = {}) {
     items = appendExploreFestivalBelowPlaceBlock(fest, items);
   }
 
-  const normalized = normalizeSearchSuggestions(q, items);
+  const normalized = normalizeSearchSuggestions(q, items, { hub, locale: opts.locale || 'ko' });
   if (!normalized.length) return null;
 
   const title = `'${hub.name}' → 도시·명소·여행지`;

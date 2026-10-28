@@ -5,6 +5,7 @@ import {
 } from './exploreFestivalSearchSuggestions.js';
 import { isGateoSiteSearchEnabled } from '../../../shared/gateoFeatureFlags.js';
 import { normalizeSearchSuggestions } from './normalizeSearchSuggestions.js';
+import { resolveExploreCityHubExact } from './exploreHubResolve.js';
 
 /**
  * Debounced /explore hybrid + festival paints via `onPaint` (first paint before late append).
@@ -34,7 +35,12 @@ export async function runExploreHybridSuggestUpdate(
 
   const tryPaint = (paintItems) => {
     if (getCurrentRequestId() !== requestId) return false;
-    onPaint?.(normalizeSearchSuggestions(query, paintItems));
+    onPaint?.(
+      normalizeSearchSuggestions(query, paintItems, {
+        hub: resolveExploreCityHubExact(query),
+        locale,
+      }),
+    );
     return true;
   };
 

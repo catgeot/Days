@@ -9,7 +9,6 @@ import {
   mergeHubAliasSuggestions,
   normalizeSearchSuggestions,
   resolveSearchSuggestionGroup,
-  suggestionDedupeKey,
 } from '../../src/pages/Home/lib/normalizeSearchSuggestions.js';
 import { buildLocalSearchSuggestions } from '../../src/pages/Home/lib/searchSuggestions.js';
 import { pickEnterSuggestionMatches } from '../../src/pages/Home/lib/searchEnterMatch.js';
@@ -40,9 +39,7 @@ test('normalizeSearchSuggestions — vienna alias «빈» merges destination + c
   const hub = resolveCityAttractionHub('vienna');
   assert.ok(hub);
   const raw = buildLocalSearchSuggestions('빈');
-  const cityBefore = raw.filter((row) => resolveSearchSuggestionGroup(row) === 'city');
   const destBefore = raw.filter((row) => resolveSearchSuggestionGroup(row) === 'destination');
-  assert.ok(cityBefore.length >= 1);
   assert.ok(destBefore.length >= 1);
 
   const normalized = normalizeSearchSuggestions('빈', raw);
@@ -54,7 +51,69 @@ test('normalizeSearchSuggestions — vienna alias «빈» merges destination + c
     ),
     false,
   );
-  assert.match(String(hubCity.searchOverlayDesc || ''), /빈/);
+  assert.equal(hubCity.searchOverlayDesc, 'Vienna · 빈');
+});
+
+test('hub exact «빈» drops weak substring festivals and puts Vienna city first', () => {
+  const hub = hubToSuggestion(resolveCityAttractionHub('vienna'));
+  const weakFest = {
+    id: 'fest-vintage',
+    name: '오슬로우 빈티지 크리스마스 마켓',
+    kind: 'festival',
+    source: 'korea-festival',
+    lat: 37.5,
+    lng: 127.0,
+  };
+  const strongFest = {
+    id: 'fest-sancheoneo',
+    name: '화천산천어축제',
+    kind: 'festival',
+    source: 'korea-festival',
+    lat: 38.1,
+    lng: 127.7,
+  };
+  const attraction = {
+    id: 'hub-attr-vienna-test',
+    kind: 'attraction',
+    badge: '명소',
+    name: '쇤브룬 궁전',
+    hubId: 'vienna',
+    lat: 48.2,
+    lng: 16.3,
+  };
+  const normalized = normalizeSearchSuggestions('빈', [weakFest, strongFest, attraction, hub], {
+    hub: resolveCityAttractionHub('vienna'),
+  });
+  assert.equal(normalized[0]?.id, 'hub-vienna');
+  assert.equal(normalized.some((row) => row.id === 'fest-vintage'), false);
+  assert.equal(normalized.some((row) => row.id === 'fest-sancheoneo'), false);
+  const attrIdx = normalized.findIndex((row) => row.id === 'hub-attr-vienna-test');
+  assert.ok(attrIdx > 0);
+});
+
+test('«산천어» keeps festival matches and lists them before generic cities', () => {
+  const fest = {
+    id: 'fest-sancheoneo',
+    name: '화천산천어축제',
+    kind: 'festival',
+    source: 'korea-festival',
+    lat: 38.1,
+    lng: 127.7,
+  };
+  const city = {
+    id: 'city-other',
+    kind: 'city',
+    badge: '도시',
+    name: '기타',
+    lat: 37,
+    lng: 127,
+  };
+  const normalized = normalizeSearchSuggestions('산천어', [city, fest]);
+  assert.ok(normalized.some((row) => row.id === 'fest-sancheoneo'));
+  assert.ok(
+    normalized.findIndex((row) => row.id === 'fest-sancheoneo') <
+      normalized.findIndex((row) => row.id === 'city-other'),
+  );
 });
 
 test('pickEnterSuggestionMatches still drops festivals from auto-nav', () => {
@@ -70,30 +129,6 @@ test('pickEnterSuggestionMatches still drops festivals from auto-nav', () => {
   const matches = pickEnterSuggestionMatches('비엔나', [fest, place]);
   assert.equal(matches.length, 1);
   assert.equal(matches[0].hubId, 'vienna');
-});
-
-test('normalizeSearchSuggestions orders festivals before attractions', () => {
-  const fest = {
-    id: 'fest-2',
-    name: '빈티지 페스티벌',
-    kind: 'festival',
-    source: 'korea-festival',
-    lat: 37.5,
-    lng: 127.0,
-  };
-  const hub = hubToSuggestion(resolveCityAttractionHub('vienna'));
-  const attraction = {
-    id: 'hub-attr-vienna-test',
-    kind: 'attraction',
-    badge: '명소',
-    name: '테스트 명소',
-    hubId: 'vienna',
-    lat: 48.2,
-    lng: 16.3,
-  };
-  const normalized = normalizeSearchSuggestions('빈', [attraction, fest, hub]);
-  const groups = normalized.map((row) => row.suggestionGroup);
-  assert.ok(groups.indexOf('festival') < groups.indexOf('attraction'));
 });
 
 test('mergeHubAliasSuggestions fixture — single canonical hub row', () => {
@@ -113,5 +148,5 @@ test('mergeHubAliasSuggestions fixture — single canonical hub row', () => {
     },
   ]);
   assert.equal(merged.length, 1);
-  assert.equal(suggestionDedupeKey(merged[0]), suggestionDedupeKey(hubToSuggestion(hub)));
+  assert.equal(merged[0].searchOverlayDesc, 'Vienna · 빈');
 });

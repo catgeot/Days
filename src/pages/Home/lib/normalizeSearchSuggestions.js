@@ -2,6 +2,12 @@
  * Shared explore search suggestion ordering + hub alias merge (autocomplete + Enter parity).
  */
 import { resolveCityAttractionHub } from './cityAttractionHubs.js';
+import { resolveExploreCityHubExact } from './exploreHubResolve.js';
+import {
+  exploreFestivalSearchFields,
+  exploreFestivalSearchTokens,
+} from './exploreFestivalSearchSuggestions.js';
+import { normalizeFestivalQuery } from '../../Korea/festivalSearch.js';
 
 export const SEARCH_SUGGESTION_GROUP_ORDER = [
   'mooni',
@@ -60,6 +66,93 @@ function groupSortIndex(group) {
   return idx >= 0 ? idx : SEARCH_SUGGESTION_GROUP_ORDER.length;
 }
 
+function buildMergedHubAliasSubtitle(cityRow, destRow) {
+  const cityName = String(cityRow?.name || '').trim();
+  const cityEn = String(cityRow?.name_en || '').trim();
+  const destAlias = String(destRow?.name || '').trim();
+  const chips = [];
+  if (cityEn) chips.push(cityEn);
+  if (destAlias && normalizeKey(destAlias) !== normalizeKey(cityName)) chips.push(destAlias);
+  return chips.join(' · ');
+}
+
+function festivalSearchFieldsIncludingName(item, locale) {
+  const fields = exploreFestivalSearchFields(item, locale);
+  for (const chunk of [item?.name, item?.title, item?.titleEn]) {
+    const norm = normalizeFestivalQuery(chunk);
+    if (norm && !fields.includes(norm)) fields.push(norm);
+  }
+  return fields;
+}
+
+function festivalMatchesQueryStrongly(query, festivalItem, locale) {
+  const tokens = exploreFestivalSearchTokens(query);
+  if (!tokens.length) return false;
+  const fields = festivalSearchFieldsIncludingName(festivalItem, locale);
+  return tokens.every((tok) => {
+    if (tok.length >= 2) return fields.some((field) => field.includes(tok));
+    return fields.some((field) => field === tok);
+  });
+}
+
+/**
+ * Single-token festival hit where query only appears inside a longer title token (e.g. «빈» in «빈티지»).
+ * @param {string} query
+ * @param {object} festivalItem
+ * @param {string} [locale]
+ */
+export function isWeakFestivalSubstringMatch(query, festivalItem, locale = 'ko') {
+  if (festivalMatchesQueryStrongly(query, festivalItem, locale)) return false;
+  const tokens = exploreFestivalSearchTokens(query);
+  if (tokens.length !== 1) return false;
+  const tok = tokens[0];
+  if (tok.length >= 2) return false;
+  const fields = festivalSearchFieldsIncludingName(festivalItem, locale);
+  return fields.some((field) => field.includes(tok) && field.length > tok.length);
+}
+
+function isPrimaryHubCityRow(item, hubId) {
+  if (!hubId || !item) return false;
+  const id = String(item.id || '');
+  if (id === `hub-${hubId}`) return true;
+  return (
+    normalizeKey(item.hubId) === hubId &&
+    resolveSearchSuggestionGroup(item) === 'city' &&
+    id.startsWith('hub-')
+  );
+}
+
+/**
+ * Hub-exact query: primary city first, hub attractions next, drop weak substring festivals, then rest.
+ * @param {object[]} items
+ * @param {object} hub
+ */
+export function reorderHubExactSuggestions(items, hub) {
+  const hubId = normalizeKey(hub?.hubId);
+  if (!hubId) return items;
+
+  const primary = [];
+  const hubAttractions = [];
+  const festivals = [];
+  const rest = [];
+
+  for (const item of items) {
+    const group = resolveSearchSuggestionGroup(item);
+    const itemHub = normalizeKey(item.hubId);
+    if (isPrimaryHubCityRow(item, hubId)) {
+      primary.push(item);
+    } else if (itemHub === hubId && group === 'attraction') {
+      hubAttractions.push(item);
+    } else if (group === 'festival') {
+      festivals.push(item);
+    } else {
+      rest.push(item);
+    }
+  }
+
+  return [...primary, ...hubAttractions, ...festivals, ...rest];
+}
+
 /**
  * Merge SSOT destination row (빈) with hub city row (비엔나) into one city card.
  * @param {object[]} items
@@ -87,11 +180,7 @@ export function mergeHubAliasSuggestions(items) {
     );
     if (!cityRow || !destRow) continue;
 
-    const aliasParts = [
-      String(destRow.name_en || cityRow.name_en || '').trim(),
-      String(destRow.name || '').trim(),
-    ].filter(Boolean);
-    const aliasLine = [...new Set(aliasParts)].join(' · ');
+    const aliasLine = buildMergedHubAliasSubtitle(cityRow, destRow);
     if (aliasLine) {
       patchByKey.set(suggestionDedupeKey(cityRow), {
         searchOverlayDesc: aliasLine,
@@ -112,12 +201,21 @@ export function mergeHubAliasSuggestions(items) {
 /**
  * @param {string} query
  * @param {object[]} rawItems
- * @param {{ mergeAliases?: boolean }} [opts]
+ * @param {{ mergeAliases?: boolean, hub?: object | null, locale?: string }} [opts]
  * @returns {object[]}
  */
 export function normalizeSearchSuggestions(query, rawItems, opts = {}) {
   const mergeAliases = opts.mergeAliases !== false;
+  const locale = opts.locale || 'ko';
+  const hub = opts.hub === undefined ? resolveExploreCityHubExact(query) : opts.hub;
   let items = mergeAliases ? mergeHubAliasSuggestions(rawItems) : [...(rawItems || [])];
+
+  if (hub?.hubId) {
+    items = items.filter((item) => {
+      if (resolveSearchSuggestionGroup(item) !== 'festival') return true;
+      return festivalMatchesQueryStrongly(query, item, locale);
+    });
+  }
 
   const seen = new Set();
   const deduped = [];
@@ -132,13 +230,15 @@ export function normalizeSearchSuggestions(query, rawItems, opts = {}) {
     });
   }
 
-  deduped.sort((a, b) => {
-    const ga = groupSortIndex(a.suggestionGroup);
-    const gb = groupSortIndex(b.suggestionGroup);
-    if (ga !== gb) return ga - gb;
-    return String(a.name || '').localeCompare(String(b.name || ''), 'ko');
-  });
+  if (!hub?.hubId) {
+    deduped.sort((a, b) => {
+      const ga = groupSortIndex(a.suggestionGroup);
+      const gb = groupSortIndex(b.suggestionGroup);
+      if (ga !== gb) return ga - gb;
+      return String(a.name || '').localeCompare(String(b.name || ''), 'ko');
+    });
+    return deduped;
+  }
 
-  void query;
-  return deduped;
+  return reorderHubExactSuggestions(deduped, hub);
 }
