@@ -574,6 +574,9 @@
         "resortTitle": "Everyday escape — air-hotel & all-inclusive",
         "resortSubtitle": "Flights, stay & pickup included — {{cta}}"
       },
+      "festivalBadge": "Festival",
+      "groupTitleSightsSuffix": " sights",
+      "hubBrowseBlurb": "Browse sights and local specialties in {{name}}.",
       "badge": {
         "여행지": "Destination",
         "도시": "City",

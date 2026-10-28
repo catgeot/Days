@@ -10,6 +10,8 @@ import {
   EXPLORE_BADGE_REGION,
   EXPLORE_BADGE_FESTIVAL,
   localizedExploreBadgeLabel,
+  localizeExploreGroupTitle,
+  localizeExploreSearchDesc,
 } from '../../../../i18n/exploreUi';
 import { fetchKoreaTourAttractionFirstImagesByIds, rememberKoreaTourAttractionFirstImage } from '../../lib/koreaTourAttractions';
 import { fetchTourApiFirstImage } from '../../../../utils/fetchTourApiAttractionDetail';
@@ -55,19 +57,6 @@ const normalizeCompare = (s) =>
     .replace(/\s+/g, '')
     .replace(/[·・.,]/g, '');
 
-/** 위치 줄: 이름에 이미 포함된 상위 도시는 생략 */
-function localizeExploreGroupTitle(groupTitle, locale = 'ko') {
-  const raw = String(groupTitle || '').trim();
-  if (!raw) return '';
-  const suffix = ' 명소';
-  if (raw.endsWith(suffix)) {
-    const region = raw.slice(0, -suffix.length).trim();
-    const localized = getLocalizedParentCityLabel(region, locale);
-    return localized ? `${localized}${suffix}` : raw;
-  }
-  return getLocalizedParentCityLabel(raw, locale) || raw;
-}
-
 /**
  * 위치 줄·뱃지와 동일한 합성 문구면 설명란을 숨김.
  * (예: 위치「미야코지마 · 일본」+ 설명「미야코지마 · 해변」)
@@ -84,10 +73,12 @@ function placeFromSearchItem(item) {
   return rest;
 }
 
-function resolveCardDesc(item, locationLine, locale = 'ko') {
+function resolveCardDesc(item, locationLine, locale = 'ko', t) {
   const overlayDesc = scenicSearchOverlayDesc(item);
   if (overlayDesc) return overlayDesc;
-  const desc = String(item?.desc || '').trim();
+  let desc = String(item?.desc || '').trim();
+  if (!desc) return '';
+  desc = localizeExploreSearchDesc(desc, locale, t, item?.parentCity || item?.name);
   if (!desc) return '';
 
   const d = normalizeCompare(desc);
@@ -400,14 +391,18 @@ export function SearchSuggestionList({
             const displayName =
               primaryName || getLocalizedPlaceName(item, i18n.language) || String(item?.name || '').trim();
             const locationLine = buildExploreSearchLocationLine(item, i18n.language);
-            const desc = resolveCardDesc(item, locationLine, i18n.language);
+            const desc = resolveCardDesc(item, locationLine, i18n.language, t);
             const subtitle = [locationLine, desc]
               .filter(Boolean)
               .filter((v, i, arr) => arr.indexOf(v) === i)
               .slice(0, 2)
               .join(' · ');
-            const groupTitle = localizeExploreGroupTitle(item.groupTitle, i18n.language);
-            const prevGroup = String(items[index - 1]?.groupTitle || '').trim();
+            const groupTitle = localizeExploreGroupTitle(item.groupTitle, i18n.language, t);
+            const prevGroup = localizeExploreGroupTitle(
+              items[index - 1]?.groupTitle,
+              i18n.language,
+              t,
+            );
             const showGroup = Boolean(groupTitle) && groupTitle !== prevGroup;
             const rankBlurb = String(item.rankBlurb || '').trim();
             const thumbItem = thumbByIndex[index]
@@ -627,12 +622,13 @@ export function SearchDisambiguationCards({
           const hydrated = introByKey[index]
             ? { ...item, desc: introByKey[index], placeChatIntroApplied: true }
             : item;
-          const desc = resolveCardDesc(hydrated, locationLine, i18n.language);
+          const desc = resolveCardDesc(hydrated, locationLine, i18n.language, t);
           const showIntroMore = Boolean(desc) && desc.length >= SEARCH_INTRO_MORE_MIN_LEN;
-          const groupTitle = localizeExploreGroupTitle(item.groupTitle, i18n.language);
+          const groupTitle = localizeExploreGroupTitle(item.groupTitle, i18n.language, t);
           const prevGroup = localizeExploreGroupTitle(
             pageItems[index - 1]?.groupTitle,
             i18n.language,
+            t,
           );
           const showGroup = Boolean(groupTitle) && groupTitle !== prevGroup;
           const rankBlurb = String(item.rankBlurb || '').trim();

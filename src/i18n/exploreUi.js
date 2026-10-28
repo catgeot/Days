@@ -1,9 +1,55 @@
 import { CATEGORY_LABELS } from '../pages/Home/components/SearchDiscovery/constants';
+import { getLocalizedParentCityLabel } from '../components/PlaceCard/common/locationDisplay.js';
 
 /** SSOT explore badge keys — BADGE_STYLES·localizedExploreBadgeLabel lookup */
 export const EXPLORE_BADGE_PLACE = '장소';
 export const EXPLORE_BADGE_REGION = '지역';
 export const EXPLORE_BADGE_FESTIVAL = '축제';
+
+/** Raw KO group header suffix in SSOT (`cityAttractionHubs`, `koreaPoiTypeSearch`). */
+export const EXPLORE_GROUP_TITLE_ATTRACTIONS_SUFFIX = ' 명소';
+
+/**
+ * @param {string} [groupTitle]
+ * @param {string} [locale]
+ * @param {import('i18next').TFunction} [t]
+ */
+export function localizeExploreGroupTitle(groupTitle, locale = 'ko', t) {
+  const raw = String(groupTitle || '').trim();
+  if (!raw) return '';
+  const koSuffix = EXPLORE_GROUP_TITLE_ATTRACTIONS_SUFFIX;
+  if (raw.endsWith(koSuffix)) {
+    const region = raw.slice(0, -koSuffix.length).trim();
+    const localized = getLocalizedParentCityLabel(region, locale);
+    const regionLabel = localized || region;
+    if (String(locale || '').startsWith('en') && t) {
+      const suffix = t('home.explore.groupTitleSightsSuffix', { defaultValue: ' sights' });
+      return `${regionLabel}${suffix}`;
+    }
+    return localized ? `${localized}${koSuffix}` : raw;
+  }
+  return getLocalizedParentCityLabel(raw, locale) || raw;
+}
+
+/**
+ * @param {string} [desc]
+ * @param {string} [locale]
+ * @param {import('i18next').TFunction} [t]
+ * @param {string} [parentCityKo]
+ */
+export function localizeExploreSearchDesc(desc, locale = 'ko', t, parentCityKo) {
+  const d = String(desc || '').trim();
+  if (!d || !t) return d;
+  const parent = String(parentCityKo || '').trim();
+  if (parent && d === `${parent}의 명소·명물을 둘러보세요.`) {
+    const name = getLocalizedParentCityLabel(parent, locale) || parent;
+    return t('home.explore.hubBrowseBlurb', {
+      name,
+      defaultValue: d,
+    });
+  }
+  return d;
+}
 
 /**
  * @param {import('i18next').TFunction} t
@@ -50,9 +96,9 @@ export function localizedExploreBadgeLabel(t, badgeKo) {
   return t(`home.explore.badge.${key}`, { defaultValue: key });
 }
 
-/** Explore search — Korea festival row badge (KO/EN via korea.theme.festivalsLink). */
+/** Explore search — Korea festival row badge (singular EN; not korea.theme.festivalsLink). */
 export function localizedExploreFestivalBadge(t) {
-  return t('korea.theme.festivalsLink', { defaultValue: '축제' });
+  return t('home.explore.festivalBadge', { defaultValue: '축제' });
 }
 
 /**
