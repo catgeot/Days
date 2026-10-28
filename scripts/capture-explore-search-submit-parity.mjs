@@ -39,15 +39,22 @@ async function startPreview(port, env) {
     env: { ...process.env, ...env },
     stdio: ['ignore', 'pipe', 'pipe'],
   });
-  const base = `http://127.0.0.1:${port}`;
-  for (let i = 0; i < 60; i += 1) {
-    await new Promise((r) => setTimeout(r, 500));
-    try {
-      const res = await fetch(`${base}/explore`);
-      if (res.ok) return { child, base };
-    } catch {
-      /* retry */
+  const base = `https://127.0.0.1:${port}`;
+  const prevTls = process.env.NODE_TLS_REJECT_UNAUTHORIZED;
+  process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+  try {
+    for (let i = 0; i < 60; i += 1) {
+      await new Promise((r) => setTimeout(r, 500));
+      try {
+        const res = await fetch(`${base}/explore`, { redirect: 'follow' });
+        if (res.ok) return { child, base };
+      } catch {
+        /* retry */
+      }
     }
+  } finally {
+    if (prevTls === undefined) delete process.env.NODE_TLS_REJECT_UNAUTHORIZED;
+    else process.env.NODE_TLS_REJECT_UNAUTHORIZED = prevTls;
   }
   child.kill('SIGTERM');
   throw new Error(`preview failed on port ${port}`);
