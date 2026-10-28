@@ -37,6 +37,43 @@ export async function runExploreHybridSuggestUpdate(
   const applyMerge = deps.applyMerge ?? applyExploreFestivalMergeStrategy;
   const mergeReview = deps.mergeReview ?? mergeExploreReviewIntoHybridSuggestions;
 
+  if (!isParityEnabled()) {
+    const tryPaintMain = (paintItems) => {
+      if (getCurrentRequestId() !== requestId) return false;
+      onPaint?.(paintItems);
+      return true;
+    };
+
+    const festPromise = isEnabled() ? buildFest(query, locale) : null;
+    const items = await buildHybrid(query);
+    if (getCurrentRequestId() !== requestId) {
+      return { stale: true };
+    }
+
+    if (festPromise) {
+      const { items: firstPaint, late } = await applyMerge(query, items, {
+        locale,
+        startedAt: mergeStartedAt,
+        festPromise,
+      });
+      if (getCurrentRequestId() !== requestId) {
+        return { stale: true };
+      }
+      tryPaintMain(firstPaint);
+      if (late) {
+        const merged = await late();
+        if (getCurrentRequestId() !== requestId) {
+          return { stale: true };
+        }
+        tryPaintMain(merged);
+      }
+      return { stale: false };
+    }
+
+    tryPaintMain(items);
+    return { stale: false };
+  }
+
   const tryPaint = (paintItems) => {
     if (getCurrentRequestId() !== requestId) return false;
     const painted = isParityEnabled()

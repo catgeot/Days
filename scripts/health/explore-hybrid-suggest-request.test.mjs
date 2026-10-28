@@ -76,6 +76,35 @@ test('onPaint fires firstPaint before late merge resolves', async () => {
   assert.ok(paintAtMs[1] > paintAtMs[0] + 20);
 });
 
+test('parity OFF uses main autocomplete path (no review merge, no maxItems cap)', async () => {
+  let reviewMerged = false;
+  /** @type {object[][]} */
+  const painted = [];
+  await runExploreHybridSuggestUpdate(
+    'q',
+    1,
+    () => 1,
+    { onPaint: (items) => painted.push(items) },
+    {
+      isSiteSearchEnabled: () => true,
+      isSubmitParityEnabled: () => false,
+      buildHybrid: async () => [{ id: 'city-1', name: '테스트', source: 'ssot' }],
+      buildFest: async () => [{ id: 'fest-1', kind: 'festival', name: '축제' }],
+      applyMerge: async (_q, items, mergeOpts) => {
+        assert.equal(mergeOpts.maxItems, undefined);
+        return { items: [...items, { id: 'fest-1', name: '축제', kind: 'festival' }], late: null };
+      },
+      mergeReview: async () => {
+        reviewMerged = true;
+        return [];
+      },
+    },
+  );
+  assert.equal(reviewMerged, false);
+  assert.equal(painted.length, 1);
+  assert.equal(painted[0].some((row) => row.id === 'fest-1'), true);
+});
+
 test('runExploreHybridSuggestUpdate skips onPaint when requestId stale after merge wait', async () => {
   let currentId = 7;
   const painted = [];
