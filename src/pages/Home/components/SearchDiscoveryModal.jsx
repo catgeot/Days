@@ -33,12 +33,8 @@ import {
   destinationLabel,
   resolveDestinationToSpot,
 } from '../lib/exploreRecentHistory';
-import { buildHybridSearchSuggestions, buildLocalSearchSuggestions } from '../lib/searchSuggestions';
-import {
-  applyExploreFestivalMergeStrategy,
-  buildExploreFestivalSearchSuggestions,
-} from '../lib/exploreFestivalSearchSuggestions';
-import { isGateoSiteSearchEnabled } from '../../../shared/gateoFeatureFlags';
+import { buildLocalSearchSuggestions } from '../lib/searchSuggestions';
+import { runExploreHybridSuggestUpdate } from '../lib/exploreHybridSuggestUpdate';
 import { hasUsableVisitedCoords } from '../lib/visitedPlaceSearch';
 import { isSearchDisambiguation } from '../lib/cityAttractionHubs';
 import {
@@ -284,26 +280,16 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, onAskMooni,
     const timer = setTimeout(async () => {
       const mergeStartedAt = Date.now();
       try {
-        const festPromise = isGateoSiteSearchEnabled()
-          ? buildExploreFestivalSearchSuggestions(q, { locale: i18n.language }).catch(() => [])
-          : null;
-        const items = await buildHybridSearchSuggestions(q);
-        if (suggestRequestIdRef.current !== requestId) return;
-
-        if (festPromise) {
-          const { items: firstPaint, late } = await applyExploreFestivalMergeStrategy(q, items, {
-            locale: i18n.language,
-            startedAt: mergeStartedAt,
-            festPromise,
-          });
-          setHybridSuggestions(firstPaint);
-          if (late) {
-            const merged = await late();
-            if (suggestRequestIdRef.current !== requestId) return;
-            setHybridSuggestions(merged);
-          }
-        } else {
-          setHybridSuggestions(items);
+        const { stale, paints } = await runExploreHybridSuggestUpdate(
+          q,
+          requestId,
+          () => suggestRequestIdRef.current,
+          { locale: i18n.language, mergeStartedAt },
+        );
+        if (stale || suggestRequestIdRef.current !== requestId) return;
+        for (const paint of paints) {
+          if (suggestRequestIdRef.current !== requestId) return;
+          setHybridSuggestions(paint);
         }
       } catch {
         if (suggestRequestIdRef.current !== requestId) return;
