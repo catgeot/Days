@@ -26,7 +26,7 @@ async function waitForFeed(page) {
   ).first();
   await page
     .locator('[data-logbook-main-scroll]')
-    .getByText(/기록 보관소|Recent stories|Recent logs/i)
+    .getByText(/기록 보관소|최근 기록 보관소/i)
     .first()
     .waitFor({ state: 'visible', timeout: 120_000 });
   await feed.waitFor({ state: 'visible', timeout: 120_000 });
