@@ -1,4 +1,4 @@
-import React, { useId, useMemo, useState } from 'react';
+import React, { useEffect, useId, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ChevronDown, ChevronRight, CalendarDays, Landmark, Sparkles } from 'lucide-react';
@@ -21,16 +21,16 @@ export default function PlaceCrossLinksSection({
   const panelEventsId = useId();
   const [festivalsOpen, setFestivalsOpen] = useState(true);
   const [collectionsOpen, setCollectionsOpen] = useState(true);
-<<<<<<< HEAD
   const [eventsOpen, setEventsOpen] = useState(false);
-=======
-  const [eventsOpen, setEventsOpen] = useState(true);
   const [expandedBuckets, setExpandedBuckets] = useState(() => ({}));
 
   const placeKey = String(location?.slug || location?.id || location?.name || '')
     .trim()
     .toLowerCase();
->>>>>>> 73c5cf16 (feat(place): crosslink P1-6 — cap·더 보기/접기·장소 key 리셋 (플래그 OFF))
+
+  useEffect(() => {
+    setExpandedBuckets({});
+  }, [placeKey]);
 
   const locale = i18n.language || 'ko';
   const bundle = useMemo(
@@ -143,8 +143,7 @@ export default function PlaceCrossLinksSection({
 
   return (
     <div
-      key={placeKey || 'place-crosslinks'}
-      className={`space-y-3 ${className}`.trim()}
+      className={`space-y-3 pb-24 md:pb-0 ${className}`.trim()}
       data-place-crosslinks=""
       aria-label={t('place.crossLinks.aria')}
     >
