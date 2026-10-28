@@ -1,18 +1,16 @@
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Camera, MapPin, Compass, Sparkles } from 'lucide-react';
 import { getGalleryImageAttribution } from '../common/galleryImageAttribution';
-import GalleryAttributionLink from '../common/GalleryAttributionLink';
 import { splitPlaceOverview } from '../common/placeOverviewText';
-import PlaceOverviewProse from '../common/PlaceOverviewProse';
-import PlaceScenicGateway from '../common/PlaceScenicGateway';
-import PlaceCrossLinksSection from '../common/PlaceCrossLinksSection';
 import { getLocalizedPlaceName } from '../common/locationDisplay';
 import { getLocalizedPlaceKeywords, isPlaceDescKoreanOnly } from '../../../pages/Home/lib/placeSeoText.js';
 import { useLocale } from '../../../i18n/LocaleProvider';
+import { usePlaceDesktopLeftInfoLayout } from '../common/usePlaceDesktopLeftInfoLayout';
+import GalleryInfoOverviewScrollContent from './GalleryInfoOverviewScrollContent';
 
 const GalleryInfoView = React.memo(({ selectedPlace, selectedImg, relatedPlaces = [], onRelatedClick }) => {
-    const { t, i18n } = useTranslation();
+    const { i18n } = useTranslation();
     const { locale } = useLocale();
     const overviewKeywords = useMemo(
         () => getLocalizedPlaceKeywords(selectedPlace, locale),
@@ -22,6 +20,8 @@ const GalleryInfoView = React.memo(({ selectedPlace, selectedImg, relatedPlaces 
     const isPhotoMode = !!selectedImg;
     const summaryScrollRef = useRef(null);
     const showRelatedDock = !isPhotoMode && relatedPlaces.length > 0;
+    const { mountInLeftOverview } = usePlaceDesktopLeftInfoLayout();
+    const [overviewScrollFade, setOverviewScrollFade] = useState(false);
 
     const description = useMemo(() => {
         if (selectedImg?.alt_description) {
@@ -38,9 +38,60 @@ const GalleryInfoView = React.memo(({ selectedPlace, selectedImg, relatedPlaces 
         [selectedImg],
     );
 
+    const scrollContentProps = {
+        selectedPlace,
+        isPhotoMode,
+        description,
+        photoAttribution,
+        selectedImg,
+        showKoreanGuideNotice,
+        overviewQuery,
+        curationOverview,
+        fixedOverview,
+        overviewKeywords,
+        includeLeftLocalInfo: mountInLeftOverview && !isPhotoMode,
+    };
+
     useEffect(() => {
         if (summaryScrollRef.current) summaryScrollRef.current.scrollTop = 0;
     }, [selectedPlace?.id, selectedPlace?.name, selectedPlace?.slug, selectedImg]);
+
+    useEffect(() => {
+        if (!mountInLeftOverview || isPhotoMode) {
+            setOverviewScrollFade(false);
+            return undefined;
+        }
+        const el = summaryScrollRef.current;
+        if (!el) return undefined;
+        const syncFade = () => {
+            const overflow = el.scrollHeight > el.clientHeight + 2;
+            const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 2;
+            setOverviewScrollFade(overflow && !atBottom);
+        };
+        syncFade();
+        el.addEventListener('scroll', syncFade, { passive: true });
+        const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(syncFade) : null;
+        ro?.observe(el);
+        return () => {
+            el.removeEventListener('scroll', syncFade);
+            ro?.disconnect();
+        };
+    }, [
+        mountInLeftOverview,
+        isPhotoMode,
+        selectedPlace?.id,
+        selectedPlace?.name,
+        selectedPlace?.slug,
+        fixedOverview,
+        curationOverview,
+        overviewKeywords.length,
+    ]);
+
+    const scrollInner = (
+        <div className="px-0.5">
+            <GalleryInfoOverviewScrollContent {...scrollContentProps} />
+        </div>
+    );
 
     return (
         <div className="animate-fade-in flex min-h-0 flex-1 flex-col gap-3">
@@ -71,100 +122,30 @@ const GalleryInfoView = React.memo(({ selectedPlace, selectedImg, relatedPlaces 
                  </span>
              </div>
 
+             {mountInLeftOverview ? (
+             <div className="relative min-h-0 flex-1">
+             <div
+                ref={summaryScrollRef}
+                data-place-overview-scroll=""
+                className="min-h-0 h-full overflow-y-auto pr-1 custom-scrollbar"
+             >
+                {scrollInner}
+             </div>
+             {overviewScrollFade ? (
+                <div
+                    className="pointer-events-none absolute bottom-0 left-0 right-1 h-10 bg-gradient-to-t from-[#05070a] via-[#05070a]/85 to-transparent"
+                    aria-hidden
+                />
+             ) : null}
+             </div>
+             ) : (
              <div
                 ref={summaryScrollRef}
                 className="min-h-0 flex-1 overflow-y-auto pr-1 custom-scrollbar"
              >
-                <div className="px-0.5">
-                {isPhotoMode ? (
-                    <div className="animate-fade-in space-y-4">
-                        <p className="text-[16px] text-gray-200 leading-relaxed font-normal opacity-90 tracking-tight">
-                            {description}
-                        </p>
-                        {photoAttribution && (
-                            <div className="rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-2.5">
-                                <p className="text-[13px] leading-relaxed text-gray-300">
-                                    Photo by{' '}
-                                    <GalleryAttributionLink
-                                        href={photoAttribution.photographerHref || photoAttribution.href}
-                                        location={selectedPlace}
-                                        image={selectedImg}
-                                        context="gallery"
-                                        className="font-semibold text-blue-200/95 underline decoration-blue-300/40 underline-offset-2 transition-colors hover:text-blue-100 hover:decoration-blue-200/70"
-                                        title={photoAttribution.title}
-                                    >
-                                        {photoAttribution.authorName}
-                                    </GalleryAttributionLink>
-                                    {' on '}
-                                    <GalleryAttributionLink
-                                        href={photoAttribution.providerHref}
-                                        location={selectedPlace}
-                                        image={selectedImg}
-                                        context="gallery"
-                                        className="font-semibold text-blue-200/95 underline decoration-blue-300/40 underline-offset-2 transition-colors hover:text-blue-100 hover:decoration-blue-200/70"
-                                    >
-                                        {photoAttribution.providerName}
-                                    </GalleryAttributionLink>
-                                </p>
-                            </div>
-                        )}
-                    </div>
-                ) : (
-                    <div className="animate-fade-in space-y-5">
-                        <div className="space-y-4">
-                            {showKoreanGuideNotice ? (
-                                <span className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-white/5 px-2.5 py-1 text-[11px] text-gray-300">
-                                    ℹ️ {t('place.localeNotice.koreanGuide')}
-                                </span>
-                            ) : null}
-                            {(overviewQuery || curationOverview) && (
-                                <div className="rounded-xl border border-violet-400/25 bg-violet-500/10 px-3.5 py-3.5">
-                                    {overviewQuery && (
-                                        <p className="mb-2.5 flex items-center gap-1.5 text-[11px] font-semibold text-violet-200/90 tracking-wide">
-                                            <Sparkles size={12} className="shrink-0 text-violet-300" aria-hidden />
-                                            <span className="min-w-0 line-clamp-2 break-keep">
-                                                {t('place.overview.fromQuery', { query: overviewQuery })}
-                                            </span>
-                                        </p>
-                                    )}
-                                    {curationOverview && (
-                                        <PlaceOverviewProse text={curationOverview} variant="curation" />
-                                    )}
-                                </div>
-                            )}
-                            {(fixedOverview || !curationOverview) && (
-                                <PlaceOverviewProse
-                                    text={fixedOverview}
-                                    variant="body"
-                                    fallback={t('place.fallback.infoUpdating')}
-                                />
-                            )}
-                        </div>
-
-                        <PlaceScenicGateway location={selectedPlace} variant="dark" />
-
-                        <PlaceCrossLinksSection
-                          location={selectedPlace}
-                          variant="dark"
-                          bucketFilter="festivalsCollections"
-                        />
-
-                        {overviewKeywords.length > 0 && (
-                            <div className="flex flex-wrap gap-2 border-t border-white/5 pt-4">
-                                {overviewKeywords.map((tag, idx) => (
-                                    <span
-                                        key={`tag-${idx}`}
-                                        className="px-2 py-0.5 rounded border transition-all duration-300 cursor-default font-medium text-[11px] bg-white/5 border-white/10 text-gray-400 hover:text-blue-400 hover:border-blue-400/30 hover:bg-blue-400/5"
-                                    >
-                                        #{tag}
-                                    </span>
-                                ))}
-                            </div>
-                        )}
-                    </div>
-                )}
-                </div>
+                {scrollInner}
              </div>
+             )}
 
             {showRelatedDock && (
                 <div
