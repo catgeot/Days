@@ -5,6 +5,8 @@ import {
   GATEO_ENV_FLAG_NAMES,
   isGateoExploreSearchSubmitParityEnabled,
 } from '../../src/shared/gateoFeatureFlags.js';
+import { buildHybridSearchSuggestions } from '../../src/pages/Home/lib/searchSuggestions.js';
+import { runExploreHybridSuggestUpdate } from '../../src/pages/Home/lib/exploreHybridSuggestUpdate.js';
 import {
   mergeHubAliasSuggestions,
   normalizeSearchSuggestions,
@@ -149,4 +151,39 @@ test('mergeHubAliasSuggestions fixture — single canonical hub row', () => {
   ]);
   assert.equal(merged.length, 1);
   assert.equal(merged[0].searchOverlayDesc, '빈');
+});
+
+async function hybridPaintIds(query, parityOn) {
+  /** @type {object[][]} */
+  const painted = [];
+  await runExploreHybridSuggestUpdate(
+    query,
+    1,
+    () => 1,
+    { onPaint: (items) => painted.push(items) },
+    {
+      isSiteSearchEnabled: () => false,
+      isSubmitParityEnabled: () => parityOn,
+      buildHybrid: (q) => buildHybridSearchSuggestions(q),
+    },
+  );
+  return painted[0]?.map((row) => row.id) ?? [];
+}
+
+test('autocomplete paint flag OFF matches main raw hybrid order (빈 · 방콕)', async () => {
+  for (const query of ['빈', '방콕']) {
+    const rawIds = (await buildHybridSearchSuggestions(query)).map((row) => row.id);
+    const paintedIds = await hybridPaintIds(query, false);
+    assert.deepEqual(
+      paintedIds,
+      rawIds,
+      `flag OFF paint must match main hybrid for «${query}»`,
+    );
+  }
+});
+
+test('autocomplete paint flag ON applies normalize (빈 hub city before spot-vienna)', async () => {
+  const paintedIds = await hybridPaintIds('빈', true);
+  assert.equal(paintedIds[0], 'hub-vienna');
+  assert.equal(paintedIds.includes('spot-vienna'), false);
 });

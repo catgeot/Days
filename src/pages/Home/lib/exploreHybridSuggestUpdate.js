@@ -3,7 +3,7 @@ import {
   applyExploreFestivalMergeStrategy,
   buildExploreFestivalSearchSuggestions,
 } from './exploreFestivalSearchSuggestions.js';
-import { isGateoSiteSearchEnabled } from '../../../shared/gateoFeatureFlags.js';
+import { isGateoSiteSearchEnabled, isGateoExploreSearchSubmitParityEnabled } from '../../../shared/gateoFeatureFlags.js';
 import { normalizeSearchSuggestions } from './normalizeSearchSuggestions.js';
 import { resolveExploreCityHubExact } from './exploreHubResolve.js';
 
@@ -27,6 +27,7 @@ export async function runExploreHybridSuggestUpdate(
   const mergeStartedAt = opts.mergeStartedAt ?? Date.now();
   const onPaint = opts.onPaint;
   const isEnabled = deps.isSiteSearchEnabled ?? isGateoSiteSearchEnabled;
+  const isParityEnabled = deps.isSubmitParityEnabled ?? isGateoExploreSearchSubmitParityEnabled;
   const buildHybrid = deps.buildHybrid ?? ((q) => buildHybridSearchSuggestions(q));
   const buildFest =
     deps.buildFest ??
@@ -35,12 +36,13 @@ export async function runExploreHybridSuggestUpdate(
 
   const tryPaint = (paintItems) => {
     if (getCurrentRequestId() !== requestId) return false;
-    onPaint?.(
-      normalizeSearchSuggestions(query, paintItems, {
-        hub: resolveExploreCityHubExact(query),
-        locale,
-      }),
-    );
+    const painted = isParityEnabled()
+      ? normalizeSearchSuggestions(query, paintItems, {
+          hub: resolveExploreCityHubExact(query),
+          locale,
+        })
+      : paintItems;
+    onPaint?.(painted);
     return true;
   };
 
