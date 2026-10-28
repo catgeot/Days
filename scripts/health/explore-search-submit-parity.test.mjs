@@ -20,10 +20,18 @@ import { hubToSuggestion } from '../../src/pages/Home/lib/cityAttractionHubs.js'
 import { resolveCityAttractionHub } from '../../src/pages/Home/lib/cityAttractionHubs.js';
 import { resolveExploreCityHubExact } from '../../src/pages/Home/lib/exploreHubResolve.js';
 
-function withSubmitParityFlag(enabled, fn) {
+function withSubmitParityFlag(mode, fn) {
   const key = GATEO_ENV_FLAG_NAMES.EXPLORE_SEARCH_SUBMIT_PARITY;
   const prev = globalThis.__VITE_ENV__[key];
-  globalThis.__VITE_ENV__[key] = enabled ? '1' : '';
+  if (mode === true || mode === '1') {
+    globalThis.__VITE_ENV__[key] = '1';
+  } else if (mode === false || mode === '0') {
+    globalThis.__VITE_ENV__[key] = '0';
+  } else if (mode === 'default' || mode === 'unset') {
+    globalThis.__VITE_ENV__[key] = '';
+  } else {
+    globalThis.__VITE_ENV__[key] = mode;
+  }
   try {
     return fn();
   } finally {
@@ -31,7 +39,10 @@ function withSubmitParityFlag(enabled, fn) {
   }
 }
 
-test('VITE_GATEO_EXPLORE_SEARCH_SUBMIT_PARITY defaults off', () => {
+test('VITE_GATEO_EXPLORE_SEARCH_SUBMIT_PARITY defaults on; explicit 0 disables', () => {
+  withSubmitParityFlag('default', () => {
+    assert.equal(isGateoExploreSearchSubmitParityEnabled(), true);
+  });
   withSubmitParityFlag(false, () => {
     assert.equal(isGateoExploreSearchSubmitParityEnabled(), false);
   });
