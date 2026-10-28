@@ -522,6 +522,15 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, onAskMooni,
       setRecentSearches(pushRecentSearch(recentKeyword));
     }
 
+    if (item.kind === 'festival' && item.festivalContentId) {
+      captureExploreReturn();
+      navigate(
+        item.exploreHref ||
+          `/korea?festival=${encodeURIComponent(String(item.festivalContentId))}`,
+      );
+      return;
+    }
+
     let place = item;
     const needsLatinHydrate = Boolean(
       item.mapboxId && (item.needsRetrieve || needsLatinPlaceName(item)),

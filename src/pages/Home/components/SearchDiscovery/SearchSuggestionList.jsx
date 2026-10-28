@@ -1,6 +1,6 @@
 import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { MapPin, Landmark, Building2, Compass, Loader2, ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
+import { MapPin, Landmark, Building2, Compass, Loader2, ChevronLeft, ChevronRight, Sparkles, CalendarDays } from 'lucide-react';
 import {
   fetchPlaceChatIntroSummaryForLocation,
   needsPlaceChatIntroHydration,
@@ -8,6 +8,7 @@ import {
 import {
   EXPLORE_BADGE_PLACE,
   EXPLORE_BADGE_REGION,
+  EXPLORE_BADGE_FESTIVAL,
   localizedExploreBadgeLabel,
 } from '../../../../i18n/exploreUi';
 import { fetchKoreaTourAttractionFirstImagesByIds, rememberKoreaTourAttractionFirstImage } from '../../lib/koreaTourAttractions';
@@ -44,6 +45,7 @@ const BADGE_STYLES = {
   박물관: 'bg-rose-500/25 text-rose-200 border-rose-400/40',
   동네: 'bg-fuchsia-500/25 text-fuchsia-200 border-fuchsia-400/40',
   장소: 'bg-white/15 text-white/90 border-white/30',
+  [EXPLORE_BADGE_FESTIVAL]: 'bg-pink-500/25 text-pink-200 border-pink-400/40',
 };
 
 const normalizeCompare = (s) =>
@@ -146,6 +148,7 @@ function MooniAskRow({ query, isPopover, onAsk }) {
 }
 
 function SuggestionIcon({ kind, size = 16 }) {
+  if (kind === 'festival') return <CalendarDays size={size} className="text-pink-200 shrink-0" />;
   if (kind === 'spot') return <Compass size={size} className="text-emerald-300 shrink-0" />;
   if (kind === 'city') return <Building2 size={size} className="text-blue-300 shrink-0" />;
   if (kind === 'attraction') return <Landmark size={size} className="text-amber-300 shrink-0" />;
