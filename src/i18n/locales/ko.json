@@ -741,6 +741,7 @@
     },
     "crossLinks": {
       "aria": "연관 축제·명소",
+      "eventsTitle": "이 도시의 행사",
       "festivalsTitle": "이 지역 축제",
       "collectionsTitle": "명승·테마 명소",
       "count": "{{count}}건"

@@ -1,7 +1,7 @@
 import React, { useId, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ChevronDown, ChevronRight, Landmark, Sparkles } from 'lucide-react';
+import { ChevronDown, ChevronRight, CalendarDays, Landmark, Sparkles } from 'lucide-react';
 import { resolvePlaceCrossLinksIfEnabled } from '../../../pages/Home/lib/placeCrosslinkRollout.js';
 
 /**
@@ -15,13 +15,16 @@ export default function PlaceCrossLinksSection({
   const { t } = useTranslation();
   const panelFestivalsId = useId();
   const panelCollectionsId = useId();
+  const panelEventsId = useId();
   const [festivalsOpen, setFestivalsOpen] = useState(true);
   const [collectionsOpen, setCollectionsOpen] = useState(true);
+  const [eventsOpen, setEventsOpen] = useState(true);
 
   const bundle = useMemo(() => resolvePlaceCrossLinksIfEnabled(location), [location]);
   const festivals = bundle.festivals || [];
   const collections = bundle.collections || [];
-  if (!festivals.length && !collections.length) return null;
+  const events = bundle.events || [];
+  if (!festivals.length && !collections.length && !events.length) return null;
 
   const isSummary = variant === 'summary';
   const shellClass = isSummary
@@ -87,6 +90,15 @@ export default function PlaceCrossLinksSection({
       data-place-crosslinks=""
       aria-label={t('place.crossLinks.aria')}
     >
+      {renderBucket(
+        'events',
+        events,
+        eventsOpen,
+        setEventsOpen,
+        panelEventsId,
+        <CalendarDays size={isSummary ? 15 : 16} className="shrink-0 text-amber-200" aria-hidden />,
+        'place.crossLinks.eventsTitle',
+      )}
       {renderBucket(
         'festivals',
         festivals,

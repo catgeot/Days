@@ -164,3 +164,15 @@ test('overseas slugs attach world events only', () => {
     assert.equal(vienna.collections.length, 0);
   });
 });
+
+test('usePlaceCrosslinkWorldEventsRail follows flag', async () => {
+  const { usePlaceCrosslinkWorldEventsRail } = await import(
+    '../src/pages/Home/lib/placeCrosslinkRollout.js'
+  );
+  withCrosslinkFlag(false, () => {
+    assert.equal(usePlaceCrosslinkWorldEventsRail(), false);
+  });
+  withCrosslinkFlag(true, () => {
+    assert.equal(usePlaceCrosslinkWorldEventsRail(), true);
+  });
+});
