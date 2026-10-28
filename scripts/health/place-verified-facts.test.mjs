@@ -184,7 +184,7 @@ test('AI generated label is present on verified-fact cards', () => {
   assert.match(factsUi, /data-ai-generated-label/);
   assert.match(factsUi, /data-verified-facts/);
   assert.match(wiki, /AiGeneratedBanner/);
-  assert.match(gallery, /PlaceVerifiedFacts/);
+  assert.match(gallery, /PlaceGalleryFactsAndStories/);
 });
 
 test('GEM and Sultan Hassan hub cards exist', () => {

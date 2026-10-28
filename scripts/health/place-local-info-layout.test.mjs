@@ -45,8 +45,7 @@ test('no verified facts leaves the place card unchanged', () => {
   const gallery = readFileSync(join(root, 'src/components/PlaceCard/views/PlaceGalleryView.jsx'), 'utf8');
   const wiki = readFileSync(join(root, 'src/components/PlaceCard/views/PlaceWikiDetailsView.jsx'), 'utf8');
   const planner = readFileSync(join(root, 'src/components/PlaceCard/tabs/PlannerTab.jsx'), 'utf8');
-  assert.match(gallery, /<PlaceVerifiedFacts/);
-  assert.match(gallery, /<PlaceVisitStories/);
+  assert.match(gallery, /PlaceGalleryFactsAndStories/);
   assert.equal(wiki.includes('<PlaceVerifiedFacts'), false);
   assert.equal(planner.includes('<PlaceVerifiedFacts'), false);
   assert.match(wiki, /PlaceLocalInfoInline/);

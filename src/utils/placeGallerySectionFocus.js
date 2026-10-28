@@ -1,5 +1,7 @@
 /** Gallery «현지 정보» / «다녀온 이야기» — hash · ?section= · 리뷰 작성 후 1회 펼침 (메모리만). */
 
+import { isGateoPlaceDesktopLeftInfoEnabled } from '../shared/gateoFeatureFlags.js';
+
 export const PLACE_GALLERY_SECTION = {
   FACTS: 'facts',
   STORIES: 'stories',
@@ -88,6 +90,8 @@ export function resolvePlaceGallerySectionAutoOpen(placeKey, locationLike) {
   return peekPlaceGallerySectionAfterReview(placeKey);
 }
 
+const DESKTOP_LEFT_INFO_MEDIA = '(min-width: 1024px)';
+
 /**
  * @param {string} sectionId
  */
@@ -95,5 +99,22 @@ export function scrollPlaceGallerySectionIntoView(sectionId) {
   if (typeof document === 'undefined') return;
   const el = document.getElementById(sectionId);
   if (!el || typeof el.scrollIntoView !== 'function') return;
+
+  const flagOn = isGateoPlaceDesktopLeftInfoEnabled();
+  const overviewScroller = flagOn ? el.closest('[data-place-overview-scroll]') : null;
+
+  if (
+    flagOn
+    && overviewScroller
+    && typeof window !== 'undefined'
+    && window.matchMedia(DESKTOP_LEFT_INFO_MEDIA).matches
+  ) {
+    const elRect = el.getBoundingClientRect();
+    const scRect = overviewScroller.getBoundingClientRect();
+    const targetTop = elRect.top - scRect.top + overviewScroller.scrollTop - 8;
+    overviewScroller.scrollTo({ top: Math.max(0, targetTop), behavior: 'smooth' });
+    return;
+  }
+
   el.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
