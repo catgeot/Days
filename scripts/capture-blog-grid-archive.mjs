@@ -16,7 +16,10 @@ const OUT_DIR =
   join('/cursor/stores/self/blog-grid', HEAD_SHA);
 const LABEL = process.env.CAPTURE_LABEL === 'after' ? 'after' : 'before';
 const BASE = (process.env.CAPTURE_BASE_URL || 'https://127.0.0.1:4173/').replace(/\/?$/, '/');
-const WIDTHS = [390, 1280, 1440];
+const WIDTHS = (process.env.CAPTURE_WIDTHS || '390,1280,1440')
+  .split(',')
+  .map((s) => Number(s.trim()))
+  .filter((n) => n > 0);
 const BLOG_PATH = process.env.CAPTURE_BLOG_PATH || '/blog?tab=public&lang=ko';
 const SUMMARY_PATH = join(OUT_DIR, 'capture-summary.json');
 
