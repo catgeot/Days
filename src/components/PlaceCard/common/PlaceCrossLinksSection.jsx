@@ -1,8 +1,10 @@
-import React, { useId, useMemo, useState } from 'react';
+import React, { useEffect, useId, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ChevronDown, ChevronRight, CalendarDays, Landmark, Sparkles } from 'lucide-react';
 import { resolvePlaceCrossLinksIfEnabled } from '../../../pages/Home/lib/placeCrosslinkRollout.js';
+
+export const PLACE_CROSSLINK_VISIBLE_ROW_CAP = 5;
 
 /**
  * @param {{ location?: object | null, variant?: 'dark' | 'summary', className?: string, bucketFilter?: 'all' | 'eventsOnly' | 'festivalsCollections' }} props
@@ -20,6 +22,15 @@ export default function PlaceCrossLinksSection({
   const [festivalsOpen, setFestivalsOpen] = useState(true);
   const [collectionsOpen, setCollectionsOpen] = useState(true);
   const [eventsOpen, setEventsOpen] = useState(false);
+  const [expandedBuckets, setExpandedBuckets] = useState(() => ({}));
+
+  const placeKey = String(location?.slug || location?.id || location?.name || '')
+    .trim()
+    .toLowerCase();
+
+  useEffect(() => {
+    setExpandedBuckets({});
+  }, [placeKey]);
 
   const locale = i18n.language || 'ko';
   const bundle = useMemo(
@@ -48,6 +59,10 @@ export default function PlaceCrossLinksSection({
 
   const renderBucket = (key, rows, open, setOpen, panelId, icon, titleKey) => {
     if (!rows.length) return null;
+    const cap = PLACE_CROSSLINK_VISIBLE_ROW_CAP;
+    const bucketExpanded = Boolean(expandedBuckets[key]);
+    const visibleRows = bucketExpanded || rows.length <= cap ? rows : rows.slice(0, cap);
+    const hiddenCount = rows.length - visibleRows.length;
     return (
       <div className={shellClass}>
         <button
@@ -75,7 +90,7 @@ export default function PlaceCrossLinksSection({
         </button>
         {open ? (
           <ul id={panelId} className={`${listClass} list-none m-0`}>
-            {rows.map((row) => (
+            {visibleRows.map((row) => (
               <li key={row.id || row.href}>
                 <Link to={row.href} className={`${rowClass} !items-start`} onClick={(e) => e.stopPropagation()}>
                   <span className="min-w-0 flex-1">
@@ -92,6 +107,34 @@ export default function PlaceCrossLinksSection({
                 </Link>
               </li>
             ))}
+            {hiddenCount > 0 ? (
+              <li>
+                <button
+                  type="button"
+                  className={`${rowClass} w-full text-left text-violet-200/90`}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    setExpandedBuckets((prev) => ({ ...prev, [key]: true }));
+                  }}
+                >
+                  {t('place.crossLinks.showMore', { count: hiddenCount })}
+                </button>
+              </li>
+            ) : null}
+            {bucketExpanded && rows.length > cap ? (
+              <li>
+                <button
+                  type="button"
+                  className={`${rowClass} w-full text-left text-white/60`}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    setExpandedBuckets((prev) => ({ ...prev, [key]: false }));
+                  }}
+                >
+                  {t('place.crossLinks.showLess')}
+                </button>
+              </li>
+            ) : null}
           </ul>
         ) : null}
       </div>
@@ -100,7 +143,7 @@ export default function PlaceCrossLinksSection({
 
   return (
     <div
-      className={`space-y-3 ${className}`.trim()}
+      className={`space-y-3 pb-24 md:pb-0 ${className}`.trim()}
       data-place-crosslinks=""
       aria-label={t('place.crossLinks.aria')}
     >

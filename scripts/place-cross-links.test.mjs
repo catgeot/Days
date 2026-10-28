@@ -40,33 +40,45 @@ test('flag off returns empty bundles', () => {
 
 test('domestic hubs expose scenic collections when flag on', () => {
   withCrosslinkFlag(true, () => {
-    const gangneung = resolvePlaceCrossLinks({
-      slug: 'gangneung',
-      name: '강릉',
-      country: '대한민국',
-    });
+    const midSeason = { now: new Date('2026-06-15T12:00:00+09:00') };
+    const gangneung = resolvePlaceCrossLinks(
+      {
+        slug: 'gangneung',
+        name: '강릉',
+        country: '대한민국',
+      },
+      midSeason,
+    );
     assert.ok(gangneung.collections.length >= 1);
-    assert.match(gangneung.collections[0].title, /강릉/);
+    assert.ok(
+      !gangneung.collections.some((row) => row.id === 'scenic-hub:gangneung'),
+      'primary hub collection row duplicates regional gateway card',
+    );
+    assert.doesNotMatch(gangneung.collections[0].title, /지역 명소 컬렉션/);
     assert.ok(
       gangneung.festivals.length >= 3,
       `gangneung festivals expected >=3 (seed+hub match), got ${gangneung.festivals.length}`,
     );
 
-    const pyeongchang = resolvePlaceCrossLinks({
-      slug: 'pyeongchang',
-      name: '평창',
-      country: '대한민국',
-    });
+    const pyeongchang = resolvePlaceCrossLinks(
+      {
+        slug: 'pyeongchang',
+        name: '평창',
+        country: '대한민국',
+      },
+      midSeason,
+    );
     assert.ok(pyeongchang.collections.length >= 1);
-    assert.match(pyeongchang.collections[0].title, /평창/);
+    assert.ok(!pyeongchang.collections.some((row) => row.id === 'scenic-hub:pyeongchang'));
 
-    const jeju = resolvePlaceCrossLinks({
-      slug: 'jeju',
-      name: '제주',
-      country: '대한민국',
-    });
-    assert.ok(jeju.collections.length >= 1);
-    assert.match(jeju.collections[0].title, /제주/);
+    const jeju = resolvePlaceCrossLinks(
+      {
+        slug: 'jeju',
+        name: '제주',
+        country: '대한민국',
+      },
+      midSeason,
+    );
     const jejuFestIds = jeju.festivals.map((row) => String(row.id || '').replace(/^festival:/, ''));
     assert.ok(
       jejuFestIds.includes('506616'),
@@ -76,9 +88,13 @@ test('domestic hubs expose scenic collections when flag on', () => {
       jeju.festivals.find((row) => row.id === 'festival:506616')?.title || '',
       /서귀포/,
     );
+    assert.ok(jeju.collections.length >= 1);
     const jejuCollectionTitles = jeju.collections.map((row) => row.title);
     const jejuCollectionIds = jeju.collections.map((row) => row.id);
-    assert.ok(jejuCollectionIds.includes('scenic-hub:jeju'), 'jeju hub collection card');
+    assert.ok(
+      !jejuCollectionIds.includes('scenic-hub:jeju'),
+      'jeju primary hub row duplicates regional gateway card',
+    );
     assert.ok(jejuCollectionIds.includes('scenic-hub:seogwipo'), 'seogwipo hub collection card');
     assert.match(
       jejuCollectionTitles.find((t) => /서귀포/.test(t) && /명소 컬렉션/.test(t)) || '',
@@ -93,6 +109,25 @@ test('domestic hubs expose scenic collections when flag on', () => {
     assert.ok(gangTitles.some((t) => /국수/.test(t)));
     assert.ok(gangTitles.some((t) => /커피/.test(t)));
     assert.ok(gangTitles.includes('K-Drone Festival'), 'TourAPI has no KO title for 4116994');
+  });
+});
+
+test('scenic collections omit primary hub row duplicated by regional gateway card', () => {
+  withCrosslinkFlag(true, () => {
+    const gangneung = resolvePlaceCrossLinks({
+      slug: 'gangneung',
+      name: '강릉',
+      country: '대한민국',
+    });
+    assert.ok(gangneung.collections.length >= 1);
+    assert.equal(
+      gangneung.collections.some((row) => row.id === 'scenic-hub:gangneung'),
+      false,
+    );
+    assert.ok(
+      gangneung.collections.every((row) => !/지역 명소 컬렉션/.test(row.title)),
+      gangneung.collections.map((row) => row.title).join(', '),
+    );
   });
 });
 

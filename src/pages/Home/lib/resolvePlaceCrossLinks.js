@@ -309,7 +309,11 @@ function listScenicCollectionsForHub(hubId) {
   const items = [];
   if (hubIds.length > 1) {
     for (let i = 0; i < hubIds.length; i += 1) {
-      if (lists[i].length) items.push(scenicHubCollectionItem(hubIds[i]));
+      const hid = hubIds[i];
+      if (!lists[i].length) continue;
+      // Primary hub hub-row duplicates PlaceScenicGateway regional card (viewAllHref).
+      if (String(hid).toLowerCase() === target) continue;
+      items.push(scenicHubCollectionItem(hid));
     }
     const interleaved = interleaveScenicSpotRows(lists, SCENIC_COLLECTION_SPOT_CAP);
     for (const row of interleaved) {
@@ -318,7 +322,6 @@ function listScenicCollectionsForHub(hubId) {
     return items;
   }
 
-  items.push(scenicHubCollectionItem(target));
   for (const row of lists[0].slice(0, SCENIC_COLLECTION_SPOT_CAP)) {
     items.push(scenicSpotCollectionItem(row));
   }

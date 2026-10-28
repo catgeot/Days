@@ -974,7 +974,9 @@
       "eventsTitle": "Events in this city",
       "festivalsTitle": "Festivals nearby",
       "collectionsTitle": "Scenic & theme spots",
-      "count": "{{count}}"
+      "count": "{{count}}",
+      "showMore": "Show {{count}} more",
+      "showLess": "Show less"
     },
     "scenicGateway": {
       "badgeHeritage": "National Heritage Scenic Site",
