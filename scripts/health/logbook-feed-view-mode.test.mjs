@@ -68,6 +68,16 @@ test('RecentList wires viewport hook and feed grid markers', () => {
   assert.match(recentList, /data-logbook-feed-grid/);
   assert.match(recentList, /logbookFeedThumbImageProps/);
   assert.match(recentList, /srcSet=\{thumb\.srcSet\}/);
+  assert.match(recentList, /min-w-0 w-full/);
+});
+
+test('DailyLayout main scroll clips horizontal bleed', () => {
+  const layout = readFileSync(
+    join(root, 'src/pages/DailyReport/layout/DailyLayout.jsx'),
+    'utf8',
+  );
+  assert.match(layout, /overflow-x-clip/);
+  assert.match(layout, /w-0 flex-1/);
 });
 
 test('feed view URL param is feedView', () => {

@@ -105,22 +105,22 @@ const RecentList = ({ reports, loading, isPublicMode }) => {
   }
 
   return (
-    <div className="bg-white/60 backdrop-blur-xl rounded-3xl border border-gray-200 shadow-sm overflow-hidden min-h-[500px] flex flex-col transition-all">
+    <div className="bg-white/60 backdrop-blur-xl rounded-3xl border border-gray-200 shadow-sm overflow-hidden min-h-[500px] min-w-0 w-full flex flex-col transition-all">
 
-      <div className="border-b border-gray-200 bg-white/80 backdrop-blur-xl sticky top-0 z-10">
-      <div className="p-5 sm:p-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+      <div className="border-b border-gray-200 bg-white/80 backdrop-blur-xl sticky top-0 z-10 min-w-0">
+      <div className="p-5 sm:p-6 flex flex-col sm:flex-row sm:flex-wrap justify-between items-center gap-4 min-w-0">
         <h3 className="font-bold text-lg text-gray-900 flex items-center gap-2 self-start sm:self-center tracking-tight">
           <ClipboardList className="text-blue-500" size={20} />
           {isCompact ? t('logbook.recentList.titleCompact') : t('logbook.recentList.title')}
         </h3>
 
-        <div className="flex items-center gap-3 w-full sm:w-auto">
+        <div className="flex items-center gap-3 w-full sm:w-auto min-w-0 sm:max-w-full sm:flex-1 sm:justify-end">
           <form
             onSubmit={(e) => {
               e.preventDefault();
               e.currentTarget.querySelector('input')?.blur();
             }}
-            className="relative flex-1 sm:w-56 group"
+            className="relative flex-1 sm:max-w-xs lg:max-w-sm min-w-0 group"
           >
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-500 transition-colors pointer-events-none" size={16} />
             <input
@@ -205,7 +205,7 @@ const RecentList = ({ reports, loading, isPublicMode }) => {
         )}
       </div>
 
-      <div className="p-5 sm:p-6 flex-1 bg-transparent">
+      <div className="p-5 sm:p-6 flex-1 bg-transparent min-w-0">
         {reports.length === 0 ? (
           <div className="h-full flex flex-col items-center justify-center text-center pb-10 mt-10">
             <div className="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mb-6 text-gray-400 border border-gray-200"><ClipboardList size={40} /></div>
@@ -244,10 +244,10 @@ const RecentList = ({ reports, loading, isPublicMode }) => {
             data-logbook-feed-cols={feedGridCols}
             className={
             viewMode === 'column'
-              ? 'grid grid-cols-1 gap-5'
+              ? 'grid grid-cols-1 gap-5 min-w-0 w-full'
               : viewMode === 'grid'
-                ? (isCompact ? 'grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4' : 'grid grid-cols-1 sm:grid-cols-2 gap-5')
-                : `flex flex-col ${isCompact ? 'gap-3' : 'gap-5'}`
+                ? (isCompact ? 'grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 min-w-0 w-full' : 'grid grid-cols-1 sm:grid-cols-2 gap-5 min-w-0 w-full')
+                : `flex flex-col min-w-0 w-full ${isCompact ? 'gap-3' : 'gap-5'}`
           }
           >
 

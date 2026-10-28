@@ -1,67 +1,70 @@
 #!/usr/bin/env node
 /**
- * /blog archive layout — before (main PROD) vs after (Preview/local), 390/1280/1440 + overlay.
+ * /blog archive — paired before (local main) / after (PR preview), 390/1280/1440.
+ * Metadata in capture-summary.json (no on-image overlay).
  *
- *   CAPTURE_LABEL=before CAPTURE_BASE_URL=https://www.gateo.kr/ node scripts/capture-blog-grid-archive.mjs
- *   CAPTURE_LABEL=after CAPTURE_BASE_URL=http://127.0.0.1:4173/ node scripts/capture-blog-grid-archive.mjs
+ *   CAPTURE_LABEL=before CAPTURE_BASE_URL=https://127.0.0.1:4173/ CAPTURE_HEAD_SHA=<main-sha> node scripts/capture-blog-grid-archive.mjs
+ *   CAPTURE_LABEL=after CAPTURE_BASE_URL=https://127.0.0.1:4173/ CAPTURE_HEAD_SHA=9f11d60a… node scripts/capture-blog-grid-archive.mjs
  */
-import { copyFile, mkdir } from 'node:fs/promises';
+import { copyFile, mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { chromium } from 'playwright';
 
-const OUT_DIR = process.env.CAPTURE_OUT_DIR || '/opt/cursor/artifacts/blog-grid';
-const STORE_DIRS = (process.env.CAPTURE_STORE_DIRS || '/cursor/stores/self/blog-grid')
-  .split(',')
-  .map((s) => s.trim())
-  .filter(Boolean);
+const HEAD_SHA = (process.env.CAPTURE_HEAD_SHA || 'unknown').slice(0, 40);
+const OUT_DIR =
+  process.env.CAPTURE_OUT_DIR ||
+  join('/cursor/stores/self/blog-grid', HEAD_SHA);
 const LABEL = process.env.CAPTURE_LABEL === 'after' ? 'after' : 'before';
-const BASE = (process.env.CAPTURE_BASE_URL || 'https://www.gateo.kr/').replace(/\/?$/, '/');
+const BASE = (process.env.CAPTURE_BASE_URL || 'https://127.0.0.1:4173/').replace(/\/?$/, '/');
 const WIDTHS = [390, 1280, 1440];
-const BLOG_PATH = '/blog?tab=public';
-
-async function paintOverlay(page, { label, width }) {
-  await page.evaluate(
-    ({ label, width }) => {
-      const id = 'gateo-capture-overlay';
-      document.getElementById(id)?.remove();
-      const bar = document.createElement('div');
-      bar.id = id;
-      bar.style.cssText =
-        'position:fixed;top:0;left:0;right:0;z-index:999999;background:rgba(15,23,42,0.88);color:#f8fafc;padding:10px 14px;font:600 13px/1.35 ui-sans-serif,system-ui,sans-serif;pointer-events:none;letter-spacing:-0.01em';
-      const grid =
-        document.querySelector('[data-logbook-feed-grid]') ||
-        document.querySelector('.p-5.sm\\:p-6.flex-1 .grid, .p-5.sm\\:p-6.flex-1 .flex.flex-col');
-      const view =
-        grid?.getAttribute('data-logbook-feed-view') ||
-        document.querySelector('[role="group"] button[aria-pressed="true"]')?.getAttribute('aria-label') ||
-        '?';
-      let cols = grid?.getAttribute('data-logbook-feed-cols');
-      if (!cols && grid) {
-        const cls = grid.className || '';
-        if (/grid-cols-1/.test(cls) && !/lg:grid-cols/.test(cls)) cols = '1';
-        else if (/lg:grid-cols-4/.test(cls)) cols = '2-4';
-        else if (/sm:grid-cols-2/.test(cls)) cols = '1-2';
-        else cols = '?';
-      }
-      bar.textContent = `${label} · ${width}px · view=${view} · cols=${cols || '?'} · ${location.pathname}${location.search}`;
-      document.body.appendChild(bar);
-    },
-    { label, width },
-  );
-}
+const BLOG_PATH = process.env.CAPTURE_BLOG_PATH || '/blog?tab=public&lang=ko';
+const SUMMARY_PATH = join(OUT_DIR, 'capture-summary.json');
 
 async function waitForFeed(page) {
+  await page.waitForFunction(
+    () => !/동기화하는 중|Syncing/i.test(document.body?.innerText || ''),
+    null,
+    { timeout: 120_000 },
+  );
   const feed = page.locator(
     '[data-logbook-feed-grid], div.flex-1 div.grid, div.flex-1 div.flex.flex-col.gap-3, div.flex-1 div.flex.flex-col.gap-5',
   ).first();
   await feed.waitFor({ state: 'visible', timeout: 120_000 });
 }
 
-async function clipShot(page, filePath, width, height) {
-  await page.screenshot({
-    path: filePath,
-    clip: { x: 0, y: 0, width, height: Math.min(height, 900) },
-  });
+async function collectMetrics(page, width) {
+  return page.evaluate((viewportWidth) => {
+    const de = document.documentElement;
+    const grid = document.querySelector('[data-logbook-feed-grid]');
+    const sticky = document.querySelector('[data-logbook-feed-grid]')?.closest('.overflow-hidden')?.querySelector('.sticky');
+    const hub = document.querySelector('[data-testid="logbook-official-review-hub"]');
+    const rect = (el) => {
+      if (!el) return null;
+      const r = el.getBoundingClientRect();
+      return {
+        left: Math.round(r.left),
+        right: Math.round(r.right),
+        width: Math.round(r.width),
+      };
+    };
+    const vw = window.innerWidth;
+    const gridRect = rect(grid);
+    const stickyRect = rect(sticky);
+    return {
+      viewportWidth,
+      innerWidth: vw,
+      scrollWidth: de.scrollWidth,
+      documentOverflowPx: de.scrollWidth - vw,
+      feedView: grid?.getAttribute('data-logbook-feed-view') || null,
+      feedCols: grid?.getAttribute('data-logbook-feed-cols') || null,
+      grid: gridRect,
+      feedToolbar: stickyRect,
+      gridWithinViewport: gridRect ? gridRect.right <= vw : null,
+      toolbarWithinViewport: stickyRect ? stickyRect.right <= vw : null,
+      reviewHubPresent: Boolean(hub),
+      reviewHubCount: hub?.querySelector('[data-testid="logbook-official-review-hub-count"]')?.textContent?.trim() || null,
+    };
+  }, width);
 }
 
 async function captureWidth(width) {
@@ -82,35 +85,71 @@ async function captureWidth(width) {
     }
   });
   const page = await context.newPage();
-  await page.goto(`${BASE.replace(/\/?$/, '')}${BLOG_PATH}`, {
+  await page.goto(`${BASE}${BLOG_PATH.startsWith('/') ? '' : '/'}${BLOG_PATH}`, {
     waitUntil: 'networkidle',
     timeout: 120_000,
   });
   await waitForFeed(page);
-  await page.waitForTimeout(1500);
-  await paintOverlay(page, { label: LABEL, width });
+  await page.waitForTimeout(1200);
+
+  const metrics = await collectMetrics(page, width);
+  const vp = page.viewportSize();
+  const shotWidth = vp?.width ?? width;
+  const shotHeight = Math.min(vp?.height ?? height, height);
+
   const fileName = `blog-archive-${LABEL}-chromium-${width}.png`;
   const outPath = join(OUT_DIR, fileName);
-  await clipShot(page, outPath, width, height);
+  await page.screenshot({
+    path: outPath,
+    clip: { x: 0, y: 0, width: shotWidth, height: shotHeight },
+  });
+
+  const pngMeta = await readFile(outPath).then((buf) => {
+    if (buf.length < 24 || buf.toString('ascii', 12, 16) !== 'IHDR') return { pngWidth: null, pngHeight: null };
+    return {
+      pngWidth: buf.readUInt32BE(16),
+      pngHeight: buf.readUInt32BE(20),
+    };
+  });
+
   await browser.close();
-  return { fileName, outPath };
+
+  return {
+    fileName,
+    outPath,
+    baseUrl: `${BASE}${BLOG_PATH}`,
+    label: LABEL,
+    headSha: HEAD_SHA,
+    ...metrics,
+    ...pngMeta,
+  };
 }
 
 async function main() {
   await mkdir(OUT_DIR, { recursive: true });
-  for (const storeDir of STORE_DIRS) {
-    await mkdir(storeDir, { recursive: true });
+
+  let summary = [];
+  try {
+    const raw = await readFile(SUMMARY_PATH, 'utf8');
+    summary = JSON.parse(raw);
+    if (!Array.isArray(summary)) summary = [];
+  } catch {
+    summary = [];
   }
 
-  const saved = [];
   for (const width of WIDTHS) {
     const row = await captureWidth(width);
-    saved.push(row);
-    for (const storeDir of STORE_DIRS) {
-      await copyFile(row.outPath, join(storeDir, row.fileName));
-    }
-    console.log(`${row.fileName} ← ${BASE}${BLOG_PATH}`);
+    summary = summary.filter((e) => !(e.label === LABEL && e.viewportWidth === width));
+    summary.push(row);
+    await copyFile(row.outPath, join(OUT_DIR, row.fileName));
+    console.log(`${row.fileName} ${row.pngWidth}x${row.pngHeight} overflow=${row.documentOverflowPx}px hub=${row.reviewHubPresent}`);
   }
+
+  summary.sort((a, b) => {
+    if (a.label !== b.label) return a.label === 'before' ? -1 : 1;
+    return a.viewportWidth - b.viewportWidth;
+  });
+  await writeFile(SUMMARY_PATH, `${JSON.stringify(summary, null, 2)}\n`, 'utf8');
   console.log(`blog-grid capture OK (${LABEL}) → ${OUT_DIR}`);
 }
 
