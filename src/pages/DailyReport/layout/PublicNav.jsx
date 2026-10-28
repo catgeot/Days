@@ -83,13 +83,13 @@ const PublicNav = () => {
         <div className="my-4 border-t border-gray-300 dark:border-gray-600" />
 
         <div
-          className="mb-3 flex w-full items-center justify-between gap-1 select-none"
+          className="mb-3 box-border flex w-full max-w-full items-center justify-between gap-x-1.5 px-1.5 select-none"
           aria-hidden="true"
         >
           {Array.from({ length: 5 }, (_, i) => (
             <span
               key={i}
-              className="text-[10px] font-semibold uppercase leading-none tracking-[0.22em] text-gray-500 antialiased dark:text-gray-400"
+              className="text-[10px] font-normal uppercase leading-none tracking-[0.12em] text-gray-400 antialiased last:-mr-[0.12em] dark:text-gray-500"
             >
               GATEO
             </span>
