@@ -12,6 +12,9 @@ const {
   buildExploreFestivalSuggestionsFromPool,
   exploreFestivalSearchTokens,
   festivalItemToExploreSuggestion,
+  appendExploreFestivalBelowPlaceBlock,
+  applyExploreFestivalMergeStrategy,
+  explorePlaceBlockInsertIndex,
   prependExploreFestivalSuggestions,
   rankExploreFestivalSearchHits,
   filterExploreFestivalSearchQuery,
@@ -140,6 +143,51 @@ test('festivalItemToExploreSuggestion localizes EN title lines', () => {
   const en = festivalItemToExploreSuggestion(item, 'en');
   assert.equal(en.name, 'Gangneung Coffee Festival');
   assert.equal(en.name_en, '강릉커피축제');
+});
+
+test('appendExploreFestivalBelowPlaceBlock inserts after local place block', () => {
+  const festivals = buildExploreFestivalSuggestionsFromPool(FIXTURE_POOL, '강릉', { now: NOW });
+  const hybrid = [
+    { id: 'city-1', kind: 'city', name: '강릉', source: 'ssot' },
+    { id: 'map-1', kind: 'city', name: 'Gangneung KR', source: 'mapbox' },
+  ];
+  assert.equal(explorePlaceBlockInsertIndex(hybrid), 1);
+  const merged = appendExploreFestivalBelowPlaceBlock(festivals, hybrid);
+  assert.equal(merged[0].id, 'city-1');
+  assert.equal(merged[1]?.kind, 'festival');
+  assert.equal(merged[merged.length - 1].id, 'map-1');
+});
+
+test('applyExploreFestivalMergeStrategy prepends when festivals resolve within 300ms', async () => {
+  const hybrid = [{ id: 'city-1', kind: 'city', source: 'ssot' }];
+  const festivals = buildExploreFestivalSuggestionsFromPool(FIXTURE_POOL, '강릉', { now: NOW });
+  const festPromise = Promise.resolve(festivals);
+  const { items, late } = await applyExploreFestivalMergeStrategy('강릉', hybrid, {
+    startedAt: Date.now(),
+    festPromise,
+  });
+  assert.equal(late, null);
+  assert.equal(items[0]?.kind, 'festival');
+});
+
+test('applyExploreFestivalMergeStrategy appends when festivals resolve after wait window', async () => {
+  const hybrid = [
+    { id: 'city-1', kind: 'city', source: 'ssot' },
+    { id: 'map-1', source: 'mapbox' },
+  ];
+  const festivals = buildExploreFestivalSuggestionsFromPool(FIXTURE_POOL, '강릉', { now: NOW });
+  const festPromise = new Promise((resolve) => {
+    setTimeout(() => resolve(festivals), 50);
+  });
+  const { items, late } = await applyExploreFestivalMergeStrategy('강릉', hybrid, {
+    startedAt: Date.now() - 301,
+    festPromise,
+  });
+  assert.equal(items[0].id, 'city-1');
+  assert.ok(late);
+  const merged = await late();
+  assert.equal(merged[0].id, 'city-1');
+  assert.equal(merged[1]?.kind, 'festival');
 });
 
 test('prependExploreFestivalSuggestions keeps festivals before local hits', () => {

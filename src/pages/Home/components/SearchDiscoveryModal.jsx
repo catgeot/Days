@@ -35,8 +35,8 @@ import {
 } from '../lib/exploreRecentHistory';
 import { buildHybridSearchSuggestions, buildLocalSearchSuggestions } from '../lib/searchSuggestions';
 import {
+  applyExploreFestivalMergeStrategy,
   buildExploreFestivalSearchSuggestions,
-  prependExploreFestivalSuggestions,
 } from '../lib/exploreFestivalSearchSuggestions';
 import { isGateoSiteSearchEnabled } from '../../../shared/gateoFeatureFlags';
 import { hasUsableVisitedCoords } from '../lib/visitedPlaceSearch';
@@ -282,19 +282,28 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, onAskMooni,
     // 허브 exact면 Mapbox 스킵 (이미 local에 명소 포함)
     setSuggestionsLoading(true);
     const timer = setTimeout(async () => {
+      const mergeStartedAt = Date.now();
       try {
+        const festPromise = isGateoSiteSearchEnabled()
+          ? buildExploreFestivalSearchSuggestions(q, { locale: i18n.language }).catch(() => [])
+          : null;
         const items = await buildHybridSearchSuggestions(q);
         if (suggestRequestIdRef.current !== requestId) return;
-        setHybridSuggestions(items);
 
-        if (isGateoSiteSearchEnabled()) {
-          const festivals = await buildExploreFestivalSearchSuggestions(q, {
+        if (festPromise) {
+          const { items: firstPaint, late } = await applyExploreFestivalMergeStrategy(q, items, {
             locale: i18n.language,
-          }).catch(() => []);
-          if (suggestRequestIdRef.current !== requestId) return;
-          if (festivals.length) {
-            setHybridSuggestions(prependExploreFestivalSuggestions(festivals, items));
+            startedAt: mergeStartedAt,
+            festPromise,
+          });
+          setHybridSuggestions(firstPaint);
+          if (late) {
+            const merged = await late();
+            if (suggestRequestIdRef.current !== requestId) return;
+            setHybridSuggestions(merged);
           }
+        } else {
+          setHybridSuggestions(items);
         }
       } catch {
         if (suggestRequestIdRef.current !== requestId) return;

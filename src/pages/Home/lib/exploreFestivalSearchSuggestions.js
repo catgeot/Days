@@ -12,6 +12,36 @@ import { EXPLORE_BADGE_FESTIVAL } from '../../../i18n/exploreUi.js';
 const MAX_ACTIVE = 5;
 const MAX_ENDED = 2;
 
+/** Max wait for festival pool before first hybrid paint (prepend if ready). */
+export const EXPLORE_FESTIVAL_MERGE_WAIT_MS = 300;
+
+/**
+ * Index after SSOT/city/hub/settlement block — before Mapbox geocode rows.
+ * @param {object[]} items
+ */
+export function explorePlaceBlockInsertIndex(items) {
+  for (let i = 0; i < (items || []).length; i += 1) {
+    const src = String(items[i]?.source || '');
+    if (src === 'mapbox' || src === 'mapbox-geocode') return i;
+  }
+  return (items || []).length;
+}
+
+/**
+ * Late festival merge: below curated city/place rows (no shift above insert index).
+ * @param {object[]} festivals
+ * @param {object[]} items
+ * @param {{ maxItems?: number }} [opts]
+ */
+export function appendExploreFestivalBelowPlaceBlock(festivals, items, opts = {}) {
+  if (!festivals?.length) return items || [];
+  const maxItems = opts.maxItems ?? 24;
+  const festIds = new Set(festivals.map((row) => row.id));
+  const base = (items || []).filter((row) => !festIds.has(row.id));
+  const idx = explorePlaceBlockInsertIndex(base);
+  return [...base.slice(0, idx), ...festivals, ...base.slice(idx)].slice(0, maxItems);
+}
+
 /** @type {Promise<object[]> | null} */
 let festivalSearchPoolPromise = null;
 
@@ -215,6 +245,53 @@ export function prependExploreFestivalSuggestions(festivals, items, opts = {}) {
 }
 
 /**
+ * /explore typing list — anti layout-shift merge (300ms prepend window, else append below place block).
+ * @param {string} query
+ * @param {object[]} hybridItems
+ * @param {{ locale?: string, now?: Date, startedAt?: number, festPromise?: Promise<object[]>, maxItems?: number }} [opts]
+ * @returns {Promise<{ items: object[], late: (() => Promise<object[]>) | null }>}
+ */
+export async function applyExploreFestivalMergeStrategy(query, hybridItems, opts = {}) {
+  if (!isGateoSiteSearchEnabled()) {
+    return { items: hybridItems || [], late: null };
+  }
+  const t0 = typeof opts.startedAt === 'number' ? opts.startedAt : Date.now();
+  const festP =
+    opts.festPromise ||
+    buildExploreFestivalSearchSuggestions(query, opts).catch(() => []);
+
+  const elapsed = Date.now() - t0;
+  const remain = Math.max(0, EXPLORE_FESTIVAL_MERGE_WAIT_MS - elapsed);
+
+  if (remain > 0) {
+    const raced = await Promise.race([
+      festP.then((festivals) => ({ festivals, settled: true })),
+      new Promise((resolve) => {
+        setTimeout(() => resolve({ festivals: null, settled: false }), remain);
+      }),
+    ]);
+    if (raced.settled && raced.festivals?.length) {
+      return {
+        items: prependExploreFestivalSuggestions(raced.festivals, hybridItems, opts),
+        late: null,
+      };
+    }
+    if (raced.settled) {
+      return { items: hybridItems || [], late: null };
+    }
+  }
+
+  return {
+    items: hybridItems || [],
+    late: async () => {
+      const festivals = await festP;
+      if (!festivals?.length) return hybridItems || [];
+      return appendExploreFestivalBelowPlaceBlock(festivals, hybridItems, opts);
+    },
+  };
+}
+
+/**
  * /explore typing list only — async merge after hybrid suggestions.
  * @param {string} query
  * @param {object[]} hybridItems
@@ -222,6 +299,7 @@ export function prependExploreFestivalSuggestions(festivals, items, opts = {}) {
  */
 export async function mergeExploreFestivalIntoHybridSuggestions(query, hybridItems, opts = {}) {
   if (!isGateoSiteSearchEnabled()) return hybridItems || [];
-  const festivals = await buildExploreFestivalSearchSuggestions(query, opts).catch(() => []);
-  return prependExploreFestivalSuggestions(festivals, hybridItems, opts);
+  const { items, late } = await applyExploreFestivalMergeStrategy(query, hybridItems, opts);
+  if (!late) return items;
+  return late();
 }
