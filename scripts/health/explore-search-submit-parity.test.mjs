@@ -18,6 +18,7 @@ import { buildLocalSearchSuggestions } from '../../src/pages/Home/lib/searchSugg
 import { pickEnterSuggestionMatches } from '../../src/pages/Home/lib/searchEnterMatch.js';
 import { hubToSuggestion } from '../../src/pages/Home/lib/cityAttractionHubs.js';
 import { resolveCityAttractionHub } from '../../src/pages/Home/lib/cityAttractionHubs.js';
+import { resolveExploreCityHubExact } from '../../src/pages/Home/lib/exploreHubResolve.js';
 
 function withSubmitParityFlag(enabled, fn) {
   const key = GATEO_ENV_FLAG_NAMES.EXPLORE_SEARCH_SUBMIT_PARITY;
@@ -138,6 +139,32 @@ test('pickEnterSuggestionMatches still drops festivals from auto-nav', () => {
   const matches = pickEnterSuggestionMatches('비엔나', [fest, place]);
   assert.equal(matches.length, 1);
   assert.equal(matches[0].hubId, 'vienna');
+});
+
+test('hub exact Enter normalize — primary hub row before attractions (5 cities)', async () => {
+  const cases = [
+    ['방콕', 'bangkok'],
+    ['파리', 'paris'],
+    ['로마', 'rome'],
+    ['도쿄', 'tokyo'],
+    ['뉴욕', 'new-york'],
+  ];
+  for (const [query, hubId] of cases) {
+    const hub = resolveExploreCityHubExact(query);
+    assert.ok(hub, query);
+    const raw = await buildHybridSearchSuggestions(query);
+    const normalized = normalizeSearchSuggestions(query, raw, { hub, locale: 'ko' });
+    assert.equal(
+      normalized[0]?.id,
+      `hub-${hubId}`,
+      `${query} first row must be hub city card`,
+    );
+    assert.equal(
+      normalized.some((row) => row.id === `spot-${hubId}`),
+      false,
+      `${query} must not duplicate spot row after merge`,
+    );
+  }
 });
 
 test('mergeHubAliasSuggestions — hub row wins over settlement «실롬» (방콕)', () => {

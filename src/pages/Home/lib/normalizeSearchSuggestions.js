@@ -1,7 +1,7 @@
 /**
  * Shared explore search suggestion ordering + hub alias merge (autocomplete + Enter parity).
  */
-import { resolveCityAttractionHub } from './cityAttractionHubs.js';
+import { resolveCityAttractionHub, hubToSuggestion } from './cityAttractionHubs.js';
 import { resolveExploreCityHubExact } from './exploreHubResolve.js';
 import {
   exploreFestivalSearchFields,
@@ -153,8 +153,17 @@ export function reorderHubExactSuggestions(items, hub) {
   return [...primary, ...hubAttractions, ...festivals, ...rest];
 }
 
+function ensurePrimaryHubCityRow(items, hub) {
+  const hubId = normalizeKey(hub?.hubId);
+  if (!hubId) return items || [];
+  const list = [...(items || [])];
+  if (list.some((row) => isPrimaryHubCityRow(row, hubId))) return list;
+  const ssotHub = resolveCityAttractionHub(hubId) || hub;
+  if (!ssotHub?.hubId) return list;
+  return [hubToSuggestion(ssotHub), ...list];
+}
+
 /**
- * Merge SSOT destination row (빈) with hub city row (비엔나) into one city card.
  * @param {object[]} items
  * @returns {object[]}
  */
@@ -208,7 +217,11 @@ export function normalizeSearchSuggestions(query, rawItems, opts = {}) {
   const mergeAliases = opts.mergeAliases !== false;
   const locale = opts.locale || 'ko';
   const hub = opts.hub === undefined ? resolveExploreCityHubExact(query) : opts.hub;
-  let items = mergeAliases ? mergeHubAliasSuggestions(rawItems) : [...(rawItems || [])];
+  let items = [...(rawItems || [])];
+  if (mergeAliases && hub?.hubId) {
+    items = ensurePrimaryHubCityRow(items, hub);
+  }
+  items = mergeAliases ? mergeHubAliasSuggestions(items) : items;
 
   if (hub?.hubId) {
     items = items.filter((item) => {
