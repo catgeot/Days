@@ -99,22 +99,26 @@ async function openExploreSearchKo(page, base) {
   return searchInput;
 }
 
-async function waitAutocompleteReady(page) {
+async function waitAutocompleteReady(page, queryText) {
   await page.getByText('불러오는 중').waitFor({ state: 'hidden', timeout: 120_000 }).catch(() => {});
   await page
-    .getByRole('button', { name: /MOONi|무니|비엔나|축제|도시|여행지|명소/i })
-    .first()
+    .getByText(new RegExp(`'${queryText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}'\\s*도시·명소·여행지`))
     .waitFor({ state: 'visible', timeout: 120_000 });
-  await page.waitForTimeout(400);
+  await page.locator('ul.divide-y button').first().waitFor({ state: 'visible', timeout: 120_000 });
+  await page.waitForTimeout(600);
 }
 
-async function waitEnterPanelReady(page, parityOn) {
-  const titleRe = parityOn
-    ? /도시·명소·여행지|도시와 명소를 골라주세요/
-    : /도시와 명소를 골라주세요|도시·명소·여행지/;
-  await page.getByText(titleRe).first().waitFor({ state: 'visible', timeout: 120_000 });
+async function waitEnterPanelReady(page) {
+  await page
+    .getByText(/도시·명소·여행지|도시와 명소를 골라주세요|원하는 장소를 선택하세요|지역을 선택하세요/)
+    .first()
+    .waitFor({ state: 'visible', timeout: 120_000 });
   await page.getByText(/Finding this place|Checking the map/i).waitFor({ state: 'hidden', timeout: 120_000 }).catch(() => {});
   await page.getByText('불러오는 중').waitFor({ state: 'hidden', timeout: 30_000 }).catch(() => {});
+  await page
+    .getByRole('button', { name: /비엔나|화천|쇤브룬|산천|축제|도시|명소|여행지|MOONi|무니/i })
+    .first()
+    .waitFor({ state: 'visible', timeout: 60_000 });
   await page.waitForTimeout(700);
 }
 
@@ -126,10 +130,10 @@ async function captureShot(page, base, opts) {
   await input.fill('');
   await input.fill(query.text);
   if (stage === 'autocomplete') {
-    await waitAutocompleteReady(page);
+    await waitAutocompleteReady(page, query.text);
   } else {
     await input.press('Enter');
-    await waitEnterPanelReady(page, parityOn);
+    await waitEnterPanelReady(page);
   }
   await injectBanner(page, [flagLabel, query.label, stage, `${width}px`, page.url()]);
   const path = join(OUT, fileName);
