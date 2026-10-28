@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Camera, MapPin, Compass, Sparkles } from 'lucide-react';
 import { getGalleryImageAttribution } from '../common/galleryImageAttribution';
@@ -7,9 +7,11 @@ import { splitPlaceOverview } from '../common/placeOverviewText';
 import PlaceOverviewProse from '../common/PlaceOverviewProse';
 import PlaceScenicGateway from '../common/PlaceScenicGateway';
 import PlaceCrossLinksSection from '../common/PlaceCrossLinksSection';
+import PlaceGalleryFactsAndStories from '../common/PlaceGalleryFactsAndStories';
 import { getLocalizedPlaceName } from '../common/locationDisplay';
 import { getLocalizedPlaceKeywords, isPlaceDescKoreanOnly } from '../../../pages/Home/lib/placeSeoText.js';
 import { useLocale } from '../../../i18n/LocaleProvider';
+import { usePlaceDesktopLeftInfoLayout } from '../common/usePlaceDesktopLeftInfoLayout';
 
 const GalleryInfoView = React.memo(({ selectedPlace, selectedImg, relatedPlaces = [], onRelatedClick }) => {
     const { t, i18n } = useTranslation();
@@ -22,6 +24,8 @@ const GalleryInfoView = React.memo(({ selectedPlace, selectedImg, relatedPlaces 
     const isPhotoMode = !!selectedImg;
     const summaryScrollRef = useRef(null);
     const showRelatedDock = !isPhotoMode && relatedPlaces.length > 0;
+    const { mountInLeftOverview } = usePlaceDesktopLeftInfoLayout();
+    const [overviewScrollFade, setOverviewScrollFade] = useState(false);
 
     const description = useMemo(() => {
         if (selectedImg?.alt_description) {
@@ -41,6 +45,37 @@ const GalleryInfoView = React.memo(({ selectedPlace, selectedImg, relatedPlaces 
     useEffect(() => {
         if (summaryScrollRef.current) summaryScrollRef.current.scrollTop = 0;
     }, [selectedPlace?.id, selectedPlace?.name, selectedPlace?.slug, selectedImg]);
+
+    useEffect(() => {
+        if (!mountInLeftOverview || isPhotoMode) {
+            setOverviewScrollFade(false);
+            return undefined;
+        }
+        const el = summaryScrollRef.current;
+        if (!el) return undefined;
+        const syncFade = () => {
+            const overflow = el.scrollHeight > el.clientHeight + 2;
+            const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 2;
+            setOverviewScrollFade(overflow && !atBottom);
+        };
+        syncFade();
+        el.addEventListener('scroll', syncFade, { passive: true });
+        const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(syncFade) : null;
+        ro?.observe(el);
+        return () => {
+            el.removeEventListener('scroll', syncFade);
+            ro?.disconnect();
+        };
+    }, [
+        mountInLeftOverview,
+        isPhotoMode,
+        selectedPlace?.id,
+        selectedPlace?.name,
+        selectedPlace?.slug,
+        fixedOverview,
+        curationOverview,
+        overviewKeywords.length,
+    ]);
 
     return (
         <div className="animate-fade-in flex min-h-0 flex-1 flex-col gap-3">
@@ -71,9 +106,11 @@ const GalleryInfoView = React.memo(({ selectedPlace, selectedImg, relatedPlaces 
                  </span>
              </div>
 
+             <div className="relative min-h-0 flex-1">
              <div
                 ref={summaryScrollRef}
-                className="min-h-0 flex-1 overflow-y-auto pr-1 custom-scrollbar"
+                data-place-overview-scroll=""
+                className="min-h-0 h-full overflow-y-auto pr-1 custom-scrollbar"
              >
                 <div className="px-0.5">
                 {isPhotoMode ? (
@@ -161,9 +198,24 @@ const GalleryInfoView = React.memo(({ selectedPlace, selectedImg, relatedPlaces 
                                 ))}
                             </div>
                         )}
+
+                        {mountInLeftOverview && !isPhotoMode ? (
+                            <PlaceGalleryFactsAndStories
+                                location={selectedPlace}
+                                wrapperClassName="border-t border-white/5 pt-2 mt-2 space-y-2"
+                                sectionClassName="!mb-0 scroll-mt-2"
+                            />
+                        ) : null}
                     </div>
                 )}
                 </div>
+             </div>
+             {mountInLeftOverview && overviewScrollFade ? (
+                <div
+                    className="pointer-events-none absolute bottom-0 left-0 right-1 h-10 bg-gradient-to-t from-[#05070a] via-[#05070a]/85 to-transparent"
+                    aria-hidden
+                />
+             ) : null}
              </div>
 
             {showRelatedDock && (

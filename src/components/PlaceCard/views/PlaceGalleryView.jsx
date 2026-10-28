@@ -35,7 +35,8 @@ import { isPlaceGalleryPhotoCreditEnabled } from '../../../utils/placeGalleryPho
 import { splitPlaceOverview } from '../common/placeOverviewText';
 import PlaceOverviewProse from '../common/PlaceOverviewProse';
 import PlaceWorldEventsSection from '../common/PlaceWorldEventsSection';
-import PlaceVerifiedFacts, { PlaceVisitStories } from '../common/PlaceVerifiedFacts';
+import PlaceGalleryFactsAndStories from '../common/PlaceGalleryFactsAndStories';
+import { usePlaceDesktopLeftInfoLayout } from '../common/usePlaceDesktopLeftInfoLayout';
 import PlaceEditorialTravelogueCard from '../common/PlaceEditorialTravelogueCard';
 import PlaceScenicGateway from '../common/PlaceScenicGateway';
 import PlaceCrossLinksSection from '../common/PlaceCrossLinksSection';
@@ -1003,6 +1004,7 @@ const PlaceGalleryView = React.memo(({
   const { curation: curationOverview, fixed: fixedOverview, originalQuery: overviewQuery } =
     useMemo(() => splitPlaceOverview(location, locale), [location, locale]);
   const hasPlaceOverview = Boolean(curationOverview || fixedOverview);
+  const { mountInGallery } = usePlaceDesktopLeftInfoLayout();
 
   const photoCaption = useMemo(() => {
     if (!selectedImg) return '';
@@ -1420,8 +1422,9 @@ const PlaceGalleryView = React.memo(({
               </div>
             )}
 
-            <PlaceVerifiedFacts location={location} />
-            <PlaceVisitStories location={location} />
+            {mountInGallery ? (
+              <PlaceGalleryFactsAndStories location={location} />
+            ) : null}
             <PlaceEditorialTravelogueCard location={location} />
 
             <PlaceScenicGateway

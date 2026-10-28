@@ -88,12 +88,33 @@ export function resolvePlaceGallerySectionAutoOpen(placeKey, locationLike) {
   return peekPlaceGallerySectionAfterReview(placeKey);
 }
 
+const DESKTOP_LEFT_INFO_MEDIA = '(min-width: 1024px)';
+
 /**
  * @param {string} sectionId
  */
 export function scrollPlaceGallerySectionIntoView(sectionId) {
   if (typeof document === 'undefined') return;
   const el = document.getElementById(sectionId);
-  if (!el || typeof el.scrollIntoView !== 'function') return;
+  if (!el) return;
+
+  const useLeftOverview =
+    typeof window !== 'undefined' &&
+    window.matchMedia(DESKTOP_LEFT_INFO_MEDIA).matches &&
+    el.closest('[data-place-overview-scroll]');
+
+  const scroller = useLeftOverview
+    ? el.closest('[data-place-overview-scroll]')
+    : el.closest('[data-place-gallery-scroll]');
+
+  if (scroller && scroller !== document.documentElement && scroller !== document.body) {
+    const elRect = el.getBoundingClientRect();
+    const scRect = scroller.getBoundingClientRect();
+    const targetTop = elRect.top - scRect.top + scroller.scrollTop - 8;
+    scroller.scrollTo({ top: Math.max(0, targetTop), behavior: 'smooth' });
+    return;
+  }
+
+  if (typeof el.scrollIntoView !== 'function') return;
   el.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }

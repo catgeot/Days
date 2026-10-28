@@ -19,6 +19,8 @@ export const GATEO_ENV_FLAG_NAMES = {
   KOGL_REELS: 'VITE_GATEO_KOGL_REELS',
   SCENIC_PLACE_LINKS: 'VITE_GATEO_SCENIC_PLACE_LINKS',
   PLACE_WORLD_EVENTS_TAB: 'VITE_GATEO_PLACE_WORLD_EVENTS_TAB',
+  /** Desktop (lg+) — move gallery #facts/#stories into left overview scroll. Default off. */
+  PLACE_DESKTOP_LEFT_INFO: 'VITE_GATEO_PLACE_DESKTOP_LEFT_INFO',
 };
 
 /** @param {string} name */
@@ -98,4 +100,9 @@ export function isGateoScenicPlaceLinksEnabled() {
 /** PlaceCard / home summary — dedicated 「세계 행사」 tab instead of inline accordion. Default off. */
 export function isGateoPlaceWorldEventsTabEnabled() {
   return readGateoEnvFlag(GATEO_ENV_FLAG_NAMES.PLACE_WORLD_EVENTS_TAB);
+}
+
+/** /place/* desktop two-column — facts/stories in left overview panel (lg+). Default off. */
+export function isGateoPlaceDesktopLeftInfoEnabled() {
+  return readGateoEnvFlag(GATEO_ENV_FLAG_NAMES.PLACE_DESKTOP_LEFT_INFO);
 }
