@@ -1,5 +1,7 @@
 /** Gallery «현지 정보» / «다녀온 이야기» — hash · ?section= · 리뷰 작성 후 1회 펼침 (메모리만). */
 
+import { isGateoPlaceDesktopLeftInfoEnabled } from '../shared/gateoFeatureFlags.js';
+
 export const PLACE_GALLERY_SECTION = {
   FACTS: 'facts',
   STORIES: 'stories',
@@ -96,25 +98,23 @@ const DESKTOP_LEFT_INFO_MEDIA = '(min-width: 1024px)';
 export function scrollPlaceGallerySectionIntoView(sectionId) {
   if (typeof document === 'undefined') return;
   const el = document.getElementById(sectionId);
-  if (!el) return;
+  if (!el || typeof el.scrollIntoView !== 'function') return;
 
-  const useLeftOverview =
-    typeof window !== 'undefined' &&
-    window.matchMedia(DESKTOP_LEFT_INFO_MEDIA).matches &&
-    el.closest('[data-place-overview-scroll]');
+  const flagOn = isGateoPlaceDesktopLeftInfoEnabled();
+  const overviewScroller = flagOn ? el.closest('[data-place-overview-scroll]') : null;
 
-  const scroller = useLeftOverview
-    ? el.closest('[data-place-overview-scroll]')
-    : el.closest('[data-place-gallery-scroll]');
-
-  if (scroller && scroller !== document.documentElement && scroller !== document.body) {
+  if (
+    flagOn
+    && overviewScroller
+    && typeof window !== 'undefined'
+    && window.matchMedia(DESKTOP_LEFT_INFO_MEDIA).matches
+  ) {
     const elRect = el.getBoundingClientRect();
-    const scRect = scroller.getBoundingClientRect();
-    const targetTop = elRect.top - scRect.top + scroller.scrollTop - 8;
-    scroller.scrollTo({ top: Math.max(0, targetTop), behavior: 'smooth' });
+    const scRect = overviewScroller.getBoundingClientRect();
+    const targetTop = elRect.top - scRect.top + overviewScroller.scrollTop - 8;
+    overviewScroller.scrollTo({ top: Math.max(0, targetTop), behavior: 'smooth' });
     return;
   }
 
-  if (typeof el.scrollIntoView !== 'function') return;
   el.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }

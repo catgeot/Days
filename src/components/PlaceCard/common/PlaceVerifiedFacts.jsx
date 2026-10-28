@@ -43,7 +43,6 @@ import {
 import { buildPlaceReviewsHref } from '../../../utils/placeReviewFocus.js';
 import { snapshotGalleryScrollForPlaceBack } from './placeScrollMemory.js';
 import { getPlaceStableKey } from '../../../utils/travelSpotResolve.js';
-import { useVisitStories } from '../hooks/useVisitStories';
 
 function usePlaceGallerySectionOpen(sectionId, placeKey) {
   const routeLocation = useLocation();
@@ -615,15 +614,19 @@ export function PlaceLocalInfoInline({
   );
 }
 
-export function PlaceVisitStories({ location, className = '' }) {
+export function PlaceVisitStories({
+  location,
+  className = '',
+  stories,
+  isLoading,
+}) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const panelId = useId();
   const placeKey = getPlaceStableKey(location) || location?.slug || location?.id || '';
   const [open, setOpen] = usePlaceGallerySectionOpen(PLACE_GALLERY_SECTION.STORIES, placeKey);
   const card = resolveVerifiedFacts(location);
-  const { stories, isLoading } = useVisitStories(location);
-  if (!card || isLoading || !stories.length) return null;
+  if (!card || isLoading || !stories?.length) return null;
   const placePath = buildPlacePath(location?.slug || location?.id);
 
   return (

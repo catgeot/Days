@@ -37,9 +37,25 @@ test('desktop left panel wiring — single mount via viewport hook', () => {
   assert.doesNotMatch(gallery, /lg:hidden/);
 });
 
-test('hash scroll prefers overview scroller when section lives there', () => {
+test('hash scroll uses overview scrollTo only when flag on and section in left overview', () => {
   const focus = readFileSync(join(root, 'src/utils/placeGallerySectionFocus.js'), 'utf8');
+  assert.match(focus, /isGateoPlaceDesktopLeftInfoEnabled/);
   assert.match(focus, /data-place-overview-scroll/);
-  assert.match(focus, /data-place-gallery-scroll/);
-  assert.match(focus, /scroller\.scrollTo/);
+  assert.match(focus, /overviewScroller\.scrollTo/);
+  assert.match(focus, /el\.scrollIntoView\(\{ behavior: 'smooth', block: 'start' \}\)/);
+  assert.doesNotMatch(focus, /data-place-gallery-scroll/);
+});
+
+test('PlaceVisitStories receives visit stories from PlaceGalleryFactsAndStories only', () => {
+  const bundle = readFileSync(
+    join(root, 'src/components/PlaceCard/common/PlaceGalleryFactsAndStories.jsx'),
+    'utf8',
+  );
+  const storiesUi = readFileSync(
+    join(root, 'src/components/PlaceCard/common/PlaceVerifiedFacts.jsx'),
+    'utf8',
+  );
+  assert.match(bundle, /useVisitStories\(location\)/);
+  assert.doesNotMatch(storiesUi, /useVisitStories/);
+  assert.match(bundle, /stories=\{stories\}/);
 });
