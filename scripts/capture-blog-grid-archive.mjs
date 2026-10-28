@@ -29,7 +29,18 @@ async function waitForFeed(page) {
   const feed = page.locator(
     '[data-logbook-main-scroll] [data-logbook-feed-grid], [data-logbook-main-scroll] .max-w-7xl div.flex-1 > div.grid, [data-logbook-main-scroll] .max-w-7xl div.flex-1 > div.flex.flex-col.gap-3, [data-logbook-main-scroll] .max-w-7xl div.flex-1 > div.flex.flex-col.gap-5',
   ).first();
-  await feed.waitFor({ state: 'visible', timeout: 120_000 });
+  await page.waitForFunction(
+    () => {
+      const grid =
+        document.querySelector('[data-logbook-main-scroll] [data-logbook-feed-grid]') ||
+        document.querySelector('[data-logbook-main-scroll] .max-w-7xl div.flex-1 > div.grid');
+      if (!grid) return false;
+      const r = grid.getBoundingClientRect();
+      return r.width > 80 && r.height > 80;
+    },
+    null,
+    { timeout: 120_000 },
+  );
   await feed.scrollIntoViewIfNeeded();
 }
 
