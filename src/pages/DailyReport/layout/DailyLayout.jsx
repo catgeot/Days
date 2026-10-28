@@ -180,7 +180,7 @@ const DailyLayout = () => {
           <div
             ref={mainScrollRef}
             data-logbook-main-scroll
-            className="relative min-h-0 min-w-0 w-0 flex-1 overflow-y-auto overflow-x-clip overscroll-y-contain"
+            className="relative min-h-0 min-w-0 w-full flex-1 md:w-0 overflow-y-auto overflow-x-clip overscroll-y-contain"
           >
             <Outlet />
           </div>

@@ -264,7 +264,7 @@ assert.match(dailyLayout, /setProfileOpen\(true\)/);
 assert.match(dailyLayout, /createPortal/);
 assert.doesNotMatch(dailyLayout, /Link to="\/account"/);
 assert.match(dailyLayout, /data-logbook-mobile-header/);
-assert.match(dailyLayout, /min-h-0 min-w-0 w-0 flex-1/);
+assert.match(dailyLayout, /min-h-0 min-w-0 w-full flex-1 md:w-0/);
 assert.match(dailyLayout, /overflow-x-clip/);
 assert.match(dailyLayout, /data-logbook-header-profile/);
 assert.match(accountProfile, /data-profile-close/);

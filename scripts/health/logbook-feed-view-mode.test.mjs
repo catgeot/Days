@@ -77,7 +77,7 @@ test('DailyLayout main scroll clips horizontal bleed', () => {
     'utf8',
   );
   assert.match(layout, /overflow-x-clip/);
-  assert.match(layout, /w-0 flex-1/);
+  assert.match(layout, /md:w-0/);
 });
 
 test('feed view URL param is feedView', () => {
