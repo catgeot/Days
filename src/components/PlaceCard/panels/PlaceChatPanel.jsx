@@ -27,7 +27,7 @@ import {
   peekPlaceReturnTo,
 } from '../../../pages/Home/lib/placeReturnTo';
 import PlaceWorldEventsSection from '../common/PlaceWorldEventsSection';
-import { usePlaceCrosslinkWorldEventsRail } from '../../../pages/Home/lib/placeCrosslinkRollout.js';
+import { isPlaceCrosslinkWorldEventsRailEnabled } from '../../../pages/Home/lib/placeCrosslinkRollout.js';
 
 const HEADER_SCROLL_TOP_MODES = ['PLANNER', 'GALLERY', 'WIKI', 'REVIEWS'];
 
@@ -61,7 +61,7 @@ const PlaceChatPanel = React.memo(({
 }) => {
   const { t } = useTranslation();
   const { locale } = useLocale();
-  const crosslinkWorldEventsRail = usePlaceCrosslinkWorldEventsRail();
+  const crosslinkWorldEventsRail = isPlaceCrosslinkWorldEventsRailEnabled();
   const [copiedType, setCopiedType] = useState('');
   const scrollRef = useRef(null);
   const navigate = useNavigate();

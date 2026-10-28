@@ -2,13 +2,14 @@ import manualFestivalEntries from '../../Korea/data/manualFestivalEntries.json' 
 import festivalSeedJson from '../data/placeCrosslinkFestivalSeed.json' with { type: 'json' };
 import hubsJson from '../data/cityAttractionHubs.json' with { type: 'json' };
 import scenicJson from '../data/koreaScenicSpots.json' with { type: 'json' };
-import { getWorldEventsForSlug, getWorldEventTitle } from '../../../utils/worldEvents.js';
+import { getWorldEventsForSlug, getWorldEventTitle, formatWorldEventDateRange } from '../../../utils/worldEvents.js';
 import { isGateoPlaceCrosslinkEnabled } from '../../../shared/gateoFeatureFlags.js';
 import { resolveCityAttractionHub, resolveHubPlaceFromSlug } from './cityAttractionHubs.js';
 import { matchKoreaAdminRegionFromAddr } from './koreaAdminRegionMatch.js';
 import { scenicHomePathForHubId } from './koreaThemeCrossLinks.js';
 import { isScenicSpotHidden } from './koreaScenicSpotVisibility.js';
 import { gateoKoreaFestivalDetailUrl } from '../../../shared/korea/mooniKoreaFestivalAssist.js';
+import { formatFestivalDetailDateRange } from '../../Korea/festivalDateFilter.js';
 import {
   crosslinkFestivalDisplayTitle,
   isCrosslinkFestivalActive,
@@ -110,6 +111,13 @@ function resolveHubIdForPlace(loc) {
   return slug;
 }
 
+function festivalCrosslinkDateLabel(row) {
+  const start = row?.eventStartDate || row?.eventstartdate;
+  const end = row?.eventEndDate || row?.eventenddate;
+  if (!start && !end) return '';
+  return formatFestivalDetailDateRange(start, end, undefined, 'ko') || '';
+}
+
 function listEventsForSlug(slug) {
   const key = String(slug || '').trim().toLowerCase();
   if (!key) return [];
@@ -117,6 +125,7 @@ function listEventsForSlug(slug) {
     id: String(event.id || ''),
     kind: 'event',
     title: getWorldEventTitle(event, 'ko'),
+    dateLabel: formatWorldEventDateRange(event, 'ko') || '',
     href: resolveEventHref(event),
   }));
 }
@@ -135,6 +144,7 @@ function listFestivalsForHub(hubId, { now = new Date() } = {}) {
       id: `festival:${contentId}`,
       kind: 'festival',
       title: crosslinkFestivalDisplayTitle(row),
+      dateLabel: festivalCrosslinkDateLabel(row),
       href: gateoKoreaFestivalDetailUrl(contentId),
     });
   }

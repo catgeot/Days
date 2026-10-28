@@ -165,14 +165,14 @@ test('overseas slugs attach world events only', () => {
   });
 });
 
-test('usePlaceCrosslinkWorldEventsRail follows flag', async () => {
-  const { usePlaceCrosslinkWorldEventsRail } = await import(
+test('isPlaceCrosslinkWorldEventsRailEnabled follows flag', async () => {
+  const { isPlaceCrosslinkWorldEventsRailEnabled } = await import(
     '../src/pages/Home/lib/placeCrosslinkRollout.js'
   );
   withCrosslinkFlag(false, () => {
-    assert.equal(usePlaceCrosslinkWorldEventsRail(), false);
+    assert.equal(isPlaceCrosslinkWorldEventsRailEnabled(), false);
   });
   withCrosslinkFlag(true, () => {
-    assert.equal(usePlaceCrosslinkWorldEventsRail(), true);
+    assert.equal(isPlaceCrosslinkWorldEventsRailEnabled(), true);
   });
 });

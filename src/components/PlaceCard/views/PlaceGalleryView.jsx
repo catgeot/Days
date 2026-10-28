@@ -39,7 +39,7 @@ import PlaceVerifiedFacts, { PlaceVisitStories } from '../common/PlaceVerifiedFa
 import PlaceEditorialTravelogueCard from '../common/PlaceEditorialTravelogueCard';
 import PlaceScenicGateway from '../common/PlaceScenicGateway';
 import PlaceCrossLinksSection from '../common/PlaceCrossLinksSection';
-import { usePlaceCrosslinkWorldEventsRail } from '../../../pages/Home/lib/placeCrosslinkRollout.js';
+import { isPlaceCrosslinkWorldEventsRailEnabled } from '../../../pages/Home/lib/placeCrosslinkRollout.js';
 import { useLocale } from '../../../i18n/LocaleProvider';
 import { useGalleryLongPress } from '../common/galleryLongPress';
 import { GALLERY_REPORT_REASONS } from '../../../shared/api/placeGalleryPersist';
@@ -369,7 +369,7 @@ const PlaceGalleryView = React.memo(({
 }) => {
   const { t } = useTranslation();
   const { locale } = useLocale();
-  const crosslinkWorldEventsRail = usePlaceCrosslinkWorldEventsRail();
+  const crosslinkWorldEventsRail = isPlaceCrosslinkWorldEventsRailEnabled();
   const fullScreenContainerRef = useRef(null);
   const scrollContainerRef = useRef(null);
   const lightboxRootRef = useRef(null);

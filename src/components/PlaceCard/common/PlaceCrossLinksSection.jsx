@@ -72,9 +72,18 @@ export default function PlaceCrossLinksSection({
           <ul id={panelId} className={`${listClass} list-none m-0`}>
             {rows.map((row) => (
               <li key={row.id || row.href}>
-                <Link to={row.href} className={rowClass} onClick={(e) => e.stopPropagation()}>
-                  <span className="min-w-0 flex-1 leading-snug break-keep">{row.title}</span>
-                  <ChevronRight size={14} className="shrink-0 text-white/40" aria-hidden />
+                <Link to={row.href} className={`${rowClass} !items-start`} onClick={(e) => e.stopPropagation()}>
+                  <span className="min-w-0 flex-1">
+                    <span className="block leading-snug break-keep">{row.title}</span>
+                    {row.dateLabel ? (
+                      <span
+                        className={`mt-0.5 block ${isSummary ? 'text-[10px]' : 'text-[11px]'} text-white/55`}
+                      >
+                        {row.dateLabel}
+                      </span>
+                    ) : null}
+                  </span>
+                  <ChevronRight size={14} className="shrink-0 text-white/40 mt-0.5" aria-hidden />
                 </Link>
               </li>
             ))}

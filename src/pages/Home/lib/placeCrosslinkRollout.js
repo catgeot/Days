@@ -11,6 +11,6 @@ export function resolvePlaceCrossLinksIfEnabled(location, options) {
 }
 
 /** When ON, 행사는 PlaceCrossLinksSection에서만 노출(PlaceWorldEventsSection 중복 방지). */
-export function usePlaceCrosslinkWorldEventsRail() {
+export function isPlaceCrosslinkWorldEventsRailEnabled() {
   return isGateoPlaceCrosslinkEnabled();
 }
