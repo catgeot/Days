@@ -1,55 +1,70 @@
 #!/usr/bin/env node
 /**
- * Deterministic MOONi scoped-festival artifacts (no live Gemini).
- * VITE_GATEO_MOONI_SCOPED_FESTIVAL=1
+ * MOONi scoped-festival QA artifacts — live festivalWindow (anon) + deterministic merge.
+ * VITE_GATEO_MOONI_SCOPED_FESTIVAL=1 · now = 2026-10-29 KST
  */
 import { writeFileSync, mkdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright';
+import { fetchKoreaFestivalsRolling12ForNode } from './lib/fetchKoreaFestivalsRolling12ForNode.mjs';
 
 globalThis.__VITE_ENV__ = {
   ...(globalThis.__VITE_ENV__ || {}),
   VITE_GATEO_MOONI_SCOPED_FESTIVAL: '1',
 };
 
-const { mergeMooniKoreaFestivalReply, buildMooniKoreaFestivalSystemHint, selectMooniKoreaFestivalCandidates } =
-  await import('../src/shared/korea/mooniKoreaFestivalAssist.js');
+const {
+  mergeMooniKoreaFestivalReply,
+  buildMooniKoreaFestivalSystemHint,
+  selectMooniKoreaFestivalCandidates,
+  selectMooniKoreaFestivalUpcomingFallback,
+  GATEO_KOREA_FESTIVAL_BASE,
+} = await import('../src/shared/korea/mooniKoreaFestivalAssist.js');
 const { readMooniLastChatId, persistMooniLastChatId } = await import('../src/pages/Home/lib/tripChatUtils.js');
 
-const NOW = new Date(2026, 9, 26, 12, 0, 0);
-const FIXTURE = [
-  {
-    contentId: '1718491',
-    title: '설악문화제',
-    eventStartDate: '20261002',
-    eventEndDate: '20261004',
-    addr1: '강원특별자치도 속초시',
-  },
-  {
-    contentId: '900010',
-    title: '서울 빛초롱축제',
-    eventStartDate: '20261108',
-    eventEndDate: '20261109',
-    addr1: '서울특별시',
-  },
-];
+const NOW = new Date('2026-10-29T12:00:00+09:00');
+const NOW_LABEL = '2026-10-29 (KST) · 이번 주 10.26–11.01';
+
+const live = await fetchKoreaFestivalsRolling12ForNode({ now: NOW, force: true });
+if (!live.ok || !live.items.length) {
+  console.error('festivalWindow fetch failed:', live.error || 'empty items');
+  process.exit(1);
+}
 
 function festivalAnswer(userText, locale = 'ko') {
-  const { candidates } = selectMooniKoreaFestivalCandidates(FIXTURE, { userText, now: NOW });
+  const picked = selectMooniKoreaFestivalCandidates(live.items, { userText, now: NOW });
+  const upcomingFallback =
+    !picked.candidates.length
+      ? selectMooniKoreaFestivalUpcomingFallback(live.items, { userText, now: NOW }).candidates
+      : [];
   const hint = buildMooniKoreaFestivalSystemHint({
     userText,
-    items: FIXTURE,
+    items: live.items,
     locale,
     now: NOW,
   });
-  const reply = mergeMooniKoreaFestivalReply('(모델 원문 생략 — 플래그 ON 0후보 치환)', {
-    candidates,
+  const modelStub =
+    picked.candidates.length > 0
+      ? '(Preview Gemini 생략 — 아래 «최종 답변»은 mergeMooniKoreaFestivalReply가 모델 답변에 GATEO 후보 링크를 보강한 결과입니다.)'
+      : '(Preview Gemini 생략 — 후보 0건이면 merge가 모델 답변을 치환합니다.)';
+  const reply = mergeMooniKoreaFestivalReply(modelStub, {
+    candidates: picked.candidates,
     userText,
     locale,
     now: NOW,
+    upcomingFallback,
   });
-  return { hint: hint.trim(), reply: reply.trim(), candidateCount: candidates.length };
+  const candidateLines = picked.candidates.map(
+    (c) => `• ${c.title} (${c.periodLabel}) · ${c.url}`,
+  );
+  return {
+    hint: hint.trim(),
+    reply: reply.trim(),
+    candidateLines,
+    candidateCount: picked.candidates.length,
+    upcomingFallback,
+  };
 }
 
 const sokcho = festivalAnswer('속초 이번주 축제');
@@ -69,25 +84,6 @@ persistMooniLastChatId('trip-seoul-42', null, { mooniPlaceContext: { slug: 'seou
 const generalResume = readMooniLastChatId(null, 'general');
 const seoulScoped = readMooniLastChatId(null, { mooniPlaceContext: { slug: 'seoul' } });
 
-const html = `<!DOCTYPE html>
-<html lang="ko"><head><meta charset="utf-8"/><meta name="viewport" content="width=390"/>
-<style>
-  body { font-family: system-ui, sans-serif; margin: 0; padding: 16px; width: 390px; box-sizing: border-box; background: #0b0f14; color: #e8ecf0; }
-  h1 { font-size: 15px; margin: 0 0 8px; color: #7dd3fc; }
-  h2 { font-size: 13px; margin: 20px 0 6px; color: #a5b4fc; }
-  pre { white-space: pre-wrap; font-size: 12px; line-height: 1.45; background: #121820; padding: 10px; border-radius: 8px; }
-  .meta { font-size: 11px; color: #94a3b8; margin-bottom: 4px; }
-</style></head><body>
-  <h1>VITE_GATEO_MOONI_SCOPED_FESTIVAL=1 (deterministic)</h1>
-  <p class="meta">Live Gemini unavailable — hint + mergeMooniKoreaFestivalReply output · now=2026-10-26</p>
-  <h2>속초 이번주 축제 (후보 ${sokcho.candidateCount}건)</h2>
-  <pre>${escapeHtml(sokcho.reply)}</pre>
-  <details><summary>시스템 힌트</summary><pre>${escapeHtml(sokcho.hint)}</pre></details>
-  <h2>서울 이번주 축제 (후보 ${seoul.candidateCount}건)</h2>
-  <pre>${escapeHtml(seoul.reply)}</pre>
-  <details><summary>시스템 힌트</summary><pre>${escapeHtml(seoul.hint)}</pre></details>
-</body></html>`;
-
 function escapeHtml(s) {
   return String(s)
     .replace(/&/g, '&amp;')
@@ -95,43 +91,73 @@ function escapeHtml(s) {
     .replace(/>/g, '&gt;');
 }
 
-const resumeHtml = `<!DOCTYPE html>
-<html lang="ko"><head><meta charset="utf-8"/><meta name="viewport" content="width=390"/>
-<style>
-  body { font-family: system-ui, sans-serif; margin: 0; padding: 16px; width: 390px; background: #0b0f14; color: #e8ecf0; }
-  h1 { font-size: 15px; color: #7dd3fc; }
-  .ok { color: #86efac; } .dim { color: #94a3b8; font-size: 12px; }
-  pre { background: #121820; padding: 10px; border-radius: 8px; font-size: 12px; }
-</style></head><body>
+function sectionHtml(title, data) {
+  const candidatesBlock = data.candidateCount
+    ? `<h3>후보 ${data.candidateCount}건 (selectMooniKoreaFestivalCandidates)</h3><pre>${escapeHtml(data.candidateLines.join('\n'))}</pre>`
+    : `<h3>후보 0건</h3><p class="dim">upcoming fallback ${data.upcomingFallback?.length || 0}건</p>`;
+  return `
+  <section>
+    <h2>${escapeHtml(title)}</h2>
+    ${candidatesBlock}
+    <h3>시스템 힌트</h3>
+    <pre>${escapeHtml(data.hint || '(힌트 없음)')}</pre>
+    <h3>최종 답변 (mergeMooniKoreaFestivalReply)</h3>
+    <pre>${escapeHtml(data.reply)}</pre>
+  </section>`;
+}
+
+const pageCss = `
+  body { font-family: system-ui, sans-serif; margin: 0; padding: 16px; width: 390px; box-sizing: border-box; background: #0b0f14; color: #e8ecf0; }
+  h1 { font-size: 15px; margin: 0 0 8px; color: #7dd3fc; }
+  h2 { font-size: 14px; margin: 16px 0 8px; color: #a5b4fc; }
+  h3 { font-size: 12px; margin: 12px 0 4px; color: #cbd5e1; }
+  pre { white-space: pre-wrap; font-size: 11px; line-height: 1.45; background: #121820; padding: 10px; border-radius: 8px; }
+  .meta { font-size: 11px; color: #94a3b8; margin-bottom: 8px; line-height: 1.4; }
+  section { border-bottom: 1px solid #1e293b; padding-bottom: 12px; margin-bottom: 12px; }
+`;
+
+function wrapPage(body) {
+  return `<!DOCTYPE html><html lang="ko"><head><meta charset="utf-8"/><meta name="viewport" content="width=390"/><style>${pageCss}</style></head><body>${body}</body></html>`;
+}
+
+const meta = `<h1>VITE_GATEO_MOONI_SCOPED_FESTIVAL=1</h1>
+<p class="meta">Live festivalWindow ${live.items.length}건 · ${NOW_LABEL}<br/>목록 SSOT: fetchKoreaFestivalsRolling12 (tourapi-proxy anon)<br/>Gemini: VM Origin 제한으로 미호출 — 힌트·후보·merge만 캡처</p>`;
+
+const sokchoHtml = wrapPage(meta + sectionHtml('속초 이번주 축제', sokcho));
+const seoulHtml = wrapPage(meta + sectionHtml('서울 이번주 축제', seoul));
+
+const resumeHtml = wrapPage(`
   <h1>MOONi 재진입 — scope 분리</h1>
-  <p class="dim">서울 place 대화 저장 후 general MOONi FAB</p>
+  <p class="meta">${NOW_LABEL}</p>
+  <p class="dim" style="font-size:12px;color:#94a3b8">서울 place 대화 저장 후 general MOONi FAB</p>
   <pre>place:seoul → ${seoulScoped ?? '(null)'}
 general scope → ${generalResume ?? '(null) — 새 대화'}</pre>
-  <p class="ok">${generalResume ? 'FAIL: general이 서울 trip 복원' : 'PASS: general은 서울 chat 상속 안 함'}</p>
-</body></html>`;
+  <p style="color:#86efac;font-size:13px">${generalResume ? 'FAIL: general이 서울 trip 복원' : 'PASS: general은 서울 chat 상속 안 함'}</p>
+  <p class="meta">축제 목록 링크 SSOT: ${GATEO_KOREA_FESTIVAL_BASE}</p>
+`);
 
-const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const outDir = '/opt/cursor/artifacts';
-mkdirSync(outDir, { recursive: true });
 const tmpDir = join(outDir, '_mooni_scoped_html');
 mkdirSync(tmpDir, { recursive: true });
-writeFileSync(join(tmpDir, 'answers.html'), html, 'utf8');
+writeFileSync(join(tmpDir, 'sokcho.html'), sokchoHtml, 'utf8');
+writeFileSync(join(tmpDir, 'seoul.html'), seoulHtml, 'utf8');
 writeFileSync(join(tmpDir, 'resume-scope.html'), resumeHtml, 'utf8');
 
 const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1 });
 
-await page.goto(`file://${join(tmpDir, 'answers.html')}`);
-await page.screenshot({
-  path: join(outDir, 'mooni-scoped-festival-sokcho-seoul-390.png'),
-  clip: { x: 0, y: 0, width: 390, height: 844 },
-});
+async function shot(fileName, htmlName) {
+  await page.goto(`file://${join(tmpDir, htmlName)}`);
+  await page.screenshot({
+    path: join(outDir, fileName),
+    clip: { x: 0, y: 0, width: 390, height: 844 },
+  });
+}
 
-await page.goto(`file://${join(tmpDir, 'resume-scope.html')}`);
-await page.screenshot({
-  path: join(outDir, 'mooni-scoped-festival-general-no-seoul-resume-390.png'),
-  clip: { x: 0, y: 0, width: 390, height: 844 },
-});
+await shot('mooni-scoped-festival-sokcho-390.png', 'sokcho.html');
+await shot('mooni-scoped-festival-seoul-390.png', 'seoul.html');
+await shot('mooni-scoped-festival-general-no-seoul-resume-390.png', 'resume-scope.html');
 
 await browser.close();
-console.log('Wrote mooni-scoped-festival-* artifacts to', outDir);
+console.log('sokcho candidates:', sokcho.candidateCount, 'seoul candidates:', seoul.candidateCount);
+console.log('Wrote artifacts to', outDir);

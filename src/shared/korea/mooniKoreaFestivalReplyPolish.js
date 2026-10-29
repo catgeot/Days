@@ -4259,7 +4259,7 @@ export function buildMooniKoreaFestivalZeroCandidateUserReply(input = {}) {
     String(input.boundPlaceName || '').trim() ||
     (isEn ? 'that area' : '해당 지역');
   const windowLabel = String(input.window?.label || (isEn ? 'this week' : '이번 주')).trim();
-  const koreaUrl = 'https://www.gateo.kr/korea';
+  const koreaUrl = GATEO_KOREA_FESTIVAL_BASE;
   const upcoming = Array.isArray(input.upcoming) ? input.upcoming : [];
 
   if (isEn) {

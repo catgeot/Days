@@ -1,7 +1,11 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import {
   buildMooniKoreaFestivalSystemHint,
   buildMooniKoreaFestivalZeroCandidateUserReply,
+  GATEO_KOREA_FESTIVAL_BASE,
   mergeMooniKoreaFestivalReply,
   selectMooniKoreaFestivalCandidates,
 } from '../../src/shared/korea/mooniKoreaFestivalAssist.js';
@@ -14,6 +18,11 @@ import {
   persistMooniLastChatId,
   readMooniLastChatId,
 } from '../../src/pages/Home/lib/tripChatUtils.js';
+
+const root = join(dirname(fileURLToPath(import.meta.url)), '../..');
+const weekFixture = JSON.parse(
+  readFileSync(join(root, 'scripts/data/mooni-scoped-festival-week-fixture.json'), 'utf8'),
+);
 
 const FLAG = 'VITE_GATEO_MOONI_SCOPED_FESTIVAL';
 
@@ -43,6 +52,8 @@ function mockStorage() {
   };
   return { session, local };
 }
+
+const NOW = new Date('2026-10-29T12:00:00+09:00');
 
 assert.equal(resolveMooniChatScope(null), 'general');
 assert.equal(
@@ -84,29 +95,21 @@ withFlag(true, () => {
 });
 
 withFlag(true, () => {
-  const NOW = new Date(2026, 9, 26, 12, 0, 0);
-  const items = [
-    {
-      contentId: '1718491',
-      title: '설악문화제',
-      eventStartDate: '20261002',
-      eventEndDate: '20261004',
-      addr1: '강원특별자치도 속초시',
-    },
-    {
-      contentId: '999001',
-      title: '속초 미래축제',
-      eventStartDate: '20261105',
-      eventEndDate: '20261107',
-      addr1: '강원특별자치도 속초시',
-    },
-  ];
-  const { candidates } = selectMooniKoreaFestivalCandidates(items, {
+  const items = weekFixture.items;
+  assert.ok(Array.isArray(items) && items.length >= 5, 'week fixture should mirror live shape');
+
+  const seoulPick = selectMooniKoreaFestivalCandidates(items, {
+    userText: '서울 이번주 축제',
+    now: NOW,
+  });
+  assert.ok(seoulPick.candidates.length > 0, '서울 이번 주(10.26–11.01) 후보 > 0');
+
+  const sokchoPick = selectMooniKoreaFestivalCandidates(items, {
     userText: '속초 이번주 축제',
     now: NOW,
   });
   assert.equal(
-    candidates.some((c) => c.title.includes('설악')),
+    sokchoPick.candidates.some((c) => String(c.title).includes('설악')),
     false,
     '설악문화제 excluded for week 10.26–11.01',
   );
@@ -122,11 +125,11 @@ withFlag(true, () => {
 
   const merged = mergeMooniKoreaFestivalReply('모델이 지어낸 축제 답변', {
     candidates: [],
-    userText: '서울 이번주 축제',
+    userText: '속초 이번주 축제',
     locale: 'ko',
     now: NOW,
   });
-  assert.match(merged, /gateo\.kr\/korea/);
+  assert.match(merged, /https:\/\/www\.gateo\.kr\/korea\//);
   assert.doesNotMatch(merged, /모델이 지어낸/);
 
   const mergedEn = mergeMooniKoreaFestivalReply('Model reply', {
@@ -136,12 +139,15 @@ withFlag(true, () => {
     now: NOW,
   });
   assert.match(mergedEn, /GATEO has no verified festivals/i);
-  assert.match(mergedEn, /gateo\.kr\/korea/i);
+  assert.match(mergedEn, /https:\/\/www\.gateo\.kr\/korea\//);
 });
 
 withFlag(false, () => {
-  const NOW = new Date(2026, 9, 26, 12, 0, 0);
-  const merged = mergeMooniKoreaFestivalReply('keep me', { candidates: [], userText: '서울 이번주 축제', now: NOW });
+  const merged = mergeMooniKoreaFestivalReply('keep me', {
+    candidates: [],
+    userText: '서울 이번주 축제',
+    now: NOW,
+  });
   assert.equal(merged, 'keep me');
 });
 
@@ -159,7 +165,8 @@ withFlag(true, () => {
     ],
   });
   assert.match(reply, /가까운 날짜/);
-  assert.match(reply, /다가오는 축제/);
+  assert.match(reply, /https:\/\/www\.gateo\.kr\/korea\//);
+  assert.equal(GATEO_KOREA_FESTIVAL_BASE, 'https://www.gateo.kr/korea/');
 });
 
 console.log('health/mooni-scoped-festival.test.mjs: OK');
