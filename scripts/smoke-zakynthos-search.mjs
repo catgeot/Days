@@ -190,7 +190,7 @@ const gallerySrc = readFileSync(
   join(root, 'src/components/PlaceCard/hooks/usePlaceGallery.js'),
   'utf8',
 );
-assert.match(gallerySrc, /CACHE_VERSION = 'v1\.21'/);
+assert.match(gallerySrc, /CACHE_VERSION = 'v1\.25'/);
 assert.match(gallerySrc, /isLatinPlaceName\(koreanName\)/, 'pexels extras skip hangul names');
 assert.doesNotMatch(gallerySrc, /"자킨토스": "Zakynthos"/);
 

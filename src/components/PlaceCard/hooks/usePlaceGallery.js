@@ -42,14 +42,28 @@ import { filterOutSinglePersonPortraits, pickPlaceStatsGalleryRow } from '../../
 import { pickKoreanNameGallery } from '../../../utils/placeStatsNameGallery.js';
 import { lookupTourContentIdByName } from '../../../utils/tourKeywordPick.js';
 import { resolveGalleryStockQuery, isLatinPlaceName } from '../../../pages/Home/lib/uiPlaceAssetQuery.js';
+import {
+  filterGalleryIncomingForSave,
+  galleryUnsplashSearchQuery,
+  resolveGallerySaveTarget,
+  unsplashGallerySearchPage,
+} from '../../../utils/gallerySaveGuard.js';
+import {
+  emptyGalleryExclusion,
+  filterExcludedGalleryImages,
+  galleryExclusionIsActive,
+  loadGalleryExcludedKeys,
+  sessionCacheAfterDroppedIds,
+} from '../../../utils/galleryExclusion.js';
 import { isLegacyMishealPlaceStatsId } from '../../../pages/Home/lib/legacyMishealPlaceSlugs.js';
 import { KO_GALLERY_QUERY_OVERRIDES } from '../../../pages/Home/lib/koreaPlaceMatchDictionary.js';
 import {
   GALLERY_SWR_TTL_MS,
+  addGalleryHiddenId,
   filterHiddenGalleryIncoming,
-  galleryHiddenIdsKey,
   gallerySwrStampKey,
   mergeGalleryFreshKeepHero,
+  readGalleryHiddenIds,
   shouldRunGalleryStockSwr,
 } from '../../../utils/galleryCachePolicy';
 import {
@@ -59,8 +73,8 @@ import {
   readGalleryAttributionReturnState,
 } from '../common/galleryAttributionNavigation';
 
-/** v1.23 — Tour 시설 컷 후 스톡 보강 · 라틴 지명 스톡 · 단일 인물 제외 */
-const CACHE_VERSION = 'v1.24';
+/** v1.25 — active exclusion keys are applied before render and session cache */
+const CACHE_VERSION = 'v1.25';
 const CACHE_TTL = 1000 * 60 * 60 * 24;
 
 /** 장소 갤러리 UI·세션 캐시 상한 (Pexels 다중 쿼리 백필 과다 방지) */
@@ -259,6 +273,12 @@ function resolvePexelsQueries(primaryQuery, backupQuery, koreanName, spotSlug) {
   return [...new Set([primaryQuery, backupQuery, ...extras, extraName].filter(Boolean))];
 }
 
+async function fetchPlaceUnsplash(accessKey, query, page) {
+  const allowedPage = unsplashGallerySearchPage(page);
+  if (!accessKey || !query || !allowedPage) return [];
+  return apiClient.fetchUnsplashImages(accessKey, query, allowedPage);
+}
+
 function mergeGalleryAppend(existing, incoming, max = GALLERY_MAX_IMAGES) {
   const cappedExisting = capGalleryImages(existing, max);
   const existingIds = new Set(cappedExisting.map((img) => img.id));
@@ -292,9 +312,7 @@ function writeGallerySwrAt(placeKey, at = Date.now()) {
 function readHiddenGalleryIds(placeKey) {
   if (!placeKey) return new Set();
   try {
-    const raw = localStorage.getItem(galleryHiddenIdsKey(CACHE_VERSION, placeKey));
-    const arr = raw ? JSON.parse(raw) : [];
-    return new Set(Array.isArray(arr) ? arr : []);
+    return readGalleryHiddenIds(placeKey, localStorage);
   } catch {
     return new Set();
   }
@@ -302,11 +320,8 @@ function readHiddenGalleryIds(placeKey) {
 
 function addHiddenGalleryId(placeKey, imageId) {
   if (!placeKey || !imageId) return false;
-  const next = readHiddenGalleryIds(placeKey);
-  next.add(imageId);
   try {
-    localStorage.setItem(galleryHiddenIdsKey(CACHE_VERSION, placeKey), JSON.stringify([...next]));
-    return true;
+    return addGalleryHiddenId(placeKey, imageId, localStorage);
   } catch {
     return false;
   }
@@ -384,6 +399,7 @@ export const usePlaceGallery = (locationSource, options = {}) => {
   /** 같은 영문 쿼리를 쓰는 서로 다른 장소 구분 + in-flight 요청 무효화 */
   const lastFetchKeyRef = useRef(null);
   const galleryLoadSeqRef = useRef(0);
+  const excludedKeysRef = useRef(emptyGalleryExclusion());
   /** 공유 upsert·관리자 PATCH용 — 숨김 필터 미적용(storage) */
   const allImagesRef = useRef([]);
   const unsplashPageRef = useRef(1);
@@ -471,7 +487,11 @@ export const usePlaceGallery = (locationSource, options = {}) => {
   // storage 갱신 후 view만 숨김 필터 적용 (upsert는 allImagesRef = storage)
   const processAndSetImages = useCallback(
     (rawImages) => {
-      const storage = capGalleryImages(filterOutSinglePersonPortraits(rawImages));
+      const storage = capGalleryImages(
+        filterOutSinglePersonPortraits(
+          filterExcludedGalleryImages(rawImages, excludedKeysRef.current),
+        ),
+      );
       if (!storage.length) {
         allImagesRef.current = [];
         setImages([]);
@@ -550,6 +570,12 @@ export const usePlaceGallery = (locationSource, options = {}) => {
       primaryQuery = slugOverride.primary;
       backupQuery = slugOverride.backup || backupQuery;
     }
+    const galleryTarget = resolveGallerySaveTarget(
+      typeof targetSpot === 'object' ? targetSpot : { name: String(targetSpot || koreanName || '') },
+      spotSlugForDb,
+    );
+    const unsplashQuery = galleryUnsplashSearchQuery(primaryQuery, galleryTarget);
+    const unsplashBackupQuery = galleryUnsplashSearchQuery(backupQuery, galleryTarget);
 
     // 라틴 스톡 쿼리가 없어도 place_stats·TourAPI는 계속한다. 빈 쿼리 Unsplash는 인물 오탐.
     if (!primaryQuery && !String(koreanName || '').trim()) {
@@ -588,6 +614,30 @@ export const usePlaceGallery = (locationSource, options = {}) => {
     }
     canonicalStatsIdRef.current = nextCanonicalId;
 
+    const requestedPlaceKey = stablePlaceKey;
+    const CACHE_KEY = thumbnailOnly
+      ? `days_gallery_thumb_${encodeURIComponent(stablePlaceKey)}`
+      : `days_gallery_${encodeURIComponent(stablePlaceKey)}_${primaryQuery}`;
+
+    // Exclusion keys must not block cache/DB paint. Filter when the RPC returns.
+    void loadGalleryExcludedKeys(
+      (name, args) => supabase.rpc(name, args),
+      nextCanonicalId || spotSlugForDb,
+    ).then((exclusion) => {
+      if (currentPlaceKeyRef.current !== requestedPlaceKey) return;
+      excludedKeysRef.current = exclusion || emptyGalleryExclusion();
+      if (!galleryExclusionIsActive(excludedKeysRef.current)) return;
+      if (!allImagesRef.current.length) return;
+      const before = allImagesRef.current.length;
+      processAndSetImages(allImagesRef.current);
+      if (allImagesRef.current.length !== before) {
+        saveToSmartCache(CACHE_KEY, allImagesRef.current);
+      }
+    }).catch(() => {
+      if (currentPlaceKeyRef.current !== requestedPlaceKey) return;
+      excludedKeysRef.current = emptyGalleryExclusion();
+    });
+
     // 이미 성공한 동일 키 + 이미지가 있을 때만 스킵 (시작 전 마킹하면 hang 후 재시도 불가)
     if (
       !forceRefresh &&
@@ -615,10 +665,6 @@ export const usePlaceGallery = (locationSource, options = {}) => {
       setImages([]);
       setLoadFailed(false);
     }
-
-    const CACHE_KEY = thumbnailOnly
-      ? `days_gallery_thumb_${encodeURIComponent(stablePlaceKey)}`
-      : `days_gallery_${encodeURIComponent(stablePlaceKey)}_${primaryQuery}`;
 
     const tourPlaceCandidate =
       typeof targetSpot === 'object' && targetSpot
@@ -792,13 +838,20 @@ export const usePlaceGallery = (locationSource, options = {}) => {
       });
       const runAtCall = runId;
       supabase.rpc('persist_place_gallery', args).then(({ data, error }) => {
-        if (runAtCall !== galleryLoadSeqRef.current) return;
         if (error) {
-          console.error('⚠️ persist_place_gallery', mode, error);
+          if (runAtCall === galleryLoadSeqRef.current) {
+            console.error('⚠️ persist_place_gallery', mode, error);
+          }
           return;
         }
         const dropped = droppedGalleryIds(data);
         if (!dropped.length) return;
+        const cached = loadFromSmartCache(CACHE_KEY);
+        if (cached?.length) {
+          const nextCache = sessionCacheAfterDroppedIds(cached, dropped);
+          if (nextCache.changed) saveToSmartCache(CACHE_KEY, nextCache.images);
+        }
+        if (runAtCall !== galleryLoadSeqRef.current) return;
         const next = withoutDroppedGalleryImages(allImagesRef.current, dropped);
         if (next.length === allImagesRef.current.length) return;
         allImagesRef.current = next;
@@ -824,12 +877,13 @@ export const usePlaceGallery = (locationSource, options = {}) => {
         return;
       }
       try {
-        let results = await apiClient.fetchUnsplashImages(ACCESS_KEY, primaryQuery, 1);
+        let results = await fetchPlaceUnsplash(ACCESS_KEY, unsplashQuery, 1);
         if (runId !== galleryLoadSeqRef.current) return;
-        if (results.length === 0 && backupQuery) {
-          results = await apiClient.fetchUnsplashImages(ACCESS_KEY, backupQuery, 1);
+        if (results.length === 0 && unsplashBackupQuery) {
+          results = await fetchPlaceUnsplash(ACCESS_KEY, unsplashBackupQuery, 1);
         }
         if (runId !== galleryLoadSeqRef.current) return;
+        results = filterGalleryIncomingForSave(results, galleryTarget);
         const beforeIds = new Set((allImagesRef.current || []).map((img) => img?.id).filter(Boolean));
         const { merged, added } = mergeGalleryFreshKeepHero(
           allImagesRef.current,
@@ -992,8 +1046,8 @@ export const usePlaceGallery = (locationSource, options = {}) => {
                 id: 'db-thumb',
                 urls: { small: dbData.image_url, regular: dbData.image_url },
               };
-              processAndSetImages([thumb]);
-              saveToSmartCache(CACHE_KEY, [thumb]);
+              const shownThumb = processAndSetImages([thumb]);
+              saveToSmartCache(CACHE_KEY, shownThumb);
               markFetchDone();
               finishLoading();
               return;
@@ -1137,25 +1191,29 @@ export const usePlaceGallery = (locationSource, options = {}) => {
       // 더보기: TourAPI page2는 중복·공허한 경우가 많아 건너뛰고 Unsplash/Pexels만 append
       unsplashPageRef.current += 1;
       console.log(
-        `🔄 더 많은 사진: 기존 ${allImagesRef.current.length}장 유지 · Unsplash/Pexels append (${primaryQuery}, unsplash p${unsplashPageRef.current})`,
+        `🔄 더 많은 사진: 기존 ${allImagesRef.current.length}장 유지 · Unsplash/Pexels append (${unsplashQuery}, unsplash p${unsplashPageRef.current})`,
       );
     }
 
     try {
       let results = [];
 
-      if (primaryQuery && ACCESS_KEY) {
-        results = await apiClient.fetchUnsplashImages(ACCESS_KEY, primaryQuery, unsplashPageRef.current);
+      if (unsplashQuery && ACCESS_KEY) {
+        results = await fetchPlaceUnsplash(ACCESS_KEY, unsplashQuery, unsplashPageRef.current);
         if (isStale()) return;
 
-        if (results.length === 0 && backupQuery) {
-          results = await apiClient.fetchUnsplashImages(ACCESS_KEY, backupQuery, unsplashPageRef.current);
+        if (results.length === 0 && unsplashBackupQuery) {
+          results = await fetchPlaceUnsplash(ACCESS_KEY, unsplashBackupQuery, unsplashPageRef.current);
         }
         if (results.length === 0 && spotSlugForDb) {
           const unsplashExtras = GALLERY_UNSPLASH_EXTRA_QUERIES[spotSlugForDb] || [];
           for (const extraQuery of unsplashExtras) {
             if (results.length > 0) break;
-            results = await apiClient.fetchUnsplashImages(ACCESS_KEY, extraQuery, unsplashPageRef.current);
+            results = await fetchPlaceUnsplash(
+              ACCESS_KEY,
+              galleryUnsplashSearchQuery(extraQuery, galleryTarget),
+              unsplashPageRef.current,
+            );
           }
         }
         if (isStale()) return;
@@ -1198,6 +1256,7 @@ export const usePlaceGallery = (locationSource, options = {}) => {
       }
 
       if (isStale()) return;
+      results = filterGalleryIncomingForSave(results, galleryTarget);
 
       // 5) soft 국내: 스톡 0일 때만 TourAPI (해외·공식 contentId 경로 제외)
       if (
@@ -1225,6 +1284,7 @@ export const usePlaceGallery = (locationSource, options = {}) => {
         } catch (tourErr) {
           console.warn('⚠️ TourAPI soft fallback miss', tourErr);
         }
+        results = filterGalleryIncomingForSave(results, galleryTarget);
       }
 
       // 🚨 [New] 강제 새로고침에서 결과를 얻지 못했다면 기존 캐시/상태 보존

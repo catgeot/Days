@@ -142,10 +142,14 @@ assert.doesNotMatch(
 );
 
 const gallerySrc = readFileSync(join(root, 'src/components/PlaceCard/hooks/usePlaceGallery.js'), 'utf8');
-assert.match(gallerySrc, /CACHE_VERSION = 'v1\.23'/, 'cache version after Tour facility filter');
+assert.match(gallerySrc, /CACHE_VERSION = 'v1\.25'/, 'cache version after exclusion keys');
 assert.match(gallerySrc, /place_stats all portraits/, 'DB all-portrait miss falls through to live');
 assert.match(gallerySrc, /pickPlaceStatsGalleryRow/, 'prefer latin scenery row over hangul portraits');
-assert.match(gallerySrc, /filterOutSinglePersonPortraits\(rawImages\)/, 'cached galleries also drop portraits');
+assert.match(
+  gallerySrc,
+  /filterOutSinglePersonPortraits\(\s*filterExcludedGalleryImages\(rawImages,/,
+  'cached galleries also drop portraits',
+);
 
 const hangulPortraits = {
   place_id: '자킨토스',
