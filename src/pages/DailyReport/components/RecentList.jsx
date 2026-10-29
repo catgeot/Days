@@ -8,7 +8,8 @@ import {
 } from '../../../shared/hooks/useMobileInputViewport';
 import { resolveLogbookFeedExcerpt } from '../../../utils/logbookDek.js';
 import { isEditorialLogbook, publicLogbookDetailPath } from '../../../utils/logbookEditorial';
-import { logbookHeroImageUrl } from '../../../utils/logbookImageSrc';
+import { logbookFeedThumbImageProps } from '../../../utils/logbookImageSrc';
+import { useLogbookFeedViewMode } from '../hooks/useLogbookFeedViewMode';
 import { profileAvatarUrl } from '../../../shared/Auth/profileAvatar';
 import { formatLogbookDisplayDate } from '../../../utils/logbookDisplayDate';
 import { readLogbookViewCount } from '../../../utils/logbookViewCount';
@@ -46,7 +47,7 @@ const RecentList = ({ reports, loading, isPublicMode }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const [viewMode, setViewMode] = useState('column');
+  const { viewMode, setViewMode } = useLogbookFeedViewMode();
   const [searchTerm, setSearchTerm] = useState('');
   const handleSearchBlur = useDeferredViewportSyncOnBlur();
   const placeFilter = searchParams.get('location') || '';
@@ -80,6 +81,14 @@ const RecentList = ({ reports, loading, isPublicMode }) => {
   const isCompact = filteredReports.length > 5;
   const cardLayout = viewMode !== 'list';
   const cardDense = viewMode === 'grid' && isCompact;
+  const feedGridCols =
+    viewMode === 'column'
+      ? '1'
+      : viewMode === 'grid'
+        ? isCompact
+          ? '2-4'
+          : '1-2'
+        : 'list';
 
   if (loading) {
     return (
@@ -96,22 +105,22 @@ const RecentList = ({ reports, loading, isPublicMode }) => {
   }
 
   return (
-    <div className="bg-white/60 backdrop-blur-xl rounded-3xl border border-gray-200 shadow-sm overflow-hidden min-h-[500px] flex flex-col transition-all">
+    <div className="bg-white/60 backdrop-blur-xl rounded-3xl border border-gray-200 shadow-sm overflow-hidden min-h-[500px] min-w-0 w-full flex flex-col transition-all">
 
-      <div className="border-b border-gray-200 bg-white/80 backdrop-blur-xl sticky top-0 z-10">
-      <div className="p-5 sm:p-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+      <div className="border-b border-gray-200 bg-white/80 backdrop-blur-xl sticky top-0 z-10 min-w-0">
+      <div className="p-5 sm:p-6 flex flex-col sm:flex-row sm:flex-wrap justify-between items-center gap-4 min-w-0">
         <h3 className="font-bold text-lg text-gray-900 flex items-center gap-2 self-start sm:self-center tracking-tight">
           <ClipboardList className="text-blue-500" size={20} />
           {isCompact ? t('logbook.recentList.titleCompact') : t('logbook.recentList.title')}
         </h3>
 
-        <div className="flex items-center gap-3 w-full sm:w-auto">
+        <div className="flex items-center gap-3 w-full sm:w-auto min-w-0 sm:max-w-full sm:flex-1 sm:justify-end">
           <form
             onSubmit={(e) => {
               e.preventDefault();
               e.currentTarget.querySelector('input')?.blur();
             }}
-            className="relative flex-1 sm:w-56 group"
+            className="relative flex-1 sm:max-w-xs lg:max-w-sm min-w-0 group"
           >
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-500 transition-colors pointer-events-none" size={16} />
             <input
@@ -196,7 +205,7 @@ const RecentList = ({ reports, loading, isPublicMode }) => {
         )}
       </div>
 
-      <div className="p-5 sm:p-6 flex-1 bg-transparent">
+      <div className="p-5 sm:p-6 flex-1 bg-transparent min-w-0">
         {reports.length === 0 ? (
           <div className="h-full flex flex-col items-center justify-center text-center pb-10 mt-10">
             <div className="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mb-6 text-gray-400 border border-gray-200"><ClipboardList size={40} /></div>
@@ -229,17 +238,22 @@ const RecentList = ({ reports, loading, isPublicMode }) => {
             </button>
           </div>
         ) : (
-          <div className={
+          <div
+            data-logbook-feed-grid
+            data-logbook-feed-view={viewMode}
+            data-logbook-feed-cols={feedGridCols}
+            className={
             viewMode === 'column'
-              ? 'grid grid-cols-1 gap-5'
+              ? 'grid grid-cols-1 gap-5 min-w-0 w-full'
               : viewMode === 'grid'
-                ? (isCompact ? 'grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4' : 'grid grid-cols-1 sm:grid-cols-2 gap-5')
-                : `flex flex-col ${isCompact ? 'gap-3' : 'gap-5'}`
-          }>
+                ? (isCompact ? 'grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 min-w-0 w-full' : 'grid grid-cols-1 sm:grid-cols-2 gap-5 min-w-0 w-full')
+                : `flex flex-col min-w-0 w-full ${isCompact ? 'gap-3' : 'gap-5'}`
+          }
+          >
 
             {filteredReports.map((report) => {
               const editorial = isEditorialLogbook(report);
-              const thumbUrl = logbookHeroImageUrl(report.images, { thumbnail: true });
+              const thumb = logbookFeedThumbImageProps(report.images, { viewMode, isCompact });
               const detailPath = isPublicMode
                 ? publicLogbookDetailPath(report)
                 : `/blog/${report.id}`;
@@ -278,8 +292,16 @@ const RecentList = ({ reports, loading, isPublicMode }) => {
                           : 'w-24 h-24 rounded-2xl border border-gray-200'
                   }
                 `}>
-                  {thumbUrl ? (
-                    <img src={thumbUrl} alt="thumbnail" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-90 group-hover:opacity-100" />
+                  {thumb.src ? (
+                    <img
+                      src={thumb.src}
+                      srcSet={thumb.srcSet}
+                      sizes={thumb.sizes}
+                      alt=""
+                      loading="lazy"
+                      decoding="async"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-90 group-hover:opacity-100"
+                    />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-gray-400 bg-gray-50">
                       <ImageIcon size={cardLayout ? (cardDense ? 24 : 32) : (isCompact ? 16 : 24)} />

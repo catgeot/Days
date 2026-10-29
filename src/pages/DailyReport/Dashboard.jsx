@@ -73,7 +73,7 @@ const Dashboard = () => {
         keywords={t('logbook.seo.keywords')}
         url="/blog"
       />
-      <div className="max-w-7xl mx-auto pt-8 px-4 sm:px-6 pb-20">
+      <div className="max-w-7xl mx-auto min-w-0 pt-8 px-4 sm:px-6 pb-20">
 
         <div className="mb-6 flex flex-col lg:flex-row justify-between lg:items-end gap-6 border-b border-gray-100 pb-6">
           <div className="flex flex-col sm:flex-row sm:items-end gap-6 flex-1">
