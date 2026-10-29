@@ -57,3 +57,21 @@ test('en locale uses @en storage for country-prefixed key (Gyeongbokgung)', () =
     'South Korea Gyeongbokgung Palace@en',
   );
 });
+
+test('mapbox settlement 강릉 교동: lookup key is only 강릉 교동 (ops destination_key)', () => {
+  const gangneungGyodong = {
+    id: 'settlement-gangneung-gyo-dong',
+    hubId: 'gangneung',
+    name: '교동',
+    parentCity: '강릉',
+    country: '대한민국',
+  };
+  assert.deepEqual(buildPlaceChatIntroKeys(gangneungGyodong, 'ko'), ['강릉 교동']);
+});
+
+test('강화 교동 (non-settlement): country-prefixed 대한민국 교동 still in key list', () => {
+  const ganghwaGyodong = { name: '교동', parentCity: '강화', country: '대한민국' };
+  const keys = buildPlaceChatIntroKeys(ganghwaGyodong, 'ko');
+  assert.equal(keys[0], '강화 교동');
+  assert.equal(keys[1], '대한민국 교동');
+});

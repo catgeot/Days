@@ -30,6 +30,7 @@ import {
   buildPlaceChatIntroBareFallbackKeys,
   destinationKeyMatchesBareName,
   introLocaleStorageKeys,
+  isMapboxSettlementLocation,
   pickBareFallbackIntroFromRows,
 } from './placeChatIntroBareFallback.js';
 
@@ -145,7 +146,8 @@ export function stripPlaceChatIntroForSummary(text, placeName = '') {
 
 /**
  * 조회·저장에 쓸 destination_key 후보 (순서 = 조회 순서).
- * parentCity 있음: `{parentCity} {name}` → `{country} {name}` (PROD 118건) → bare는 fetchBareFallback(동명 1건일 때만).
+ * parentCity 있음: `{parentCity} {name}` → (비정착지만) `{country} {name}` → bare는 fetchBareFallback(동명 1건·비정착지).
+ * Mapbox 정착지: `{parentCity} {name}`만 — miss 시 빈 설명(bare·country 폴백 없음).
  * parentCity 없음: label/name → `{country} {name}`.
  */
 export function buildPlaceChatIntroKeys(locOrName, lng = i18n.language) {
@@ -175,7 +177,12 @@ export function buildPlaceChatIntroKeys(locOrName, lng = i18n.language) {
 
   if (parentCity && name && !name.includes(parentCity)) {
     push(`${parentCity} ${name}`);
-    if (country && !isPlaceholderCountry(country) && !name.includes(country)) {
+    if (
+      !isMapboxSettlementLocation(locOrName) &&
+      country &&
+      !isPlaceholderCountry(country) &&
+      !name.includes(country)
+    ) {
       push(`${country} ${name}`);
     }
     return keys;

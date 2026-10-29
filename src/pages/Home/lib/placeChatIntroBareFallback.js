@@ -2,6 +2,10 @@ import { i18n } from '../../../i18n/config.js';
 import { normalizeAppLocale } from '../../../i18n/constants.js';
 import { getLocalizedPlaceName } from '../../../components/PlaceCard/common/locationDisplay.js';
 import { normalizeDestinationKey } from './mooniPlaceChatLabel.js';
+import {
+  isMapboxSettlementLocation,
+  settlementBareNameIsAmbiguousInSsot,
+} from './mapboxSettlementPlaces.js';
 
 const INVALID_DESTINATIONS = new Set(['', 'new session', 'scanning...', 'mooni']);
 const INTRO_LOCALE_SUFFIX = { en: '@en' };
@@ -65,6 +69,15 @@ export function isBareIntroNameUnambiguous(rows, bareName) {
   return distinctIntroLogicalKeysForBareName(rows, bareName).size === 1;
 }
 
+export { isMapboxSettlementLocation, settlementBareNameIsAmbiguousInSsot } from './mapboxSettlementPlaces.js';
+
+/** 정착지는 parentCity 키만 — bare·country 폴백으로 타 지역 intro 금지. */
+export function shouldSkipBareIntroFallbackForLocation(locOrName, bareName) {
+  if (!isMapboxSettlementLocation(locOrName)) return false;
+  if (normalizeDestinationKey(locOrName.parentCity || '')) return true;
+  return settlementBareNameIsAmbiguousInSsot(bareName);
+}
+
 /**
  * When parentCity-qualified keys miss, try bare name and country+name (not in primary key list).
  * @param {object} locOrName
@@ -81,6 +94,7 @@ export function buildPlaceChatIntroBareFallbackKeys(locOrName, lng = i18n.langua
     getLocalizedPlaceName(locOrName, locale) || locOrName.displayLabel || locOrName.name || '',
   );
   if (!name || name.includes(parentCity)) return [];
+  if (shouldSkipBareIntroFallbackForLocation(locOrName, name)) return [];
 
   const keys = [];
   const push = (k) => {

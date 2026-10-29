@@ -6,6 +6,7 @@ import {
   destinationKeyMatchesBareName,
   distinctIntroLogicalKeysForBareName,
   isBareIntroNameUnambiguous,
+  isMapboxSettlementLocation,
   pickBareFallbackIntroFromRows,
 } from '../src/pages/Home/lib/placeChatIntroBareFallback.js';
 
@@ -44,4 +45,23 @@ test('ambiguous bare-name miss: two parent-qualified keys for the same bare name
   assert.equal(distinctIntroLogicalKeysForBareName(rows, '상왕봉').size, 2);
   assert.equal(isBareIntroNameUnambiguous(rows, '상왕봉'), false);
   assert.equal(pickBareFallbackIntroFromRows(rows, '상왕봉', 'ko'), null);
+});
+
+const GANGNEUNG_GYODONG = {
+  id: 'settlement-gangneung-gyo-dong',
+  hubId: 'gangneung',
+  name: '교동',
+  parentCity: '강릉',
+  country: '대한민국',
+};
+
+test('mapbox settlement 강릉 교동: bare fallback disabled (no 강화/인천 교동 bleed)', () => {
+  assert.equal(isMapboxSettlementLocation(GANGNEUNG_GYODONG), true);
+  assert.deepEqual(buildPlaceChatIntroBareFallbackKeys(GANGNEUNG_GYODONG, 'ko'), []);
+});
+
+test('non-settlement 강화 교동 keeps bare fallback when unambiguous', () => {
+  const ganghwaGyodong = { name: '교동', parentCity: '강화', country: '대한민국' };
+  assert.equal(isMapboxSettlementLocation(ganghwaGyodong), false);
+  assert.deepEqual(buildPlaceChatIntroBareFallbackKeys(ganghwaGyodong, 'ko'), ['교동']);
 });
