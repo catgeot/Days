@@ -8,6 +8,8 @@ export const GATEO_ENV_FLAG_NAMES = {
   POI_COUNTY_SLUG_SEARCH: 'VITE_GATEO_POI_COUNTY_SLUG_SEARCH',
   PLACE_CROSSLINK: 'VITE_GATEO_PLACE_CROSSLINK',
   SITE_SEARCH: 'VITE_GATEO_SITE_SEARCH',
+  /** Regional “all site assets” bundles under search (PR-A+). Requires SITE_SEARCH. Default off. */
+  SITE_SEARCH_ALL_ASSETS: 'VITE_GATEO_SITE_SEARCH_ALL_ASSETS',
   FESTIVAL_DATE_CHIP: 'VITE_GATEO_FESTIVAL_DATE_CHIP',
   LOGBOOK_REVIEW_HUB: 'VITE_GATEO_LOGBOOK_REVIEW_HUB',
   REVIEW_DEEPLINK: 'VITE_GATEO_REVIEW_DEEPLINK',
@@ -40,6 +42,10 @@ export function isGateoPlaceCrosslinkEnabled() {
 
 export function isGateoSiteSearchEnabled() {
   return readGateoEnvFlag(GATEO_ENV_FLAG_NAMES.SITE_SEARCH);
+}
+
+export function isGateoSiteSearchAllAssetsEnabled() {
+  return readGateoEnvFlag(GATEO_ENV_FLAG_NAMES.SITE_SEARCH_ALL_ASSETS);
 }
 
 export function isGateoFestivalDateChipEnabled() {
