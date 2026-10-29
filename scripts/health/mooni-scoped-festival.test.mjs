@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
+import { test } from 'node:test';
 import { fileURLToPath } from 'node:url';
 import {
   buildMooniKoreaFestivalSystemHint,
@@ -26,6 +27,11 @@ import {
   __testSetMooniTitleEnFetch,
   ensureKoreaFestivalItemsTitleEnForMooni,
 } from '../../src/pages/Korea/fetchKoreaFestivalsWindow.js';
+import {
+  __testResetFetchKoreaFestivalsRolling12,
+  __testSetFetchKoreaFestivalsRolling12,
+  resolvePlaceChatKoreaFestivalHint,
+} from '../../src/pages/Home/lib/resolvePlaceChatKoreaFestivalHint.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '../..');
 const weekFixture = JSON.parse(
@@ -245,26 +251,35 @@ withFlag(false, () => {
   assert.equal(globalThis.sessionStorage.getItem('gateo_mooni_last_chat_id'), 'trip-off');
 });
 
-withFlag(false, async () => {
+test('ensureKoreaFestivalItemsTitleEnForMooni flag OFF makes no titleEn fetch', async () => {
+  const prev = globalThis.__VITE_ENV__?.[FLAG];
+  globalThis.__VITE_ENV__ = { ...(globalThis.__VITE_ENV__ || {}), [FLAG]: '' };
+  try {
+    __testResetMooniTitleEnCache();
+    let fetchCalls = 0;
+    __testSetMooniTitleEnFetch(async () => {
+      fetchCalls += 1;
+      throw new Error('must not fetch titleEn when flag OFF');
+    });
+    const koItems = [{ contentId: '1', title: '축제', eventStartDate: '20260101' }];
+    const out = await ensureKoreaFestivalItemsTitleEnForMooni(koItems, {
+      scopedFestivalEnabled: false,
+      locale: 'en-US',
+    });
+    assert.equal(fetchCalls, 0);
+    assert.equal(out, koItems);
+  } finally {
+    __testResetMooniTitleEnCache();
+    if (prev === undefined) delete globalThis.__VITE_ENV__[FLAG];
+    else globalThis.__VITE_ENV__[FLAG] = prev;
+  }
+});
+
+test('ensureKoreaFestivalItemsTitleEnForMooni keeps original items when fetch throws', async () => {
   __testResetMooniTitleEnCache();
   let fetchCalls = 0;
   __testSetMooniTitleEnFetch(async () => {
     fetchCalls += 1;
-    throw new Error('must not fetch titleEn when flag OFF');
-  });
-  const koItems = [{ contentId: '1', title: '축제', eventStartDate: '20260101' }];
-  const out = await ensureKoreaFestivalItemsTitleEnForMooni(koItems, {
-    scopedFestivalEnabled: false,
-    locale: 'en-US',
-  });
-  assert.equal(fetchCalls, 0);
-  assert.equal(out, koItems);
-  __testResetMooniTitleEnCache();
-});
-
-withFlag(true, async () => {
-  __testResetMooniTitleEnCache();
-  __testSetMooniTitleEnFetch(async () => {
     throw new Error('network fail');
   });
   const koItems = [{ contentId: '1', title: '축제', eventStartDate: '20260101' }];
@@ -273,10 +288,48 @@ withFlag(true, async () => {
     locale: 'en',
     now: NOW,
   });
+  assert.equal(fetchCalls, 1);
   assert.equal(out.length, 1);
   assert.equal(out[0].title, '축제');
   assert.equal(out[0].titleEn, undefined);
+  const out2 = await ensureKoreaFestivalItemsTitleEnForMooni(koItems, {
+    scopedFestivalEnabled: true,
+    locale: 'en',
+    now: NOW,
+  });
+  assert.equal(fetchCalls, 1, 'failure cached — no second live fetch within 60s');
+  assert.equal(out2[0].title, '축제');
   __testResetMooniTitleEnCache();
+});
+
+test('resolvePlaceChatKoreaFestivalHint flag OFF skips titleEn fetch on EN festival query', async () => {
+  const prev = globalThis.__VITE_ENV__?.[FLAG];
+  globalThis.__VITE_ENV__ = { ...(globalThis.__VITE_ENV__ || {}), [FLAG]: '' };
+  try {
+    __testResetMooniTitleEnCache();
+    __testResetFetchKoreaFestivalsRolling12();
+    let titleEnFetchCalls = 0;
+    __testSetMooniTitleEnFetch(async () => {
+      titleEnFetchCalls += 1;
+      throw new Error('must not fetch');
+    });
+    __testSetFetchKoreaFestivalsRolling12(async () => ({
+      ok: true,
+      items: [{ contentId: '99', title: '축제', eventStartDate: '20261001' }],
+      fromCache: true,
+    }));
+    await resolvePlaceChatKoreaFestivalHint({
+      userText: 'Seoul festivals this week',
+      locale: 'en-US',
+      boundPlaceName: 'Seoul',
+    });
+    assert.equal(titleEnFetchCalls, 0);
+  } finally {
+    __testResetMooniTitleEnCache();
+    __testResetFetchKoreaFestivalsRolling12();
+    if (prev === undefined) delete globalThis.__VITE_ENV__[FLAG];
+    else globalThis.__VITE_ENV__[FLAG] = prev;
+  }
 });
 
 withFlag(false, () => {
@@ -311,5 +364,3 @@ assert.match(
   }),
   /https:\/\/www\.gateo\.kr\/korea\//,
 );
-
-console.log('health/mooni-scoped-festival.test.mjs: OK');

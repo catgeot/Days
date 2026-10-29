@@ -6,13 +6,14 @@ const FESTIVAL_DETAIL_TIMEOUT_MS = 30_000;
 /**
  * @param {string} action
  * @param {Record<string, unknown>} payload
- * @param {{ timeoutMs?: number, locale?: string }} [opts]
+ * @param {{ timeoutMs?: number, locale?: string, signal?: AbortSignal }} [opts]
  */
 async function invokeTourApi(action, payload, opts = {}) {
   return invokeTourApiProxy(action, payload, {
     timeoutMs: opts.timeoutMs,
     returnRawOnFail: true,
     locale: opts.locale ?? TOUR_API_BODY_LOCALE,
+    signal: opts.signal,
   });
 }
 
@@ -56,6 +57,8 @@ export async function fetchTourApiFestivals(opts) {
  *   eventEndDate?: string,
  *   force?: boolean,
  *   locale?: string,
+ *   timeoutMs?: number,
+ *   signal?: AbortSignal,
  * }} [opts]
  */
 export async function fetchTourApiFestivalWindow(opts = {}) {
@@ -69,8 +72,9 @@ export async function fetchTourApiFestivalWindow(opts = {}) {
   }
   if (opts?.force === true) payload.force = true;
   return invokeTourApi('festivalWindow', payload, {
-    timeoutMs: FESTIVAL_WINDOW_TIMEOUT_MS,
+    timeoutMs: opts.timeoutMs ?? FESTIVAL_WINDOW_TIMEOUT_MS,
     locale: opts.locale ?? TOUR_API_BODY_LOCALE,
+    signal: opts.signal,
   });
 }
 
