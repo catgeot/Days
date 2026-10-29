@@ -98,6 +98,18 @@ withFlag(true, () => {
 
 withFlag(true, () => {
   mockStorage();
+  const savedAt = Date.now() - 500;
+  globalThis.sessionStorage.setItem('gateo_mooni_last_chat_id', 'legacy-local-saved-at');
+  globalThis.localStorage.setItem('gateo_mooni_last_chat_saved_at', String(savedAt));
+  assert.equal(globalThis.sessionStorage.getItem('gateo_mooni_last_chat_saved_at'), null);
+  const migrated = readMooniLastChatId(null, 'general');
+  assert.equal(migrated, 'legacy-local-saved-at');
+  const scoped = JSON.parse(globalThis.sessionStorage.getItem('gateo_mooni_last_chat_id:general'));
+  assert.equal(scoped.savedAt, savedAt);
+});
+
+withFlag(true, () => {
+  mockStorage();
   globalThis.localStorage.setItem('gateo_mooni_last_chat_id_user-1', 'user-trip');
   globalThis.localStorage.setItem(
     'gateo_mooni_last_chat_saved_at_user-1',
@@ -205,6 +217,27 @@ withFlag(true, () => {
   });
   const linkCount = (polishedList.match(/gateo\.kr\/korea\/\?festival=/g) || []).length;
   assert.ok(linkCount >= 2, `polish should keep list links, got ${linkCount}`);
+
+  const enCandidate = {
+    ...seoulPick.candidates[0],
+    titleEn: 'Garden Night Market WICKED',
+  };
+  const mergedEnList = mergeMooniKoreaFestivalReply('intro', {
+    candidates: [enCandidate],
+    userText: '서울 이번주 축제',
+    locale: 'en',
+    now: NOW,
+    scopedFestivalEnabled: true,
+  });
+  assert.match(mergedEnList, /Garden Night Market WICKED \(백년나이트/);
+});
+
+withFlag(false, () => {
+  mockStorage();
+  persistMooniLastChatId('trip-off', null, null);
+  assert.equal(globalThis.sessionStorage.getItem('gateo_mooni_last_chat_saved_at'), null);
+  assert.equal(globalThis.localStorage.getItem('gateo_mooni_last_chat_saved_at'), null);
+  assert.equal(globalThis.sessionStorage.getItem('gateo_mooni_last_chat_id'), 'trip-off');
 });
 
 withFlag(false, () => {

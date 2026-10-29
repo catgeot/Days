@@ -92,6 +92,17 @@ function itemsNeedTitleEn(items) {
 }
 
 /**
+ * KorService2 items missing titleEn — EngService2 join (Mooni EN list).
+ * @param {object[]} items
+ * @param {Date} [now]
+ */
+export async function ensureKoreaFestivalItemsTitleEn(items, now = new Date()) {
+  if (!itemsNeedTitleEn(items)) return items;
+  const range = rolling12MonthRangeYmd(now);
+  return mergeTitleEnOntoItems(items, { ...range, force: false });
+}
+
+/**
  * Edge festivalWindow 1회 (서버 페이지 merge + DB 캐시).
  * @param {{ force?: boolean, now?: Date, locale?: string }} [opts]
  */

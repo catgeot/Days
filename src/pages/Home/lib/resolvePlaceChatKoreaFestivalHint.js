@@ -1,4 +1,4 @@
-import { fetchKoreaFestivalsRolling12 } from '../../Korea/fetchKoreaFestivalsWindow.js';
+import { fetchKoreaFestivalsRolling12, ensureKoreaFestivalItemsTitleEn } from '../../Korea/fetchKoreaFestivalsWindow.js';
 import { resolveMooniChatKoreaFestivalHint } from '../../../shared/korea/mooniKoreaFestivalAssist.js';
 import { isGateoMooniScopedFestivalEnabled } from '../../../shared/gateoFeatureFlags.js';
 
@@ -24,7 +24,11 @@ export async function resolvePlaceChatKoreaFestivalHint(input = {}) {
     scopedFestivalEnabled: isGateoMooniScopedFestivalEnabled(),
     loadFestivalItems: async () => {
       const festWindow = await fetchKoreaFestivalsRolling12({ locale });
-      return festWindow?.items ?? [];
+      let items = festWindow?.items ?? [];
+      if (String(locale || '').toLowerCase().startsWith('en')) {
+        items = await ensureKoreaFestivalItemsTitleEn(items);
+      }
+      return items;
     },
   });
 }

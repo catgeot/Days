@@ -46,21 +46,17 @@ function encodeScopedEntry(chatId, savedAt = Date.now()) {
 }
 
 function readLegacySavedAt(userId) {
-  const fromSession = Number(sessionStorage.getItem(MOONI_LAST_CHAT_SAVED_AT_SESSION_KEY));
-  if (Number.isFinite(fromSession)) return fromSession;
-  const fromLocal = Number(localStorage.getItem(mooniLastChatSavedAtStorageKey(userId)));
-  if (Number.isFinite(fromLocal)) return fromLocal;
-  return undefined;
-}
-
-function writeLegacySavedAt(userId, savedAt) {
-  const ts = String(savedAt);
-  try {
-    sessionStorage.setItem(MOONI_LAST_CHAT_SAVED_AT_SESSION_KEY, ts);
-    localStorage.setItem(mooniLastChatSavedAtStorageKey(userId), ts);
-  } catch {
-    // private mode
+  const sessionRaw = sessionStorage.getItem(MOONI_LAST_CHAT_SAVED_AT_SESSION_KEY);
+  if (sessionRaw != null && sessionRaw !== '') {
+    const fromSession = Number(sessionRaw);
+    if (Number.isFinite(fromSession)) return fromSession;
   }
+  const localRaw = localStorage.getItem(mooniLastChatSavedAtStorageKey(userId));
+  if (localRaw != null && localRaw !== '') {
+    const fromLocal = Number(localRaw);
+    if (Number.isFinite(fromLocal)) return fromLocal;
+  }
+  return undefined;
 }
 
 function parseLegacyMooniLastChatRaw(raw) {
@@ -120,9 +116,6 @@ export function persistMooniLastChatId(chatId, userId, scopeOrContext = null) {
   try {
     sessionStorage.setItem(sessionKeyForScope(scope), payload);
     localStorage.setItem(localKeyForScope(userId, scope), payload);
-    if (!scope) {
-      writeLegacySavedAt(userId, now);
-    }
   } catch {
     // private mode
   }
