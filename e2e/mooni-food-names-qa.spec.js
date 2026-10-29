@@ -135,7 +135,6 @@ async function linkStatus(url) {
 }
 
 async function blockSlowExternals(context) {
-  await context.route(/emrld\.ltd/i, (route) => route.abort());
   await context.route(/visitkorea\.or\.kr/i, (route) => route.abort());
 }
 

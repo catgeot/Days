@@ -146,7 +146,7 @@ async function installFestivalStub(context) {
       body: JSON.stringify({ ok: true, items: [] }),
     });
   });
-  await context.route(/emrld\.ltd|visitkorea\.or\.kr|google-analytics/i, (route) => route.abort());
+  await context.route(/visitkorea\.or\.kr|google-analytics/i, (route) => route.abort());
 }
 
 async function stagingSession() {
