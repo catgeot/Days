@@ -775,7 +775,7 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null, isActiv
   return (
     <div className="flex flex-col h-full min-h-0 bg-white animate-[fadeIn_0.3s_ease-out] relative">
       {/* PC 헤더 (기존 유지) */}
-      <div className="hidden md:block p-4 border-b border-gray-100 shrink-0">
+      <div className="hidden lg:block p-4 border-b border-gray-100 shrink-0">
         <div className="flex justify-between items-center mb-4">
           <div>
             <h3 className="font-bold text-lg text-gray-800 flex items-center gap-2">
@@ -826,7 +826,7 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null, isActiv
       {/* 모바일 우측 하단 FAB 작성 버튼 */}
       <button
         onClick={handleWriteClick}
-        className={`md:hidden fixed bottom-6 right-4 z-50 flex items-center justify-center gap-1.5 px-4 py-3 bg-blue-600 text-white rounded-full shadow-[0_4px_20px_rgba(37,99,235,0.4)] hover:bg-blue-700 active:scale-95 transition-all ${mobileLandscapeChromeHidden}`}
+        className={`lg:hidden fixed bottom-6 right-4 z-50 flex items-center justify-center gap-1.5 px-4 py-3 bg-blue-600 text-white rounded-full shadow-[0_4px_20px_rgba(37,99,235,0.4)] hover:bg-blue-700 active:scale-95 transition-all ${mobileLandscapeChromeHidden}`}
       >
         <PenSquare className="w-4 h-4" />
         <span className="font-bold text-sm">{t('place.reviews.write')}</span>
@@ -837,19 +837,19 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null, isActiv
       <div
         ref={scrollContainerRef}
         data-place-reviews-scroll-root=""
-        className={`flex-1 min-h-0 overflow-y-auto overflow-x-hidden custom-scrollbar ${placeScrollSurfaceClass} ${mobilePlaceReviewsFooterScrollPadding} md:pb-4 md:pt-0`}
+        className={`flex-1 min-h-0 overflow-y-auto overflow-x-hidden custom-scrollbar ${placeScrollSurfaceClass} ${mobilePlaceReviewsFooterScrollPadding} lg:pb-4 lg:pt-0`}
       >
         {mobileSecondaryNav && (
           <div
             data-place-reviews-scroll-chrome=""
-            className={`md:hidden px-2 pb-2 shrink-0 ${mobileLandscapeChromeHidden}`}
+            className={`lg:hidden px-2 pb-2 shrink-0 ${mobileLandscapeChromeHidden}`}
           >
             {mobileSecondaryNav}
           </div>
         )}
 
         {/* 모바일 전용 압축 헤더 — sticky 제거, 스크롤과 함께 이동 */}
-        <div className={`md:hidden flex flex-col shrink-0 bg-white border-b border-gray-100 shadow-sm ${mobileLandscapeChromeHidden}`}>
+        <div className={`lg:hidden flex flex-col shrink-0 bg-white border-b border-gray-100 shadow-sm ${mobileLandscapeChromeHidden}`}>
           <div className="flex items-start justify-between px-3 pt-2.5 pb-1 gap-2">
             <div className="flex items-center gap-2 min-w-0 flex-1">
               <button

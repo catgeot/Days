@@ -65,7 +65,7 @@ test('PlaceChatPanel secondary title truncates on narrow desktop header', () => 
   const panel = read('src/components/PlaceCard/panels/PlaceChatPanel.jsx');
   assert.match(panel, /min-w-\[8rem\]/);
   assert.match(panel, /truncate whitespace-nowrap/);
-  assert.match(panel, /md:w-full xl:w-auto/);
+  assert.match(panel, /lg:w-full xl:w-auto/);
   assert.doesNotMatch(panel, /justify-end w-full xl:w-auto/);
 });
 
@@ -75,11 +75,12 @@ test('PlaceWorldEventsTabView reserves mobile fixed header space', () => {
   assert.match(view, /mobileLandscapeChromeHidden/);
 });
 
-test('PlaceCard keeps main initialTab for unknown URL segments', () => {
+test('PlaceCard maps URL tabKey to expanded media mode (no invalid EVENTS when flag off)', () => {
   const index = read('src/components/PlaceCard/index.jsx');
   assert.match(index, /initialTabForExpanded/);
-  assert.match(index, /currentTab\.toUpperCase\(\)/);
-  assert.doesNotMatch(index, /initialMediaMode/);
+  assert.match(index, /tabKey === 'events' \? 'WORLD_EVENTS' : mediaModeFromUrlTab\(tabKey\)/);
+  assert.doesNotMatch(index, /currentTab\.toUpperCase\(\)/);
+  assert.doesNotMatch(index, /currentTab === tabKey/);
 });
 
 test('secondary nav flag gates scroll chrome (off matches main justify-center)', () => {

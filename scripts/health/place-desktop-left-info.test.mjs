@@ -34,7 +34,15 @@ test('desktop left panel wiring — single mount via viewport hook', () => {
   assert.match(hook, /mountInGallery/);
   assert.match(gallery, /mountInGallery/);
   assert.match(info, /mountInLeftOverview/);
-  assert.doesNotMatch(gallery, /lg:hidden/);
+  assert.match(
+    gallery,
+    /\{mountInGallery \? \(\s*\n\s*<PlaceGalleryFactsAndStories location=\{location\} \/>/,
+    'desktop-left-info bundle must stay visible at lg when flag on (no lg:hidden on mount)',
+  );
+  assert.doesNotMatch(
+    gallery,
+    /mountInGallery[\s\S]{0,120}lg:hidden[\s\S]{0,120}PlaceGalleryFactsAndStories/,
+  );
 });
 
 test('hash scroll uses overview scrollTo only when flag on and section in left overview', () => {

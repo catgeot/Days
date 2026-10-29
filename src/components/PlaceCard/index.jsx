@@ -12,6 +12,7 @@ import {
   getPlaceTabSeoTitle,
 } from '../../pages/Home/lib/placeSeoText.js';
 import { isGateoPlaceWorldEventsTabEnabled } from '../../shared/gateoFeatureFlags';
+import { mediaModeFromUrlTab } from './common/placeMediaTabRoutes';
 
 const PlaceCard = () => {
   const { slug, tab } = useParams();
@@ -39,9 +40,8 @@ const PlaceCard = () => {
     allowedUrlTabs.push('events');
   }
   const tabKey = allowedUrlTabs.includes(currentTab) ? currentTab : 'gallery';
-  const worldEventsTabFlagOn = isGateoPlaceWorldEventsTabEnabled();
   const initialTabForExpanded =
-    currentTab === 'events' && worldEventsTabFlagOn ? 'WORLD_EVENTS' : currentTab.toUpperCase();
+    tabKey === 'events' ? 'WORLD_EVENTS' : mediaModeFromUrlTab(tabKey);
 
   const reviewPlaceSlug =
     contextLocation?.id != null &&

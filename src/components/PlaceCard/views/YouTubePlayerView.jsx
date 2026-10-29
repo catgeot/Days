@@ -501,11 +501,11 @@ const YouTubePlayerView = forwardRef(({
 
   return (
     <div
-      className={`flex flex-col flex-1 w-full h-full bg-[#05070a] md:rounded-[2rem] md:border md:border-white/5 overflow-hidden relative shadow-2xl transition-all duration-500 caret-transparent select-none outline-none ${isFullScreen ? 'fixed inset-0 z-[200] w-screen h-screen rounded-none border-none' : ''}`}
+      className={`flex flex-col flex-1 w-full h-full bg-[#05070a] lg:rounded-[2rem] lg:border lg:border-white/5 overflow-hidden relative shadow-2xl transition-all duration-500 caret-transparent select-none outline-none ${isFullScreen ? 'fixed inset-0 z-[200] w-screen h-screen rounded-none border-none' : ''}`}
     >
       <div className={mobilePlaceHeaderSpacerClass} aria-hidden="true" />
       {mobileSecondaryNav && (
-        <div className={`md:hidden shrink-0 z-[215] relative border-b border-white/10 ${mobileLandscapeChromeHidden}`}>
+        <div className={`lg:hidden shrink-0 z-[215] relative border-b border-white/10 ${mobileLandscapeChromeHidden}`}>
           {mobileSecondaryNav}
         </div>
       )}
@@ -606,7 +606,7 @@ const YouTubePlayerView = forwardRef(({
       )}
 
       {!showFetchError && !showEmpty && !showNoPlayable && videoList.length > 0 && showUI && (
-        <div className={`hidden md:block absolute bottom-24 left-1/2 -translate-x-1/2 w-[90%] max-w-[1000px] z-[210] transition-opacity duration-500
+        <div className={`hidden lg:block absolute bottom-24 left-1/2 -translate-x-1/2 w-[90%] max-w-[1000px] z-[210] transition-opacity duration-500
             ${(!isPlaying || isPaused) ? 'opacity-100' : 'opacity-0 hover:opacity-100'}`}
         >
           <div className="relative group/playlist">
@@ -660,7 +660,7 @@ const YouTubePlayerView = forwardRef(({
 
       {!isLoading && videoList.length > 0 && (canLoadMore || loadMoreError || loadMoreLimitCode || loadMoreNoNew) && (
         <div
-          className={`hidden md:block absolute left-1/2 -translate-x-1/2 z-[220] w-[90%] max-w-md px-2 ${
+          className={`hidden lg:block absolute left-1/2 -translate-x-1/2 z-[220] w-[90%] max-w-md px-2 ${
             isPlaying
               ? 'bottom-3 md:bottom-4'
               : 'bottom-28 md:bottom-[13.5rem]'
@@ -693,7 +693,7 @@ const YouTubePlayerView = forwardRef(({
       )}
 
       {!isFullScreen && (
-        <div className={`md:hidden absolute bottom-32 right-4 z-[210] flex flex-col gap-3 transition-all duration-300
+        <div className={`lg:hidden absolute bottom-32 right-4 z-[210] flex flex-col gap-3 transition-all duration-300
             ${(showUI || !isPlaying || isPaused) ? 'opacity-100 scale-100' : 'opacity-30 scale-95'}`}>
 
             {!showEmpty && !showFetchError && !showNoPlayable && videoList.length > 0 && (
@@ -711,7 +711,7 @@ const YouTubePlayerView = forwardRef(({
 
       {isMobileListOpen && videoList.length > 0 && (
         <div
-            className="md:hidden fixed inset-0 z-[300] bg-black/70 backdrop-blur-sm flex items-center justify-center p-6 animate-fade-in"
+            className="lg:hidden fixed inset-0 z-[300] bg-black/70 backdrop-blur-sm flex items-center justify-center p-6 animate-fade-in"
             onClick={() => setIsMobileListOpen(false)}
         >
             <div
@@ -784,7 +784,7 @@ const YouTubePlayerView = forwardRef(({
         </div>
       )}
 
-      <div className={`hidden md:flex absolute top-6 right-6 items-center gap-3 z-[220] transition-opacity ${(!showUI && isFullScreen) ? 'opacity-0' : 'opacity-100'}`}>
+      <div className={`hidden lg:flex absolute top-6 right-6 items-center gap-3 z-[220] transition-opacity ${(!showUI && isFullScreen) ? 'opacity-0' : 'opacity-100'}`}>
         {!showEmpty && !showFetchError && !showNoPlayable && videoList.length > 0 && (
           <div className="px-4 py-2 bg-black/60 backdrop-blur-md border border-white/10 rounded-full flex items-center gap-2 shadow-lg">
               <Sparkles size={14} className="text-red-500 animate-pulse" />

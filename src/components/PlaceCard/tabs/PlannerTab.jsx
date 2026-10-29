@@ -358,7 +358,7 @@ const PlannerTab = ({
         return (
             <div className="w-full h-full flex flex-col bg-[#f8f9fa]">
                 {mobileSecondaryNav && (
-                    <div className={`md:hidden shrink-0 border-b border-gray-200/90 bg-[#f8f9fa] px-2 pb-2 ${mobilePlaceHeaderScrollPadding}`}>
+                    <div className={`lg:hidden shrink-0 border-b border-gray-200/90 bg-[#f8f9fa] px-2 pb-2 ${mobilePlaceHeaderScrollPadding}`}>
                         {mobileSecondaryNav}
                     </div>
                 )}
@@ -392,7 +392,7 @@ const PlannerTab = ({
         );
     }
 
-    const plannerBodyScrollClass = `flex-1 min-h-0 w-full flex flex-col overflow-y-auto overflow-x-hidden custom-scrollbar bg-[#f8f9fa] px-3 sm:px-4 ${mobilePlaceFooterScrollPadding} md:p-6 md:pt-10 md:pb-8 ${plannerScrollSurfaceClass}`;
+    const plannerBodyScrollClass = `flex-1 min-h-0 w-full flex flex-col overflow-y-auto overflow-x-hidden custom-scrollbar bg-[#f8f9fa] px-3 sm:px-4 ${mobilePlaceFooterScrollPadding} lg:p-6 lg:pt-10 lg:pb-8 ${plannerScrollSurfaceClass}`;
     const toolkitErrorNotice = (
         <PlannerToolkitErrorNotice
             message={toolkitErrorKey ? t(TOOLKIT_ERROR_MESSAGE_KEY[toolkitErrorKey] || TOOLKIT_ERROR_MESSAGE_KEY.generic) : ''}
@@ -413,11 +413,11 @@ const PlannerTab = ({
                     className={plannerBodyScrollClass}
                 >
                 {mobileSecondaryNav && (
-                    <div className={`md:hidden shrink-0 -mx-3 sm:-mx-4 px-2 pb-2 mb-1 border-b border-gray-200/90 bg-[#f8f9fa] ${mobileLandscapeChromeHidden}`}>
+                    <div className={`lg:hidden shrink-0 -mx-3 sm:-mx-4 px-2 pb-2 mb-1 border-b border-gray-200/90 bg-[#f8f9fa] ${mobileLandscapeChromeHidden}`}>
                         {mobileSecondaryNav}
                     </div>
                 )}
-                <div className="w-full max-w-lg mx-auto flex flex-col items-center text-center pt-6 md:pt-0">
+                <div className="w-full max-w-lg mx-auto flex flex-col items-center text-center pt-6 lg:pt-0">
                 <Briefcase size={48} className="text-gray-300 mb-4" />
                 <h3 className="text-lg font-bold text-gray-800 mb-2">{t('place.planner.emptyTitle')}</h3>
                 <p className="text-sm text-gray-500 mb-2 max-w-sm">
@@ -467,7 +467,7 @@ const PlannerTab = ({
                 className={plannerBodyScrollClass}
             >
                 {mobileSecondaryNav && (
-                    <div className={`md:hidden shrink-0 -mx-3 sm:-mx-4 px-2 pb-2 mb-1 border-b border-gray-200/90 bg-[#f8f9fa] ${mobileLandscapeChromeHidden}`}>
+                    <div className={`lg:hidden shrink-0 -mx-3 sm:-mx-4 px-2 pb-2 mb-1 border-b border-gray-200/90 bg-[#f8f9fa] ${mobileLandscapeChromeHidden}`}>
                         {mobileSecondaryNav}
                     </div>
                 )}
@@ -666,7 +666,7 @@ const PlannerTab = ({
                     aria-label={t('place.nav.plannerTop')}
                 >
                     <ArrowUp size={22} className="shrink-0" strokeWidth={2.5} />
-                    <span className="hidden md:inline text-sm font-bold">{t('place.nav.scrollTopShort')}</span>
+                    <span className="hidden lg:inline text-sm font-bold">{t('place.nav.scrollTopShort')}</span>
                 </button>,
                 document.body
             )}

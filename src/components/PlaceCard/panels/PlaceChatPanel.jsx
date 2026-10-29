@@ -191,17 +191,17 @@ const PlaceChatPanel = React.memo(({
 
   return (
     <div className={`flex flex-col transition-all duration-500
-        ${isFullScreen ? 'opacity-0 pointer-events-none md:pointer-events-auto md:translate-x-[-100%]' : 'opacity-100 translate-x-0 pointer-events-auto'}
-        absolute top-0 left-0 w-full z-[180] h-auto bg-[#05070a]/90 backdrop-blur-md border-b border-white/10 pb-1.5 max-md:landscape:pb-0 max-md:landscape:border-b-0 max-md:landscape:bg-transparent max-md:landscape:backdrop-blur-none md:pb-0 md:border-none md:rounded-none
-        md:relative md:w-[35%] md:h-full md:backdrop-blur-xl md:border md:border-white/10 md:rounded-[2rem] md:shadow-2xl md:overflow-hidden md:bg-[#05070a]/80 md:z-auto`}>
+        ${isFullScreen ? 'opacity-0 pointer-events-none lg:pointer-events-auto lg:translate-x-[-100%]' : 'opacity-100 translate-x-0 pointer-events-auto'}
+        absolute top-0 left-0 w-full z-[180] h-auto bg-[#05070a]/90 backdrop-blur-md border-b border-white/10 pb-1.5 landscape-phone:pb-0 landscape-phone:border-b-0 landscape-phone:bg-transparent landscape-phone:backdrop-blur-none lg:pb-0 lg:border-none lg:rounded-none
+        lg:relative lg:w-[35%] lg:h-full lg:backdrop-blur-xl lg:border lg:border-white/10 lg:rounded-[2rem] lg:shadow-2xl lg:overflow-hidden lg:bg-[#05070a]/80 lg:z-auto`}>
 
       {/* Header — 갤러리·위키·리뷰·플래너: 지명 영역 탭 시 스크롤 맨 위 (뒤로/홈 버튼과 분리) */}
       <div
-        className={`shrink-0 px-3 md:border-b md:border-white/5 bg-transparent z-20 py-2 md:py-3 flex flex-col items-stretch justify-between gap-2 md:gap-3 max-md:fixed max-md:inset-x-0 max-md:top-0 max-md:z-[180] max-md:bg-[#05070a] max-md:backdrop-blur-none max-md:border-b max-md:border-white/10 max-md:pb-1.5 ${mobileLandscapeChromeHidden}`}
+        className={`shrink-0 px-3 lg:border-b lg:border-white/5 bg-transparent z-20 py-2 lg:py-3 flex flex-col items-stretch justify-between gap-2 lg:gap-3 max-lg:fixed max-lg:inset-x-0 max-lg:top-0 max-lg:z-[180] max-lg:bg-[#05070a] max-lg:backdrop-blur-none max-lg:border-b max-lg:border-white/10 max-lg:pb-1.5 ${mobileLandscapeChromeHidden}`}
       >
          {/* Row 1: Home, Location Info, Bookmark, Toolkit (Killer Tab) */}
          <div
-           className="flex flex-col gap-1.5 max-md:flex-row max-md:items-center md:max-xl:gap-2 xl:flex-row xl:items-center xl:gap-x-2.5 overflow-hidden w-full min-w-0 pointer-events-auto touch-manipulation"
+           className="flex flex-col gap-1.5 max-lg:flex-row max-lg:items-center lg:max-xl:gap-2 xl:flex-row xl:items-center xl:gap-x-2.5 overflow-hidden w-full min-w-0 pointer-events-auto touch-manipulation"
            data-place-chrome-hit
            onPointerDown={(e) => e.stopPropagation()}
            onClick={(e) => e.stopPropagation()}
@@ -250,7 +250,7 @@ const PlaceChatPanel = React.memo(({
                 <Globe className="w-4 h-4 md:w-4 md:h-4 pointer-events-none" />
              </button>
              <div
-                className={`flex flex-col flex-1 min-w-[8rem] basis-[45%] justify-center overflow-hidden ${supportsHeaderScrollTop ? 'max-md:cursor-pointer' : ''}`}
+                className={`flex flex-col flex-1 min-w-[8rem] basis-[45%] justify-center overflow-hidden ${supportsHeaderScrollTop ? 'max-lg:cursor-pointer' : ''}`}
                 onClick={handleHeaderScrollTap}
                 onKeyDown={(event) => {
                     if (supportsHeaderScrollTop && (event.key === 'Enter' || event.key === ' ')) {
@@ -293,7 +293,7 @@ const PlaceChatPanel = React.memo(({
                  )}
              </div>
              </div>
-             <div className="flex shrink-0 items-center gap-1.5 md:gap-2 justify-end w-auto md:w-full xl:w-auto xl:ml-auto max-md:pointer-events-auto">
+             <div className="flex shrink-0 items-center gap-1.5 md:gap-2 justify-end w-auto lg:w-full xl:w-auto xl:ml-auto max-lg:pointer-events-auto">
                  <button
                     type="button"
                     onClick={openMooni}
@@ -330,7 +330,7 @@ const PlaceChatPanel = React.memo(({
          </div>
 
          {/* Row 2: 데스크톱만 고정 — 모바일 2행은 미디어 패널 스크롤 안으로 이동 */}
-         <div className="hidden md:flex w-full shrink-0 flex-col">
+         <div className="hidden lg:flex w-full shrink-0 flex-col">
            <PlaceMobileSecondaryNav
              placement="header"
              mediaMode={mediaMode}
@@ -346,7 +346,7 @@ const PlaceChatPanel = React.memo(({
       {/* Body — gallery: fill leftover height; related chips stay above MOONi */}
       <div
         ref={scrollRef}
-        className={`hidden md:flex flex-col flex-1 min-h-0 relative custom-scrollbar ${
+        className={`hidden lg:flex flex-col flex-1 min-h-0 relative custom-scrollbar ${
             mediaMode !== 'WIKI' && activeInfo.mode !== 'VIDEO' ? 'overflow-hidden' : 'overflow-y-auto'
         }`}
       >
@@ -410,7 +410,7 @@ const PlaceChatPanel = React.memo(({
 
       {/* Footer — 데스크톱 MOONi 진입 */}
       {mediaMode !== 'WIKI' && (
-          <div className="hidden md:block p-6 pt-4 bg-gradient-to-t from-[#05070a] via-[#05070a] to-transparent shrink-0 z-20">
+          <div className="hidden lg:block p-6 pt-4 bg-gradient-to-t from-[#05070a] via-[#05070a] to-transparent shrink-0 z-20">
               <button
                 type="button"
                 onClick={openMooni}
@@ -428,7 +428,7 @@ const PlaceChatPanel = React.memo(({
       )}
 
       {relatedPlaces.length > 0 && relatedPlaceTabForMediaMode(mediaMode) && !selectedImg && !isFullScreen && !isMooniChatOpen && createPortal(
-          <div className={`md:hidden fixed bottom-0 left-0 w-full z-[160] bg-[#05070a]/90 backdrop-blur-xl border-t border-white/10 p-3 pb-8 animate-fade-in-up shadow-[0_-10px_30px_rgba(0,0,0,0.5)] ${mobileLandscapeChromeHidden}`}>
+          <div className={`lg:hidden fixed bottom-0 left-0 w-full z-[160] bg-[#05070a]/90 backdrop-blur-xl border-t border-white/10 p-3 pb-8 animate-fade-in-up shadow-[0_-10px_30px_rgba(0,0,0,0.5)] ${mobileLandscapeChromeHidden}`}>
               <style>{`
                   .no-scrollbar::-webkit-scrollbar { display: none; }
                   .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }

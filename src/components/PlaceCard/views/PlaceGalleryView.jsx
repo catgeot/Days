@@ -1328,7 +1328,7 @@ const PlaceGalleryView = React.memo(({
           type="button"
           onClick={() => toggleFullScreen(fullScreenContainerRef)}
           aria-label={isFullScreen ? t('place.gallery.exitFullscreen') : t('place.gallery.fullscreen')}
-          className="hidden md:flex h-11 w-11 items-center justify-center rounded-full border border-white/30 bg-black/75 text-white shadow-[0_4px_24px_rgba(0,0,0,0.55)] ring-2 ring-white/25 backdrop-blur-md transition-all hover:border-blue-300/60 hover:bg-blue-600/90 hover:ring-blue-300/40"
+          className="hidden lg:flex h-11 w-11 items-center justify-center rounded-full border border-white/30 bg-black/75 text-white shadow-[0_4px_24px_rgba(0,0,0,0.55)] ring-2 ring-white/25 backdrop-blur-md transition-all hover:border-blue-300/60 hover:bg-blue-600/90 hover:ring-blue-300/40"
         >
           {isFullScreen ? <Minimize2 size={22} strokeWidth={2.25} /> : <Maximize2 size={22} strokeWidth={2.25} />}
         </button>
@@ -1345,7 +1345,7 @@ const PlaceGalleryView = React.memo(({
 
       {photoCaption && (
         <div
-          className={`md:hidden absolute left-0 right-0 top-16 z-[205] px-4 transition-opacity duration-300 ${isUIHidden ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+          className={`lg:hidden absolute left-0 right-0 top-16 z-[205] px-4 transition-opacity duration-300 ${isUIHidden ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
           onClick={(e) => e.stopPropagation()}
         >
           <div className="max-h-[30vh] overflow-y-auto rounded-2xl border border-white/10 bg-black/55 px-3.5 py-3 backdrop-blur-md shadow-lg">
@@ -1366,7 +1366,7 @@ const PlaceGalleryView = React.memo(({
           title={t('place.gallery.download')}
         >
           <Download size={20} />
-          <span className="hidden md:block text-sm font-medium pr-1">{t('place.gallery.download')}</span>
+          <span className="hidden lg:block text-sm font-medium pr-1">{t('place.gallery.download')}</span>
         </button>
       </div>
       )}
@@ -1385,20 +1385,20 @@ const PlaceGalleryView = React.memo(({
             ref={scrollContainerRef}
             data-place-gallery-scroll=""
             aria-hidden={selectedImg ? true : undefined}
-            className={`flex-1 min-h-0 w-full overflow-y-auto overflow-x-hidden custom-scrollbar-blue relative ${placeScrollSurfaceClass} md:pt-10 ${mobilePlaceGalleryFooterScrollPadding} md:pb-6 ${
+            className={`flex-1 min-h-0 w-full overflow-y-auto overflow-x-hidden custom-scrollbar-blue relative ${placeScrollSurfaceClass} lg:pt-10 ${mobilePlaceGalleryFooterScrollPadding} lg:pb-6 ${
               selectedImg ? 'invisible pointer-events-none' : ''
             }`}
           >
 
           {mobileSecondaryNav && (
-            <div className={`md:hidden shrink-0 px-2 pb-2 ${mobileLandscapeChromeHidden}`}>
+            <div className={`lg:hidden shrink-0 px-2 pb-2 ${mobileLandscapeChromeHidden}`}>
               {mobileSecondaryNav}
             </div>
           )}
 
-          <div className="px-6 max-md:landscape:px-3">
+          <div className="px-6 landscape-phone:px-3">
             {hasPlaceOverview && (
-              <div className={`md:hidden mb-4 ${mobileLandscapeChromeHidden}`}>
+              <div className={`lg:hidden mb-4 ${mobileLandscapeChromeHidden}`}>
                 <div className="rounded-2xl border border-white/10 bg-black/35 px-4 py-4 backdrop-blur-md shadow-inner space-y-3.5">
                   {(overviewQuery || curationOverview) && (
                     <div className="rounded-xl border border-violet-400/25 bg-violet-500/10 px-3 py-3">
@@ -1430,24 +1430,24 @@ const PlaceGalleryView = React.memo(({
             <PlaceScenicGateway
               location={location}
               variant="dark"
-              className={`md:hidden mb-4 ${mobileLandscapeChromeHidden}`}
+              className={`lg:hidden mb-4 ${mobileLandscapeChromeHidden}`}
             />
 
             <PlaceCrossLinksSection
               location={location}
               variant="dark"
-              className={`md:hidden mb-4 ${mobileLandscapeChromeHidden}`}
+              className={`lg:hidden mb-4 ${mobileLandscapeChromeHidden}`}
             />
 
             {!crosslinkWorldEventsRail ? (
               <PlaceWorldEventsSection
                 location={location}
                 variant="dark"
-                className={`md:hidden mb-4 ${mobileLandscapeChromeHidden}`}
+                className={`lg:hidden mb-4 ${mobileLandscapeChromeHidden}`}
               />
             ) : null}
 
-            <div className={`${hasPlaceOverview ? 'mt-4' : 'mt-12'} max-md:landscape:mt-0 md:mt-0`}>
+            <div className={`${hasPlaceOverview ? 'mt-4' : 'mt-12'} landscape-phone:mt-0 lg:mt-0`}>
               {showLoadingChrome && <GalleryLoadingChrome />}
 
               {showInitialSkeleton ? (
@@ -1596,11 +1596,11 @@ const PlaceGalleryView = React.memo(({
         <button
           type="button"
           onClick={scrollGalleryToTop}
-          className={`fixed z-[170] flex h-12 w-12 items-center justify-center rounded-full bg-blue-600 text-white shadow-[0_4px_20px_rgba(37,99,235,0.55)] ring-2 ring-white transition-colors hover:bg-blue-500 active:scale-95 bottom-24 right-3 sm:right-4 md:bottom-8 md:right-8 md:h-auto md:w-auto md:gap-1.5 md:px-4 md:py-2.5 touch-manipulation ${mobileLandscapeChromeHidden}`}
+          className={`fixed z-[170] flex h-12 w-12 items-center justify-center rounded-full bg-blue-600 text-white shadow-[0_4px_20px_rgba(37,99,235,0.55)] ring-2 ring-white transition-colors hover:bg-blue-500 active:scale-95 bottom-24 right-3 sm:right-4 lg:bottom-8 lg:right-8 lg:h-auto lg:w-auto lg:gap-1.5 lg:px-4 lg:py-2.5 touch-manipulation ${mobileLandscapeChromeHidden}`}
           aria-label={t('place.gallery.scrollTop')}
         >
           <ArrowUp size={22} className="shrink-0" strokeWidth={2.5} />
-          <span className="hidden md:inline text-sm font-bold">{t('place.gallery.scrollTopShort')}</span>
+          <span className="hidden lg:inline text-sm font-bold">{t('place.gallery.scrollTopShort')}</span>
         </button>,
         document.body
       )}
