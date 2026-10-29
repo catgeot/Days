@@ -1,6 +1,10 @@
 import hubsJson from '../data/cityAttractionHubs.json' with { type: 'json' };
 import sigunguJson from '../data/koreaSigunguByHub.json' with { type: 'json' };
+import areaCodesJson from '../data/koreaAreaCodes.json' with { type: 'json' };
 import { detectSidoFromAddr, SIDO_ADDR_HINTS } from '../../Korea/koreaAreaFilter.js';
+
+const METRO_AREA_CODES = new Set(['1', '2', '3', '4', '5', '6', '7']);
+const METRO_GU_TOKEN_RE = /^[가-힣]{1,6}구$/u;
 
 const ADMIN_SUFFIX_RE = /(특별자치도|특별자치시|광역시|특별시|도|시|군|구)$/u;
 
@@ -85,6 +89,63 @@ function buildSigunguRegionIndex() {
 
 const SIGUNGU_REGION_INDEX = buildSigunguRegionIndex();
 
+function buildMultiSidoSigunguLabelSet() {
+  /** @type {Map<string, Set<string>>} */
+  const labelToSidos = new Map();
+  for (const key of SIGUNGU_REGION_INDEX.keys()) {
+    const pipe = key.indexOf('|');
+    if (pipe <= 0) continue;
+    const sido = key.slice(0, pipe);
+    const label = key.slice(pipe + 1);
+    if (!label) continue;
+    if (!labelToSidos.has(label)) labelToSidos.set(label, new Set());
+    labelToSidos.get(label).add(sido);
+  }
+  /** @type {Set<string>} */
+  const ambiguous = new Set();
+  for (const [label, sidos] of labelToSidos) {
+    if (sidos.size > 1) ambiguous.add(label);
+  }
+  return ambiguous;
+}
+
+const MULTI_SIDO_SIGUNGU_LABELS = buildMultiSidoSigunguLabelSet();
+
+/** @returns {ReadonlySet<string>} */
+export function listMultiSidoSigunguLabels() {
+  return MULTI_SIDO_SIGUNGU_LABELS;
+}
+
+function primaryHubForAreaCode(areaCode) {
+  const hubs = areaCodesJson?.areas?.[String(areaCode)]?.hubIds;
+  const first = hubs?.[0];
+  return first ? String(first).trim().toLowerCase() : '';
+}
+
+function sigunguResult(sidoCode, hubId, lookupLabel) {
+  const stripped = stripKoreaAdminSuffix(lookupLabel);
+  const sigungu =
+    stripped && !isForbiddenShortRegionKey(stripped) ? stripped : lookupLabel;
+  return { hubId, sidoCode, sigungu };
+}
+
+/**
+ * Logbook / free-text: 시·도 없이 시군구만 쓰면 null (동명·중구 등).
+ * @param {string} text
+ */
+export function isAmbiguousSigunguTextWithoutSido(text) {
+  const raw = String(text || '').trim().normalize('NFC');
+  if (!raw || detectSidoFromAddr(raw)) return false;
+  const compact = raw.replace(/\s+/g, '');
+  if (!compact) return false;
+  if (MULTI_SIDO_SIGUNGU_LABELS.has(compact)) return true;
+  if (METRO_GU_TOKEN_RE.test(compact)) return true;
+  for (const label of sigunguLookupLabels(raw)) {
+    if (MULTI_SIDO_SIGUNGU_LABELS.has(label)) return true;
+  }
+  return false;
+}
+
 /**
  * addr1 시·도 + 시군구 **토큰 완전 일치** (부분 문자열·includes 금지).
  * @param {string | null | undefined} addr1
@@ -103,10 +164,19 @@ export function matchKoreaAdminRegionFromAddr(addr1) {
       if (!key) continue;
       const hubId = SIGUNGU_REGION_INDEX.get(key);
       if (hubId) {
-        const stripped = stripKoreaAdminSuffix(lookupLabel);
-        const sigungu =
-          stripped && !isForbiddenShortRegionKey(stripped) ? stripped : lookupLabel;
-        return { hubId, sidoCode, sigungu };
+        return sigunguResult(sidoCode, hubId, lookupLabel);
+      }
+
+      const stripped = stripKoreaAdminSuffix(lookupLabel);
+      const isShared =
+        MULTI_SIDO_SIGUNGU_LABELS.has(lookupLabel) ||
+        MULTI_SIDO_SIGUNGU_LABELS.has(stripped) ||
+        METRO_GU_TOKEN_RE.test(String(token || '').trim());
+      if (isShared && METRO_AREA_CODES.has(sidoCode)) {
+        const primary = primaryHubForAreaCode(sidoCode);
+        if (primary) {
+          return sigunguResult(sidoCode, primary, lookupLabel);
+        }
       }
     }
   }

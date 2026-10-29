@@ -1,7 +1,7 @@
 import {
   isGateoSiteSearchAllAssetsEnabled,
   isGateoSiteSearchEnabled,
-} from '../../../shared/gateoFeatureFlags.js';
+} from '../../../../shared/gateoFeatureFlags.js';
 
 /**
  * Rollout gate: parent site search + all-assets flag (both default off in prod).

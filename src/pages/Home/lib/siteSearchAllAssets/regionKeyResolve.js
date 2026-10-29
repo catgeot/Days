@@ -10,7 +10,19 @@
 
 /** @typedef {string | null} RegionKey */
 
-export const REGION_KEY_COORD_MAX_KM = 200;
+export const REGION_KEY_COORD_MAX_KM = 40;
+
+/** @type {readonly { minLat: number, maxLat: number, minLng: number, maxLng: number, hubId: string }[]} */
+const REGION_KEY_ISLAND_ZONES = [
+  { minLat: 37.85, maxLat: 38.05, minLng: 124.5, maxLng: 124.85, hubId: 'ongjin' },
+  { minLat: 37.4, maxLat: 37.65, minLng: 130.7, maxLng: 131.05, hubId: 'ulleung' },
+  { minLat: 37.1, maxLat: 37.35, minLng: 131.75, maxLng: 132.05, hubId: 'ulleung' },
+];
+
+/** Tsushima / 対馬 — exclude from KR regionKey coord match */
+const REGION_KEY_FOREIGN_EXCLUDE_ZONES = [
+  { minLat: 33.75, maxLat: 34.55, minLng: 128.95, maxLng: 129.55 },
+];
 
 /** @type {Promise<any> | null} */
 let contextPromise = null;
@@ -47,6 +59,7 @@ async function loadContext() {
 
       return {
         matchKoreaAdminRegionFromAddr: adminMod.matchKoreaAdminRegionFromAddr,
+        isAmbiguousSigunguTextWithoutSido: adminMod.isAmbiguousSigunguTextWithoutSido,
         resolveCityAttractionHub: hubMod.resolveCityAttractionHub,
         resolveHubPlaceFromSlug: hubMod.resolveHubPlaceFromSlug,
         resolveHubAttraction: hubMod.resolveHubAttraction,
@@ -77,6 +90,23 @@ function normalizeCompact(s) {
     .trim()
     .toLowerCase()
     .replace(/\s+/g, '');
+}
+
+function inBbox(lat, lng, box) {
+  return lat >= box.minLat && lat <= box.maxLat && lng >= box.minLng && lng <= box.maxLng;
+}
+
+function resolveRegionKeyFromLatLng(lat, lng, resolveKoreaAreaFromCoords) {
+  for (const box of REGION_KEY_FOREIGN_EXCLUDE_ZONES) {
+    if (inBbox(lat, lng, box)) return null;
+  }
+  for (const zone of REGION_KEY_ISLAND_ZONES) {
+    if (inBbox(lat, lng, zone)) return normalizeHubId(zone.hubId);
+  }
+  const hit = resolveKoreaAreaFromCoords(lat, lng);
+  if (!hit?.hubId) return null;
+  if (Number(hit.km) > REGION_KEY_COORD_MAX_KM) return null;
+  return normalizeHubId(hit.hubId);
 }
 
 function buildLogbookLabelIndex(hubs) {
@@ -157,10 +187,16 @@ function resolveLogbookTextSync(ctx, parts) {
     .normalize('NFC');
   if (!text) return null;
 
+  const adminHit = ctx.matchKoreaAdminRegionFromAddr(text);
+  if (adminHit?.hubId) return normalizeHubId(adminHit.hubId);
+
+  if (ctx.isAmbiguousSigunguTextWithoutSido(text)) return null;
+
   /** @type {Set<string>} */
   const matched = new Set();
 
   for (const { label, labelKey, hubId } of ctx.logbookLabels) {
+    if (ctx.isAmbiguousSigunguTextWithoutSido(label)) continue;
     if (labelKey.length < 3) {
       const tokens = text.split(/[\s,·/|，、]+/).filter(Boolean);
       if (tokens.some((tok) => normalizeCompact(tok) === labelKey)) {
@@ -230,10 +266,7 @@ export async function resolveRegionKeyFromCoords(coords) {
   const ctx = await loadContext();
   const pair = tourCoordsToLatLng(coords);
   if (!pair) return null;
-  const hit = ctx.resolveKoreaAreaFromCoords(pair.lat, pair.lng);
-  if (!hit?.hubId) return null;
-  if (Number(hit.km) > REGION_KEY_COORD_MAX_KM) return null;
-  return normalizeHubId(hit.hubId);
+  return resolveRegionKeyFromLatLng(pair.lat, pair.lng, ctx.resolveKoreaAreaFromCoords);
 }
 
 /**
@@ -247,10 +280,12 @@ export async function resolveRegionKeyFromTourApi(asset) {
   if (fromCodes) return fromCodes;
   const pair = tourCoordsToLatLng(asset);
   if (pair) {
-    const hit = ctx.resolveKoreaAreaFromCoords(pair.lat, pair.lng);
-    if (hit?.hubId && Number(hit.km) <= REGION_KEY_COORD_MAX_KM) {
-      return normalizeHubId(hit.hubId);
-    }
+    const fromCoords = resolveRegionKeyFromLatLng(
+      pair.lat,
+      pair.lng,
+      ctx.resolveKoreaAreaFromCoords,
+    );
+    if (fromCoords) return fromCoords;
   }
   return null;
 }
@@ -296,10 +331,12 @@ export async function resolveRegionKey(asset) {
 
   const pair = tourCoordsToLatLng(asset);
   if (pair) {
-    const hit = ctx.resolveKoreaAreaFromCoords(pair.lat, pair.lng);
-    if (hit?.hubId && Number(hit.km) <= REGION_KEY_COORD_MAX_KM) {
-      return normalizeHubId(hit.hubId);
-    }
+    const fromCoords = resolveRegionKeyFromLatLng(
+      pair.lat,
+      pair.lng,
+      ctx.resolveKoreaAreaFromCoords,
+    );
+    if (fromCoords) return fromCoords;
   }
 
   if (asset.destination != null || asset.location != null || asset.title != null) {
