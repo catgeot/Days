@@ -12,6 +12,11 @@ import {
   STANDARD_HOME_POI_CONFIG,
   STANDARD_HOME_SPACE_CONFIG
 } from './globeStandardBasemap';
+import {
+  setLayerZoomRangeIfChanged,
+  setLayoutPropertyIfChanged,
+  setPaintPropertyIfChanged,
+} from './globeMapStyleWrite';
 
 const MAPBOX_LABEL_MAX_ZOOM = 22;
 const GLOBE_CONTEXT_LABEL_MIN_ZOOM = 0;
@@ -108,68 +113,48 @@ export function shouldShowMapboxPoiLabels({ isPinVisible, zoom }) {
 
 export function forceHideMapboxLayer(map, layerId) {
   if (!map?.getLayer?.(layerId)) return;
-  try {
-    map.setLayoutProperty(layerId, 'visibility', 'none');
-    map.setLayerZoomRange(layerId, FORCE_HIDDEN_ZOOM_MIN, FORCE_HIDDEN_ZOOM_MAX);
-  } catch {
-    // Style may be mid-transition.
-  }
+  setLayoutPropertyIfChanged(map, layerId, 'visibility', 'none');
+  setLayerZoomRangeIfChanged(map, layerId, FORCE_HIDDEN_ZOOM_MIN, FORCE_HIDDEN_ZOOM_MAX);
 }
 
 export function showMapboxCountryLabelLayer(map, layerId) {
   if (!map?.getLayer?.(layerId)) return;
-  try {
-    map.setLayerZoomRange(layerId, COUNTRY_LABEL_MIN_ZOOM, MAPBOX_LABEL_MAX_ZOOM);
-    map.setLayoutProperty(layerId, 'visibility', 'visible');
-  } catch {
-    // Style may be mid-transition.
-  }
+  setLayerZoomRangeIfChanged(map, layerId, COUNTRY_LABEL_MIN_ZOOM, MAPBOX_LABEL_MAX_ZOOM);
+  setLayoutPropertyIfChanged(map, layerId, 'visibility', 'visible');
 }
 
 export function showMapboxDetailLayer(map, layerId) {
   if (!map?.getLayer?.(layerId)) return;
-  try {
-    map.setLayerZoomRange(layerId, PLACE_LABEL_MIN_ZOOM, MAPBOX_LABEL_MAX_ZOOM);
-    map.setLayoutProperty(layerId, 'visibility', 'visible');
-  } catch {
-    // Style may be mid-transition.
-  }
+  setLayerZoomRangeIfChanged(map, layerId, PLACE_LABEL_MIN_ZOOM, MAPBOX_LABEL_MAX_ZOOM);
+  setLayoutPropertyIfChanged(map, layerId, 'visibility', 'visible');
 }
 
 export function showMapboxPoiDetailLayer(map, layerId) {
   if (!map?.getLayer?.(layerId)) return;
-  try {
-    map.setLayerZoomRange(layerId, POI_LABEL_MIN_ZOOM, MAPBOX_LABEL_MAX_ZOOM);
-    map.setLayoutProperty(layerId, 'visibility', 'visible');
-  } catch {
-    // Style may be mid-transition.
-  }
+  setLayerZoomRangeIfChanged(map, layerId, POI_LABEL_MIN_ZOOM, MAPBOX_LABEL_MAX_ZOOM);
+  setLayoutPropertyIfChanged(map, layerId, 'visibility', 'visible');
 }
 
 /** 대륙·대양 Mapbox 라벨 — gateo 여행지명과 겹칠 때 여행지 우선(sort-key는 스타일 기본값) */
 export function showGlobeContextBasemapLayer(map, layerId) {
   if (!map?.getLayer?.(layerId)) return;
-  try {
-    map.setLayerZoomRange(layerId, GLOBE_CONTEXT_LABEL_MIN_ZOOM, MAPBOX_LABEL_MAX_ZOOM);
-    map.setLayoutProperty(layerId, 'visibility', 'visible');
-    map.setPaintProperty(layerId, 'text-opacity', [
-      'interpolate',
-      ['linear'],
-      ['zoom'],
-      1,
-      0.68,
-      4,
-      0.58,
-      6,
-      0.42,
-      8,
-      0.25,
-    ]);
-    map.setPaintProperty(layerId, 'text-halo-color', 'rgba(2, 6, 23, 0.88)');
-    map.setPaintProperty(layerId, 'text-halo-width', 1.1);
-  } catch {
-    // Style may be mid-transition or layer paint not overridable.
-  }
+  setLayerZoomRangeIfChanged(map, layerId, GLOBE_CONTEXT_LABEL_MIN_ZOOM, MAPBOX_LABEL_MAX_ZOOM);
+  setLayoutPropertyIfChanged(map, layerId, 'visibility', 'visible');
+  setPaintPropertyIfChanged(map, layerId, 'text-opacity', [
+    'interpolate',
+    ['linear'],
+    ['zoom'],
+    1,
+    0.68,
+    4,
+    0.58,
+    6,
+    0.42,
+    8,
+    0.25,
+  ]);
+  setPaintPropertyIfChanged(map, layerId, 'text-halo-color', 'rgba(2, 6, 23, 0.88)');
+  setPaintPropertyIfChanged(map, layerId, 'text-halo-width', 1.1);
 }
 
 /** 해역 포커스 시 Mapbox marine/water/ocean 지명 가독성 강화 */
@@ -193,23 +178,19 @@ export function emphasizeMapboxMarineLabels(map, { force = false, minIntervalMs 
     if (!isGlobeContextBasemapLabel(layerId, sourceLayer)) continue;
     if (!layerMatchesHints(layerId, sourceLayer, ['marine', 'water', 'ocean'])) continue;
     showGlobeContextBasemapLayer(map, layerId);
-    try {
-      map.setPaintProperty(layerId, 'text-opacity', [
-        'interpolate',
-        ['linear'],
-        ['zoom'],
-        1,
-        0.82,
-        4,
-        0.78,
-        6,
-        0.65,
-        8,
-        0.45,
-      ]);
-    } catch {
-      // Style may be mid-transition.
-    }
+    setPaintPropertyIfChanged(map, layerId, 'text-opacity', [
+      'interpolate',
+      ['linear'],
+      ['zoom'],
+      1,
+      0.82,
+      4,
+      0.78,
+      6,
+      0.65,
+      8,
+      0.45,
+    ]);
   }
 }
 

@@ -170,6 +170,10 @@ const HomeGlobeAdapter = forwardRef((props, ref) => {
     const api = {
       pauseRotation: () => childRef.current?.pauseRotation?.(),
       resumeRotation: () => childRef.current?.resumeRotation?.(),
+      releasePauseRenderHold: () => childRef.current?.releasePauseRenderHold?.(),
+      clearFocusRefreshTimers: () => childRef.current?.clearFocusRefreshTimers?.(),
+      releaseHomeGlobeFlySession: (outcome) =>
+        childRef.current?.releaseHomeGlobeFlySession?.(outcome),
       wakeAfterOverlay: () => childRef.current?.wakeAfterOverlay?.(),
       requestGateoMarkerReveal: () => childRef.current?.requestGateoMarkerReveal?.(),
       markCameraBusy: () => childRef.current?.markCameraBusy?.(),

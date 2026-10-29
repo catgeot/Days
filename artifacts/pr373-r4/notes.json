@@ -1,0 +1,36 @@
+{
+  "base": "https://127.0.0.1:4173",
+  "cities": [
+    {
+      "city": "paris",
+      "size": "390",
+      "from": "place-header",
+      "summaryVisibleAfter4s": false
+    },
+    {
+      "city": "tokyo",
+      "size": "390",
+      "from": "place-header",
+      "summaryVisibleAfter4s": false
+    },
+    {
+      "city": "paris",
+      "size": "1280",
+      "from": "place-header",
+      "summaryVisibleAfter4s": false
+    },
+    {
+      "city": "tokyo",
+      "size": "1280",
+      "from": "place-header",
+      "summaryVisibleAfter4s": false
+    }
+  ],
+  "dpr3": {
+    "windowDpr": 2,
+    "canvasBackingRatio": 2,
+    "canvasW": 780,
+    "cssW": 390
+  },
+  "capturedAt": "2026-10-22T22:06:12.741Z"
+}

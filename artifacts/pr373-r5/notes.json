@@ -1,0 +1,95 @@
+{
+  "branchBase": "https://127.0.0.1:4173",
+  "mainBase": "https://127.0.0.1:4174",
+  "capturedAt": "2026-10-22T22:22:09.784Z",
+  "runs": [
+    {
+      "flow": "paris",
+      "entry": "home-search",
+      "prefix": "branch-",
+      "base": "https://127.0.0.1:4173",
+      "markers": 0,
+      "summaryOpen": false,
+      "canvasW": 390,
+      "cssW": 390,
+      "windowDpr": 1
+    },
+    {
+      "flow": "paris",
+      "entry": "home-search",
+      "prefix": "main-",
+      "base": "https://127.0.0.1:4174",
+      "markers": 0,
+      "summaryOpen": true,
+      "canvasW": 390,
+      "cssW": 390,
+      "windowDpr": 1
+    },
+    {
+      "flow": "tokyo",
+      "entry": "home-search",
+      "prefix": "branch-",
+      "base": "https://127.0.0.1:4173",
+      "markers": 0,
+      "summaryOpen": false,
+      "canvasW": 390,
+      "cssW": 390,
+      "windowDpr": 1
+    },
+    {
+      "flow": "tokyo",
+      "entry": "home-search",
+      "prefix": "main-",
+      "base": "https://127.0.0.1:4174",
+      "markers": 0,
+      "summaryOpen": true,
+      "canvasW": 390,
+      "cssW": 390,
+      "windowDpr": 1
+    },
+    {
+      "flow": "jeju",
+      "entry": "home-search",
+      "prefix": "branch-",
+      "base": "https://127.0.0.1:4173",
+      "markers": 0,
+      "summaryOpen": false,
+      "canvasW": 390,
+      "cssW": 390,
+      "windowDpr": 1
+    },
+    {
+      "flow": "jeju",
+      "entry": "home-search",
+      "prefix": "main-",
+      "base": "https://127.0.0.1:4174",
+      "markers": 0,
+      "summaryOpen": true,
+      "canvasW": 390,
+      "cssW": 390,
+      "windowDpr": 1
+    },
+    {
+      "flow": "jeju-explore",
+      "entry": "explore-direct",
+      "prefix": "branch-",
+      "base": "https://127.0.0.1:4173",
+      "markers": 0,
+      "summaryOpen": false,
+      "canvasW": 390,
+      "cssW": 390,
+      "windowDpr": 1
+    },
+    {
+      "flow": "jeju-explore",
+      "entry": "explore-direct",
+      "prefix": "main-",
+      "base": "https://127.0.0.1:4174",
+      "markers": 0,
+      "summaryOpen": true,
+      "canvasW": 390,
+      "cssW": 390,
+      "windowDpr": 1
+    }
+  ]
+}
