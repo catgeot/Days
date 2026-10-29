@@ -10,7 +10,7 @@ import { usePlaceDesktopLeftInfoLayout } from '../common/usePlaceDesktopLeftInfo
 import GalleryInfoOverviewScrollContent from './GalleryInfoOverviewScrollContent';
 
 const GalleryInfoView = React.memo(({ selectedPlace, selectedImg, relatedPlaces = [], onRelatedClick }) => {
-    const { i18n } = useTranslation();
+    const { t, i18n } = useTranslation();
     const { locale } = useLocale();
     const overviewKeywords = useMemo(
         () => getLocalizedPlaceKeywords(selectedPlace, locale),
@@ -111,12 +111,12 @@ const GalleryInfoView = React.memo(({ selectedPlace, selectedImg, relatedPlaces 
                     {isPhotoMode ? (
                         <>
                             <Camera size={13} /> 
-                            PHOTO_LOG 
+                            {t('place.info.photoLogLabel')}
                         </>
                     ) : (
                         <>
                             <MapPin size={13} /> 
-                            PLACE_OVERVIEW
+                            {t('place.info.overviewLabel')}
                         </>
                     )}
                  </span>

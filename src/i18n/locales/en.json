@@ -840,6 +840,10 @@
     "overview": {
       "fromQuery": "From \"{{query}}\" to this place"
     },
+    "info": {
+      "overviewLabel": "Overview",
+      "photoLogLabel": "Photos"
+    },
     "nav": {
       "back": "Back",
       "home": "Go to home",
