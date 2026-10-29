@@ -610,6 +610,10 @@
     "overview": {
       "fromQuery": "「{{query}}」에서 이 여행지로"
     },
+    "info": {
+      "overviewLabel": "여행지 개요",
+      "photoLogLabel": "사진 기록"
+    },
     "nav": {
       "back": "뒤로가기",
       "home": "홈으로 이동",

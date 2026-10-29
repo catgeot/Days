@@ -1,7 +1,7 @@
 import { createElement, useEffect, useLayoutEffect, useRef, useState } from 'react';
 
 /** Generous load window before pin/placeholder fallback (slow mobile Safari + VisitKorea CDN). */
-export const FESTIVAL_PHOTO_LOAD_TIMEOUT_MS = 15_000;
+export const FESTIVAL_PHOTO_LOAD_TIMEOUT_MS = 8_000;
 
 /**
  * @param {HTMLImageElement | null | undefined} img
