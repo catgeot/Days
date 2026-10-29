@@ -1,3 +1,9 @@
+import { isGateoMooniScopedFestivalEnabled } from '../../../shared/gateoFeatureFlags.js';
+import {
+  MOONI_GENERAL_CHAT_MAX_AGE_MS,
+  resolveMooniChatScope,
+} from './mooniChatScope.js';
+
 const MOONI_LAST_CHAT_SESSION_KEY = 'gateo_mooni_last_chat_id';
 const MOONI_LAST_CHAT_LOCAL_KEY = 'gateo_mooni_last_chat_id';
 
@@ -6,24 +12,93 @@ export function mooniLastChatStorageKey(userId) {
   return userId ? `${MOONI_LAST_CHAT_LOCAL_KEY}_${userId}` : MOONI_LAST_CHAT_LOCAL_KEY;
 }
 
-export function persistMooniLastChatId(chatId, userId) {
+function resolvePersistScope(scopeOrContext) {
+  if (!isGateoMooniScopedFestivalEnabled()) return null;
+  if (typeof scopeOrContext === 'string' && scopeOrContext.trim()) {
+    return scopeOrContext.trim();
+  }
+  return resolveMooniChatScope(
+    scopeOrContext && typeof scopeOrContext === 'object' ? scopeOrContext : {},
+  );
+}
+
+function sessionKeyForScope(scope) {
+  if (!scope) return MOONI_LAST_CHAT_SESSION_KEY;
+  return `${MOONI_LAST_CHAT_SESSION_KEY}:${scope}`;
+}
+
+function localKeyForScope(userId, scope) {
+  const base = mooniLastChatStorageKey(userId);
+  if (!scope) return base;
+  return `${base}:${scope}`;
+}
+
+function encodeScopedEntry(chatId) {
+  return JSON.stringify({ id: String(chatId), savedAt: Date.now() });
+}
+
+/**
+ * @param {string | null} raw
+ * @param {string | null} scope
+ */
+export function decodeMooniScopedLastChatEntry(raw, scope) {
+  if (raw == null || raw === '') return null;
+  if (!isGateoMooniScopedFestivalEnabled()) return String(raw);
+
+  let parsed;
+  try {
+    parsed = JSON.parse(raw);
+  } catch {
+    return String(raw);
+  }
+  const id = parsed?.id != null ? String(parsed.id) : '';
+  if (!id) return null;
+  if (scope === 'general') {
+    const savedAt = Number(parsed.savedAt);
+    if (!Number.isFinite(savedAt) || Date.now() - savedAt > MOONI_GENERAL_CHAT_MAX_AGE_MS) {
+      return null;
+    }
+  }
+  return id;
+}
+
+/**
+ * @param {string | number | null | undefined} chatId
+ * @param {string | null | undefined} userId
+ * @param {string | { boundSpot?: object, mooniPlaceContext?: object } | null} [scopeOrContext]
+ */
+export function persistMooniLastChatId(chatId, userId, scopeOrContext = null) {
   if (chatId == null || chatId === '') return;
   const id = String(chatId);
+  const scope = resolvePersistScope(scopeOrContext);
+  const payload = scope ? encodeScopedEntry(id) : id;
   try {
-    sessionStorage.setItem(MOONI_LAST_CHAT_SESSION_KEY, id);
-    localStorage.setItem(mooniLastChatStorageKey(userId), id);
+    sessionStorage.setItem(sessionKeyForScope(scope), payload);
+    localStorage.setItem(localKeyForScope(userId, scope), payload);
   } catch {
     // private mode
   }
 }
 
-export function readMooniLastChatId(userId) {
+/**
+ * @param {string | null | undefined} userId
+ * @param {string | { boundSpot?: object, mooniPlaceContext?: object } | null} [scopeOrContext]
+ */
+export function readMooniLastChatId(userId, scopeOrContext = null) {
+  const scope = resolvePersistScope(scopeOrContext);
   try {
-    return (
-      sessionStorage.getItem(MOONI_LAST_CHAT_SESSION_KEY) ||
-      localStorage.getItem(mooniLastChatStorageKey(userId)) ||
-      localStorage.getItem(MOONI_LAST_CHAT_LOCAL_KEY)
-    );
+    if (!scope) {
+      return (
+        sessionStorage.getItem(MOONI_LAST_CHAT_SESSION_KEY) ||
+        localStorage.getItem(mooniLastChatStorageKey(userId)) ||
+        localStorage.getItem(MOONI_LAST_CHAT_LOCAL_KEY)
+      );
+    }
+    const sessionRaw = sessionStorage.getItem(sessionKeyForScope(scope));
+    const fromSession = decodeMooniScopedLastChatEntry(sessionRaw, scope);
+    if (fromSession) return fromSession;
+    const localRaw = localStorage.getItem(localKeyForScope(userId, scope));
+    return decodeMooniScopedLastChatEntry(localRaw, scope);
   } catch {
     return null;
   }

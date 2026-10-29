@@ -1,4 +1,5 @@
 import { supabase } from '../../../shared/api/supabase';
+import { isGateoMooniScopedFestivalEnabled } from '../../../shared/gateoFeatureFlags.js';
 import {
   findTripById,
   readMooniLastChatId,
@@ -9,8 +10,15 @@ import {
  * MOONi FAB 재진입 — sessionStorage + localStorage last id, 없으면 DB(로그인)에서 trip 로드.
  * 메시지 SSOT: saved_trips.messages (로그인 DB · 게스트 localStorage).
  */
-export async function resolveMooniResumeTrip({ savedTrips = [], userId = null }) {
-  const lastId = readMooniLastChatId(userId);
+export async function resolveMooniResumeTrip({
+  savedTrips = [],
+  userId = null,
+  scopeOrContext = null,
+} = {}) {
+  const readScope = isGateoMooniScopedFestivalEnabled()
+    ? (scopeOrContext ?? 'general')
+    : null;
+  const lastId = readMooniLastChatId(userId, readScope);
   if (!lastId) return null;
 
   let trip = findTripById(savedTrips, lastId);

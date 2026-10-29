@@ -370,7 +370,7 @@ function Home() {
 
   const handleClearMooniPlaceBinding = useCallback(() => {
     if (activeChatId) {
-      persistMooniLastChatId(activeChatId, user?.id ?? null);
+      persistMooniLastChatId(activeChatId, user?.id ?? null, { mooniPlaceContext });
     }
     setMooniPlaceContext(null);
     setSelectedLocation(null);
@@ -387,6 +387,7 @@ function Home() {
   }, [
     activeChatId,
     user?.id,
+    mooniPlaceContext,
     category,
     setMooniPlaceContext,
     setSelectedLocation,
@@ -908,11 +909,11 @@ function Home() {
       setChatDraft(null);
       setActiveChatId(created.id);
       if (mooniChatEntry || destination === 'MOONi') {
-        persistMooniLastChatId(created.id, user?.id ?? null);
+        persistMooniLastChatId(created.id, user?.id ?? null, { mooniPlaceContext });
       }
     }
     return created;
-  }, [category, saveNewTrip, mooniChatEntry, user?.id]);
+  }, [category, saveNewTrip, mooniChatEntry, user?.id, mooniPlaceContext]);
 
   const updateChatDraftDestination = useCallback((patch) => {
     setChatDraft((prev) => (prev ? { ...prev, ...patch } : null));
@@ -1781,7 +1782,7 @@ function Home() {
           onPlaceIntroReady={handlePlaceIntroReady}
           onClose={() => {
             if (activeChatId && mooniChatEntry) {
-              persistMooniLastChatId(activeChatId, user?.id ?? null);
+              persistMooniLastChatId(activeChatId, user?.id ?? null, { mooniPlaceContext });
             }
             setIsChatOpen(false);
             setChatDraft(null);

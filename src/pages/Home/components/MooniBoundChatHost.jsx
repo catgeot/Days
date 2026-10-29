@@ -152,11 +152,11 @@ export default function MooniBoundChatHost({ isOpen, boundSpot, initialQuery = n
       if (created) {
         setChatDraft(null);
         setActiveChatId(created.id);
-        persistMooniLastChatId(created.id, user?.id ?? null);
+        persistMooniLastChatId(created.id, user?.id ?? null, { mooniPlaceContext });
       }
       return created;
     },
-    [saveNewTrip, setActiveChatId, user?.id, i18n.language],
+    [saveNewTrip, setActiveChatId, user?.id, i18n.language, mooniPlaceContext],
   );
 
   useEffect(() => {
@@ -182,15 +182,15 @@ export default function MooniBoundChatHost({ isOpen, boundSpot, initialQuery = n
 
   const handleClose = useCallback(() => {
     if (activeChatId) {
-      persistMooniLastChatId(activeChatId, user?.id ?? null);
+      persistMooniLastChatId(activeChatId, user?.id ?? null, { mooniPlaceContext });
     }
     resetSession();
     onClose?.();
-  }, [activeChatId, onClose, resetSession, user?.id]);
+  }, [activeChatId, onClose, resetSession, user?.id, mooniPlaceContext]);
 
   const handleClearPlaceBinding = useCallback(() => {
     if (activeChatId) {
-      persistMooniLastChatId(activeChatId, user?.id ?? null);
+      persistMooniLastChatId(activeChatId, user?.id ?? null, { mooniPlaceContext });
     }
     setMooniPlaceContext(null);
     setActiveChatId(null);
@@ -201,12 +201,12 @@ export default function MooniBoundChatHost({ isOpen, boundSpot, initialQuery = n
       persona: PERSONA_TYPES.GENERAL,
       category: THEME_CHAT_CATEGORY,
     });
-  }, [activeChatId, setActiveChatId, user?.id]);
+  }, [activeChatId, setActiveChatId, user?.id, mooniPlaceContext]);
 
   useEffect(() => {
     if (isOpen) return;
     if (activeChatId) {
-      persistMooniLastChatId(activeChatId, user?.id ?? null);
+      persistMooniLastChatId(activeChatId, user?.id ?? null, { mooniPlaceContext });
     }
     if (
       openedKeyRef.current != null ||
