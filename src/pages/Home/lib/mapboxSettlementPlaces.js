@@ -8,7 +8,6 @@ import {
   placeSlugVariants,
   placeUrlSlug,
 } from './cityAttractionHubs.js';
-import { normalizeDestinationKey } from './mooniPlaceChatLabel.js';
 
 const FEATURE_TYPES = new Set(['place', 'city', 'locality']);
 const HUB_EXACT_SETTLEMENT_LIMIT = 3;
@@ -52,33 +51,6 @@ for (const row of ROWS) {
 }
 
 const hubMetaById = new Map(listCityAttractionHubs().map((h) => [h.hubId, h]));
-
-/** @type {Map<string, number>} normalized settlement name → count in SSOT */
-const SETTLEMENT_BARE_NAME_COUNTS = (() => {
-  const counts = new Map();
-  for (const row of ROWS) {
-    for (const settlement of row.settlements ?? []) {
-      const bare = normalizeDestinationKey(settlement.name || '');
-      if (!bare) continue;
-      counts.set(bare, (counts.get(bare) || 0) + 1);
-    }
-  }
-  return counts;
-})();
-
-export function settlementBareNameIsAmbiguousInSsot(bareName) {
-  const b = normalizeDestinationKey(bareName);
-  if (!b) return false;
-  return (SETTLEMENT_BARE_NAME_COUNTS.get(b) || 0) > 1;
-}
-
-/** Mapbox 정착지 카드·핀 (hubId + settlement-* id 또는 source=settlement). */
-export function isMapboxSettlementLocation(locOrName) {
-  if (!locOrName || typeof locOrName !== 'object') return false;
-  if (locOrName.source === 'settlement') return true;
-  const id = String(locOrName.id ?? '');
-  return Boolean(locOrName.hubId && id.startsWith('settlement-'));
-}
 
 export function listMapboxSettlementRows() {
   return ROWS;

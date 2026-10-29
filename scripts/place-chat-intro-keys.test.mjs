@@ -5,6 +5,10 @@ import {
   buildPlaceChatIntroKeys,
   withPlaceChatIntroLocale,
 } from '../src/pages/Home/lib/placeChatIntro.js';
+import {
+  resolveSettlement,
+  settlementToPlacePin,
+} from '../src/pages/Home/lib/mapboxSettlementPlaces.js';
 
 test('완도 상왕봉 is looked up before the bare 상왕봉 key that also matches 가야산', () => {
   const wando = buildPlaceChatIntroKeys(
@@ -58,15 +62,29 @@ test('en locale uses @en storage for country-prefixed key (Gyeongbokgung)', () =
   );
 });
 
-test('mapbox settlement 강릉 교동: lookup key is only 강릉 교동 (ops destination_key)', () => {
+test('SETTLEMENT_INTRO_PARENT_ONLY_IDS: gangneung-gyo-dong keys only 강릉 교동', () => {
   const gangneungGyodong = {
     id: 'settlement-gangneung-gyo-dong',
+    placeId: 'gangneung-gyo-dong',
     hubId: 'gangneung',
     name: '교동',
     parentCity: '강릉',
     country: '대한민국',
   };
   assert.deepEqual(buildPlaceChatIntroKeys(gangneungGyodong, 'ko'), ['강릉 교동']);
+});
+
+test('unlisted settlement 속초 설악동: same keys as main parentCity spot', () => {
+  const hit = resolveSettlement('설악동');
+  assert.ok(hit, '설악동 SSOT');
+  const pin = settlementToPlacePin(hit.row, hit.settlement);
+  const keys = buildPlaceChatIntroKeys(pin, 'ko');
+  assert.deepEqual(keys, ['속초 설악동', '대한민국 설악동']);
+  const mainEquivalent = buildPlaceChatIntroKeys(
+    { name: '설악동', parentCity: '속초', country: '대한민국' },
+    'ko',
+  );
+  assert.deepEqual(keys, mainEquivalent);
 });
 
 test('강화 교동 (non-settlement): country-prefixed 대한민국 교동 still in key list', () => {
