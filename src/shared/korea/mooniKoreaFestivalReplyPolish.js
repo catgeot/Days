@@ -1,6 +1,11 @@
 import { KO, EN } from '../../i18n/mooniPromptBundleData.js';
 import { listCityAttractionHubs, resolveCityAttractionHub } from '../../pages/Home/lib/cityAttractionHubs.js';
-import { englishLodgingAreaLabel, englishLodgingPlaceName } from './englishPlaceLabel.js';
+import {
+  englishLodgingAreaLabel,
+  englishLodgingPlaceName,
+  formatEnglishThenKorean,
+} from './englishPlaceLabel.js';
+import { festivalListDisplayTitle } from '../../pages/Korea/festivalDisplayTitle.js';
 import { ensureItineraryMarkdownLineBreaks } from '../../utils/mooniTruncatedContinue.js';
 import { haversineKm as stayHaversineKm, parseStayCoordPair } from '../../utils/mrtStayDistance.js';
 import { filterBySearchQuery, normalizeFestivalQuery } from '../../pages/Korea/festivalSearch.js';
@@ -12,6 +17,11 @@ import {
   rolling30DayRangeYmd,
   toYmd,
 } from '../../pages/Korea/festivalTimeFilter.js';
+import {
+  addDaysYmd,
+  mondayYmdOfSeoulWeekContaining,
+  seoulTodayYmd,
+} from '../../pages/Korea/festivalDateFilter.js';
 import { glueAccessNumbersInProse } from './festivalAccessProseGlue.js';
 import {
   composeFestivalAccessReply,
@@ -30,6 +40,44 @@ export {
 } from './mooniKoreaFestivalHintBudget.js';
 
 export const GATEO_KOREA_FESTIVAL_BASE = 'https://www.gateo.kr/korea/';
+
+/** @param {string | null | undefined} locale */
+export function mooniReplyLocaleIsEn(locale) {
+  return String(locale || 'ko').toLowerCase().startsWith('en');
+}
+
+function englishMooniFestivalRegionName(koRegion) {
+  const ko = String(koRegion || '').trim();
+  if (!ko) return 'that area';
+  const formatted = formatEnglishThenKorean(ko);
+  if (!formatted) return 'that area';
+  if (!/[가-힣]/.test(formatted)) return formatted;
+  const head = formatted.split('(')[0].trim();
+  return head || 'that area';
+}
+
+function englishMooniFestivalWindowLabel(koLabel) {
+  const label = String(koLabel || '').trim();
+  const map = {
+    '이번 주': 'this week',
+    '다음 주': 'next week',
+    '다다음 주': 'the week after next',
+    '이번 주말': 'this weekend',
+    '이번 주 주말': 'this weekend',
+    '다음 주 주말': 'next weekend',
+    '다다음 주 주말': 'the weekend after next',
+    '앞으로 30일': 'the next 30 days',
+  };
+  return map[label] || 'this week';
+}
+
+function mergeCandidateDisplayTitle(c, locale) {
+  if (!mooniReplyLocaleIsEn(locale)) return String(c.title || '').trim();
+  return (
+    festivalListDisplayTitle({ title: c.title, titleEn: c.titleEn }, locale) ||
+    String(c.title || '').trim()
+  );
+}
 
 /** @param {string} contentId */
 export function gateoKoreaFestivalDetailUrl(contentId) {
@@ -491,8 +539,13 @@ function shouldSkipFestivalAccessBookingFooterAppend(body) {
   return busSites >= 1;
 }
 
+function isGateoKoreaFestivalHubUrl(url) {
+  return looseUrlKey(String(url || '').trim()) === looseUrlKey(GATEO_KOREA_FESTIVAL_BASE);
+}
+
 function isAllowedFestivalMarkdownUrl(url, homepage = '') {
   const clean = String(url || '').trim();
+  if (isGateoKoreaFestivalHubUrl(clean)) return true;
   if (ALLOWED_FESTIVAL_URL.test(clean)) return true;
   if (FESTIVAL_BOOKING_URL.test(clean)) return true;
   if (sameOfficialUrl(clean, homepage)) return true;
@@ -501,6 +554,7 @@ function isAllowedFestivalMarkdownUrl(url, homepage = '') {
 
 function isAllowedFestivalBareUrl(url) {
   const clean = String(url || '').trim();
+  if (isGateoKoreaFestivalHubUrl(clean)) return true;
   if (ALLOWED_FESTIVAL_URL.test(clean)) return true;
   if (FESTIVAL_BOOKING_URL.test(clean)) return true;
   return false;
@@ -2178,6 +2232,13 @@ export function dedupeFestivalPageLinks(text) {
   const matches = [...src.matchAll(/\[([^\]]*)\]\((https?:\/\/[^)\s]+)\)/g)]
     .filter((match) => isPlainFestivalPageUrl(match[2]));
   if (matches.length < 2) return src;
+  const listLineLinks = matches.filter((match) => {
+    const lineStart = src.lastIndexOf('\n', match.index ?? 0) + 1;
+    const lineEnd = src.indexOf('\n', match.index ?? 0);
+    const line = src.slice(lineStart, lineEnd === -1 ? src.length : lineEnd);
+    return /^\s*[-*]\s+\[/.test(line);
+  });
+  if (listLineLinks.length >= 2) return src;
   const keep = matches[matches.length - 1];
   let result = '';
   let cursor = 0;
@@ -4043,24 +4104,23 @@ export function isMooniKoreaFestivalQuery(userText) {
   return FESTIVAL_INTENT_RE.test(String(userText || ''));
 }
 
-function mondayOfWeekContaining(d) {
-  const x = new Date(d.getFullYear(), d.getMonth(), d.getDate());
-  const day = x.getDay();
-  const offset = day === 0 ? -6 : 1 - day;
-  x.setDate(x.getDate() + offset);
-  return x;
+function koreanTopicWaOrGwa(noun) {
+  const word = String(noun || '').trim();
+  if (!word) return '와';
+  const last = word.charAt(word.length - 1);
+  return syllableHasBatchim(last) ? '과' : '와';
 }
 
 /**
- * @param {number} weeksAhead 0=이번 주(월~일)
+ * @param {number} weeksAhead 0=이번 주(월~일, Asia/Seoul)
  * @param {Date} now
  */
 function calendarWeekRange(weeksAhead, now) {
-  const mon = mondayOfWeekContaining(now);
-  mon.setDate(mon.getDate() + weeksAhead * 7);
-  const sun = new Date(mon);
-  sun.setDate(mon.getDate() + 6);
-  return { startYmd: toYmd(mon), endYmd: toYmd(sun) };
+  const today = seoulTodayYmd(now);
+  const mon = mondayYmdOfSeoulWeekContaining(today);
+  const startYmd = addDaysYmd(mon, weeksAhead * 7);
+  const endYmd = addDaysYmd(startYmd, 6);
+  return { startYmd, endYmd };
 }
 
 function weekendInWeek(weeksAhead, now) {
@@ -4159,7 +4219,7 @@ export function selectMooniKoreaFestivalCandidates(items, opts) {
     list = filterBySearchQuery(list, locationQuery);
   }
 
-  const today = todayYmd(now);
+  const today = kstTodayYmd(now);
   list = list.filter((item) => {
     const start = String(item?.eventStartDate || '');
     const endRaw = String(item?.eventEndDate || '');
@@ -4174,11 +4234,13 @@ export function selectMooniKoreaFestivalCandidates(items, opts) {
   const candidates = list.slice(0, limit).map((item) => {
     const contentId = String(item.contentId || '').trim();
     const title = String(item.title || '').trim();
+    const titleEn = String(item.titleEn || '').trim();
     const start = String(item.eventStartDate || '');
     const end = String(item.eventEndDate || start);
     return {
       contentId,
       title,
+      titleEn,
       startYmd: start,
       endYmd: end,
       periodLabel: formatFestivalPeriodLabel(start, end),
@@ -4188,6 +4250,105 @@ export function selectMooniKoreaFestivalCandidates(items, opts) {
   });
 
   return { window, candidates };
+}
+
+/**
+ * Verified festivals after the asked window (same region filter), for empty-window replies.
+ * @param {object[]} items
+ * @param {{ userText: string, boundPlaceName?: string, now?: Date, limit?: number }} opts
+ */
+export function selectMooniKoreaFestivalUpcomingFallback(items, opts) {
+  const now = opts.now ?? new Date();
+  const window = parseMooniFestivalTimeWindow(opts.userText, now);
+  if (!window) return { window: null, candidates: [] };
+
+  const locationQuery = extractMooniFestivalLocationQuery(
+    opts.userText,
+    opts.boundPlaceName,
+  );
+  let list = Array.isArray(items) ? items : [];
+  if (locationQuery) {
+    list = filterBySearchQuery(list, locationQuery);
+  }
+
+  const today = kstTodayYmd(now);
+  list = list.filter((item) => {
+    const start = String(item?.eventStartDate || '');
+    const endRaw = String(item?.eventEndDate || '');
+    const end = /^\d{8}$/.test(endRaw) ? endRaw : start;
+    if (!/^\d{8}$/.test(start)) return false;
+    if (end < today) return false;
+    if (rangesOverlap(start, end, window.startYmd, window.endYmd)) return false;
+    return true;
+  });
+
+  list = [...list].sort((a, b) => compareFestivalsByOpenDate(a, b, now));
+  const limit = Math.min(Math.max(Number(opts.limit) || 3, 1), 5);
+  const candidates = list.slice(0, limit).map((item) => {
+    const contentId = String(item.contentId || '').trim();
+    const title = String(item.title || '').trim();
+    const titleEn = String(item.titleEn || '').trim();
+    const start = String(item.eventStartDate || '');
+    const end = String(item.eventEndDate || start);
+    return {
+      contentId,
+      title,
+      titleEn,
+      startYmd: start,
+      endYmd: end,
+      periodLabel: formatFestivalPeriodLabel(start, end),
+      addr: String(item.addr1 || '').trim(),
+      url: gateoKoreaFestivalDetailUrl(contentId),
+    };
+  });
+
+  return { window, candidates };
+}
+
+/**
+ * @param {{
+ *   locale?: string,
+ *   userText?: string,
+ *   boundPlaceName?: string,
+ *   window?: { label?: string } | null,
+ *   upcoming?: { title: string, periodLabel: string, url: string }[],
+ * }} input
+ */
+export function buildMooniKoreaFestivalZeroCandidateUserReply(input = {}) {
+  const isEn = mooniReplyLocaleIsEn(input.locale);
+  const regionKo =
+    extractMooniFestivalLocationQuery(input.userText || '', input.boundPlaceName || '') ||
+    String(input.boundPlaceName || '').trim() ||
+    (isEn ? 'that area' : '해당 지역');
+  const region = isEn ? englishMooniFestivalRegionName(regionKo) : regionKo;
+  const windowKo = String(input.window?.label || (isEn ? 'this week' : '이번 주')).trim();
+  const windowLabel = isEn ? englishMooniFestivalWindowLabel(windowKo) : windowKo;
+  const koreaUrl = GATEO_KOREA_FESTIVAL_BASE;
+  const upcoming = Array.isArray(input.upcoming) ? input.upcoming : [];
+
+  if (isEn) {
+    let body =
+      `GATEO has no verified festivals overlapping ${region} for ${windowLabel}. ` +
+      `You can browse confirmed dates on [GATEO Korean festivals](${koreaUrl}).`;
+    if (upcoming.length) {
+      const lines = upcoming.map(
+        (c) => `- **[${c.title}](${c.url})** (${c.periodLabel})`,
+      );
+      body += `\n\nUpcoming verified festivals nearby:\n${lines.join('\n')}`;
+    }
+    return body.trim();
+  }
+
+  let body =
+    `GATEO가 확인한 축제 중 ${windowLabel} ${region}${koreanTopicWaOrGwa(region)} 겹치는 행사는 없어요. ` +
+    `[GATEO 축제 목록](${koreaUrl})에서 날짜가 확인된 축제를 볼 수 있어요.`;
+  if (upcoming.length) {
+    const lines = upcoming.map(
+      (c) => `- **[${c.title}](${c.url})** (${c.periodLabel})`,
+    );
+    body += `\n\n가까운 날짜의 확인된 축제:\n${lines.join('\n')}`;
+  }
+  return body.trim();
 }
 
 const NO_MATCH_KO = '매칭 없음';
@@ -4470,8 +4631,19 @@ export function buildMooniKoreaFestivalSystemHint(input) {
 
   const locale = String(input.locale || 'ko').slice(0, 2);
   const isEn = locale === 'en';
+  const scopedFestival = input.scopedFestivalEnabled === true;
+  const regionLabel =
+    extractMooniFestivalLocationQuery(input.userText, input.boundPlaceName) ||
+    String(input.boundPlaceName || '').trim() ||
+    (isEn ? 'the area' : '해당 지역');
+  const regionWa = koreanTopicWaOrGwa(regionLabel);
 
   if (!candidates.length) {
+    if (scopedFestival) {
+      return isEn
+        ? `\n[GATEO Korea festivals — no matches]\n- The user is looking for festivals they can actually attend ${window.label} (${formatFestivalPeriodLabel(window.startYmd, window.endYmd)}).\n- GATEO has no verified festivals overlapping ${regionLabel} in that window. Say that briefly in a helpful tone, then point them to upcoming verified festivals or the GATEO festival list (${GATEO_KOREA_FESTIVAL_BASE}).\n- The user wants festivals they can actually attend, so introducing only verified festivals from GATEO—with dates and links when you have them—will help them most.`
+        : `\n[GATEO 한국 축제 — 매칭 없음]\n- GATEO가 확인한 축제 중에는 ${window.label} ${regionLabel}${regionWa} 겹치는 행사가 없어요. 사용자는 실제로 갈 수 있는 곳을 원하니, 그 사실을 짧게 알려 주고 가까운 날짜의 확인된 축제나 GATEO 축제 목록(${GATEO_KOREA_FESTIVAL_BASE})을 안내해 주시면 가장 도움이 돼요.`;
+    }
     return isEn
       ? `\n[GATEO Korea festivals — no matches]\n- The user asked about Korean festivals for: ${window.label} (${formatFestivalPeriodLabel(window.startYmd, window.endYmd)}).\n- No festivals in GATEO data overlap this window and place filter. Say so briefly; do not invent festivals or URLs.`
       : `\n[GATEO 한국 축제 — 매칭 없음]\n- 사용자가 물은 기간: ${window.label}(${formatFestivalPeriodLabel(window.startYmd, window.endYmd)}).\n- GATEO 축제 데이터에 이 기간·지역과 겹치는 행사가 없습니다. 짧게 안내하고, 목록에 없는 축제명·링크를 만들지 마세요.`;
@@ -4483,7 +4655,15 @@ export function buildMooniKoreaFestivalSystemHint(input) {
   );
 
   if (isEn) {
+    if (scopedFestival) {
+      return `\n[GATEO Korea festivals — verified list]\n- The user wants festivals they can attend ${window.label} (${formatFestivalPeriodLabel(window.startYmd, window.endYmd)}).\n- Recommend only the verified festivals below (GATEO-checked dates). Each line must appear in the answer with its period and the exact https://www.gateo.kr/korea/?festival= URL as a markdown link.\n${lines.join('\n')}`;
+    }
     return `\n[GATEO Korea festivals — use ONLY this list]\n- Question window: ${window.label} (${formatFestivalPeriodLabel(window.startYmd, window.endYmd)}). Exclude anything not listed.\n- Recommend only festivals below. Each line must appear in the answer with its period and the exact https://www.gateo.kr/korea/?festival= URL as a markdown link.\n- Do not recommend ended festivals or events outside this window.\n${lines.join('\n')}`;
+  }
+
+  if (scopedFestival) {
+    const windowWa = koreanTopicWaOrGwa(window.label);
+    return `\n[GATEO 한국 축제 — 확인된 목록]\n- 사용자는 ${window.label}(${formatFestivalPeriodLabel(window.startYmd, window.endYmd)})에 실제로 갈 수 있는 축제를 찾고 있어요. 아래 목록은 GATEO가 날짜를 확인한, ${window.label}${windowWa} 겹치는 축제예요. 이 목록에 있는 축제를 기간과 링크와 함께 소개해 주시면 사용자가 바로 일정을 잡을 수 있어요.\n${lines.join('\n')}`;
   }
 
   return `\n[GATEO 한국 축제 — 아래 목록만 추천]\n- 사용자가 물은 기간: ${window.label}(${formatFestivalPeriodLabel(window.startYmd, window.endYmd)}). 이 기간과 겹치지 않거나 이미 끝난 행사는 추천하지 않는다.\n- **아래 목록에 있는 축제만** 추천한다. 각 축제는 **행사 기간**과 **정확한 GATEO 상세 URL**(https://www.gateo.kr/korea/?festival=…)을 마크다운 링크로 넣는다.\n- 목록에 없는 축제명·URL을 지어내지 않는다.\n${lines.join('\n')}`;
@@ -4491,10 +4671,37 @@ export function buildMooniKoreaFestivalSystemHint(input) {
 
 /**
  * @param {string} aiReply
- * @param {{ candidates: { title: string, periodLabel: string, url: string, contentId: string }[] }} ctx
+ * @param {{
+ *   candidates?: { title: string, periodLabel: string, url: string, contentId: string }[],
+ *   userText?: string,
+ *   boundPlaceName?: string,
+ *   locale?: string,
+ *   now?: Date,
+ *   upcomingFallback?: { title: string, periodLabel: string, url: string }[],
+ *   isFestivalQuestion?: boolean,
+ * }} ctx
  */
 export function mergeMooniKoreaFestivalReply(aiReply, ctx) {
   const candidates = ctx?.candidates || [];
+  const userText = String(ctx?.userText || '');
+  const festivalQuestion =
+    ctx?.isFestivalQuestion === true || isMooniKoreaFestivalQuery(userText);
+
+  if (
+    ctx?.scopedFestivalEnabled === true &&
+    festivalQuestion &&
+    !candidates.length
+  ) {
+    const window = parseMooniFestivalTimeWindow(userText, ctx?.now);
+    return buildMooniKoreaFestivalZeroCandidateUserReply({
+      locale: ctx?.locale,
+      userText,
+      boundPlaceName: ctx?.boundPlaceName,
+      window,
+      upcoming: ctx?.upcomingFallback,
+    });
+  }
+
   if (!candidates.length) return aiReply ?? '';
   const reply = String(aiReply ?? '');
   const hasGateoFestivalLink = candidates.some(
@@ -4504,10 +4711,12 @@ export function mergeMooniKoreaFestivalReply(aiReply, ctx) {
 
   const blocks = candidates.map((c) => {
     const place = c.addr ? ` · ${c.addr}` : '';
-    return `- **[${c.title}](${c.url})** (${c.periodLabel})${place}`;
+    const label = mergeCandidateDisplayTitle(c, ctx?.locale);
+    return `- [${label}](${c.url}) (${c.periodLabel})${place}`;
   });
-  const intro =
-    'GATEO에 등록된 축제만 정리했습니다. 이름을 누르면 상세·일정으로 바로 갈 수 있습니다.\n\n';
+  const intro = mooniReplyLocaleIsEn(ctx?.locale)
+    ? 'Here are GATEO-verified festivals only. Tap a name for details and dates.\n\n'
+    : 'GATEO에 등록된 축제만 모았어요. 이름을 누르면 상세·일정으로 바로 갈 수 있어요.\n\n';
   return `${reply.trim()}\n\n${intro}${blocks.join('\n')}`.trim();
 }
 
@@ -4644,12 +4853,22 @@ export async function resolveMooniChatKoreaFestivalHint(input = {}) {
     now: input.now,
   });
 
+  const upcomingFallback =
+    input.scopedFestivalEnabled === true && !picked.candidates.length
+      ? selectMooniKoreaFestivalUpcomingFallback(items, {
+          userText,
+          boundPlaceName: input.boundPlaceName,
+          now: input.now,
+        }).candidates
+      : [];
+
   const hint = buildMooniKoreaFestivalSystemHint({
     userText,
     boundPlaceName: input.boundPlaceName,
     items,
     locale: input.locale,
     now: input.now,
+    scopedFestivalEnabled: input.scopedFestivalEnabled === true,
   });
 
   return {
@@ -4658,6 +4877,7 @@ export async function resolveMooniChatKoreaFestivalHint(input = {}) {
       chipId: input.chipId,
     }),
     candidates: picked.candidates,
+    upcomingFallback,
   };
 }
 

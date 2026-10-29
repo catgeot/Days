@@ -1,5 +1,6 @@
-import { fetchKoreaFestivalsRolling12 } from '../../Korea/fetchKoreaFestivalsWindow.js';
+import { fetchKoreaFestivalsRolling12, ensureKoreaFestivalItemsTitleEnForMooni } from '../../Korea/fetchKoreaFestivalsWindow.js';
 import { resolveMooniChatKoreaFestivalHint } from '../../../shared/korea/mooniKoreaFestivalAssist.js';
+import { isGateoMooniScopedFestivalEnabled } from '../../../shared/gateoFeatureFlags.js';
 
 /**
  * usePlaceChat · ChatModal 공통 mooni_chat koreaFestivalHint.
@@ -13,6 +14,7 @@ import { resolveMooniChatKoreaFestivalHint } from '../../../shared/korea/mooniKo
  */
 export async function resolvePlaceChatKoreaFestivalHint(input = {}) {
   const locale = input.locale || 'ko';
+  const scopedFestivalEnabled = isGateoMooniScopedFestivalEnabled();
   return resolveMooniChatKoreaFestivalHint({
     userText: input.userText,
     chipId: input.chipId ?? null,
@@ -20,9 +22,14 @@ export async function resolvePlaceChatKoreaFestivalHint(input = {}) {
     boundPlaceName: input.boundPlaceName,
     departureLabel: input.departureLabel ?? '',
     locale,
+    scopedFestivalEnabled,
     loadFestivalItems: async () => {
       const festWindow = await fetchKoreaFestivalsRolling12({ locale });
-      return festWindow?.items ?? [];
+      const items = festWindow?.items ?? [];
+      return ensureKoreaFestivalItemsTitleEnForMooni(items, {
+        scopedFestivalEnabled,
+        locale,
+      });
     },
   });
 }

@@ -54,6 +54,7 @@ import { loadFestivalLodgingForAsk } from '../../Korea/lib/festivalStayLoad.js';
 import { invokeMooniChatToleratingChip } from '../lib/mooniChipEdgeFallback.js';
 import { resolvePlaceChatKoreaFestivalHint } from '../lib/resolvePlaceChatKoreaFestivalHint.js';
 import { fitMooniKoreaFestivalHint } from '../../../shared/korea/mooniKoreaFestivalHintBudget.js';
+import { isGateoMooniScopedFestivalEnabled } from '../../../shared/gateoFeatureFlags.js';
 import { buildFestivalMooniChatOpening } from '../../Korea/lib/festivalMooniBoundSpot.js';
 import { festivalChatHeaderTitle } from '../../Korea/lib/festivalMooniContext.js';
 import {
@@ -1233,6 +1234,7 @@ const ChatModal = ({
 
       let koreaFestivalHint = '';
       let mooniFestivalCandidates = [];
+      let mooniFestivalUpcomingFallback = [];
       const festivalContext = await loadFestivalAskContext(
         mooniPlaceContext?.festivalContext ?? null,
         { chipId, userText: cleanText },
@@ -1248,6 +1250,7 @@ const ChatModal = ({
         });
         koreaFestivalHint = festHint.hint;
         mooniFestivalCandidates = festHint.candidates;
+        mooniFestivalUpcomingFallback = festHint.upcomingFallback || [];
       } catch (festErr) {
         console.warn('[mooni] korea festival SSOT skipped:', festErr?.message || festErr);
       }
@@ -1334,6 +1337,11 @@ const ChatModal = ({
       );
       const festivalMergedReply = mergeMooniKoreaFestivalReply(aiReply, {
         candidates: mooniFestivalCandidates,
+        userText: cleanText,
+        boundPlaceName: destName,
+        locale: i18n.language,
+        upcomingFallback: mooniFestivalUpcomingFallback,
+        scopedFestivalEnabled: isGateoMooniScopedFestivalEnabled(),
       });
       const stripPhantomTicketMention = !hasTransportCta;
       const polishedFestivalReply = polishFestivalModelReply(festivalMergedReply, lodgingOptions);

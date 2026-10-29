@@ -670,6 +670,7 @@ export function useHomeHandlers({
         const resumedTrip = await resolveMooniResumeTrip({
           savedTrips,
           userId: user?.id ?? null,
+          scopeOrContext: 'general',
         });
         if (resumedTrip) {
           logCurationHandoff('chat.resume.mooniTrip', { id: resumedTrip.id });

@@ -91,6 +91,109 @@ function itemsNeedTitleEn(items) {
   return (items || []).some((item) => item?.contentId && !item?.titleEn);
 }
 
+const MOONI_TITLE_EN_TIMEOUT_MS = 5000;
+
+/** @type {Map<string, object[]>} */
+const mooniTitleEnEnItemsByRange = new Map();
+/** @type {Map<string, Promise<object[] | null>>} */
+const mooniTitleEnInflightByRange = new Map();
+
+/** @type {typeof fetchTourApiFestivalWindow | null} */
+let mooniTitleEnFetchImpl = null;
+
+function mooniTitleEnFetch() {
+  return mooniTitleEnFetchImpl ?? fetchTourApiFestivalWindow;
+}
+
+/** @param {typeof fetchTourApiFestivalWindow | null} fn */
+export function __testSetMooniTitleEnFetch(fn) {
+  mooniTitleEnFetchImpl = fn;
+}
+
+export function __testResetMooniTitleEnCache() {
+  mooniTitleEnEnItemsByRange.clear();
+  mooniTitleEnInflightByRange.clear();
+  mooniTitleEnFetchImpl = null;
+}
+
+/**
+ * @param {Promise<T>} promise
+ * @param {number} ms
+ * @returns {Promise<T>}
+ */
+function withTimeout(promise, ms) {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error('mooni titleEn merge timeout')), ms);
+    promise.then(
+      (v) => {
+        clearTimeout(timer);
+        resolve(v);
+      },
+      (e) => {
+        clearTimeout(timer);
+        reject(e);
+      },
+    );
+  });
+}
+
+/**
+ * @param {{ eventStartDate: string, eventEndDate: string, force?: boolean }} range
+ */
+async function loadEnFestivalItemsForMooniRange(range) {
+  const cacheKey = `${range.eventStartDate}:${range.eventEndDate}`;
+  const cached = mooniTitleEnEnItemsByRange.get(cacheKey);
+  if (cached) return cached;
+
+  let inflight = mooniTitleEnInflightByRange.get(cacheKey);
+  if (!inflight) {
+    inflight = withTimeout(
+      mooniTitleEnFetch()({
+        eventStartDate: range.eventStartDate,
+        eventEndDate: range.eventEndDate,
+        force: Boolean(range.force),
+        locale: 'en',
+      }),
+      MOONI_TITLE_EN_TIMEOUT_MS,
+    )
+      .then((enData) => {
+        if (!enData?.ok || !Array.isArray(enData.items) || !enData.items.length) {
+          return null;
+        }
+        mooniTitleEnEnItemsByRange.set(cacheKey, enData.items);
+        return enData.items;
+      })
+      .finally(() => {
+        mooniTitleEnInflightByRange.delete(cacheKey);
+      });
+    mooniTitleEnInflightByRange.set(cacheKey, inflight);
+  }
+
+  return inflight;
+}
+
+/**
+ * MOONi scoped festival — EngService2 title join (flag ON + EN locale only).
+ * @param {object[]} items
+ * @param {{ scopedFestivalEnabled?: boolean, locale?: string, now?: Date }} [opts]
+ */
+export async function ensureKoreaFestivalItemsTitleEnForMooni(items, opts = {}) {
+  if (!opts.scopedFestivalEnabled) return items;
+  if (!String(opts.locale || '').toLowerCase().startsWith('en')) return items;
+  if (!items?.length || !itemsNeedTitleEn(items)) return items;
+
+  const now = opts.now instanceof Date ? opts.now : new Date();
+  const range = rolling12MonthRangeYmd(now);
+
+  try {
+    const enItems = await loadEnFestivalItemsForMooniRange({ ...range, force: false });
+    if (!enItems?.length) return items;
+    return mergeFestivalTitleEn(items, enItems);
+  } catch {
+    return items;
+  }
+}
+
 /**
  * Edge festivalWindow 1회 (서버 페이지 merge + DB 캐시).
  * @param {{ force?: boolean, now?: Date, locale?: string }} [opts]

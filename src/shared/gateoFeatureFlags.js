@@ -25,6 +25,8 @@ export const GATEO_ENV_FLAG_NAMES = {
   EXPLORE_SEARCH_SUBMIT_PARITY: 'VITE_GATEO_EXPLORE_SEARCH_SUBMIT_PARITY',
   /** Desktop (lg+) — move gallery #facts/#stories into left overview scroll. Default off. */
   PLACE_DESKTOP_LEFT_INFO: 'VITE_GATEO_PLACE_DESKTOP_LEFT_INFO',
+  /** MOONi scoped last-chat + verified festival list replies. Default off. */
+  MOONI_SCOPED_FESTIVAL: 'VITE_GATEO_MOONI_SCOPED_FESTIVAL',
 };
 
 /** @param {string} name */
@@ -123,4 +125,9 @@ export function isGateoExploreSearchSubmitParityEnabled() {
 /** /place/* desktop two-column — facts/stories in left overview panel (lg+). Default off. */
 export function isGateoPlaceDesktopLeftInfoEnabled() {
   return readGateoEnvFlag(GATEO_ENV_FLAG_NAMES.PLACE_DESKTOP_LEFT_INFO);
+}
+
+/** MOONi conversation scope keys + verified-festival reply polish. Default off. */
+export function isGateoMooniScopedFestivalEnabled() {
+  return readGateoEnvFlag(GATEO_ENV_FLAG_NAMES.MOONI_SCOPED_FESTIVAL);
 }
