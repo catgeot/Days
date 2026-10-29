@@ -5,7 +5,7 @@
  */
 import { mkdir } from 'node:fs/promises';
 import { join } from 'node:path';
-import { webkit } from 'playwright';
+import { chromium } from 'playwright';
 
 const PROD = 'https://www.gateo.kr';
 const PREVIEW = (process.env.PREVIEW_BASE_URL || '').replace(/\/$/, '');
@@ -98,7 +98,7 @@ async function dismissHints(page) {
 }
 
 async function captureBase(base, mode, feature, vp) {
-  const browser = await webkit.launch({ headless: true });
+  const browser = await chromium.launch({ headless: true });
   const context = await browser.newContext({
     viewport: { width: vp.width, height: vp.height },
     locale: 'ko-KR',

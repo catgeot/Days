@@ -86,6 +86,15 @@ function gateoEmitVersionJson() {
 // 폰·LAN 테스트: 기본(HTTPS). PC만 빠르게 볼 때: npm run dev:http
 const devSsl = process.env.DEV_SSL !== '0';
 
+/** preview/flags-on-* branch only — mirrors committed `.env.production` on that branch. */
+const previewFlagsOnBranch =
+  process.env.VERCEL_GIT_COMMIT_REF === 'preview/flags-on-2026-10-29'
+  || process.env.GATEO_PREVIEW_FLAGS_ON === '1';
+
+function gateoPreviewRolloutDefine(envKey, enabledValue = '1') {
+  return JSON.stringify(previewFlagsOnBranch ? enabledValue : '');
+}
+
 export default defineConfig({
   define: {
     'import.meta.env.VITE_GATEO_QA_MOONI_MD_FIXTURE': JSON.stringify(
@@ -93,6 +102,16 @@ export default defineConfig({
     ),
     'import.meta.env.VITE_GATEO_PREVIEW_DEBUG_CHROME': JSON.stringify(
       process.env.VERCEL_ENV === 'preview' ? '1' : '',
+    ),
+    'import.meta.env.VITE_GATEO_SCENIC_PLACE_LINKS': gateoPreviewRolloutDefine(
+      'VITE_GATEO_SCENIC_PLACE_LINKS',
+    ),
+    'import.meta.env.VITE_GATEO_NEARBY_CARDS': gateoPreviewRolloutDefine('VITE_GATEO_NEARBY_CARDS'),
+    'import.meta.env.VITE_GATEO_PHOTO_CREDIT': gateoPreviewRolloutDefine('VITE_GATEO_PHOTO_CREDIT'),
+    'import.meta.env.VITE_GATEO_REVIEW_DEEPLINK': gateoPreviewRolloutDefine('VITE_GATEO_REVIEW_DEEPLINK'),
+    'import.meta.env.VITE_GATEO_FRESHNESS_TODAY': gateoPreviewRolloutDefine(
+      'VITE_GATEO_FRESHNESS_TODAY',
+      '2026-10-29',
     ),
   },
   plugins: [
