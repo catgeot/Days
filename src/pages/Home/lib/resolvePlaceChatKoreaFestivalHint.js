@@ -1,5 +1,6 @@
 import { fetchKoreaFestivalsRolling12 } from '../../Korea/fetchKoreaFestivalsWindow.js';
 import { resolveMooniChatKoreaFestivalHint } from '../../../shared/korea/mooniKoreaFestivalAssist.js';
+import { isGateoMooniScopedFestivalEnabled } from '../../../shared/gateoFeatureFlags.js';
 
 /**
  * usePlaceChat · ChatModal 공통 mooni_chat koreaFestivalHint.
@@ -20,6 +21,7 @@ export async function resolvePlaceChatKoreaFestivalHint(input = {}) {
     boundPlaceName: input.boundPlaceName,
     departureLabel: input.departureLabel ?? '',
     locale,
+    scopedFestivalEnabled: isGateoMooniScopedFestivalEnabled(),
     loadFestivalItems: async () => {
       const festWindow = await fetchKoreaFestivalsRolling12({ locale });
       return festWindow?.items ?? [];

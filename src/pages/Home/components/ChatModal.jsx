@@ -54,6 +54,7 @@ import { loadFestivalLodgingForAsk } from '../../Korea/lib/festivalStayLoad.js';
 import { invokeMooniChatToleratingChip } from '../lib/mooniChipEdgeFallback.js';
 import { resolvePlaceChatKoreaFestivalHint } from '../lib/resolvePlaceChatKoreaFestivalHint.js';
 import { fitMooniKoreaFestivalHint } from '../../../shared/korea/mooniKoreaFestivalHintBudget.js';
+import { isGateoMooniScopedFestivalEnabled } from '../../../shared/gateoFeatureFlags.js';
 import { buildFestivalMooniChatOpening } from '../../Korea/lib/festivalMooniBoundSpot.js';
 import { festivalChatHeaderTitle } from '../../Korea/lib/festivalMooniContext.js';
 import {
@@ -1340,6 +1341,7 @@ const ChatModal = ({
         boundPlaceName: destName,
         locale: i18n.language,
         upcomingFallback: mooniFestivalUpcomingFallback,
+        scopedFestivalEnabled: isGateoMooniScopedFestivalEnabled(),
       });
       const stripPhantomTicketMention = !hasTransportCta;
       const polishedFestivalReply = polishFestivalModelReply(festivalMergedReply, lodgingOptions);

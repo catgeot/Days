@@ -80,6 +80,33 @@ export function persistMooniLastChatId(chatId, userId, scopeOrContext = null) {
   }
 }
 
+function readLegacyMooniLastChatId(userId) {
+  return (
+    sessionStorage.getItem(MOONI_LAST_CHAT_SESSION_KEY) ||
+    localStorage.getItem(mooniLastChatStorageKey(userId)) ||
+    localStorage.getItem(MOONI_LAST_CHAT_LOCAL_KEY)
+  );
+}
+
+function migrateLegacyMooniLastChatToGeneral(userId) {
+  const legacyRaw = readLegacyMooniLastChatId(userId);
+  if (legacyRaw == null || legacyRaw === '') return null;
+  if (legacyRaw.startsWith('{')) return null;
+  const id = String(legacyRaw).trim();
+  if (!id) return null;
+  const payload = encodeScopedEntry(id);
+  try {
+    sessionStorage.setItem(sessionKeyForScope('general'), payload);
+    localStorage.setItem(localKeyForScope(userId, 'general'), payload);
+    sessionStorage.removeItem(MOONI_LAST_CHAT_SESSION_KEY);
+    localStorage.removeItem(mooniLastChatStorageKey(userId));
+    localStorage.removeItem(MOONI_LAST_CHAT_LOCAL_KEY);
+  } catch {
+    // private mode
+  }
+  return decodeMooniScopedLastChatEntry(payload, 'general');
+}
+
 /**
  * @param {string | null | undefined} userId
  * @param {string | { boundSpot?: object, mooniPlaceContext?: object } | null} [scopeOrContext]
@@ -88,17 +115,18 @@ export function readMooniLastChatId(userId, scopeOrContext = null) {
   const scope = resolvePersistScope(scopeOrContext);
   try {
     if (!scope) {
-      return (
-        sessionStorage.getItem(MOONI_LAST_CHAT_SESSION_KEY) ||
-        localStorage.getItem(mooniLastChatStorageKey(userId)) ||
-        localStorage.getItem(MOONI_LAST_CHAT_LOCAL_KEY)
-      );
+      return readLegacyMooniLastChatId(userId);
     }
     const sessionRaw = sessionStorage.getItem(sessionKeyForScope(scope));
     const fromSession = decodeMooniScopedLastChatEntry(sessionRaw, scope);
     if (fromSession) return fromSession;
     const localRaw = localStorage.getItem(localKeyForScope(userId, scope));
-    return decodeMooniScopedLastChatEntry(localRaw, scope);
+    const fromLocal = decodeMooniScopedLastChatEntry(localRaw, scope);
+    if (fromLocal) return fromLocal;
+    if (scope === 'general') {
+      return migrateLegacyMooniLastChatToGeneral(userId);
+    }
+    return null;
   } catch {
     return null;
   }

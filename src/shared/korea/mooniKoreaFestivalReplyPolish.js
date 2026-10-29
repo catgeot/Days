@@ -12,6 +12,11 @@ import {
   rolling30DayRangeYmd,
   toYmd,
 } from '../../pages/Korea/festivalTimeFilter.js';
+import {
+  addDaysYmd,
+  mondayYmdOfSeoulWeekContaining,
+  seoulTodayYmd,
+} from '../../pages/Korea/festivalDateFilter.js';
 import { glueAccessNumbersInProse } from './festivalAccessProseGlue.js';
 import {
   composeFestivalAccessReply,
@@ -22,7 +27,6 @@ import {
   formatOriginHubGuidance,
 } from '../../pages/Home/lib/festivalDomesticOrigins.js';
 import { fitMooniKoreaFestivalHint } from './mooniKoreaFestivalHintBudget.js';
-import { isGateoMooniScopedFestivalEnabled } from '../gateoFeatureFlags.js';
 
 export {
   MOONI_KOREA_FESTIVAL_HINT_BUDGET,
@@ -4044,24 +4048,23 @@ export function isMooniKoreaFestivalQuery(userText) {
   return FESTIVAL_INTENT_RE.test(String(userText || ''));
 }
 
-function mondayOfWeekContaining(d) {
-  const x = new Date(d.getFullYear(), d.getMonth(), d.getDate());
-  const day = x.getDay();
-  const offset = day === 0 ? -6 : 1 - day;
-  x.setDate(x.getDate() + offset);
-  return x;
+function koreanTopicWaOrGwa(noun) {
+  const word = String(noun || '').trim();
+  if (!word) return '와';
+  const last = word.charAt(word.length - 1);
+  return syllableHasBatchim(last) ? '과' : '와';
 }
 
 /**
- * @param {number} weeksAhead 0=이번 주(월~일)
+ * @param {number} weeksAhead 0=이번 주(월~일, Asia/Seoul)
  * @param {Date} now
  */
 function calendarWeekRange(weeksAhead, now) {
-  const mon = mondayOfWeekContaining(now);
-  mon.setDate(mon.getDate() + weeksAhead * 7);
-  const sun = new Date(mon);
-  sun.setDate(mon.getDate() + 6);
-  return { startYmd: toYmd(mon), endYmd: toYmd(sun) };
+  const today = seoulTodayYmd(now);
+  const mon = mondayYmdOfSeoulWeekContaining(today);
+  const startYmd = addDaysYmd(mon, weeksAhead * 7);
+  const endYmd = addDaysYmd(startYmd, 6);
+  return { startYmd, endYmd };
 }
 
 function weekendInWeek(weeksAhead, now) {
@@ -4160,7 +4163,7 @@ export function selectMooniKoreaFestivalCandidates(items, opts) {
     list = filterBySearchQuery(list, locationQuery);
   }
 
-  const today = todayYmd(now);
+  const today = kstTodayYmd(now);
   list = list.filter((item) => {
     const start = String(item?.eventStartDate || '');
     const endRaw = String(item?.eventEndDate || '');
@@ -4210,7 +4213,7 @@ export function selectMooniKoreaFestivalUpcomingFallback(items, opts) {
     list = filterBySearchQuery(list, locationQuery);
   }
 
-  const today = todayYmd(now);
+  const today = kstTodayYmd(now);
   list = list.filter((item) => {
     const start = String(item?.eventStartDate || '');
     const endRaw = String(item?.eventEndDate || '');
@@ -4276,7 +4279,7 @@ export function buildMooniKoreaFestivalZeroCandidateUserReply(input = {}) {
   }
 
   let body =
-    `GATEO가 확인한 축제 중 ${windowLabel} ${region}과 겹치는 행사는 없어요. ` +
+    `GATEO가 확인한 축제 중 ${windowLabel} ${region}${koreanTopicWaOrGwa(region)} 겹치는 행사는 없어요. ` +
     `[GATEO 축제 목록](${koreaUrl})에서 날짜가 확인된 축제를 볼 수 있어요.`;
   if (upcoming.length) {
     const lines = upcoming.map(
@@ -4567,17 +4570,18 @@ export function buildMooniKoreaFestivalSystemHint(input) {
 
   const locale = String(input.locale || 'ko').slice(0, 2);
   const isEn = locale === 'en';
-  const scopedFestival = isGateoMooniScopedFestivalEnabled();
+  const scopedFestival = input.scopedFestivalEnabled === true;
   const regionLabel =
     extractMooniFestivalLocationQuery(input.userText, input.boundPlaceName) ||
     String(input.boundPlaceName || '').trim() ||
     (isEn ? 'the area' : '해당 지역');
+  const regionWa = koreanTopicWaOrGwa(regionLabel);
 
   if (!candidates.length) {
     if (scopedFestival) {
       return isEn
-        ? `\n[GATEO Korea festivals — no matches]\n- The user is looking for festivals they can actually attend ${window.label} (${formatFestivalPeriodLabel(window.startYmd, window.endYmd)}).\n- GATEO has no verified festivals overlapping ${regionLabel} in that window. Say that briefly in a helpful tone, then point them to upcoming verified festivals or the GATEO festival list (/korea). Do not invent festivals or URLs.`
-        : `\n[GATEO 한국 축제 — 매칭 없음]\n- GATEO가 확인한 축제 중에는 ${window.label} ${regionLabel}과 겹치는 행사가 없어요. 사용자는 실제로 갈 수 있는 곳을 원하니, 그 사실을 짧게 알려 주고 가까운 날짜의 확인된 축제나 GATEO 축제 목록(/korea)을 안내해 주시면 가장 도움이 돼요.`;
+        ? `\n[GATEO Korea festivals — no matches]\n- The user is looking for festivals they can actually attend ${window.label} (${formatFestivalPeriodLabel(window.startYmd, window.endYmd)}).\n- GATEO has no verified festivals overlapping ${regionLabel} in that window. Say that briefly in a helpful tone, then point them to upcoming verified festivals or the GATEO festival list (${GATEO_KOREA_FESTIVAL_BASE}).\n- The user wants festivals they can actually attend, so introducing only verified festivals from GATEO—with dates and links when you have them—will help them most.`
+        : `\n[GATEO 한국 축제 — 매칭 없음]\n- GATEO가 확인한 축제 중에는 ${window.label} ${regionLabel}${regionWa} 겹치는 행사가 없어요. 사용자는 실제로 갈 수 있는 곳을 원하니, 그 사실을 짧게 알려 주고 가까운 날짜의 확인된 축제나 GATEO 축제 목록(${GATEO_KOREA_FESTIVAL_BASE})을 안내해 주시면 가장 도움이 돼요.`;
     }
     return isEn
       ? `\n[GATEO Korea festivals — no matches]\n- The user asked about Korean festivals for: ${window.label} (${formatFestivalPeriodLabel(window.startYmd, window.endYmd)}).\n- No festivals in GATEO data overlap this window and place filter. Say so briefly; do not invent festivals or URLs.`
@@ -4622,7 +4626,7 @@ export function mergeMooniKoreaFestivalReply(aiReply, ctx) {
     ctx?.isFestivalQuestion === true || isMooniKoreaFestivalQuery(userText);
 
   if (
-    isGateoMooniScopedFestivalEnabled() &&
+    ctx?.scopedFestivalEnabled === true &&
     festivalQuestion &&
     !candidates.length
   ) {
@@ -4786,7 +4790,7 @@ export async function resolveMooniChatKoreaFestivalHint(input = {}) {
   });
 
   const upcomingFallback =
-    isGateoMooniScopedFestivalEnabled() && !picked.candidates.length
+    input.scopedFestivalEnabled === true && !picked.candidates.length
       ? selectMooniKoreaFestivalUpcomingFallback(items, {
           userText,
           boundPlaceName: input.boundPlaceName,
@@ -4800,6 +4804,7 @@ export async function resolveMooniChatKoreaFestivalHint(input = {}) {
     items,
     locale: input.locale,
     now: input.now,
+    scopedFestivalEnabled: input.scopedFestivalEnabled === true,
   });
 
   return {
