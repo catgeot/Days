@@ -19,6 +19,8 @@ export const GATEO_ENV_FLAG_NAMES = {
   KOGL_REELS: 'VITE_GATEO_KOGL_REELS',
   SCENIC_PLACE_LINKS: 'VITE_GATEO_SCENIC_PLACE_LINKS',
   PLACE_WORLD_EVENTS_TAB: 'VITE_GATEO_PLACE_WORLD_EVENTS_TAB',
+  /** Explore Enter panel matches autocomplete groups (hub exact). Default on; `0`/`false`/`off` disables. */
+  EXPLORE_SEARCH_SUBMIT_PARITY: 'VITE_GATEO_EXPLORE_SEARCH_SUBMIT_PARITY',
   /** Desktop (lg+) — move gallery #facts/#stories into left overview scroll. Default off. */
   PLACE_DESKTOP_LEFT_INFO: 'VITE_GATEO_PLACE_DESKTOP_LEFT_INFO',
 };
@@ -100,6 +102,16 @@ export function isGateoScenicPlaceLinksEnabled() {
 /** PlaceCard / home summary — dedicated 「세계 행사」 tab instead of inline accordion. Default off. */
 export function isGateoPlaceWorldEventsTabEnabled() {
   return readGateoEnvFlag(GATEO_ENV_FLAG_NAMES.PLACE_WORLD_EVENTS_TAB);
+}
+
+/** Hub-exact Enter + autocomplete normalize. Unset defaults on; `0`/`false`/`off` kill switch. */
+export function isGateoExploreSearchSubmitParityEnabled() {
+  const name = GATEO_ENV_FLAG_NAMES.EXPLORE_SEARCH_SUBMIT_PARITY;
+  const raw = import.meta.env?.[name] ?? globalThis.__VITE_ENV__?.[name];
+  if (raw == null || String(raw).trim() === '') return true;
+  const value = String(raw).trim().toLowerCase();
+  if (value === '0' || value === 'false' || value === 'off') return false;
+  return true;
 }
 
 /** /place/* desktop two-column — facts/stories in left overview panel (lg+). Default off. */
