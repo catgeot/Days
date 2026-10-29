@@ -51,11 +51,15 @@ export function withTourApiTimeout(promise, ms, label) {
 /**
  * @param {string} action
  * @param {Record<string, unknown>} [payload]
- * @param {{ timeoutMs?: number, locale?: string, returnRawOnFail?: boolean }} [opts]
+ * @param {{ timeoutMs?: number, locale?: string, returnRawOnFail?: boolean, signal?: AbortSignal }} [opts]
  */
 export async function invokeTourApiProxy(action, payload = {}, opts = {}) {
   const timeoutMs = opts.timeoutMs ?? DEFAULT_INVOKE_TIMEOUT_MS;
   const locale = resolveTourApiLocale(opts.locale ?? getTourApiLocale());
+  const signal = opts.signal;
+  if (signal?.aborted) {
+    return null;
+  }
   const cacheBody = { action, locale, ...payload };
   if (!opts.force && isPersistedTourApiAction(action)) {
     const hit = readTourApiProxyCache(cacheBody);
@@ -65,6 +69,7 @@ export async function invokeTourApiProxy(action, payload = {}, opts = {}) {
     const { data, error } = await withTourApiTimeout(
       invokeSupabaseFunctionDeduped('tourapi-proxy', {
         body: cacheBody,
+        signal,
       }),
       timeoutMs,
       `tourapi:${action}`,

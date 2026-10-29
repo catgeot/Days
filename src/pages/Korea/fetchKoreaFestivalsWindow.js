@@ -92,11 +92,15 @@ function itemsNeedTitleEn(items) {
 }
 
 const MOONI_TITLE_EN_TIMEOUT_MS = 5000;
+const MOONI_TITLE_EN_FAILURE_CACHE_MS = 60_000;
 
+/** Successful Eng join: in-memory en items per rolling-12 window (session). Failures: suppress retry 60s. */
 /** @type {Map<string, object[]>} */
 const mooniTitleEnEnItemsByRange = new Map();
 /** @type {Map<string, Promise<object[] | null>>} */
 const mooniTitleEnInflightByRange = new Map();
+/** @type {Map<string, number>} */
+const mooniTitleEnFailureUntilByRange = new Map();
 
 /** @type {typeof fetchTourApiFestivalWindow | null} */
 let mooniTitleEnFetchImpl = null;
@@ -113,28 +117,34 @@ export function __testSetMooniTitleEnFetch(fn) {
 export function __testResetMooniTitleEnCache() {
   mooniTitleEnEnItemsByRange.clear();
   mooniTitleEnInflightByRange.clear();
+  mooniTitleEnFailureUntilByRange.clear();
   mooniTitleEnFetchImpl = null;
 }
 
 /**
- * @param {Promise<T>} promise
- * @param {number} ms
- * @returns {Promise<T>}
+ * @param {{ eventStartDate: string, eventEndDate: string, force?: boolean, signal?: AbortSignal }} range
  */
-function withTimeout(promise, ms) {
-  return new Promise((resolve, reject) => {
-    const timer = setTimeout(() => reject(new Error('mooni titleEn merge timeout')), ms);
-    promise.then(
-      (v) => {
-        clearTimeout(timer);
-        resolve(v);
-      },
-      (e) => {
-        clearTimeout(timer);
-        reject(e);
-      },
-    );
-  });
+async function fetchMooniEnFestivalWindow(range) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => {
+    controller.abort(new Error('mooni titleEn merge timeout'));
+  }, MOONI_TITLE_EN_TIMEOUT_MS);
+  try {
+    return await mooniTitleEnFetch()({
+      eventStartDate: range.eventStartDate,
+      eventEndDate: range.eventEndDate,
+      force: Boolean(range.force),
+      locale: 'en',
+      timeoutMs: MOONI_TITLE_EN_TIMEOUT_MS,
+      signal: controller.signal,
+    });
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+function markMooniTitleEnFailure(cacheKey) {
+  mooniTitleEnFailureUntilByRange.set(cacheKey, Date.now() + MOONI_TITLE_EN_FAILURE_CACHE_MS);
 }
 
 /**
@@ -142,26 +152,30 @@ function withTimeout(promise, ms) {
  */
 async function loadEnFestivalItemsForMooniRange(range) {
   const cacheKey = `${range.eventStartDate}:${range.eventEndDate}`;
+
+  const failUntil = mooniTitleEnFailureUntilByRange.get(cacheKey);
+  if (failUntil != null) {
+    if (failUntil > Date.now()) return null;
+    mooniTitleEnFailureUntilByRange.delete(cacheKey);
+  }
+
   const cached = mooniTitleEnEnItemsByRange.get(cacheKey);
   if (cached) return cached;
 
   let inflight = mooniTitleEnInflightByRange.get(cacheKey);
   if (!inflight) {
-    inflight = withTimeout(
-      mooniTitleEnFetch()({
-        eventStartDate: range.eventStartDate,
-        eventEndDate: range.eventEndDate,
-        force: Boolean(range.force),
-        locale: 'en',
-      }),
-      MOONI_TITLE_EN_TIMEOUT_MS,
-    )
+    inflight = fetchMooniEnFestivalWindow(range)
       .then((enData) => {
         if (!enData?.ok || !Array.isArray(enData.items) || !enData.items.length) {
+          markMooniTitleEnFailure(cacheKey);
           return null;
         }
         mooniTitleEnEnItemsByRange.set(cacheKey, enData.items);
         return enData.items;
+      })
+      .catch(() => {
+        markMooniTitleEnFailure(cacheKey);
+        return null;
       })
       .finally(() => {
         mooniTitleEnInflightByRange.delete(cacheKey);

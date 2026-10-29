@@ -28,11 +28,22 @@ function cacheKey(functionName, body) {
  * Deduped supabase.functions.invoke — identical function+body shares one in-flight Promise
  * and a short session cache (default 7 min).
  *
+ * When `signal` is set, skips dedupe/cache and forwards abort to the underlying invoke.
+ *
  * @param {string} functionName
- * @param {{ body?: Record<string, unknown>, ttlMs?: number }} [opts]
+ * @param {{ body?: Record<string, unknown>, ttlMs?: number, signal?: AbortSignal }} [opts]
  */
 export async function invokeSupabaseFunctionDeduped(functionName, opts = {}) {
   const body = opts.body ?? {};
+  const signal = opts.signal;
+  if (signal?.aborted) {
+    return { data: null, error: signal.reason ?? new Error('aborted') };
+  }
+
+  if (signal) {
+    return supabase.functions.invoke(functionName, { body, signal });
+  }
+
   const ttlMs = opts.ttlMs ?? DEFAULT_TTL_MS;
   const key = cacheKey(functionName, body);
 
