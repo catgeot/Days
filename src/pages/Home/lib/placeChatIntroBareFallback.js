@@ -2,6 +2,7 @@ import { i18n } from '../../../i18n/config.js';
 import { normalizeAppLocale } from '../../../i18n/constants.js';
 import { getLocalizedPlaceName } from '../../../components/PlaceCard/common/locationDisplay.js';
 import { normalizeDestinationKey } from './mooniPlaceChatLabel.js';
+import { settlementIntroUsesParentCityKeyOnly } from './settlementIntroParentOnly.js';
 
 const INVALID_DESTINATIONS = new Set(['', 'new session', 'scanning...', 'mooni']);
 const INTRO_LOCALE_SUFFIX = { en: '@en' };
@@ -65,6 +66,11 @@ export function isBareIntroNameUnambiguous(rows, bareName) {
   return distinctIntroLogicalKeysForBareName(rows, bareName).size === 1;
 }
 
+/** SETTLEMENT_INTRO_PARENT_ONLY_IDS — bare·country 폴백 금지. */
+export function shouldSkipBareIntroFallbackForLocation(locOrName) {
+  return settlementIntroUsesParentCityKeyOnly(locOrName);
+}
+
 /**
  * When parentCity-qualified keys miss, try bare name and country+name (not in primary key list).
  * @param {object} locOrName
@@ -81,6 +87,7 @@ export function buildPlaceChatIntroBareFallbackKeys(locOrName, lng = i18n.langua
     getLocalizedPlaceName(locOrName, locale) || locOrName.displayLabel || locOrName.name || '',
   );
   if (!name || name.includes(parentCity)) return [];
+  if (shouldSkipBareIntroFallbackForLocation(locOrName)) return [];
 
   const keys = [];
   const push = (k) => {

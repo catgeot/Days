@@ -32,6 +32,7 @@ import {
   introLocaleStorageKeys,
   pickBareFallbackIntroFromRows,
 } from './placeChatIntroBareFallback.js';
+import { settlementIntroUsesParentCityKeyOnly } from './settlementIntroParentOnly.js';
 
 export { isSyntheticOrEmptyPlaceDesc, needsPlaceChatIntroHydration };
 
@@ -146,6 +147,7 @@ export function stripPlaceChatIntroForSummary(text, placeName = '') {
 /**
  * 조회·저장에 쓸 destination_key 후보 (순서 = 조회 순서).
  * parentCity 있음: `{parentCity} {name}` → `{country} {name}` (PROD 118건) → bare는 fetchBareFallback(동명 1건일 때만).
+ * SETTLEMENT_INTRO_PARENT_ONLY_IDS: `{parentCity} {name}`만 — miss 시 빈 설명.
  * parentCity 없음: label/name → `{country} {name}`.
  */
 export function buildPlaceChatIntroKeys(locOrName, lng = i18n.language) {
@@ -175,7 +177,12 @@ export function buildPlaceChatIntroKeys(locOrName, lng = i18n.language) {
 
   if (parentCity && name && !name.includes(parentCity)) {
     push(`${parentCity} ${name}`);
-    if (country && !isPlaceholderCountry(country) && !name.includes(country)) {
+    if (
+      !settlementIntroUsesParentCityKeyOnly(locOrName) &&
+      country &&
+      !isPlaceholderCountry(country) &&
+      !name.includes(country)
+    ) {
       push(`${country} ${name}`);
     }
     return keys;
