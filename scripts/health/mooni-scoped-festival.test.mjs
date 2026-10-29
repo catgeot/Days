@@ -21,6 +21,11 @@ import {
   persistMooniLastChatId,
   readMooniLastChatId,
 } from '../../src/pages/Home/lib/tripChatUtils.js';
+import {
+  __testResetMooniTitleEnCache,
+  __testSetMooniTitleEnFetch,
+  ensureKoreaFestivalItemsTitleEnForMooni,
+} from '../../src/pages/Korea/fetchKoreaFestivalsWindow.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '../..');
 const weekFixture = JSON.parse(
@@ -238,6 +243,40 @@ withFlag(false, () => {
   assert.equal(globalThis.sessionStorage.getItem('gateo_mooni_last_chat_saved_at'), null);
   assert.equal(globalThis.localStorage.getItem('gateo_mooni_last_chat_saved_at'), null);
   assert.equal(globalThis.sessionStorage.getItem('gateo_mooni_last_chat_id'), 'trip-off');
+});
+
+withFlag(false, async () => {
+  __testResetMooniTitleEnCache();
+  let fetchCalls = 0;
+  __testSetMooniTitleEnFetch(async () => {
+    fetchCalls += 1;
+    throw new Error('must not fetch titleEn when flag OFF');
+  });
+  const koItems = [{ contentId: '1', title: '축제', eventStartDate: '20260101' }];
+  const out = await ensureKoreaFestivalItemsTitleEnForMooni(koItems, {
+    scopedFestivalEnabled: false,
+    locale: 'en-US',
+  });
+  assert.equal(fetchCalls, 0);
+  assert.equal(out, koItems);
+  __testResetMooniTitleEnCache();
+});
+
+withFlag(true, async () => {
+  __testResetMooniTitleEnCache();
+  __testSetMooniTitleEnFetch(async () => {
+    throw new Error('network fail');
+  });
+  const koItems = [{ contentId: '1', title: '축제', eventStartDate: '20260101' }];
+  const out = await ensureKoreaFestivalItemsTitleEnForMooni(koItems, {
+    scopedFestivalEnabled: true,
+    locale: 'en',
+    now: NOW,
+  });
+  assert.equal(out.length, 1);
+  assert.equal(out[0].title, '축제');
+  assert.equal(out[0].titleEn, undefined);
+  __testResetMooniTitleEnCache();
 });
 
 withFlag(false, () => {
