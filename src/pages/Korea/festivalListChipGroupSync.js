@@ -1,9 +1,11 @@
+import { resolveFestivalItemSidoCode } from './koreaAreaFilter.js';
 import {
   buildCityTags,
   buildSidoTags,
   extractSubregionLabels,
   filterByRegion,
   isMetroArea,
+  LIST_SIDO_CHIP_MIN_COUNT,
 } from './festivalRegionTags.js';
 import { groupFestivalsForList } from './festivalPersonalStore.js';
 import { excludeFestivalsByContentId } from './socialPromoFestivalsLogic.js';
@@ -30,9 +32,9 @@ export function auditListHeadingMatchesSidoChip(
   areaCode,
 ) {
   const heading = festivalListHeadingCount(panelItems, promoContentIds);
-  const chip = buildSidoTags(chipPoolItems || []).find(
-    (c) => String(c.id) === String(areaCode),
-  );
+  const chip = buildSidoTags(chipPoolItems || [], {
+    minCount: LIST_SIDO_CHIP_MIN_COUNT,
+  }).find((c) => String(c.id) === String(areaCode));
   const chipCount = chip?.count ?? null;
   if (chipCount == null || heading !== chipCount) {
     return { ok: false, heading, chip: chipCount, areaCode };
@@ -68,7 +70,9 @@ export function auditCityChipSumMatchesList(panelItems, areaCode) {
  * @returns {{ ok: true } | { ok: false, mismatches: Array<Record<string, unknown>> }}
  */
 export function auditAllSidoCityChipSumsMatchList(panelItems) {
-  const sidoChips = buildSidoTags(panelItems || [], { minCount: 1 });
+  const sidoChips = buildSidoTags(panelItems || [], {
+    minCount: LIST_SIDO_CHIP_MIN_COUNT,
+  });
   const mismatches = [];
   for (const chip of sidoChips) {
     const code = String(chip.id);
@@ -120,10 +124,66 @@ export function auditCityChipCountsMatchGroups(panelItems, areaCode) {
 
 /**
  * @param {object[]} panelItems
+ * @param {{ minCount?: number }} [opts]
+ * @returns {{ ok: true, chipSum: number, list: number, unmapped: number } | { ok: false, list: number, chipSum: number, unmapped: number, reason?: string, hidden?: Array<{ id: string, listCount: number, chipCount: number | null }> }}
+ */
+export function auditNationwideSidoChipsMatchList(panelItems, opts = {}) {
+  const list = panelItems || [];
+  const minCount = opts.minCount ?? LIST_SIDO_CHIP_MIN_COUNT;
+  const chips = buildSidoTags(list, { minCount });
+  const chipSum = chips.reduce((acc, c) => acc + c.count, 0);
+  /** @type {Map<string, number>} */
+  const bySido = new Map();
+  let unmapped = 0;
+  for (const item of list) {
+    const code = resolveFestivalItemSidoCode(item);
+    if (!code) {
+      unmapped += 1;
+      continue;
+    }
+    bySido.set(code, (bySido.get(code) || 0) + 1);
+  }
+  if (unmapped > 0) {
+    return {
+      ok: false,
+      list: list.length,
+      chipSum,
+      unmapped,
+      reason: 'unresolvedSido',
+    };
+  }
+  if (chipSum !== list.length) {
+    return { ok: false, list: list.length, chipSum, unmapped, reason: 'chipSum' };
+  }
+  const hidden = [];
+  for (const [id, listCount] of bySido) {
+    const chip = chips.find((c) => String(c.id) === String(id));
+    const chipCount = chip?.count ?? null;
+    if (chipCount !== listCount) {
+      hidden.push({ id, listCount, chipCount });
+    }
+  }
+  if (hidden.length) {
+    return {
+      ok: false,
+      list: list.length,
+      chipSum,
+      unmapped,
+      reason: 'coverage',
+      hidden,
+    };
+  }
+  return { ok: true, chipSum, list: list.length, unmapped: 0 };
+}
+
+/**
+ * @param {object[]} panelItems
  * @returns {{ ok: true } | { ok: false, mismatches: Array<{ id: string, chip: number, group: number }> }}
  */
 export function auditSidoChipCountsMatchGroups(panelItems) {
-  const chips = buildSidoTags(panelItems || [], { minCount: 1 });
+  const chips = buildSidoTags(panelItems || [], {
+    minCount: LIST_SIDO_CHIP_MIN_COUNT,
+  });
   const groups = groupFestivalsForList(panelItems || [], { areaCode: 'all' });
   const mismatches = [];
   for (const chip of chips) {

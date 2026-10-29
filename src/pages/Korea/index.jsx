@@ -84,6 +84,7 @@ import { buildTasteTags, filterByTaste, tasteLabel } from './festivalTasteTags';
 import {
   buildCityTags,
   buildSidoTags,
+  LIST_SIDO_CHIP_MIN_COUNT,
   filterByRegion,
   neighborSidoTags,
   sidoLabel,
@@ -1721,7 +1722,10 @@ export default function KoreaFestivalHub() {
     [filterItemsByTime, timeTab, itemsWithSocialPromo],
   );
 
-  const sidoChips = useMemo(() => buildSidoTags(timedItems), [timedItems]);
+  const sidoChips = useMemo(
+    () => buildSidoTags(timedItems, { minCount: LIST_SIDO_CHIP_MIN_COUNT }),
+    [timedItems],
+  );
 
   useEffect(() => {
     if (dateChipEnabled) return;
@@ -1832,7 +1836,7 @@ export default function KoreaFestivalHub() {
   const sidoChipsForDisplay = useMemo(() => {
     if (!visiblePromoContentIds.size) return sidoChips;
     const timed = filterItemsByTime(timeTab, itemsForChipCounts);
-    return buildSidoTags(timed);
+    return buildSidoTags(timed, { minCount: LIST_SIDO_CHIP_MIN_COUNT });
   }, [
     visiblePromoContentIds,
     sidoChips,

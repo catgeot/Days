@@ -15,6 +15,7 @@ import {
 import {
   matchSido,
   resolveFestivalItemSidoCode,
+  normalizeTourApiSidoAreaCode,
 } from '../src/pages/Korea/koreaAreaFilter.js';
 import {
   buildSidoTags,
@@ -144,6 +145,11 @@ for (const chip of sidoChips) {
 assert(
   resolveFestivalItemSidoCode({ areacode: '38', addr1: integratedGwangjuGu }) === '38',
   'item areacode wins over addr',
+);
+assert(normalizeTourApiSidoAreaCode('04') === '4', 'TourAPI padded Daegu areacode');
+assert(
+  resolveFestivalItemSidoCode({ areacode: '04', addr1: '대구광역시 중구' }) === '4',
+  'padded 04 → Daegu chip id',
 );
 
 const festivalAddrFixture = JSON.parse(

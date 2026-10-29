@@ -28,6 +28,20 @@ export const SIDO_ADDR_HINTS = {
   39: ['제주특별자치도', '제주도', '제주'],
 };
 
+const KNOWN_SIDO_CODES = new Set(Object.keys(SIDO_ADDR_HINTS));
+
+/**
+ * TourAPI areacode may be zero-padded (`04`). Chip SSOT ids are unpadded (`4`).
+ * @param {unknown} raw
+ */
+export function normalizeTourApiSidoAreaCode(raw) {
+  const s = String(raw ?? '').trim();
+  if (!/^\d+$/.test(s)) return s;
+  const n = Number.parseInt(s, 10);
+  if (!Number.isFinite(n)) return s;
+  return String(n);
+}
+
 /**
  * @param {string} addr
  * @param {string} hint
@@ -79,8 +93,12 @@ export function detectSidoFromAddr(addr) {
  */
 export function resolveFestivalItemSidoCode(item) {
   const raw = item?.areaCode ?? item?.areacode;
-  if (raw != null && String(raw).trim() !== '') return String(raw).trim();
-  return detectSidoFromAddr(String(item?.addr1 || ''));
+  const addr = String(item?.addr1 || '');
+  if (raw != null && String(raw).trim() !== '') {
+    const normalized = normalizeTourApiSidoAreaCode(raw);
+    if (KNOWN_SIDO_CODES.has(normalized)) return normalized;
+  }
+  return detectSidoFromAddr(addr);
 }
 
 /**
