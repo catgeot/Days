@@ -80,12 +80,20 @@ const PublicNav = () => {
           {!currentLoc && <ChevronRight size={16} className="text-blue-500" />}
         </button>
 
-        <div className="my-4 border-t border-gray-300" />
+        <div className="my-4 border-t border-gray-300 dark:border-gray-600" />
 
-        <div className="px-2 mb-3">
-          <h5 className="text-[7px] font-bold text-gray-600 uppercase tracking-wider flex items-center justify-center gap-3 [word-spacing:10px]">
-             Gateo Gateo Gateo Gateo Gateo
-          </h5>
+        <div
+          className="mb-3 box-border flex w-full max-w-full items-center justify-between gap-x-1.5 px-1.5 select-none"
+          aria-hidden="true"
+        >
+          {Array.from({ length: 5 }, (_, i) => (
+            <span
+              key={i}
+              className="text-[10px] font-normal uppercase leading-none tracking-[0.12em] text-gray-400 antialiased last:-mr-[0.12em] dark:text-gray-500"
+            >
+              GATEO
+            </span>
+          ))}
         </div>
 
         {loading ? (
