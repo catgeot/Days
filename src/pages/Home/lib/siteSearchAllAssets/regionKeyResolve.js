@@ -30,8 +30,8 @@ let contextPromise = null;
 async function loadContext() {
   if (!contextPromise) {
     contextPromise = (async () => {
-      const [adminMod, hubMod, sigunguMod, coordsMod] = await Promise.all([
-        import('../koreaAdminRegionMatch.js'),
+      const [adminMatchMod, hubMod, sigunguMod, coordsMod] = await Promise.all([
+        import('./regionKeyAdminMatch.js'),
         import('../cityAttractionHubs.js'),
         import('../../data/koreaSigunguByHub.json'),
         import('../../../Korea/resolveKoreaAreaFromCoords.js'),
@@ -58,8 +58,8 @@ async function loadContext() {
       const logbookLabels = buildLogbookLabelIndex(hubMod.listCityAttractionHubs());
 
       return {
-        matchKoreaAdminRegionFromAddr: adminMod.matchKoreaAdminRegionFromAddr,
-        isAmbiguousSigunguTextWithoutSido: adminMod.isAmbiguousSigunguTextWithoutSido,
+        matchRegionKeyAdminFromAddr: adminMatchMod.matchRegionKeyAdminFromAddr,
+        isAmbiguousSigunguTextWithoutSido: adminMatchMod.isAmbiguousSigunguTextWithoutSido,
         resolveCityAttractionHub: hubMod.resolveCityAttractionHub,
         resolveHubPlaceFromSlug: hubMod.resolveHubPlaceFromSlug,
         resolveHubAttraction: hubMod.resolveHubAttraction,
@@ -157,7 +157,7 @@ function resolveFromTourApiSync(ctx, asset) {
   }
   const addr1 = String(asset?.addr1 ?? asset?.address ?? '').trim();
   if (addr1) {
-    const region = ctx.matchKoreaAdminRegionFromAddr(addr1);
+    const region = ctx.matchRegionKeyAdminFromAddr(addr1);
     if (region?.hubId) return region.hubId;
   }
   return null;
@@ -187,7 +187,7 @@ function resolveLogbookTextSync(ctx, parts) {
     .normalize('NFC');
   if (!text) return null;
 
-  const adminHit = ctx.matchKoreaAdminRegionFromAddr(text);
+  const adminHit = ctx.matchRegionKeyAdminFromAddr(text);
   if (adminHit?.hubId) return normalizeHubId(adminHit.hubId);
 
   if (ctx.isAmbiguousSigunguTextWithoutSido(text)) return null;
@@ -254,7 +254,7 @@ export async function resolveRegionKeyFromPlaceSlug(placeSlug) {
  */
 export async function resolveRegionKeyFromAddr(addr1) {
   const ctx = await loadContext();
-  const region = ctx.matchKoreaAdminRegionFromAddr(addr1);
+  const region = ctx.matchRegionKeyAdminFromAddr(addr1);
   return region?.hubId ? normalizeHubId(region.hubId) : null;
 }
 
@@ -325,7 +325,7 @@ export async function resolveRegionKey(asset) {
 
   const addr = asset.addr1 ?? asset.address;
   if (addr) {
-    const region = ctx.matchKoreaAdminRegionFromAddr(addr);
+    const region = ctx.matchRegionKeyAdminFromAddr(addr);
     if (region?.hubId) return normalizeHubId(region.hubId);
   }
 

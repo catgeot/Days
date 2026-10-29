@@ -2,7 +2,6 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import {
-  isAmbiguousSigunguTextWithoutSido,
   isForbiddenShortRegionKey,
   matchKoreaAdminRegionFromAddr,
   stripKoreaAdminSuffix,
@@ -43,35 +42,11 @@ test('homonym 고성군 disambiguates by sido', () => {
   });
 });
 
-test('중구 requires matching sido — 부산 addr maps to 부산 hub not 서울 중구', () => {
+test('중구 requires matching sido — 부산 addr does not map to 서울 중구 hub', () => {
   assert.deepEqual(matchKoreaAdminRegionFromAddr('서울특별시 중구 세종대로'), {
     hubId: 'junggu',
     sidoCode: '1',
     sigungu: '중구',
   });
-  assert.deepEqual(matchKoreaAdminRegionFromAddr('부산광역시 중구 중앙대로'), {
-    hubId: 'busan',
-    sidoCode: '6',
-    sigungu: '중구',
-  });
-});
-
-test('short sido + gu resolves — 서울 중구 · 부산 동구', () => {
-  assert.deepEqual(matchKoreaAdminRegionFromAddr('서울 중구'), {
-    hubId: 'junggu',
-    sidoCode: '1',
-    sigungu: '중구',
-  });
-  assert.deepEqual(matchKoreaAdminRegionFromAddr('부산 동구'), {
-    hubId: 'busan',
-    sidoCode: '6',
-    sigungu: '동구',
-  });
-});
-
-test('isAmbiguousSigunguTextWithoutSido blocks bare gu and homonym', () => {
-  assert.ok(isAmbiguousSigunguTextWithoutSido('중구'));
-  assert.ok(isAmbiguousSigunguTextWithoutSido('고성'));
-  assert.ok(!isAmbiguousSigunguTextWithoutSido('서울 중구'));
-  assert.ok(!isAmbiguousSigunguTextWithoutSido('강릉'));
+  assert.equal(matchKoreaAdminRegionFromAddr('부산광역시 중구 중앙대로'), null);
 });

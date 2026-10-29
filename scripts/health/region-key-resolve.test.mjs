@@ -11,7 +11,7 @@ import {
   resolveRegionKeyFromPlaceSlug,
   resolveRegionKeyFromTourApi,
 } from '../../src/pages/Home/lib/siteSearchAllAssets/regionKeyResolve.js';
-import { listMultiSidoSigunguLabels } from '../../src/pages/Home/lib/koreaAdminRegionMatch.js';
+import { listMultiSidoSigunguLabels } from '../../src/pages/Home/lib/siteSearchAllAssets/regionKeyAdminMatch.js';
 
 test.before(async () => {
   await preloadRegionKeyResolve();
