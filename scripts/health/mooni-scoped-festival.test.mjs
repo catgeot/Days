@@ -7,7 +7,9 @@ import {
   buildMooniKoreaFestivalZeroCandidateUserReply,
   GATEO_KOREA_FESTIVAL_BASE,
   mergeMooniKoreaFestivalReply,
+  mooniReplyLocaleIsEn,
   parseMooniFestivalTimeWindow,
+  polishFestivalModelReply,
   selectMooniKoreaFestivalCandidates,
 } from '../../src/shared/korea/mooniKoreaFestivalAssist.js';
 import {
@@ -82,11 +84,38 @@ withFlag(true, () => {
 
 withFlag(true, () => {
   mockStorage();
+  const savedAt = Date.now() - 1000;
   globalThis.sessionStorage.setItem('gateo_mooni_last_chat_id', 'legacy-trip-99');
+  globalThis.sessionStorage.setItem('gateo_mooni_last_chat_saved_at', String(savedAt));
   const migrated = readMooniLastChatId(null, 'general');
   assert.equal(migrated, 'legacy-trip-99');
   assert.equal(globalThis.sessionStorage.getItem('gateo_mooni_last_chat_id'), null);
-  assert.ok(globalThis.sessionStorage.getItem('gateo_mooni_last_chat_id:general'));
+  const scopedRaw = globalThis.sessionStorage.getItem('gateo_mooni_last_chat_id:general');
+  assert.ok(scopedRaw);
+  const scoped = JSON.parse(scopedRaw);
+  assert.equal(scoped.savedAt, savedAt);
+});
+
+withFlag(true, () => {
+  mockStorage();
+  globalThis.localStorage.setItem('gateo_mooni_last_chat_id_user-1', 'user-trip');
+  globalThis.localStorage.setItem(
+    'gateo_mooni_last_chat_saved_at_user-1',
+    String(Date.now()),
+  );
+  globalThis.localStorage.setItem('gateo_mooni_last_chat_id', 'guest-trip');
+  readMooniLastChatId('user-1', 'general');
+  assert.equal(globalStorageGet('gateo_mooni_last_chat_id'), 'guest-trip');
+});
+
+function globalStorageGet(k) {
+  return globalThis.localStorage.getItem(k);
+}
+
+withFlag(true, () => {
+  mockStorage();
+  globalThis.sessionStorage.setItem('gateo_mooni_last_chat_id', 'stale-plain');
+  assert.equal(readMooniLastChatId(null, 'general'), null);
 });
 
 withFlag(true, () => {
@@ -142,14 +171,54 @@ withFlag(true, () => {
 
   const mergedEn = mergeMooniKoreaFestivalReply('Model reply', {
     candidates: [],
-    userText: '서울 이번주 축제',
-    locale: 'en',
+    userText: '속초 이번주 축제',
+    locale: 'en-US',
     now: NOW,
     scopedFestivalEnabled: true,
   });
-  assert.match(mergedEn, /GATEO has no verified festivals overlapping/i);
+  assert.match(mergedEn, /GATEO has no verified festivals overlapping Sokcho for this week/i);
+  assert.doesNotMatch(mergedEn, /[가-힣]/);
   assert.match(mergedEn, /https:\/\/www\.gateo\.kr\/korea\//);
+
+  const weekendHint = buildMooniKoreaFestivalSystemHint({
+    userText: '서울 이번주말 축제',
+    items: weekFixture.items,
+    locale: 'ko',
+    now: NOW,
+    scopedFestivalEnabled: true,
+  });
+  assert.match(weekendHint, /이번 주말과/);
+  assert.doesNotMatch(weekendHint, /이번 주말와/);
+
+  const mergedList = mergeMooniKoreaFestivalReply('서울 축제', {
+    candidates: seoulPick.candidates.slice(0, 2),
+    userText: '서울 이번주 축제',
+    locale: 'ko',
+    now: NOW,
+    scopedFestivalEnabled: true,
+  });
+  assert.match(mergedList, /\[.+\]\(https:\/\/www\.gateo\.kr\/korea\/\?festival=\d+\)/);
+  assert.doesNotMatch(mergedList, /\*\*\*\*/);
+  const polishedList = polishFestivalModelReply(mergedList, {
+    locale: 'ko',
+    userText: '서울 이번주 축제',
+  });
+  const linkCount = (polishedList.match(/gateo\.kr\/korea\/\?festival=/g) || []).length;
+  assert.ok(linkCount >= 2, `polish should keep list links, got ${linkCount}`);
 });
+
+withFlag(false, () => {
+  const mondayOff = parseMooniFestivalTimeWindow(
+    '서울 이번주 축제',
+    new Date('2026-10-26T00:10:00+09:00'),
+  );
+  assert.equal(mondayOff.startYmd, '20261026');
+  assert.equal(mondayOff.endYmd, '20261101');
+});
+
+assert.equal(mooniReplyLocaleIsEn('en-US'), true);
+assert.equal(mooniReplyLocaleIsEn('en-GB'), true);
+assert.equal(mooniReplyLocaleIsEn('ko'), false);
 
 withFlag(false, () => {
   const merged = mergeMooniKoreaFestivalReply('keep me', {

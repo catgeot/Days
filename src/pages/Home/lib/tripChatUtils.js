@@ -6,10 +6,18 @@ import {
 
 const MOONI_LAST_CHAT_SESSION_KEY = 'gateo_mooni_last_chat_id';
 const MOONI_LAST_CHAT_LOCAL_KEY = 'gateo_mooni_last_chat_id';
+const MOONI_LAST_CHAT_SAVED_AT_SESSION_KEY = 'gateo_mooni_last_chat_saved_at';
+const MOONI_LAST_CHAT_SAVED_AT_LOCAL_KEY = 'gateo_mooni_last_chat_saved_at';
 
 /** 로그인 유저는 userId별 localStorage — 배포 후 재접속·다른 탭에서도 MOONi 대화 복원 */
 export function mooniLastChatStorageKey(userId) {
   return userId ? `${MOONI_LAST_CHAT_LOCAL_KEY}_${userId}` : MOONI_LAST_CHAT_LOCAL_KEY;
+}
+
+function mooniLastChatSavedAtStorageKey(userId) {
+  return userId
+    ? `${MOONI_LAST_CHAT_SAVED_AT_LOCAL_KEY}_${userId}`
+    : MOONI_LAST_CHAT_SAVED_AT_LOCAL_KEY;
 }
 
 function resolvePersistScope(scopeOrContext) {
@@ -33,8 +41,44 @@ function localKeyForScope(userId, scope) {
   return `${base}:${scope}`;
 }
 
-function encodeScopedEntry(chatId) {
-  return JSON.stringify({ id: String(chatId), savedAt: Date.now() });
+function encodeScopedEntry(chatId, savedAt = Date.now()) {
+  return JSON.stringify({ id: String(chatId), savedAt: Number(savedAt) });
+}
+
+function readLegacySavedAt(userId) {
+  const fromSession = Number(sessionStorage.getItem(MOONI_LAST_CHAT_SAVED_AT_SESSION_KEY));
+  if (Number.isFinite(fromSession)) return fromSession;
+  const fromLocal = Number(localStorage.getItem(mooniLastChatSavedAtStorageKey(userId)));
+  if (Number.isFinite(fromLocal)) return fromLocal;
+  return undefined;
+}
+
+function writeLegacySavedAt(userId, savedAt) {
+  const ts = String(savedAt);
+  try {
+    sessionStorage.setItem(MOONI_LAST_CHAT_SAVED_AT_SESSION_KEY, ts);
+    localStorage.setItem(mooniLastChatSavedAtStorageKey(userId), ts);
+  } catch {
+    // private mode
+  }
+}
+
+function parseLegacyMooniLastChatRaw(raw) {
+  if (raw == null || raw === '') return null;
+  if (raw.startsWith('{')) {
+    try {
+      const parsed = JSON.parse(raw);
+      const id = parsed?.id != null ? String(parsed.id) : '';
+      if (!id) return null;
+      const savedAt = Number(parsed.savedAt);
+      return { id, savedAt: Number.isFinite(savedAt) ? savedAt : undefined };
+    } catch {
+      return null;
+    }
+  }
+  const id = String(raw).trim();
+  if (!id) return null;
+  return { id, savedAt: undefined };
 }
 
 /**
@@ -71,10 +115,14 @@ export function persistMooniLastChatId(chatId, userId, scopeOrContext = null) {
   if (chatId == null || chatId === '') return;
   const id = String(chatId);
   const scope = resolvePersistScope(scopeOrContext);
-  const payload = scope ? encodeScopedEntry(id) : id;
+  const now = Date.now();
+  const payload = scope ? encodeScopedEntry(id, now) : id;
   try {
     sessionStorage.setItem(sessionKeyForScope(scope), payload);
     localStorage.setItem(localKeyForScope(userId, scope), payload);
+    if (!scope) {
+      writeLegacySavedAt(userId, now);
+    }
   } catch {
     // private mode
   }
@@ -89,18 +137,48 @@ function readLegacyMooniLastChatId(userId) {
 }
 
 function migrateLegacyMooniLastChatToGeneral(userId) {
-  const legacyRaw = readLegacyMooniLastChatId(userId);
-  if (legacyRaw == null || legacyRaw === '') return null;
-  if (legacyRaw.startsWith('{')) return null;
-  const id = String(legacyRaw).trim();
-  if (!id) return null;
-  const payload = encodeScopedEntry(id);
+  const sessionRaw = sessionStorage.getItem(MOONI_LAST_CHAT_SESSION_KEY);
+  const userLocalRaw = userId ? localStorage.getItem(mooniLastChatStorageKey(userId)) : null;
+  const guestLocalRaw = localStorage.getItem(MOONI_LAST_CHAT_LOCAL_KEY);
+
+  /** @type {'session' | 'local-user' | 'local-guest' | null} */
+  let source = null;
+  let parsed = null;
+
+  if (sessionRaw) {
+    parsed = parseLegacyMooniLastChatRaw(sessionRaw);
+    if (parsed?.id) source = 'session';
+  }
+  if (!parsed?.id && userId && userLocalRaw) {
+    parsed = parseLegacyMooniLastChatRaw(userLocalRaw);
+    if (parsed?.id) source = 'local-user';
+  }
+  if (!parsed?.id && guestLocalRaw) {
+    parsed = parseLegacyMooniLastChatRaw(guestLocalRaw);
+    if (parsed?.id) source = 'local-guest';
+  }
+
+  if (!parsed?.id || !source) return null;
+
+  const savedAt =
+    parsed.savedAt ??
+    readLegacySavedAt(source === 'local-user' ? userId : source === 'local-guest' ? null : userId) ??
+    0;
+
+  const payload = encodeScopedEntry(parsed.id, savedAt);
   try {
     sessionStorage.setItem(sessionKeyForScope('general'), payload);
     localStorage.setItem(localKeyForScope(userId, 'general'), payload);
-    sessionStorage.removeItem(MOONI_LAST_CHAT_SESSION_KEY);
-    localStorage.removeItem(mooniLastChatStorageKey(userId));
-    localStorage.removeItem(MOONI_LAST_CHAT_LOCAL_KEY);
+    if (source === 'session') {
+      sessionStorage.removeItem(MOONI_LAST_CHAT_SESSION_KEY);
+      sessionStorage.removeItem(MOONI_LAST_CHAT_SAVED_AT_SESSION_KEY);
+    } else if (source === 'local-user' && userId) {
+      localStorage.removeItem(mooniLastChatStorageKey(userId));
+      localStorage.removeItem(mooniLastChatSavedAtStorageKey(userId));
+    } else if (source === 'local-guest') {
+      localStorage.removeItem(MOONI_LAST_CHAT_LOCAL_KEY);
+      localStorage.removeItem(mooniLastChatSavedAtStorageKey(null));
+    }
   } catch {
     // private mode
   }
