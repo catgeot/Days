@@ -86,6 +86,42 @@ function gateoEmitVersionJson() {
 // 폰·LAN 테스트: 기본(HTTPS). PC만 빠르게 볼 때: npm run dev:http
 const devSsl = process.env.DEV_SSL !== '0';
 
+/** preview/flags-on-* branch only — mirrors committed `.env.production` on that branch. */
+const previewFlagsOnBranch =
+  process.env.VERCEL_GIT_COMMIT_REF === 'preview/flags-on-2026-10-29'
+  || process.env.GATEO_PREVIEW_FLAGS_ON === '1';
+
+function gateoPreviewRolloutDefine(envKey, enabledValue = '1') {
+  return JSON.stringify(previewFlagsOnBranch ? enabledValue : '');
+}
+
+/** Mirrors `.env.production` on preview/flags-on-2026-10-29 (Vite `define` wins over env). */
+const PREVIEW_ROLLOUT_ENV = {
+  VITE_GATEO_SCENIC_PLACE_LINKS: '1',
+  VITE_GATEO_NEARBY_CARDS: '1',
+  VITE_GATEO_PHOTO_CREDIT: '1',
+  VITE_GATEO_REVIEW_DEEPLINK: '1',
+  VITE_GATEO_FRESHNESS_TODAY: '2026-10-29',
+  VITE_GATEO_PLACE_CROSSLINK: '1',
+  VITE_GATEO_FESTIVAL_ROAD: '1',
+  VITE_GATEO_LOGBOOK_REVIEW_HUB: '1',
+  VITE_GATEO_PLACE_WORLD_EVENTS_TAB: '1',
+  VITE_GATEO_PLACE_TRAVELOGUE_CARD: '1',
+  VITE_GATEO_LOCAL_INFO_ROLLOUT: '1',
+  VITE_GATEO_PLACE_DESKTOP_LEFT_INFO: '1',
+  VITE_GATEO_MOONI_SCOPED_FESTIVAL: '1',
+  VITE_GATEO_SITE_SEARCH: '1',
+  VITE_GATEO_SITE_SEARCH_ALL_ASSETS: '1',
+  VITE_GATEO_FESTIVAL_DATE_CHIP: '1',
+};
+
+const previewRolloutDefineEntries = Object.fromEntries(
+  Object.entries(PREVIEW_ROLLOUT_ENV).map(([key, value]) => [
+    `import.meta.env.${key}`,
+    gateoPreviewRolloutDefine(key, value),
+  ]),
+);
+
 export default defineConfig({
   define: {
     'import.meta.env.VITE_GATEO_QA_MOONI_MD_FIXTURE': JSON.stringify(
@@ -94,6 +130,7 @@ export default defineConfig({
     'import.meta.env.VITE_GATEO_PREVIEW_DEBUG_CHROME': JSON.stringify(
       process.env.VERCEL_ENV === 'preview' ? '1' : '',
     ),
+    ...previewRolloutDefineEntries,
   },
   plugins: [
     react(),
