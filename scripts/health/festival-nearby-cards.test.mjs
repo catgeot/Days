@@ -105,6 +105,8 @@ test('VITE_GATEO_NEARBY_CARDS flag defaults off', () => {
   const key = GATEO_ENV_FLAG_NAMES.NEARBY_CARDS;
   const prev = globalThis.__VITE_ENV__[key];
   globalThis.__VITE_ENV__[key] = '';
+  assert.equal(isGateoNearbyCardsEnabled(), true);
+  globalThis.__VITE_ENV__[key] = '0';
   assert.equal(isGateoNearbyCardsEnabled(), false);
   globalThis.__VITE_ENV__[key] = '1';
   assert.equal(isGateoNearbyCardsEnabled(), true);
