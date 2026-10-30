@@ -10,6 +10,7 @@ import {
   freshnessOf,
   freshnessTier,
   formatCheckedChipDate,
+  isActiveEventNotice,
   isIsoDateString,
   CONSULAR_CALL_CENTER_DISPLAY,
   CONSULAR_CALL_CENTER_TEL,
@@ -64,6 +65,13 @@ test('endsAt forces hidden even when checkedOn is fresh', () => {
   assert.equal(freshnessTier(slot, '2026-10-26'), 'hidden');
 });
 
+test('isActiveEventNotice is true through endsAt inclusive', () => {
+  assert.equal(isActiveEventNotice(parisSafety, '2026-10-29'), true);
+  assert.equal(isActiveEventNotice(parisSafety, '2026-11-05'), true);
+  assert.equal(isActiveEventNotice(parisSafety, '2026-11-06'), false);
+  assert.equal(isActiveEventNotice(cairoSafety, '2026-11-05'), false);
+});
+
 test('slots without kind stay on legacy meta path', () => {
   const entry = PARIS_CITY_FACTS.slots.find((slot) => slot.id === 'entry');
   assert.equal(entry.kind, null);
@@ -111,6 +119,7 @@ test('freshness UI pins MOFA URL and consular tel in hidden + fact value paths',
   assert.match(factsUi, /data-fact-consular-phone/);
   assert.equal(CONSULAR_CALL_CENTER_TEL, 'tel:+82232100404');
   assert.equal(mofaOverseasSafetyUrl(), 'https://www.0404.go.kr/');
+  assert.match(factsUi, /isActiveEventNotice/);
   assert.match(factsUi, /slot\.kind && !slot\.checkedOn/);
 });
 

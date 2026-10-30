@@ -23,6 +23,7 @@ import {
   formatCheckedChipDate,
   freshnessOf,
   getFreshnessToday,
+  isActiveEventNotice,
   mofaOverseasSafetyUrl,
   splitConsularCallCenter,
 } from '../../../data/placeVerifiedFacts/freshness.js';
@@ -463,7 +464,7 @@ function DisclosureHeader({
 function FactTopicRow({ slot, slug, locale, light }) {
   const { t } = useTranslation();
   const panelId = useId();
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(() => isActiveEventNotice(slot, getFreshnessToday()));
   const label = slotHeading(slot, t);
   return (
     <div
