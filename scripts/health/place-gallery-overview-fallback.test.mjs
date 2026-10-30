@@ -22,20 +22,13 @@ import {
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 
 function gitDiffAgainstBaseBranch(paths) {
-  const baseSha = process.env.GITHUB_BASE_SHA?.trim();
-  if (baseSha) {
-    try {
-      execSync(`git fetch --depth=1 origin ${baseSha}`, { cwd: root, stdio: 'ignore' });
-    } catch {
-      /* already present or unreachable */
-    }
-    try {
-      return execSync(`git diff ${baseSha} -- ${paths}`, { cwd: root, encoding: 'utf8' });
-    } catch {
-      /* fall through */
-    }
+  try {
+    execSync('git rev-parse --verify HEAD^2^{commit}', { cwd: root, stdio: 'ignore' });
+    return execSync(`git diff HEAD^1 -- ${paths}`, { cwd: root, encoding: 'utf8' });
+  } catch {
+    /* push to main or local — not a PR merge checkout */
   }
-  const candidates = ['origin/main', 'main'].filter(Boolean);
+  const candidates = ['origin/main', 'main'];
   for (const ref of candidates) {
     try {
       execSync(`git rev-parse --verify ${ref}^{commit}`, { cwd: root, stdio: 'ignore' });
