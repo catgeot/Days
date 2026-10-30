@@ -83,10 +83,15 @@ export async function openNearbyPlaceCard(page, festivalDialog, cardMatch, opts 
   const detailTimeoutMs = opts.detailTimeoutMs ?? 90_000;
   await waitForFestivalNearbySights(festivalDialog);
   await scrollFestivalSheetToBottom(festivalDialog);
-  const card = festivalNearbySightsList(festivalDialog)
-    .locator('li button')
-    .filter({ hasText: cardMatch })
-    .first();
+  const attractions = festivalDialog.locator('[data-festival-section="nearAttractions"]');
+  const usesNearbyCards = (await attractions.locator('[data-nearby-cards-section]').count()) > 0;
+  const card = usesNearbyCards
+    ? attractions.locator('[data-nearby-photo-card]').filter({ hasText: cardMatch }).first()
+    : festivalNearbySightsList(festivalDialog)
+        .locator('li button')
+        .filter({ hasText: cardMatch })
+        .first();
+  await card.scrollIntoViewIfNeeded({ timeout: 30_000 }).catch(() => {});
   await expect(card).toBeVisible({ timeout: 30_000 });
   await card.click();
   const modal = nearbyPlaceModal(page);
