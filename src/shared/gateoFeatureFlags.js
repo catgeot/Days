@@ -84,7 +84,12 @@ export function resolveLightboxHistoryEnabled(always = false) {
 
 /** Extra local-info places. Cairo stays on when this is off. */
 export function isGateoLocalInfoRolloutEnabled() {
-  return readGateoEnvFlag(GATEO_ENV_FLAG_NAMES.LOCAL_INFO_ROLLOUT);
+  // Unset defaults on; `0`/`false`/`off` kill switch.
+  const name = GATEO_ENV_FLAG_NAMES.LOCAL_INFO_ROLLOUT;
+  const raw = import.meta.env?.[name] ?? globalThis.__VITE_ENV__?.[name];
+  if (raw == null || String(raw).trim() === '') return true;
+  const value = String(raw).trim().toLowerCase();
+  return value !== '0' && value !== 'false' && value !== 'off';
 }
 
 /** Festival road draft inside festival detail. Default off. */
@@ -107,9 +112,13 @@ export function isGateoKoglReelsEnabled() {
   return readGateoEnvFlag(GATEO_ENV_FLAG_NAMES.KOGL_REELS);
 }
 
-/** Scenic modal place-card CTA, hub regional grid, SSOT scenic gallery fallback. Default off. */
+/** Scenic modal place-card CTA, hub regional grid, SSOT scenic gallery fallback. Unset defaults on; `0`/`false`/`off` disables. */
 export function isGateoScenicPlaceLinksEnabled() {
-  return readGateoEnvFlag(GATEO_ENV_FLAG_NAMES.SCENIC_PLACE_LINKS);
+  const name = GATEO_ENV_FLAG_NAMES.SCENIC_PLACE_LINKS;
+  const raw = import.meta.env?.[name] ?? globalThis.__VITE_ENV__?.[name];
+  if (raw == null || String(raw).trim() === '') return true;
+  const value = String(raw).trim().toLowerCase();
+  return value !== '0' && value !== 'false' && value !== 'off';
 }
 
 /** PlaceCard / home summary — dedicated 「세계 행사」 tab instead of inline accordion. Default off. */

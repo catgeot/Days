@@ -49,7 +49,7 @@ test('registry maps cairo and paris and keeps ko and en card data', () => {
 test('registry lookup keeps cairo when the rollout flag is off and renders nothing for other places', () => {
   const flag = GATEO_ENV_FLAG_NAMES.LOCAL_INFO_ROLLOUT;
   const prev = globalThis.__VITE_ENV__[flag];
-  globalThis.__VITE_ENV__[flag] = '';
+  globalThis.__VITE_ENV__[flag] = '0';
   try {
     assert.equal(resolveVerifiedFacts({ slug: 'cairo' }).slug, 'cairo');
     assert.equal(resolveVerifiedFacts('grand-egyptian-museum').slug, 'grand-egyptian-museum');
