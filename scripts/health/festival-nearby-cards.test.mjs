@@ -101,7 +101,7 @@ test('food items group by distance only', () => {
   assert.ok(groups.every((g) => g.kind === 'distance'));
 });
 
-test('VITE_GATEO_NEARBY_CARDS flag defaults off', () => {
+test('VITE_GATEO_NEARBY_CARDS flag defaults on', () => {
   const key = GATEO_ENV_FLAG_NAMES.NEARBY_CARDS;
   const prev = globalThis.__VITE_ENV__[key];
   globalThis.__VITE_ENV__[key] = '';

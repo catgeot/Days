@@ -136,7 +136,7 @@ export default function FestivalNearbyPhotoCard({
             </span>
           </div>
           {metaLine ? (
-            <p className="max-h-[2.5rem] overflow-hidden px-2.5 py-2 text-[11px] leading-[1.25] text-stone-600 break-words line-clamp-2">
+            <p className="px-2.5 pb-2.5 pt-1.5 text-[11px] leading-snug text-stone-600 break-words line-clamp-2">
               {metaLine}
             </p>
           ) : (
