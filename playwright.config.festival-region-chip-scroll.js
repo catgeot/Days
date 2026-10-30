@@ -16,7 +16,7 @@ export default defineConfig({
     ignoreHTTPSErrors: true,
   },
   webServer: {
-    command: 'BROWSER=none DEV_SSL=0 npx vite --host 127.0.0.1 --port 5194',
+    command: 'BROWSER=none DEV_SSL=0 VITE_GATEO_NEARBY_CARDS=0 npx vite --host 127.0.0.1 --port 5194',
     url: 'http://127.0.0.1:5194/korea/',
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,

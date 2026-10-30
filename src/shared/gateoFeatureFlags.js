@@ -97,9 +97,14 @@ export function isGateoFestivalRoadEnabled() {
   return readGateoEnvFlag(GATEO_ENV_FLAG_NAMES.FESTIVAL_ROAD);
 }
 
-/** Festival nearby sights/food 2-column cards. Default off. */
+/** Festival nearby sights/food 2-column cards. Default on; `0` / `false` / `off` disables. */
 export function isGateoNearbyCardsEnabled() {
-  return readGateoEnvFlag(GATEO_ENV_FLAG_NAMES.NEARBY_CARDS);
+  // Unset defaults on; `0`/`false`/`off` kill switch.
+  const name = GATEO_ENV_FLAG_NAMES.NEARBY_CARDS;
+  const raw = import.meta.env?.[name] ?? globalThis.__VITE_ENV__?.[name];
+  if (raw == null || String(raw).trim() === '') return true;
+  const value = String(raw).trim().toLowerCase();
+  return value !== '0' && value !== 'false' && value !== 'off';
 }
 
 /** Globe home KOGL reels section. Default off. */
