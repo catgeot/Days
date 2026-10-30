@@ -12,7 +12,7 @@ import {
 function withScenicPlaceLinksFlag(enabled, fn) {
   const key = GATEO_ENV_FLAG_NAMES.SCENIC_PLACE_LINKS;
   const prev = globalThis.__VITE_ENV__[key];
-  globalThis.__VITE_ENV__[key] = enabled ? '1' : '';
+  globalThis.__VITE_ENV__[key] = enabled ? '1' : '0';
   try {
     return fn();
   } finally {
@@ -20,7 +20,7 @@ function withScenicPlaceLinksFlag(enabled, fn) {
   }
 }
 
-test('VITE_GATEO_SCENIC_PLACE_LINKS defaults off', () => {
+test("VITE_GATEO_SCENIC_PLACE_LINKS '0' disables", () => {
   withScenicPlaceLinksFlag(false, () => {
     assert.equal(isGateoScenicPlaceLinksEnabled(), false);
     assert.equal(showThemeSpotPlaceCardLink('odaesan-seonjae-trail'), false);
@@ -55,4 +55,15 @@ test('flag on exposes regional cards, gallery urls, and modal CTA', () => {
     });
     assert.ok(gallery.length >= 1);
   });
+});
+
+test('VITE_GATEO_SCENIC_PLACE_LINKS unset defaults on', () => {
+  const key = GATEO_ENV_FLAG_NAMES.SCENIC_PLACE_LINKS;
+  const prev = globalThis.__VITE_ENV__[key];
+  delete globalThis.__VITE_ENV__[key];
+  try {
+    assert.equal(isGateoScenicPlaceLinksEnabled(), true);
+  } finally {
+    globalThis.__VITE_ENV__[key] = prev;
+  }
 });
