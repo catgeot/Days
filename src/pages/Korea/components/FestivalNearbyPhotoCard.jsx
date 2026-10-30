@@ -55,8 +55,8 @@ export default function FestivalNearbyPhotoCard({
     : {};
 
   const cardTone = clickable
-    ? 'flex h-full w-full min-w-0 flex-col overflow-hidden rounded-2xl border border-stone-200 bg-white text-left shadow-sm transition-colors [@media(hover:hover)]:hover:border-amber-300 [@media(hover:hover)]:hover:bg-amber-50/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-300/90'
-    : 'flex h-full w-full min-w-0 flex-col overflow-hidden rounded-2xl border border-stone-200 bg-white text-left shadow-sm';
+    ? 'flex h-full w-full min-w-0 flex-col rounded-2xl border border-stone-200 bg-white text-left shadow-sm transition-colors [@media(hover:hover)]:hover:border-amber-300 [@media(hover:hover)]:hover:bg-amber-50/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-300/90'
+    : 'flex h-full w-full min-w-0 flex-col rounded-2xl border border-stone-200 bg-white text-left shadow-sm';
 
   const CategoryIcon = variant === 'food' ? UtensilsCrossed : MapPin;
 
@@ -103,7 +103,7 @@ export default function FestivalNearbyPhotoCard({
         </div>
       ) : (
         <>
-          <div className="relative aspect-[4/3] w-full overflow-hidden bg-stone-200">
+          <div className="relative aspect-[4/3] w-full shrink-0 overflow-hidden rounded-t-2xl bg-stone-200">
             <FestivalPhotoFrame
               src={activeUrl}
               alt=""
@@ -136,9 +136,14 @@ export default function FestivalNearbyPhotoCard({
             </span>
           </div>
           {metaLine ? (
-            <p className="px-2.5 pb-2.5 pt-1.5 text-[11px] leading-snug text-stone-600 break-words line-clamp-2">
-              {metaLine}
-            </p>
+            <div className="shrink-0 space-y-0.5 px-2.5 pb-3.5 pt-2 text-[11px] leading-normal text-stone-600 rounded-b-2xl">
+              {dist ? (
+                <p className="truncate tabular-nums">{dist}</p>
+              ) : null}
+              {subtitles.length ? (
+                <p className="min-w-0 truncate">{subtitles.join(' · ')}</p>
+              ) : null}
+            </div>
           ) : (
             <span className="block h-2" aria-hidden="true" />
           )}
