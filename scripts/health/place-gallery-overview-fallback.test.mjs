@@ -22,22 +22,14 @@ import {
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 
 function gitDiffAgainstBaseBranch(paths) {
+  const baseRef = process.env.GITHUB_BASE_REF
+    ? `origin/${process.env.GITHUB_BASE_REF}`
+    : 'origin/main';
   try {
-    execSync('git rev-parse --verify HEAD^2^{commit}', { cwd: root, stdio: 'ignore' });
-    return execSync(`git diff HEAD^1 -- ${paths}`, { cwd: root, encoding: 'utf8' });
-  } catch {
-    /* push to main or local — not a PR merge checkout */
+    return execSync(`git diff ${baseRef} -- ${paths}`, { cwd: root, encoding: 'utf8' });
+  } catch (err) {
+    throw new Error(`Could not diff Home files against ${baseRef}: ${err?.message || err}`);
   }
-  const candidates = ['origin/main', 'main'];
-  for (const ref of candidates) {
-    try {
-      execSync(`git rev-parse --verify ${ref}^{commit}`, { cwd: root, stdio: 'ignore' });
-      return execSync(`git diff ${ref} -- ${paths}`, { cwd: root, encoding: 'utf8' });
-    } catch {
-      /* try next ref */
-    }
-  }
-  throw new Error('Could not resolve base ref for Home diff guard');
 }
 
 test('gallery overview flag defaults on', () => {

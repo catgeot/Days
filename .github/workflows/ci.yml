@@ -28,6 +28,10 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Fetch base branch (PR health guards)
+        if: github.event_name == 'pull_request'
+        run: git fetch --depth=1 origin "${{ github.base_ref }}"
+
       - name: Lint (src — no-undef blocking)
         run: npm run lint:ci
 
