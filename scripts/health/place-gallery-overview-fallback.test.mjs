@@ -22,11 +22,20 @@ import {
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 
 function gitDiffAgainstBaseBranch(paths) {
-  const candidates = [
-    process.env.GITHUB_BASE_SHA,
-    'origin/main',
-    'main',
-  ].filter(Boolean);
+  const baseSha = process.env.GITHUB_BASE_SHA?.trim();
+  if (baseSha) {
+    try {
+      execSync(`git fetch --depth=1 origin ${baseSha}`, { cwd: root, stdio: 'ignore' });
+    } catch {
+      /* already present or unreachable */
+    }
+    try {
+      return execSync(`git diff ${baseSha} -- ${paths}`, { cwd: root, encoding: 'utf8' });
+    } catch {
+      /* fall through */
+    }
+  }
+  const candidates = ['origin/main', 'main'].filter(Boolean);
   for (const ref of candidates) {
     try {
       execSync(`git rev-parse --verify ${ref}^{commit}`, { cwd: root, stdio: 'ignore' });
