@@ -119,6 +119,35 @@ test('Gallery UI wires EN korean description label i18n key', () => {
   assert.match(scroll, /descriptionInKorean/);
 });
 
+test('fetchDomesticTourOverview (main) uses searchKeyword path not ForLocation shortcut', () => {
+  const src = readFileSync(join(root, 'src/utils/tourKeywordPick.js'), 'utf8');
+  const match = src.match(/export async function fetchDomesticTourOverview\(placeName\)\s*\{[\s\S]*?\n\}/);
+  assert.ok(match, 'fetchDomesticTourOverview body');
+  const mainFn = match[0];
+  assert.match(mainFn, /lookupTourContentIdByName/);
+  assert.doesNotMatch(mainFn, /fetchDomesticTourOverviewForLocation/);
+  assert.doesNotMatch(mainFn, /resolveTourContentIdForLocation/);
+});
+
+test('fetchDomesticTourOverviewForLocation only wired from gallery hydrate module', () => {
+  const hydrateSrc = readFileSync(
+    join(root, 'src/pages/Home/lib/hydratePlaceGalleryOverview.js'),
+    'utf8',
+  );
+  assert.match(hydrateSrc, /fetchDomesticTourOverviewForLocation/);
+  const homeHandlers = readFileSync(join(root, 'src/pages/Home/hooks/useHomeHandlers.js'), 'utf8');
+  assert.doesNotMatch(homeHandlers, /hydratePlaceGalleryOverview/);
+  assert.doesNotMatch(homeHandlers, /fetchDomesticTourOverviewForLocation/);
+});
+
+test('home intro hydrate keeps ensurePlaceChatIntroForLocation (overseas AI)', () => {
+  const homeHandlers = readFileSync(join(root, 'src/pages/Home/hooks/useHomeHandlers.js'), 'utf8');
+  assert.match(homeHandlers, /ensurePlaceChatIntroForLocation\(pin, \{ generateIfMissing: true \}\)/);
+  const homeIndex = readFileSync(join(root, 'src/pages/Home/index.jsx'), 'utf8');
+  assert.match(homeIndex, /ensurePlaceChatIntroForLocation\(focusTarget, \{ generateIfMissing: true \}\)/);
+  assert.doesNotMatch(homeIndex, /hydratePlaceGalleryOverview/);
+});
+
 test('gyeongbokgung resolves Tour contentId via name', () => {
   const pin = {
     slug: 'gyeongbokgung-palace',

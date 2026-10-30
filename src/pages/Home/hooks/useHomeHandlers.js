@@ -95,9 +95,6 @@ import {
 } from '../lib/placeChatIntro.js';
 import { isDomesticKoreaLocation } from '../../../utils/tourApiMatch.js';
 import { fetchDomesticTourOverview } from '../../../utils/tourKeywordPick.js';
-import { hydratePlaceGalleryOverview } from '../lib/hydratePlaceGalleryOverview.js';
-import { isGateoPlaceGalleryOverviewFallbackEnabled } from '../../../shared/gateoFeatureFlags.js';
-import { i18n } from '../../../i18n/config.js';
 import { lookupVisitedPlacesForSearch } from '../lib/visitedPlaceSearchLookup.js';
 import {
   overlayGeoFieldsOnVisitedSpots,
@@ -552,16 +549,6 @@ export function useHomeHandlers({
       if (!needsPlaceChatIntroHydration(pin)) return;
       const pinId = pin?.id;
       const pinName = pin?.name;
-
-      if (isGateoPlaceGalleryOverviewFallbackEnabled()) {
-        hydratePlaceGalleryOverview(pin, { lng: i18n.language })
-          .then((summary) => {
-            applyPlaceIntro(pin, pinId, pinName, summary);
-          })
-          .catch(() => {});
-        return;
-      }
-
       const overviewPromise = isDomesticKoreaLocation(pin)
         ? fetchDomesticTourOverview(pinName)
         : Promise.resolve('');

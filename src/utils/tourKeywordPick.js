@@ -122,12 +122,18 @@ export async function fetchDomesticTourOverviewForLocation(locationOrName) {
 }
 
 /**
- * 국내 미등록 명소 — place_chat_intro가 없을 때 Tour 본문.
+ * 국내 미등록 명소 — place_chat_intro가 없을 때 Tour 본문 (main: searchKeyword → detailCommon).
  * @param {string} placeName
  * @returns {Promise<string>}
  */
 export async function fetchDomesticTourOverview(placeName) {
-  const name = String(placeName || '').trim();
-  if (name.length < 2) return '';
-  return fetchDomesticTourOverviewForLocation({ name });
+  const contentId = await lookupTourContentIdByName(placeName);
+  if (!contentId) return '';
+  try {
+    const common = await invokeTourApiProxy('detailCommon', { contentId });
+    const text = plainOverview(common?.items?.[0]?.overview);
+    return text.length >= 40 ? text : '';
+  } catch {
+    return '';
+  }
 }
