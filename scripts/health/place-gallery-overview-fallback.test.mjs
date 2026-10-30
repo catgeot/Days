@@ -21,6 +21,23 @@ import {
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 
+function gitDiffAgainstBaseBranch(paths) {
+  const candidates = [
+    process.env.GITHUB_BASE_SHA,
+    'origin/main',
+    'main',
+  ].filter(Boolean);
+  for (const ref of candidates) {
+    try {
+      execSync(`git rev-parse --verify ${ref}^{commit}`, { cwd: root, stdio: 'ignore' });
+      return execSync(`git diff ${ref} -- ${paths}`, { cwd: root, encoding: 'utf8' });
+    } catch {
+      /* try next ref */
+    }
+  }
+  throw new Error('Could not resolve base ref for Home diff guard');
+}
+
 test('gallery overview flag defaults on', () => {
   assert.equal(isGateoPlaceGalleryOverviewFallbackEnabled(), true);
   globalThis.__VITE_ENV__ = { VITE_GATEO_PLACE_GALLERY_OVERVIEW_FALLBACK: '0' };
@@ -56,10 +73,8 @@ test('flag ON — splitPlaceOverview ignores Home ensure desc (readonly hydrate 
 });
 
 test('Home index.jsx and useHomeHandlers.js match origin/main (no PR home changes)', () => {
-  const diff = execSync('git diff origin/main -- src/pages/Home/index.jsx src/pages/Home/hooks/useHomeHandlers.js', {
-    cwd: root,
-    encoding: 'utf8',
-  });
+  const paths = 'src/pages/Home/index.jsx src/pages/Home/hooks/useHomeHandlers.js';
+  const diff = gitDiffAgainstBaseBranch(paths);
   assert.equal(diff.trim(), '', 'Home files must be identical to origin/main');
 });
 
