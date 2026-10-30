@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Camera, MapPin, Compass, Sparkles } from 'lucide-react';
 import { getGalleryImageAttribution } from '../common/galleryImageAttribution';
-import { splitPlaceOverview } from '../common/placeOverviewText';
+import { usePlaceGalleryOverviewHydration } from '../hooks/usePlaceGalleryOverviewHydration';
 import { getLocalizedPlaceName } from '../common/locationDisplay';
 import { getLocalizedPlaceKeywords, isPlaceDescKoreanOnly } from '../../../pages/Home/lib/placeSeoText.js';
 import { useLocale } from '../../../i18n/LocaleProvider';
@@ -31,7 +31,7 @@ const GalleryInfoView = React.memo(({ selectedPlace, selectedImg, relatedPlaces 
     }, [selectedImg, selectedPlace]);
 
     const { curation: curationOverview, fixed: fixedOverview, originalQuery: overviewQuery } =
-        useMemo(() => splitPlaceOverview(selectedPlace, locale), [selectedPlace, locale]);
+        usePlaceGalleryOverviewHydration(selectedPlace, locale);
 
     const photoAttribution = useMemo(
         () => (selectedImg ? getGalleryImageAttribution(selectedImg) : null),

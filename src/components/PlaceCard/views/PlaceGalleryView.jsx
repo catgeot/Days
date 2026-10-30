@@ -32,7 +32,7 @@ import {
 import GalleryGridPhotoCredit from '../common/GalleryGridPhotoCredit';
 import GalleryAttributionLink from '../common/GalleryAttributionLink';
 import { isPlaceGalleryPhotoCreditEnabled } from '../../../utils/placeGalleryPhotoCreditFlag';
-import { splitPlaceOverview } from '../common/placeOverviewText';
+import { usePlaceGalleryOverviewHydration } from '../hooks/usePlaceGalleryOverviewHydration';
 import PlaceOverviewProse from '../common/PlaceOverviewProse';
 import PlaceWorldEventsSection from '../common/PlaceWorldEventsSection';
 import PlaceGalleryFactsAndStories from '../common/PlaceGalleryFactsAndStories';
@@ -1002,7 +1002,7 @@ const PlaceGalleryView = React.memo(({
   const isUIHidden = (!showUI && isFullScreen) || isMobileUIHidden || isMobileLandscapeImmersive;
 
   const { curation: curationOverview, fixed: fixedOverview, originalQuery: overviewQuery } =
-    useMemo(() => splitPlaceOverview(location, locale), [location, locale]);
+    usePlaceGalleryOverviewHydration(location, locale);
   const hasPlaceOverview = Boolean(curationOverview || fixedOverview);
   const { mountInGallery } = usePlaceDesktopLeftInfoLayout();
 

@@ -1,5 +1,5 @@
 import { isSyntheticOrEmptyPlaceDesc } from '../../../pages/Home/lib/placeDescText.js';
-import { getLocalizedPlaceDesc } from '../../../pages/Home/lib/placeSeoText.js';
+import { getPlaceOverviewDescForDisplay } from '../../../pages/Home/lib/placeSeoText.js';
 
 /**
  * 갤러리 PLACE_OVERVIEW — 큐레이션 연결 문구와 고정/intro desc를 분리.
@@ -9,7 +9,7 @@ import { getLocalizedPlaceDesc } from '../../../pages/Home/lib/placeSeoText.js';
  */
 export function splitPlaceOverview(location, locale = 'ko') {
   const curation = String(location?.curationSummary || '').trim();
-  let fixed = getLocalizedPlaceDesc(location, locale).trim();
+  let fixed = getPlaceOverviewDescForDisplay(location, locale).trim();
 
   if (fixed && isSyntheticOrEmptyPlaceDesc({ ...location, desc: fixed })) {
     fixed = '';

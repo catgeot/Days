@@ -90,11 +90,9 @@ import {
   samePlaceCenter,
 } from '../lib/uiPlaceAssetQuery.js';
 import {
-  ensurePlaceChatIntroForLocation,
   needsPlaceChatIntroHydration,
 } from '../lib/placeChatIntro.js';
-import { isDomesticKoreaLocation } from '../../../utils/tourApiMatch.js';
-import { fetchDomesticTourOverview } from '../../../utils/tourKeywordPick.js';
+import { hydratePlaceGalleryOverview } from '../lib/hydratePlaceGalleryOverview.js';
 import { lookupVisitedPlacesForSearch } from '../lib/visitedPlaceSearchLookup.js';
 import {
   overlayGeoFieldsOnVisitedSpots,
@@ -549,18 +547,9 @@ export function useHomeHandlers({
       if (!needsPlaceChatIntroHydration(pin)) return;
       const pinId = pin?.id;
       const pinName = pin?.name;
-      const overviewPromise = isDomesticKoreaLocation(pin)
-        ? fetchDomesticTourOverview(pinName)
-        : Promise.resolve('');
-      ensurePlaceChatIntroForLocation(pin, { generateIfMissing: true })
+      hydratePlaceGalleryOverview(pin, { generateIfMissing: true })
         .then((summary) => {
-          if (summary) {
-            applyPlaceIntro(pin, pinId, pinName, summary);
-            return;
-          }
-          return overviewPromise.then((overview) => {
-            applyPlaceIntro(pin, pinId, pinName, overview);
-          });
+          applyPlaceIntro(pin, pinId, pinName, summary);
         })
         .catch(() => {});
     };
