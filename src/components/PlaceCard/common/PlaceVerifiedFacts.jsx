@@ -45,10 +45,14 @@ import { buildPlaceReviewsHref } from '../../../utils/placeReviewFocus.js';
 import { snapshotGalleryScrollForPlaceBack } from './placeScrollMemory.js';
 import { getPlaceStableKey } from '../../../utils/travelSpotResolve.js';
 
-function usePlaceGallerySectionOpen(sectionId, placeKey) {
+function usePlaceGallerySectionOpen(sectionId, placeKey, defaultOpen = false) {
   const routeLocation = useLocation();
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(defaultOpen);
   const autoOpenedRef = useRef(false);
+
+  useEffect(() => {
+    setOpen(defaultOpen);
+  }, [placeKey, defaultOpen]);
 
   useEffect(() => {
     autoOpenedRef.current = false;
@@ -518,10 +522,17 @@ export default function PlaceVerifiedFacts({ location, className = '' }) {
   const { locale } = useLocale();
   const panelId = useId();
   const placeKey = getPlaceStableKey(location) || location?.slug || location?.id || '';
-  const [open, setOpen] = usePlaceGallerySectionOpen(PLACE_GALLERY_SECTION.FACTS, placeKey);
   const card = resolveVerifiedFacts(location);
+  const filled = card ? verifiedFactSlots(card) : [];
+  const defaultSectionOpen = filled.some(
+    (slot) => isActiveEventNotice(slot, getFreshnessToday()),
+  );
+  const [open, setOpen] = usePlaceGallerySectionOpen(
+    PLACE_GALLERY_SECTION.FACTS,
+    placeKey,
+    defaultSectionOpen,
+  );
   if (!card) return null;
-  const filled = verifiedFactSlots(card);
   if (!filled.length) return null;
   const unverified = unverifiedLine(card.slots, t);
 

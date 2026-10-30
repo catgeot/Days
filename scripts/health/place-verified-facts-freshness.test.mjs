@@ -120,6 +120,8 @@ test('freshness UI pins MOFA URL and consular tel in hidden + fact value paths',
   assert.equal(CONSULAR_CALL_CENTER_TEL, 'tel:+82232100404');
   assert.equal(mofaOverseasSafetyUrl(), 'https://www.0404.go.kr/');
   assert.match(factsUi, /isActiveEventNotice/);
+  assert.match(factsUi, /defaultSectionOpen/);
+  assert.match(factsUi, /usePlaceGallerySectionOpen\(\s*\n?\s*PLACE_GALLERY_SECTION\.FACTS/s);
   assert.match(factsUi, /slot\.kind && !slot\.checkedOn/);
 });
 

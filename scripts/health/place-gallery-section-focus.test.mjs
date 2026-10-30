@@ -38,9 +38,11 @@ test('review flash is in-memory and consumed once', () => {
   );
 });
 
-test('gallery sections default collapsed with anchors and toggle chip', () => {
+test('gallery facts may default open for active event notices; stories stay collapsed', () => {
   const factsUi = readFileSync(join(root, 'src/components/PlaceCard/common/PlaceVerifiedFacts.jsx'), 'utf8');
-  assert.match(factsUi, /usePlaceGallerySectionOpen\(PLACE_GALLERY_SECTION\.FACTS/);
+  assert.match(factsUi, /usePlaceGallerySectionOpen\(\s*\n?\s*PLACE_GALLERY_SECTION\.FACTS/s);
+  assert.match(factsUi, /defaultSectionOpen/);
+  assert.match(factsUi, /isActiveEventNotice/);
   assert.match(factsUi, /usePlaceGallerySectionOpen\(PLACE_GALLERY_SECTION\.STORIES/);
   assert.match(factsUi, /routeLocation\.pathname/);
   assert.match(factsUi, /id=\{PLACE_GALLERY_SECTION\.FACTS\}/);
