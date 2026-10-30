@@ -605,7 +605,8 @@
       "unknownCountry": "미상"
     },
     "localeNotice": {
-      "koreanGuide": "Detailed guide is currently provided in Korean."
+      "koreanGuide": "Detailed guide is currently provided in Korean.",
+      "descriptionInKorean": "Description available in Korean"
     },
     "overview": {
       "fromQuery": "「{{query}}」에서 이 여행지로"

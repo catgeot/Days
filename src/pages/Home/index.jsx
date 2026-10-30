@@ -60,8 +60,13 @@ import { resolveSessionBoundSpot } from '../../utils/resolveDestinationFromChat'
 import {
   buildMooniBoundSpotFromLocation,
   needsPlaceChatIntroHydration,
+  ensurePlaceChatIntroForLocation,
 } from './lib/placeChatIntro';
+import { isDomesticKoreaLocation } from '../../utils/tourApiMatch.js';
+import { fetchDomesticTourOverview } from '../../utils/tourKeywordPick.js';
 import { hydratePlaceGalleryOverview } from './lib/hydratePlaceGalleryOverview.js';
+import { isGateoPlaceGalleryOverviewFallbackEnabled } from '../../shared/gateoFeatureFlags.js';
+import { i18n } from '../../i18n/config.js';
 import { GLOBE_MODE, isTourMode } from './lib/globeMode';
 import { FlightCinemaProvider } from './lib/FlightCinemaContext.jsx';
 import { pickRandomGlobeCategory } from './lib/globeCategoryFocus';
@@ -1083,9 +1088,25 @@ function Home() {
                 return next;
               });
             };
-            hydratePlaceGalleryOverview(focusTarget, { generateIfMissing: true })
-              .then(applySummary)
-              .catch(() => {});
+
+            if (isGateoPlaceGalleryOverviewFallbackEnabled()) {
+              hydratePlaceGalleryOverview(focusTarget, { lng: i18n.language })
+                .then(applySummary)
+                .catch(() => {});
+            } else {
+              const overviewPromise = isDomesticKoreaLocation(focusTarget)
+                ? fetchDomesticTourOverview(pinName)
+                : Promise.resolve('');
+              ensurePlaceChatIntroForLocation(focusTarget, { generateIfMissing: true })
+                .then((summary) => {
+                  if (summary) {
+                    applySummary(summary);
+                    return;
+                  }
+                  return overviewPromise.then(applySummary);
+                })
+                .catch(() => {});
+            }
           }
 
           // SSOT 미등록 uiPlace — URL 복원 시 Explore/빈 국가·좌표-only 표시명을 역지오로 복구

@@ -1001,8 +1001,12 @@ const PlaceGalleryView = React.memo(({
 
   const isUIHidden = (!showUI && isFullScreen) || isMobileUIHidden || isMobileLandscapeImmersive;
 
-  const { curation: curationOverview, fixed: fixedOverview, originalQuery: overviewQuery } =
-    usePlaceGalleryOverviewHydration(location, locale);
+  const {
+    curation: curationOverview,
+    fixed: fixedOverview,
+    originalQuery: overviewQuery,
+    showDescriptionInKoreanLabel,
+  } = usePlaceGalleryOverviewHydration(location, locale);
   const hasPlaceOverview = Boolean(curationOverview || fixedOverview);
   const { mountInGallery } = usePlaceDesktopLeftInfoLayout();
 
@@ -1415,6 +1419,11 @@ const PlaceGalleryView = React.memo(({
                       )}
                     </div>
                   )}
+                  {showDescriptionInKoreanLabel ? (
+                    <span className="inline-flex items-center rounded-full border border-white/15 bg-white/5 px-2.5 py-1 text-[11px] text-gray-300">
+                      {t('place.localeNotice.descriptionInKorean')}
+                    </span>
+                  ) : null}
                   {fixedOverview && (
                     <PlaceOverviewProse text={fixedOverview} variant="mobile" />
                   )}

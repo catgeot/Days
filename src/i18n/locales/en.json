@@ -835,7 +835,8 @@
       "unknownCountry": "Unknown"
     },
     "localeNotice": {
-      "koreanGuide": "Detailed guide is currently provided in Korean."
+      "koreanGuide": "Detailed guide is currently provided in Korean.",
+      "descriptionInKorean": "Description available in Korean"
     },
     "overview": {
       "fromQuery": "From \"{{query}}\" to this place"

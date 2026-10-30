@@ -123,6 +123,12 @@ export function isPlaceDescKoreanOnly(location) {
   return !override?.desc_en;
 }
 
+/** EN UI — 개요 본문이 한글만일 때( Tour · intro ) */
+export function overviewTextIsKoreanOnly(text) {
+  const s = String(text || '').trim();
+  return Boolean(s) && hasHangul(s);
+}
+
 export function getLocalizedPlaceKeywords(location, locale = 'ko') {
   const slug = String(location?.slug || '').trim();
   const koKeywords = Array.isArray(location?.keywords) ? location.keywords.filter(Boolean) : [];

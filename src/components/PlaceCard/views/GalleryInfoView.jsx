@@ -16,7 +16,9 @@ const GalleryInfoView = React.memo(({ selectedPlace, selectedImg, relatedPlaces 
         () => getLocalizedPlaceKeywords(selectedPlace, locale),
         [selectedPlace, locale],
     );
-    const showKoreanGuideNotice = locale === 'en' && isPlaceDescKoreanOnly(selectedPlace);
+    const showKoreanGuideNotice =
+        locale === 'en' &&
+        isPlaceDescKoreanOnly(selectedPlace);
     const isPhotoMode = !!selectedImg;
     const summaryScrollRef = useRef(null);
     const showRelatedDock = !isPhotoMode && relatedPlaces.length > 0;
@@ -30,8 +32,12 @@ const GalleryInfoView = React.memo(({ selectedPlace, selectedImg, relatedPlaces 
         return `Visual data captured at ${selectedPlace?.name || 'Unknown Location'}`;
     }, [selectedImg, selectedPlace]);
 
-    const { curation: curationOverview, fixed: fixedOverview, originalQuery: overviewQuery } =
-        usePlaceGalleryOverviewHydration(selectedPlace, locale);
+    const {
+        curation: curationOverview,
+        fixed: fixedOverview,
+        originalQuery: overviewQuery,
+        showDescriptionInKoreanLabel,
+    } = usePlaceGalleryOverviewHydration(selectedPlace, locale);
 
     const photoAttribution = useMemo(
         () => (selectedImg ? getGalleryImageAttribution(selectedImg) : null),
@@ -44,7 +50,8 @@ const GalleryInfoView = React.memo(({ selectedPlace, selectedImg, relatedPlaces 
         description,
         photoAttribution,
         selectedImg,
-        showKoreanGuideNotice,
+        showKoreanGuideNotice: showDescriptionInKoreanLabel ? false : showKoreanGuideNotice,
+        showDescriptionInKoreanLabel,
         overviewQuery,
         curationOverview,
         fixedOverview,
