@@ -1,4 +1,7 @@
-import { isSyntheticOrEmptyPlaceDesc } from '../../../pages/Home/lib/placeDescText.js';
+import {
+  isSyntheticOrEmptyPlaceDesc,
+  shouldUsePlaceGalleryReadonlyOverview,
+} from '../../../pages/Home/lib/placeDescText.js';
 import { getLocalizedPlaceDesc, getPlaceOverviewDescForDisplay } from '../../../pages/Home/lib/placeSeoText.js';
 import { isGateoPlaceGalleryOverviewFallbackEnabled } from '../../../shared/gateoFeatureFlags.js';
 
@@ -10,10 +13,12 @@ import { isGateoPlaceGalleryOverviewFallbackEnabled } from '../../../shared/gate
  */
 export function splitPlaceOverview(location, locale = 'ko') {
   const curation = String(location?.curationSummary || '').trim();
-  const readDesc = isGateoPlaceGalleryOverviewFallbackEnabled()
-    ? getPlaceOverviewDescForDisplay
-    : getLocalizedPlaceDesc;
-  let fixed = readDesc(location, locale).trim();
+  const flagOn = isGateoPlaceGalleryOverviewFallbackEnabled();
+  const readDesc = flagOn ? getPlaceOverviewDescForDisplay : getLocalizedPlaceDesc;
+  let fixed =
+    flagOn && shouldUsePlaceGalleryReadonlyOverview(location)
+      ? ''
+      : readDesc(location, locale).trim();
 
   if (fixed && isSyntheticOrEmptyPlaceDesc({ ...location, desc: fixed })) {
     fixed = '';

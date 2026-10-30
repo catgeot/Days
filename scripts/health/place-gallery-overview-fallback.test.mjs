@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { execSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -9,7 +10,7 @@ import {
   getLocalizedPlaceDesc,
   overviewTextIsKoreanOnly,
 } from '../../src/pages/Home/lib/placeSeoText.js';
-import { isSyntheticOrEmptyPlaceDesc } from '../../src/pages/Home/lib/placeDescText.js';
+import { isSyntheticOrEmptyPlaceDesc, shouldUsePlaceGalleryReadonlyOverview } from '../../src/pages/Home/lib/placeDescText.js';
 import { attractionToPlacePin, listCityAttractionHubs } from '../../src/pages/Home/lib/cityAttractionHubs.js';
 import { isGateoPlaceGalleryOverviewFallbackEnabled } from '../../src/shared/gateoFeatureFlags.js';
 import { resolveTourApiPlace } from '../../src/utils/tourApiMatch.js';
@@ -40,13 +41,36 @@ test('flag OFF — splitPlaceOverview uses getLocalizedPlaceDesc (EN hides hangu
   delete globalThis.__VITE_ENV__;
 });
 
-test('flag ON — EN shows KO overview body for display helper', () => {
+test('flag ON — splitPlaceOverview ignores Home ensure desc (readonly hydrate only)', () => {
+  const pin = {
+    slug: 'gyeongbokgung-palace',
+    name: '경복궁',
+    parentCity: '서울',
+    uiPlace: true,
+    desc: 'AI가 쓴 경복궁 영문 소개문입니다.',
+    placeChatIntroApplied: true,
+  };
+  assert.equal(shouldUsePlaceGalleryReadonlyOverview(pin), true);
+  assert.equal(splitPlaceOverview(pin, 'en').fixed, '');
+  assert.equal(splitPlaceOverview(pin, 'ko').fixed, '');
+});
+
+test('Home index.jsx and useHomeHandlers.js match origin/main (no PR home changes)', () => {
+  const diff = execSync('git diff origin/main -- src/pages/Home/index.jsx src/pages/Home/hooks/useHomeHandlers.js', {
+    cwd: root,
+    encoding: 'utf8',
+  });
+  assert.equal(diff.trim(), '', 'Home files must be identical to origin/main');
+});
+
+test('flag ON — EN shows KO overview body for display helper (non-readonly pins)', () => {
   const pin = {
     slug: 'gyeongbokgung-palace',
     name: '경복궁',
     desc: '조선 왕조의 법궁으로, 광화문과 근정전이 유명한 서울의 대표 고궁입니다.',
     placeChatIntroApplied: true,
   };
+  assert.equal(shouldUsePlaceGalleryReadonlyOverview(pin), false);
   assert.match(getPlaceOverviewDescForDisplay(pin, 'en'), /조선/);
   assert.equal(overviewTextIsKoreanOnly(getPlaceOverviewDescForDisplay(pin, 'en')), true);
 });
@@ -69,6 +93,51 @@ test('hook path — no save RPC or AI ensure', () => {
   assert.doesNotMatch(hook, /save_place_chat_intro/);
   assert.doesNotMatch(hook, /persistPlaceChatIntroSummary/);
   assert.doesNotMatch(hook, /ensurePlaceChatIntroForLocation/);
+  assert.doesNotMatch(hook, /generatePlaceChatIntroWithAi/);
+  assert.match(hook, /shouldUsePlaceGalleryReadonlyOverview/);
+});
+
+test('gallery entry views — overview hook only, no ensure or save', () => {
+  for (const rel of [
+    'src/components/PlaceCard/views/PlaceGalleryView.jsx',
+    'src/components/PlaceCard/views/GalleryInfoView.jsx',
+    'src/components/PlaceCard/common/placeOverviewText.js',
+  ]) {
+    const src = readFileSync(join(root, rel), 'utf8');
+    assert.doesNotMatch(src, /ensurePlaceChatIntroForLocation/, rel);
+    assert.doesNotMatch(src, /generatePlaceChatIntroWithAi/, rel);
+    assert.doesNotMatch(src, /persistPlaceChatIntroSummary/, rel);
+    assert.doesNotMatch(src, /save_place_chat_intro/, rel);
+  }
+  assert.match(
+    readFileSync(join(root, 'src/components/PlaceCard/views/GalleryInfoView.jsx'), 'utf8'),
+    /usePlaceGalleryOverviewHydration/,
+  );
+});
+
+test('hydrate still runs after Home ensure when gallery readonly pin', async () => {
+  resetPlaceGalleryOverviewCacheForTests();
+  const pin = {
+    slug: 'gyeongbokgung-palace',
+    name: '경복궁',
+    country: '대한민국',
+    parentCity: '서울',
+    uiPlace: true,
+    desc: 'Home ensure AI text',
+    placeChatIntroApplied: true,
+  };
+  let tourCalls = 0;
+  const summary = await hydratePlaceGalleryOverview(pin, {
+    lng: 'ko',
+    readIntro: async () => '',
+    readTour: async () => {
+      tourCalls += 1;
+      return 'Tour overview from contentId.';
+    },
+  });
+  assert.equal(tourCalls, 1);
+  assert.match(summary, /Tour overview/);
+  resetPlaceGalleryOverviewCacheForTests();
 });
 
 test('in-flight dedup — parallel hydrate shares one inflight promise', async () => {

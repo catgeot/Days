@@ -1,6 +1,6 @@
 import { isDomesticKoreaLocation } from '../../../utils/tourApiMatch.js';
 import { fetchDomesticTourOverviewForLocation } from '../../../utils/tourKeywordPick.js';
-import { needsPlaceChatIntroHydration } from './placeDescText.js';
+import { shouldUsePlaceGalleryReadonlyOverview } from './placeDescText.js';
 import { fetchPlaceChatIntroSummaryForLocation } from './placeChatIntro.js';
 
 /** @type {Map<string, string>} */
@@ -36,7 +36,7 @@ export async function hydratePlaceGalleryOverview(location, options = {}) {
     readIntro = fetchPlaceChatIntroSummaryForLocation,
     readTour = fetchDomesticTourOverviewForLocation,
   } = options;
-  if (!location || !needsPlaceChatIntroHydration(location)) return '';
+  if (!location || !shouldUsePlaceGalleryReadonlyOverview(location)) return '';
 
   const key = overviewCacheKey(location, lng);
   if (overviewMemory.has(key)) {

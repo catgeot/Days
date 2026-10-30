@@ -59,8 +59,8 @@ import { getAddressFromCoordinates } from './lib/geocoding';
 import { resolveSessionBoundSpot } from '../../utils/resolveDestinationFromChat';
 import {
   buildMooniBoundSpotFromLocation,
-  needsPlaceChatIntroHydration,
   ensurePlaceChatIntroForLocation,
+  needsPlaceChatIntroHydration,
 } from './lib/placeChatIntro';
 import { isDomesticKoreaLocation } from '../../utils/tourApiMatch.js';
 import { fetchDomesticTourOverview } from '../../utils/tourKeywordPick.js';
@@ -1067,6 +1067,9 @@ function Home() {
           if (needsPlaceChatIntroHydration(focusTarget)) {
             const pinId = focusTarget?.id;
             const pinName = focusTarget?.name;
+            const overviewPromise = isDomesticKoreaLocation(focusTarget)
+              ? fetchDomesticTourOverview(pinName)
+              : Promise.resolve('');
             const applySummary = (summary) => {
               if (!summary || syncId !== placeRouteSyncRef.current) return;
               setSelectedLocation((prev) => {
@@ -1085,16 +1088,12 @@ function Home() {
                 return next;
               });
             };
-
             ensurePlaceChatIntroForLocation(focusTarget, { generateIfMissing: true })
               .then((summary) => {
                 if (summary) {
                   applySummary(summary);
                   return;
                 }
-                const overviewPromise = isDomesticKoreaLocation(focusTarget)
-                  ? fetchDomesticTourOverview(pinName)
-                  : Promise.resolve('');
                 return overviewPromise.then(applySummary);
               })
               .catch(() => {});

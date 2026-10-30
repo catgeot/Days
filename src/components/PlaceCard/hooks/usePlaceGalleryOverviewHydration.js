@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { splitPlaceOverview } from '../common/placeOverviewText';
 import { isGateoPlaceGalleryOverviewFallbackEnabled } from '../../../shared/gateoFeatureFlags.js';
-import { needsPlaceChatIntroHydration } from '../../../pages/Home/lib/placeDescText.js';
+import { shouldUsePlaceGalleryReadonlyOverview } from '../../../pages/Home/lib/placeDescText.js';
 import { hydratePlaceGalleryOverview } from '../../../pages/Home/lib/hydratePlaceGalleryOverview.js';
 import { overviewTextIsKoreanOnly } from '../../../pages/Home/lib/placeSeoText.js';
 
@@ -33,7 +33,7 @@ export function usePlaceGalleryOverviewHydration(location, locale) {
 
   useEffect(() => {
     if (!flagOn) return undefined;
-    if (!location || !needsPlaceChatIntroHydration(location)) return undefined;
+    if (!location || !shouldUsePlaceGalleryReadonlyOverview(location)) return undefined;
     if (base.fixed || base.curation) return undefined;
 
     let cancelled = false;

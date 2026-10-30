@@ -90,8 +90,8 @@ import {
   samePlaceCenter,
 } from '../lib/uiPlaceAssetQuery.js';
 import {
-  needsPlaceChatIntroHydration,
   ensurePlaceChatIntroForLocation,
+  needsPlaceChatIntroHydration,
 } from '../lib/placeChatIntro.js';
 import { isDomesticKoreaLocation } from '../../../utils/tourApiMatch.js';
 import { fetchDomesticTourOverview } from '../../../utils/tourKeywordPick.js';
