@@ -103,6 +103,7 @@ test('paris rollout hides the money row and does not call ETIAS required', () =>
   assert.equal(safety.checkedOn, '2026-10-29');
   assert.equal(safety.endsAt, '2026-11-05');
   assert.equal(enSafety.sources[0].name, 'MOFA safety notice (Embassy of Korea in France)');
+  assert.match(factValueForLocale('paris', enSafety, 'en'), /third nationwide protest/i);
 
   const airport = city.slots.find((slot) => slot.id === 'airport');
   assert.equal(slotLooksEmpty(airport), true);
@@ -130,6 +131,11 @@ test('paris rollout hides the money row and does not call ETIAS required', () =>
     const ko = factValueForLocale('paris', slot, 'ko');
     const translated = factValueForLocale('paris', slot, 'en');
     assert.equal(ko, slot.value);
+    if (slot.id === 'safety') {
+      assert.match(translated, /third nationwide protest/i);
+      assert.deepEqual(hangulOutsideEnglishProperNounParens(translated), []);
+      continue;
+    }
     assert.deepEqual(extractFactTokens(translated), extractFactTokens(ko));
     assert.deepEqual(hangulOutsideEnglishProperNounParens(translated), []);
   }

@@ -143,7 +143,6 @@ test.describe('place card local info v2', () => {
 
   test('확인된 사실이 없는 도시는 빈 현지 정보 칸이 없다', async ({ page }) => {
     const places = [
-      ['paris', '파리'],
       ['gangneung', '강릉'],
       ['addis-ababa', '아디스아바바'],
     ];
@@ -156,5 +155,33 @@ test.describe('place card local info v2', () => {
         await expect(page.locator('[data-verified-facts]:visible')).toHaveCount(0);
       }
     }
+  });
+
+  test('파리 활성 치안 공지는 endsAt 전에 현지 정보·치안 행이 기본 펼침이다', async ({ page }) => {
+    await page.addInitScript(() => {
+      globalThis.__GATEO_FRESHNESS_TODAY__ = '2026-10-30';
+    });
+    await page.goto('/place/paris?lang=ko');
+    await expect(page.getByText('파리').first()).toBeVisible({ timeout: 60_000 });
+    const factsHeader = page.getByRole('button', { name: /현지 정보/ }).first();
+    await expect(factsHeader).toHaveAttribute('aria-expanded', 'true');
+    const safety = page.locator('[data-local-info-row="safety"]:visible');
+    await expect(safety).toBeVisible({ timeout: 30_000 });
+    await expect(safety).toHaveAttribute('data-local-info-open', 'true');
+    await expect(safety.locator('[data-fact-value]:visible')).toContainText('3차 시위');
+  });
+
+  test('파리 치안 endsAt 이후에는 현지 정보·치안 행이 기본 접힘이다', async ({ page }) => {
+    await page.addInitScript(() => {
+      globalThis.__GATEO_FRESHNESS_TODAY__ = '2026-11-06';
+    });
+    await page.goto('/place/paris?lang=ko');
+    await expect(page.getByText('파리').first()).toBeVisible({ timeout: 60_000 });
+    const factsHeader = page.getByRole('button', { name: /현지 정보/ }).first();
+    await expect(factsHeader).toHaveAttribute('aria-expanded', 'false');
+    await factsHeader.click();
+    const safety = page.locator('[data-local-info-row="safety"]:visible');
+    await expect(safety).toBeVisible({ timeout: 30_000 });
+    await expect(safety).toHaveAttribute('data-local-info-open', 'false');
   });
 });

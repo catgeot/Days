@@ -54,6 +54,21 @@ export function daysBetweenIsoDates(fromYmd, toYmd) {
 }
 
 /**
+ * Event notice still within its endsAt window (inclusive, KST calendar day).
+ */
+export function isActiveEventNotice(slot, todayYmd = getFreshnessToday()) {
+  if (slot?.kind !== 'event') return false;
+  const endsAt = String(slot?.endsAt || '').trim();
+  if (!endsAt || !isIsoDateString(endsAt)) return false;
+  const today = String(todayYmd || '').trim();
+  if (!isIsoDateString(today)) return false;
+  const todayIdx = dayIndex(today);
+  const endIdx = dayIndex(endsAt);
+  if (todayIdx == null || endIdx == null) return false;
+  return todayIdx <= endIdx;
+}
+
+/**
  * @returns {'none' | 'fresh' | 'warn' | 'hidden'}
  */
 export function freshnessTier(slot, todayYmd) {
