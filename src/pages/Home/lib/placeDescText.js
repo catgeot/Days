@@ -49,3 +49,12 @@ export function needsPlaceChatIntroHydration(location) {
   if (!isSyntheticOrEmptyPlaceDesc(location)) return false;
   return true;
 }
+
+/**
+ * flag ON 갤러리 overview — Home ensure·AI desc 무시, 읽기 전용 hydrate만.
+ */
+export function shouldUsePlaceGalleryReadonlyOverview(location) {
+  if (!location?.name) return false;
+  if (location.uiPlace && location.parentCity) return true;
+  return isSyntheticOrEmptyPlaceDesc(location);
+}

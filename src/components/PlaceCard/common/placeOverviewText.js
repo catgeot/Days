@@ -1,5 +1,9 @@
-import { isSyntheticOrEmptyPlaceDesc } from '../../../pages/Home/lib/placeDescText.js';
-import { getLocalizedPlaceDesc } from '../../../pages/Home/lib/placeSeoText.js';
+import {
+  isSyntheticOrEmptyPlaceDesc,
+  shouldUsePlaceGalleryReadonlyOverview,
+} from '../../../pages/Home/lib/placeDescText.js';
+import { getLocalizedPlaceDesc, getPlaceOverviewDescForDisplay } from '../../../pages/Home/lib/placeSeoText.js';
+import { isGateoPlaceGalleryOverviewFallbackEnabled } from '../../../shared/gateoFeatureFlags.js';
 
 /**
  * 갤러리 PLACE_OVERVIEW — 큐레이션 연결 문구와 고정/intro desc를 분리.
@@ -9,7 +13,12 @@ import { getLocalizedPlaceDesc } from '../../../pages/Home/lib/placeSeoText.js';
  */
 export function splitPlaceOverview(location, locale = 'ko') {
   const curation = String(location?.curationSummary || '').trim();
-  let fixed = getLocalizedPlaceDesc(location, locale).trim();
+  const flagOn = isGateoPlaceGalleryOverviewFallbackEnabled();
+  const readDesc = flagOn ? getPlaceOverviewDescForDisplay : getLocalizedPlaceDesc;
+  let fixed =
+    flagOn && shouldUsePlaceGalleryReadonlyOverview(location)
+      ? ''
+      : readDesc(location, locale).trim();
 
   if (fixed && isSyntheticOrEmptyPlaceDesc({ ...location, desc: fixed })) {
     fixed = '';

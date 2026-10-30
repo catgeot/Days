@@ -14,6 +14,7 @@ export default function GalleryInfoOverviewScrollContent({
   photoAttribution,
   selectedImg,
   showKoreanGuideNotice,
+  showDescriptionInKoreanLabel = false,
   overviewQuery,
   curationOverview,
   fixedOverview,
@@ -62,7 +63,11 @@ export default function GalleryInfoOverviewScrollContent({
   return (
     <div className="animate-fade-in space-y-5">
       <div className="space-y-4">
-        {showKoreanGuideNotice ? (
+        {showDescriptionInKoreanLabel ? (
+          <span className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-white/5 px-2.5 py-1 text-[11px] text-gray-300">
+            {t('place.localeNotice.descriptionInKorean')}
+          </span>
+        ) : showKoreanGuideNotice ? (
           <span className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-white/5 px-2.5 py-1 text-[11px] text-gray-300">
             ℹ️ {t('place.localeNotice.koreanGuide')}
           </span>

@@ -84,12 +84,49 @@ export function getLocalizedPlaceDesc(location, locale = 'ko') {
   return '';
 }
 
+/**
+ * Place card gallery overview — synthetic hub desc는 비움 · EN은 desc_en 없을 때 KO 본문 허용(한글 안내 배지).
+ */
+export function getPlaceOverviewDescForDisplay(location, locale = 'ko') {
+  const slug = String(location?.slug || '').trim();
+  const koDesc = String(location?.desc || location?.description || '').trim();
+
+  if (koDesc && isSyntheticOrEmptyPlaceDesc({ ...location, desc: koDesc })) {
+    return '';
+  }
+
+  if (locale !== 'en') {
+    return koDesc;
+  }
+
+  const override = slug ? PLACE_SEO_EN_OVERRIDES[slug] : null;
+  if (override?.desc_en) {
+    return override.desc_en.trim();
+  }
+
+  if (koDesc && !hasHangul(koDesc)) {
+    return koDesc;
+  }
+
+  if (koDesc && hasHangul(koDesc)) {
+    return koDesc;
+  }
+
+  return '';
+}
+
 export function isPlaceDescKoreanOnly(location) {
   const slug = String(location?.slug || '').trim();
   const koDesc = String(location?.desc || location?.description || '').trim();
   if (!koDesc || !hasHangul(koDesc)) return false;
   const override = slug ? PLACE_SEO_EN_OVERRIDES[slug] : null;
   return !override?.desc_en;
+}
+
+/** EN UI — 개요 본문이 한글만일 때( Tour · intro ) */
+export function overviewTextIsKoreanOnly(text) {
+  const s = String(text || '').trim();
+  return Boolean(s) && hasHangul(s);
 }
 
 export function getLocalizedPlaceKeywords(location, locale = 'ko') {

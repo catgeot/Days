@@ -1,4 +1,5 @@
 import { invokeTourApiProxy } from './tourApiProxy.js';
+import { resolveTourApiPlace } from './tourApiMatch.js';
 
 function compactTitle(value) {
   return String(value || '')
@@ -80,7 +81,48 @@ function plainOverview(value) {
 }
 
 /**
- * 국내 미등록 명소 — place_chat_intro가 없을 때 Tour 본문.
+ * @param {string | { slug?: string, name?: string, contentId?: string }} locationOrName
+ * @returns {string}
+ */
+export function resolveTourContentIdForLocation(locationOrName) {
+  if (locationOrName == null) return '';
+  if (typeof locationOrName === 'string') {
+    const mapping = resolveTourApiPlace(locationOrName);
+    const id = String(mapping?.contentId || '').trim();
+    return /^\d{1,32}$/.test(id) ? id : '';
+  }
+  const mapping = resolveTourApiPlace(locationOrName);
+  const fromMapping = String(mapping?.contentId || '').trim();
+  if (/^\d{1,32}$/.test(fromMapping)) return fromMapping;
+  const explicit = String(locationOrName.contentId || '').trim();
+  return /^\d{1,32}$/.test(explicit) ? explicit : '';
+}
+
+/**
+ * @param {string | Record<string, unknown>} locationOrName
+ * @returns {Promise<string>}
+ */
+export async function fetchDomesticTourOverviewForLocation(locationOrName) {
+  let contentId = resolveTourContentIdForLocation(locationOrName);
+  if (!contentId) {
+    const name =
+      typeof locationOrName === 'string'
+        ? locationOrName
+        : String(locationOrName?.name || resolveTourApiPlace(locationOrName)?.title || '').trim();
+    contentId = await lookupTourContentIdByName(name);
+  }
+  if (!contentId) return '';
+  try {
+    const common = await invokeTourApiProxy('detailCommon', { contentId });
+    const text = plainOverview(common?.items?.[0]?.overview);
+    return text.length >= 40 ? text : '';
+  } catch {
+    return '';
+  }
+}
+
+/**
+ * 국내 미등록 명소 — place_chat_intro가 없을 때 Tour 본문 (main: searchKeyword → detailCommon).
  * @param {string} placeName
  * @returns {Promise<string>}
  */

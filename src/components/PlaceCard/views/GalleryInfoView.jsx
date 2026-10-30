@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Camera, MapPin, Compass, Sparkles } from 'lucide-react';
 import { getGalleryImageAttribution } from '../common/galleryImageAttribution';
-import { splitPlaceOverview } from '../common/placeOverviewText';
+import { usePlaceGalleryOverviewHydration } from '../hooks/usePlaceGalleryOverviewHydration';
 import { getLocalizedPlaceName } from '../common/locationDisplay';
 import { getLocalizedPlaceKeywords, isPlaceDescKoreanOnly } from '../../../pages/Home/lib/placeSeoText.js';
 import { useLocale } from '../../../i18n/LocaleProvider';
@@ -16,7 +16,9 @@ const GalleryInfoView = React.memo(({ selectedPlace, selectedImg, relatedPlaces 
         () => getLocalizedPlaceKeywords(selectedPlace, locale),
         [selectedPlace, locale],
     );
-    const showKoreanGuideNotice = locale === 'en' && isPlaceDescKoreanOnly(selectedPlace);
+    const showKoreanGuideNotice =
+        locale === 'en' &&
+        isPlaceDescKoreanOnly(selectedPlace);
     const isPhotoMode = !!selectedImg;
     const summaryScrollRef = useRef(null);
     const showRelatedDock = !isPhotoMode && relatedPlaces.length > 0;
@@ -30,8 +32,12 @@ const GalleryInfoView = React.memo(({ selectedPlace, selectedImg, relatedPlaces 
         return `Visual data captured at ${selectedPlace?.name || 'Unknown Location'}`;
     }, [selectedImg, selectedPlace]);
 
-    const { curation: curationOverview, fixed: fixedOverview, originalQuery: overviewQuery } =
-        useMemo(() => splitPlaceOverview(selectedPlace, locale), [selectedPlace, locale]);
+    const {
+        curation: curationOverview,
+        fixed: fixedOverview,
+        originalQuery: overviewQuery,
+        showDescriptionInKoreanLabel,
+    } = usePlaceGalleryOverviewHydration(selectedPlace, locale);
 
     const photoAttribution = useMemo(
         () => (selectedImg ? getGalleryImageAttribution(selectedImg) : null),
@@ -44,7 +50,8 @@ const GalleryInfoView = React.memo(({ selectedPlace, selectedImg, relatedPlaces 
         description,
         photoAttribution,
         selectedImg,
-        showKoreanGuideNotice,
+        showKoreanGuideNotice: showDescriptionInKoreanLabel ? false : showKoreanGuideNotice,
+        showDescriptionInKoreanLabel,
         overviewQuery,
         curationOverview,
         fixedOverview,

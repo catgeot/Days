@@ -25,6 +25,8 @@ export const GATEO_ENV_FLAG_NAMES = {
   EXPLORE_SEARCH_SUBMIT_PARITY: 'VITE_GATEO_EXPLORE_SEARCH_SUBMIT_PARITY',
   /** Desktop (lg+) — move gallery #facts/#stories into left overview scroll. Default off. */
   PLACE_DESKTOP_LEFT_INFO: 'VITE_GATEO_PLACE_DESKTOP_LEFT_INFO',
+  /** Gallery overview — TourAPI / place_chat_intro hydrate when hub desc is synthetic. Default on. */
+  PLACE_GALLERY_OVERVIEW_FALLBACK: 'VITE_GATEO_PLACE_GALLERY_OVERVIEW_FALLBACK',
   /** MOONi scoped last-chat + verified festival list replies. Default off. */
   MOONI_SCOPED_FESTIVAL: 'VITE_GATEO_MOONI_SCOPED_FESTIVAL',
 };
@@ -139,6 +141,15 @@ export function isGateoExploreSearchSubmitParityEnabled() {
 /** /place/* desktop two-column — facts/stories in left overview panel (lg+). Default off. */
 export function isGateoPlaceDesktopLeftInfoEnabled() {
   return readGateoEnvFlag(GATEO_ENV_FLAG_NAMES.PLACE_DESKTOP_LEFT_INFO);
+}
+
+/** Synthetic hub desc → Tour / place_chat_intro for gallery overview. Unset defaults on. */
+export function isGateoPlaceGalleryOverviewFallbackEnabled() {
+  const name = GATEO_ENV_FLAG_NAMES.PLACE_GALLERY_OVERVIEW_FALLBACK;
+  const raw = import.meta.env?.[name] ?? globalThis.__VITE_ENV__?.[name];
+  if (raw == null || String(raw).trim() === '') return true;
+  const value = String(raw).trim().toLowerCase();
+  return value !== '0' && value !== 'false' && value !== 'off';
 }
 
 /** MOONi conversation scope keys + verified-festival reply polish. Default off. */
