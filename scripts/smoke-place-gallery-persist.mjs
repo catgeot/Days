@@ -10,9 +10,13 @@ import {
   galleryAdminFromProbe,
   galleryModerateFailureReason,
   galleryPersistDropsStoredImages,
+  galleryPersistReplaceSameAsStored,
   galleryReportErrorReason,
   imagesForGalleryPersist,
+  isStockGalleryImage,
+  isTourApiDominantGallery,
   resolveGalleryPersistPlaceId,
+  skipPersistPlaceGalleryReplaceReason,
   withoutDroppedGalleryImages,
 } from '../src/shared/api/placeGalleryPersist.js';
 import {
@@ -144,5 +148,41 @@ assert.equal(isPlaceChatIntroKeyAccepted('qa\u0080place'), false, 'C1 start U+00
 assert.equal(isPlaceChatIntroKeyAccepted('qa\u0085place'), false, 'C1 U+0085');
 assert.equal(isPlaceChatIntroKeyAccepted('qa\u009fplace'), false, 'C1 end U+009F');
 assert.equal(isPlaceChatIntroKeyAccepted('qa\u00a0place'), true, 'U+00A0 is not [[:cntrl:]]');
+
+const tourA = { id: 'tourapi-1', source: 'tourapi', urls: { small: 'https://tong.visitkorea.or.kr/a.jpg' } };
+const tourB = { id: 'tourapi-2', source: 'tourapi', urls: { small: 'https://tong.visitkorea.or.kr/b.jpg' } };
+const tourBaseline = [tourA, tourB];
+const stockOnly = [
+  { id: 'vis-1', urls: { small: 'https://images.unsplash.com/vis-1/small' } },
+  { id: 'pexels-1', source: 'pexels', urls: { small: 'https://images.pexels.com/1.jpg' } },
+];
+
+assert.equal(
+  skipPersistPlaceGalleryReplaceReason(tourBaseline, tourBaseline),
+  'unchanged',
+  'replace skip when id sequence matches DB baseline',
+);
+assert.equal(
+  skipPersistPlaceGalleryReplaceReason(tourBaseline, [tourB, tourA]),
+  null,
+  'reordered ids still persist',
+);
+assert.equal(
+  skipPersistPlaceGalleryReplaceReason(tourBaseline, stockOnly),
+  'tour_to_stock_only',
+  'block replace when tour-dominant DB would become stock-only',
+);
+assert.equal(
+  skipPersistPlaceGalleryReplaceReason([], stockOnly),
+  null,
+  'first visit without DB baseline still allows replace',
+);
+assert.equal(
+  skipPersistPlaceGalleryReplaceReason(tourBaseline, [...tourBaseline, stockOnly[0]]),
+  null,
+  'normal replace when payload adds new ids',
+);
+assert.ok(isTourApiDominantGallery(tourBaseline), 'fixture is tour-dominant');
+assert.ok(stockOnly.every((img) => isStockGalleryImage(img)), 'stock fixture');
 
 console.log('smoke:place-gallery-persist PASS');

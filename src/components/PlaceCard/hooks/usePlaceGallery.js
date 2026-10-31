@@ -22,6 +22,7 @@ import {
   galleryReportErrorReason,
   imagesForGalleryPersist,
   resolveGalleryPersistPlaceId,
+  skipPersistPlaceGalleryReplaceReason,
   withoutDroppedGalleryImages,
 } from '../../../shared/api/placeGalleryPersist';
 import { buildPlaceDbIdCandidates, getPlaceStableKey, getPlaceStatsId } from '../../../utils/travelSpotResolve';
@@ -393,6 +394,8 @@ export const usePlaceGallery = (locationSource, options = {}) => {
   const currentPlaceKeyRef = useRef('');
   /** pickPlaceStatsGalleryRow가 고른 행. alias(dbStatsId)로 쓰지 않는다. */
   const loadedStatsPlaceIdRef = useRef('');
+  /** place_stats SELECT gallery_urls — replace no-op·Tour→스톡 덮어쓰기 방지 */
+  const loadedStatsGalleryRef = useRef(null);
   const canonicalStatsIdRef = useRef('');
   /** 여행지(slug/id)별 갤러리 새로고침 쿨타임 — 장소 전환 시 다른 여행지에 영향 없음 */
   const lastRefreshAtByPlaceRef = useRef(new Map());
@@ -585,6 +588,7 @@ export const usePlaceGallery = (locationSource, options = {}) => {
     const nextCanonicalId = String(dbStatsId || '').trim();
     if (canonicalStatsIdRef.current !== nextCanonicalId) {
       loadedStatsPlaceIdRef.current = '';
+      loadedStatsGalleryRef.current = null;
     }
     canonicalStatsIdRef.current = nextCanonicalId;
 
@@ -781,6 +785,13 @@ export const usePlaceGallery = (locationSource, options = {}) => {
       if (mode === 'replace' && galleryPersistDropsStoredImages(payloadImages, allImagesRef.current)) {
         console.error('⚠️ persist_place_gallery refused: storage list was filtered');
         return;
+      }
+      if (mode === 'replace') {
+        const skipReason = skipPersistPlaceGalleryReplaceReason(
+          loadedStatsGalleryRef.current,
+          payloadImages,
+        );
+        if (skipReason) return;
       }
       if (mode !== 'thumb' && (!Array.isArray(payloadImages) || payloadImages.length === 0)) return;
       if (mode === 'thumb' && !imageUrl) return;
@@ -982,6 +993,9 @@ export const usePlaceGallery = (locationSource, options = {}) => {
           }
           if (dbData?.place_id) {
             loadedStatsPlaceIdRef.current = String(dbData.place_id).trim();
+          }
+          if (Array.isArray(dbData?.gallery_urls) && dbData.gallery_urls.length > 0) {
+            loadedStatsGalleryRef.current = dbData.gallery_urls;
           }
 
           if (isStale()) return;
