@@ -363,6 +363,8 @@ jobs:
         env:
           DEV_SSL: '0'
           CI: 'true'
+          VITE_SUPABASE_URL: https://example.supabase.co
+          VITE_SUPABASE_ANON_KEY: e2e-anon-placeholder
         run: |
           npx vite preview --host 127.0.0.1 --port 5199 --strictPort > /tmp/vite-logbook-owner-edit.log 2>&1 &
           ready=0

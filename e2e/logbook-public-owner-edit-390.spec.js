@@ -41,7 +41,7 @@ function authUserJson(userId) {
 }
 
 function supabaseAuthStorageKey() {
-  const url = process.env.VITE_SUPABASE_URL || '';
+  const url = process.env.VITE_SUPABASE_URL || 'https://example.supabase.co';
   try {
     const host = new URL(url).hostname.split('.')[0];
     return host ? `sb-${host}-auth-token` : '';
