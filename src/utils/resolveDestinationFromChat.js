@@ -61,6 +61,9 @@ const ALREADY_ACCESS_SHAPED_EN =
 
 const SCORE_GAP_FOR_SINGLE_WINNER = 8;
 
+const KOREAN_PLACE_TRAILING_PARTICLE =
+  /(?:으로|로|에|은|는|이|가|와|과|랑|하고|에서|까지|부터|을|를|의|도|만)$/u;
+
 /** spot.keywords 부분일치 금지 — 「역사나 문화적으로…」→ 로마·베를린·델리 오탐 */
 const GENERIC_KEYWORD_MATCH_BLOCKLIST = new Set(
   [
@@ -133,6 +136,36 @@ function buildLowResult(candidates, source) {
     candidates: candidates.slice(0, 3),
     source,
   };
+}
+
+function stripPlaceQueryParticles(fragment) {
+  let s = String(fragment ?? '').trim();
+  for (let i = 0; i < 3 && s; i += 1) {
+    const next = s.replace(KOREAN_PLACE_TRAILING_PARTICLE, '').trim();
+    if (next === s) break;
+    s = next;
+  }
+  return s;
+}
+
+function stripPlaceQueryForLookup(query) {
+  const normalized = normalizeQueryFragment(query);
+  const stripped = stripPlaceQueryParticles(normalized);
+  return stripped || normalized;
+}
+
+function sortHitsByTextOrder(text, hits) {
+  const hay = String(text ?? '');
+  const order = (hit) => {
+    const labels = [hit.spot?.name, hit.spot?.name_en].filter(Boolean);
+    let best = hay.length + 1;
+    for (const label of labels) {
+      const idx = hay.indexOf(String(label).trim());
+      if (idx >= 0 && idx < best) best = idx;
+    }
+    return best;
+  };
+  return [...hits].sort((a, b) => order(a) - order(b) || b.score - a.score);
 }
 
 function emptyResult() {
@@ -212,9 +245,12 @@ function isDepartureHubSpot(spot) {
   return DEPARTURE_HUB_SLUGS.has(String(spot.slug).toLowerCase());
 }
 
-function filterDepartureHubs(hits, excludeDeparture) {
-  if (!excludeDeparture) return hits;
-  return hits.filter(({ spot }) => !isDepartureHubSpot(spot));
+function filterDepartureHubs(resolved, excludeDeparture) {
+  if (!excludeDeparture) return resolved;
+  return {
+    ...resolved,
+    hits: resolved.hits.filter(({ spot }) => !isDepartureHubSpot(spot)),
+  };
 }
 
 /**
@@ -239,14 +275,26 @@ export function resolveDestinationFromChat(userText, chatHistory = [], currentDe
     return buildHighResult(sessionBound, 10, 'bound');
   }
 
-  const currentDirect = filterDepartureHubs(resolveDirectHits(currentText), excludeDepartureHub);
-  if (currentDirect.length === 1) {
-    return buildHighResult(currentDirect[0].spot, currentDirect[0].score, 'lookup');
+  const currentResolved = filterDepartureHubs(
+    resolveDirectHits(currentText),
+    excludeDepartureHub,
+  );
+  if (currentResolved.overflow) {
+    return buildLowResult([], 'lookup');
   }
-  if (currentDirect.length > 1) {
+  if (currentResolved.hits.length === 1) {
+    return buildHighResult(
+      currentResolved.hits[0].spot,
+      currentResolved.hits[0].score,
+      'lookup',
+    );
+  }
+  if (currentResolved.hits.length > 1) {
     return buildLowResult(
-      currentDirect.map(({ spot, score }) => spotToCandidate(spot, score, 'lookup')),
-      'lookup'
+      currentResolved.hits.map(({ spot, score, reason }) =>
+        spotToCandidate(spot, score, reason || 'lookup'),
+      ),
+      'lookup',
     );
   }
 
@@ -258,46 +306,40 @@ export function resolveDestinationFromChat(userText, chatHistory = [], currentDe
   }
 
   if (looksLikeThemeQuery(currentText)) {
-    const themeCandidates = collectThemeCandidates(currentText);
-    if (themeCandidates.length > 0) {
-      return buildLowResult(themeCandidates, 'theme');
-    }
+    return emptyResult();
   }
 
-  // bound 세션 — 이번 턴에 새 목적지가 없으면 히스토리(출발지 등) 재스캔 금지
+  // bound 세션 — 이번 턴 질문에 새 목적지가 없을 때만 유지 (출발지·가는법은 위에서 처리)
   if (sessionBound) {
     return buildHighResult(sessionBound, 10, 'bound');
-  }
-
-  const recentUser = chatHistory
-    .filter((m) => m.role === 'user')
-    .slice(-3)
-    .map((m) => m.text ?? '')
-    .filter(Boolean);
-  const combined = [...recentUser, currentText].join(' ').trim();
-  const combinedDirect = filterDepartureHubs(resolveDirectHits(combined), excludeDepartureHub);
-  if (combinedDirect.length === 1) {
-    return buildHighResult(combinedDirect[0].spot, combinedDirect[0].score, 'lookup');
-  }
-  if (combinedDirect.length > 1) {
-    return buildLowResult(
-      combinedDirect.map(({ spot, score }) => spotToCandidate(spot, score, 'lookup')),
-      'lookup'
-    );
   }
 
   return emptyResult();
 }
 
 function resolveDirectHits(text) {
-  const hits = collectDirectLookupHits(text);
-  if (hits.length <= 1) return hits;
+  const raw = collectDirectLookupHits(text);
+  const nameHits = raw.filter((h) => h.reason === 'name' || h.reason === 'query');
 
-  const sorted = [...hits].sort((a, b) => b.score - a.score);
-  if (sorted[0].score >= sorted[1].score + SCORE_GAP_FOR_SINGLE_WINNER) {
-    return [sorted[0]];
+  if (nameHits.length > 3) {
+    return { hits: [], overflow: true };
   }
-  return sorted;
+
+  const pool =
+    nameHits.length > 0 ? sortHitsByTextOrder(text, nameHits) : [...raw].sort((a, b) => b.score - a.score);
+
+  if (pool.length <= 1) {
+    return { hits: pool, overflow: false };
+  }
+
+  if (nameHits.length > 0) {
+    return { hits: pool.slice(0, 3), overflow: false };
+  }
+
+  if (pool[0].score >= pool[1].score + SCORE_GAP_FOR_SINGLE_WINNER) {
+    return { hits: [pool[0]], overflow: false };
+  }
+  return { hits: pool.slice(0, 3), overflow: false };
 }
 
 function collectDirectLookupHits(text) {
@@ -305,25 +347,29 @@ function collectDirectLookupHits(text) {
   const bySlug = new Map();
 
   for (const query of queries) {
-    const spot = resolveTravelSpotFromSearchQuery(query);
+    const lookupQuery = stripPlaceQueryForLookup(query);
+    const spot = resolveTravelSpotFromSearchQuery(lookupQuery);
     if (!spot) continue;
-    const score = query.length + 20;
+    const score = lookupQuery.length + 20;
     const prev = bySlug.get(spot.slug);
     if (!prev || score > prev.score) {
-      bySlug.set(spot.slug, { spot, score });
+      bySlug.set(spot.slug, { spot, score, reason: 'query' });
     }
   }
 
   for (const spot of TRAVEL_SPOTS) {
-    const names = [spot.name, spot.name_en].filter((n) => n && String(n).trim().length >= 2);
+    const names = [spot.name, spot.name_en].filter((n) => n && String(n).trim().length >= 1);
     for (const name of names) {
       if (!textIncludesPlaceName(text, name)) continue;
-      const score = String(name).length + 15;
+      const score = Math.max(String(name).length, 1) + 15;
       const prev = bySlug.get(spot.slug);
-      if (!prev || score > prev.score) {
-        bySlug.set(spot.slug, { spot, score });
+      if (!prev || score > prev.score || prev.reason === 'keyword') {
+        bySlug.set(spot.slug, { spot, score, reason: 'name' });
       }
     }
+    const hasNameHit = bySlug.get(spot.slug)?.reason === 'name';
+    if (hasNameHit) continue;
+    if (looksLikeThemeQuery(text)) continue;
     for (const kw of spot.keywords || []) {
       const compact = String(kw ?? '').replace(/\s+/g, '').toLowerCase();
       if (!compact || compact.length < 2) continue;
@@ -332,7 +378,7 @@ function collectDirectLookupHits(text) {
       const score = String(kw).length + 12;
       const prev = bySlug.get(spot.slug);
       if (!prev || score > prev.score) {
-        bySlug.set(spot.slug, { spot, score });
+        bySlug.set(spot.slug, { spot, score, reason: 'keyword' });
       }
     }
   }
@@ -346,6 +392,7 @@ function extractLookupQueries(text) {
   if (!trimmed) return [];
 
   out.add(normalizeQueryFragment(trimmed));
+  out.add(stripPlaceQueryForLookup(trimmed));
 
   const patterns = [
     /(.+?)\s*(?:가고\s*싶|여행|가(?:려|고)|갈\s*거|추천|어때)/,
@@ -356,7 +403,9 @@ function extractLookupQueries(text) {
   for (const re of patterns) {
     const match = trimmed.match(re);
     if (match?.[1]?.trim()) {
-      out.add(normalizeQueryFragment(match[1].trim()));
+      const frag = match[1].trim();
+      out.add(normalizeQueryFragment(frag));
+      out.add(stripPlaceQueryForLookup(frag));
     }
   }
 
@@ -368,10 +417,67 @@ function extractLookupQueries(text) {
   return [...out].filter(Boolean);
 }
 
+function textIncludesSingleCharPlaceName(haystack, char) {
+  const ch = String(char ?? '').trim();
+  if (!ch || ch.length !== 1) return false;
+  const esc = escapeRegExp(ch);
+  if (new RegExp(`(?:^|[·])${esc}(?:[·]|$)`, 'u').test(haystack)) return true;
+  if (
+    new RegExp(
+      `(?:^|[\\s·,，、.!?])${esc}(?:으로|로|에|은|는|이|가|와|과|랑|이랑|하고|에서)(?=$|[\\s·,，、.!?])`,
+      'u',
+    ).test(haystack)
+  ) {
+    return true;
+  }
+  if (new RegExp(`(?:^|[\\s·,，、.!?])${esc}$`, 'u').test(haystack.trim())) return true;
+  if (
+    new RegExp(
+      `(?:^|[\\s·,，、.!?])${esc}\\s+(?:여행|trip|travel|vacation|holiday)`,
+      'iu',
+    ).test(haystack)
+  ) {
+    return true;
+  }
+  return false;
+}
+
+function isCebuGenericDetailUsage(haystack) {
+  const h = String(haystack ?? '');
+  if (/세부\s*(?:일정|내용|사항|계획|안|설명|항목|정보|내역|스케줄|리스트)/u.test(h)) {
+    return true;
+  }
+  if (/(?:시간별|일별|주별|코스별|동선별|일정별|분(?:별|당)|시(?:간|점)별)\s+세부/u.test(h)) {
+    return true;
+  }
+  return false;
+}
+
+function textIncludesCebuPlaceName(haystack) {
+  const h = String(haystack ?? '');
+  if (isCebuGenericDetailUsage(h)) return false;
+  if (/(?:^|[\s·,，、.!?])세부(?:으로|로|에|에서|와|과|랑|이랑)(?=$|[\s·,，、.!?])/u.test(h)) {
+    return true;
+  }
+  if (/(?:^|[\s·,，、.!?])세부\s+(?:여행|관광|자유여행|휴양|배낭)/u.test(h)) {
+    return true;
+  }
+  if (/(?:^|[·])세부(?:[·]|$)/u.test(h)) return true;
+  if (/(?:^|[\s·,，、.!?])세부(?=$|[\s·,，、.!?])/u.test(h.trim())) return true;
+  return false;
+}
+
 function textIncludesPlaceName(haystack, needle) {
   const h = haystack.toLowerCase();
   const n = String(needle).trim().toLowerCase();
-  if (!n || n.length < 2) return false;
+  if (!n) return false;
+  if (removeSpaces(n) === '세부') {
+    return textIncludesCebuPlaceName(haystack);
+  }
+  if (n.length === 1 && /[\uac00-\ud7a3]/u.test(n)) {
+    return textIncludesSingleCharPlaceName(haystack, needle.trim());
+  }
+  if (n.length < 2) return false;
 
   if (/^[a-z0-9\s-]+$/i.test(n)) {
     const re = new RegExp(`(?:^|[\\s,.!?])${escapeRegExp(n)}(?:$|[\\s,.!?])`, 'i');
