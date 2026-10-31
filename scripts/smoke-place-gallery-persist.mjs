@@ -17,6 +17,7 @@ import {
   isTourApiDominantGallery,
   loadedStatsGalleryRefFromDbRow,
   resolveGalleryPersistPlaceId,
+  resolveLoadedStatsPersistSnapshot,
   skipPersistPlaceGalleryReplaceReason,
   withoutDroppedGalleryImages,
 } from '../src/shared/api/placeGalleryPersist.js';
@@ -190,6 +191,32 @@ assert.equal(
   'non-stock mixed payload is not tour_to_stock_only block',
 );
 assert.equal(loadedStatsGalleryRefFromDbRow([]), null, 'empty DB gallery clears baseline ref value');
+assert.deepEqual(resolveLoadedStatsPersistSnapshot({ place_id: 'a', gallery_urls: tourBaseline }, true), {
+  apply: false,
+});
+const triple = {
+  id: 'tourapi-triple',
+  urls: {
+    small: 'https://tong.visitkorea.or.kr/s.jpg',
+    regular: 'https://tong.visitkorea.or.kr/r.jpg',
+    full: 'https://tong.visitkorea.or.kr/f.jpg',
+  },
+};
+const tripleBaseline = [triple];
+assert.equal(
+  skipPersistPlaceGalleryReplaceReason(tripleBaseline, [
+    { ...triple, urls: { ...triple.urls, regular: 'https://tong.visitkorea.or.kr/r2.jpg' } },
+  ]),
+  null,
+  'regular-only URL change must persist',
+);
+assert.equal(
+  skipPersistPlaceGalleryReplaceReason(tripleBaseline, [
+    { ...triple, urls: { ...triple.urls, full: 'https://tong.visitkorea.or.kr/f2.jpg' } },
+  ]),
+  null,
+  'full-only URL change must persist',
+);
 assert.equal(
   skipPersistPlaceGalleryReplaceReason(tourBaseline, stockOnly),
   'tour_to_stock_only',

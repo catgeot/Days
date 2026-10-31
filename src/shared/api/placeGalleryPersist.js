@@ -43,16 +43,27 @@ export function galleryPersistDropsStoredImages(payloadImages, storage) {
   return (storage || []).some((img) => img?.id && !payloadIds.has(img.id));
 }
 
-function galleryPersistImagePersistUrl(img) {
-  if (!img || typeof img !== 'object') return '';
-  return String(img.urls?.small || img.urls?.regular || img.urls?.full || '').trim();
+function galleryPersistImagePersistUrls(img) {
+  if (!img || typeof img !== 'object') {
+    return { small: '', regular: '', full: '' };
+  }
+  const urls = img.urls || {};
+  return {
+    small: String(urls.small ?? '').trim(),
+    regular: String(urls.regular ?? '').trim(),
+    full: String(urls.full ?? '').trim(),
+  };
+}
+
+function galleryPersistPersistUrlsEqual(a, b) {
+  return a.small === b.small && a.regular === b.regular && a.full === b.full;
 }
 
 function galleryPersistNormalizedEntries(images) {
   return (Array.isArray(images) ? images : [])
     .map((img) => ({
       id: String(img?.id ?? '').trim(),
-      url: galleryPersistImagePersistUrl(img),
+      urls: galleryPersistImagePersistUrls(img),
     }))
     .filter((entry) => entry.id);
 }
@@ -61,6 +72,20 @@ function galleryPersistNormalizedEntries(images) {
 export function loadedStatsGalleryRefFromDbRow(galleryUrls) {
   if (Array.isArray(galleryUrls) && galleryUrls.length > 0) return galleryUrls;
   return null;
+}
+
+/**
+ * DB place_stats 행 → persist baseline 스냅샷. isStale 이면 apply:false (ref·place_id 갱신 없음).
+ * @returns {{ apply: false } | { apply: true, loadedPlaceId: string, galleryBaseline: unknown[] | null }}
+ */
+export function resolveLoadedStatsPersistSnapshot(dbData, isStaleRun) {
+  if (isStaleRun) return { apply: false };
+  const loadedPlaceId = dbData?.place_id ? String(dbData.place_id).trim() : '';
+  return {
+    apply: true,
+    loadedPlaceId,
+    galleryBaseline: loadedStatsGalleryRefFromDbRow(dbData?.gallery_urls),
+  };
 }
 
 export function isTourApiGalleryImage(img) {
@@ -108,7 +133,7 @@ export function galleryPersistReplaceSameAsStored(storedBaseline, payloadImages)
   if (stored.length !== payload.length) return false;
   for (let i = 0; i < stored.length; i += 1) {
     if (stored[i].id !== payload[i].id) return false;
-    if (stored[i].url !== payload[i].url) return false;
+    if (!galleryPersistPersistUrlsEqual(stored[i].urls, payload[i].urls)) return false;
   }
   return true;
 }

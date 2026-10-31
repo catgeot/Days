@@ -5,6 +5,7 @@ import {
   isStockGalleryImage,
   isTourApiDominantGallery,
   loadedStatsGalleryRefFromDbRow,
+  resolveLoadedStatsPersistSnapshot,
   skipPersistPlaceGalleryReplaceReason,
 } from '../../src/shared/api/placeGalleryPersist.js';
 
@@ -24,13 +25,41 @@ const stockOnly = [
   { id: 'pexels-1', source: 'pexels', urls: { small: 'https://images.pexels.com/1.jpg' } },
 ];
 
+const tripleUrlRow = {
+  id: 'tourapi-triple',
+  source: 'tourapi',
+  urls: {
+    small: 'https://tong.visitkorea.or.kr/s.jpg',
+    regular: 'https://tong.visitkorea.or.kr/r.jpg',
+    full: 'https://tong.visitkorea.or.kr/f.jpg',
+  },
+};
+
 test('loadedStatsGalleryRefFromDbRow clears on empty DB gallery (장소 전환·miss)', () => {
   assert.equal(loadedStatsGalleryRefFromDbRow(null), null);
   assert.equal(loadedStatsGalleryRefFromDbRow([]), null);
   assert.deepEqual(loadedStatsGalleryRefFromDbRow(tourBaseline), tourBaseline);
 });
 
-test('replace unchanged requires matching id order and URL', () => {
+test('resolveLoadedStatsPersistSnapshot skips stale and applies DB row when fresh', () => {
+  const row = {
+    place_id: 'gyeongbokgung-palace',
+    gallery_urls: tourBaseline,
+  };
+  assert.deepEqual(resolveLoadedStatsPersistSnapshot(row, true), { apply: false });
+  assert.deepEqual(resolveLoadedStatsPersistSnapshot(row, false), {
+    apply: true,
+    loadedPlaceId: 'gyeongbokgung-palace',
+    galleryBaseline: tourBaseline,
+  });
+  assert.deepEqual(resolveLoadedStatsPersistSnapshot({ gallery_urls: [] }, false), {
+    apply: true,
+    loadedPlaceId: '',
+    galleryBaseline: null,
+  });
+});
+
+test('replace unchanged requires matching id order and all URL fields', () => {
   assert.equal(galleryPersistReplaceSameAsStored(tourBaseline, tourBaseline), true);
   const httpsOnly = [
     {
@@ -43,8 +72,35 @@ test('replace unchanged requires matching id order and URL', () => {
   assert.equal(
     skipPersistPlaceGalleryReplaceReason(tourBaseline, httpsOnly),
     null,
-    'http→https URL change must persist',
+    'http→https on small must persist',
   );
+
+  const tripleBaseline = [tripleUrlRow];
+  assert.equal(galleryPersistReplaceSameAsStored(tripleBaseline, tripleBaseline), true);
+
+  const regularOnlyChange = [
+    {
+      ...tripleUrlRow,
+      urls: {
+        ...tripleUrlRow.urls,
+        regular: 'https://tong.visitkorea.or.kr/r-updated.jpg',
+      },
+    },
+  ];
+  assert.equal(galleryPersistReplaceSameAsStored(tripleBaseline, regularOnlyChange), false);
+  assert.equal(skipPersistPlaceGalleryReplaceReason(tripleBaseline, regularOnlyChange), null);
+
+  const fullOnlyChange = [
+    {
+      ...tripleUrlRow,
+      urls: {
+        ...tripleUrlRow.urls,
+        full: 'https://tong.visitkorea.or.kr/f-updated.jpg',
+      },
+    },
+  ];
+  assert.equal(galleryPersistReplaceSameAsStored(tripleBaseline, fullOnlyChange), false);
+  assert.equal(skipPersistPlaceGalleryReplaceReason(tripleBaseline, fullOnlyChange), null);
 });
 
 test('tour-dominant baseline blocks stock-only replace', () => {
@@ -65,12 +121,4 @@ test('non-stock mixed payload is not blocked as tour_to_stock_only', () => {
   const payload = [stockOnly[0], unknown];
   assert.equal(isStockGalleryImage(unknown), false);
   assert.equal(skipPersistPlaceGalleryReplaceReason(tourBaseline, payload), null);
-});
-
-test('stale in-flight response must not overwrite baseline ref (contract)', () => {
-  const priorBaseline = tourBaseline;
-  const isStaleRun = true;
-  const nextRef = isStaleRun ? priorBaseline : loadedStatsGalleryRefFromDbRow(stockOnly);
-  assert.deepEqual(nextRef, priorBaseline);
-  assert.notDeepEqual(loadedStatsGalleryRefFromDbRow(stockOnly), priorBaseline);
 });

@@ -21,8 +21,8 @@ import {
   galleryPersistDropsStoredImages,
   galleryReportErrorReason,
   imagesForGalleryPersist,
-  loadedStatsGalleryRefFromDbRow,
   resolveGalleryPersistPlaceId,
+  resolveLoadedStatsPersistSnapshot,
   skipPersistPlaceGalleryReplaceReason,
   withoutDroppedGalleryImages,
 } from '../../../shared/api/placeGalleryPersist';
@@ -992,12 +992,12 @@ export const usePlaceGallery = (locationSource, options = {}) => {
               if (named?.gallery_urls?.length) dbData = named;
             }
           }
-          if (isStale()) return;
-
-          if (dbData?.place_id) {
-            loadedStatsPlaceIdRef.current = String(dbData.place_id).trim();
+          const statsSnapshot = resolveLoadedStatsPersistSnapshot(dbData, isStale());
+          if (!statsSnapshot.apply) return;
+          if (statsSnapshot.loadedPlaceId) {
+            loadedStatsPlaceIdRef.current = statsSnapshot.loadedPlaceId;
           }
-          loadedStatsGalleryRef.current = loadedStatsGalleryRefFromDbRow(dbData?.gallery_urls);
+          loadedStatsGalleryRef.current = statsSnapshot.galleryBaseline;
 
           if (!dbError && dbData) {
             if (thumbnailOnly && dbData.image_url) {
