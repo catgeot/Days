@@ -60,7 +60,37 @@ async function expectShareButtonSingleLine(page) {
   expect(box?.height ?? 999, 'Share button should stay single-line').toBeLessThanOrEqual(40);
 }
 
-function defineDetailToolbarSuite({ tag, width, height, outDir, assertShareHeight }) {
+async function expectDeleteClearOfBack(page) {
+  const toolbar = page.locator('[data-logbook-detail-toolbar]');
+  await toolbar.evaluate((el) => {
+    el.scrollLeft = el.scrollWidth;
+  });
+  const deleteBtn = page.locator('[data-logbook-detail-delete]');
+  const backBtn = page.locator('[data-logbook-detail-back]');
+  await deleteBtn.scrollIntoViewIfNeeded();
+  await expect(deleteBtn).toBeVisible();
+  await expect(backBtn).toBeVisible();
+  const deleteBox = await deleteBtn.boundingBox();
+  const backBox = await backBtn.boundingBox();
+  expect(deleteBox && backBox).toBeTruthy();
+  const deleteRight = deleteBox.x + deleteBox.width;
+  const backLeft = backBox.x;
+  const gapPx = Math.round((backLeft - deleteRight) * 10) / 10;
+  const deleteBottom = deleteBox.y + deleteBox.height;
+  const backBottom = backBox.y + backBox.height;
+  const intersects =
+    deleteBox.x < backBox.x + backBox.width &&
+    backBox.x < deleteRight &&
+    deleteBox.y < backBottom &&
+    backBox.y < deleteBottom;
+  expect(intersects, `delete–back boxes overlap (gap ${gapPx}px)`).toBe(false);
+  expect(
+    gapPx,
+    `delete–back horizontal gap ${gapPx}px (need ≥8px)`,
+  ).toBeGreaterThanOrEqual(8);
+}
+
+function defineDetailToolbarSuite({ tag, width, height, outDir, assertShareHeight, assertBackGap }) {
   test.describe(`logbook mine Detail toolbar (${tag}px, mocked Supabase)`, () => {
     test.use({
       viewport: { width, height },
@@ -81,6 +111,9 @@ function defineDetailToolbarSuite({ tag, width, height, outDir, assertShareHeigh
       if (assertShareHeight) {
         await expectShareButtonSingleLine(page);
       }
+      if (assertBackGap) {
+        await expectDeleteClearOfBack(page);
+      }
       await shot(page, outDir, 'detail-toolbar.png', width, height);
     });
   });
@@ -92,6 +125,7 @@ defineDetailToolbarSuite({
   height: 740,
   outDir: '/opt/cursor/artifacts/logbook-detail-toolbar-360',
   assertShareHeight: true,
+  assertBackGap: true,
 });
 defineDetailToolbarSuite({
   tag: '390',
@@ -99,6 +133,7 @@ defineDetailToolbarSuite({
   height: 844,
   outDir: '/opt/cursor/artifacts/logbook-detail-toolbar-390',
   assertShareHeight: true,
+  assertBackGap: true,
 });
 defineDetailToolbarSuite({
   tag: '1280',
@@ -106,4 +141,5 @@ defineDetailToolbarSuite({
   height: 720,
   outDir: '/opt/cursor/artifacts/logbook-detail-toolbar-1280',
   assertShareHeight: false,
+  assertBackGap: false,
 });

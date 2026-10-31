@@ -27,6 +27,7 @@ export default function AppOutlineBackButton({
   variant = 'default',
   icon = 'back',
   className = '',
+  logbookDetailBack = false,
 }) {
   const [mounted, setMounted] = useState(false);
 
@@ -43,6 +44,7 @@ export default function AppOutlineBackButton({
       onClick={onClick}
       aria-label={ariaLabel}
       title={title ?? ariaLabel}
+      {...(logbookDetailBack ? { 'data-logbook-detail-back': '' } : {})}
       className={`${BASE_CLASS} ${toneClass} ${className}`.trim()}
     >
       <Icon size={22} strokeWidth={2.5} aria-hidden="true" />

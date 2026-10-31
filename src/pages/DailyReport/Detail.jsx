@@ -253,6 +253,7 @@ const Detail = () => {
         onClick={handleBack}
         ariaLabel={t('logbook.public.backTitle')}
         title={t('logbook.public.backTitle')}
+        logbookDetailBack
       />
 
       {heroImageUrl && (
@@ -266,7 +267,7 @@ const Detail = () => {
 
         <div
           data-logbook-detail-toolbar
-          className="mb-8 flex flex-nowrap items-center justify-start gap-2 sm:gap-3 overflow-x-auto overflow-y-hidden max-w-full max-md:pr-[3.75rem] sm:max-w-[calc(100%-3.5rem)]"
+          className="mb-8 flex flex-nowrap items-center justify-start gap-2 sm:gap-3 overflow-x-auto overflow-y-hidden max-w-full max-md:pr-[calc(2.75rem+max(1.25rem,env(safe-area-inset-right,0px))+0.5rem)] sm:pr-[calc(3rem+2rem+0.5rem)] sm:max-w-[calc(100%-3.5rem)]"
         >
 
             {/* 🚨 [New] 직관적인 공유하기 버튼 (가장 돋보이게 처리) */}
@@ -312,6 +313,7 @@ const Detail = () => {
             <LogbookOwnerEditButton reportId={id} variant="compact" className={detailToolbarBtnClass} />
             <button
               type="button"
+              data-logbook-detail-delete
               onClick={handleDelete}
               className={`flex items-center gap-1.5 bg-red-50 backdrop-blur-md text-red-500 px-3 sm:px-4 py-2 rounded-full hover:bg-red-100 transition-colors border border-red-100 text-sm font-medium ${detailToolbarBtnClass}`}
             >
