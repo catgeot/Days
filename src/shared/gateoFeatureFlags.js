@@ -29,6 +29,8 @@ export const GATEO_ENV_FLAG_NAMES = {
   PLACE_GALLERY_OVERVIEW_FALLBACK: 'VITE_GATEO_PLACE_GALLERY_OVERVIEW_FALLBACK',
   /** MOONi scoped last-chat + verified festival list replies. Default on; `0`/`false`/`off` disables. */
   MOONI_SCOPED_FESTIVAL: 'VITE_GATEO_MOONI_SCOPED_FESTIVAL',
+  /** Explore page v2 — monthly picks row (step 1+). Default off. */
+  EXPLORE_V2: 'VITE_GATEO_EXPLORE_V2',
 };
 
 /** @param {string} name */
@@ -153,6 +155,11 @@ export function isGateoPlaceGalleryOverviewFallbackEnabled() {
 }
 
 /** MOONi conversation scope keys + verified-festival reply polish. Unset defaults on. */
+/** Explore v2 rollout. Default off; `'1'` enables preview UI. */
+export function isGateoExploreV2Enabled() {
+  return readGateoEnvFlag(GATEO_ENV_FLAG_NAMES.EXPLORE_V2);
+}
+
 export function isGateoMooniScopedFestivalEnabled() {
   const name = GATEO_ENV_FLAG_NAMES.MOONI_SCOPED_FESTIVAL;
   const hasMeta =

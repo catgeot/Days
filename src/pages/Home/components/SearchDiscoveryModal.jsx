@@ -62,6 +62,8 @@ import {
 import TravelAgencyDirectory from '../../../components/travelAgencies/TravelAgencyDirectory';
 import { useTravelAgencyVisits } from '../../../hooks/useTravelAgencyVisits';
 import TrendingExploreChipsRow from './TrendingExploreChipsRow';
+import ExploreMonthlyPicksSection from './SearchDiscovery/ExploreMonthlyPicksSection';
+import { isGateoExploreV2Enabled } from '../../../shared/gateoFeatureFlags';
 
 const pickVisibleElementRect = (...refs) => {
   for (const ref of refs) {
@@ -865,8 +867,12 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, onAskMooni,
 
     // 1. 큐레이션 모드 (검색어 없음, 전체 선택)
     if (isCurationMode && curationData) {
+      const showExploreV2Monthly = isGateoExploreV2Enabled();
       return (
         <div className="space-y-12 pb-10 w-full pt-4">
+          {showExploreV2Monthly ? (
+            <ExploreMonthlyPicksSection onSelectSpot={handleSpotSelect} />
+          ) : null}
           <CurationSection
             title={t('home.explore.curation.islandTitle')}
             subtitle={t('home.explore.curation.islandSubtitle')}

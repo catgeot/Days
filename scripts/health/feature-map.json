@@ -17,6 +17,7 @@
     "korea-festival-detail-url.spec.js": "축제 상세·MRT",
     "explore-search-enter.spec.js": "검색",
     "explore-trending-chips.spec.js": "트렌딩 칩",
+    "explore-v2-monthly.spec.js": "탐색 v2 이달의 여행지",
     "globe-crash-regressions.spec.js": "지구본 안정성",
     "no-webgpu.spec.js": "지구본(WebGPU 없음)",
     "smoke-health-pages.spec.js": "핵심 페이지",
