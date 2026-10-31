@@ -209,6 +209,7 @@ jobs:
           DEV_SSL: '0'
         run: |
           npx playwright test e2e/festival-nearby-cards.spec.js --project=chromium-festival-nearby-cards-390 --reporter=line
+          npx playwright test e2e/festival-nearby-card-alt-overlap.spec.js --project=chromium-festival-nearby-card-alt-390 --project=chromium-festival-nearby-card-alt-1280 --reporter=line
 
   festival-external-return-e2e:
     name: Festival external return E2E (WebKit 390)
