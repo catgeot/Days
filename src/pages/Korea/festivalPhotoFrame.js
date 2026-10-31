@@ -37,6 +37,23 @@ export function festivalPhotoWrapClassName(imgClassName = '') {
   return 'relative block shrink-0 overflow-hidden';
 }
 
+/** Keep loading in DOM but do not paint a broken-image glyph in the card box. */
+export function festivalPhotoImgHiddenStyle(style) {
+  return {
+    ...style,
+    position: 'absolute',
+    width: 0,
+    height: 0,
+    maxWidth: 0,
+    maxHeight: 0,
+    opacity: 0,
+    visibility: 'hidden',
+    overflow: 'hidden',
+    border: 0,
+    pointerEvents: 'none',
+  };
+}
+
 /**
  * Festival photo that never leaves the browser broken-image glyph on screen.
  * A failed or empty src renders `fallback` (empty slot or neutral placeholder).
@@ -97,11 +114,13 @@ export function FestivalPhotoFrame({
   };
 
   const markLoaded = (el) => {
-    if (loadedRef.current || brokenRef.current) return;
+    if (loadedRef.current) return;
     if (!isFestivalPhotoDecoded(el)) return;
     loadedRef.current = true;
+    brokenRef.current = false;
     clearLoadTimeout();
     setTimedOut(false);
+    setBroken(false);
     setLoaded(true);
     if (onLoadedRef.current) onLoadedRef.current();
   };
@@ -116,7 +135,7 @@ export function FestivalPhotoFrame({
   };
 
   const syncFromImg = (img) => {
-    if (!img || loadedRef.current || brokenRef.current) return;
+    if (!img || loadedRef.current) return;
     if (isFestivalPhotoDecoded(img)) markLoaded(img);
   };
 
@@ -144,6 +163,10 @@ export function FestivalPhotoFrame({
         requestAnimationFrame(loop);
         return;
       }
+      if (loadedRef.current && !isFestivalPhotoDecoded(img)) {
+        loadedRef.current = false;
+        setLoaded(false);
+      }
       if (isFestivalPhotoDecoded(img)) {
         markLoaded(img);
         return;
@@ -159,16 +182,20 @@ export function FestivalPhotoFrame({
     return () => {
       cancelled = true;
     };
-  }, [src, timedOut, broken]);
+  }, [src, timedOut, broken, loaded]);
 
   if (!src) return fallback;
 
-  const showFallback = !loaded && (timedOut || broken);
-  const showPending = Boolean(pendingShimmer) && !loaded && !showFallback;
+  const imgEl = imgRef.current;
+  const paintLoaded = loaded && isFestivalPhotoDecoded(imgEl);
+  const showFallback = !paintLoaded && (timedOut || broken);
+  const showPending = Boolean(pendingShimmer) && !paintLoaded && !showFallback;
+  const hideImgPaint = !paintLoaded;
 
   const imgA11yClass = ' text-transparent select-none';
-  const imgVisibilityClass =
-    showFallback || showPending ? ' opacity-0' : broken && !loaded ? ' opacity-0' : '';
+  const imgClassName = hideImgPaint
+    ? `block${imgA11yClass}`.trim()
+    : `${className}${imgA11yClass}`.trim();
 
   return createElement(
     'span',
@@ -183,7 +210,7 @@ export function FestivalPhotoFrame({
       },
       src,
       alt,
-      className: `${className}${imgA11yClass}${imgVisibilityClass}`.trim(),
+      className: imgClassName,
       loading,
       decoding,
       draggable,
@@ -191,9 +218,10 @@ export function FestivalPhotoFrame({
       referrerPolicy,
       lang,
       translate,
-      style: broken ? { ...style, display: 'none' } : style,
+      style: hideImgPaint ? festivalPhotoImgHiddenStyle(style) : style,
       'data-festival-photo': '',
-      'data-festival-photo-loaded': loaded ? 'true' : undefined,
+      'data-festival-photo-hidden': hideImgPaint ? 'true' : undefined,
+      'data-festival-photo-loaded': paintLoaded ? 'true' : undefined,
       onLoad(event) {
         const el = event?.currentTarget;
         if (isFestivalPhotoDecoded(el)) {

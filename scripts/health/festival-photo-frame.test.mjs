@@ -9,6 +9,7 @@ import { createRoot } from 'react-dom/client';
 import {
   FESTIVAL_PHOTO_LOAD_TIMEOUT_MS,
   FestivalPhotoFrame,
+  festivalPhotoImgHiddenStyle,
   festivalPhotoWrapClassName,
   isFestivalPhotoDecoded,
   shouldSyncMarkFestivalPhotoBroken,
@@ -185,7 +186,8 @@ test('cached zero-width festival photo swaps to fallback at mount', async () => 
 
   const imgAfter = container.querySelector('img[data-festival-photo]');
   assert.ok(imgAfter);
-  assert.equal(imgAfter.style.display, 'none');
+  assert.equal(imgAfter.getAttribute('data-festival-photo-hidden'), 'true');
+  assert.equal(Number.parseFloat(imgAfter.style.width || '0'), 0);
   assert.ok(container.querySelector('[data-festival-photo-fallback]'));
 });
 
@@ -215,7 +217,7 @@ test('late load after timeout restores the photo', async () => {
     assert.ok(container.querySelector('[data-festival-photo-fallback-slot]'));
     const img = container.querySelector('img[data-festival-photo]');
     assert.ok(img);
-    assert.match(img.className, /opacity-0/);
+    assert.equal(img.getAttribute('data-festival-photo-hidden'), 'true');
 
     Object.defineProperty(img, 'complete', { value: true, configurable: true });
     Object.defineProperty(img, 'naturalWidth', { value: 220, configurable: true });
@@ -224,7 +226,8 @@ test('late load after timeout restores the photo', async () => {
     });
 
     assert.equal(container.querySelector('[data-festival-photo-fallback-slot]'), null);
-    assert.doesNotMatch(img.className, /opacity-0/);
+    assert.notEqual(img.getAttribute('data-festival-photo-hidden'), 'true');
+    assert.match(img.className, /h-14 w-14/);
   } finally {
     globalThis.setTimeout = originalSetTimeout;
   }
@@ -299,7 +302,7 @@ test('pending shimmer covers the thumb until decode, then the timeout fallback r
     assert.ok(pending, 'shimmer shows before the image decodes');
     assert.match(pending.innerHTML, /blur-md/);
     const img = container.querySelector('img[data-festival-photo]');
-    assert.match(img.className, /opacity-0/);
+    assert.equal(img.getAttribute('data-festival-photo-hidden'), 'true');
     assert.equal(container.querySelector('[data-festival-photo-fallback]'), null);
 
     const timeoutTimer = timers.find((t) => t.ms === FESTIVAL_PHOTO_LOAD_TIMEOUT_MS);
@@ -317,7 +320,8 @@ test('pending shimmer covers the thumb until decode, then the timeout fallback r
     });
     assert.equal(container.querySelector('[data-festival-photo-pending]'), null);
     assert.equal(container.querySelector('[data-festival-photo-fallback]'), null);
-    assert.doesNotMatch(img.className, /opacity-0/);
+    assert.notEqual(img.getAttribute('data-festival-photo-hidden'), 'true');
+    assert.match(img.className, /object-cover/);
   } finally {
     globalThis.setTimeout = originalSetTimeout;
   }
@@ -342,7 +346,7 @@ test('broken festival photo hides the image and shows the empty slot', async () 
 
   const brokenImg = container.querySelector('img[data-festival-photo]');
   assert.ok(brokenImg);
-  assert.equal(brokenImg.style.display, 'none');
+  assert.equal(brokenImg.getAttribute('data-festival-photo-hidden'), 'true');
   assert.ok(container.querySelector('[data-festival-photo-fallback]'));
 });
 
@@ -405,7 +409,7 @@ test('late hero error removes the image and keeps the fixed hero box', async () 
 
   const brokenHeroImg = container.querySelector('img[data-festival-photo]');
   assert.ok(brokenHeroImg);
-  assert.equal(brokenHeroImg.style.display, 'none');
+  assert.equal(brokenHeroImg.getAttribute('data-festival-photo-hidden'), 'true');
   assert.ok(container.querySelector('[data-festival-hero-fallback]'));
   assert.match(box.className, /h-\[min\(40vh,18rem\)\]/);
 });
@@ -469,7 +473,7 @@ test('list card 40x40 thumb removes a broken image and shows the placeholder', a
 
   const brokenThumb = container.querySelector('img[data-festival-photo]');
   assert.ok(brokenThumb);
-  assert.equal(brokenThumb.style.display, 'none');
+  assert.equal(brokenThumb.getAttribute('data-festival-photo-hidden'), 'true');
   assert.ok(container.querySelector('[data-thumb-fallback]'));
   assert.match(box.className, /h-10/);
   assert.match(box.className, /w-10/);

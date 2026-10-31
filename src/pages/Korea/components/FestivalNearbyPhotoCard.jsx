@@ -123,7 +123,6 @@ export default function FestivalNearbyPhotoCard({
               onFailed={() => {
                 setPhotoReady(false);
                 if (urlIndex + 1 < urls.length) setUrlIndex((i) => i + 1);
-                else setForceCompact(true);
               }}
             />
             <span
