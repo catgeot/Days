@@ -379,7 +379,7 @@ jobs:
             cat /tmp/vite-logbook-owner-edit.log
             exit 1
           fi
-          PLAYWRIGHT_BASE_URL=http://127.0.0.1:5199 npx playwright test e2e/logbook-public-owner-edit-390.spec.js --project=chromium-logbook-owner-edit --reporter=line
+          PLAYWRIGHT_BASE_URL=http://127.0.0.1:5199 npx playwright test e2e/logbook-public-owner-edit-390.spec.js e2e/logbook-detail-toolbar-layout.spec.js --project=chromium-logbook-owner-edit --reporter=line
 
   # YouTube 탭 세션(더 보기). 프로덕션 일일 헬스(e2e-health)에서는 제외.
   e2e-youtube-session:

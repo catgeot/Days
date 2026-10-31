@@ -54,6 +54,7 @@ export default defineConfig({
         /place-lightbox-history\.spec\.js/,
         /tinian-search-planner-390\.spec\.js/,
         /logbook-public-owner-edit-390\.spec\.js/,
+        /logbook-detail-toolbar-layout\.spec\.js/,
       ],
       use: { ...devices['Desktop Chrome'], viewport: { width: 1280, height: 720 } },
     },
@@ -305,7 +306,7 @@ export default defineConfig({
     },
     {
       name: 'chromium-logbook-owner-edit',
-      testMatch: /logbook-public-owner-edit-390\.spec\.js/,
+      testMatch: /logbook-public-owner-edit-390\.spec\.js|logbook-detail-toolbar-layout\.spec\.js/,
       timeout: 180_000,
       use: {
         ...devices['Desktop Chrome'],

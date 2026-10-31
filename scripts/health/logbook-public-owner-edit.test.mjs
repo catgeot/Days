@@ -51,11 +51,19 @@ test('LogbookOwnerEditButton navigates to existing write route', () => {
   assert.match(src, /data-logbook-owner-edit/);
   assert.match(src, /\/blog\/write\//);
   assert.match(src, /logbook\.detail\.editAria/);
-  assert.match(src, /min-h-11/);
-  assert.doesNotMatch(src, /hidden sm:inline/);
+  assert.match(src, /data-logbook-owner-edit-variant/);
 });
 
-test('Detail reuses LogbookOwnerEditButton', () => {
-  const src = readFileSync(join(root, 'src/pages/DailyReport/Detail.jsx'), 'utf8');
-  assert.match(src, /LogbookOwnerEditButton/);
+test('Detail reuses LogbookOwnerEditButton compact variant', () => {
+  const detail = readFileSync(join(root, 'src/pages/DailyReport/Detail.jsx'), 'utf8');
+  assert.match(detail, /LogbookOwnerEditButton/);
+  assert.match(detail, /variant="compact"/);
+  assert.match(detail, /data-logbook-detail-toolbar/);
+});
+
+test('LogbookOwnerEditButton public vs compact variants', () => {
+  const src = readFileSync(join(root, 'src/pages/DailyReport/components/LogbookOwnerEditButton.jsx'), 'utf8');
+  assert.match(src, /variant = 'public'/);
+  assert.match(src, /hidden sm:inline/);
+  assert.match(src, /min-h-11/);
 });
