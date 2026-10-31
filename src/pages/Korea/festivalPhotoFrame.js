@@ -166,6 +166,10 @@ export function FestivalPhotoFrame({
   const showFallback = !loaded && (timedOut || broken);
   const showPending = Boolean(pendingShimmer) && !loaded && !showFallback;
 
+  const imgA11yClass = ' text-transparent select-none';
+  const imgVisibilityClass =
+    showFallback || showPending ? ' opacity-0' : broken && !loaded ? ' opacity-0' : '';
+
   return createElement(
     'span',
     {
@@ -179,7 +183,7 @@ export function FestivalPhotoFrame({
       },
       src,
       alt,
-      className: `${className}${showFallback || showPending ? ' opacity-0' : ''}`.trim(),
+      className: `${className}${imgA11yClass}${imgVisibilityClass}`.trim(),
       loading,
       decoding,
       draggable,
