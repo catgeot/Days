@@ -308,6 +308,36 @@ export async function dispatchPersistedReturn(page) {
   });
 }
 
+/** Safari bfcache blank shell: app calls location.reload(); must finish before page.goto. */
+export async function dispatchBlankPersistedReloadAndWait(page, opts = {}) {
+  const timeoutMs =
+    opts.timeoutMs ??
+    (process.env.CI === 'true' || process.env.GITHUB_ACTIONS === 'true' ? 60_000 : 45_000);
+
+  await Promise.all([
+    page.waitForEvent('load', { timeout: timeoutMs }),
+    page.evaluate(() => {
+      try {
+        sessionStorage.removeItem('gateo:persisted-blank-reload-once');
+      } catch {
+        /* ignore */
+      }
+      const root = document.getElementById('root');
+      if (root) root.replaceChildren();
+      window.dispatchEvent(new PageTransitionEvent('pageshow', { persisted: true }));
+    }),
+  ]);
+
+  await page.waitForLoadState('load', { timeout: timeoutMs });
+  await page.waitForFunction(
+    () => {
+      const root = document.getElementById('root');
+      return Boolean(root && root.childElementCount > 0);
+    },
+    { timeout: timeoutMs },
+  );
+}
+
 const FESTIVAL_SHEET_EXTERNAL_RETURN_KEY = 'gateo:festival-sheet-external-return';
 const FESTIVAL_SHEET_PENDING_DEEPLINK_KEY = 'gateo:festival-sheet-pending-deeplink';
 

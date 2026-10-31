@@ -9,6 +9,7 @@ import {
 import {
   assertSheetButtonsInteractive,
   dispatchPersistedReturn,
+  dispatchBlankPersistedReloadAndWait,
   externalReturnShot,
   openFestivalSheet,
   openNearbyPlaceCard,
@@ -127,20 +128,7 @@ test.describe('festival external return — WebKit 390', () => {
     await page.goBack({ waitUntil: 'domcontentloaded', timeout: 30_000 });
     await expect(page).toHaveURL(new RegExp(`festival=${YANGGU.id}`), { timeout: 15_000 });
 
-    const reloadOrRecover = page
-      .waitForEvent('load', { timeout: 45_000 })
-      .catch(() => null);
-    await page.evaluate(() => {
-      try {
-        sessionStorage.removeItem('gateo:persisted-blank-reload-once');
-      } catch {
-        /* ignore */
-      }
-      const root = document.getElementById('root');
-      if (root) root.replaceChildren();
-      window.dispatchEvent(new PageTransitionEvent('pageshow', { persisted: true }));
-    });
-    await reloadOrRecover;
+    await dispatchBlankPersistedReloadAndWait(page);
 
     const sheet = festivalSheetDialog(page);
     if (!(await sheet.isVisible().catch(() => false))) {
