@@ -1831,9 +1831,6 @@ function Home() {
           }}
           onDeleteChat={deleteTrip}
           onClearPlaceBinding={handleClearMooniPlaceBinding}
-          onStartNewChat={() => {
-            handleStartChat('MOONi', { freshSession: true, persona: PERSONA_TYPES.GENERAL });
-          }}
         />
 
         <SearchDiscoveryModal
