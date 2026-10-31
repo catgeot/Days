@@ -441,6 +441,14 @@ jobs:
           CI: true
         run: npx playwright test -c playwright.config.explore-v2.js --grep @flagOff --reporter=line
 
+      - name: Explore v2 E2E — query on (no env flag)
+        env:
+          VITE_SUPABASE_URL: https://example.supabase.co
+          VITE_SUPABASE_ANON_KEY: e2e-anon-placeholder
+          DEV_SSL: '0'
+          CI: true
+        run: npx playwright test -c playwright.config.explore-v2.js --grep @queryOn --reporter=line
+
       - name: Explore v2 E2E — flag on
         env:
           VITE_SUPABASE_URL: https://example.supabase.co

@@ -15,6 +15,7 @@ import {
   getExploreCategorySeoBundle,
   parseExploreCategoryPath,
 } from './lib/exploreCategorySeo';
+import { readExploreV2QueryParam } from './lib/exploreMonthlyPicks';
 
 import { supabase } from '../../shared/api/supabase';
 import { trackMooniOpenIfRising } from '../../shared/analytics/trackEvent.js';
@@ -1606,6 +1607,13 @@ function Home() {
     return getExploreCategorySeoBundle(parsed.continent, parsed.category, locale);
   }, [routeLocation.pathname, locale]);
 
+  const exploreV2QueryNoIndex = useMemo(
+    () =>
+      routeLocation.pathname.startsWith('/explore') &&
+      readExploreV2QueryParam(routeLocation.search),
+    [routeLocation.pathname, routeLocation.search],
+  );
+
   return (
     <FlightCinemaProvider
       globeRef={globeRef}
@@ -1620,6 +1628,7 @@ function Home() {
         description={exploreCategorySeo?.description}
         keywords={exploreCategorySeo?.keywords}
         url={exploreCategorySeo?.path}
+        robotsNoIndex={exploreV2QueryNoIndex}
       />
       <div className="w-full h-full">
         <HomeGlobe

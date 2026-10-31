@@ -1,5 +1,10 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
 import test from 'node:test';
+import { fileURLToPath } from 'node:url';
+
+const root = join(dirname(fileURLToPath(import.meta.url)), '../..');
 
 import { TRAVEL_SPOTS } from '../../src/pages/Home/data/travelSpots.js';
 import {
@@ -9,6 +14,8 @@ import {
 import {
   isValidMonthlyPickSource,
   normalizeMonthlyPickSource,
+  readExploreV2QueryParam,
+  isExploreV2MonthlyRowVisible,
 } from '../../src/pages/Home/lib/exploreMonthlyPicks.js';
 import {
   GATEO_ENV_FLAG_NAMES,
@@ -69,4 +76,30 @@ test('VITE_GATEO_EXPLORE_V2 defaults off when unset', () => {
     if (prev === undefined) delete globalThis.__VITE_ENV__[key];
     else globalThis.__VITE_ENV__[key] = prev;
   }
+});
+
+test('explore_v2=1 query enables monthly row without env flag or storage', () => {
+  assert.equal(readExploreV2QueryParam(''), false);
+  assert.equal(readExploreV2QueryParam('?foo=1'), false);
+  assert.equal(readExploreV2QueryParam('?explore_v2=1'), true);
+  assert.equal(readExploreV2QueryParam('?explore_v2=0'), false);
+
+  const key = GATEO_ENV_FLAG_NAMES.EXPLORE_V2;
+  const prev = globalThis.__VITE_ENV__[key];
+  try {
+    delete globalThis.__VITE_ENV__[key];
+    assert.equal(isExploreV2MonthlyRowVisible(''), false);
+    assert.equal(isExploreV2MonthlyRowVisible('?explore_v2=1'), true);
+  } finally {
+    if (prev === undefined) delete globalThis.__VITE_ENV__[key];
+    else globalThis.__VITE_ENV__[key] = prev;
+  }
+});
+
+test('explore_v2=1 query sets robots noindex on Home SEO only', () => {
+  const home = readFileSync(join(root, 'src/pages/Home/index.jsx'), 'utf8');
+  const seo = readFileSync(join(root, 'src/components/SEO/index.jsx'), 'utf8');
+  assert.match(home, /readExploreV2QueryParam\(routeLocation\.search\)/);
+  assert.match(home, /robotsNoIndex=\{exploreV2QueryNoIndex\}/);
+  assert.match(seo, /robotsNoIndex \? <meta name="robots" content="noindex" \/>/);
 });
