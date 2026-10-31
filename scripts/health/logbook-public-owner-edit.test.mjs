@@ -50,6 +50,9 @@ test('LogbookOwnerEditButton navigates to existing write route', () => {
   const src = readFileSync(join(root, 'src/pages/DailyReport/components/LogbookOwnerEditButton.jsx'), 'utf8');
   assert.match(src, /data-logbook-owner-edit/);
   assert.match(src, /\/blog\/write\//);
+  assert.match(src, /logbook\.detail\.editAria/);
+  assert.match(src, /min-h-11/);
+  assert.doesNotMatch(src, /hidden sm:inline/);
 });
 
 test('Detail reuses LogbookOwnerEditButton', () => {

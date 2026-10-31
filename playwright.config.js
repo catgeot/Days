@@ -307,16 +307,9 @@ export default defineConfig({
       name: 'chromium-logbook-owner-edit',
       testMatch: /logbook-public-owner-edit-390\.spec\.js/,
       timeout: 180_000,
-      webServer: {
-        command:
-          'BROWSER=none DEV_SSL=0 npm run build && BROWSER=none DEV_SSL=0 npx vite preview --host 127.0.0.1 --port 5199',
-        url: 'http://127.0.0.1:5199',
-        reuseExistingServer: !process.env.CI,
-        timeout: 240_000,
-      },
       use: {
         ...devices['Desktop Chrome'],
-        baseURL: 'http://127.0.0.1:5199',
+        baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://127.0.0.1:5199',
         locale: 'ko-KR',
         viewport: { width: 390, height: 844 },
         deviceScaleFactor: 1,

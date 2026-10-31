@@ -2,8 +2,8 @@ import { mkdir } from 'node:fs/promises';
 import { join } from 'node:path';
 import { test, expect } from './fixtures.js';
 
-const OUT = '/opt/cursor/artifacts/logbook-public-owner-edit-390';
-const VIEWPORT = { width: 390, height: 844 };
+const OUT_390 = '/opt/cursor/artifacts/logbook-public-owner-edit-390';
+const OUT_1280 = '/opt/cursor/artifacts/logbook-public-owner-edit-1280';
 
 const REPORT_ID = 'e2e-chuncheon-merong';
 const OWNER_ID = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa';
@@ -125,48 +125,60 @@ async function installRoutes(page, sessionUserId) {
   );
 }
 
-async function shot(page, file) {
+async function shot(page, outDir, file, width, height) {
   await page.screenshot({
-    path: join(OUT, file),
-    clip: { x: 0, y: 0, width: VIEWPORT.width, height: VIEWPORT.height },
+    path: join(outDir, file),
+    clip: { x: 0, y: 0, width, height: Math.min(height, 844) },
   });
 }
 
-test.use({
-  viewport: VIEWPORT,
-  deviceScaleFactor: 1,
-  locale: 'ko-KR',
-});
+async function openPublicDetail(page) {
+  await page.goto(`/p/${REPORT_ID}?lang=ko`, { waitUntil: 'domcontentloaded' });
+  await expect(page.getByText('메롱')).toBeVisible({ timeout: 30_000 });
+}
 
-test.describe('logbook public detail owner edit (390px, mocked Supabase)', () => {
-  test.beforeAll(async () => {
-    await mkdir(OUT, { recursive: true });
-  });
+function defineViewportSuite({ tag, width, height, outDir }) {
+  test.describe(`logbook public detail owner edit (${tag}px, mocked Supabase)`, () => {
+    test.use({
+      viewport: { width, height },
+      deviceScaleFactor: 1,
+      locale: 'ko-KR',
+    });
 
-  test('owner sees edit button', async ({ page }) => {
-    await seedAuthSession(page, OWNER_ID);
-    await installRoutes(page, OWNER_ID);
-    await page.goto(`/p/${REPORT_ID}?lang=ko`, { waitUntil: 'domcontentloaded' });
-    await expect(page.getByText('메롱')).toBeVisible({ timeout: 30_000 });
-    await expect(page.locator('[data-logbook-owner-edit]')).toBeVisible();
-    await shot(page, 'owner-edit-visible.png');
-  });
+    test.beforeAll(async () => {
+      await mkdir(outDir, { recursive: true });
+    });
 
-  test('other user does not see edit button', async ({ page }) => {
-    await seedAuthSession(page, OTHER_ID);
-    await installRoutes(page, OTHER_ID);
-    await page.goto(`/p/${REPORT_ID}?lang=ko`, { waitUntil: 'domcontentloaded' });
-    await expect(page.getByText('메롱')).toBeVisible({ timeout: 30_000 });
-    await expect(page.locator('[data-logbook-owner-edit]')).toHaveCount(0);
-    await shot(page, 'other-user-no-edit.png');
-  });
+    test('owner sees edit button', async ({ page }) => {
+      await seedAuthSession(page, OWNER_ID);
+      await installRoutes(page, OWNER_ID);
+      await openPublicDetail(page);
+      const edit = page.getByRole('button', { name: '기록 수정' });
+      await expect(edit).toBeVisible();
+      await expect(edit).toContainText('수정');
+      const box = await page.locator('[data-logbook-owner-edit]').boundingBox();
+      expect(box?.width ?? 0).toBeGreaterThanOrEqual(44);
+      expect(box?.height ?? 0).toBeGreaterThanOrEqual(44);
+      await shot(page, outDir, 'owner-edit-visible.png', width, height);
+    });
 
-  test('logged out does not see edit button', async ({ page }) => {
-    await seedAuthSession(page, null);
-    await installRoutes(page, null);
-    await page.goto(`/p/${REPORT_ID}?lang=ko`, { waitUntil: 'domcontentloaded' });
-    await expect(page.getByText('메롱')).toBeVisible({ timeout: 30_000 });
-    await expect(page.locator('[data-logbook-owner-edit]')).toHaveCount(0);
-    await shot(page, 'logged-out-no-edit.png');
+    test('other user does not see edit button', async ({ page }) => {
+      await seedAuthSession(page, OTHER_ID);
+      await installRoutes(page, OTHER_ID);
+      await openPublicDetail(page);
+      await expect(page.locator('[data-logbook-owner-edit]')).toHaveCount(0);
+      await shot(page, outDir, 'other-user-no-edit.png', width, height);
+    });
+
+    test('logged out does not see edit button', async ({ page }) => {
+      await seedAuthSession(page, null);
+      await installRoutes(page, null);
+      await openPublicDetail(page);
+      await expect(page.locator('[data-logbook-owner-edit]')).toHaveCount(0);
+      await shot(page, outDir, 'logged-out-no-edit.png', width, height);
+    });
   });
-});
+}
+
+defineViewportSuite({ tag: '390', width: 390, height: 844, outDir: OUT_390 });
+defineViewportSuite({ tag: '1280', width: 1280, height: 720, outDir: OUT_1280 });
