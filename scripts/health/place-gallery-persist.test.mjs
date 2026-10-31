@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import {
   galleryPersistReplaceSameAsStored,
+  galleryPersistReplaceWouldShrinkStoredTailOnly,
   isStockGalleryImage,
   isTourApiDominantGallery,
   loadedStatsGalleryRefFromDbRow,
@@ -114,6 +115,27 @@ test('partial tour in payload is not blocked as tour_to_stock_only', () => {
   const mixed = [tourA, stockOnly[0]];
   assert.equal(skipPersistPlaceGalleryReplaceReason(tourBaseline, mixed), null);
   assert.equal(isTourApiDominantGallery(tourBaseline), true);
+});
+
+test('DB prefix id match with shorter payload skips replace (tail shrink)', () => {
+  const stored = [
+    { id: 'a', urls: { small: 'https://a/1' } },
+    { id: 'b', urls: { small: 'https://b/1' } },
+    { id: 'c', urls: { small: 'https://c/1' } },
+  ];
+  assert.equal(galleryPersistReplaceWouldShrinkStoredTailOnly(stored, stored.slice(0, 2)), true);
+  assert.equal(skipPersistPlaceGalleryReplaceReason(stored, stored.slice(0, 2)), 'unchanged');
+  assert.equal(
+    skipPersistPlaceGalleryReplaceReason(stored, [stored[0], stored[2]]),
+    null,
+  );
+  const prefixHttp = stored.slice(0, 2).map((img, i) =>
+    i === 0
+      ? { ...img, urls: { small: 'http://a/1' } }
+      : img,
+  );
+  assert.equal(galleryPersistReplaceWouldShrinkStoredTailOnly(stored, prefixHttp), false);
+  assert.equal(skipPersistPlaceGalleryReplaceReason(stored, prefixHttp), null);
 });
 
 test('non-stock mixed payload is not blocked as tour_to_stock_only', () => {

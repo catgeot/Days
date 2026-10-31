@@ -11,6 +11,7 @@ import {
   galleryModerateFailureReason,
   galleryPersistDropsStoredImages,
   galleryPersistReplaceSameAsStored,
+  galleryPersistReplaceWouldShrinkStoredTailOnly,
   galleryReportErrorReason,
   imagesForGalleryPersist,
   isStockGalleryImage,
@@ -234,5 +235,65 @@ assert.equal(
 );
 assert.ok(isTourApiDominantGallery(tourBaseline), 'fixture is tour-dominant');
 assert.ok(stockOnly.every((img) => isStockGalleryImage(img)), 'stock fixture');
+
+const db107Prefix = [
+  ...Array.from({ length: 24 }, (_, i) => ({
+    id: `tourapi-detail-${i}`,
+    source: 'tourapi',
+    urls: { small: `https://tong.visitkorea.or.kr/t${i}.jpg` },
+  })),
+  ...Array.from({ length: 53 }, (_, i) => ({
+    id: `pexels-${i}`,
+    source: 'pexels',
+    urls: { small: `https://images.pexels.com/p${i}.jpg` },
+  })),
+  ...Array.from({ length: 30 }, (_, i) => ({
+    id: `legacy-${i}`,
+    urls: { small: `https://cdn.example/legacy-${i}.jpg` },
+  })),
+];
+const payload24TourOnly = db107Prefix.slice(0, 24);
+assert.equal(db107Prefix.length, 107);
+assert.equal(
+  galleryPersistReplaceWouldShrinkStoredTailOnly(db107Prefix, payload24TourOnly),
+  true,
+  '24 Tour ids match DB prefix',
+);
+assert.equal(
+  skipPersistPlaceGalleryReplaceReason(db107Prefix, payload24TourOnly),
+  'unchanged',
+  'gyeongbokgung-like cap must not replace-shrink DB tail',
+);
+assert.equal(
+  skipPersistPlaceGalleryReplaceReason(db107Prefix, db107Prefix.slice(0, 50)),
+  'unchanged',
+  'any same-order id prefix shorter than DB skips replace',
+);
+assert.equal(
+  skipPersistPlaceGalleryReplaceReason(db107Prefix, [db107Prefix[0], db107Prefix[2]]),
+  null,
+  'non-prefix shrink (skipped middle id) still allows replace',
+);
+const prefixUrlOnlyChange = payload24TourOnly.map((img, i) =>
+  i === 0
+    ? {
+        ...img,
+        urls: {
+          ...img.urls,
+          small: String(img.urls.small).replace(/^https:/, 'http:'),
+        },
+      }
+    : img,
+);
+assert.equal(
+  galleryPersistReplaceWouldShrinkStoredTailOnly(db107Prefix, prefixUrlOnlyChange),
+  false,
+  'prefix with URL drift is not tail-only shrink',
+);
+assert.equal(
+  skipPersistPlaceGalleryReplaceReason(db107Prefix, prefixUrlOnlyChange),
+  null,
+  'prefix with only URL changed -> persist happens',
+);
 
 console.log('smoke:place-gallery-persist PASS');

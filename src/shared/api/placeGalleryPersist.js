@@ -139,12 +139,29 @@ export function galleryPersistReplaceSameAsStored(storedBaseline, payloadImages)
 }
 
 /**
+ * payload id·URL 열이 DB gallery_urls 앞쪽과 같고 길이만 짧으면 tail-only shrink (107→24 Tour 등).
+ */
+export function galleryPersistReplaceWouldShrinkStoredTailOnly(storedBaseline, payloadImages) {
+  const stored = galleryPersistNormalizedEntries(storedBaseline);
+  const payload = galleryPersistNormalizedEntries(payloadImages);
+  if (!stored.length || !payload.length || payload.length >= stored.length) return false;
+  for (let i = 0; i < payload.length; i += 1) {
+    if (payload[i].id !== stored[i].id) return false;
+    if (!galleryPersistPersistUrlsEqual(payload[i].urls, stored[i].urls)) return false;
+  }
+  return true;
+}
+
+/**
  * replace RPC 생략 — 화면·캐시는 그대로, DB 쓰기만 막음.
  * @returns {'unchanged' | 'tour_to_stock_only' | null}
  */
 export function skipPersistPlaceGalleryReplaceReason(storedBaseline, payloadImages) {
   if (!Array.isArray(payloadImages) || payloadImages.length === 0) return null;
   if (galleryPersistReplaceSameAsStored(storedBaseline, payloadImages)) {
+    return 'unchanged';
+  }
+  if (galleryPersistReplaceWouldShrinkStoredTailOnly(storedBaseline, payloadImages)) {
     return 'unchanged';
   }
   const baseline = Array.isArray(storedBaseline) ? storedBaseline.filter(Boolean) : [];
