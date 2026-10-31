@@ -41,6 +41,7 @@ const SEO = ({
   tab = null,
   galleryImages = null,
   reviewStats = null,
+  robotsNoIndex = false,
 }) => {
   const { t } = useTranslation();
   const { locale } = useLocale();
@@ -178,6 +179,7 @@ const SEO = ({
       <title>{seoTitle}</title>
       <meta name="description" content={seoDescription} />
       <meta name="keywords" content={seoKeywords} />
+      {robotsNoIndex ? <meta name="robots" content="noindex" /> : null}
 
       <link rel="canonical" href={seoUrl} />
       {hreflangAlternates.map((alt) => (

@@ -20,6 +20,7 @@ test.describe('Explore v2 monthly picks @flagOff', () => {
   test('390 — legacy explore without monthly row', async ({ page }) => {
     await openExplore(page, { width: 390, height: 844 });
     await expect(monthlySection(page)).toHaveCount(0);
+    await expect(page.locator('meta[name="robots"][content="noindex"]')).toHaveCount(0);
     await expect(page.getByText('에디터스 픽').first()).toBeVisible({ timeout: 45_000 });
   });
 
@@ -43,6 +44,7 @@ test.describe('Explore v2 monthly picks @queryOn', () => {
   test('390 — explore_v2=1 shows monthly row without env flag', async ({ page }) => {
     await openExplore(page, { width: 390, height: 844 }, 'explore_v2=1');
     await expect(monthlySection(page)).toBeVisible({ timeout: 45_000 });
+    await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex');
     await expect(page.getByTestId('explore-v2-monthly-heading')).toContainText('11월의 여행지');
     await expect(page.locator('[data-testid^="explore-v2-monthly-card-"]')).toHaveCount(6);
   });

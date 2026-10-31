@@ -1,5 +1,10 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
 import test from 'node:test';
+import { fileURLToPath } from 'node:url';
+
+const root = join(dirname(fileURLToPath(import.meta.url)), '../..');
 
 import { TRAVEL_SPOTS } from '../../src/pages/Home/data/travelSpots.js';
 import {
@@ -89,4 +94,12 @@ test('explore_v2=1 query enables monthly row without env flag or storage', () =>
     if (prev === undefined) delete globalThis.__VITE_ENV__[key];
     else globalThis.__VITE_ENV__[key] = prev;
   }
+});
+
+test('explore_v2=1 query sets robots noindex on Home SEO only', () => {
+  const home = readFileSync(join(root, 'src/pages/Home/index.jsx'), 'utf8');
+  const seo = readFileSync(join(root, 'src/components/SEO/index.jsx'), 'utf8');
+  assert.match(home, /readExploreV2QueryParam\(routeLocation\.search\)/);
+  assert.match(home, /robotsNoIndex=\{exploreV2QueryNoIndex\}/);
+  assert.match(seo, /robotsNoIndex \? <meta name="robots" content="noindex" \/>/);
 });
