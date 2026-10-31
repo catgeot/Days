@@ -11,6 +11,8 @@ import { useTravelData } from '../hooks/useTravelData';
 import { getSystemPrompt, PERSONA_TYPES } from '../lib/prompts';
 import {
   persistMooniLastChatId,
+  persistMooniFreshDraftSession,
+  mooniLastChatScopeInput,
   tripHasPersistedDialogue,
 } from '../lib/tripChatUtils';
 import { buildMooniBoundSpotFromLocation } from '../lib/placeChatIntro';
@@ -152,7 +154,7 @@ export default function MooniBoundChatHost({ isOpen, boundSpot, initialQuery = n
       if (created) {
         setChatDraft(null);
         setActiveChatId(created.id);
-        persistMooniLastChatId(created.id, user?.id ?? null, { mooniPlaceContext });
+        persistMooniLastChatId(created.id, user?.id ?? null, mooniLastChatScopeInput(mooniPlaceContext));
       }
       return created;
     },
@@ -182,7 +184,7 @@ export default function MooniBoundChatHost({ isOpen, boundSpot, initialQuery = n
 
   const handleClose = useCallback(() => {
     if (activeChatId) {
-      persistMooniLastChatId(activeChatId, user?.id ?? null, { mooniPlaceContext });
+      persistMooniLastChatId(activeChatId, user?.id ?? null, mooniLastChatScopeInput(mooniPlaceContext));
     }
     resetSession();
     onClose?.();
@@ -190,7 +192,7 @@ export default function MooniBoundChatHost({ isOpen, boundSpot, initialQuery = n
 
   const handleClearPlaceBinding = useCallback(() => {
     if (activeChatId) {
-      persistMooniLastChatId(activeChatId, user?.id ?? null, { mooniPlaceContext });
+      persistMooniLastChatId(activeChatId, user?.id ?? null, mooniLastChatScopeInput(mooniPlaceContext));
     }
     setMooniPlaceContext(null);
     setActiveChatId(null);
@@ -204,9 +206,7 @@ export default function MooniBoundChatHost({ isOpen, boundSpot, initialQuery = n
   }, [activeChatId, setActiveChatId, user?.id, mooniPlaceContext]);
 
   const handleStartNewChat = useCallback(() => {
-    if (activeChatId) {
-      persistMooniLastChatId(activeChatId, user?.id ?? null, { mooniPlaceContext });
-    }
+    persistMooniFreshDraftSession(user?.id ?? null, mooniLastChatScopeInput(mooniPlaceContext));
     setActiveChatId(null);
     const label = String(mooniPlaceContext?.displayLabel || mooniPlaceContext?.name || '').trim();
     setChatDraft({
@@ -216,12 +216,12 @@ export default function MooniBoundChatHost({ isOpen, boundSpot, initialQuery = n
       persona: PERSONA_TYPES.GENERAL,
       category: THEME_CHAT_CATEGORY,
     });
-  }, [activeChatId, mooniPlaceContext, user?.id]);
+  }, [mooniPlaceContext, user?.id]);
 
   useEffect(() => {
     if (isOpen) return;
     if (activeChatId) {
-      persistMooniLastChatId(activeChatId, user?.id ?? null, { mooniPlaceContext });
+      persistMooniLastChatId(activeChatId, user?.id ?? null, mooniLastChatScopeInput(mooniPlaceContext));
     }
     if (
       openedKeyRef.current != null ||

@@ -22,12 +22,30 @@ function mooniLastChatSavedAtStorageKey(userId) {
 
 function resolvePersistScope(scopeOrContext) {
   if (!isGateoMooniScopedFestivalEnabled()) return null;
-  if (typeof scopeOrContext === 'string' && scopeOrContext.trim()) {
-    return scopeOrContext.trim();
+  const normalized = mooniLastChatScopeInput(scopeOrContext);
+  if (typeof normalized === 'string') {
+    const s = normalized.trim();
+    return s || 'general';
   }
-  return resolveMooniChatScope(
-    scopeOrContext && typeof scopeOrContext === 'object' ? scopeOrContext : {},
-  );
+  return resolveMooniChatScope(normalized);
+}
+
+/**
+ * persist/read 공통 scope — raw boundSpot·`{ mooniPlaceContext }`·`general` 문자열을 동일 키로 정규화.
+ * @param {string | Record<string, unknown> | null | undefined} spotOrContext
+ * @returns {string | { boundSpot?: object, mooniPlaceContext?: object }}
+ */
+export function mooniLastChatScopeInput(spotOrContext) {
+  if (spotOrContext == null || spotOrContext === '') return 'general';
+  if (typeof spotOrContext === 'string') {
+    const s = spotOrContext.trim();
+    return s || 'general';
+  }
+  if (typeof spotOrContext !== 'object') return 'general';
+  if (spotOrContext.boundSpot != null || spotOrContext.mooniPlaceContext != null) {
+    return spotOrContext;
+  }
+  return { mooniPlaceContext: spotOrContext };
 }
 
 function sessionKeyForScope(scope) {
@@ -119,6 +137,33 @@ export function persistMooniLastChatId(chatId, userId, scopeOrContext = null) {
   } catch {
     // private mode
   }
+}
+
+/** «새 대화» draft id — saved_trips에 없거나 대화 없으면 resume 대상 아님 */
+export function isMooniEphemeralDraftSessionId(id) {
+  const s = String(id ?? '').trim();
+  return s.startsWith('temp_') || s.startsWith('draft_');
+}
+
+export function clearMooniLastChatId(userId, scopeOrContext = null) {
+  const scope = resolvePersistScope(scopeOrContext);
+  try {
+    sessionStorage.removeItem(sessionKeyForScope(scope));
+    localStorage.removeItem(localKeyForScope(userId, scope));
+  } catch {
+    // private mode
+  }
+}
+
+export function createMooniDraftSessionId() {
+  return `draft_${Date.now()}`;
+}
+
+/** «새 대화»: active last-id를 빈 draft로 교체 (이전 trip id persist 금지) */
+export function persistMooniFreshDraftSession(userId, scopeOrContext = null) {
+  const draftId = createMooniDraftSessionId();
+  persistMooniLastChatId(draftId, userId, scopeOrContext);
+  return draftId;
 }
 
 function readLegacyMooniLastChatId(userId) {

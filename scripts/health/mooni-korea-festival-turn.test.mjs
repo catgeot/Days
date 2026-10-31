@@ -110,3 +110,66 @@ test('general MOONi trip with unreadable date is stale (no resume)', async () =>
   });
   assert.equal(resumed, null);
 });
+
+test('mooniLastChatScopeInput — boundSpot save matches wrapped read scope', async () => {
+  globalThis.__VITE_ENV__ = { VITE_GATEO_MOONI_SCOPED_FESTIVAL: '1' };
+  const session = new Map();
+  const local = new Map();
+  globalThis.sessionStorage = {
+    getItem: (k) => session.get(k) ?? null,
+    setItem: (k, v) => session.set(k, v),
+    removeItem: (k) => session.delete(k),
+  };
+  globalThis.localStorage = {
+    getItem: (k) => local.get(k) ?? null,
+    setItem: (k, v) => local.set(k, v),
+    removeItem: (k) => local.delete(k),
+  };
+
+  const { persistMooniLastChatId, readMooniLastChatId, mooniLastChatScopeInput } =
+    await import('../../src/pages/Home/lib/tripChatUtils.js');
+  const parisSpot = { slug: 'paris', name: '프랑스 파리', displayLabel: '프랑스 파리' };
+  persistMooniLastChatId('trip-paris-resume', null, { mooniPlaceContext: parisSpot });
+  assert.equal(
+    readMooniLastChatId(null, mooniLastChatScopeInput(parisSpot)),
+    'trip-paris-resume',
+  );
+  delete globalThis.__VITE_ENV__;
+});
+
+test('fresh draft session id replaces last chat and skips resume', async () => {
+  globalThis.__VITE_ENV__ = { VITE_GATEO_MOONI_SCOPED_FESTIVAL: '1' };
+  const session = new Map();
+  const local = new Map();
+  globalThis.sessionStorage = {
+    getItem: (k) => session.get(k) ?? null,
+    setItem: (k, v) => session.set(k, v),
+    removeItem: (k) => session.delete(k),
+  };
+  globalThis.localStorage = {
+    getItem: (k) => local.get(k) ?? null,
+    setItem: (k, v) => local.set(k, v),
+    removeItem: (k) => local.delete(k),
+  };
+
+  const { persistMooniLastChatId, persistMooniFreshDraftSession, readMooniLastChatId } =
+    await import('../../src/pages/Home/lib/tripChatUtils.js');
+  const scopeCtx = { mooniPlaceContext: { slug: 'paris', name: '파리' } };
+  const oldTrip = {
+    id: 'trip-paris-old',
+    destination: '파리',
+    is_hidden: false,
+    messages: [{ role: 'user', text: '이전 질문', mooniAt: Date.now() }],
+  };
+  persistMooniLastChatId('trip-paris-old', null, scopeCtx);
+  persistMooniFreshDraftSession(null, scopeCtx);
+  const lastId = readMooniLastChatId(null, scopeCtx);
+  assert.match(String(lastId), /^draft_/);
+  const resumed = await resolveMooniResumeTrip({
+    savedTrips: [oldTrip],
+    userId: null,
+    scopeOrContext: scopeCtx,
+  });
+  assert.equal(resumed, null);
+  delete globalThis.__VITE_ENV__;
+});
