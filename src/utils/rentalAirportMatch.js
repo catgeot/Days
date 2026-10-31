@@ -1,4 +1,5 @@
 import { RENTAL_AIRPORT_HUBS, DEFAULT_HUB_RADIUS_KM } from './rentalAirportHubs.js';
+import { isCebuGenericDetailUsage } from './cebuKoreanPlaceGuard.js';
 import { findNearestAirportInIndex, getAirportsIndexCoords } from './airportsIndexLookup.js';
 import { lookupGraphRouteByDestIata } from './flightRouteGraphLookup.js';
 import { resolveTravelSpotForUiPlaceRegion } from './travelSpotResolve.js';
@@ -554,6 +555,14 @@ function pushValidArrivalIata(ordered, seen, raw) {
 
 /** IATA 별칭·짧은 영문이 다른 단어 안쪽(jordan→ord 등)에 걸리지 않도록 단어 경계로만 매칭 */
 export function aliasMatchesHay(hay, alias, hubIata) {
+  const hub = String(hubIata ?? '')
+    .trim()
+    .toUpperCase();
+  const aliasRaw = String(alias ?? '').trim();
+  if (hub === 'CEB' && aliasRaw === '세부' && isCebuGenericDetailUsage(hay)) {
+    return false;
+  }
+
   const al = alias.toLowerCase();
   const isAscii = /^[\x00-\x7F]+$/.test(alias);
   const isIataToken = al.length === 3 && /^[a-z]{3}$/.test(al) && al === hubIata.toLowerCase();
