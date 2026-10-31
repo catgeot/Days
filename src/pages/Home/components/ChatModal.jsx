@@ -1039,6 +1039,7 @@ const ChatModal = ({
     if (!text?.trim()) return;
     if (!sendGateRef.current.tryBegin()) return;
 
+    let destinationPickExtras = null;
     try {
     const rawText = typeof text === 'object' ? (text.text || t('mooni.chat.questionUnreadable')) : text;
     const sessionBoundEarly = activeSessionPlace?.name
@@ -1130,31 +1131,19 @@ const ChatModal = ({
       mooniAt: turnAt,
       ...(chipDestination ? { confirmedDestination: chipDestination } : {}),
       ...(departureLabel && chipDestination ? { departureLabel } : {}),
-      // name-bound uiPlace(슬러그 없음)도 목적지로 확정 — 「역사」키워드 오탐 후보 칩 숨김
-      ...(resolution?.confidence === 'low' &&
-      resolution.candidates?.length &&
-      !placeBound
-        ? { destinationCandidates: resolution.candidates, destinationPrompt: true }
-        : {}),
     };
 
+    // name-bound uiPlace(슬러그 없음)도 목적지로 확정 — 「역사」키워드 오탐 후보 칩 숨김.
+    // 후보 칩은 AI 답 아래 보조로만 붙인다 — 이 분기에서 AI 호출을 건너뛰면 칩만 남는다.
     const needsDestinationPick =
       resolution?.confidence === 'low' &&
       resolution.candidates?.length > 0 &&
       !effectiveBound;
-
     if (needsDestinationPick) {
-      const newMessages = [...messages, userMsg];
-      setMessages(newMessages);
-      setInput('');
-      if (activeChatId) {
-        onUpdateChat(
-          activeChatId,
-          newMessages,
-          festivalSaveExtras(mooniPlaceContext?.festivalContext ? i18n.language : '', undefined),
-        );
-      }
-      return;
+      destinationPickExtras = {
+        destinationCandidates: resolution.candidates,
+        destinationPrompt: true,
+      };
     }
 
     const newMessages = [...messages, userMsg];
@@ -1435,6 +1424,7 @@ const ChatModal = ({
           },
           frozenBookingActions: booking.show ? booking.actions : null,
           bookingActions: booking.show ? booking.actions : null,
+          ...destinationPickExtras,
           plannerFollowUp,
           bookingMeta:
             booking.show || plannerFollowUp
@@ -1454,7 +1444,7 @@ const ChatModal = ({
     } catch (error) {
       const text = getGeminiProxyErrorMessage(error);
       const role = error instanceof GeminiProxyError && error.kind === 'budget' ? 'model' : 'error';
-      setMessages((prev) => [...prev, { role, text }]);
+      setMessages((prev) => [...prev, { role, text, ...destinationPickExtras }]);
     } finally {
       sendGateRef.current.end();
       setIsLoading(false);
