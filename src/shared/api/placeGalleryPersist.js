@@ -43,6 +43,122 @@ export function galleryPersistDropsStoredImages(payloadImages, storage) {
   return (storage || []).some((img) => img?.id && !payloadIds.has(img.id));
 }
 
+function galleryPersistImagePersistUrls(img) {
+  if (!img || typeof img !== 'object') {
+    return { small: '', regular: '', full: '' };
+  }
+  const urls = img.urls || {};
+  return {
+    small: String(urls.small ?? '').trim(),
+    regular: String(urls.regular ?? '').trim(),
+    full: String(urls.full ?? '').trim(),
+  };
+}
+
+function galleryPersistPersistUrlsEqual(a, b) {
+  return a.small === b.small && a.regular === b.regular && a.full === b.full;
+}
+
+function galleryPersistNormalizedEntries(images) {
+  return (Array.isArray(images) ? images : [])
+    .map((img) => ({
+      id: String(img?.id ?? '').trim(),
+      urls: galleryPersistImagePersistUrls(img),
+    }))
+    .filter((entry) => entry.id);
+}
+
+/** place_stats gallery_urls → baseline ref (빈 목록이면 null). isStale() 통과 후에만 호출. */
+export function loadedStatsGalleryRefFromDbRow(galleryUrls) {
+  if (Array.isArray(galleryUrls) && galleryUrls.length > 0) return galleryUrls;
+  return null;
+}
+
+/**
+ * DB place_stats 행 → persist baseline 스냅샷. isStale 이면 apply:false (ref·place_id 갱신 없음).
+ * @returns {{ apply: false } | { apply: true, loadedPlaceId: string, galleryBaseline: unknown[] | null }}
+ */
+export function resolveLoadedStatsPersistSnapshot(dbData, isStaleRun) {
+  if (isStaleRun) return { apply: false };
+  const loadedPlaceId = dbData?.place_id ? String(dbData.place_id).trim() : '';
+  return {
+    apply: true,
+    loadedPlaceId,
+    galleryBaseline: loadedStatsGalleryRefFromDbRow(dbData?.gallery_urls),
+  };
+}
+
+export function isTourApiGalleryImage(img) {
+  if (!img || typeof img !== 'object') return false;
+  if (img.source === 'tourapi') return true;
+  return String(img.id ?? '').startsWith('tourapi');
+}
+
+export function isOfficialGalleryImage(img) {
+  if (!img || typeof img !== 'object') return false;
+  const source = String(img.source ?? '').trim();
+  if (source === 'local-scenic-official' || source === 'korea-scenic-ssot') return true;
+  return String(img.id ?? '').startsWith('local-scenic-official-');
+}
+
+function isPexelsGalleryImage(img) {
+  if (!img || typeof img !== 'object') return false;
+  if (img.source === 'pexels') return true;
+  return String(img.id ?? '').startsWith('pexels');
+}
+
+function isUnsplashGalleryImage(img) {
+  if (!img || typeof img !== 'object') return false;
+  if (img.source === 'unsplash') return true;
+  const url = String(img.urls?.small || img.urls?.regular || '').trim();
+  return url.includes('images.unsplash.com');
+}
+
+export function isStockGalleryImage(img) {
+  return isPexelsGalleryImage(img) || isUnsplashGalleryImage(img);
+}
+
+/** place_stats가 TourAPI 위주면 soft는 스톡 API로 갱신(절약은 세션·스톡 DB 히트) — usePlaceGallery 와 동일 기준 */
+export function isTourApiDominantGallery(images) {
+  const list = Array.isArray(images) ? images.filter(Boolean) : [];
+  if (list.length === 0) return false;
+  const tourCount = list.filter(isTourApiGalleryImage).length;
+  return tourCount / list.length >= 0.5;
+}
+
+export function galleryPersistReplaceSameAsStored(storedBaseline, payloadImages) {
+  const stored = galleryPersistNormalizedEntries(storedBaseline);
+  if (!stored.length) return false;
+  const payload = galleryPersistNormalizedEntries(payloadImages);
+  if (stored.length !== payload.length) return false;
+  for (let i = 0; i < stored.length; i += 1) {
+    if (stored[i].id !== payload[i].id) return false;
+    if (!galleryPersistPersistUrlsEqual(stored[i].urls, payload[i].urls)) return false;
+  }
+  return true;
+}
+
+/**
+ * replace RPC 생략 — 화면·캐시는 그대로, DB 쓰기만 막음.
+ * @returns {'unchanged' | 'tour_to_stock_only' | null}
+ */
+export function skipPersistPlaceGalleryReplaceReason(storedBaseline, payloadImages) {
+  if (!Array.isArray(payloadImages) || payloadImages.length === 0) return null;
+  if (galleryPersistReplaceSameAsStored(storedBaseline, payloadImages)) {
+    return 'unchanged';
+  }
+  const baseline = Array.isArray(storedBaseline) ? storedBaseline.filter(Boolean) : [];
+  if (!baseline.length || !isTourApiDominantGallery(baseline)) return null;
+  const hasTourOrOfficial = payloadImages.some(
+    (img) => isTourApiGalleryImage(img) || isOfficialGalleryImage(img),
+  );
+  if (hasTourOrOfficial) return null;
+  if (payloadImages.every((img) => isStockGalleryImage(img))) {
+    return 'tour_to_stock_only';
+  }
+  return null;
+}
+
 export function buildPersistPlaceGalleryArgs({ placeId, mode, images, imageUrl }) {
   return {
     p_place_id: placeId,
