@@ -53,6 +53,7 @@ export default defineConfig({
         /korea-festival-date-chip\.spec\.js/,
         /place-lightbox-history\.spec\.js/,
         /tinian-search-planner-390\.spec\.js/,
+        /logbook-public-owner-edit-390\.spec\.js/,
       ],
       use: { ...devices['Desktop Chrome'], viewport: { width: 1280, height: 720 } },
     },
@@ -297,6 +298,26 @@ export default defineConfig({
       testMatch: /korea-festival-road-wonju-390\.spec\.js/,
       use: {
         ...devices['iPhone 13'],
+        viewport: { width: 390, height: 844 },
+        deviceScaleFactor: 1,
+        ignoreHTTPSErrors: true,
+      },
+    },
+    {
+      name: 'chromium-logbook-owner-edit',
+      testMatch: /logbook-public-owner-edit-390\.spec\.js/,
+      timeout: 180_000,
+      webServer: {
+        command:
+          'BROWSER=none DEV_SSL=0 npm run build && BROWSER=none DEV_SSL=0 npx vite preview --host 127.0.0.1 --port 5199',
+        url: 'http://127.0.0.1:5199',
+        reuseExistingServer: !process.env.CI,
+        timeout: 240_000,
+      },
+      use: {
+        ...devices['Desktop Chrome'],
+        baseURL: 'http://127.0.0.1:5199',
+        locale: 'ko-KR',
         viewport: { width: 390, height: 844 },
         deviceScaleFactor: 1,
         ignoreHTTPSErrors: true,

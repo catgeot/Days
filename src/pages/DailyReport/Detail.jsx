@@ -5,7 +5,8 @@
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { supabase } from '../../shared/api/supabase';
-import { ArrowUp, Trash2, Edit, MapPin, Copy, CheckCircle2, Lock, Share2 } from 'lucide-react';
+import { ArrowUp, Trash2, MapPin, Copy, CheckCircle2, Lock, Share2 } from 'lucide-react';
+import LogbookOwnerEditButton from './components/LogbookOwnerEditButton';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import LogbookBody from './components/LogbookBody';
@@ -301,9 +302,7 @@ const Detail = () => {
               <span className="hidden sm:inline">{isCopied ? t('logbook.detail.copied') : t('logbook.detail.export')}</span>
             </button>
 
-            <button onClick={() => navigate(`/blog/write/${id}`)} className="flex items-center gap-1.5 bg-gray-50 backdrop-blur-md text-gray-600 px-3 sm:px-4 py-2 rounded-full hover:bg-gray-100 hover:text-gray-900 transition-colors border border-gray-200 text-sm font-medium">
-              <Edit size={16} /> <span className="hidden sm:inline">{t('logbook.detail.edit')}</span>
-            </button>
+            <LogbookOwnerEditButton reportId={id} />
             <button onClick={handleDelete} className="flex items-center gap-1.5 bg-red-50 backdrop-blur-md text-red-500 px-3 sm:px-4 py-2 rounded-full hover:bg-red-100 transition-colors border border-red-100 text-sm font-medium">
               <Trash2 size={16} /> <span className="hidden sm:inline">{t('logbook.detail.delete')}</span>
             </button>
