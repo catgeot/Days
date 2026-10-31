@@ -1096,8 +1096,24 @@ const ChatModal = ({
     const placeBound = sessionBound;
     const effectiveBound = sessionBound;
 
+    const catalogPlacePinned =
+      Boolean(mooniPlaceContext?.uiPlace) ||
+      Boolean(resolveCatalogPlaceSlug(mooniPlaceContext?.slug));
+    const lookupTripBinding =
+      resolution?.confidence === 'high' &&
+      resolution.source === 'lookup' &&
+      resolution.name
+        ? resolution
+        : null;
+    const shouldApplyBinding =
+      Boolean(lookupTripBinding) &&
+      !(accessRoute && effectiveBound && resolution.slug !== effectiveBound.slug) &&
+      !(ferryRoute && effectiveBound && resolution.slug !== effectiveBound.slug) &&
+      !catalogPlacePinned;
+
     let sessionDest = currentDest;
     if (
+      !catalogPlacePinned &&
       resolution?.confidence === 'high' &&
       resolution.name &&
       resolution.source === 'lookup'
@@ -1114,20 +1130,12 @@ const ChatModal = ({
     const chipDestination =
       (accessRoute || ferryRoute) && effectiveBound
         ? { slug: effectiveBound.slug, name: effectiveBound.name }
-        : resolution?.confidence === 'high' &&
+        : !catalogPlacePinned &&
+            resolution?.confidence === 'high' &&
             resolution.slug &&
             resolution.source === 'lookup'
           ? { slug: resolution.slug, name: resolution.name }
           : null;
-
-    const uiPlaceBound = Boolean(activeSessionPlace?.name);
-    const shouldApplyBinding =
-      resolution?.confidence === 'high' &&
-      resolution.name &&
-      resolution.source === 'lookup' &&
-      !(accessRoute && effectiveBound && resolution.slug !== effectiveBound.slug) &&
-      !(ferryRoute && effectiveBound && resolution.slug !== effectiveBound.slug) &&
-      !uiPlaceBound;
 
     const turnAt = Date.now();
     const bubbleText = mooniUserBubbleText(cleanText);
@@ -1190,10 +1198,9 @@ const ChatModal = ({
     );
 
       const destForPrompt =
+        (catalogPlacePinned && placeBound?.name) ||
+        (!catalogPlacePinned && lookupTripBinding?.name) ||
         placeBound?.name ||
-        (resolution?.confidence === 'high' &&
-        resolution.source === 'lookup' &&
-        resolution.name) ||
         (sessionDest === 'MOONi'
           ? (sessionBound?.name || resolution?.name || sessionDest)
           : sessionDest);
@@ -1205,12 +1212,16 @@ const ChatModal = ({
         }));
 
       const slug =
+        (catalogPlacePinned && placeBound?.slug) ||
+        (!catalogPlacePinned && lookupTripBinding?.slug) ||
         placeBound?.slug ||
         ((accessRoute || ferryRoute) && effectiveBound?.slug) ||
         resolution?.slug ||
         sessionBound?.slug ||
         resolveSlugFromDestination(destForPrompt === 'MOONi' ? null : destForPrompt);
       const destName =
+        (catalogPlacePinned && placeBound?.name) ||
+        (!catalogPlacePinned && lookupTripBinding?.name) ||
         placeBound?.name ||
         (destForPrompt === 'MOONi'
           ? (resolution?.name ?? effectiveBound?.name ?? '')

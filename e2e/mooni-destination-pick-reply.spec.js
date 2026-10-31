@@ -29,6 +29,9 @@ const HIGH_CONFIDENCE_TURN = '카오락과 푸꾸옥이요';
 const PICK_PROMPT = '이 중 어디로 가고 싶으세요?';
 const replyMarker = (n) => `E2E-PICK-REPLY-${n}`;
 const BOLD_TIME_SAMPLE = '**13:30 ** 출발편이에요.';
+const CEBU_GENERIC_DETAIL = '카오락 시간별 세부 일정 짜 줘';
+const GBR_SNORKEL_TURN = '그레이트 배리어 리프 스노클링 일정';
+const PHUKET_REBIND_TURN = '푸켓으로 바꿀게요 3박 일정';
 
 async function installCountingGeminiMock(context, { boldTimeSample = false } = {}) {
   const tasks = [];
@@ -218,5 +221,56 @@ test.describe('MOONi destination pick — AI reply first, chips below', () => {
     await expect(page.getByText(PICK_PROMPT, { exact: true })).toHaveCount(0);
     await expect(reply.getByText(/목적지 · .*푸꾸옥/)).toBeVisible();
     await expectNoDestinationChipInUserBubbles(page);
+  });
+
+  test('카오락 시간별 세부 일정 — 세부(cebu) 칩·목적지 칩 없음', async ({ page, context }) => {
+    await installCountingGeminiMock(context);
+    await openHomeMooni(page);
+
+    await sendTurn(page, CEBU_GENERIC_DETAIL);
+    const reply = page.getByTestId('mooni-model-reply').filter({ hasText: replyMarker(1) });
+    await expect(reply).toBeVisible({ timeout: 90_000 });
+    await expect(reply.getByText(/목적지 · .*세부/)).toHaveCount(0);
+    await expect(page.getByText(PICK_PROMPT, { exact: true })).toHaveCount(0);
+    await expect(page.getByRole('button', { name: '세부' })).toHaveCount(0);
+  });
+
+  test('홈 MOONi — GBR 확정 후 푸켓 재바인딩 시 헤더·칩', async ({ page, context }) => {
+    await installCountingGeminiMock(context);
+    await openHomeMooni(page);
+
+    await sendTurn(page, GBR_SNORKEL_TURN);
+    await expect(page.getByText(/그레이트 배리어 리프 · MOONi/)).toBeVisible({ timeout: 60_000 });
+    const reply1 = page.getByTestId('mooni-model-reply').filter({ hasText: replyMarker(1) });
+    await expect(reply1).toBeVisible({ timeout: 90_000 });
+    await expect(reply1.getByText(/목적지 · .*그레이트 배리어 리프/)).toBeVisible();
+
+    await sendTurn(page, PHUKET_REBIND_TURN);
+    const reply2 = page.getByTestId('mooni-model-reply').filter({ hasText: replyMarker(2) });
+    await expect(reply2).toBeVisible({ timeout: 90_000 });
+    await expect(reply2.getByText(/목적지 · .*푸켓/)).toBeVisible();
+    await expect(page.getByText(/푸켓 · MOONi/)).toBeVisible({ timeout: 60_000 });
+    await expect(page.getByText(/그레이트 배리어 리프 · MOONi/)).toHaveCount(0);
+  });
+
+  test('장소 uiPlace 고정 — 푸켓 말해도 헤더는 그레이트 배리어 리프', async ({ page, context }) => {
+    await installCountingGeminiMock(context);
+    await page.goto('/place/great-barrier-reef/planner?lang=ko', {
+      waitUntil: 'domcontentloaded',
+      timeout: 120_000,
+    });
+    await dismissMooniHintIfPresent(page);
+    const mooniBtn = page.locator('.place-header-mooni-btn').first();
+    await expect(mooniBtn).toBeVisible({ timeout: 60_000 });
+    await mooniBtn.click();
+    await expect(page.getByLabel(/채팅 닫기|Close chat/i)).toBeVisible({ timeout: 30_000 });
+    await expect(page.getByText(/그레이트 배리어 리프 · MOONi/)).toBeVisible();
+
+    await sendTurn(page, PHUKET_REBIND_TURN);
+    const reply = page.getByTestId('mooni-model-reply').filter({ hasText: replyMarker(1) });
+    await expect(reply).toBeVisible({ timeout: 90_000 });
+    await expect(page.getByText(/그레이트 배리어 리프 · MOONi/)).toBeVisible();
+    await expect(page.getByText(/푸켓 · MOONi/)).toHaveCount(0);
+    await expect(reply.getByText(/목적지 · .*푸켓/)).toHaveCount(0);
   });
 });

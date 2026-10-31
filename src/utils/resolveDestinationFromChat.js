@@ -442,10 +442,38 @@ function textIncludesSingleCharPlaceName(haystack, char) {
   return false;
 }
 
+function isCebuGenericDetailUsage(haystack) {
+  const h = String(haystack ?? '');
+  if (/세부\s*(?:일정|내용|사항|계획|안|설명|항목|정보|내역|스케줄|리스트)/u.test(h)) {
+    return true;
+  }
+  if (/(?:시간별|일별|주별|코스별|동선별|일정별|분(?:별|당)|시(?:간|점)별)\s+세부/u.test(h)) {
+    return true;
+  }
+  return false;
+}
+
+function textIncludesCebuPlaceName(haystack) {
+  const h = String(haystack ?? '');
+  if (isCebuGenericDetailUsage(h)) return false;
+  if (/(?:^|[\s·,，、.!?])세부(?:으로|로|에|에서|와|과|랑|이랑)(?=$|[\s·,，、.!?])/u.test(h)) {
+    return true;
+  }
+  if (/(?:^|[\s·,，、.!?])세부\s+(?:여행|관광|자유여행|휴양|배낭)/u.test(h)) {
+    return true;
+  }
+  if (/(?:^|[·])세부(?:[·]|$)/u.test(h)) return true;
+  if (/(?:^|[\s·,，、.!?])세부(?=$|[\s·,，、.!?])/u.test(h.trim())) return true;
+  return false;
+}
+
 function textIncludesPlaceName(haystack, needle) {
   const h = haystack.toLowerCase();
   const n = String(needle).trim().toLowerCase();
   if (!n) return false;
+  if (removeSpaces(n) === '세부') {
+    return textIncludesCebuPlaceName(haystack);
+  }
   if (n.length === 1 && /[\uac00-\ud7a3]/u.test(n)) {
     return textIncludesSingleCharPlaceName(haystack, needle.trim());
   }

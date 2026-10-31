@@ -55,6 +55,31 @@ test('theme-only question — no keyword pick candidates', () => {
   assert.deepEqual(slugs(r), []);
 });
 
+test('카오락 시간별 세부 일정 — no cebu (generic 세부)', () => {
+  const r = resolveDestinationFromChat('카오락 시간별 세부 일정 짜 줘', [], MOONI);
+  assert.equal(r.confidence, 'none');
+  assert.notEqual(r.slug, 'cebu');
+  assert.ok(!slugs(r).includes('cebu'));
+});
+
+test('세부 여행 — cebu place name kept', () => {
+  const r = resolveDestinationFromChat('세부 여행 3박 일정', [], MOONI);
+  assert.equal(r.confidence, 'high');
+  assert.equal(r.slug, 'cebu');
+});
+
+test('세부로 — cebu place name kept', () => {
+  const r = resolveDestinationFromChat('세부로 갈게요', [], MOONI);
+  assert.equal(r.confidence, 'high');
+  assert.equal(r.slug, 'cebu');
+});
+
+test('세부 일정 — generic usage, no cebu', () => {
+  const r = resolveDestinationFromChat('세부 일정만 정리해 줘', [], MOONI);
+  assert.equal(r.confidence, 'none');
+  assert.ok(!slugs(r).includes('cebu'));
+});
+
 test('session rebound — phuket after phu quoc trip destination', () => {
   const history = [
     {
