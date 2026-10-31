@@ -126,7 +126,12 @@ export function FestivalPhotoFrame({
   };
 
   const markBroken = (el) => {
-    if (loadedRef.current || brokenRef.current) return;
+    if (loadedRef.current && isFestivalPhotoDecoded(el)) return;
+    if (loadedRef.current) {
+      loadedRef.current = false;
+      setLoaded(false);
+    }
+    if (brokenRef.current) return;
     brokenRef.current = true;
     clearLoadTimeout();
     setBroken(true);
@@ -231,7 +236,6 @@ export function FestivalPhotoFrame({
         if (shouldSyncMarkFestivalPhotoBroken(el, { loading })) markBroken(el);
       },
       onError(event) {
-        if (loadedRef.current) return;
         markBroken(event?.currentTarget);
       },
     }),
