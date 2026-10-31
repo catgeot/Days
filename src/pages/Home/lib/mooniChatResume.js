@@ -5,6 +5,7 @@ import {
   readMooniLastChatId,
   tripHasPersistedDialogue,
   isStaleGeneralMooniTrip,
+  isMooniEphemeralDraftSessionId,
 } from './tripChatUtils';
 
 /**
@@ -21,6 +22,13 @@ export async function resolveMooniResumeTrip({
     : null;
   const lastId = readMooniLastChatId(userId, readScope);
   if (!lastId) return null;
+
+  if (isMooniEphemeralDraftSessionId(lastId)) {
+    const ephemeral = findTripById(savedTrips, lastId);
+    if (!ephemeral || !tripHasPersistedDialogue(ephemeral)) {
+      return null;
+    }
+  }
 
   let trip = findTripById(savedTrips, lastId);
 

@@ -46,7 +46,7 @@ import {
 } from './lib/placeStatsSlugHydrate.js';
 import { isHiddenKoreaScenicPlaceSlug } from './lib/koreaScenicSpotVisibility.js';
 import { getSystemPrompt, PERSONA_TYPES } from './lib/prompts';
-import { persistMooniLastChatId } from './lib/tripChatUtils';
+import { persistMooniLastChatId, persistMooniFreshDraftSession } from './lib/tripChatUtils';
 import { enrichLocationWithRentalAirport } from '../../utils/rentalAirportMatch.js';
 import {
   mergeCanonicalTravelSpot,
@@ -398,9 +398,7 @@ function Home() {
   ]);
 
   const handleStartNewMooniChat = useCallback(() => {
-    if (activeChatId) {
-      persistMooniLastChatId(activeChatId, user?.id ?? null, { mooniPlaceContext });
-    }
+    persistMooniFreshDraftSession(user?.id ?? null, { mooniPlaceContext });
     setActiveChatId(null);
     setInitialQuery(null);
     const label = String(mooniPlaceContext?.displayLabel || mooniPlaceContext?.name || '').trim();
@@ -412,7 +410,6 @@ function Home() {
       category,
     });
   }, [
-    activeChatId,
     user?.id,
     mooniPlaceContext,
     category,

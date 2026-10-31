@@ -45,7 +45,7 @@ import {
   resolveTravelSpotFromSearchQuery,
 } from '../../../utils/travelSpotResolve.js';
 import { enrichUiPlaceFromNearbySpot } from '../lib/travelRegionCountry.js';
-import { tripHasPersistedDialogue } from '../lib/tripChatUtils';
+import { tripHasPersistedDialogue, persistMooniFreshDraftSession } from '../lib/tripChatUtils';
 import { resolveMooniResumeTrip } from '../lib/mooniChatResume.js';
 import { logCurationHandoff } from '../../../shared/cloudPreview/curationHandoffDebug';
 import {
@@ -629,6 +629,7 @@ export function useHomeHandlers({
       setMooniPlaceContext?.(boundSpot ?? null);
 
       if (freshSession) {
+        persistMooniFreshDraftSession(user?.id ?? null, boundSpot ?? 'general');
         setChatDraft({
           destination: 'MOONi',
           lat: 0,
@@ -643,37 +644,20 @@ export function useHomeHandlers({
         return;
       }
 
-      if (!existingId && boundPlaceLabel) {
-        let placeTrip = savedTrips.find(
-          (t) =>
-            !t.is_hidden &&
-            (t.destination === boundPlaceLabel ||
-              t.destination === boundSpot?.name) &&
-            tripHasPersistedDialogue(t),
-        );
-        if (placeTrip?.is_hidden) {
-          placeTrip = { ...placeTrip, is_hidden: false };
-          setSavedTrips((prev) => prev.map((t) => (t.id === placeTrip.id ? placeTrip : t)));
-        }
-        if (placeTrip) {
-          logCurationHandoff('chat.resume.placeTrip', { id: placeTrip.id });
-          setChatDraft(null);
-          setActiveChatId(placeTrip.id);
-          setInitialQuery(initPayload?.text ? { text: initPayload.text, persona } : null);
-          setIsChatOpen(true);
-          return;
-        }
-      }
-
-      // 장소카드 boundSpot 진입 — 범용 MOONi trip resume 건너뜀 (§2.10 P2)
-      if (!existingId && !boundPlaceLabel) {
+      if (!existingId) {
+        const resumeScope = boundPlaceLabel
+          ? (boundSpot ?? { mooniPlaceContext: boundSpot })
+          : 'general';
         const resumedTrip = await resolveMooniResumeTrip({
           savedTrips,
           userId: user?.id ?? null,
-          scopeOrContext: 'general',
+          scopeOrContext: resumeScope,
         });
         if (resumedTrip) {
-          logCurationHandoff('chat.resume.mooniTrip', { id: resumedTrip.id });
+          logCurationHandoff(
+            boundPlaceLabel ? 'chat.resume.placeTrip' : 'chat.resume.mooniTrip',
+            { id: resumedTrip.id },
+          );
           if (!savedTrips.some((t) => String(t.id) === String(resumedTrip.id))) {
             setSavedTrips((prev) => [resumedTrip, ...prev]);
           }
@@ -684,6 +668,36 @@ export function useHomeHandlers({
           return;
         }
       }
+
+      const isSameLocation =
+        selectedLocation &&
+        (selectedLocation.name === locationName ||
+          selectedLocation.display_name === locationName ||
+          selectedLocation.name === boundSpot?.name ||
+          Boolean(boundSpot?.name));
+      const targetLat = Number.isFinite(Number(boundSpot?.lat))
+        ? Number(boundSpot.lat)
+        : isSameLocation
+          ? selectedLocation.lat || 0
+          : 0;
+      const targetLng = Number.isFinite(Number(boundSpot?.lng))
+        ? Number(boundSpot.lng)
+        : isSameLocation
+          ? selectedLocation.lng || 0
+          : 0;
+
+      setChatDraft({
+        destination: locationName,
+        lat: targetLat,
+        lng: targetLng,
+        persona,
+        category,
+      });
+      setActiveChatId(null);
+      setInitialQuery(initPayload?.text ? { text: initPayload.text, persona } : null);
+      logCurationHandoff('chat.open.draft', { destination: locationName, isMooniRequest: true });
+      setIsChatOpen(true);
+      return;
     } else {
       setMooniChatEntry?.(false);
       setMooniPlaceContext?.(null);

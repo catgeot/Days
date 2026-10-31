@@ -121,6 +121,33 @@ export function persistMooniLastChatId(chatId, userId, scopeOrContext = null) {
   }
 }
 
+/** «새 대화» draft id — saved_trips에 없거나 대화 없으면 resume 대상 아님 */
+export function isMooniEphemeralDraftSessionId(id) {
+  const s = String(id ?? '').trim();
+  return s.startsWith('temp_') || s.startsWith('draft_');
+}
+
+export function clearMooniLastChatId(userId, scopeOrContext = null) {
+  const scope = resolvePersistScope(scopeOrContext);
+  try {
+    sessionStorage.removeItem(sessionKeyForScope(scope));
+    localStorage.removeItem(localKeyForScope(userId, scope));
+  } catch {
+    // private mode
+  }
+}
+
+export function createMooniDraftSessionId() {
+  return `draft_${Date.now()}`;
+}
+
+/** «새 대화»: active last-id를 빈 draft로 교체 (이전 trip id persist 금지) */
+export function persistMooniFreshDraftSession(userId, scopeOrContext = null) {
+  const draftId = createMooniDraftSessionId();
+  persistMooniLastChatId(draftId, userId, scopeOrContext);
+  return draftId;
+}
+
 function readLegacyMooniLastChatId(userId) {
   return (
     sessionStorage.getItem(MOONI_LAST_CHAT_SESSION_KEY) ||

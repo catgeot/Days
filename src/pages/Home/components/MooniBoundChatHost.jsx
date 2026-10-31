@@ -11,6 +11,7 @@ import { useTravelData } from '../hooks/useTravelData';
 import { getSystemPrompt, PERSONA_TYPES } from '../lib/prompts';
 import {
   persistMooniLastChatId,
+  persistMooniFreshDraftSession,
   tripHasPersistedDialogue,
 } from '../lib/tripChatUtils';
 import { buildMooniBoundSpotFromLocation } from '../lib/placeChatIntro';
@@ -204,9 +205,7 @@ export default function MooniBoundChatHost({ isOpen, boundSpot, initialQuery = n
   }, [activeChatId, setActiveChatId, user?.id, mooniPlaceContext]);
 
   const handleStartNewChat = useCallback(() => {
-    if (activeChatId) {
-      persistMooniLastChatId(activeChatId, user?.id ?? null, { mooniPlaceContext });
-    }
+    persistMooniFreshDraftSession(user?.id ?? null, { mooniPlaceContext });
     setActiveChatId(null);
     const label = String(mooniPlaceContext?.displayLabel || mooniPlaceContext?.name || '').trim();
     setChatDraft({
@@ -216,7 +215,7 @@ export default function MooniBoundChatHost({ isOpen, boundSpot, initialQuery = n
       persona: PERSONA_TYPES.GENERAL,
       category: THEME_CHAT_CATEGORY,
     });
-  }, [activeChatId, mooniPlaceContext, user?.id]);
+  }, [mooniPlaceContext, user?.id]);
 
   useEffect(() => {
     if (isOpen) return;
