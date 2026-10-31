@@ -15,6 +15,7 @@ import {
   imagesForGalleryPersist,
   isStockGalleryImage,
   isTourApiDominantGallery,
+  loadedStatsGalleryRefFromDbRow,
   resolveGalleryPersistPlaceId,
   skipPersistPlaceGalleryReplaceReason,
   withoutDroppedGalleryImages,
@@ -160,13 +161,35 @@ const stockOnly = [
 assert.equal(
   skipPersistPlaceGalleryReplaceReason(tourBaseline, tourBaseline),
   'unchanged',
-  'replace skip when id sequence matches DB baseline',
+  'replace skip when id sequence and URLs match DB baseline',
+);
+assert.equal(
+  skipPersistPlaceGalleryReplaceReason(
+    tourBaseline,
+    [{ ...tourA, urls: { small: 'http://tong.visitkorea.or.kr/a.jpg' } }, tourB],
+  ),
+  null,
+  'http→https on same id must still persist',
 );
 assert.equal(
   skipPersistPlaceGalleryReplaceReason(tourBaseline, [tourB, tourA]),
   null,
   'reordered ids still persist',
 );
+assert.equal(
+  skipPersistPlaceGalleryReplaceReason(tourBaseline, [tourA, stockOnly[0]]),
+  null,
+  'partial tour remaining allows replace RPC',
+);
+assert.equal(
+  skipPersistPlaceGalleryReplaceReason(tourBaseline, [
+    stockOnly[0],
+    { id: 'legacy-1', urls: { small: 'https://cdn.example/x.jpg' } },
+  ]),
+  null,
+  'non-stock mixed payload is not tour_to_stock_only block',
+);
+assert.equal(loadedStatsGalleryRefFromDbRow([]), null, 'empty DB gallery clears baseline ref value');
 assert.equal(
   skipPersistPlaceGalleryReplaceReason(tourBaseline, stockOnly),
   'tour_to_stock_only',

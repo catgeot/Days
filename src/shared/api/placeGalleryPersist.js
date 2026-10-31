@@ -43,10 +43,24 @@ export function galleryPersistDropsStoredImages(payloadImages, storage) {
   return (storage || []).some((img) => img?.id && !payloadIds.has(img.id));
 }
 
-function galleryPersistNormalizedIds(images) {
+function galleryPersistImagePersistUrl(img) {
+  if (!img || typeof img !== 'object') return '';
+  return String(img.urls?.small || img.urls?.regular || img.urls?.full || '').trim();
+}
+
+function galleryPersistNormalizedEntries(images) {
   return (Array.isArray(images) ? images : [])
-    .map((img) => String(img?.id ?? '').trim())
-    .filter(Boolean);
+    .map((img) => ({
+      id: String(img?.id ?? '').trim(),
+      url: galleryPersistImagePersistUrl(img),
+    }))
+    .filter((entry) => entry.id);
+}
+
+/** place_stats gallery_urls → baseline ref (빈 목록이면 null). isStale() 통과 후에만 호출. */
+export function loadedStatsGalleryRefFromDbRow(galleryUrls) {
+  if (Array.isArray(galleryUrls) && galleryUrls.length > 0) return galleryUrls;
+  return null;
 }
 
 export function isTourApiGalleryImage(img) {
@@ -88,12 +102,13 @@ export function isTourApiDominantGallery(images) {
 }
 
 export function galleryPersistReplaceSameAsStored(storedBaseline, payloadImages) {
-  const stored = galleryPersistNormalizedIds(storedBaseline);
+  const stored = galleryPersistNormalizedEntries(storedBaseline);
   if (!stored.length) return false;
-  const payload = galleryPersistNormalizedIds(payloadImages);
+  const payload = galleryPersistNormalizedEntries(payloadImages);
   if (stored.length !== payload.length) return false;
   for (let i = 0; i < stored.length; i += 1) {
-    if (stored[i] !== payload[i]) return false;
+    if (stored[i].id !== payload[i].id) return false;
+    if (stored[i].url !== payload[i].url) return false;
   }
   return true;
 }
