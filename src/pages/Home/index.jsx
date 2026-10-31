@@ -46,7 +46,7 @@ import {
 } from './lib/placeStatsSlugHydrate.js';
 import { isHiddenKoreaScenicPlaceSlug } from './lib/koreaScenicSpotVisibility.js';
 import { getSystemPrompt, PERSONA_TYPES } from './lib/prompts';
-import { persistMooniLastChatId, persistMooniFreshDraftSession } from './lib/tripChatUtils';
+import { persistMooniLastChatId, persistMooniFreshDraftSession, mooniLastChatScopeInput } from './lib/tripChatUtils';
 import { enrichLocationWithRentalAirport } from '../../utils/rentalAirportMatch.js';
 import {
   mergeCanonicalTravelSpot,
@@ -370,7 +370,7 @@ function Home() {
 
   const handleClearMooniPlaceBinding = useCallback(() => {
     if (activeChatId) {
-      persistMooniLastChatId(activeChatId, user?.id ?? null, { mooniPlaceContext });
+      persistMooniLastChatId(activeChatId, user?.id ?? null, mooniLastChatScopeInput(mooniPlaceContext));
     }
     setMooniPlaceContext(null);
     setSelectedLocation(null);
@@ -398,7 +398,7 @@ function Home() {
   ]);
 
   const handleStartNewMooniChat = useCallback(() => {
-    persistMooniFreshDraftSession(user?.id ?? null, { mooniPlaceContext });
+    persistMooniFreshDraftSession(user?.id ?? null, mooniLastChatScopeInput(mooniPlaceContext));
     setActiveChatId(null);
     setInitialQuery(null);
     const label = String(mooniPlaceContext?.displayLabel || mooniPlaceContext?.name || '').trim();
@@ -930,7 +930,7 @@ function Home() {
       setChatDraft(null);
       setActiveChatId(created.id);
       if (mooniChatEntry || destination === 'MOONi') {
-        persistMooniLastChatId(created.id, user?.id ?? null, { mooniPlaceContext });
+        persistMooniLastChatId(created.id, user?.id ?? null, mooniLastChatScopeInput(mooniPlaceContext));
       }
     }
     return created;
@@ -1803,7 +1803,7 @@ function Home() {
           onPlaceIntroReady={handlePlaceIntroReady}
           onClose={() => {
             if (activeChatId && mooniChatEntry) {
-              persistMooniLastChatId(activeChatId, user?.id ?? null, { mooniPlaceContext });
+              persistMooniLastChatId(activeChatId, user?.id ?? null, mooniLastChatScopeInput(mooniPlaceContext));
             }
             setIsChatOpen(false);
             setChatDraft(null);

@@ -45,7 +45,7 @@ import {
   resolveTravelSpotFromSearchQuery,
 } from '../../../utils/travelSpotResolve.js';
 import { enrichUiPlaceFromNearbySpot } from '../lib/travelRegionCountry.js';
-import { tripHasPersistedDialogue, persistMooniFreshDraftSession } from '../lib/tripChatUtils';
+import { tripHasPersistedDialogue, persistMooniFreshDraftSession, mooniLastChatScopeInput } from '../lib/tripChatUtils';
 import { resolveMooniResumeTrip } from '../lib/mooniChatResume.js';
 import { logCurationHandoff } from '../../../shared/cloudPreview/curationHandoffDebug';
 import {
@@ -629,7 +629,7 @@ export function useHomeHandlers({
       setMooniPlaceContext?.(boundSpot ?? null);
 
       if (freshSession) {
-        persistMooniFreshDraftSession(user?.id ?? null, boundSpot ?? 'general');
+        persistMooniFreshDraftSession(user?.id ?? null, mooniLastChatScopeInput(boundSpot));
         setChatDraft({
           destination: 'MOONi',
           lat: 0,
@@ -645,13 +645,10 @@ export function useHomeHandlers({
       }
 
       if (!existingId) {
-        const resumeScope = boundPlaceLabel
-          ? (boundSpot ?? { mooniPlaceContext: boundSpot })
-          : 'general';
         const resumedTrip = await resolveMooniResumeTrip({
           savedTrips,
           userId: user?.id ?? null,
-          scopeOrContext: resumeScope,
+          scopeOrContext: mooniLastChatScopeInput(boundPlaceLabel ? boundSpot : 'general'),
         });
         if (resumedTrip) {
           logCurationHandoff(

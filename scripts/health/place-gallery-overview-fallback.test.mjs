@@ -66,7 +66,7 @@ test('flag ON — splitPlaceOverview ignores Home ensure desc (readonly hydrate 
   assert.equal(splitPlaceOverview(pin, 'ko').fixed, '');
 });
 
-test('Home gallery PR drift guard; MOONi resume/new-chat wiring OK', () => {
+test('Home gallery PR drift guard; MOONi session wiring line allowlist', () => {
   const galleryForbidden = [
     /hydratePlaceGalleryOverview/,
     /usePlaceGalleryOverviewHydration/,
@@ -75,20 +75,98 @@ test('Home gallery PR drift guard; MOONi resume/new-chat wiring OK', () => {
     /splitPlaceOverview/,
     /getPlaceOverviewDescForDisplay/,
   ];
-  const mooniAllowed =
-    /resolveMooniResumeTrip|persistMooniFreshDraftSession|handleStartNewMooniChat|onStartNewChat|draftSessionReset|persistMooniLastChatId/;
 
-  for (const rel of [
-    'src/pages/Home/hooks/useHomeHandlers.js',
-    'src/pages/Home/index.jsx',
-  ]) {
+  /** Each changed line (+/-) must match one pattern (no broad MOONi keyword gate). */
+  const handlersAllow = [
+    /^[+-]\s*import .*tripChatUtils/,
+    /^[+-].*tripHasPersistedDialogue/,
+    /^[+-].*mooniLastChatScopeInput/,
+    /^[+-].*persistMooniFreshDraftSession/,
+    /^[+-].*resolveMooniResumeTrip/,
+    /^[+-].*resumeScope/,
+    /^[+-].*scopeOrContext:/,
+    /^[+-].*mooniPlaceContext: boundSpot/,
+    /^[+-].*boundPlaceLabel \? 'chat\.resume\.placeTrip'/,
+    /^[+-].*chat\.resume\.(placeTrip|mooniTrip)/,
+    /^[+-].*logCurationHandoff\(/,
+    /^[+-].*setChatDraft\(/,
+    /^[+-].*setActiveChatId\(/,
+    /^[+-].*setInitialQuery\(/,
+    /^[+-].*setIsChatOpen\(/,
+    /^[+-].*setSavedTrips\(/,
+    /^[+-].*setMooniPlaceContext/,
+    /^[+-].*setMooniChatEntry/,
+    /^[+-].*freshSession/,
+    /^[+-].*isMooniRequest/,
+    /^[+-].*isSameLocation/,
+    /^[+-].*selectedLocation/,
+    /^[+-].*targetLat/,
+    /^[+-].*targetLng/,
+    /^[+-].*locationName/,
+    /^[+-].*boundSpot/,
+    /^[+-].*boundPlaceLabel/,
+    /^[+-].*placeTrip/,
+    /^[+-].*is_hidden/,
+    /^[+-].*destination ===/,
+    /^[+-].*persona/,
+    /^[+-].*category/,
+    /^[+-].*existingId/,
+    /^[+-].*resumedTrip/,
+    /^[+-].*장소카드 boundSpot/,
+    /^[+-].*\(t\)/,
+    /^[+-].*\? /,
+    /^[+-].*: 0;/,
+    /^[+-].*return;/,
+    /^[+-]\s*$/,
+    /^[+-]\s*\}\s*$/,
+    /^[+-]\s*\)\s*;?\s*$/,
+    /^[+-]\s*\}\s*,\s*$/,
+    /^[+-]\s*\}\);?\s*$/,
+  ];
+
+  const indexAllow = [
+    /^[+-]\s*import .*tripChatUtils/,
+    /^[+-].*mooniLastChatScopeInput/,
+    /^[+-].*persistMooniFreshDraftSession/,
+    /^[+-].*handleStartNewMooniChat/,
+    /^[+-].*onStartNewChat=/,
+    /^[+-].*persistMooniLastChatId/,
+    /^[+-].*mooniPlaceContext/,
+    /^[+-].*activeChatId/,
+    /^[+-].*setActiveChatId/,
+    /^[+-].*setInitialQuery/,
+    /^[+-].*setChatDraft/,
+    /^[+-].*setMooniPlaceContext/,
+    /^[+-].*setSelectedLocation/,
+    /^[+-].*handleClearMooniPlaceBinding/,
+    /^[+-].*mooniChatEntry/,
+    /^[+-].*destination === 'MOONi'/,
+    /^[+-].*category/,
+    /^[+-].*user\?\.id/,
+    /^[+-]\s*\}\s*,?\s*$/,
+    /^[+-]\s*\)\s*;?\s*$/,
+    /^[+-]\s*\]\s*;?\s*$/,
+  ];
+
+  function assertDiffAllowlist(rel, allowPatterns) {
     const diff = gitDiffAgainstBaseBranch(rel);
-    if (diff.trim() === '') continue;
+    if (diff.trim() === '') return;
     for (const re of galleryForbidden) {
       assert.doesNotMatch(diff, re, `${rel}: gallery overview PR must not change Home`);
     }
-    assert.match(diff, mooniAllowed, `${rel}: allowed delta is MOONi session wiring only`);
+    const changed = diff
+      .split('\n')
+      .filter((line) => (line.startsWith('+') || line.startsWith('-')) && !line.startsWith('+++') && !line.startsWith('---'));
+    for (const line of changed) {
+      assert.ok(
+        allowPatterns.some((re) => re.test(line)),
+        `${rel}: unexpected diff line: ${line}`,
+      );
+    }
   }
+
+  assertDiffAllowlist('src/pages/Home/hooks/useHomeHandlers.js', handlersAllow);
+  assertDiffAllowlist('src/pages/Home/index.jsx', indexAllow);
 });
 
 test('flag ON — EN shows KO overview body for display helper (non-readonly pins)', () => {

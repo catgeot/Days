@@ -93,6 +93,39 @@ test.describe('MOONi «새 대화» close/reopen persist', () => {
     mkdirSync(ART_DIR, { recursive: true });
   });
 
+  test('Paris: normal close/reopen resumes thread (reload + Tokyo detour)', async ({ page, context }) => {
+    await installShortGeminiMock(context);
+
+    const marker = `E2E_PARIS_RESUME_${Date.now()}`;
+    await openParisPlannerMooni(page);
+    await sendMooniMessage(page, marker);
+    await expect(page.getByText(marker)).toBeVisible({ timeout: 45_000 });
+    await expect(page.getByText(/MOONi E2E persist reply/i)).toBeVisible({ timeout: 45_000 });
+
+    await clipViewport(page, 'mooni-paris-before-close-390.png', 390);
+    await clipViewport(page, 'mooni-paris-before-close-1280.png', 1280);
+
+    await closeMooni(page);
+    await openParisPlannerMooni(page);
+    await expect(page.getByText(marker)).toBeVisible({ timeout: 20_000 });
+    await expect(page.getByText(/MOONi E2E persist reply/i)).toBeVisible({ timeout: 10_000 });
+
+    await clipViewport(page, 'mooni-paris-after-reopen-390.png', 390);
+    await clipViewport(page, 'mooni-paris-after-reopen-1280.png', 1280);
+
+    await closeMooni(page);
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await openParisPlannerMooni(page);
+    await expect(page.getByText(marker)).toBeVisible({ timeout: 20_000 });
+
+    await closeMooni(page);
+    await page.goto('/place/tokyo/planner?lang=ko');
+    await dismissMooniHintIfPresent(page);
+    await page.goto('/place/paris/planner?lang=ko');
+    await openParisPlannerMooni(page);
+    await expect(page.getByText(marker)).toBeVisible({ timeout: 20_000 });
+  });
+
   test('Paris + home: new chat → close → reopen keeps empty thread', async ({ page, context }) => {
     await installShortGeminiMock(context);
 
