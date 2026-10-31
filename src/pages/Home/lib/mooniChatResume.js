@@ -4,6 +4,7 @@ import {
   findTripById,
   readMooniLastChatId,
   tripHasPersistedDialogue,
+  isStaleGeneralMooniTrip,
 } from './tripChatUtils';
 
 /**
@@ -37,6 +38,12 @@ export async function resolveMooniResumeTrip({
   }
 
   if (!trip || trip.is_hidden || !tripHasPersistedDialogue(trip)) {
+    return null;
+  }
+
+  const scopeKey =
+    typeof readScope === 'string' && readScope.trim() ? readScope.trim() : 'general';
+  if (scopeKey === 'general' && isStaleGeneralMooniTrip(trip)) {
     return null;
   }
 

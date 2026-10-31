@@ -2728,6 +2728,7 @@
     },
     "chat": {
       "history": "Chat history",
+      "newChat": "New chat",
       "deleteChat": "Delete chat",
       "close": "Close",
       "closeAria": "Close chat",

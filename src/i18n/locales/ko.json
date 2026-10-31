@@ -2491,6 +2491,7 @@
     },
     "chat": {
       "history": "채팅 기록",
+      "newChat": "새 대화",
       "deleteChat": "채팅방 삭제",
       "close": "닫기",
       "closeAria": "채팅 닫기",

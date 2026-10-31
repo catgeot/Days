@@ -19,6 +19,10 @@ import {
   useChatEssentialGuide,
 } from '../../../hooks/useChatEssentialGuide';
 import { resolvePlaceChatKoreaFestivalHint } from '../../../pages/Home/lib/resolvePlaceChatKoreaFestivalHint.js';
+import {
+  resolveMooniFestivalBoundPlaceNameForHint,
+  shouldOmitMooniGeminiHistoryForKoreaFestivalTurn,
+} from '../../../pages/Home/lib/mooniKoreaFestivalTurn.js';
 import { buildFestivalMooniPolishOptions } from '../../../pages/Home/lib/festivalMooniRequest.js';
 import { fitMooniKoreaFestivalHint } from '../../../shared/korea/mooniKoreaFestivalHintBudget.js';
 import {
@@ -58,14 +62,28 @@ export const usePlaceChat = (options = {}) => {
         chatHistory: priorHistory,
       });
       const params = taskParams && typeof taskParams === 'object' ? taskParams : {};
-      const history = prepareMooniGeminiHistory(
-        priorHistory
-          .filter((turn) => turn.role === 'user' || turn.role === 'model')
-          .map((turn) => ({
-            role: turn.role,
-            text: String(turn.mooniRawReply ?? turn.text ?? ''),
-          })),
+      const boundSpot = params.boundSpot ?? null;
+      const boundPlaceName = params.boundPlaceName || destinationName || '';
+      const festivalBoundPlaceName = resolveMooniFestivalBoundPlaceNameForHint(
+        userText,
+        boundPlaceName,
+        boundSpot,
       );
+      const omitGeminiHistory = shouldOmitMooniGeminiHistoryForKoreaFestivalTurn(
+        userText,
+        boundSpot,
+        boundPlaceName,
+      );
+      const history = omitGeminiHistory
+        ? []
+        : prepareMooniGeminiHistory(
+            priorHistory
+              .filter((turn) => turn.role === 'user' || turn.role === 'model')
+              .map((turn) => ({
+                role: turn.role,
+                text: String(turn.mooniRawReply ?? turn.text ?? ''),
+              })),
+          );
 
       const essentialGuide =
         (await ensureChatEssentialGuide(slug, destinationName)) ?? cachedGuide;
@@ -83,7 +101,8 @@ export const usePlaceChat = (options = {}) => {
         const festHint = await resolvePlaceChatKoreaFestivalHint({
           userText,
           festivalContext: params.festivalContext ?? null,
-          boundPlaceName: params.boundPlaceName || destinationName || '',
+          boundPlaceName: festivalBoundPlaceName,
+          boundSpot,
           locale: params.locale || locale,
         });
         koreaFestivalHint = fitMooniKoreaFestivalHint(festHint.hint, undefined, {

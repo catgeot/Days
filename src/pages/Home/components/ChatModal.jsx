@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAccountProfile } from '../../../shared/Auth/useAccountProfile';
-import { X, Send, Loader2, MessageSquare, Trash2, Sparkles, ChevronLeft, Compass } from 'lucide-react';
+import { X, Send, Loader2, MessageSquare, Trash2, Sparkles, ChevronLeft, Compass, Plus } from 'lucide-react';
 import { PERSONA_TYPES } from '../lib/prompts';
 import { apiClient } from '../lib/apiClient';
 import { GeminiProxyError, getGeminiProxyErrorMessage } from '../lib/geminiProxyError';
@@ -55,6 +55,10 @@ import { invokeMooniChatToleratingChip } from '../lib/mooniChipEdgeFallback.js';
 import { resolvePlaceChatKoreaFestivalHint } from '../lib/resolvePlaceChatKoreaFestivalHint.js';
 import { fitMooniKoreaFestivalHint } from '../../../shared/korea/mooniKoreaFestivalHintBudget.js';
 import { isGateoMooniScopedFestivalEnabled } from '../../../shared/gateoFeatureFlags.js';
+import {
+  resolveMooniFestivalBoundPlaceNameForHint,
+  shouldOmitMooniGeminiHistoryForKoreaFestivalTurn,
+} from '../lib/mooniKoreaFestivalTurn.js';
 import { buildFestivalMooniChatOpening } from '../../Korea/lib/festivalMooniBoundSpot.js';
 import { festivalChatHeaderTitle } from '../../Korea/lib/festivalMooniContext.js';
 import {
@@ -192,6 +196,7 @@ const ChatModal = ({
   /** 무니 인트로 본문 준비 시 장소카드 desc hydrate (DB 캐시·신규 생성 공통) */
   onPlaceIntroReady = null,
   onClearPlaceBinding = null,
+  onStartNewChat = null,
 }) => {
   const { t, i18n } = useTranslation();
   const account = useAccountProfile();
@@ -1219,18 +1224,30 @@ const ChatModal = ({
         chatHistory: priorTurns,
         persona: personaToUse,
       });
-      const history = prepareMooniGeminiHistory(
-        newMessages
-          .slice(0, -1)
-          .filter((m) => m.role === 'user' || m.role === 'model')
-          .map((m) => ({
-            role: m.role,
-            text:
-              m.role === 'model'
-                ? String(m.mooniRawReply ?? messageTextPlain(m))
-                : messageTextPlain(m),
-          })),
+      const festivalBoundPlaceName = resolveMooniFestivalBoundPlaceNameForHint(
+        cleanText,
+        destName,
+        mooniPlaceContext,
       );
+      const omitGeminiHistory = shouldOmitMooniGeminiHistoryForKoreaFestivalTurn(
+        cleanText,
+        mooniPlaceContext,
+        destName,
+      );
+      const history = omitGeminiHistory
+        ? []
+        : prepareMooniGeminiHistory(
+            newMessages
+              .slice(0, -1)
+              .filter((m) => m.role === 'user' || m.role === 'model')
+              .map((m) => ({
+                role: m.role,
+                text:
+                  m.role === 'model'
+                    ? String(m.mooniRawReply ?? messageTextPlain(m))
+                    : messageTextPlain(m),
+              })),
+          );
 
       let koreaFestivalHint = '';
       let mooniFestivalCandidates = [];
@@ -1244,7 +1261,8 @@ const ChatModal = ({
           userText: cleanText,
           chipId,
           festivalContext,
-          boundPlaceName: destName,
+          boundPlaceName: festivalBoundPlaceName,
+          boundSpot: mooniPlaceContext,
           locale: i18n.language,
           departureLabel: explicitDeparture || departureLabel || '',
         });
@@ -1327,7 +1345,9 @@ const ChatModal = ({
         aiReplyText: aiReply,
         essentialGuide,
         tripSession: nextSession,
-        domesticKoreaFestival: Boolean(mooniPlaceContext?.festivalContext?.contentId),
+        domesticKoreaFestival: Boolean(
+          mooniPlaceContext?.festivalContext?.contentId || koreaFestivalHint,
+        ),
       });
 
       const hasTransportCta = (booking.actions ?? []).some((a) =>
@@ -1338,7 +1358,7 @@ const ChatModal = ({
       const festivalMergedReply = mergeMooniKoreaFestivalReply(aiReply, {
         candidates: mooniFestivalCandidates,
         userText: cleanText,
-        boundPlaceName: destName,
+        boundPlaceName: festivalBoundPlaceName,
         locale: i18n.language,
         upcomingFallback: mooniFestivalUpcomingFallback,
         scopedFestivalEnabled: isGateoMooniScopedFestivalEnabled(),
@@ -1597,11 +1617,30 @@ const ChatModal = ({
       <div className={`w-[95vw] max-w-6xl h-[90vh] max-md:w-full max-md:h-[100dvh] max-md:max-h-[100dvh] rounded-3xl max-md:rounded-none max-md:border-0 shadow-2xl flex overflow-hidden relative transition-all ${tone(fresh, 'bg-gray-900 border border-gray-700', 'bg-gradient-to-br from-sky-50 via-cyan-50 to-teal-50 border border-cyan-200/80')}`}>
 
         <div className={`hidden md:flex w-72 flex-col ${tone(fresh, 'bg-gray-900 border-r border-gray-700', 'bg-white/70 border-r border-cyan-100')}`}>
-          <div className={`p-5 flex items-center justify-between ${tone(fresh, 'border-b border-gray-800', 'border-b border-cyan-100')}`}>
-            <div className="flex items-center gap-2">
+          <div className={`p-5 flex items-center justify-between gap-2 ${tone(fresh, 'border-b border-gray-800', 'border-b border-cyan-100')}`}>
+            <div className="flex items-center gap-2 min-w-0">
               <MessageSquare size={18} className={tone(fresh, 'text-blue-400', 'text-cyan-500')} />
-              <span className={`font-bold text-sm ${tone(fresh, 'text-gray-200', 'text-slate-700')}`}>{t('mooni.chat.history')}</span>
+              <span className={`font-bold text-sm truncate ${tone(fresh, 'text-gray-200', 'text-slate-700')}`}>{t('mooni.chat.history')}</span>
             </div>
+            {typeof onStartNewChat === 'function' ? (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onStartNewChat();
+                }}
+                className={tone(
+                  fresh,
+                  'inline-flex shrink-0 items-center gap-1.5 rounded-xl border border-cyan-300/70 bg-cyan-500/25 px-3 py-2 text-xs font-bold text-cyan-50 shadow-sm hover:bg-cyan-500/35 touch-manipulation',
+                  'inline-flex shrink-0 items-center gap-1.5 rounded-xl border-2 border-cyan-600 bg-cyan-600 px-3 py-2 text-xs font-bold text-white shadow-md hover:bg-cyan-700 hover:border-cyan-700 touch-manipulation',
+                )}
+                title={t('mooni.chat.newChat')}
+                aria-label={t('mooni.chat.newChat')}
+              >
+                <Plus size={14} strokeWidth={2.5} aria-hidden />
+                {t('mooni.chat.newChat')}
+              </button>
+            ) : null}
           </div>
 
           <div className="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-2">
