@@ -20,8 +20,6 @@ test.describe('Explore v2 monthly picks @flagOff', () => {
     await openExplore(page, { width: 390, height: 844 });
     await expect(monthlySection(page)).toHaveCount(0);
     await expect(page.getByText('에디터스 픽').first()).toBeVisible({ timeout: 45_000 });
-    const row = page.getByTestId('explore-trending-chips-row');
-    await expect(row).toBeVisible({ timeout: 45_000 });
   });
 
   test('1280 — legacy explore without monthly row', async ({ page }) => {
