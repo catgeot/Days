@@ -542,7 +542,7 @@ test.describe('Festival nearby cards — flag ON', () => {
     await installFestivalNearbyCardsFixtures(context);
   });
 
-  test('825295 attractions + food banner, grid, band chip scroll', async ({ page }) => {
+  test('825295 attractions + food banner and grid layout', async ({ page }) => {
     test.setTimeout(180_000);
     await page.goto('/korea/');
     await dismissLocHint(page);
@@ -640,7 +640,7 @@ test.describe('Festival nearby cards — flag ON', () => {
     });
   });
 
-  test('825295 mobile grid balance with FAB overlay @evidence', async ({ page }) => {
+  test('825295 mobile grid balance with FAB overlay @ciNearbyCards @evidence', async ({ page }) => {
     test.setTimeout(180_000);
     await dismissLocHint(page);
     const dialog = await openFestival(page, '825295');
@@ -661,7 +661,7 @@ test.describe('Festival nearby cards — flag ON', () => {
     });
   });
 
-  test('825295 distance band chips scroll to section headers @390', async ({ page }) => {
+  test('825295 distance band chips scroll to section headers @ciNearbyCards @390', async ({ page }) => {
     test.setTimeout(180_000);
     await dismissLocHint(page);
     const dialog = await openFestival(page, '825295');
@@ -699,7 +699,7 @@ test.describe('Festival nearby cards — flag ON', () => {
     });
   });
 
-  test('825295 scroll top button orange visible @siteqa @evidence', async ({ page }) => {
+  test('825295 scroll top button orange visible @siteqa @ciNearbyCards @evidence', async ({ page }) => {
     test.setTimeout(180_000);
     await dismissLocHint(page);
     const dialog = await openFestival(page, '825295');
@@ -709,7 +709,7 @@ test.describe('Festival nearby cards — flag ON', () => {
     await screenshotScrollTopButton(page, '825295-scroll-top-button-390-flag-on.png');
   });
 
-  test('4106717 nearby grid bottom clears FAB stack @siteqa @evidence', async ({ page }) => {
+  test('4106717 nearby grid bottom clears FAB stack @siteqa @ciNearbyCards @evidence', async ({ page }) => {
     test.setTimeout(180_000);
     await dismissLocHint(page);
     const dialog = await openFestival(page, '4106717');
@@ -754,7 +754,7 @@ test.describe('Festival nearby cards — flag ON', () => {
     });
   });
 
-  test('4128786 nearby grid bottom clears FAB stack @siteqa @evidence', async ({ page }) => {
+  test('4128786 nearby grid bottom clears FAB stack @siteqa @ciNearbyCards @evidence', async ({ page }) => {
     test.setTimeout(180_000);
     await dismissLocHint(page);
     const dialog = await openFestival(page, '4128786');

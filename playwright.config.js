@@ -247,7 +247,7 @@ export default defineConfig({
     {
       name: 'chromium-festival-nearby-cards-390',
       testMatch: /festival-nearby-cards\.spec\.js/,
-      grep: /grid balance|distance band chips|band chip scroll|@siteqa/,
+      grep: /@ciNearbyCards/,
       grepInvert: /@flagOff|@mainBaseline|@desktop1280/,
       timeout: 180_000,
       expect: { timeout: 60_000 },
