@@ -1,0 +1,49 @@
+import assert from 'node:assert/strict';
+import { test } from 'node:test';
+import { resolveDestinationFromChat } from '../../src/utils/resolveDestinationFromChat.js';
+
+const MOONI = 'MOONi';
+
+function slugs(resolution) {
+  return (resolution.candidates || []).map((c) => c.slug);
+}
+
+test('4 named destinations — chips suppressed (empty low candidates)', () => {
+  const text = '괌·오키나와·팔라우·보홀 4곳을 표로 비교해 주세요';
+  const r = resolveDestinationFromChat(text, [], MOONI);
+  assert.equal(r.confidence, 'low');
+  assert.deepEqual(slugs(r), []);
+});
+
+test('괌이랑 오키나와 — exactly guam and okinawa, no keyword noise', () => {
+  const r = resolveDestinationFromChat('괌이랑 오키나와 비교해 주세요', [], MOONI);
+  assert.equal(r.confidence, 'low');
+  assert.deepEqual(slugs(r), ['guam', 'okinawa']);
+});
+
+test('괌으로 스노클링 — guam wins, not gili-meno keyword spill', () => {
+  const text = '괌으로 5박 6일 부부 스노클링 여행을 가려고 해요';
+  const r = resolveDestinationFromChat(text, [], MOONI);
+  assert.equal(r.confidence, 'high');
+  assert.equal(r.slug, 'guam');
+  assert.deepEqual(slugs(r), ['guam']);
+  assert.ok(!slugs(r).includes('gili-meno'));
+});
+
+test('빈 시간 — no vienna false chip', () => {
+  const r = resolveDestinationFromChat('빈 시간에 뭐 할까요', [], MOONI);
+  assert.equal(r.confidence, 'none');
+  assert.deepEqual(slugs(r), []);
+});
+
+test('follow-up duration only — no chips from prior theme turn', () => {
+  const history = [
+    {
+      role: 'user',
+      text: '조용한 섬에서 부부가 스노클링하기 좋은 여행지 10곳 추천해 주세요',
+    },
+  ];
+  const r = resolveDestinationFromChat('5박 6일로 다녀올 예정입니다', history, MOONI);
+  assert.equal(r.confidence, 'none');
+  assert.deepEqual(slugs(r), []);
+});
