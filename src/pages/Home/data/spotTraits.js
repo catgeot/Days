@@ -27,7 +27,7 @@ export const MONTHLY_PICKS = {
     },
     {
       slug: 'chiang-mai',
-      reason: '11/23~25 이펑 축제 · 11~2월 건기',
+      reason: '11/23~25 이펭 축제 · 11~2월 건기',
       sources: [
         {
           url: 'https://www.thailandtravel.or.jp/about/calendar/',
@@ -75,15 +75,15 @@ export const MONTHLY_PICKS = {
       sources: [
         {
           url: 'https://www.visitdubai.com/en/-/media/Images/pdf/2026/dubai-city-guide-en-2026.pdf',
-          label: 'Dubai Tourism',
+          label: '두바이 관광청',
         },
         {
           url: 'https://www.visitdubai.com/en/articles/dubai-in-november-weather-guide',
-          label: 'Dubai Tourism·11월 날씨',
+          label: '두바이 관광청·11월 날씨',
         },
         {
           url: 'https://weatherspark.com/y/105470/Average-Weather-in-Dubai-United-Arab-Emirates-Year-Round',
-          label: 'Weather Spark',
+          label: '웨더스파크',
         },
       ],
       checked: '2026-11-01',
