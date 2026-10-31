@@ -3712,13 +3712,13 @@ export default function FestivalDetailSheet({
           e.stopPropagation();
           sheetScrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
         }}
-        className={`fixed bottom-[max(3.6rem,calc(env(safe-area-inset-bottom)+2.85rem))] right-3 z-[45] flex h-11 items-center gap-1 rounded-full border border-amber-400/60 bg-amber-500 px-3.5 text-white shadow-[0_4px_18px_rgba(245,158,11,0.45)] transition-all duration-300 md:hidden ${
+        className={`fixed bottom-[max(3.25rem,calc(env(safe-area-inset-bottom)+2.6rem))] right-3 z-[45] flex h-10 items-center gap-1 rounded-full border border-amber-400/55 bg-amber-500/92 px-3 text-white shadow-[0_4px_16px_rgba(245,158,11,0.38)] backdrop-blur-[2px] transition-all duration-300 md:hidden ${
           showScrollTop && !lightboxOpen && !mooniOpen && !nestedSpotModalOpen
             ? 'pointer-events-auto translate-y-0 opacity-100'
             : 'pointer-events-none translate-y-3 opacity-0'
         }`}
       >
-        <ArrowUp size={18} strokeWidth={2.5} className="shrink-0" aria-hidden="true" />
+        <ArrowUp size={16} strokeWidth={2.5} className="shrink-0" aria-hidden="true" />
         <span className="text-xs font-bold">{t('korea.common.scrollUp')}</span>
       </button>
 
