@@ -201,7 +201,7 @@ const PlaceChatPanel = React.memo(({
       >
          {/* Row 1: Home, Location Info, Bookmark, Toolkit (Killer Tab) */}
          <div
-           className="flex flex-col gap-1.5 max-lg:flex-row max-lg:items-center lg:gap-2 2xl:flex-row 2xl:items-center 2xl:justify-between 2xl:gap-x-4 overflow-hidden w-full min-w-0 pointer-events-auto touch-manipulation"
+           className="flex flex-col gap-1.5 max-lg:flex-row max-lg:items-center lg:gap-2 min-[1400px]:flex-row min-[1400px]:items-center min-[1400px]:justify-between min-[1400px]:gap-x-4 overflow-hidden w-full min-w-0 pointer-events-auto touch-manipulation"
            data-place-chrome-hit
            onPointerDown={(e) => e.stopPropagation()}
            onClick={(e) => e.stopPropagation()}
@@ -272,7 +272,7 @@ const PlaceChatPanel = React.memo(({
                      >
                         {primaryName || location.name}
                      </button>
-                     <div className="shrink-0 -mt-0.5 2xl:mr-0.5">
+                     <div className="shrink-0 -mt-0.5 min-[1400px]:mr-0.5">
                          <BookmarkButton location={location} isBookmarked={isBookmarked} onToggle={onToggleBookmark} />
                      </div>
                  </div>
@@ -293,7 +293,7 @@ const PlaceChatPanel = React.memo(({
                  )}
              </div>
              </div>
-             <div className="flex shrink-0 items-center gap-1.5 md:gap-2 justify-end w-auto lg:w-full 2xl:w-auto 2xl:flex-none 2xl:ml-auto max-lg:pointer-events-auto">
+             <div className="flex shrink-0 items-center gap-1.5 md:gap-2 justify-end w-auto lg:w-full min-[1400px]:w-auto min-[1400px]:flex-none min-[1400px]:ml-auto max-lg:pointer-events-auto">
                  <button
                     type="button"
                     onClick={openMooni}

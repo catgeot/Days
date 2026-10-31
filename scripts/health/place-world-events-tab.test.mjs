@@ -65,8 +65,8 @@ test('PlaceChatPanel secondary title truncates on narrow desktop header', () => 
   const panel = read('src/components/PlaceCard/panels/PlaceChatPanel.jsx');
   assert.match(panel, /min-w-\[8rem\]/);
   assert.match(panel, /truncate whitespace-nowrap/);
-  assert.match(panel, /lg:w-full 2xl:w-auto/);
-  assert.doesNotMatch(panel, /justify-end w-full 2xl:w-auto/);
+  assert.match(panel, /lg:w-full min-\[1400px\]:w-auto/);
+  assert.doesNotMatch(panel, /justify-end w-full min-\[1400px\]:w-auto/);
 });
 
 test('PlaceWorldEventsTabView reserves mobile fixed header space', () => {

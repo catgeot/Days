@@ -75,6 +75,6 @@ test('gallery scroll desktop inset uses lg not md', () => {
 test('PlaceChatPanel xl header keeps bookmark–MOONi chip gutter (1280 overlap)', () => {
   const chat = read('src/components/PlaceCard/panels/PlaceChatPanel.jsx');
   assert.doesNotMatch(chat, /xl:flex-row xl:items-center/);
-  assert.match(chat, /2xl:flex-row[\s\S]{0,60}2xl:justify-between/);
-  assert.match(chat, /2xl:w-auto 2xl:flex-none 2xl:ml-auto[\s\S]{0,500}place-header-mooni-btn/);
+  assert.match(chat, /min-\[1400px\]:flex-row[\s\S]{0,80}min-\[1400px\]:justify-between/);
+  assert.match(chat, /min-\[1400px\]:w-auto min-\[1400px\]:flex-none min-\[1400px\]:ml-auto[\s\S]{0,500}place-header-mooni-btn/);
 });
