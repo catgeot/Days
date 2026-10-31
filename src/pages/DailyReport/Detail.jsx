@@ -267,7 +267,7 @@ const Detail = () => {
 
         <div
           data-logbook-detail-toolbar
-          className="mb-8 flex flex-nowrap items-center justify-start gap-2 sm:gap-3 overflow-x-auto overflow-y-hidden max-w-full max-md:pr-[calc(2.75rem+max(1.25rem,env(safe-area-inset-right,0px))+0.5rem)] sm:pr-[calc(3rem+2rem+0.5rem)] sm:max-w-[calc(100%-3.5rem)]"
+          className="mb-8 flex max-[389px]:flex-wrap min-[390px]:flex-nowrap items-center justify-start gap-1.5 sm:gap-3 max-[389px]:overflow-x-visible min-[390px]:overflow-x-auto overflow-y-hidden max-w-full max-[389px]:pr-[3.75rem] min-[390px]:pr-[calc(2.75rem+max(1.25rem,env(safe-area-inset-right,0px))+0.5rem)] sm:pr-[calc(3rem+2rem+0.5rem)] sm:max-w-[calc(100%-3.5rem)]"
         >
 
             {/* 🚨 [New] 직관적인 공유하기 버튼 (가장 돋보이게 처리) */}
@@ -275,7 +275,7 @@ const Detail = () => {
               type="button"
               data-logbook-detail-share
               onClick={handleSmartShare}
-              className={`flex items-center gap-1.5 px-4 sm:px-5 py-2 rounded-full transition-all border text-sm font-bold bg-blue-600 hover:bg-blue-500 text-white shadow-sm hover:shadow-md border-transparent ${detailToolbarBtnClass}`}
+              className={`flex items-center gap-1.5 px-3 sm:px-5 py-2 rounded-full transition-all border text-sm font-bold bg-blue-600 hover:bg-blue-500 text-white shadow-sm hover:shadow-md border-transparent ${detailToolbarBtnClass}`}
             >
               <Share2 size={16} />
               <span className="hidden sm:inline">{t('logbook.detail.share')}</span>
@@ -300,7 +300,7 @@ const Detail = () => {
             <button
               type="button"
               onClick={handleExportBlog}
-              className={`flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-full transition-all border text-sm font-medium backdrop-blur-md ${detailToolbarBtnClass}
+              className={`flex items-center gap-1.5 px-2.5 sm:px-4 py-2 rounded-full transition-all border text-sm font-medium backdrop-blur-md ${detailToolbarBtnClass}
                 ${isCopied
                   ? 'bg-green-50 text-green-600 border-green-200 shadow-sm'
                   : 'bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100 hover:text-gray-900'}
@@ -315,7 +315,7 @@ const Detail = () => {
               type="button"
               data-logbook-detail-delete
               onClick={handleDelete}
-              className={`flex items-center gap-1.5 bg-red-50 backdrop-blur-md text-red-500 px-3 sm:px-4 py-2 rounded-full hover:bg-red-100 transition-colors border border-red-100 text-sm font-medium ${detailToolbarBtnClass}`}
+              className={`flex items-center gap-1.5 bg-red-50 backdrop-blur-md text-red-500 px-2.5 sm:px-4 py-2 rounded-full hover:bg-red-100 transition-colors border border-red-100 text-sm font-medium ${detailToolbarBtnClass}`}
             >
               <Trash2 size={16} /> <span className="hidden sm:inline">{t('logbook.detail.delete')}</span>
             </button>

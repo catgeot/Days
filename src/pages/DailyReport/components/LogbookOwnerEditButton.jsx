@@ -19,7 +19,7 @@ export default function LogbookOwnerEditButton({ reportId, className = '', varia
   const compact = variant === 'compact';
 
   const variantClass = compact
-    ? 'flex shrink-0 whitespace-nowrap items-center gap-1.5 bg-gray-50 backdrop-blur-md text-gray-600 px-3 sm:px-4 py-2 rounded-full hover:bg-gray-100 hover:text-gray-900 transition-colors border border-gray-200 text-sm font-medium'
+    ? 'flex shrink-0 whitespace-nowrap items-center gap-1.5 bg-gray-50 backdrop-blur-md text-gray-600 px-2.5 sm:px-4 py-2 rounded-full hover:bg-gray-100 hover:text-gray-900 transition-colors border border-gray-200 text-sm font-medium'
     : 'inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center gap-1.5 rounded-full border-2 border-gray-500 bg-white px-4 py-2.5 text-sm font-semibold text-gray-900 shadow-sm transition-colors hover:border-gray-700 hover:bg-gray-50';
 
   return (

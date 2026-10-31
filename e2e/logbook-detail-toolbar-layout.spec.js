@@ -8,20 +8,6 @@ import {
   seedAuthSession,
 } from './fixtures/logbook-owner-edit-mocks.js';
 
-const MOCK_REPORT = {
-  id: REPORT_ID,
-  user_id: OWNER_ID,
-  title: '메롱',
-  dek: null,
-  content: '내 기록 Detail E2E 목업',
-  location: '춘천',
-  date: '2026-04-30',
-  images: [],
-  is_public: true,
-  is_deleted: false,
-  is_editorial: false,
-};
-
 async function shot(page, outDir, file, width, height) {
   await page.screenshot({
     path: join(outDir, file),
@@ -53,21 +39,46 @@ async function openMineDetail(page) {
   await expect(page.getByRole('heading', { name: '메롱' })).toBeVisible({ timeout: 30_000 });
 }
 
+async function measureToolbarOverflow(page) {
+  return page.locator('[data-logbook-detail-toolbar]').evaluate((el) => ({
+    scrollWidth: el.scrollWidth,
+    clientWidth: el.clientWidth,
+    scrollLeft: el.scrollLeft,
+  }));
+}
+
+async function expectToolbarFitsUnscrolled(page) {
+  const { scrollWidth, clientWidth, scrollLeft } = await measureToolbarOverflow(page);
+  expect(scrollLeft, 'toolbar should not be pre-scrolled').toBe(0);
+  expect(
+    scrollWidth,
+    `toolbar scrollWidth ${scrollWidth} > clientWidth ${clientWidth} (overflow ${scrollWidth - clientWidth}px)`,
+  ).toBeLessThanOrEqual(clientWidth);
+  return { scrollWidth, clientWidth, overflowPx: scrollWidth - clientWidth };
+}
+
+async function expectDeleteFullyInViewport(page, viewportWidth) {
+  const deleteBox = await page.locator('[data-logbook-detail-delete]').boundingBox();
+  expect(deleteBox, 'delete button missing box').toBeTruthy();
+  expect(deleteBox.x, `delete left ${deleteBox.x}px`).toBeGreaterThanOrEqual(0);
+  expect(
+    deleteBox.x + deleteBox.width,
+    `delete right ${deleteBox.x + deleteBox.width}px > viewport ${viewportWidth}`,
+  ).toBeLessThanOrEqual(viewportWidth);
+  return deleteBox;
+}
+
 async function expectShareButtonSingleLine(page) {
   const share = page.locator('[data-logbook-detail-share]');
   await expect(share).toBeVisible();
   const box = await share.boundingBox();
   expect(box?.height ?? 999, 'Share button should stay single-line').toBeLessThanOrEqual(40);
+  return box?.height ?? null;
 }
 
 async function expectDeleteClearOfBack(page) {
-  const toolbar = page.locator('[data-logbook-detail-toolbar]');
-  await toolbar.evaluate((el) => {
-    el.scrollLeft = el.scrollWidth;
-  });
   const deleteBtn = page.locator('[data-logbook-detail-delete]');
   const backBtn = page.locator('[data-logbook-detail-back]');
-  await deleteBtn.scrollIntoViewIfNeeded();
   await expect(deleteBtn).toBeVisible();
   await expect(backBtn).toBeVisible();
   const deleteBox = await deleteBtn.boundingBox();
@@ -88,9 +99,18 @@ async function expectDeleteClearOfBack(page) {
     gapPx,
     `delete–back horizontal gap ${gapPx}px (need ≥8px)`,
   ).toBeGreaterThanOrEqual(8);
+  return gapPx;
 }
 
-function defineDetailToolbarSuite({ tag, width, height, outDir, assertShareHeight, assertBackGap }) {
+function defineDetailToolbarSuite({
+  tag,
+  width,
+  height,
+  outDir,
+  assertShareHeight,
+  assertInitialLayout,
+  assertSingleRow,
+}) {
   test.describe(`logbook mine Detail toolbar (${tag}px, mocked Supabase)`, () => {
     test.use({
       viewport: { width, height },
@@ -102,18 +122,38 @@ function defineDetailToolbarSuite({ tag, width, height, outDir, assertShareHeigh
       await mkdir(outDir, { recursive: true });
     });
 
-    test('toolbar stays one row with compact edit', async ({ page }) => {
+    test('toolbar stays one row with compact edit', async ({ page }, testInfo) => {
       await seedAuthSession(page, OWNER_ID);
       await installLogbookReportRoutes(page, OWNER_ID);
       await openMineDetail(page);
       await expect(page.locator('[data-logbook-owner-edit-variant="compact"]')).toBeVisible();
-      await expectToolbarSingleRow(page);
+
+      let shareHeight = null;
+      let gapPx = null;
+      let overflowPx = null;
+
+      if (assertInitialLayout) {
+        const fit = await expectToolbarFitsUnscrolled(page);
+        overflowPx = fit.overflowPx;
+        await expectDeleteFullyInViewport(page, width);
+        gapPx = await expectDeleteClearOfBack(page);
+      }
       if (assertShareHeight) {
-        await expectShareButtonSingleLine(page);
+        shareHeight = await expectShareButtonSingleLine(page);
       }
-      if (assertBackGap) {
-        await expectDeleteClearOfBack(page);
+      if (assertSingleRow) {
+        await expectToolbarSingleRow(page);
       }
+
+      testInfo.annotations.push({
+        type: tag,
+        description: JSON.stringify({
+          overflowPx,
+          deleteBackGapPx: gapPx,
+          shareHeightPx: shareHeight,
+        }),
+      });
+
       await shot(page, outDir, 'detail-toolbar.png', width, height);
     });
   });
@@ -125,7 +165,8 @@ defineDetailToolbarSuite({
   height: 740,
   outDir: '/opt/cursor/artifacts/logbook-detail-toolbar-360',
   assertShareHeight: true,
-  assertBackGap: true,
+  assertInitialLayout: true,
+  assertSingleRow: false,
 });
 defineDetailToolbarSuite({
   tag: '390',
@@ -133,7 +174,8 @@ defineDetailToolbarSuite({
   height: 844,
   outDir: '/opt/cursor/artifacts/logbook-detail-toolbar-390',
   assertShareHeight: true,
-  assertBackGap: true,
+  assertInitialLayout: true,
+  assertSingleRow: true,
 });
 defineDetailToolbarSuite({
   tag: '1280',
@@ -141,5 +183,6 @@ defineDetailToolbarSuite({
   height: 720,
   outDir: '/opt/cursor/artifacts/logbook-detail-toolbar-1280',
   assertShareHeight: false,
-  assertBackGap: false,
+  assertInitialLayout: false,
+  assertSingleRow: true,
 });
