@@ -32,6 +32,11 @@ const BOLD_TIME_SAMPLE = '**13:30 ** 출발편이에요.';
 const CEBU_GENERIC_DETAIL = '카오락 시간별 세부 일정 짜 줘';
 const GBR_SNORKEL_TURN = '그레이트 배리어 리프 스노클링 일정';
 const PHUKET_REBIND_TURN = '푸켓으로 바꿀게요 3박 일정';
+const AU_PHUKET_DETAIL_TURNS = [
+  '호주에서 출발해서 그레이트 배리어 리프 가려고 해요',
+  PHUKET_REBIND_TURN,
+  '세부 일정 짜 줘',
+];
 
 async function installCountingGeminiMock(context, { boldTimeSample = false } = {}) {
   const tasks = [];
@@ -233,6 +238,22 @@ test.describe('MOONi destination pick — AI reply first, chips below', () => {
     await expect(reply.getByText(/목적지 · .*세부/)).toHaveCount(0);
     await expect(page.getByText(PICK_PROMPT, { exact: true })).toHaveCount(0);
     await expect(page.getByRole('button', { name: '세부' })).toHaveCount(0);
+  });
+
+  test('호주→푸켓→세부 일정 — 항공 카드 출발 CEB(막탄세부) 아님', async ({ page, context }) => {
+    await installCountingGeminiMock(context);
+    await openHomeMooni(page);
+
+    for (let i = 0; i < AU_PHUKET_DETAIL_TURNS.length; i += 1) {
+      await sendTurn(page, AU_PHUKET_DETAIL_TURNS[i]);
+      const reply = page.getByTestId('mooni-model-reply').filter({ hasText: replyMarker(i + 1) });
+      await expect(reply).toBeVisible({ timeout: 90_000 });
+    }
+
+    await expect(page.getByText(/푸켓 · MOONi/)).toBeVisible({ timeout: 60_000 });
+    await expect(page.getByText(/인천.*\(ICN\).*→.*푸켓.*\(HKT\)/)).toBeVisible();
+    await expect(page.getByText(/막탄세부.*\(CEB\).*→/)).toHaveCount(0);
+    await expect(page.getByText(/CEB.*→.*HKT/)).toHaveCount(0);
   });
 
   test('홈 MOONi — GBR 확정 후 푸켓 재바인딩 시 헤더·칩', async ({ page, context }) => {

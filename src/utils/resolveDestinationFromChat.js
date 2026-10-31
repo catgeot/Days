@@ -4,6 +4,7 @@ import {
   resolveTravelSpotFromSearchQuery,
   resolveTravelSpotFromLocation,
 } from './travelSpotResolve.js';
+import { isCebuGenericDetailUsage } from './cebuKoreanPlaceGuard.js';
 export { resolveDepartureLabelFromChat } from './resolveDepartureIataFromChat.js';
 
 const MOONI_PLACEHOLDERS = new Set(['', 'mooni', 'new session', 'scanning...']);
@@ -437,17 +438,6 @@ function textIncludesSingleCharPlaceName(haystack, char) {
       'iu',
     ).test(haystack)
   ) {
-    return true;
-  }
-  return false;
-}
-
-function isCebuGenericDetailUsage(haystack) {
-  const h = String(haystack ?? '');
-  if (/세부\s*(?:일정|내용|사항|계획|안|설명|항목|정보|내역|스케줄|리스트)/u.test(h)) {
-    return true;
-  }
-  if (/(?:시간별|일별|주별|코스별|동선별|일정별|분(?:별|당)|시(?:간|점)별)\s+세부/u.test(h)) {
     return true;
   }
   return false;
