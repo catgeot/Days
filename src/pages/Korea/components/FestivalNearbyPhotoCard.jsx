@@ -106,7 +106,7 @@ export default function FestivalNearbyPhotoCard({
           <div className="relative aspect-[4/3] w-full shrink-0 overflow-hidden rounded-t-2xl bg-stone-200">
             <FestivalPhotoFrame
               src={activeUrl}
-              alt=""
+              alt={title}
               loading={eagerImage ? 'eager' : 'lazy'}
               decoding="async"
               referrerPolicy="no-referrer"
@@ -114,13 +114,10 @@ export default function FestivalNearbyPhotoCard({
               pendingShimmer={!photoReady}
               fallback={
                 <span
-                  className="absolute inset-0 flex items-end bg-gradient-to-t from-stone-900/75 via-stone-400/30 to-stone-200 p-2"
+                  className="absolute inset-0 bg-gradient-to-br from-stone-200 via-stone-300/80 to-amber-100/60"
                   data-nearby-photo-fallback=""
-                >
-                  <span className="text-sm font-bold text-white line-clamp-2 break-words">
-                    {title}
-                  </span>
-                </span>
+                  aria-hidden="true"
+                />
               }
               onLoaded={() => setPhotoReady(true)}
               onFailed={() => {

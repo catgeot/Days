@@ -8,7 +8,9 @@ const siteUrl =
 
 const nearbyCardsArgv = process.argv.join(' ');
 const nearbyCardsE2e =
-  process.env.NEARBY_CARDS_E2E === '1' || /festival-nearby-cards/.test(nearbyCardsArgv);
+  process.env.NEARBY_CARDS_E2E === '1' ||
+  /festival-nearby-cards/.test(nearbyCardsArgv) ||
+  /festival-nearby-card-alt-overlap/.test(nearbyCardsArgv);
 const nearbyCardsFlag = process.env.NEARBY_CARDS_FLAG === '0' ? '0' : '1';
 const nearbyCardsPort = nearbyCardsFlag === '0' ? 5197 : 5196;
 const nearbyCardsLocalBase = `http://127.0.0.1:${nearbyCardsPort}`;
@@ -245,6 +247,32 @@ export default defineConfig({
         viewport: { width: 390, height: 844 },
         deviceScaleFactor: 1,
         ignoreHTTPSErrors: true,
+      },
+    },
+    {
+      name: 'chromium-festival-nearby-card-alt-390',
+      testMatch: /festival-nearby-card-alt-overlap\.spec\.js/,
+      grep: /390 —/,
+      timeout: 180_000,
+      expect: { timeout: 60_000 },
+      use: {
+        ...devices['Desktop Chrome'],
+        viewport: { width: 390, height: 844 },
+        deviceScaleFactor: 1,
+        ...(nearbyCardsE2e ? { baseURL: nearbyCardsLocalBase } : {}),
+      },
+    },
+    {
+      name: 'chromium-festival-nearby-card-alt-1280',
+      testMatch: /festival-nearby-card-alt-overlap\.spec\.js/,
+      grep: /1280 —/,
+      timeout: 180_000,
+      expect: { timeout: 60_000 },
+      use: {
+        ...devices['Desktop Chrome'],
+        viewport: { width: 1280, height: 844 },
+        deviceScaleFactor: 1,
+        ...(nearbyCardsE2e ? { baseURL: nearbyCardsLocalBase } : {}),
       },
     },
     {
