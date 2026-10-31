@@ -431,6 +431,7 @@ export default function MooniAgentFab({
         <div
           role="button"
           tabIndex={0}
+          data-testid="mooni-fab-open"
           onPointerDown={onFabPointerDown}
           onPointerMove={onFabPointerMove}
           onPointerUp={onFabPointerUp}

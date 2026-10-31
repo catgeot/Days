@@ -1625,6 +1625,7 @@ const ChatModal = ({
             {typeof onStartNewChat === 'function' ? (
               <button
                 type="button"
+                data-testid="mooni-chat-new"
                 onClick={(e) => {
                   e.stopPropagation();
                   onStartNewChat();
@@ -1716,6 +1717,26 @@ const ChatModal = ({
                  </span>
                </div>
                <div className="flex items-center gap-1.5 shrink-0 max-w-[46%] md:max-w-none">
+                 {typeof onStartNewChat === 'function' ? (
+                   <button
+                     type="button"
+                     data-testid="mooni-chat-new"
+                     onClick={(e) => {
+                       e.stopPropagation();
+                       onStartNewChat();
+                     }}
+                     className={tone(
+                       fresh,
+                       'md:hidden inline-flex shrink-0 items-center gap-1 rounded-full border border-cyan-300/80 bg-cyan-500/30 px-2 py-1.5 text-[10px] font-bold text-cyan-50 touch-manipulation hover:bg-cyan-500/40',
+                       'md:hidden inline-flex shrink-0 items-center gap-1 rounded-full border border-cyan-500 bg-cyan-600 px-2 py-1.5 text-[10px] font-bold text-white touch-manipulation hover:bg-cyan-700',
+                     )}
+                     title={t('mooni.chat.newChat')}
+                     aria-label={t('mooni.chat.newChat')}
+                   >
+                     <Plus size={12} strokeWidth={2.5} aria-hidden />
+                     {t('mooni.chat.newChat')}
+                   </button>
+                 ) : null}
                  {showClearPlaceBinding ? (
                    <>
                      <button
