@@ -15,6 +15,10 @@ export const GANGWON_FESTIVAL_MOCK_MARKER = 'GATEO_E2E_GANGWON_MOCK_7c2a';
 const GANGWON_GEMINI_MOCK_REPLY =
   `강원특별자치도에서 열리는 축제를 이번 주 기준으로 정리했어요. ${GANGWON_FESTIVAL_MOCK_MARKER} (E2E mock)`;
 
+/**
+ * Live PROD `festivalWindow`: 이번 주 강원 SSOT는 보통 «나오라쇼» 1건뿐이다.
+ * 아래 `GANGWON_WEEK_ITEMS` 두 번째(춘천 마임축제 + mock marker)는 E2E route mock 전용.
+ */
 const GANGWON_WEEK_ITEMS = [
   {
     contentId: '900001',
@@ -97,12 +101,40 @@ async function clipShot(page, name, width) {
   });
 }
 
-async function clipHeader390(page, name) {
-  await page.setViewportSize({ width: 390, height: 844 });
+async function mooniChatHeader(page) {
+  return page
+    .locator('[class*="backdrop-blur-md"]')
+    .filter({ has: page.getByLabel(/채팅 닫기|Close chat/i) })
+    .first();
+}
+
+async function clipHeaderAt(page, name, width) {
+  await page.setViewportSize({ width, height: 844 });
   await page.waitForTimeout(300);
-  const header = page.locator('[class*="backdrop-blur-md"]').filter({ has: page.getByLabel(/채팅 닫기|Close chat/i) }).first();
+  const header = await mooniChatHeader(page);
   await expect(header).toBeVisible({ timeout: 10_000 });
   await header.screenshot({ path: `${ART_DIR}/${name}` });
+}
+
+/** 헤더 우측 버튼 right edge ≤ viewportWidth − 12px (main 12px inset) */
+async function assertHeaderRightInset(page, viewportWidth) {
+  await page.setViewportSize({ width: viewportWidth, height: 844 });
+  await page.waitForTimeout(200);
+  const header = await mooniChatHeader(page);
+  await expect(header).toBeVisible({ timeout: 10_000 });
+  const maxAllowed = viewportWidth - 12;
+  const rightEdge = await header.evaluate((el) => {
+    let max = 0;
+    el.querySelectorAll('button').forEach((btn) => {
+      const r = btn.getBoundingClientRect();
+      if (r.right > max) max = r.right;
+    });
+    return max;
+  });
+  expect(
+    rightEdge,
+    `viewport ${viewportWidth}px — max right ${maxAllowed}px, got ${rightEdge}`,
+  ).toBeLessThanOrEqual(maxAllowed + 0.5);
 }
 
 async function sendMooniMessage(page, text) {
@@ -129,6 +161,13 @@ test.describe('MOONi Paris bound — 강원 축제 회귀 @390 @1280', () => {
     await installGangwonGeminiMock(context);
 
     await openParisPlannerMooni(page);
+
+    for (const w of [360, 390, 1280]) {
+      await assertHeaderRightInset(page, w);
+    }
+    await clipHeaderAt(page, 'mooni-paris-header-360.png', 360);
+    await clipHeaderAt(page, 'mooni-paris-header-390.png', 390);
+
     await sendMooniMessage(page, '이번주 강원 축제');
 
     const replyMarker = page.getByText(GANGWON_FESTIVAL_MOCK_MARKER);
@@ -136,7 +175,6 @@ test.describe('MOONi Paris bound — 강원 축제 회귀 @390 @1280', () => {
 
     await clipShot(page, 'mooni-paris-before-new-chat-390.png', 390);
     await clipShot(page, 'mooni-paris-before-new-chat-1280.png', 1280);
-    await clipHeader390(page, 'mooni-paris-header-390.png');
 
     await clickNewChat(page);
     await expect(replyMarker).toBeHidden({ timeout: 10_000 });
