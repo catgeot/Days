@@ -1,6 +1,7 @@
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { formatFestivalDistKm } from '../lib/formatFestivalDistKm.js';
+import { scrollFestivalNearbyBandIntoView } from '../lib/festivalNearbyBandScroll.js';
 import {
   flattenNearbyDisplayGroups,
   groupFestivalNearbyBlocks,
@@ -40,6 +41,11 @@ export default function FestivalNearbyCardsSection({
 }) {
   const { t } = useTranslation();
   const [highlightBand, setHighlightBand] = useState(null);
+  const sectionRootRef = useRef(null);
+
+  const scrollToBand = useCallback((band) => {
+    scrollFestivalNearbyBandIntoView(sectionRootRef.current, band);
+  }, []);
 
   const bandSummaryLabels = useMemo(
     () => ({
@@ -92,7 +98,8 @@ export default function FestivalNearbyCardsSection({
 
   return (
     <div
-      className="space-y-3 max-md:pr-[max(3.25rem,calc(env(safe-area-inset-right)+2.5rem))] md:pr-14 lg:pr-16 md:pb-[5.75rem]"
+      ref={sectionRootRef}
+      className="w-full min-w-0 space-y-3 md:pr-14 lg:pr-16 md:pb-[5.75rem]"
       data-nearby-cards-section=""
     >
       <div
@@ -130,7 +137,13 @@ export default function FestivalNearbyCardsSection({
               onMouseDown={(event) => event.preventDefault()}
               onClick={() => {
                 if (count === 0) return;
+                const willSelect = highlightBand !== band;
                 setHighlightBand((prev) => (prev === band ? null : band));
+                if (willSelect) {
+                  requestAnimationFrame(() => {
+                    requestAnimationFrame(() => scrollToBand(band));
+                  });
+                }
               }}
               className={`min-w-0 rounded-lg px-1 py-2 text-center transition-colors disabled:opacity-40 ${
                 active
@@ -166,7 +179,7 @@ export default function FestivalNearbyCardsSection({
               data-heading={group.kind === 'heading' ? 'true' : undefined}
             >
               <p
-                className="inline-flex max-w-full rounded-full bg-stone-800 px-3 py-1 text-[11px] font-bold text-white break-keep"
+                className="inline-flex max-w-full scroll-mt-[max(4.5rem,calc(env(safe-area-inset-top)+3.5rem))] rounded-full bg-stone-800 px-3 py-1 text-[11px] font-bold text-white break-keep"
                 data-nearby-group-title=""
               >
                 {group.title}

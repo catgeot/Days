@@ -245,6 +245,20 @@ export default defineConfig({
       },
     },
     {
+      name: 'chromium-festival-nearby-cards-390',
+      testMatch: /festival-nearby-cards\.spec\.js/,
+      grep: /@ciNearbyCards/,
+      grepInvert: /@flagOff|@mainBaseline|@desktop1280/,
+      timeout: 180_000,
+      expect: { timeout: 60_000 },
+      use: {
+        ...devices['Desktop Chrome'],
+        viewport: { width: 390, height: 844 },
+        deviceScaleFactor: 1,
+        ...(nearbyCardsE2e ? { baseURL: nearbyCardsLocalBase } : {}),
+      },
+    },
+    {
       name: 'webkit-festival-nearby-cards',
       testMatch: /festival-nearby-cards\.spec\.js/,
       grepInvert: /@flagOff|@mainBaseline|@desktop1280/,

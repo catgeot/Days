@@ -2664,7 +2664,7 @@ export default function FestivalDetailSheet({
 
         <div
           data-festival-sheet-content=""
-          className="min-w-0 shrink-0 overflow-visible px-5 pt-5 pb-[max(8.5rem,calc(env(safe-area-inset-bottom)+7rem))] md:min-h-0 md:flex-1 md:overflow-y-auto md:p-7 lg:p-8 md:pb-8 space-y-4 md:space-y-5 md:custom-scrollbar"
+          className="min-w-0 shrink-0 overflow-visible px-5 pt-5 max-md:pb-[max(11.5rem,calc(env(safe-area-inset-bottom)+10.5rem))] md:min-h-0 md:flex-1 md:overflow-y-auto md:p-7 lg:p-8 md:pb-8 space-y-4 md:space-y-5 md:custom-scrollbar"
         >
           <div className="space-y-1.5 pr-10">
             <div className="flex items-start justify-between gap-2">
@@ -3712,7 +3712,7 @@ export default function FestivalDetailSheet({
           e.stopPropagation();
           sheetScrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
         }}
-        className={`fixed bottom-[max(3.6rem,calc(env(safe-area-inset-bottom)+2.85rem))] right-3 z-[45] flex h-11 items-center gap-1 rounded-full border border-amber-400/60 bg-amber-500 px-3.5 text-white shadow-[0_4px_18px_rgba(245,158,11,0.45)] transition-all duration-300 md:hidden ${
+      className={`fixed bottom-[max(3.6rem,calc(env(safe-area-inset-bottom)+2.85rem))] right-3 z-[45] flex h-11 items-center gap-1 rounded-full border border-amber-400/60 bg-amber-500 px-3.5 text-white shadow-[0_4px_18px_rgba(245,158,11,0.45)] transition-all duration-300 md:hidden ${
           showScrollTop && !lightboxOpen && !mooniOpen && !nestedSpotModalOpen
             ? 'pointer-events-auto translate-y-0 opacity-100'
             : 'pointer-events-none translate-y-3 opacity-0'

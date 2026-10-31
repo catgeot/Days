@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { installFestivalNearbyCardsFixtures } from './festival-nearby-cards-fixture.js';
 
 const SCREENSHOT_DIR = '/opt/cursor/artifacts/screenshots/nearby-cards';
 const nearbyCardsLocal = process.env.NEARBY_CARDS_E2E === '1';
@@ -61,6 +62,138 @@ async function clearNearbyBandFilter(section) {
   if ((await pressed.count()) > 0) {
     await pressed.first().evaluate((node) => node.click());
   }
+}
+
+async function readSheetScrollTop(page) {
+  return page.evaluate(() => {
+    const content = document.querySelector('[data-festival-sheet-content]');
+    const dialog = document.querySelector('[role="dialog"].overflow-y-auto');
+    const md = window.matchMedia('(min-width: 768px)').matches;
+    let scroller = dialog;
+    if (md && content) {
+      const oy = getComputedStyle(content).overflowY;
+      if (oy === 'auto' || oy === 'scroll') scroller = content;
+    }
+    return scroller?.scrollTop ?? 0;
+  });
+}
+
+async function measureNearbyBandHeaderVisibility(page, band) {
+  return page.evaluate((bandKey) => {
+    const scroller = (() => {
+      const content = document.querySelector('[data-festival-sheet-content]');
+      const dialog = document.querySelector('[role="dialog"].overflow-y-auto');
+      const md = window.matchMedia('(min-width: 768px)').matches;
+      if (md && content) {
+        const oy = getComputedStyle(content).overflowY;
+        if (oy === 'auto' || oy === 'scroll') return content;
+      }
+      return dialog || content;
+    })();
+    if (!scroller) return { ok: false, reason: 'no-scroller' };
+    const title = document.querySelector(
+      `[data-nearby-group][data-band="${bandKey}"] [data-nearby-group-title]`,
+    );
+    if (!title) return { ok: false, reason: 'no-title', band: bandKey };
+    const port = scroller.getBoundingClientRect();
+    const t = title.getBoundingClientRect();
+    let topInset = port.top + 12;
+    const closeBtn = [...document.querySelectorAll('body > button.fixed')].find((node) =>
+      /닫기|Close/i.test(node.getAttribute('aria-label') || ''),
+    );
+    if (closeBtn) {
+      const c = closeBtn.getBoundingClientRect();
+      if (c.bottom > port.top) topInset = Math.max(topInset, c.bottom + 4);
+    }
+    const sheet = scroller.closest('[role="dialog"]') || scroller;
+    for (const node of sheet.querySelectorAll('*')) {
+      const st = getComputedStyle(node);
+      if (st.position !== 'sticky' || st.top === 'auto') continue;
+      const r = node.getBoundingClientRect();
+      if (r.top <= port.top + 2 && r.bottom > port.top) {
+        topInset = Math.max(topInset, r.bottom + 4);
+      }
+    }
+    const ok = t.top >= topInset - 2 && t.bottom <= port.bottom + 2;
+    return {
+      ok,
+      band: bandKey,
+      topInset,
+      titleTop: t.top,
+      titleBottom: t.bottom,
+      portTop: port.top,
+      portBottom: port.bottom,
+    };
+  }, band);
+}
+
+async function measureNearbyGridHorizontalBalance(page) {
+  return page.evaluate(() => {
+    const section = document.querySelector('[data-nearby-cards-section]');
+    if (!section) return { ok: false, reason: 'missing-section' };
+    const sectionRect = section.getBoundingClientRect();
+    let cards = [];
+    for (const grid of section.querySelectorAll('[data-nearby-cards-grid]')) {
+      const nodes = [...grid.querySelectorAll('[data-nearby-photo-card]')];
+      if (nodes.length >= 2) {
+        cards = nodes;
+        break;
+      }
+    }
+    if (cards.length < 2) {
+      cards = [...section.querySelectorAll('[data-nearby-photo-card]')];
+    }
+    if (cards.length < 2) return { ok: false, reason: 'few-cards', count: cards.length };
+    const rects = cards.map((node) => node.getBoundingClientRect());
+    const minLeft = Math.min(...rects.map((r) => r.left));
+    const maxRight = Math.max(...rects.map((r) => r.right));
+    const leftMargin = Math.round(minLeft - sectionRect.left);
+    const rightMargin = Math.round(sectionRect.right - maxRight);
+    return {
+      ok: Math.abs(leftMargin - rightMargin) <= 2,
+      leftMargin,
+      rightMargin,
+      sectionWidth: Math.round(sectionRect.width),
+      cardSpan: Math.round(maxRight - minLeft),
+    };
+  });
+}
+
+async function scrollSheetToShowNearbyGrid(page) {
+  await page.evaluate(() => {
+    const section = document.querySelector('[data-nearby-cards-section]');
+    const content = document.querySelector('[data-festival-sheet-content]');
+    const dialog = document.querySelector('[role="dialog"].overflow-y-auto');
+    const md = window.matchMedia('(min-width: 768px)').matches;
+    let scroller = dialog;
+    if (md && content) {
+      const oy = getComputedStyle(content).overflowY;
+      if (oy === 'auto' || oy === 'scroll') scroller = content;
+    }
+    const grid = section?.querySelector('[data-nearby-cards-grid]');
+    if (!section || !grid || !scroller) return;
+    const gRect = grid.getBoundingClientRect();
+    const tRect = scroller.getBoundingClientRect();
+    scroller.scrollTop += gRect.top - tRect.top - 120;
+  });
+  await page.waitForTimeout(400);
+}
+
+async function forceShowScrollTopButton(page) {
+  await page.evaluate(() => {
+    const sheet = document.querySelector('[role="dialog"].overflow-y-auto');
+    if (sheet) sheet.scrollTop = Math.max(sheet.scrollTop, 240);
+  });
+  await page.waitForTimeout(350);
+}
+
+async function clickNearbyBandChip(section, band) {
+  const cell = section.locator(`[data-nearby-summary-cell][data-band="${band}"]`);
+  await expect(cell).toBeVisible();
+  if ((await cell.getAttribute('disabled')) != null) return false;
+  await cell.click();
+  await section.page().waitForTimeout(600);
+  return true;
 }
 
 async function waitSheetReadyForCapture(page) {
@@ -156,20 +289,123 @@ async function scrollTo4106717BottomEvidence(page) {
 }
 
 async function scrollNearbyCardsSectionToEnd(page) {
+  await scrollNearbyCardsClearFabStack(page);
+}
+
+async function scrollNearbyCardsClearFabStack(page) {
   await page.evaluate(() => {
     const section = document.querySelector('[data-nearby-cards-section]');
     const content = document.querySelector('[data-festival-sheet-content]');
     const dialog = document.querySelector('[role="dialog"].overflow-y-auto');
+    const md = window.matchMedia('(min-width: 768px)').matches;
     let scroller = dialog;
-    if (content) {
+    if (md && content) {
       const oy = getComputedStyle(content).overflowY;
       if (oy === 'auto' || oy === 'scroll') scroller = content;
     }
     if (!section || !scroller) return;
+
     const sectionBottom = section.offsetTop + section.offsetHeight;
-    scroller.scrollTop = Math.max(0, sectionBottom - scroller.clientHeight + 24);
+    scroller.scrollTop = Math.max(0, sectionBottom - scroller.clientHeight);
+
+    const cards = [...document.querySelectorAll('[data-nearby-photo-card]')];
+    if (!cards.length) return;
+    const lefts = cards.map((c) => c.getBoundingClientRect().left);
+    const mid = (Math.min(...lefts) + Math.max(...lefts)) / 2;
+    const rightCol = cards.filter((c) => c.getBoundingClientRect().left >= mid - 2);
+    const last = rightCol[rightCol.length - 1] || cards[cards.length - 1];
+
+    const floaters = [...document.querySelectorAll('button.fixed')].filter((btn) => {
+      const label = `${btn.getAttribute('aria-label') || ''} ${btn.textContent || ''}`;
+      return /무니|mooni|맨 위로|scroll/i.test(label);
+    });
+    const visibleFabTops = floaters
+      .map((btn) => btn.getBoundingClientRect())
+      .filter((r) => r.width > 0 && r.height > 0 && r.bottom > 0)
+      .map((r) => r.top);
+    const clearanceTop =
+      visibleFabTops.length > 0 ? Math.min(...visibleFabTops) - 12 : scroller.getBoundingClientRect().bottom - 12;
+
+    let cardRect = last.getBoundingClientRect();
+    if (cardRect.bottom > clearanceTop) {
+      scroller.scrollTop += cardRect.bottom - clearanceTop;
+    }
+
+    cardRect = last.getBoundingClientRect();
+    const portTop = scroller.getBoundingClientRect().top + 48;
+    if (cardRect.top < portTop) {
+      scroller.scrollTop -= portTop - cardRect.top;
+    }
   });
-  await page.waitForTimeout(350);
+  await page.waitForTimeout(400);
+}
+
+async function assertFloatingButtonsClearLastRightColumnCard(page) {
+  const report = await page.evaluate(() => {
+    const cards = [...document.querySelectorAll('[data-nearby-photo-card]')];
+    if (!cards.length) return { ok: false, reason: 'no-cards' };
+    const lefts = cards.map((c) => c.getBoundingClientRect().left);
+    const mid = (Math.min(...lefts) + Math.max(...lefts)) / 2;
+    const rightCol = cards.filter((c) => c.getBoundingClientRect().left >= mid - 2);
+    const last = rightCol[rightCol.length - 1] || cards[cards.length - 1];
+    const card = last.getBoundingClientRect();
+    const vh = window.innerHeight || 844;
+    if (card.bottom <= 0 || card.top >= vh) {
+      return { ok: false, reason: 'card-not-visible', card: { bottom: card.bottom, top: card.top } };
+    }
+    const floaters = [...document.querySelectorAll('button.fixed')].filter((btn) => {
+      const label = `${btn.getAttribute('aria-label') || ''} ${btn.textContent || ''}`;
+      return /무니|mooni|맨 위로|scroll/i.test(label);
+    });
+    const gaps = floaters.map((btn) => {
+      const r = btn.getBoundingClientRect();
+      const horizontal = card.right > r.left + 4 && card.left < r.right - 4;
+      const verticalOverlap = horizontal && card.bottom > r.top + 4;
+      return {
+        label: btn.getAttribute('aria-label') || btn.textContent?.trim()?.slice(0, 12),
+        top: Math.round(r.top),
+        cardBottom: Math.round(card.bottom),
+        verticalOverlap,
+        clearance: Math.round(r.top - card.bottom),
+      };
+    });
+    const bad = gaps.filter((g) => g.verticalOverlap);
+    return { ok: bad.length === 0, gaps, bad };
+  });
+  expect(report.ok, JSON.stringify(report)).toBe(true);
+  return report;
+}
+
+async function assertScrollTopButtonOrangeVisible(page) {
+  const scrollBtn = page.getByRole('button', { name: /맨 위로|^Top$/i }).last();
+  await expect(scrollBtn).toBeVisible();
+  const styles = await scrollBtn.evaluate((el) => {
+    const cs = getComputedStyle(el);
+    return {
+      backgroundColor: cs.backgroundColor,
+      color: cs.color,
+      opacity: cs.opacity,
+    };
+  });
+  expect(styles.backgroundColor).toMatch(/245,\s*158,\s*11/);
+  expect(Number(styles.opacity)).toBeGreaterThan(0.9);
+  return { scrollBtn, styles };
+}
+
+async function screenshotScrollTopButton(page, fileName) {
+  const { scrollBtn } = await assertScrollTopButtonOrangeVisible(page);
+  const box = await scrollBtn.boundingBox();
+  if (!box) throw new Error('scroll top button has no box');
+  const pad = 8;
+  await page.screenshot({
+    path: `${SCREENSHOT_DIR}/${fileName}`,
+    clip: {
+      x: Math.max(0, box.x - pad),
+      y: Math.max(0, box.y - pad),
+      width: Math.min(390, box.width + pad * 2),
+      height: box.height + pad * 2,
+    },
+  });
 }
 
 async function assertMooniFabDoesNotCoverLastNearbyCard(page) {
@@ -301,11 +537,12 @@ async function assertCloseButtonDoesNotOverlapCards(page, section) {
 }
 
 test.describe('Festival nearby cards — flag ON', () => {
-  test.beforeEach(() => {
+  test.beforeEach(async ({ context }) => {
     skipUnlessNearbyCardsLocal();
+    await installFestivalNearbyCardsFixtures(context);
   });
 
-  test('825295 attractions + food banner, grid, summary tap no scroll', async ({ page }) => {
+  test('825295 attractions + food banner and grid layout', async ({ page }) => {
     test.setTimeout(180_000);
     await page.goto('/korea/');
     await dismissLocHint(page);
@@ -315,19 +552,17 @@ test.describe('Festival nearby cards — flag ON', () => {
     await assertTwoColumnGrid(attractions);
     await waitNearbyCardImages(dialog);
 
-    const scrollBefore = await page.evaluate(() => {
-      const el = document.querySelector('[role="dialog"].overflow-y-auto');
-      return el?.scrollTop ?? 0;
-    });
+    await scrollSheetToShowNearbyGrid(page);
+    const scrollBefore = await readSheetScrollTop(page);
     const walkCell = attractions.locator('[data-nearby-summary-cell][data-band="walk"]');
     if ((await walkCell.getAttribute('disabled')) == null) {
-      await walkCell.evaluate((node) => node.click());
+      await walkCell.click();
+      await page.waitForTimeout(600);
     }
-    const scrollAfter = await page.evaluate(() => {
-      const el = document.querySelector('[role="dialog"].overflow-y-auto');
-      return el?.scrollTop ?? 0;
-    });
-    expect(scrollAfter).toBe(scrollBefore);
+    const scrollAfter = await readSheetScrollTop(page);
+    const walkVis = await measureNearbyBandHeaderVisibility(page, 'walk');
+    expect(walkVis.ok, JSON.stringify(walkVis)).toBe(true);
+    expect(scrollAfter).not.toBe(scrollBefore);
     await clearNearbyBandFilter(attractions);
 
     const food = dialog.locator('[data-festival-section="nearFood"]');
@@ -405,6 +640,49 @@ test.describe('Festival nearby cards — flag ON', () => {
     });
   });
 
+  test('825295 mobile grid balance with FAB overlay @ciNearbyCards @evidence', async ({ page }) => {
+    test.setTimeout(180_000);
+    await dismissLocHint(page);
+    const dialog = await openFestival(page, '825295');
+    const attractions = dialog.locator('[data-festival-section="nearAttractions"]');
+    await assertTwoColumnGrid(attractions);
+    await waitNearbyCardImages(dialog);
+    await scrollSheetToShowNearbyGrid(page);
+    await forceShowScrollTopButton(page);
+    const balance = await measureNearbyGridHorizontalBalance(page);
+    test.info().attach('nearby-grid-margin-390', {
+      body: JSON.stringify(balance, null, 2),
+      contentType: 'application/json',
+    });
+    expect(balance.ok, JSON.stringify(balance)).toBe(true);
+    await page.screenshot({
+      path: `${SCREENSHOT_DIR}/825295-nearby-grid-balance-390-flag-on.png`,
+      clip: { x: 0, y: 0, width: 390, height: 844 },
+    });
+  });
+
+  test('825295 distance band chips scroll to section headers @ciNearbyCards @390', async ({ page }) => {
+    test.setTimeout(180_000);
+    await dismissLocHint(page);
+    const dialog = await openFestival(page, '825295');
+    const attractions = dialog.locator('[data-festival-section="nearAttractions"]');
+    await assertTwoColumnGrid(attractions);
+    await waitNearbyCardImages(dialog);
+    await scrollSheetToShowNearbyGrid(page);
+
+    for (const band of ['walk', 'drive', 'far']) {
+      await clearNearbyBandFilter(attractions);
+      const clicked = await clickNearbyBandChip(attractions, band);
+      if (!clicked) continue;
+      const vis = await measureNearbyBandHeaderVisibility(page, band);
+      expect(vis.ok, JSON.stringify(vis)).toBe(true);
+      await page.screenshot({
+        path: `${SCREENSHOT_DIR}/825295-band-chip-${band}-390-flag-on.png`,
+        clip: { x: 0, y: 0, width: 390, height: 844 },
+      });
+    }
+  });
+
   test('distance band selected ring state @evidence', async ({ page }) => {
     test.setTimeout(180_000);
     await dismissLocHint(page);
@@ -418,6 +696,77 @@ test.describe('Festival nearby cards — flag ON', () => {
     await expect(attractions.locator('[data-nearby-group-highlighted="true"]').first()).toBeVisible();
     await attractions.screenshot({
       path: `${SCREENSHOT_DIR}/825295-band-walk-selected-390-flag-on.png`,
+    });
+  });
+
+  test('825295 scroll top button orange visible @siteqa @ciNearbyCards @evidence', async ({ page }) => {
+    test.setTimeout(180_000);
+    await dismissLocHint(page);
+    const dialog = await openFestival(page, '825295');
+    await waitNearbyCardImages(dialog);
+    await scrollSheetToShowNearbyGrid(page);
+    await forceShowScrollTopButton(page);
+    await screenshotScrollTopButton(page, '825295-scroll-top-button-390-flag-on.png');
+  });
+
+  test('4106717 nearby grid bottom clears FAB stack @siteqa @ciNearbyCards @evidence', async ({ page }) => {
+    test.setTimeout(180_000);
+    await dismissLocHint(page);
+    const dialog = await openFestival(page, '4106717');
+    await waitNearbyCardImages(dialog);
+    await scrollNearbyCardsSectionToEnd(page);
+    await forceShowScrollTopButton(page);
+    const balance = await measureNearbyGridHorizontalBalance(page);
+    expect(balance.ok, JSON.stringify(balance)).toBe(true);
+    await assertFloatingButtonsClearLastRightColumnCard(page);
+    await page.screenshot({
+      path: `${SCREENSHOT_DIR}/4106717-nearby-grid-bottom-390-flag-on.png`,
+      clip: { x: 0, y: 0, width: 390, height: 844 },
+    });
+
+    const moreBtn = dialog.locator('[data-festival-near-scenic-more]');
+    await expect(moreBtn).toBeVisible({ timeout: 30_000 });
+    await page.evaluate(() => {
+      const more = document.querySelector('[data-festival-near-scenic-more]');
+      const cards = document.querySelector('[data-nearby-cards-section]');
+      if (!more || !cards) return;
+      const gap = more.getBoundingClientRect().top - cards.getBoundingClientRect().bottom;
+      if (gap > 16) {
+        more.scrollIntoView({ block: 'end' });
+      } else {
+        more.scrollIntoView({ block: 'center' });
+      }
+    });
+    await page.waitForTimeout(350);
+    await page.screenshot({
+      path: `${SCREENSHOT_DIR}/4106717-grid-end-more-button-390-flag-on.png`,
+      clip: { x: 0, y: 0, width: 390, height: 844 },
+    });
+
+    await page.evaluate(() => {
+      const dialog = document.querySelector('[role="dialog"].overflow-y-auto');
+      if (dialog) dialog.scrollTop = dialog.scrollHeight;
+    });
+    await page.waitForTimeout(400);
+    await page.screenshot({
+      path: `${SCREENSHOT_DIR}/4106717-sheet-bottom-390-flag-on.png`,
+      clip: { x: 0, y: 0, width: 390, height: 844 },
+    });
+  });
+
+  test('4128786 nearby grid bottom clears FAB stack @siteqa @ciNearbyCards @evidence', async ({ page }) => {
+    test.setTimeout(180_000);
+    await dismissLocHint(page);
+    const dialog = await openFestival(page, '4128786');
+    await waitNearbyCardImages(dialog);
+    await scrollNearbyCardsSectionToEnd(page);
+    await forceShowScrollTopButton(page);
+    const balance = await measureNearbyGridHorizontalBalance(page);
+    expect(balance.ok, JSON.stringify(balance)).toBe(true);
+    await assertFloatingButtonsClearLastRightColumnCard(page);
+    await page.screenshot({
+      path: `${SCREENSHOT_DIR}/4128786-nearby-grid-bottom-390-flag-on.png`,
+      clip: { x: 0, y: 0, width: 390, height: 844 },
     });
   });
 
@@ -479,6 +828,12 @@ test('825295 attractions desktop 1280 flag ON @desktop1280', async ({ page }) =>
   await assertTwoColumnGrid(attractions);
   await waitNearbyCardImages(dialog);
   await scrollNearbyAttractionsToComparisonView(page);
+  await clearNearbyBandFilter(attractions);
+  if (await clickNearbyBandChip(attractions, 'drive')) {
+    await page.screenshot({
+      path: `${SCREENSHOT_DIR}/825295-band-chip-drive-1280-flag-on.png`,
+    });
+  }
   await assertCloseButtonDoesNotOverlapCards(page, attractions);
   await attractions.screenshot({
     path: `${SCREENSHOT_DIR}/825295-nearAttractions-1280-flag-on.png`,

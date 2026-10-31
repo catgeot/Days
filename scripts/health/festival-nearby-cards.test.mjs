@@ -122,11 +122,21 @@ test('FestivalDetailSheet gates legacy list behind flag', () => {
   assert.match(sheet, /data-nearby-heading/);
 });
 
-test('flag off keeps main sheet body padding (no nearby-only pr on sheet)', () => {
+test('flag off keeps main sheet body padding (no nearby cards DOM)', () => {
   const contentBlock = sheet.slice(
     sheet.indexOf('data-festival-sheet-content'),
     sheet.indexOf('data-festival-sheet-content') + 600,
   );
   assert.doesNotMatch(contentBlock, /pr-\[max\(5rem/);
-  assert.match(contentBlock, /px-5 pt-5 pb-\[max\(8\.5rem/);
+  assert.match(contentBlock, /max-md:pb-\[max\(11\.5rem/);
+});
+
+test('nearby cards section does not reserve mobile FAB gutter in layout', () => {
+  const cardsSection = readFileSync(
+    join(rootDir, 'src/pages/Korea/components/FestivalNearbyCardsSection.jsx'),
+    'utf8',
+  );
+  assert.doesNotMatch(cardsSection, /max-md:pb-\[max\(11\.5rem/);
+  assert.doesNotMatch(cardsSection, /max-md:pr-\[max\(3\.25rem/);
+  assert.match(cardsSection, /data-nearby-cards-section/);
 });
