@@ -10,6 +10,19 @@ export function isValidMonthlyPickSource(url) {
   return typeof url === 'string' && HTTPS_SOURCE.test(url.trim());
 }
 
+/** @param {import('../data/spotTraits.js').MonthlyPickSource | string} raw */
+export function normalizeMonthlyPickSource(raw) {
+  if (typeof raw === 'string') {
+    const url = raw.trim();
+    return isValidMonthlyPickSource(url) ? { url, label: '출처' } : null;
+  }
+  if (!raw || typeof raw !== 'object') return null;
+  const url = String(raw.url || '').trim();
+  const label = String(raw.label || '').trim();
+  if (!isValidMonthlyPickSource(url) || !label) return null;
+  return { url, label };
+}
+
 /** @param {string} [monthKey] */
 export function resolveExploreV2MonthlyPickKey(monthKey = EXPLORE_V2_MONTHLY_PICK_KEY) {
   return MONTHLY_PICKS[monthKey] ? monthKey : null;
@@ -36,7 +49,9 @@ export function buildVisibleMonthlyPickCards(monthKey = EXPLORE_V2_MONTHLY_PICK_
 
   const cards = [];
   for (const entry of entries) {
-    const sources = (entry.sources || []).filter(isValidMonthlyPickSource);
+    const sources = (entry.sources || [])
+      .map(normalizeMonthlyPickSource)
+      .filter(Boolean);
     if (sources.length === 0) continue;
     const spot = bySlug.get(String(entry.slug || '').toLowerCase());
     if (!spot) continue;

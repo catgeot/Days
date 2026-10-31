@@ -1,5 +1,9 @@
 // Explore v2 step 1 — monthly picks row (flag off = legacy /explore unchanged)
 import { test, expect } from './fixtures.js';
+import travelSpotsList from '../src/pages/Home/data/travelSpots-list.json' with { type: 'json' };
+
+const TRAVEL_SPOT_COUNT = travelSpotsList.length;
+const MONTHLY_PICK_COUNT = 6;
 
 const monthlySection = (page) => page.getByTestId('explore-v2-monthly-section');
 const SCROLL_AREA = (page) => page.locator('.modal-scroll-area').first();
@@ -42,7 +46,9 @@ test.describe('Explore v2 monthly picks @flagOn', () => {
     const section = monthlySection(page);
     await expect(section).toBeVisible({ timeout: 45_000 });
     await expect(page.getByTestId('explore-v2-monthly-heading')).toContainText('11월의 여행지');
-    await expect(page.getByTestId('explore-v2-monthly-heading')).toContainText('274곳 중 6곳');
+    await expect(page.getByTestId('explore-v2-monthly-heading')).toContainText(
+      `${TRAVEL_SPOT_COUNT}곳 중 ${MONTHLY_PICK_COUNT}곳`,
+    );
 
     const cards = page.locator('[data-testid^="explore-v2-monthly-card-"]');
     await expect(cards).toHaveCount(6);

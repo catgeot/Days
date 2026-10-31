@@ -47,10 +47,10 @@ const ExploreMonthlyPickCard = ({ spot, entry, onSelect }) => {
       </div>
       <p className="mt-3 text-sm leading-relaxed text-gray-200 break-keep">{entry.reason}</p>
       <div className="mt-3 flex flex-wrap gap-2">
-        {entry.sources.map((url) => (
+        {entry.sources.map((source) => (
           <a
-            key={url}
-            href={url}
+            key={source.url}
+            href={source.url}
             target="_blank"
             rel="noopener noreferrer"
             data-testid="explore-v2-monthly-source-link"
@@ -58,7 +58,7 @@ const ExploreMonthlyPickCard = ({ spot, entry, onSelect }) => {
             onPointerDown={(e) => e.stopPropagation()}
             className="text-[11px] font-medium text-blue-300 underline decoration-blue-400/40 underline-offset-2 hover:text-blue-200"
           >
-            출처
+            {source.label}
           </a>
         ))}
       </div>

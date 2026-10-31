@@ -6,7 +6,10 @@ import {
   EXPLORE_V2_MONTHLY_PICK_KEY,
   MONTHLY_PICKS,
 } from '../../src/pages/Home/data/spotTraits.js';
-import { isValidMonthlyPickSource } from '../../src/pages/Home/lib/exploreMonthlyPicks.js';
+import {
+  isValidMonthlyPickSource,
+  normalizeMonthlyPickSource,
+} from '../../src/pages/Home/lib/exploreMonthlyPicks.js';
 import {
   GATEO_ENV_FLAG_NAMES,
   isGateoExploreV2Enabled,
@@ -35,8 +38,11 @@ test('MONTHLY_PICKS 2026-11 has six slugs in TRAVEL_SPOTS with sources and check
     assert.ok(spotSlugs.has(entry.slug), `missing TRAVEL_SPOTS slug ${entry.slug}`);
     assert.ok(typeof entry.reason === 'string' && entry.reason.trim().length > 0);
     assert.ok(Array.isArray(entry.sources) && entry.sources.length >= 1);
-    for (const url of entry.sources) {
-      assert.ok(isValidMonthlyPickSource(url), `invalid source ${url}`);
+    for (const raw of entry.sources) {
+      const source = normalizeMonthlyPickSource(raw);
+      assert.ok(source, `invalid source ${JSON.stringify(raw)}`);
+      assert.ok(isValidMonthlyPickSource(source.url), `invalid url ${source.url}`);
+      assert.ok(source.label.length > 0 && source.label !== '출처');
     }
     assert.match(String(entry.checked || ''), /^\d{4}-\d{2}-\d{2}$/);
   }
