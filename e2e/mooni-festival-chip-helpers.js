@@ -9,7 +9,8 @@ export async function dismissLocHint(page) {
     .first();
   try {
     await close.waitFor({ state: 'visible', timeout: 2500 });
-    await close.click();
+    // 딥링크로 상세 시트가 바로 열리면 시트가 위치 안내를 덮어 click이 무한 재시도된다.
+    await close.click({ timeout: 5000 });
   } catch {
     /* optional */
   }
