@@ -1097,7 +1097,13 @@ const ChatModal = ({
     const effectiveBound = sessionBound;
 
     let sessionDest = currentDest;
-    if (placeBound?.name) {
+    if (
+      resolution?.confidence === 'high' &&
+      resolution.name &&
+      resolution.source === 'lookup'
+    ) {
+      sessionDest = resolution.name;
+    } else if (placeBound?.name) {
       sessionDest = placeBound.name;
     } else if (resolution?.confidence === 'high' && resolution.name) {
       sessionDest = resolution.name;
@@ -1108,18 +1114,20 @@ const ChatModal = ({
     const chipDestination =
       (accessRoute || ferryRoute) && effectiveBound
         ? { slug: effectiveBound.slug, name: effectiveBound.name }
-        : placeBound
-          ? { slug: placeBound.slug, name: placeBound.name }
-          : resolution?.confidence === 'high' && resolution.slug
-            ? { slug: resolution.slug, name: resolution.name }
-            : null;
+        : resolution?.confidence === 'high' &&
+            resolution.slug &&
+            resolution.source === 'lookup'
+          ? { slug: resolution.slug, name: resolution.name }
+          : null;
 
+    const uiPlaceBound = Boolean(activeSessionPlace?.name);
     const shouldApplyBinding =
       resolution?.confidence === 'high' &&
       resolution.name &&
+      resolution.source === 'lookup' &&
       !(accessRoute && effectiveBound && resolution.slug !== effectiveBound.slug) &&
       !(ferryRoute && effectiveBound && resolution.slug !== effectiveBound.slug) &&
-      !placeBound;
+      !uiPlaceBound;
 
     const turnAt = Date.now();
     const bubbleText = mooniUserBubbleText(cleanText);
@@ -1129,7 +1137,6 @@ const ChatModal = ({
       text: bubbleText,
       ...(promptText ? { mooniPromptText: promptText } : {}),
       mooniAt: turnAt,
-      ...(chipDestination ? { confirmedDestination: chipDestination } : {}),
       ...(departureLabel && chipDestination ? { departureLabel } : {}),
     };
 
@@ -1184,6 +1191,9 @@ const ChatModal = ({
 
       const destForPrompt =
         placeBound?.name ||
+        (resolution?.confidence === 'high' &&
+        resolution.source === 'lookup' &&
+        resolution.name) ||
         (sessionDest === 'MOONi'
           ? (sessionBound?.name || resolution?.name || sessionDest)
           : sessionDest);
@@ -1424,6 +1434,12 @@ const ChatModal = ({
           },
           frozenBookingActions: booking.show ? booking.actions : null,
           bookingActions: booking.show ? booking.actions : null,
+          ...(chipDestination
+            ? {
+                confirmedDestination: chipDestination,
+                ...(departureLabel ? { departureLabel } : {}),
+              }
+            : {}),
           ...destinationPickExtras,
           plannerFollowUp,
           bookingMeta:
@@ -2009,7 +2025,9 @@ const ChatModal = ({
                         variant={isMooniUi ? 'light' : 'dark'}
                       />
                     ) : null}
-                    {(msg.confirmedDestination || (msg.destinationCandidates?.length > 0 && msg.destinationPrompt)) && (
+                    {(isModelMsg &&
+                      (msg.confirmedDestination ||
+                        (msg.destinationCandidates?.length > 0 && msg.destinationPrompt))) && (
                       <DestinationResolutionChips
                         confirmed={
                           msg.confirmedDestination

@@ -64,10 +64,6 @@ const SCORE_GAP_FOR_SINGLE_WINNER = 8;
 const KOREAN_PLACE_TRAILING_PARTICLE =
   /(?:으로|로|에|은|는|이|가|와|과|랑|하고|에서|까지|부터|을|를|의|도|만)$/u;
 
-/** 「상기 4곳」 등 — 현재 턴에 지명이 없을 때만 직전 user 발화를 합쳐 본다 */
-const CHAT_HISTORY_DEST_REF =
-  /(?:상기|위\s*\d+\s*곳|앞서(?:\s*(?:말|추천|언급))?|이\s*중|그\s*중|those|the\s+(?:four|three|\d))/iu;
-
 /** spot.keywords 부분일치 금지 — 「역사나 문화적으로…」→ 로마·베를린·델리 오탐 */
 const GENERIC_KEYWORD_MATCH_BLOCKLIST = new Set(
   [
@@ -140,10 +136,6 @@ function buildLowResult(candidates, source) {
     candidates: candidates.slice(0, 3),
     source,
   };
-}
-
-function shouldScanChatHistoryForDestinations(text) {
-  return CHAT_HISTORY_DEST_REF.test(String(text ?? '').trim());
 }
 
 function stripPlaceQueryParticles(fragment) {
@@ -253,9 +245,12 @@ function isDepartureHubSpot(spot) {
   return DEPARTURE_HUB_SLUGS.has(String(spot.slug).toLowerCase());
 }
 
-function filterDepartureHubs(hits, excludeDeparture) {
-  if (!excludeDeparture) return hits;
-  return hits.filter(({ spot }) => !isDepartureHubSpot(spot));
+function filterDepartureHubs(resolved, excludeDeparture) {
+  if (!excludeDeparture) return resolved;
+  return {
+    ...resolved,
+    hits: resolved.hits.filter(({ spot }) => !isDepartureHubSpot(spot)),
+  };
 }
 
 /**
@@ -311,42 +306,12 @@ export function resolveDestinationFromChat(userText, chatHistory = [], currentDe
   }
 
   if (looksLikeThemeQuery(currentText)) {
-    const themeCandidates = collectThemeCandidates(currentText);
-    if (themeCandidates.length > 0) {
-      return buildLowResult(themeCandidates, 'theme');
-    }
+    return emptyResult();
   }
 
-  // bound 세션 — 이번 턴에 새 목적지가 없으면 히스토리(출발지 등) 재스캔 금지
+  // bound 세션 — 이번 턴 질문에 새 목적지가 없을 때만 유지 (출발지·가는법은 위에서 처리)
   if (sessionBound) {
     return buildHighResult(sessionBound, 10, 'bound');
-  }
-
-  if (shouldScanChatHistoryForDestinations(currentText)) {
-    const recentUser = chatHistory
-      .filter((m) => m.role === 'user')
-      .slice(-3)
-      .map((m) => m.text ?? '')
-      .filter(Boolean);
-    const combined = [...recentUser, currentText].join(' ').trim();
-    const combinedResolved = filterDepartureHubs(
-      resolveDirectHits(combined),
-      excludeDepartureHub,
-    );
-    if (combinedResolved.overflow) {
-      return buildLowResult([], 'lookup');
-    }
-    if (combinedResolved.hits.length === 1) {
-      return buildHighResult(combinedResolved.hits[0].spot, combinedResolved.hits[0].score, 'lookup');
-    }
-    if (combinedResolved.hits.length > 1) {
-      return buildLowResult(
-        combinedResolved.hits.map(({ spot, score, reason }) =>
-          spotToCandidate(spot, score, reason || 'lookup'),
-        ),
-        'lookup',
-      );
-    }
   }
 
   return emptyResult();
@@ -404,6 +369,7 @@ function collectDirectLookupHits(text) {
     }
     const hasNameHit = bySlug.get(spot.slug)?.reason === 'name';
     if (hasNameHit) continue;
+    if (looksLikeThemeQuery(text)) continue;
     for (const kw of spot.keywords || []) {
       const compact = String(kw ?? '').replace(/\s+/g, '').toLowerCase();
       if (!compact || compact.length < 2) continue;

@@ -1,6 +1,7 @@
 import { ensureItineraryMarkdownLineBreaks } from '../../../utils/mooniTruncatedContinue.js';
 import { sanitizeMooniMarkdownLinks } from '../../../utils/mooniPlaceholderUrls.js';
 import { sanitizeMooniModelReply } from '../../../utils/mooniReplySanitizer.js';
+import { normalizeMooniMarkdownBoldSpacing } from '../../../utils/mooniMarkdownBoldSpacing.js';
 
 /** @param {{ mooniRawReply?: string, text?: string | { text?: string } }} msg */
 export function getMooniModelRawText(msg) {
@@ -16,5 +17,7 @@ export function getMooniModelRawText(msg) {
  */
 export function getMooniModelMarkdownForRender(raw, options = {}) {
   const { text } = sanitizeMooniModelReply(raw, options);
-  return ensureItineraryMarkdownLineBreaks(sanitizeMooniMarkdownLinks(text));
+  return normalizeMooniMarkdownBoldSpacing(
+    ensureItineraryMarkdownLineBreaks(sanitizeMooniMarkdownLinks(text)),
+  );
 }

@@ -47,3 +47,24 @@ test('follow-up duration only — no chips from prior theme turn', () => {
   assert.equal(r.confidence, 'none');
   assert.deepEqual(slugs(r), []);
 });
+
+test('theme-only question — no keyword pick candidates', () => {
+  const text = '조용한 섬에서 부부가 스노클링하기 좋은 여행지 10곳 추천해 주세요';
+  const r = resolveDestinationFromChat(text, [], MOONI);
+  assert.equal(r.confidence, 'none');
+  assert.deepEqual(slugs(r), []);
+});
+
+test('session rebound — phuket after phu quoc trip destination', () => {
+  const history = [
+    {
+      role: 'user',
+      text: '카오락과 푸꾸옥이요',
+      confirmedDestination: { slug: 'phu-quoc', name: '푸꾸옥' },
+    },
+  ];
+  const r = resolveDestinationFromChat('푸켓으로 바꿀게요 3박 일정', history, '푸꾸옥');
+  assert.equal(r.confidence, 'high');
+  assert.equal(r.slug, 'phuket');
+  assert.equal(r.source, 'lookup');
+});
