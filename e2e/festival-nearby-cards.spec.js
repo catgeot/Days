@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { installFestivalNearbyCardsFixtures } from './festival-nearby-cards-fixture.js';
 
 const SCREENSHOT_DIR = '/opt/cursor/artifacts/screenshots/nearby-cards';
 const nearbyCardsLocal = process.env.NEARBY_CARDS_E2E === '1';
@@ -536,8 +537,9 @@ async function assertCloseButtonDoesNotOverlapCards(page, section) {
 }
 
 test.describe('Festival nearby cards — flag ON', () => {
-  test.beforeEach(() => {
+  test.beforeEach(async ({ context }) => {
     skipUnlessNearbyCardsLocal();
+    await installFestivalNearbyCardsFixtures(context);
   });
 
   test('825295 attractions + food banner, grid, band chip scroll', async ({ page }) => {
@@ -719,6 +721,35 @@ test.describe('Festival nearby cards — flag ON', () => {
     await assertFloatingButtonsClearLastRightColumnCard(page);
     await page.screenshot({
       path: `${SCREENSHOT_DIR}/4106717-nearby-grid-bottom-390-flag-on.png`,
+      clip: { x: 0, y: 0, width: 390, height: 844 },
+    });
+
+    const moreBtn = dialog.locator('[data-festival-near-scenic-more]');
+    await expect(moreBtn).toBeVisible({ timeout: 30_000 });
+    await page.evaluate(() => {
+      const more = document.querySelector('[data-festival-near-scenic-more]');
+      const cards = document.querySelector('[data-nearby-cards-section]');
+      if (!more || !cards) return;
+      const gap = more.getBoundingClientRect().top - cards.getBoundingClientRect().bottom;
+      if (gap > 16) {
+        more.scrollIntoView({ block: 'end' });
+      } else {
+        more.scrollIntoView({ block: 'center' });
+      }
+    });
+    await page.waitForTimeout(350);
+    await page.screenshot({
+      path: `${SCREENSHOT_DIR}/4106717-grid-end-more-button-390-flag-on.png`,
+      clip: { x: 0, y: 0, width: 390, height: 844 },
+    });
+
+    await page.evaluate(() => {
+      const dialog = document.querySelector('[role="dialog"].overflow-y-auto');
+      if (dialog) dialog.scrollTop = dialog.scrollHeight;
+    });
+    await page.waitForTimeout(400);
+    await page.screenshot({
+      path: `${SCREENSHOT_DIR}/4106717-sheet-bottom-390-flag-on.png`,
       clip: { x: 0, y: 0, width: 390, height: 844 },
     });
   });

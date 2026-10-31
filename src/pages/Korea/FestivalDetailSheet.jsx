@@ -2664,7 +2664,7 @@ export default function FestivalDetailSheet({
 
         <div
           data-festival-sheet-content=""
-          className="min-w-0 shrink-0 overflow-visible px-5 pt-5 pb-[max(8.5rem,calc(env(safe-area-inset-bottom)+7rem))] md:min-h-0 md:flex-1 md:overflow-y-auto md:p-7 lg:p-8 md:pb-8 space-y-4 md:space-y-5 md:custom-scrollbar"
+          className="min-w-0 shrink-0 overflow-visible px-5 pt-5 max-md:pb-[max(11.5rem,calc(env(safe-area-inset-bottom)+10.5rem))] md:min-h-0 md:flex-1 md:overflow-y-auto md:p-7 lg:p-8 md:pb-8 space-y-4 md:space-y-5 md:custom-scrollbar"
         >
           <div className="space-y-1.5 pr-10">
             <div className="flex items-start justify-between gap-2">
