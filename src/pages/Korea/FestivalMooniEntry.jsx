@@ -155,7 +155,7 @@ export function useFestivalMooniEntry({
     <button
       type="button"
       onClick={openMooni('festival_detail_fab')}
-      className={`pointer-events-auto z-[55] flex items-center justify-center border border-cyan-200/90 bg-gradient-to-br from-sky-200/90 via-cyan-200/90 to-teal-300/90 shadow-[0_6px_20px_rgba(34,211,238,0.28)] ring-2 ring-white/70 backdrop-blur-[2px] transition-[transform,opacity] duration-300 hover:scale-105 active:scale-95 fixed right-3 h-12 w-12 rounded-full md:absolute md:bottom-6 md:right-6 md:h-12 md:w-auto md:gap-2 md:rounded-xl md:px-4 md:border-teal-700 md:bg-teal-600 md:from-teal-600 md:via-teal-600 md:to-teal-600 md:text-white md:opacity-100 md:ring-0 md:backdrop-blur-none ${
+      className={`pointer-events-auto z-[55] flex items-center justify-center border border-cyan-200 bg-gradient-to-br from-sky-200 via-cyan-200 to-teal-300 shadow-[0_8px_24px_rgba(34,211,238,0.35)] ring-2 ring-white/80 transition-[transform,opacity] duration-300 hover:scale-105 active:scale-95 fixed right-3 h-14 w-14 rounded-full md:absolute md:bottom-6 md:right-6 md:h-12 md:w-auto md:gap-2 md:rounded-xl md:px-4 md:from-teal-600 md:via-teal-600 md:to-teal-600 md:text-white md:ring-0 md:border-teal-700 ${
         raised
           ? 'bottom-[max(7.35rem,calc(env(safe-area-inset-bottom)+6.6rem))] md:bottom-24'
           : 'bottom-[max(3.6rem,calc(env(safe-area-inset-bottom)+2.85rem))] md:bottom-6'
@@ -166,7 +166,7 @@ export function useFestivalMooniEntry({
       <img
         src={mooniChar}
         alt=""
-        className="h-9 w-9 object-contain md:h-7 md:w-7"
+        className="h-10 w-10 object-contain md:h-7 md:w-7"
         draggable={false}
       />
       <span className="hidden md:inline text-sm font-bold">

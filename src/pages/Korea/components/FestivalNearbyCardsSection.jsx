@@ -99,7 +99,7 @@ export default function FestivalNearbyCardsSection({
   return (
     <div
       ref={sectionRootRef}
-      className="w-full min-w-0 space-y-3 md:pr-14 lg:pr-16 md:pb-[5.75rem]"
+      className="w-full min-w-0 space-y-3 max-md:pb-[max(11.5rem,calc(env(safe-area-inset-bottom)+10.5rem))] md:pr-14 lg:pr-16 md:pb-[5.75rem]"
       data-nearby-cards-section=""
     >
       <div

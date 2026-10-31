@@ -288,20 +288,123 @@ async function scrollTo4106717BottomEvidence(page) {
 }
 
 async function scrollNearbyCardsSectionToEnd(page) {
+  await scrollNearbyCardsClearFabStack(page);
+}
+
+async function scrollNearbyCardsClearFabStack(page) {
   await page.evaluate(() => {
     const section = document.querySelector('[data-nearby-cards-section]');
     const content = document.querySelector('[data-festival-sheet-content]');
     const dialog = document.querySelector('[role="dialog"].overflow-y-auto');
+    const md = window.matchMedia('(min-width: 768px)').matches;
     let scroller = dialog;
-    if (content) {
+    if (md && content) {
       const oy = getComputedStyle(content).overflowY;
       if (oy === 'auto' || oy === 'scroll') scroller = content;
     }
     if (!section || !scroller) return;
+
     const sectionBottom = section.offsetTop + section.offsetHeight;
-    scroller.scrollTop = Math.max(0, sectionBottom - scroller.clientHeight + 24);
+    scroller.scrollTop = Math.max(0, sectionBottom - scroller.clientHeight);
+
+    const cards = [...document.querySelectorAll('[data-nearby-photo-card]')];
+    if (!cards.length) return;
+    const lefts = cards.map((c) => c.getBoundingClientRect().left);
+    const mid = (Math.min(...lefts) + Math.max(...lefts)) / 2;
+    const rightCol = cards.filter((c) => c.getBoundingClientRect().left >= mid - 2);
+    const last = rightCol[rightCol.length - 1] || cards[cards.length - 1];
+
+    const floaters = [...document.querySelectorAll('button.fixed')].filter((btn) => {
+      const label = `${btn.getAttribute('aria-label') || ''} ${btn.textContent || ''}`;
+      return /무니|mooni|맨 위로|scroll/i.test(label);
+    });
+    const visibleFabTops = floaters
+      .map((btn) => btn.getBoundingClientRect())
+      .filter((r) => r.width > 0 && r.height > 0 && r.bottom > 0)
+      .map((r) => r.top);
+    const clearanceTop =
+      visibleFabTops.length > 0 ? Math.min(...visibleFabTops) - 12 : scroller.getBoundingClientRect().bottom - 12;
+
+    let cardRect = last.getBoundingClientRect();
+    if (cardRect.bottom > clearanceTop) {
+      scroller.scrollTop += cardRect.bottom - clearanceTop;
+    }
+
+    cardRect = last.getBoundingClientRect();
+    const portTop = scroller.getBoundingClientRect().top + 48;
+    if (cardRect.top < portTop) {
+      scroller.scrollTop -= portTop - cardRect.top;
+    }
   });
-  await page.waitForTimeout(350);
+  await page.waitForTimeout(400);
+}
+
+async function assertFloatingButtonsClearLastRightColumnCard(page) {
+  const report = await page.evaluate(() => {
+    const cards = [...document.querySelectorAll('[data-nearby-photo-card]')];
+    if (!cards.length) return { ok: false, reason: 'no-cards' };
+    const lefts = cards.map((c) => c.getBoundingClientRect().left);
+    const mid = (Math.min(...lefts) + Math.max(...lefts)) / 2;
+    const rightCol = cards.filter((c) => c.getBoundingClientRect().left >= mid - 2);
+    const last = rightCol[rightCol.length - 1] || cards[cards.length - 1];
+    const card = last.getBoundingClientRect();
+    const vh = window.innerHeight || 844;
+    if (card.bottom <= 0 || card.top >= vh) {
+      return { ok: false, reason: 'card-not-visible', card: { bottom: card.bottom, top: card.top } };
+    }
+    const floaters = [...document.querySelectorAll('button.fixed')].filter((btn) => {
+      const label = `${btn.getAttribute('aria-label') || ''} ${btn.textContent || ''}`;
+      return /무니|mooni|맨 위로|scroll/i.test(label);
+    });
+    const gaps = floaters.map((btn) => {
+      const r = btn.getBoundingClientRect();
+      const horizontal = card.right > r.left + 4 && card.left < r.right - 4;
+      const verticalOverlap = horizontal && card.bottom > r.top + 4;
+      return {
+        label: btn.getAttribute('aria-label') || btn.textContent?.trim()?.slice(0, 12),
+        top: Math.round(r.top),
+        cardBottom: Math.round(card.bottom),
+        verticalOverlap,
+        clearance: Math.round(r.top - card.bottom),
+      };
+    });
+    const bad = gaps.filter((g) => g.verticalOverlap);
+    return { ok: bad.length === 0, gaps, bad };
+  });
+  expect(report.ok, JSON.stringify(report)).toBe(true);
+  return report;
+}
+
+async function assertScrollTopButtonOrangeVisible(page) {
+  const scrollBtn = page.getByRole('button', { name: /맨 위로|^Top$/i }).last();
+  await expect(scrollBtn).toBeVisible();
+  const styles = await scrollBtn.evaluate((el) => {
+    const cs = getComputedStyle(el);
+    return {
+      backgroundColor: cs.backgroundColor,
+      color: cs.color,
+      opacity: cs.opacity,
+    };
+  });
+  expect(styles.backgroundColor).toMatch(/245,\s*158,\s*11/);
+  expect(Number(styles.opacity)).toBeGreaterThan(0.9);
+  return { scrollBtn, styles };
+}
+
+async function screenshotScrollTopButton(page, fileName) {
+  const { scrollBtn } = await assertScrollTopButtonOrangeVisible(page);
+  const box = await scrollBtn.boundingBox();
+  if (!box) throw new Error('scroll top button has no box');
+  const pad = 8;
+  await page.screenshot({
+    path: `${SCREENSHOT_DIR}/${fileName}`,
+    clip: {
+      x: Math.max(0, box.x - pad),
+      y: Math.max(0, box.y - pad),
+      width: Math.min(390, box.width + pad * 2),
+      height: box.height + pad * 2,
+    },
+  });
 }
 
 async function assertMooniFabDoesNotCoverLastNearbyCard(page) {
@@ -591,6 +694,48 @@ test.describe('Festival nearby cards — flag ON', () => {
     await expect(attractions.locator('[data-nearby-group-highlighted="true"]').first()).toBeVisible();
     await attractions.screenshot({
       path: `${SCREENSHOT_DIR}/825295-band-walk-selected-390-flag-on.png`,
+    });
+  });
+
+  test('825295 scroll top button orange visible @siteqa @evidence', async ({ page }) => {
+    test.setTimeout(180_000);
+    await dismissLocHint(page);
+    const dialog = await openFestival(page, '825295');
+    await waitNearbyCardImages(dialog);
+    await scrollSheetToShowNearbyGrid(page);
+    await forceShowScrollTopButton(page);
+    await screenshotScrollTopButton(page, '825295-scroll-top-button-390-flag-on.png');
+  });
+
+  test('4106717 nearby grid bottom clears FAB stack @siteqa @evidence', async ({ page }) => {
+    test.setTimeout(180_000);
+    await dismissLocHint(page);
+    const dialog = await openFestival(page, '4106717');
+    await waitNearbyCardImages(dialog);
+    await scrollNearbyCardsSectionToEnd(page);
+    await forceShowScrollTopButton(page);
+    const balance = await measureNearbyGridHorizontalBalance(page);
+    expect(balance.ok, JSON.stringify(balance)).toBe(true);
+    await assertFloatingButtonsClearLastRightColumnCard(page);
+    await page.screenshot({
+      path: `${SCREENSHOT_DIR}/4106717-nearby-grid-bottom-390-flag-on.png`,
+      clip: { x: 0, y: 0, width: 390, height: 844 },
+    });
+  });
+
+  test('4128786 nearby grid bottom clears FAB stack @siteqa @evidence', async ({ page }) => {
+    test.setTimeout(180_000);
+    await dismissLocHint(page);
+    const dialog = await openFestival(page, '4128786');
+    await waitNearbyCardImages(dialog);
+    await scrollNearbyCardsSectionToEnd(page);
+    await forceShowScrollTopButton(page);
+    const balance = await measureNearbyGridHorizontalBalance(page);
+    expect(balance.ok, JSON.stringify(balance)).toBe(true);
+    await assertFloatingButtonsClearLastRightColumnCard(page);
+    await page.screenshot({
+      path: `${SCREENSHOT_DIR}/4128786-nearby-grid-bottom-390-flag-on.png`,
+      clip: { x: 0, y: 0, width: 390, height: 844 },
     });
   });
 

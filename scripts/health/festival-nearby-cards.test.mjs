@@ -136,6 +136,7 @@ test('nearby cards section does not reserve mobile FAB gutter in layout', () => 
     join(rootDir, 'src/pages/Korea/components/FestivalNearbyCardsSection.jsx'),
     'utf8',
   );
+  assert.match(cardsSection, /max-md:pb-\[max\(11\.5rem/);
   assert.doesNotMatch(cardsSection, /max-md:pr-\[max\(3\.25rem/);
   assert.match(cardsSection, /data-nearby-cards-section/);
 });
