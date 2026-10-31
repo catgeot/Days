@@ -53,7 +53,14 @@ async function openMineDetail(page) {
   await expect(page.getByRole('heading', { name: '메롱' })).toBeVisible({ timeout: 30_000 });
 }
 
-function defineDetailToolbarSuite({ tag, width, height, outDir }) {
+async function expectShareButtonSingleLine(page) {
+  const share = page.locator('[data-logbook-detail-share]');
+  await expect(share).toBeVisible();
+  const box = await share.boundingBox();
+  expect(box?.height ?? 999, 'Share button should stay single-line').toBeLessThanOrEqual(40);
+}
+
+function defineDetailToolbarSuite({ tag, width, height, outDir, assertShareHeight }) {
   test.describe(`logbook mine Detail toolbar (${tag}px, mocked Supabase)`, () => {
     test.use({
       viewport: { width, height },
@@ -71,6 +78,9 @@ function defineDetailToolbarSuite({ tag, width, height, outDir }) {
       await openMineDetail(page);
       await expect(page.locator('[data-logbook-owner-edit-variant="compact"]')).toBeVisible();
       await expectToolbarSingleRow(page);
+      if (assertShareHeight) {
+        await expectShareButtonSingleLine(page);
+      }
       await shot(page, outDir, 'detail-toolbar.png', width, height);
     });
   });
@@ -81,16 +91,19 @@ defineDetailToolbarSuite({
   width: 360,
   height: 740,
   outDir: '/opt/cursor/artifacts/logbook-detail-toolbar-360',
+  assertShareHeight: true,
 });
 defineDetailToolbarSuite({
   tag: '390',
   width: 390,
   height: 844,
   outDir: '/opt/cursor/artifacts/logbook-detail-toolbar-390',
+  assertShareHeight: true,
 });
 defineDetailToolbarSuite({
   tag: '1280',
   width: 1280,
   height: 720,
   outDir: '/opt/cursor/artifacts/logbook-detail-toolbar-1280',
+  assertShareHeight: false,
 });

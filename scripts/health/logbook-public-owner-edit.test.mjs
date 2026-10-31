@@ -59,6 +59,8 @@ test('Detail reuses LogbookOwnerEditButton compact variant', () => {
   assert.match(detail, /LogbookOwnerEditButton/);
   assert.match(detail, /variant="compact"/);
   assert.match(detail, /data-logbook-detail-toolbar/);
+  assert.match(detail, /data-logbook-detail-share/);
+  assert.match(detail, /shrink-0 whitespace-nowrap/);
 });
 
 test('LogbookOwnerEditButton public vs compact variants', () => {
