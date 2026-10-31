@@ -139,7 +139,7 @@ export function galleryPersistReplaceSameAsStored(storedBaseline, payloadImages)
 }
 
 /**
- * payload id 열이 DB gallery_urls 앞쪽과 같고 길이만 짧으면 tail-only shrink (107→24 Tour 등).
+ * payload id·URL 열이 DB gallery_urls 앞쪽과 같고 길이만 짧으면 tail-only shrink (107→24 Tour 등).
  */
 export function galleryPersistReplaceWouldShrinkStoredTailOnly(storedBaseline, payloadImages) {
   const stored = galleryPersistNormalizedEntries(storedBaseline);
@@ -147,6 +147,7 @@ export function galleryPersistReplaceWouldShrinkStoredTailOnly(storedBaseline, p
   if (!stored.length || !payload.length || payload.length >= stored.length) return false;
   for (let i = 0; i < payload.length; i += 1) {
     if (payload[i].id !== stored[i].id) return false;
+    if (!galleryPersistPersistUrlsEqual(payload[i].urls, stored[i].urls)) return false;
   }
   return true;
 }

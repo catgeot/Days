@@ -274,5 +274,26 @@ assert.equal(
   null,
   'non-prefix shrink (skipped middle id) still allows replace',
 );
+const prefixUrlOnlyChange = payload24TourOnly.map((img, i) =>
+  i === 0
+    ? {
+        ...img,
+        urls: {
+          ...img.urls,
+          small: String(img.urls.small).replace(/^https:/, 'http:'),
+        },
+      }
+    : img,
+);
+assert.equal(
+  galleryPersistReplaceWouldShrinkStoredTailOnly(db107Prefix, prefixUrlOnlyChange),
+  false,
+  'prefix with URL drift is not tail-only shrink',
+);
+assert.equal(
+  skipPersistPlaceGalleryReplaceReason(db107Prefix, prefixUrlOnlyChange),
+  null,
+  'prefix with only URL changed -> persist happens',
+);
 
 console.log('smoke:place-gallery-persist PASS');

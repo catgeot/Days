@@ -129,6 +129,13 @@ test('DB prefix id match with shorter payload skips replace (tail shrink)', () =
     skipPersistPlaceGalleryReplaceReason(stored, [stored[0], stored[2]]),
     null,
   );
+  const prefixHttp = stored.slice(0, 2).map((img, i) =>
+    i === 0
+      ? { ...img, urls: { small: 'http://a/1' } }
+      : img,
+  );
+  assert.equal(galleryPersistReplaceWouldShrinkStoredTailOnly(stored, prefixHttp), false);
+  assert.equal(skipPersistPlaceGalleryReplaceReason(stored, prefixHttp), null);
 });
 
 test('non-stock mixed payload is not blocked as tour_to_stock_only', () => {
