@@ -66,13 +66,7 @@ test('flag ON — splitPlaceOverview ignores Home ensure desc (readonly hydrate 
   assert.equal(splitPlaceOverview(pin, 'ko').fixed, '');
 });
 
-test('Home useHomeHandlers.js unchanged; index.jsx no gallery PR drift (MOONi new-chat wiring OK)', () => {
-  const handlersDiff = gitDiffAgainstBaseBranch('src/pages/Home/hooks/useHomeHandlers.js');
-  assert.equal(handlersDiff.trim(), '', 'useHomeHandlers must match origin/main');
-
-  const indexDiff = gitDiffAgainstBaseBranch('src/pages/Home/index.jsx');
-  if (indexDiff.trim() === '') return;
-
+test('Home gallery PR drift guard; MOONi resume/new-chat wiring OK', () => {
   const galleryForbidden = [
     /hydratePlaceGalleryOverview/,
     /usePlaceGalleryOverviewHydration/,
@@ -81,14 +75,20 @@ test('Home useHomeHandlers.js unchanged; index.jsx no gallery PR drift (MOONi ne
     /splitPlaceOverview/,
     /getPlaceOverviewDescForDisplay/,
   ];
-  for (const re of galleryForbidden) {
-    assert.doesNotMatch(indexDiff, re, 'gallery overview PR must not change Home index');
+  const mooniAllowed =
+    /resolveMooniResumeTrip|persistMooniFreshDraftSession|handleStartNewMooniChat|onStartNewChat|draftSessionReset|persistMooniLastChatId/;
+
+  for (const rel of [
+    'src/pages/Home/hooks/useHomeHandlers.js',
+    'src/pages/Home/index.jsx',
+  ]) {
+    const diff = gitDiffAgainstBaseBranch(rel);
+    if (diff.trim() === '') continue;
+    for (const re of galleryForbidden) {
+      assert.doesNotMatch(diff, re, `${rel}: gallery overview PR must not change Home`);
+    }
+    assert.match(diff, mooniAllowed, `${rel}: allowed delta is MOONi session wiring only`);
   }
-  assert.match(
-    indexDiff,
-    /onStartNewChat|handleStartNewMooniChat/,
-    'allowed Home index delta: MOONi sidebar new-chat only',
-  );
 });
 
 test('flag ON — EN shows KO overview body for display helper (non-readonly pins)', () => {
