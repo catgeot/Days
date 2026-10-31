@@ -250,6 +250,6 @@ export function isStaleGeneralMooniTrip(trip, nowMs = Date.now()) {
   const dest = String(trip.destination || '').trim();
   if (dest && dest !== 'MOONi') return false;
   const last = tripLastActivityMs(trip);
-  if (last == null) return false;
+  if (last == null) return true;
   return nowMs - last > MOONI_GENERAL_CHAT_MAX_AGE_MS;
 }

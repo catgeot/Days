@@ -1,12 +1,19 @@
 import { mkdirSync } from 'node:fs';
+import { join } from 'node:path';
 import { test, expect } from '@playwright/test';
 import { dismissMooniHintIfPresent } from './helpers.js';
 
-const ART_DIR = '/opt/cursor/artifacts/screenshots/mooni-paris-gangwon-fix';
+/** Cloud: `/opt/cursor/artifacts/...` · 로컬: `artifacts/screenshots/...` */
+const ART_DIR =
+  process.env.MOONI_PARIS_GANGWON_SCREENSHOT_DIR ||
+  process.env.MOONI_SCREENSHOT_DIR ||
+  join(process.cwd(), 'artifacts/screenshots/mooni-paris-gangwon-fix');
+
+export const GANGWON_FESTIVAL_MOCK_MARKER = 'GATEO_E2E_GANGWON_MOCK_7c2a';
 
 /** Gemini route-mock — scoped festival merge는 festivalWindow SSOT + 짧은 mock 본문 */
 const GANGWON_GEMINI_MOCK_REPLY =
-  '강원특별자치도에서 열리는 축제를 이번 주 기준으로 정리했어요. (E2E mock)';
+  `강원특별자치도에서 열리는 축제를 이번 주 기준으로 정리했어요. ${GANGWON_FESTIVAL_MOCK_MARKER} (E2E mock)`;
 
 const GANGWON_WEEK_ITEMS = [
   {
@@ -20,7 +27,7 @@ const GANGWON_WEEK_ITEMS = [
   },
   {
     contentId: '900002',
-    title: '춘천 마임축제',
+    title: `춘천 마임축제 ${GANGWON_FESTIVAL_MOCK_MARKER}`,
     addr1: '강원특별자치도 춘천시',
     eventStartDate: '20261029',
     eventEndDate: '20261102',
@@ -90,10 +97,26 @@ async function clipShot(page, name, width) {
   });
 }
 
-async function expectNewChatVisible(page) {
-  await expect(page.getByTestId('mooni-chat-new').first()).toBeVisible({
-    timeout: 15_000,
+async function clipHeader390(page, name) {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.waitForTimeout(300);
+  const header = page.locator('[class*="backdrop-blur-md"]').filter({ has: page.getByLabel(/채팅 닫기|Close chat/i) }).first();
+  await expect(header).toBeVisible({ timeout: 10_000 });
+  await header.screenshot({ path: `${ART_DIR}/${name}` });
+}
+
+async function sendMooniMessage(page, text) {
+  const input = page.getByRole('textbox', {
+    name: /메시지 입력|직접 입력|Type a message|Type directly/i,
   });
+  await input.fill(text);
+  await input.press('Enter');
+}
+
+async function clickNewChat(page) {
+  const btn = page.locator('[data-testid="mooni-chat-new"]:visible').first();
+  await expect(btn).toBeVisible({ timeout: 10_000 });
+  await btn.click();
 }
 
 test.describe('MOONi Paris bound — 강원 축제 회귀 @390 @1280', () => {
@@ -101,33 +124,42 @@ test.describe('MOONi Paris bound — 강원 축제 회귀 @390 @1280', () => {
     mkdirSync(ART_DIR, { recursive: true });
   });
 
-  test('홈·장소 새 대화 + 파리 PLANNER 강원 축제 (Gemini mock)', async ({ page, context }) => {
+  test('홈·장소 새 대화 클리어 + PLANNER 강원 축제 (Gemini mock)', async ({ page, context }) => {
     await mockFestivalWindow(page);
     await installGangwonGeminiMock(context);
 
-    await openHomeMooni(page);
-    await expectNewChatVisible(page);
-    await clipShot(page, 'mooni-home-new-chat-390.png', 390);
-    await clipShot(page, 'mooni-home-new-chat-1280.png', 1280);
+    await openParisPlannerMooni(page);
+    await sendMooniMessage(page, '이번주 강원 축제');
+
+    const replyMarker = page.getByText(GANGWON_FESTIVAL_MOCK_MARKER);
+    await expect(replyMarker).toBeVisible({ timeout: 45_000 });
+
+    await clipShot(page, 'mooni-paris-before-new-chat-390.png', 390);
+    await clipShot(page, 'mooni-paris-before-new-chat-1280.png', 1280);
+    await clipHeader390(page, 'mooni-paris-header-390.png');
+
+    await clickNewChat(page);
+    await expect(replyMarker).toBeHidden({ timeout: 10_000 });
+
+    await clipShot(page, 'mooni-paris-after-new-chat-390.png', 390);
+    await clipShot(page, 'mooni-paris-after-new-chat-1280.png', 1280);
 
     await page.getByLabel(/채팅 닫기|Close chat/i).click();
-    await expect(page.getByLabel(/채팅 닫기|Close chat/i)).toBeHidden({ timeout: 15_000 });
 
-    await openParisPlannerMooni(page);
-    await expectNewChatVisible(page);
-    await clipShot(page, 'mooni-paris-place-new-chat-390.png', 390);
-    await clipShot(page, 'mooni-paris-place-new-chat-1280.png', 1280);
+    await openHomeMooni(page);
+    await sendMooniMessage(page, '안녕 MOONi E2E');
+    const homeUserLine = page.getByText('안녕 MOONi E2E');
+    await expect(homeUserLine).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByText(/E2E mock/i)).toBeVisible({ timeout: 45_000 });
 
-    const input = page.getByRole('textbox', {
-      name: /메시지 입력|직접 입력|Type a message|Type directly/i,
-    });
-    await input.fill('이번주 강원 축제');
-    await input.press('Enter');
+    await clipShot(page, 'mooni-home-before-new-chat-390.png', 390);
+    await clipShot(page, 'mooni-home-before-new-chat-1280.png', 1280);
 
-    await expect(page.getByText(/나오라쇼|춘천 마임축제|gateo\.kr\/korea\/\?festival=/i)).toBeVisible({
-      timeout: 45_000,
-    });
-    await clipShot(page, 'mooni-paris-gangwon-festival-reply-390.png', 390);
-    await clipShot(page, 'mooni-paris-gangwon-festival-reply-1280.png', 1280);
+    await clickNewChat(page);
+    await expect(homeUserLine).toBeHidden({ timeout: 10_000 });
+    await expect(page.getByText(/E2E mock/i)).toBeHidden({ timeout: 10_000 });
+
+    await clipShot(page, 'mooni-home-after-new-chat-390.png', 390);
+    await clipShot(page, 'mooni-home-after-new-chat-1280.png', 1280);
   });
 });

@@ -133,6 +133,10 @@ test('shouldHydrateDraftMessages skips while loading or after user sent', () => 
   assert.equal(shouldHydrateDraftMessages({ localMessageCount: 0, isLoading: true }), false);
   assert.equal(shouldHydrateDraftMessages({ localMessageCount: 1, isLoading: false }), false);
   assert.equal(shouldHydrateDraftMessages({ localMessageCount: 0, isLoading: false }), true);
+  assert.equal(
+    shouldHydrateDraftMessages({ localMessageCount: 3, isLoading: false, draftSessionReset: true }),
+    true,
+  );
 });
 
 test('draft cache fallback only without trip row and empty local', () => {

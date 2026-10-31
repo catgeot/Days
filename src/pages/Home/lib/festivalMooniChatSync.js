@@ -118,8 +118,9 @@ export function rememberInFlightChatId(lastSyncedChatId, activeChatId, isLoading
   return lastSyncedChatId ?? null;
 }
 
-export function shouldHydrateDraftMessages({ localMessageCount, isLoading }) {
+export function shouldHydrateDraftMessages({ localMessageCount, isLoading, draftSessionReset = false }) {
   if (isLoading) return false;
+  if (draftSessionReset) return true;
   return (Number(localMessageCount) || 0) === 0;
 }
 

@@ -204,6 +204,7 @@ const ChatModal = ({
   const messagesRef = useRef(messages);
   messagesRef.current = messages;
   const lastTripSyncChatIdRef = useRef(null);
+  const pendingDraftSessionResetRef = useRef(false);
   const festivalUiLocaleRef = useRef(i18n.language);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -401,6 +402,24 @@ const ChatModal = ({
   }, [isOpen, chatDraft, activeChatId, chatHistory, mooniPlaceContext, i18n.language]);
 
   const boundDestinationSlug = resolveCatalogPlaceSlug(activeSessionPlace?.slug) || null;
+
+  const resetMooniDraftThread = useCallback(() => {
+    pendingDraftSessionResetRef.current = true;
+    lastTripSyncChatIdRef.current = null;
+    setMessages([]);
+    tripSessionRef.current = hydrateMooniTripSession({
+      messages: [],
+      stored: null,
+      slug: boundDestinationSlug || '',
+      destinationName: introDestinationRaw || chatDraft?.destination || 'MOONi',
+    });
+  }, [boundDestinationSlug, introDestinationRaw, chatDraft?.destination]);
+
+  const handleStartNewChatClick = useCallback(() => {
+    resetMooniDraftThread();
+    onStartNewChat?.();
+  }, [resetMooniDraftThread, onStartNewChat]);
+
   /** 지명만 있는 uiPlace도 주제 칩 허용 (플래너·카탈로그 연동은 slug 있을 때만) */
   const hasPlaceBoundName = Boolean(String(activeSessionPlace?.name || '').trim());
   const hasAskSeed = Boolean(
@@ -867,7 +886,17 @@ const ChatModal = ({
         return;
       }
       const localLen = messagesRef.current?.length ?? 0;
-      if (!shouldHydrateDraftMessages({ localMessageCount: localLen, isLoading })) return;
+      const draftSessionReset = pendingDraftSessionResetRef.current;
+      if (
+        !shouldHydrateDraftMessages({
+          localMessageCount: localLen,
+          isLoading,
+          draftSessionReset,
+        })
+      ) {
+        return;
+      }
+      if (draftSessionReset) pendingDraftSessionResetRef.current = false;
       setMessages([]);
       if (chatDraft.persona) setCurrentPersona(chatDraft.persona);
       tripSessionRef.current = hydrateMooniTripSession({
@@ -1628,7 +1657,7 @@ const ChatModal = ({
                 data-testid="mooni-chat-new"
                 onClick={(e) => {
                   e.stopPropagation();
-                  onStartNewChat();
+                  handleStartNewChatClick();
                 }}
                 className={tone(
                   fresh,
@@ -1723,18 +1752,17 @@ const ChatModal = ({
                      data-testid="mooni-chat-new"
                      onClick={(e) => {
                        e.stopPropagation();
-                       onStartNewChat();
+                       handleStartNewChatClick();
                      }}
                      className={tone(
                        fresh,
-                       'md:hidden inline-flex shrink-0 items-center gap-1 rounded-full border border-cyan-300/80 bg-cyan-500/30 px-2 py-1.5 text-[10px] font-bold text-cyan-50 touch-manipulation hover:bg-cyan-500/40',
-                       'md:hidden inline-flex shrink-0 items-center gap-1 rounded-full border border-cyan-500 bg-cyan-600 px-2 py-1.5 text-[10px] font-bold text-white touch-manipulation hover:bg-cyan-700',
+                       'md:hidden inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-cyan-300/80 bg-cyan-500/30 p-0 text-cyan-50 touch-manipulation hover:bg-cyan-500/40',
+                       'md:hidden inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-cyan-500 bg-cyan-600 p-0 text-white touch-manipulation hover:bg-cyan-700',
                      )}
                      title={t('mooni.chat.newChat')}
                      aria-label={t('mooni.chat.newChat')}
                    >
-                     <Plus size={12} strokeWidth={2.5} aria-hidden />
-                     {t('mooni.chat.newChat')}
+                     <Plus size={16} strokeWidth={2.5} aria-hidden />
                    </button>
                  ) : null}
                  {showClearPlaceBinding ? (
@@ -1773,8 +1801,8 @@ const ChatModal = ({
                      onClick={() => handlePlannerNavigate(`/place/${effectiveQuickReplySlug}/planner`)}
                      className={tone(
                        fresh,
-                       'inline-flex items-center gap-1 rounded-full border border-cyan-300/80 bg-cyan-500/30 px-2.5 py-1.5 max-md:min-h-[32px] text-[11px] font-semibold text-cyan-50 shadow-[0_0_12px_rgba(34,211,238,0.25)] ring-1 ring-cyan-400/35 hover:border-cyan-300 hover:bg-cyan-500/40 transition-colors touch-manipulation',
-                       'inline-flex items-center gap-1 rounded-full border border-cyan-300 bg-gradient-to-r from-cyan-400 to-teal-400 px-2.5 py-1.5 max-md:min-h-[32px] text-[11px] font-semibold text-white shadow-[0_4px_12px_rgba(34,211,238,0.28)] hover:from-cyan-300 hover:to-teal-300 transition-colors touch-manipulation',
+                       'inline-flex items-center gap-1 whitespace-nowrap rounded-full border border-cyan-300/80 bg-cyan-500/30 px-2.5 py-1.5 max-md:min-h-[32px] text-[11px] font-semibold text-cyan-50 shadow-[0_0_12px_rgba(34,211,238,0.25)] ring-1 ring-cyan-400/35 hover:border-cyan-300 hover:bg-cyan-500/40 transition-colors touch-manipulation',
+                       'inline-flex items-center gap-1 whitespace-nowrap rounded-full border border-cyan-300 bg-gradient-to-r from-cyan-400 to-teal-400 px-2.5 py-1.5 max-md:min-h-[32px] text-[11px] font-semibold text-white shadow-[0_4px_12px_rgba(34,211,238,0.28)] hover:from-cyan-300 hover:to-teal-300 transition-colors touch-manipulation',
                      )}
                      title={t('mooni.chat.openPlanner')}
                    >

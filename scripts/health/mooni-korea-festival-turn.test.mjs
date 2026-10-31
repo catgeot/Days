@@ -93,3 +93,20 @@ test('stale general MOONi trip is not resumed', async () => {
   });
   assert.equal(resumed, null);
 });
+
+test('general MOONi trip with unreadable date is stale (no resume)', async () => {
+  const trip = {
+    id: 'trip-no-date',
+    destination: 'MOONi',
+    is_hidden: false,
+    messages: [{ role: 'user', text: '안녕' }],
+    date: 'not-a-date',
+  };
+  assert.equal(isStaleGeneralMooniTrip(trip), true);
+  const resumed = await resolveMooniResumeTrip({
+    savedTrips: [trip],
+    userId: null,
+    scopeOrContext: 'general',
+  });
+  assert.equal(resumed, null);
+});
