@@ -55,6 +55,7 @@ export default defineConfig({
         /tinian-search-planner-390\.spec\.js/,
         /logbook-public-owner-edit-390\.spec\.js/,
         /logbook-detail-toolbar-layout\.spec\.js/,
+        /mooni-destination-pick-reply\.spec\.js/,
       ],
       use: { ...devices['Desktop Chrome'], viewport: { width: 1280, height: 720 } },
     },
