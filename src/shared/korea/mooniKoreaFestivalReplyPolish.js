@@ -32,6 +32,10 @@ import {
   formatOriginHubGuidance,
 } from '../../pages/Home/lib/festivalDomesticOrigins.js';
 import { fitMooniKoreaFestivalHint } from './mooniKoreaFestivalHintBudget.js';
+import {
+  extractMooniFestivalLocationQueryText,
+  isMooniKoreaFestivalQueryText,
+} from '../../pages/Home/lib/mooniKoreaFestivalTurn.js';
 
 export {
   MOONI_KOREA_FESTIVAL_HINT_BUDGET,
@@ -4101,7 +4105,7 @@ const TIME_STRIP_RE =
  * @param {string} userText
  */
 export function isMooniKoreaFestivalQuery(userText) {
-  return FESTIVAL_INTENT_RE.test(String(userText || ''));
+  return isMooniKoreaFestivalQueryText(userText);
 }
 
 function koreanTopicWaOrGwa(noun) {
@@ -4183,17 +4187,8 @@ export function parseMooniFestivalTimeWindow(userText, now = new Date()) {
  * @param {string} userText
  * @param {string} [boundPlaceName]
  */
-export function extractMooniFestivalLocationQuery(userText, boundPlaceName = '') {
-  let t = String(userText || '')
-    .replace(FESTIVAL_INTENT_RE, ' ')
-    .replace(TIME_STRIP_RE, ' ')
-    .replace(/[?？!！.。,，]/g, ' ')
-    .trim();
-  const q = normalizeFestivalQuery(t);
-  if (q.length >= 2) return t.trim();
-  const bound = String(boundPlaceName || '').trim();
-  if (bound && bound !== 'MOONi') return bound;
-  return '';
+export function extractMooniFestivalLocationQuery(userText, boundPlaceName = '', boundSpot = null) {
+  return extractMooniFestivalLocationQueryText(userText, boundPlaceName, boundSpot);
 }
 
 /**
@@ -4213,6 +4208,7 @@ export function selectMooniKoreaFestivalCandidates(items, opts) {
   const locationQuery = extractMooniFestivalLocationQuery(
     opts.userText,
     opts.boundPlaceName,
+    opts.boundSpot ?? null,
   );
   let list = Array.isArray(items) ? items : [];
   if (locationQuery) {
@@ -4265,6 +4261,7 @@ export function selectMooniKoreaFestivalUpcomingFallback(items, opts) {
   const locationQuery = extractMooniFestivalLocationQuery(
     opts.userText,
     opts.boundPlaceName,
+    opts.boundSpot ?? null,
   );
   let list = Array.isArray(items) ? items : [];
   if (locationQuery) {
@@ -4625,6 +4622,7 @@ export function buildMooniKoreaFestivalSystemHint(input) {
   const { window, candidates } = selectMooniKoreaFestivalCandidates(items, {
     userText: input.userText,
     boundPlaceName: input.boundPlaceName,
+    boundSpot: input.boundSpot ?? null,
     now: input.now,
   });
   if (!window) return '';
@@ -4633,7 +4631,11 @@ export function buildMooniKoreaFestivalSystemHint(input) {
   const isEn = locale === 'en';
   const scopedFestival = input.scopedFestivalEnabled === true;
   const regionLabel =
-    extractMooniFestivalLocationQuery(input.userText, input.boundPlaceName) ||
+    extractMooniFestivalLocationQuery(
+      input.userText,
+      input.boundPlaceName,
+      input.boundSpot ?? null,
+    ) ||
     String(input.boundPlaceName || '').trim() ||
     (isEn ? 'the area' : '해당 지역');
   const regionWa = koreanTopicWaOrGwa(regionLabel);
@@ -4850,6 +4852,7 @@ export async function resolveMooniChatKoreaFestivalHint(input = {}) {
   const picked = selectMooniKoreaFestivalCandidates(items, {
     userText,
     boundPlaceName: input.boundPlaceName,
+    boundSpot: input.boundSpot ?? null,
     now: input.now,
   });
 
@@ -4858,6 +4861,7 @@ export async function resolveMooniChatKoreaFestivalHint(input = {}) {
       ? selectMooniKoreaFestivalUpcomingFallback(items, {
           userText,
           boundPlaceName: input.boundPlaceName,
+          boundSpot: input.boundSpot ?? null,
           now: input.now,
         }).candidates
       : [];
@@ -4865,6 +4869,7 @@ export async function resolveMooniChatKoreaFestivalHint(input = {}) {
   const hint = buildMooniKoreaFestivalSystemHint({
     userText,
     boundPlaceName: input.boundPlaceName,
+    boundSpot: input.boundSpot ?? null,
     items,
     locale: input.locale,
     now: input.now,

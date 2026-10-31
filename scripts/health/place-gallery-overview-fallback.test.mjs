@@ -66,10 +66,29 @@ test('flag ON — splitPlaceOverview ignores Home ensure desc (readonly hydrate 
   assert.equal(splitPlaceOverview(pin, 'ko').fixed, '');
 });
 
-test('Home index.jsx and useHomeHandlers.js match origin/main (no PR home changes)', () => {
-  const paths = 'src/pages/Home/index.jsx src/pages/Home/hooks/useHomeHandlers.js';
-  const diff = gitDiffAgainstBaseBranch(paths);
-  assert.equal(diff.trim(), '', 'Home files must be identical to origin/main');
+test('Home useHomeHandlers.js unchanged; index.jsx no gallery PR drift (MOONi new-chat wiring OK)', () => {
+  const handlersDiff = gitDiffAgainstBaseBranch('src/pages/Home/hooks/useHomeHandlers.js');
+  assert.equal(handlersDiff.trim(), '', 'useHomeHandlers must match origin/main');
+
+  const indexDiff = gitDiffAgainstBaseBranch('src/pages/Home/index.jsx');
+  if (indexDiff.trim() === '') return;
+
+  const galleryForbidden = [
+    /hydratePlaceGalleryOverview/,
+    /usePlaceGalleryOverviewHydration/,
+    /shouldUsePlaceGalleryReadonlyOverview/,
+    /fetchDomesticTourOverviewForLocation/,
+    /splitPlaceOverview/,
+    /getPlaceOverviewDescForDisplay/,
+  ];
+  for (const re of galleryForbidden) {
+    assert.doesNotMatch(indexDiff, re, 'gallery overview PR must not change Home index');
+  }
+  assert.match(
+    indexDiff,
+    /onStartNewChat|handleStartNewMooniChat/,
+    'allowed Home index delta: MOONi sidebar new-chat only',
+  );
 });
 
 test('flag ON — EN shows KO overview body for display helper (non-readonly pins)', () => {

@@ -397,6 +397,30 @@ function Home() {
     setChatDraft,
   ]);
 
+  const handleStartNewMooniChat = useCallback(() => {
+    if (activeChatId) {
+      persistMooniLastChatId(activeChatId, user?.id ?? null, { mooniPlaceContext });
+    }
+    setActiveChatId(null);
+    setInitialQuery(null);
+    const label = String(mooniPlaceContext?.displayLabel || mooniPlaceContext?.name || '').trim();
+    setChatDraft({
+      destination: label || 'MOONi',
+      lat: Number.isFinite(Number(mooniPlaceContext?.lat)) ? Number(mooniPlaceContext.lat) : 0,
+      lng: Number.isFinite(Number(mooniPlaceContext?.lng)) ? Number(mooniPlaceContext.lng) : 0,
+      persona: PERSONA_TYPES.GENERAL,
+      category,
+    });
+  }, [
+    activeChatId,
+    user?.id,
+    mooniPlaceContext,
+    category,
+    setActiveChatId,
+    setInitialQuery,
+    setChatDraft,
+  ]);
+
   const handleCategorySelect = useCallback(async (nextCategory) => {
     if (flightCinemaActive) {
       globeRef.current?.closeFlightCinema?.();
@@ -1831,6 +1855,7 @@ function Home() {
           }}
           onDeleteChat={deleteTrip}
           onClearPlaceBinding={handleClearMooniPlaceBinding}
+          onStartNewChat={handleStartNewMooniChat}
         />
 
         <SearchDiscoveryModal

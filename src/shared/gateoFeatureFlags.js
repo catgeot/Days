@@ -27,7 +27,7 @@ export const GATEO_ENV_FLAG_NAMES = {
   PLACE_DESKTOP_LEFT_INFO: 'VITE_GATEO_PLACE_DESKTOP_LEFT_INFO',
   /** Gallery overview — TourAPI / place_chat_intro hydrate when hub desc is synthetic. Default on. */
   PLACE_GALLERY_OVERVIEW_FALLBACK: 'VITE_GATEO_PLACE_GALLERY_OVERVIEW_FALLBACK',
-  /** MOONi scoped last-chat + verified festival list replies. Default off. */
+  /** MOONi scoped last-chat + verified festival list replies. Default on; `0`/`false`/`off` disables. */
   MOONI_SCOPED_FESTIVAL: 'VITE_GATEO_MOONI_SCOPED_FESTIVAL',
 };
 
@@ -152,7 +152,20 @@ export function isGateoPlaceGalleryOverviewFallbackEnabled() {
   return value !== '0' && value !== 'false' && value !== 'off';
 }
 
-/** MOONi conversation scope keys + verified-festival reply polish. Default off. */
+/** MOONi conversation scope keys + verified-festival reply polish. Unset defaults on. */
 export function isGateoMooniScopedFestivalEnabled() {
-  return readGateoEnvFlag(GATEO_ENV_FLAG_NAMES.MOONI_SCOPED_FESTIVAL);
+  const name = GATEO_ENV_FLAG_NAMES.MOONI_SCOPED_FESTIVAL;
+  const hasMeta =
+    typeof import.meta.env === 'object' &&
+    import.meta.env != null &&
+    Object.prototype.hasOwnProperty.call(import.meta.env, name);
+  const hasGlobal =
+    globalThis.__VITE_ENV__ &&
+    Object.prototype.hasOwnProperty.call(globalThis.__VITE_ENV__, name);
+  if (!hasMeta && !hasGlobal) return true;
+  const raw = hasMeta ? import.meta.env[name] : globalThis.__VITE_ENV__[name];
+  const value = String(raw ?? '').trim().toLowerCase();
+  if (value === '1' || value === 'true' || value === 'on') return true;
+  if (value === '' || value === '0' || value === 'false' || value === 'off') return false;
+  return false;
 }

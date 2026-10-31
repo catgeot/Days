@@ -203,6 +203,21 @@ export default function MooniBoundChatHost({ isOpen, boundSpot, initialQuery = n
     });
   }, [activeChatId, setActiveChatId, user?.id, mooniPlaceContext]);
 
+  const handleStartNewChat = useCallback(() => {
+    if (activeChatId) {
+      persistMooniLastChatId(activeChatId, user?.id ?? null, { mooniPlaceContext });
+    }
+    setActiveChatId(null);
+    const label = String(mooniPlaceContext?.displayLabel || mooniPlaceContext?.name || '').trim();
+    setChatDraft({
+      destination: label || 'MOONi',
+      lat: Number.isFinite(Number(mooniPlaceContext?.lat)) ? Number(mooniPlaceContext.lat) : 0,
+      lng: Number.isFinite(Number(mooniPlaceContext?.lng)) ? Number(mooniPlaceContext.lng) : 0,
+      persona: PERSONA_TYPES.GENERAL,
+      category: THEME_CHAT_CATEGORY,
+    });
+  }, [activeChatId, mooniPlaceContext, user?.id]);
+
   useEffect(() => {
     if (isOpen) return;
     if (activeChatId) {
@@ -261,6 +276,7 @@ export default function MooniBoundChatHost({ isOpen, boundSpot, initialQuery = n
         }
       }}
       onDeleteChat={deleteTrip}
+      onStartNewChat={handleStartNewChat}
     />
   );
 }

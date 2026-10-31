@@ -224,3 +224,32 @@ export function tripHasPersistedDialogue(trip) {
       ).trim().length > 0
   );
 }
+
+/**
+ * @param {Record<string, unknown> | null | undefined} trip
+ */
+export function tripLastActivityMs(trip) {
+  if (!trip || typeof trip !== 'object') return null;
+  const messages = Array.isArray(trip.messages) ? trip.messages : [];
+  let max = 0;
+  for (const msg of messages) {
+    const at = Number(msg?.mooniAt);
+    if (Number.isFinite(at) && at > max) max = at;
+  }
+  if (max > 0) return max;
+  const parsed = Date.parse(String(trip.updated_at || trip.date || ''));
+  if (Number.isFinite(parsed)) return parsed;
+  return null;
+}
+
+/**
+ * @param {Record<string, unknown> | null | undefined} trip
+ */
+export function isStaleGeneralMooniTrip(trip, nowMs = Date.now()) {
+  if (!trip) return true;
+  const dest = String(trip.destination || '').trim();
+  if (dest && dest !== 'MOONi') return false;
+  const last = tripLastActivityMs(trip);
+  if (last == null) return true;
+  return nowMs - last > MOONI_GENERAL_CHAT_MAX_AGE_MS;
+}

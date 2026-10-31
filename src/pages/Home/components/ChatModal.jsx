@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAccountProfile } from '../../../shared/Auth/useAccountProfile';
-import { X, Send, Loader2, MessageSquare, Trash2, Sparkles, ChevronLeft, Compass } from 'lucide-react';
+import { X, Send, Loader2, MessageSquare, Trash2, Sparkles, ChevronLeft, Compass, Plus, ClipboardList } from 'lucide-react';
 import { PERSONA_TYPES } from '../lib/prompts';
 import { apiClient } from '../lib/apiClient';
 import { GeminiProxyError, getGeminiProxyErrorMessage } from '../lib/geminiProxyError';
@@ -55,6 +55,10 @@ import { invokeMooniChatToleratingChip } from '../lib/mooniChipEdgeFallback.js';
 import { resolvePlaceChatKoreaFestivalHint } from '../lib/resolvePlaceChatKoreaFestivalHint.js';
 import { fitMooniKoreaFestivalHint } from '../../../shared/korea/mooniKoreaFestivalHintBudget.js';
 import { isGateoMooniScopedFestivalEnabled } from '../../../shared/gateoFeatureFlags.js';
+import {
+  resolveMooniFestivalBoundPlaceNameForHint,
+  shouldOmitMooniGeminiHistoryForKoreaFestivalTurn,
+} from '../lib/mooniKoreaFestivalTurn.js';
 import { buildFestivalMooniChatOpening } from '../../Korea/lib/festivalMooniBoundSpot.js';
 import { festivalChatHeaderTitle } from '../../Korea/lib/festivalMooniContext.js';
 import {
@@ -192,6 +196,7 @@ const ChatModal = ({
   /** 무니 인트로 본문 준비 시 장소카드 desc hydrate (DB 캐시·신규 생성 공통) */
   onPlaceIntroReady = null,
   onClearPlaceBinding = null,
+  onStartNewChat = null,
 }) => {
   const { t, i18n } = useTranslation();
   const account = useAccountProfile();
@@ -199,6 +204,7 @@ const ChatModal = ({
   const messagesRef = useRef(messages);
   messagesRef.current = messages;
   const lastTripSyncChatIdRef = useRef(null);
+  const pendingDraftSessionResetRef = useRef(false);
   const festivalUiLocaleRef = useRef(i18n.language);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -396,6 +402,24 @@ const ChatModal = ({
   }, [isOpen, chatDraft, activeChatId, chatHistory, mooniPlaceContext, i18n.language]);
 
   const boundDestinationSlug = resolveCatalogPlaceSlug(activeSessionPlace?.slug) || null;
+
+  const resetMooniDraftThread = useCallback(() => {
+    pendingDraftSessionResetRef.current = true;
+    lastTripSyncChatIdRef.current = null;
+    setMessages([]);
+    tripSessionRef.current = hydrateMooniTripSession({
+      messages: [],
+      stored: null,
+      slug: boundDestinationSlug || '',
+      destinationName: introDestinationRaw || chatDraft?.destination || 'MOONi',
+    });
+  }, [boundDestinationSlug, introDestinationRaw, chatDraft?.destination]);
+
+  const handleStartNewChatClick = useCallback(() => {
+    resetMooniDraftThread();
+    onStartNewChat?.();
+  }, [resetMooniDraftThread, onStartNewChat]);
+
   /** 지명만 있는 uiPlace도 주제 칩 허용 (플래너·카탈로그 연동은 slug 있을 때만) */
   const hasPlaceBoundName = Boolean(String(activeSessionPlace?.name || '').trim());
   const hasAskSeed = Boolean(
@@ -862,7 +886,17 @@ const ChatModal = ({
         return;
       }
       const localLen = messagesRef.current?.length ?? 0;
-      if (!shouldHydrateDraftMessages({ localMessageCount: localLen, isLoading })) return;
+      const draftSessionReset = pendingDraftSessionResetRef.current;
+      if (
+        !shouldHydrateDraftMessages({
+          localMessageCount: localLen,
+          isLoading,
+          draftSessionReset,
+        })
+      ) {
+        return;
+      }
+      if (draftSessionReset) pendingDraftSessionResetRef.current = false;
       setMessages([]);
       if (chatDraft.persona) setCurrentPersona(chatDraft.persona);
       tripSessionRef.current = hydrateMooniTripSession({
@@ -1219,18 +1253,30 @@ const ChatModal = ({
         chatHistory: priorTurns,
         persona: personaToUse,
       });
-      const history = prepareMooniGeminiHistory(
-        newMessages
-          .slice(0, -1)
-          .filter((m) => m.role === 'user' || m.role === 'model')
-          .map((m) => ({
-            role: m.role,
-            text:
-              m.role === 'model'
-                ? String(m.mooniRawReply ?? messageTextPlain(m))
-                : messageTextPlain(m),
-          })),
+      const festivalBoundPlaceName = resolveMooniFestivalBoundPlaceNameForHint(
+        cleanText,
+        destName,
+        mooniPlaceContext,
       );
+      const omitGeminiHistory = shouldOmitMooniGeminiHistoryForKoreaFestivalTurn(
+        cleanText,
+        mooniPlaceContext,
+        destName,
+      );
+      const history = omitGeminiHistory
+        ? []
+        : prepareMooniGeminiHistory(
+            newMessages
+              .slice(0, -1)
+              .filter((m) => m.role === 'user' || m.role === 'model')
+              .map((m) => ({
+                role: m.role,
+                text:
+                  m.role === 'model'
+                    ? String(m.mooniRawReply ?? messageTextPlain(m))
+                    : messageTextPlain(m),
+              })),
+          );
 
       let koreaFestivalHint = '';
       let mooniFestivalCandidates = [];
@@ -1244,7 +1290,8 @@ const ChatModal = ({
           userText: cleanText,
           chipId,
           festivalContext,
-          boundPlaceName: destName,
+          boundPlaceName: festivalBoundPlaceName,
+          boundSpot: mooniPlaceContext,
           locale: i18n.language,
           departureLabel: explicitDeparture || departureLabel || '',
         });
@@ -1327,7 +1374,9 @@ const ChatModal = ({
         aiReplyText: aiReply,
         essentialGuide,
         tripSession: nextSession,
-        domesticKoreaFestival: Boolean(mooniPlaceContext?.festivalContext?.contentId),
+        domesticKoreaFestival: Boolean(
+          mooniPlaceContext?.festivalContext?.contentId || koreaFestivalHint,
+        ),
       });
 
       const hasTransportCta = (booking.actions ?? []).some((a) =>
@@ -1338,7 +1387,7 @@ const ChatModal = ({
       const festivalMergedReply = mergeMooniKoreaFestivalReply(aiReply, {
         candidates: mooniFestivalCandidates,
         userText: cleanText,
-        boundPlaceName: destName,
+        boundPlaceName: festivalBoundPlaceName,
         locale: i18n.language,
         upcomingFallback: mooniFestivalUpcomingFallback,
         scopedFestivalEnabled: isGateoMooniScopedFestivalEnabled(),
@@ -1597,11 +1646,31 @@ const ChatModal = ({
       <div className={`w-[95vw] max-w-6xl h-[90vh] max-md:w-full max-md:h-[100dvh] max-md:max-h-[100dvh] rounded-3xl max-md:rounded-none max-md:border-0 shadow-2xl flex overflow-hidden relative transition-all ${tone(fresh, 'bg-gray-900 border border-gray-700', 'bg-gradient-to-br from-sky-50 via-cyan-50 to-teal-50 border border-cyan-200/80')}`}>
 
         <div className={`hidden md:flex w-72 flex-col ${tone(fresh, 'bg-gray-900 border-r border-gray-700', 'bg-white/70 border-r border-cyan-100')}`}>
-          <div className={`p-5 flex items-center justify-between ${tone(fresh, 'border-b border-gray-800', 'border-b border-cyan-100')}`}>
-            <div className="flex items-center gap-2">
+          <div className={`p-5 flex items-center justify-between gap-2 ${tone(fresh, 'border-b border-gray-800', 'border-b border-cyan-100')}`}>
+            <div className="flex items-center gap-2 min-w-0">
               <MessageSquare size={18} className={tone(fresh, 'text-blue-400', 'text-cyan-500')} />
-              <span className={`font-bold text-sm ${tone(fresh, 'text-gray-200', 'text-slate-700')}`}>{t('mooni.chat.history')}</span>
+              <span className={`font-bold text-sm truncate ${tone(fresh, 'text-gray-200', 'text-slate-700')}`}>{t('mooni.chat.history')}</span>
             </div>
+            {typeof onStartNewChat === 'function' ? (
+              <button
+                type="button"
+                data-testid="mooni-chat-new"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleStartNewChatClick();
+                }}
+                className={tone(
+                  fresh,
+                  'inline-flex shrink-0 items-center gap-1.5 rounded-xl border border-cyan-300/70 bg-cyan-500/25 px-3 py-2 text-xs font-bold text-cyan-50 shadow-sm hover:bg-cyan-500/35 touch-manipulation',
+                  'inline-flex shrink-0 items-center gap-1.5 rounded-xl border-2 border-cyan-600 bg-cyan-600 px-3 py-2 text-xs font-bold text-white shadow-md hover:bg-cyan-700 hover:border-cyan-700 touch-manipulation',
+                )}
+                title={t('mooni.chat.newChat')}
+                aria-label={t('mooni.chat.newChat')}
+              >
+                <Plus size={14} strokeWidth={2.5} aria-hidden />
+                {t('mooni.chat.newChat')}
+              </button>
+            ) : null}
           </div>
 
           <div className="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-2">
@@ -1635,7 +1704,7 @@ const ChatModal = ({
 
         <div className={`flex-1 flex flex-col relative min-w-0 ${tone(fresh, 'bg-black/50', 'bg-white/55')}`}>
             <div
-              className={`p-4 md:py-2.5 md:px-4 max-md:px-3 max-md:py-2 max-md:pt-[max(0.4rem,env(safe-area-inset-top,0px))] flex items-center gap-3 max-md:gap-2 backdrop-blur-md ${tone(fresh, 'bg-gray-800/50 border-b border-gray-700', 'bg-white/80 border-b border-cyan-100')}`}
+              className={`p-4 md:py-2.5 md:px-4 max-md:px-3 max-md:py-2 max-[360px]:pl-2 max-[360px]:pr-3 max-md:pr-[max(0.75rem,env(safe-area-inset-right,0px))] max-md:pt-[max(0.4rem,env(safe-area-inset-top,0px))] flex items-center gap-3 max-md:gap-2 max-[360px]:gap-1 backdrop-blur-md ${tone(fresh, 'bg-gray-800/50 border-b border-gray-700', 'bg-white/80 border-b border-cyan-100')}`}
               onPointerDown={() => {
                 if (mobileDockInputFocused && !input.trim()) {
                   collapseMobileDockInput();
@@ -1649,8 +1718,8 @@ const ChatModal = ({
                  title={t('mooni.chat.close')}
                  className={tone(
                    fresh,
-                   'flex h-9 w-9 md:h-8 md:w-8 max-md:h-8 max-md:w-8 shrink-0 items-center justify-center rounded-full border border-gray-500/60 max-md:border-white/45 bg-gray-700/70 max-md:bg-gray-700 text-gray-200 max-md:text-white shadow-md transition-colors hover:border-gray-400 hover:bg-gray-600 hover:text-white touch-manipulation',
-                   'flex h-9 w-9 md:h-8 md:w-8 max-md:h-8 max-md:w-8 shrink-0 items-center justify-center rounded-full border border-cyan-200 bg-white text-slate-600 shadow-sm transition-colors hover:border-cyan-300 hover:bg-cyan-50 hover:text-slate-800 touch-manipulation',
+                   'flex h-9 w-9 md:h-8 md:w-8 max-md:h-8 max-md:w-8 max-[360px]:h-7 max-[360px]:w-7 shrink-0 items-center justify-center rounded-full border border-gray-500/60 max-md:border-white/45 bg-gray-700/70 max-md:bg-gray-700 text-gray-200 max-md:text-white shadow-md transition-colors hover:border-gray-400 hover:bg-gray-600 hover:text-white touch-manipulation',
+                   'flex h-9 w-9 md:h-8 md:w-8 max-md:h-8 max-md:w-8 max-[360px]:h-7 max-[360px]:w-7 shrink-0 items-center justify-center rounded-full border border-cyan-200 bg-white text-slate-600 shadow-sm transition-colors hover:border-cyan-300 hover:bg-cyan-50 hover:text-slate-800 touch-manipulation',
                  )}
                >
                  <X size={16} className="pointer-events-none max-md:h-4 max-md:w-4" />
@@ -1676,7 +1745,26 @@ const ChatModal = ({
                    {isMooniUi ? t('mooni.chat.mooniSessionTitle') : t('mooni.chat.travelSessionTitle')}
                  </span>
                </div>
-               <div className="flex items-center gap-1.5 shrink-0 max-w-[46%] md:max-w-none">
+               <div className="flex items-center gap-1.5 max-[360px]:gap-0.5 shrink-0 max-w-[46%] max-[360px]:max-w-[42%] md:max-w-none">
+                 {typeof onStartNewChat === 'function' ? (
+                   <button
+                     type="button"
+                     data-testid="mooni-chat-new"
+                     onClick={(e) => {
+                       e.stopPropagation();
+                       handleStartNewChatClick();
+                     }}
+                     className={tone(
+                       fresh,
+                       'md:hidden inline-flex h-8 w-8 max-[360px]:h-7 max-[360px]:w-7 shrink-0 items-center justify-center rounded-full border border-cyan-300/80 bg-cyan-500/30 p-0 text-cyan-50 touch-manipulation hover:bg-cyan-500/40',
+                       'md:hidden inline-flex h-8 w-8 max-[360px]:h-7 max-[360px]:w-7 shrink-0 items-center justify-center rounded-full border border-cyan-500 bg-cyan-600 p-0 text-white touch-manipulation hover:bg-cyan-700',
+                     )}
+                     title={t('mooni.chat.newChat')}
+                     aria-label={t('mooni.chat.newChat')}
+                   >
+                     <Plus size={16} strokeWidth={2.5} aria-hidden />
+                   </button>
+                 ) : null}
                  {showClearPlaceBinding ? (
                    <>
                      <button
@@ -1684,8 +1772,8 @@ const ChatModal = ({
                        onClick={onClearPlaceBinding}
                        className={tone(
                          fresh,
-                         'md:hidden inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-cyan-400/45 bg-cyan-500/20 text-cyan-100 touch-manipulation hover:bg-cyan-500/30',
-                         'md:hidden inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-cyan-300 bg-cyan-100 text-cyan-700 touch-manipulation hover:bg-cyan-200',
+                         `md:hidden ${effectiveQuickReplySlug ? 'max-md:hidden' : ''} inline-flex h-8 w-8 max-[360px]:h-7 max-[360px]:w-7 shrink-0 items-center justify-center rounded-full border border-cyan-400/45 bg-cyan-500/20 text-cyan-100 touch-manipulation hover:bg-cyan-500/30`,
+                         `md:hidden ${effectiveQuickReplySlug ? 'max-md:hidden' : ''} inline-flex h-8 w-8 max-[360px]:h-7 max-[360px]:w-7 shrink-0 items-center justify-center rounded-full border border-cyan-300 bg-cyan-100 text-cyan-700 touch-manipulation hover:bg-cyan-200`,
                        )}
                        title={t('mooni.chat.clearPlaceBindingAria')}
                        aria-label={t('mooni.chat.clearPlaceBindingAria')}
@@ -1711,14 +1799,21 @@ const ChatModal = ({
                    <button
                      type="button"
                      onClick={() => handlePlannerNavigate(`/place/${effectiveQuickReplySlug}/planner`)}
+                     aria-label={t('mooni.chat.openPlanner')}
                      className={tone(
                        fresh,
-                       'inline-flex items-center gap-1 rounded-full border border-cyan-300/80 bg-cyan-500/30 px-2.5 py-1.5 max-md:min-h-[32px] text-[11px] font-semibold text-cyan-50 shadow-[0_0_12px_rgba(34,211,238,0.25)] ring-1 ring-cyan-400/35 hover:border-cyan-300 hover:bg-cyan-500/40 transition-colors touch-manipulation',
-                       'inline-flex items-center gap-1 rounded-full border border-cyan-300 bg-gradient-to-r from-cyan-400 to-teal-400 px-2.5 py-1.5 max-md:min-h-[32px] text-[11px] font-semibold text-white shadow-[0_4px_12px_rgba(34,211,238,0.28)] hover:from-cyan-300 hover:to-teal-300 transition-colors touch-manipulation',
+                       'inline-flex items-center gap-1 whitespace-nowrap rounded-full border border-cyan-300/80 bg-cyan-500/30 px-2.5 py-1.5 max-md:min-h-[32px] max-md:ring-0 max-md:shadow-none max-[360px]:h-7 max-[360px]:w-7 max-[360px]:min-h-0 max-[360px]:p-0 max-[360px]:justify-center max-[360px]:ring-0 max-[360px]:shadow-none text-[11px] font-semibold text-cyan-50 shadow-[0_0_12px_rgba(34,211,238,0.25)] ring-1 ring-cyan-400/35 hover:border-cyan-300 hover:bg-cyan-500/40 transition-colors touch-manipulation',
+                       'inline-flex items-center gap-1 whitespace-nowrap rounded-full border border-cyan-300 bg-gradient-to-r from-cyan-400 to-teal-400 px-2.5 py-1.5 max-md:min-h-[32px] max-md:ring-0 max-md:shadow-none max-[360px]:h-7 max-[360px]:w-7 max-[360px]:min-h-0 max-[360px]:p-0 max-[360px]:justify-center max-[360px]:ring-0 max-[360px]:shadow-none text-[11px] font-semibold text-white shadow-[0_4px_12px_rgba(34,211,238,0.28)] hover:from-cyan-300 hover:to-teal-300 transition-colors touch-manipulation',
                      )}
                      title={t('mooni.chat.openPlanner')}
                    >
-                     {t('mooni.chips.l1.planner.label')}
+                     <ClipboardList
+                       size={15}
+                       strokeWidth={2.25}
+                       className="hidden max-[360px]:block shrink-0"
+                       aria-hidden
+                     />
+                     <span className="max-[360px]:hidden">{t('mooni.chips.l1.planner.label')}</span>
                    </button>
                  ) : null}
                </div>
