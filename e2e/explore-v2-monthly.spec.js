@@ -8,9 +8,10 @@ const MONTHLY_PICK_COUNT = 6;
 const monthlySection = (page) => page.getByTestId('explore-v2-monthly-section');
 const SCROLL_AREA = (page) => page.locator('.modal-scroll-area').first();
 
-async function openExplore(page, viewport) {
+async function openExplore(page, viewport, search = '') {
   await page.setViewportSize(viewport);
-  await page.goto('/explore', { waitUntil: 'domcontentloaded', timeout: 90_000 });
+  const suffix = search ? (search.startsWith('?') ? search : `?${search}`) : '';
+  await page.goto(`/explore${suffix}`, { waitUntil: 'domcontentloaded', timeout: 90_000 });
 }
 
 test.describe('Explore v2 monthly picks @flagOff', () => {
@@ -26,6 +27,30 @@ test.describe('Explore v2 monthly picks @flagOff', () => {
     await openExplore(page, { width: 1280, height: 720 });
     await expect(monthlySection(page)).toHaveCount(0);
     await expect(page.getByText('에디터스 픽').first()).toBeVisible({ timeout: 45_000 });
+  });
+});
+
+test.describe('Explore v2 monthly picks @queryOn', () => {
+  test.use({ ignoreHTTPSErrors: true });
+
+  test.beforeEach(() => {
+    test.skip(
+      process.env.VITE_GATEO_EXPLORE_V2 === '1',
+      'query param path is tested with env flag off',
+    );
+  });
+
+  test('390 — explore_v2=1 shows monthly row without env flag', async ({ page }) => {
+    await openExplore(page, { width: 390, height: 844 }, 'explore_v2=1');
+    await expect(monthlySection(page)).toBeVisible({ timeout: 45_000 });
+    await expect(page.getByTestId('explore-v2-monthly-heading')).toContainText('11월의 여행지');
+    await expect(page.locator('[data-testid^="explore-v2-monthly-card-"]')).toHaveCount(6);
+  });
+
+  test('1280 — explore_v2=1 shows monthly row without env flag', async ({ page }) => {
+    await openExplore(page, { width: 1280, height: 720 }, 'explore_v2=1');
+    await expect(monthlySection(page)).toBeVisible({ timeout: 45_000 });
+    await expect(page.locator('[data-testid^="explore-v2-monthly-card-"]')).toHaveCount(6);
   });
 });
 

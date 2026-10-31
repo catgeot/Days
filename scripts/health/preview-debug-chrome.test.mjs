@@ -37,4 +37,14 @@ test('work log and mobile widget log stay off production hosts', () => {
   assert.match(app, /isPreviewDebugChromeBundled/);
   assert.match(app, /lazy\(\(\) => import\('\.\/shared\/cloudPreview\/PreviewDebugChrome\.jsx'\)/);
   assert.doesNotMatch(app, /from '\.\/shared\/cloudPreview\/CloudPreviewWorkLog\.jsx'/);
+
+  const bundledGate = readFileSync(
+    join(root, 'src/shared/cloudPreview/isPreviewDebugChromeBundled.js'),
+    'utf8',
+  );
+  assert.match(
+    bundledGate,
+    /import\.meta\.env\.DEV \|\| import\.meta\.env\.VITE_GATEO_PREVIEW_DEBUG_CHROME === '1'/,
+    'operational PROD build (import.meta.env.PROD, no preview env) must not set bundled gate',
+  );
 });

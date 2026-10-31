@@ -9,6 +9,8 @@ import {
 import {
   isValidMonthlyPickSource,
   normalizeMonthlyPickSource,
+  readExploreV2QueryParam,
+  isExploreV2MonthlyRowVisible,
 } from '../../src/pages/Home/lib/exploreMonthlyPicks.js';
 import {
   GATEO_ENV_FLAG_NAMES,
@@ -65,6 +67,24 @@ test('VITE_GATEO_EXPLORE_V2 defaults off when unset', () => {
     assert.equal(isGateoExploreV2Enabled(), false);
     globalThis.__VITE_ENV__[key] = '1';
     assert.equal(isGateoExploreV2Enabled(), true);
+  } finally {
+    if (prev === undefined) delete globalThis.__VITE_ENV__[key];
+    else globalThis.__VITE_ENV__[key] = prev;
+  }
+});
+
+test('explore_v2=1 query enables monthly row without env flag or storage', () => {
+  assert.equal(readExploreV2QueryParam(''), false);
+  assert.equal(readExploreV2QueryParam('?foo=1'), false);
+  assert.equal(readExploreV2QueryParam('?explore_v2=1'), true);
+  assert.equal(readExploreV2QueryParam('?explore_v2=0'), false);
+
+  const key = GATEO_ENV_FLAG_NAMES.EXPLORE_V2;
+  const prev = globalThis.__VITE_ENV__[key];
+  try {
+    delete globalThis.__VITE_ENV__[key];
+    assert.equal(isExploreV2MonthlyRowVisible(''), false);
+    assert.equal(isExploreV2MonthlyRowVisible('?explore_v2=1'), true);
   } finally {
     if (prev === undefined) delete globalThis.__VITE_ENV__[key];
     else globalThis.__VITE_ENV__[key] = prev;
