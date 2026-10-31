@@ -2607,6 +2607,7 @@
       "copied": "Copied!",
       "export": "Export for blog",
       "edit": "Edit",
+      "editAria": "Edit entry",
       "delete": "Delete"
     },
     "public": {

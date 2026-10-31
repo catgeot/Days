@@ -22,6 +22,8 @@ import LogbookReactionSlot from './components/LogbookReactionSlot';
 import LogbookComments from './components/LogbookComments';
 import { useLogbookLikes } from './hooks/useLogbookLikes';
 import LogbookArticleHead from './components/LogbookArticleHead';
+import LogbookOwnerEditButton from './components/LogbookOwnerEditButton';
+import { isLogbookReportOwner } from './utils/logbookReportOwner';
 import { buildEditorialLogbookJsonLd } from './lib/logbookEditorialJsonLd';
 import SEO from '../../components/SEO';
 import { navigateAppBack } from '../../shared/navigation/navigateAppBack';
@@ -63,6 +65,7 @@ const PublicViewer = () => {
   const [authorAvatar, setAuthorAvatar] = useState('');
   const [authorPhotos, setAuthorPhotos] = useState([]);
   const [authorPhotoOpen, setAuthorPhotoOpen] = useState(false);
+  const [sessionUserId, setSessionUserId] = useState(null);
   const [errorMsg, setErrorMsg] = useState('');
   const [seenCount, setSeenCount] = useState(null);
   const [placeCount, setPlaceCount] = useState(null);
@@ -73,6 +76,22 @@ const PublicViewer = () => {
   const handleBack = useCallback(() => {
     navigateAppBack(navigate, { fallback: '/blog' });
   }, [navigate]);
+
+  useEffect(() => {
+    let cancelled = false;
+    const syncUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!cancelled) setSessionUserId(user?.id ?? null);
+    };
+    void syncUser();
+    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!cancelled) setSessionUserId(session?.user?.id ?? null);
+    });
+    return () => {
+      cancelled = true;
+      authListener?.subscription?.unsubscribe();
+    };
+  }, []);
 
   useEffect(() => {
     const fetchPublicReport = async () => {
@@ -193,6 +212,7 @@ const PublicViewer = () => {
   const placeKey = logbookPlaceKey(report.location);
   const placeHref = placeKey ? `/blog?tab=public&location=${encodeURIComponent(placeKey)}` : '';
   const likeState = resolveLike(report);
+  const showOwnerEdit = isLogbookReportOwner(sessionUserId, report);
 
   return (
     <div className="min-h-screen bg-white text-gray-900 relative overflow-hidden pb-20 font-sans">
@@ -234,6 +254,11 @@ const PublicViewer = () => {
           editorial ? 'pt-6 sm:pt-12 px-5 sm:px-6' : 'pt-12 px-4 sm:px-6'
         }`}
       >
+        {showOwnerEdit ? (
+          <div className="mb-4 flex flex-wrap items-center justify-start gap-2 sm:gap-3 max-md:pr-[3.75rem] sm:max-w-[calc(100%-3.5rem)]">
+            <LogbookOwnerEditButton reportId={report.id} />
+          </div>
+        ) : null}
         <div
           className={
             editorial

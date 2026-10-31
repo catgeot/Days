@@ -53,6 +53,8 @@ export default defineConfig({
         /korea-festival-date-chip\.spec\.js/,
         /place-lightbox-history\.spec\.js/,
         /tinian-search-planner-390\.spec\.js/,
+        /logbook-public-owner-edit-390\.spec\.js/,
+        /logbook-detail-toolbar-layout\.spec\.js/,
       ],
       use: { ...devices['Desktop Chrome'], viewport: { width: 1280, height: 720 } },
     },
@@ -311,6 +313,19 @@ export default defineConfig({
       testMatch: /korea-festival-road-wonju-390\.spec\.js/,
       use: {
         ...devices['iPhone 13'],
+        viewport: { width: 390, height: 844 },
+        deviceScaleFactor: 1,
+        ignoreHTTPSErrors: true,
+      },
+    },
+    {
+      name: 'chromium-logbook-owner-edit',
+      testMatch: /logbook-public-owner-edit-390\.spec\.js|logbook-detail-toolbar-layout\.spec\.js/,
+      timeout: 180_000,
+      use: {
+        ...devices['Desktop Chrome'],
+        baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://127.0.0.1:5199',
+        locale: 'ko-KR',
         viewport: { width: 390, height: 844 },
         deviceScaleFactor: 1,
         ignoreHTTPSErrors: true,
