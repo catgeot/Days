@@ -78,25 +78,41 @@ export function isBusinessLikeSearchHit(item) {
   return !kind || !TOURISM_KIND_RE.test(kind);
 }
 
-/**
- * 「Gwacheon Mission of the Anmyeonam」(안면암 과천 포교당)처럼 관광 카테고리여도
- * 이름이 다른 곳의 분원·지점임을 밝힌 POI. 카테고리만으로는 본 장소와 구분되지 않는다.
- */
-const BRANCH_NAME_RE = /포교당|분원|지점|분점|\bmission\b|\bbranch\b/i;
+const KO_BRANCH_MARKERS = ['포교당', '분원', '분점'];
 
-/** 거리 규칙 대상 — 업소(상호·무분류) 또는 이름이 지점·분원인 POI. 관광·명소는 제외하지 않는다. */
-export function isBranchLikeSearchHit(item) {
+const escapeRegExp = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+/**
+ * 관광 카테고리 POI가 검색어 장소의 분원·지점임을 이름으로 밝힌 경우.
+ * 「Gwacheon Mission of the Anmyeonam」(안면암 과천 포교당)은 본 사찰과 분류가 같아 이름으로만 구분된다.
+ * 표시는 검색어와 함께 있을 때만 본다 — 「Mission Dolores」「Mission San Juan Capistrano」(사적지)·
+ * 「한반도 땅끝 최북단 지점」(관광지)은 지점이 아니다. 「지점」은 관광 분류에서 표시로 쓰지 않는다.
+ */
+function nameMarksBranchOfQuery(name, query) {
+  const q = normalizeKey(query);
+  if (q.length < 2) return false;
+  const raw = String(name ?? '');
+  const key = normalizeKey(raw);
+  if (!key.includes(q)) return false;
+  if (KO_BRANCH_MARKERS.some((marker) => key.includes(marker) && !q.includes(marker))) return true;
+  const words = String(query).trim().split(/\s+/).map(escapeRegExp).join('[\\s\\-]*');
+  const english = new RegExp(`\\b(mission|branch)\\s+of\\s+(the\\s+)?${words}\\b|\\b${words}\\s+(mission|branch)\\b`, 'i');
+  return english.test(raw);
+}
+
+/** 거리 규칙 대상 — 업소(상호·무분류) 또는 검색어 장소의 지점·분원인 관광 POI. 관광·명소는 제외하지 않는다. */
+export function isBranchLikeSearchHit(item, query) {
   if (isBusinessLikeSearchHit(item)) return true;
   if (!item || item.source !== 'mapbox') return false;
   if (!item.poiAttraction && item.kind !== 'attraction') return false;
-  return [item.name, item.name_en, item.name_ko].some((name) => BRANCH_NAME_RE.test(String(name ?? '')));
+  return [item.name, item.name_en, item.name_ko].some((name) => nameMarksBranchOfQuery(name, query));
 }
 
 /** 지역 기준점이 될 수 있는 결과 — 도시·지역형이거나 관광 카테고리 POI (지점 제외) */
-export function isRegionAnchorHit(item) {
+export function isRegionAnchorHit(item, query) {
   if (!item || !hasCoords(item)) return false;
   if (item.source === 'mapbox' && (item.poiAttraction || item.kind === 'attraction')) {
-    return !isBranchLikeSearchHit(item);
+    return !isBranchLikeSearchHit(item, query);
   }
   return item.source === 'tourapi' || item.kind === 'city' || item.kind === 'spot';
 }
@@ -135,13 +151,13 @@ function isMapboxPoiHit(item) {
 export function dropFarHomonymBusinessHits(query, hits, opts = {}) {
   const list = Array.isArray(hits) ? hits : [];
   const maxKm = opts.maxKm ?? HOMONYM_REGION_MAX_KM;
-  const anchors = [...(opts.anchors || []).filter(hasCoords), ...list.filter(isRegionAnchorHit)].filter((item) =>
+  const anchors = [...(opts.anchors || []).filter(hasCoords), ...list.filter((item) => isRegionAnchorHit(item, query))].filter((item) =>
     nameHasQueryWord(item, query),
   );
   if (!anchors.length) return list;
   return list.filter((item) => {
     if (!isMapboxPoiHit(item) || !hasCoords(item)) return true;
-    if (!isBranchLikeSearchHit(item)) return true;
+    if (!isBranchLikeSearchHit(item, query)) return true;
     if (nameEqualsQuery(item, query)) return minDistanceKm(item, anchors) <= maxKm;
     if (!nameContainsQuery(item, query)) return true;
     return minDistanceKm(item, anchors) <= DERIVED_NAME_BUSINESS_MAX_KM;

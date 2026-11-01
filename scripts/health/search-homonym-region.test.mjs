@@ -208,17 +208,59 @@ test('하이브리드 — 이름이 다른 내장 결과(남산 → 춘천·남�
   assert.ok(out.includes(shop), '춘천 내장 결과를 기준점으로 대전 「남산」을 뺌');
 });
 
-test('지점 표시 — 사찰 분류여도 「Mission of」「포교당」「…점」 이름은 거리 규칙 대상, 본 사찰은 아님', () => {
+test('지점 표시 — 사찰 분류여도 「Mission of the 검색어」「검색어 포교당」은 거리 규칙 대상, 본 사찰은 아님', () => {
   const [taean, , gwacheon] = ANMYEONAM_FEATURES.map((f) => featureToSuggestion(f, { source: 'mapbox' }));
-  assert.equal(isBranchLikeSearchHit(gwacheon), true);
-  assert.equal(isBranchLikeSearchHit(taean), false);
-  assert.equal(isBranchLikeSearchHit(YONGGUNGSA_HITS[1]), false);
-  assert.equal(isBranchLikeSearchHit(NAMSAN_HITS[1]), false);
+  assert.equal(isBranchLikeSearchHit(gwacheon, 'Anmyeonam'), true);
+  assert.equal(isBranchLikeSearchHit(taean, 'Anmyeonam'), false);
+  assert.equal(isBranchLikeSearchHit(YONGGUNGSA_HITS[1], '용궁사'), false);
+  assert.equal(isBranchLikeSearchHit(NAMSAN_HITS[1], '남산'), false);
   const pogyo = featureToSuggestion(
     poi('안면암 서울포교당', '서울특별시, 03000, South Korea', ['buddhist_temple'], ['buddhist temple'], 126.98, 37.57, 'p'),
     { source: 'mapbox' },
   );
-  assert.equal(isBranchLikeSearchHit(pogyo), true);
+  assert.equal(isBranchLikeSearchHit(pogyo, '안면암'), true);
+  assert.equal(isBranchLikeSearchHit(pogyo, '수덕사'), false, '검색어 없이 붙은 표시는 지점이 아님');
+});
+
+const MISSION_DOLORES = featureToSuggestion(
+  poi('Mission Dolores', 'San Francisco, California 94114, United States', ['historic_site'], ['historic site'], -122.4269, 37.7643, 'md'),
+  { source: 'mapbox' },
+);
+const MISSION_CAPISTRANO = featureToSuggestion(
+  poi('Mission San Juan Capistrano', 'San Juan Capistrano, California 92675, United States', ['historic_site'], ['historic site'], -117.6631, 33.5025, 'mc'),
+  { source: 'mapbox' },
+);
+
+test('Mission Dolores·Mission San Juan Capistrano — 사적지 이름의 Mission은 지점 표시가 아님', () => {
+  assert.equal(isBranchLikeSearchHit(MISSION_DOLORES, 'Mission Dolores'), false);
+  assert.equal(isBranchLikeSearchHit(MISSION_DOLORES, 'Dolores'), false);
+  assert.equal(isBranchLikeSearchHit(MISSION_CAPISTRANO, 'Mission San Juan Capistrano'), false);
+  assert.equal(isBranchLikeSearchHit(MISSION_CAPISTRANO, 'Capistrano'), false);
+
+  const dolores = { name: 'Dolores', kind: 'city', source: 'mapbox-geocode', lat: -33.53, lng: -58.21 };
+  const doloresOut = dropFarHomonymBusinessHits('Dolores', [dolores, MISSION_DOLORES]);
+  assert.ok(doloresOut.includes(MISSION_DOLORES), '우루과이 Dolores 기준점 때문에 Mission Dolores가 빠짐');
+
+  const capistrano = { name: 'Capistrano', kind: 'city', source: 'mapbox-geocode', lat: 38.69, lng: 16.29 };
+  const capistranoOut = dropFarHomonymBusinessHits('Capistrano', [capistrano, MISSION_CAPISTRANO]);
+  assert.ok(capistranoOut.includes(MISSION_CAPISTRANO), '이탈리아 Capistrano 기준점 때문에 Mission San Juan Capistrano가 빠짐');
+});
+
+test('「한반도 땅끝 최북단 지점」 — 관광 분류의 「지점」은 지점 표시가 아님, 해남 땅끝과 멀어도 유지', () => {
+  const north = featureToSuggestion(
+    poi('한반도 땅끝 최북단 지점', '고성군, 24700, South Korea', ['tourist_attraction', 'viewpoint'], ['tourist attraction', 'viewpoint'], 128.35, 38.61, 'tk'),
+    { source: 'mapbox' },
+  );
+  assert.equal(isBranchLikeSearchHit(north, '땅끝'), false);
+  const haenam = { name: '땅끝', kind: 'spot', source: 'local', lat: 34.3, lng: 126.53 };
+  const out = dropFarHomonymBusinessHits('땅끝', [north], { anchors: [haenam] });
+  assert.ok(out.includes(north), '해남 땅끝 기준점 때문에 고성 최북단 지점이 빠짐');
+
+  const shop = featureToSuggestion(
+    poi('땅끝횟집 부산지점', '부산광역시, 48000, South Korea', ['restaurant', 'food'], ['restaurant', 'food'], 129.1, 35.15, 'ts'),
+    { source: 'mapbox' },
+  );
+  assert.ok(!dropFarHomonymBusinessHits('땅끝', [north, shop], { anchors: [haenam] }).includes(shop), '먼 「…지점」 업소는 그대로 제외');
 });
 
 test('하이브리드 검색은 Mapbox 결과를 로컬 SSOT 기준점으로 한 번 더 거른다', async () => {
