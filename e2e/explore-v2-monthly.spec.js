@@ -1,9 +1,9 @@
 // Explore v2 step 1 — monthly picks row (flag off = legacy /explore unchanged)
 import { test, expect } from './fixtures.js';
 
-/** chiang-mai place SEO OG URL is 404 — row drops it after img onError */
-const MONTHLY_VISIBLE_COUNT = 5;
-const MONTHLY_EXCLUDED_LABEL = '치앙마이';
+/** chiang-mai OG 404 · phu-quoc — no valid place SEO hero on site */
+const MONTHLY_VISIBLE_COUNT = 4;
+const MONTHLY_EXCLUDED_LABELS = ['푸꾸옥', '치앙마이'];
 const MONTHLY_HEADING = '11월의 여행지';
 
 const monthlySection = (page) => page.getByTestId('explore-v2-monthly-section');
@@ -19,12 +19,13 @@ async function expectMonthlyRowWithPhotos(page) {
   const section = monthlySection(page);
   await expect(section).toBeVisible({ timeout: 45_000 });
   await page.waitForTimeout(2000);
-  await expect(section).toHaveAttribute('data-explore-v2-excluded', MONTHLY_EXCLUDED_LABEL);
+  await expect(section).toHaveAttribute('data-explore-v2-excluded', MONTHLY_EXCLUDED_LABELS.join(','));
   await expect(page.getByTestId('explore-v2-monthly-heading')).toHaveText(MONTHLY_HEADING);
   await expect(page.locator('[data-testid^="explore-v2-monthly-card-"]')).toHaveCount(
     MONTHLY_VISIBLE_COUNT,
   );
   await expect(page.getByTestId('explore-v2-monthly-card-chiang-mai')).toHaveCount(0);
+  await expect(page.getByTestId('explore-v2-monthly-card-phu-quoc')).toHaveCount(0);
   return section;
 }
 

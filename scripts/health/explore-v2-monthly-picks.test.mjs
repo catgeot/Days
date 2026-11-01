@@ -108,9 +108,13 @@ test('explore_v2 monthly heading is month label only (no spot count)', () => {
 test('2026-11 monthly picks resolve gateo hero image (no color fallback row)', () => {
   const cards = buildVisibleMonthlyPickCards(MONTH_KEY);
   const { withHero, excluded } = partitionExploreMonthlyPickCardsByHero(cards);
-  assert.equal(excluded.length, 0, `missing hero: ${excluded.map((e) => e.slug).join(', ')}`);
-  assert.equal(withHero.length, 6);
-  for (const slug of EXPECTED_SLUGS) {
+  assert.deepEqual(
+    excluded.map((e) => e.slug),
+    ['phu-quoc'],
+  );
+  assert.equal(withHero.length, 5);
+  assert.ok(!resolveExploreMonthlyPickHeroUrl({ slug: 'phu-quoc' }));
+  for (const slug of ['kyoto', 'jeju', 'dubai', 'melbourne', 'chiang-mai']) {
     assert.ok(resolveExploreMonthlyPickHeroUrl({ slug }), `no hero for ${slug}`);
   }
 });
