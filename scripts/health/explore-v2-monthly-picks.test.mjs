@@ -78,17 +78,20 @@ test('VITE_GATEO_EXPLORE_V2 defaults off when unset', () => {
   }
 });
 
-test('explore_v2=1 query enables monthly row without env flag or storage', () => {
+test('readExploreV2QueryParam — preview flag only (not monthly row gate)', () => {
   assert.equal(readExploreV2QueryParam(''), false);
   assert.equal(readExploreV2QueryParam('?foo=1'), false);
   assert.equal(readExploreV2QueryParam('?explore_v2=1'), true);
   assert.equal(readExploreV2QueryParam('?explore_v2=0'), false);
+});
 
+test('monthly row visible by default; VITE_GATEO_EXPLORE_V2 stays off for other v2', () => {
   const key = GATEO_ENV_FLAG_NAMES.EXPLORE_V2;
   const prev = globalThis.__VITE_ENV__[key];
   try {
     delete globalThis.__VITE_ENV__[key];
-    assert.equal(isExploreV2MonthlyRowVisible(''), false);
+    assert.equal(isGateoExploreV2Enabled(), false);
+    assert.equal(isExploreV2MonthlyRowVisible(''), true);
     assert.equal(isExploreV2MonthlyRowVisible('?explore_v2=1'), true);
   } finally {
     if (prev === undefined) delete globalThis.__VITE_ENV__[key];

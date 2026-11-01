@@ -1,4 +1,4 @@
-// Explore v2 step 1 — monthly picks row (flag off = legacy /explore unchanged)
+// Explore v2 step 1 — monthly picks row (code default ON; env flag = future v2 only)
 import { test, expect } from './fixtures.js';
 import travelSpotsList from '../src/pages/Home/data/travelSpots-list.json' with { type: 'json' };
 
@@ -17,16 +17,27 @@ async function openExplore(page, viewport, search = '') {
 test.describe('Explore v2 monthly picks @flagOff', () => {
   test.use({ ignoreHTTPSErrors: true });
 
-  test('390 — legacy explore without monthly row', async ({ page }) => {
+  test.beforeEach(() => {
+    test.skip(
+      process.env.VITE_GATEO_EXPLORE_V2 === '1',
+      'default-path tests require env flag off in webServer',
+    );
+  });
+
+  test('390 — default explore shows six cards, no noindex', async ({ page }) => {
     await openExplore(page, { width: 390, height: 844 });
-    await expect(monthlySection(page)).toHaveCount(0);
+    await expect(monthlySection(page)).toBeVisible({ timeout: 45_000 });
     await expect(page.locator('meta[name="robots"][content="noindex"]')).toHaveCount(0);
+    await expect(page.getByTestId('explore-v2-monthly-heading')).toContainText('11월의 여행지');
+    await expect(page.locator('[data-testid^="explore-v2-monthly-card-"]')).toHaveCount(6);
     await expect(page.getByText('에디터스 픽').first()).toBeVisible({ timeout: 45_000 });
   });
 
-  test('1280 — legacy explore without monthly row', async ({ page }) => {
+  test('1280 — default explore shows six cards, no noindex', async ({ page }) => {
     await openExplore(page, { width: 1280, height: 720 });
-    await expect(monthlySection(page)).toHaveCount(0);
+    await expect(monthlySection(page)).toBeVisible({ timeout: 45_000 });
+    await expect(page.locator('meta[name="robots"][content="noindex"]')).toHaveCount(0);
+    await expect(page.locator('[data-testid^="explore-v2-monthly-card-"]')).toHaveCount(6);
     await expect(page.getByText('에디터스 픽').first()).toBeVisible({ timeout: 45_000 });
   });
 });
@@ -41,7 +52,7 @@ test.describe('Explore v2 monthly picks @queryOn', () => {
     );
   });
 
-  test('390 — explore_v2=1 shows monthly row without env flag', async ({ page }) => {
+  test('390 — explore_v2=1 adds noindex only with query', async ({ page }) => {
     await openExplore(page, { width: 390, height: 844 }, 'explore_v2=1');
     await expect(monthlySection(page)).toBeVisible({ timeout: 45_000 });
     await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex');
@@ -49,9 +60,10 @@ test.describe('Explore v2 monthly picks @queryOn', () => {
     await expect(page.locator('[data-testid^="explore-v2-monthly-card-"]')).toHaveCount(6);
   });
 
-  test('1280 — explore_v2=1 shows monthly row without env flag', async ({ page }) => {
+  test('1280 — explore_v2=1 adds noindex only with query', async ({ page }) => {
     await openExplore(page, { width: 1280, height: 720 }, 'explore_v2=1');
     await expect(monthlySection(page)).toBeVisible({ timeout: 45_000 });
+    await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex');
     await expect(page.locator('[data-testid^="explore-v2-monthly-card-"]')).toHaveCount(6);
   });
 });
@@ -70,6 +82,7 @@ test.describe('Explore v2 monthly picks @flagOn', () => {
     await openExplore(page, { width: 390, height: 844 });
     const section = monthlySection(page);
     await expect(section).toBeVisible({ timeout: 45_000 });
+    await expect(page.locator('meta[name="robots"][content="noindex"]')).toHaveCount(0);
     await expect(page.getByTestId('explore-v2-monthly-heading')).toContainText('11월의 여행지');
     await expect(page.getByTestId('explore-v2-monthly-heading')).toContainText(
       `${TRAVEL_SPOT_COUNT}곳 중 ${MONTHLY_PICK_COUNT}곳`,

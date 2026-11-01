@@ -3,8 +3,6 @@ import {
   EXPLORE_V2_MONTHLY_PICK_KEY,
   MONTHLY_PICKS,
 } from '../data/spotTraits';
-import { isGateoExploreV2Enabled } from '../../../shared/gateoFeatureFlags';
-
 /** `/explore?explore_v2=1` — request-scoped preview; no storage. */
 export function readExploreV2QueryParam(search = '') {
   const raw = String(search || '').trim();
@@ -17,8 +15,9 @@ export function readExploreV2QueryParam(search = '') {
   }
 }
 
-export function isExploreV2MonthlyRowVisible(search = '') {
-  return isGateoExploreV2Enabled() || readExploreV2QueryParam(search);
+/** 11월의 여행지 행 — PROD 기본 ON (VITE_GATEO_EXPLORE_V2와 무관). */
+export function isExploreV2MonthlyRowVisible(_search = '') {
+  return true;
 }
 
 const HTTPS_SOURCE = /^https:\/\/.+/i;
