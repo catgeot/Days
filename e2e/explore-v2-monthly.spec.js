@@ -41,17 +41,28 @@ test.describe('Explore v2 monthly picks @queryOn', () => {
     );
   });
 
-  test('390 — explore_v2=1 shows monthly row without env flag', async ({ page }) => {
+  test('390 — explore_v2=1 default layout a (horizontal)', async ({ page }) => {
     await openExplore(page, { width: 390, height: 844 }, 'explore_v2=1');
     await expect(monthlySection(page)).toBeVisible({ timeout: 45_000 });
     await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex');
     await expect(page.getByTestId('explore-v2-monthly-heading')).toContainText('11월의 여행지');
+    await expect(page.getByTestId('explore-v2-monthly-layout-a')).toBeVisible();
+    await expect(page.getByTestId('explore-v2-monthly-layout-b')).toHaveCount(0);
     await expect(page.locator('[data-testid^="explore-v2-monthly-card-"]')).toHaveCount(6);
   });
 
-  test('1280 — explore_v2=1 shows monthly row without env flag', async ({ page }) => {
-    await openExplore(page, { width: 1280, height: 720 }, 'explore_v2=1');
+  test('1280 — explore_v2=1&layout=b mosaic', async ({ page }) => {
+    await openExplore(page, { width: 1280, height: 720 }, 'explore_v2=1&layout=b');
     await expect(monthlySection(page)).toBeVisible({ timeout: 45_000 });
+    await expect(page.getByTestId('explore-v2-monthly-layout-b')).toBeVisible();
+    await expect(page.getByTestId('explore-v2-monthly-layout-a')).toHaveCount(0);
+    await expect(page.locator('[data-testid^="explore-v2-monthly-card-"]')).toHaveCount(6);
+  });
+
+  test('390 — layout=b mosaic at narrow width', async ({ page }) => {
+    await openExplore(page, { width: 390, height: 844 }, 'explore_v2=1&layout=b');
+    await expect(monthlySection(page)).toBeVisible({ timeout: 45_000 });
+    await expect(page.getByTestId('explore-v2-monthly-layout-b')).toBeVisible();
     await expect(page.locator('[data-testid^="explore-v2-monthly-card-"]')).toHaveCount(6);
   });
 });
@@ -74,14 +85,18 @@ test.describe('Explore v2 monthly picks @flagOn', () => {
     await expect(page.getByTestId('explore-v2-monthly-heading')).toContainText(
       `${TRAVEL_SPOT_COUNT}곳 중 ${MONTHLY_PICK_COUNT}곳`,
     );
+    await expect(page.getByTestId('explore-v2-monthly-layout-a')).toBeVisible();
 
     const cards = page.locator('[data-testid^="explore-v2-monthly-card-"]');
     await expect(cards).toHaveCount(6);
 
     for (let i = 0; i < 6; i += 1) {
-      await expect(cards.nth(i).getByTestId('explore-v2-monthly-source-link').first()).toBeVisible();
+      await expect(
+        page.locator('[data-testid^="explore-v2-monthly-item-"]').nth(i).getByTestId('explore-v2-monthly-source-link').first(),
+      ).toBeVisible();
     }
 
+    const jejuItem = page.getByTestId('explore-v2-monthly-item-jeju');
     const jejuCard = page.getByTestId('explore-v2-monthly-card-jeju');
     await expect(jejuCard.getByTestId('explore-v2-monthly-estimate')).toHaveText('추정');
 
@@ -92,6 +107,7 @@ test.describe('Explore v2 monthly picks @flagOn', () => {
     expect(page.url()).toBe(urlBefore);
     expect(await scrollEl.evaluate((el) => el.scrollTop)).toBe(scrollBefore);
 
+    await jejuItem.scrollIntoViewIfNeeded();
     await jejuCard.click();
     await expect(page).toHaveURL(/\/place\/jeju/, { timeout: 30_000 });
   });

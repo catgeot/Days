@@ -17,6 +17,20 @@ export function readExploreV2QueryParam(search = '') {
   }
 }
 
+/** `layout=a` (default) | `layout=b` — monthly row visual variant. */
+export function readExploreV2LayoutParam(search = '') {
+  const raw = String(search || '').trim();
+  if (!raw) return 'a';
+  try {
+    const query = raw.startsWith('?') ? raw.slice(1) : raw;
+    const value = new URLSearchParams(query).get('layout');
+    if (value === 'b') return 'b';
+    return 'a';
+  } catch {
+    return 'a';
+  }
+}
+
 export function isExploreV2MonthlyRowVisible(search = '') {
   return isGateoExploreV2Enabled() || readExploreV2QueryParam(search);
 }

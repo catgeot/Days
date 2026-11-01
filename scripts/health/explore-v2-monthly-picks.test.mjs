@@ -15,6 +15,7 @@ import {
   isValidMonthlyPickSource,
   normalizeMonthlyPickSource,
   readExploreV2QueryParam,
+  readExploreV2LayoutParam,
   isExploreV2MonthlyRowVisible,
 } from '../../src/pages/Home/lib/exploreMonthlyPicks.js';
 import {
@@ -94,6 +95,15 @@ test('explore_v2=1 query enables monthly row without env flag or storage', () =>
     if (prev === undefined) delete globalThis.__VITE_ENV__[key];
     else globalThis.__VITE_ENV__[key] = prev;
   }
+});
+
+test('explore_v2 layout query selects mosaic b or default a', () => {
+  assert.equal(readExploreV2LayoutParam(''), 'a');
+  assert.equal(readExploreV2LayoutParam('?explore_v2=1'), 'a');
+  assert.equal(readExploreV2LayoutParam('?explore_v2=1&layout=a'), 'a');
+  assert.equal(readExploreV2LayoutParam('?explore_v2=1&layout=b'), 'b');
+  assert.equal(readExploreV2LayoutParam('?layout=b'), 'b');
+  assert.equal(readExploreV2LayoutParam('?layout=c'), 'a');
 });
 
 test('explore_v2=1 query sets robots noindex on Home SEO only', () => {

@@ -1,13 +1,21 @@
 import React, { useMemo } from 'react';
-import ExploreMonthlyPickCard from './ExploreMonthlyPickCard';
+import { useLocation } from 'react-router-dom';
 import {
   buildVisibleMonthlyPickCards,
   exploreV2MonthlyPickHeadline,
+  readExploreV2LayoutParam,
   resolveExploreV2MonthlyPickKey,
 } from '../../lib/exploreMonthlyPicks';
 import { EXPLORE_V2_MONTHLY_PICK_KEY } from '../../data/spotTraits';
+import ExploreMonthlyPicksLayoutA from './ExploreMonthlyPicksLayoutA';
+import ExploreMonthlyPicksLayoutB from './ExploreMonthlyPicksLayoutB';
 
 const ExploreMonthlyPicksSection = ({ onSelectSpot }) => {
+  const location = useLocation();
+  const layout = useMemo(
+    () => readExploreV2LayoutParam(location.search),
+    [location.search],
+  );
   const monthKey = resolveExploreV2MonthlyPickKey(EXPLORE_V2_MONTHLY_PICK_KEY);
   const cards = useMemo(
     () => (monthKey ? buildVisibleMonthlyPickCards(monthKey) : []),
@@ -23,6 +31,7 @@ const ExploreMonthlyPicksSection = ({ onSelectSpot }) => {
   return (
     <section
       data-testid="explore-v2-monthly-section"
+      data-explore-v2-layout={layout}
       className="mb-10 w-full animate-fade-in"
       aria-label={headline}
     >
@@ -32,16 +41,11 @@ const ExploreMonthlyPicksSection = ({ onSelectSpot }) => {
       >
         {headline}
       </h2>
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4 xl:gap-5">
-        {cards.map(({ spot, entry }) => (
-          <ExploreMonthlyPickCard
-            key={spot.id ?? entry.slug}
-            spot={spot}
-            entry={entry}
-            onSelect={onSelectSpot}
-          />
-        ))}
-      </div>
+      {layout === 'b' ? (
+        <ExploreMonthlyPicksLayoutB cards={cards} onSelectSpot={onSelectSpot} />
+      ) : (
+        <ExploreMonthlyPicksLayoutA cards={cards} onSelectSpot={onSelectSpot} />
+      )}
     </section>
   );
 };
