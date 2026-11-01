@@ -2,7 +2,8 @@
   "git": {
     "deploymentEnabled": {
       "cursor/*": false,
-      "cursor/festival-access-promo-5b7f": true
+      "cursor/festival-access-promo-5b7f": true,
+      "preview/flags-on-2026-10-29": true
     }
   },
   "redirects": [
