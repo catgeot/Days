@@ -4,7 +4,7 @@ import {
   MONTHLY_PICKS,
 } from '../data/spotTraits';
 import { isGateoExploreV2Enabled } from '../../../shared/gateoFeatureFlags';
-import { PLACE_SEO_OG_IMAGE_OVERRIDES } from '../../../data/placeSeoOgImageOverrides.js';
+import { EXPLORE_MONTHLY_PICK_VERIFIED_HERO_URLS } from '../data/exploreMonthlyPickHeroUrls.js';
 import { resolveListImageUrl } from '../../../utils/listImageUrl.js';
 import { getLocalizedPlaceName } from '../../../components/PlaceCard/common/locationDisplay';
 
@@ -100,7 +100,7 @@ export function buildVisibleMonthlyPickCards(monthKey = EXPLORE_V2_MONTHLY_PICK_
 export function resolveExploreMonthlyPickHeroUrl(spot) {
   const slug = String(spot?.slug || '').toLowerCase();
   if (!slug) return '';
-  const raw = PLACE_SEO_OG_IMAGE_OVERRIDES[slug] || '';
+  const raw = EXPLORE_MONTHLY_PICK_VERIFIED_HERO_URLS[slug] || '';
   if (!raw) return '';
   return resolveListImageUrl(raw, { role: 'list', width: 640 });
 }

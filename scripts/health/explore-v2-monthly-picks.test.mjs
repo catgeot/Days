@@ -105,17 +105,20 @@ test('explore_v2 monthly heading is month label only (no spot count)', () => {
   assert.equal(exploreV2MonthlyPickHeadline(MONTH_KEY), '11월의 여행지');
 });
 
-test('2026-11 monthly picks resolve gateo hero image (no color fallback row)', () => {
+test('2026-11 monthly picks resolve verified place gallery hero (no OG overrides)', () => {
   const cards = buildVisibleMonthlyPickCards(MONTH_KEY);
   const { withHero, excluded } = partitionExploreMonthlyPickCardsByHero(cards);
-  assert.deepEqual(
-    excluded.map((e) => e.slug),
-    ['phu-quoc'],
-  );
-  assert.equal(withHero.length, 5);
-  assert.ok(!resolveExploreMonthlyPickHeroUrl({ slug: 'phu-quoc' }));
-  for (const slug of ['kyoto', 'jeju', 'dubai', 'melbourne', 'chiang-mai']) {
-    assert.ok(resolveExploreMonthlyPickHeroUrl({ slug }), `no hero for ${slug}`);
+  assert.deepEqual(excluded, []);
+  assert.equal(withHero.length, 6);
+  for (const slug of EXPECTED_SLUGS) {
+    const url = resolveExploreMonthlyPickHeroUrl({ slug });
+    assert.ok(url, `no hero for ${slug}`);
+    assert.match(url, /^https:\/\//);
+    assert.doesNotMatch(
+      url,
+      /photo-1436491865332|photo-1500530855697|photo-1539037116277/,
+      `stale OG-like hero for ${slug}`,
+    );
   }
 });
 
