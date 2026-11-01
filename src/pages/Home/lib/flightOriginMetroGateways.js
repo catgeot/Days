@@ -1,5 +1,6 @@
 import { RENTAL_AIRPORT_HUBS, DEFAULT_HUB_RADIUS_KM } from '../../../utils/rentalAirportHubs.js';
 import { distanceKm } from '../../../utils/rentalAirportMatch.js';
+import { KOREA_AIRPORT_IATAS } from '../../../utils/koreaAirportIatas.js';
 
 /** 국내·단거리 feeder → 국제 gateway 승격 (GPS geolocation 전용) */
 export const FLIGHT_ORIGIN_METRO_GATEWAYS = [
@@ -25,29 +26,7 @@ export function areMetroCoterminalAirports(aIata, bIata) {
   return false;
 }
 
-/**
- * 한국 공항 — 본토↔본토 국내선 시네마 오탐 억제 (제주 CJU만 예외 허용).
- * rental hubs + airportsIndex 국내 도착에 쓰는 코드.
- * SHO 금지: IATA SHO는 에스와티니(airportsIndex) · 구 속초는 YNY.
- */
-export const KOREA_AIRPORT_IATAS = new Set([
-  'ICN',
-  'GMP',
-  'SEL',
-  'CJU',
-  'PUS',
-  'CJJ',
-  'TAE',
-  'KWJ',
-  'RSU',
-  'USN',
-  'HIN',
-  'KUV',
-  'WJU',
-  'YNY',
-  'MWX',
-  'KPO',
-]);
+export { KOREA_AIRPORT_IATAS };
 
 /**
  * ICN→YNY/WJU/PUS 등 본토 국내선 OD — 시네마·「항공 경로」숨김 대상.

@@ -2,6 +2,8 @@ import {
   getFlightCinemaOriginOption,
   suggestFlightOriginFromBrowserTimezone,
 } from './flightCinemaOriginOptions.js';
+import { isKoreaDomesticDestIata } from '../../../utils/koreaAirportIatas.js';
+import { resolveCinemaDestIata } from '../../../utils/rentalAirportMatch.js';
 
 const STORAGE_KEY = 'gateo.flightOriginIata';
 
@@ -40,10 +42,18 @@ function prefersKoreanLocale() {
 }
 
 /**
- * last-used → browser timezone → ko locale ICN · 그 외 timezone 매칭 또는 ICN fallback.
+ * 국내 도착(제주·김해 등)인데 출발이 인천이면 국내선 공항 김포로 바꾼다.
+ * @param {string} originIata
+ * @param {string | null | undefined} destIata
  * @returns {string}
  */
-export function resolveDefaultFlightOriginIata() {
+export function preferDomesticFlightOriginIata(originIata, destIata) {
+  const origin = String(originIata ?? '').trim().toUpperCase();
+  if (origin === 'ICN' && isKoreaDomesticDestIata(destIata)) return 'GMP';
+  return origin;
+}
+
+function resolveBaseDefaultFlightOriginIata() {
   const stored = getStoredFlightOriginIata();
   if (stored && getFlightCinemaOriginOption(stored)) return stored;
 
@@ -52,6 +62,33 @@ export function resolveDefaultFlightOriginIata() {
 
   if (prefersKoreanLocale()) return 'ICN';
   return 'ICN';
+}
+
+/**
+ * last-used → browser timezone → ko locale ICN · 그 외 timezone 매칭 또는 ICN fallback.
+ * `destIata`가 국내 공항이면 ICN → GMP (국내선).
+ * @param {{ destIata?: string | null }} [options]
+ * @returns {string}
+ */
+export function resolveDefaultFlightOriginIata(options = {}) {
+  return preferDomesticFlightOriginIata(resolveBaseDefaultFlightOriginIata(), options.destIata);
+}
+
+/**
+ * 장소카드·MOONi 출발지 기본값 — 장소의 도착 공항으로 국내선 여부를 판단한다.
+ * @param {Record<string, unknown> | null | undefined} location
+ * @returns {string}
+ */
+export function resolveDefaultFlightOriginIataForLocation(location) {
+  let destIata = null;
+  if (location) {
+    try {
+      destIata = resolveCinemaDestIata(location);
+    } catch {
+      destIata = null;
+    }
+  }
+  return resolveDefaultFlightOriginIata({ destIata });
 }
 
 /**

@@ -2,6 +2,7 @@ import { RENTAL_AIRPORT_HUBS, DEFAULT_HUB_RADIUS_KM } from './rentalAirportHubs.
 import { isCebuGenericDetailUsage } from './cebuKoreanPlaceGuard.js';
 import { findNearestAirportInIndex, getAirportsIndexCoords } from './airportsIndexLookup.js';
 import { lookupGraphRouteByDestIata } from './flightRouteGraphLookup.js';
+import { isKoreaDomesticFlightOd } from './koreaAirportIatas.js';
 import { resolveTravelSpotForUiPlaceRegion } from './travelSpotResolve.js';
 import { getLocalizedPlaceName } from '../components/PlaceCard/common/locationDisplay.js';
 import { i18n } from '../i18n/config.js';
@@ -115,6 +116,8 @@ function getFlightRouteAirportRow(location) {
  */
 export function shouldResolveFlightRouteViaEdge(location, options = {}) {
   const origin = String(options.originIata ?? 'ICN').trim().toUpperCase();
+  // 국내선(GMP→CJU 등)은 직항 — Edge 경유 조회가 늦거나 멈추면 「조회 중…」에 갇힌다
+  if (isKoreaDomesticFlightOd(origin, options.destIata)) return false;
   if (origin !== 'ICN') return true;
 
   if (!location?.uiPlace) return false;

@@ -121,7 +121,7 @@ import FlightOriginSelector from './FlightOriginSelector';
 import { getFlightCinemaOriginOption } from '../lib/flightCinemaOriginOptions';
 import {
   persistFlightOriginIata,
-  resolveDefaultFlightOriginIata,
+  resolveDefaultFlightOriginIataForLocation,
 } from '../lib/flightOriginPreference';
 import {
   hasMooniTripSessionFacts,
@@ -217,7 +217,9 @@ const ChatModal = ({
   const [topicDockParent, setTopicDockParent] = useState(null);
   /** 모바일 주제 독: 입력 포커스·타이핑 시 칩 숨기고 검색바 확장 */
   const [mobileDockInputFocused, setMobileDockInputFocused] = useState(false);
-  const [accessOriginIata, setAccessOriginIata] = useState(() => resolveDefaultFlightOriginIata());
+  const [accessOriginIata, setAccessOriginIata] = useState(() =>
+    resolveDefaultFlightOriginIataForLocation(mooniPlaceContext),
+  );
   const [festivalAccessId, setFestivalAccessId] = useState('incheon');
   const [accessOriginSearchOpen, setAccessOriginSearchOpen] = useState(false);
   const [accessOriginSearchActive, setAccessOriginSearchActive] = useState(false);
@@ -647,7 +649,7 @@ const ChatModal = ({
         mobileDockBlurTimerRef.current = null;
       }
     } else {
-      setAccessOriginIata(resolveDefaultFlightOriginIata());
+      setAccessOriginIata(resolveDefaultFlightOriginIataForLocation(mooniPlaceContext));
     }
   }, [isOpen]);
 
