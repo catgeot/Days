@@ -1,0 +1,282 @@
+// 전체 검색 「추자도/Chujado」 — 다른 지역 동명 업소가 섞이지 않게
+import assert from 'node:assert/strict';
+import test from 'node:test';
+
+const {
+  alignVisitedSpotsToRegionAnchors,
+  dropFarHomonymBusinessHits,
+  isBranchLikeSearchHit,
+  isBusinessLikeSearchHit,
+  tourKeywordItemsToRegionAnchors,
+} = await import('../../src/pages/Home/lib/searchHomonymRegion.js');
+const { featureToSuggestion } = await import('../../src/pages/Home/lib/mapboxSearchBox.js');
+const { coordsInKorea, visitedRowToSearchSpot } = await import(
+  '../../src/pages/Home/lib/visitedPlaceSearch.js'
+);
+
+function poi(name, placeFormatted, categoryIds, categories, lng, lat, id) {
+  return {
+    type: 'Feature',
+    geometry: { type: 'Point', coordinates: [lng, lat] },
+    properties: {
+      mapbox_id: id,
+      feature_type: 'poi',
+      name,
+      place_formatted: placeFormatted,
+      poi_category_ids: categoryIds,
+      poi_category: categories,
+      context: { country: { name: 'South Korea' }, place: { name: placeFormatted.split(',')[0] } },
+    },
+  };
+}
+
+// Mapbox Search Box 「Chujado」(en, types=place,city,poi) 실응답 축약 — 2026-11-01
+const CHUJADO_FEATURES = [
+  poi('Chujado Lighthouse', 'Jeju, 63000, South Korea', ['tourist_attraction', 'viewpoint'], ['tourist attraction', 'viewpoint'], 126.29656905, 33.95534543, 'a'),
+  poi('Jeju Olle Trail Route 18-1, Chuja-do', 'Jeju, 63000, South Korea', ['outdoors'], ['outdoors'], 126.29609105, 33.96352101, 'b'),
+  poi('Chujado Island', 'Jeju, 63001, South Korea', ['tourist_attraction'], ['tourist attraction'], 126.31984797, 33.94843182, 'c'),
+  poi('Chujado', 'Bucheon, 14697, South Korea', [], [], 126.8076013, 37.47699594, 'd'),
+  poi('Chujado Observatory', 'Jeju, 63000, South Korea', ['tourist_attraction', 'viewpoint'], ['tourist attraction', 'viewpoint'], 126.29011517, 33.96400643, 'e'),
+  poi('Chujado Restaurant', 'Jeju, 63000, South Korea', ['restaurant', 'food'], ['restaurant', 'food'], 126.29423483, 33.96245491, 'f'),
+];
+
+// TourAPI searchKeyword 「추자도」 실응답 축약
+const TOUR_CHUJADO_ITEMS = [
+  { contentId: '127863', title: '추자도', addr1: '제주특별자치도 제주시 추자면', mapx: '126.3076233112', mapy: '33.9518128033', contentTypeId: '12' },
+  { contentId: '129146', title: '추자도 등대', addr1: '제주특별자치도 제주시 추자면 영흥리 77-3', mapx: '126.2967000000', mapy: '33.9553000000', contentTypeId: '12' },
+];
+
+// place_stats 「추자도」 행 — 좌표가 포항(동명 업소)으로 저장됨
+const VISITED_CHUJADO_ROW = {
+  place_id: '추자도',
+  name_ko: '추자도',
+  name_en: null,
+  lat: 36.01184993,
+  lng: 129.36822414,
+  image_url: 'https://tong.visitkorea.or.kr/cms/resource/01/3539201_image2_1.jpg',
+};
+
+test('Chujado — 부천 무분류 상호 POI 제외, 제주 추자도 결과는 유지', () => {
+  const hits = CHUJADO_FEATURES.map((f) => featureToSuggestion(f, { source: 'mapbox' }));
+  const bucheon = hits.find((h) => h.name === 'Chujado');
+  assert.equal(isBusinessLikeSearchHit(bucheon), true);
+
+  const filtered = dropFarHomonymBusinessHits('Chujado', hits);
+  const names = filtered.map((h) => h.name);
+  assert.ok(!names.includes('Chujado'), `부천 Chujado가 남음: ${names.join(', ')}`);
+  for (const keep of ['Chujado Lighthouse', 'Chujado Island', 'Chujado Observatory', 'Chujado Restaurant']) {
+    assert.ok(names.includes(keep), `${keep} 누락`);
+  }
+  for (const item of filtered) {
+    assert.ok(item.lat < 34.2 && item.lng < 126.6, `${item.name}가 추자도 밖 (${item.lat},${item.lng})`);
+  }
+});
+
+test('기준점(관광 POI·도시)이 없으면 동명 업소도 그대로 둔다', () => {
+  const onlyBusiness = [featureToSuggestion(CHUJADO_FEATURES[3], { source: 'mapbox' })];
+  assert.deepEqual(dropFarHomonymBusinessHits('Chujado', onlyBusiness), onlyBusiness);
+});
+
+test('추자도 — 포항 좌표 방문 행은 TourAPI 공식 추자도(제주) 좌표로 정렬', () => {
+  const spot = visitedRowToSearchSpot(VISITED_CHUJADO_ROW);
+  assert.ok(spot);
+  const anchors = tourKeywordItemsToRegionAnchors(TOUR_CHUJADO_ITEMS, '추자도');
+  assert.equal(anchors.length, 1, '제목이 정확히 같은 「추자도」만 기준점');
+
+  const [aligned] = alignVisitedSpotsToRegionAnchors([{ ...spot, parentCity: 'Pohang' }], anchors, {
+    isDomestic: coordsInKorea,
+  });
+  assert.ok(Math.abs(aligned.lat - 33.9518) < 0.01 && Math.abs(aligned.lng - 126.3076) < 0.01);
+  assert.equal(aligned.parentCity, undefined, '포항 라벨 제거');
+  assert.equal(aligned.name, '추자도');
+  assert.equal(aligned.slug, spot.slug);
+});
+
+// Mapbox Search Box 「Anmyeonam」(en) 응답 축약 — 과천 사찰이 이름만 겹친다
+const ANMYEONAM_FEATURES = [
+  poi('Anmyeon-Am', 'Taean, 32133, South Korea', ['buddhist_temple'], ['buddhist temple'], 126.375, 36.559, 'a'),
+  poi('Anmyeon-Am', 'Taean, 32133, South Korea', ['bus_stop'], ['bus stop'], 126.349, 36.554, 'b'),
+  poi('Gwacheon Mission of the Anmyeonam', 'Gwacheon, 13800, South Korea', ['buddhist_temple'], ['buddhist temple'], 126.983, 37.403, 'c'),
+];
+
+test('Anmyeonam — 과천 「… of the Anmyeonam」 사찰 제외, 태안 안면암 유지', () => {
+  const hits = ANMYEONAM_FEATURES.map((f) => featureToSuggestion(f, { source: 'mapbox' }));
+  const names = dropFarHomonymBusinessHits('Anmyeonam', hits).map((h) => `${h.name}|${h.lat}`);
+  assert.ok(!names.some((n) => n.startsWith('Gwacheon')), `과천 결과가 남음: ${names.join(', ')}`);
+  assert.ok(names.includes('Anmyeon-Am|36.559'), '태안 안면암 누락');
+});
+
+// 「장포리」 — 남원·서천 마을(geocode) + 이름에 검색어를 붙인 남해 낚시 업소
+const JANGPORI_HITS = [
+  { name: '장포리', kind: 'city', source: 'mapbox-geocode', lat: 35.43, lng: 127.33, parentCity: '남원시' },
+  { name: '장포리', kind: 'city', source: 'mapbox-geocode', lat: 36.05, lng: 126.71, parentCity: '서천군' },
+  featureToSuggestion(
+    poi('장포리낚시', '남해군, 52400, South Korea', ['fishing_store'], ['fishing store'], 127.9, 34.81, 'n'),
+    { source: 'mapbox' },
+  ),
+];
+
+test('장포리 — 남원·서천 마을과 먼 남해 낚시 업소 제외', () => {
+  assert.equal(isBusinessLikeSearchHit(JANGPORI_HITS[2]), true);
+  const filtered = dropFarHomonymBusinessHits('장포리', JANGPORI_HITS);
+  assert.deepEqual(
+    filtered.map((h) => h.parentCity),
+    ['남원시', '서천군'],
+  );
+});
+
+test('장포리 — 해당 마을 옆 업소는 유지', () => {
+  const near = featureToSuggestion(
+    poi('장포리낚시', '서천군, 33600, South Korea', ['fishing_store'], ['fishing store'], 126.72, 36.06, 'm'),
+    { source: 'mapbox' },
+  );
+  const filtered = dropFarHomonymBusinessHits('장포리', [...JANGPORI_HITS.slice(0, 2), near]);
+  assert.equal(filtered.length, 3);
+});
+
+// Mapbox Search Box 「해미읍성」(ko) 응답 축약 — 관광 POI 없이 상호만, 일부는 다른 지역 지점
+const HAEMI_FEATURES = [
+  poi('김추일수제돈까스 해미읍성점', '서산시, 31956, South Korea', ['food'], ['food'], 126.546, 36.714, 'a'),
+  poi('해미읍성감자탕', '서산시, 31956, South Korea', ['food'], ['food'], 126.546, 36.709, 'b'),
+  poi('해미읍성왕꽈배기', '태안군, 32133, South Korea', ['food'], ['food'], 126.35, 36.622, 'c'),
+  poi('해미읍성 왕꽈배기 대부도점', '안산시, 15654, South Korea', ['bakery'], ['bakery'], 126.571, 37.23, 'd'),
+  poi('해미읍성 왕꽈배기 창원점', '창원시, 51430, South Korea', ['bakery'], ['bakery'], 128.68, 35.23, 'e'),
+];
+
+test('해미읍성 — SSOT 명소를 기준점으로 안산·태안·창원 지점 제외, 서산 해미 업소 유지', async () => {
+  const { buildLocalSearchSuggestions } = await import('../../src/pages/Home/lib/searchSuggestions.js');
+  const local = buildLocalSearchSuggestions('해미읍성');
+  const hub = local.find((item) => /해미읍성/.test(item.name));
+  assert.ok(hub && Math.abs(hub.lat - 36.713) < 0.01, '로컬 SSOT 서산 해미읍성 기준점');
+
+  const hits = HAEMI_FEATURES.map((f) => featureToSuggestion(f, { source: 'mapbox' }));
+  assert.deepEqual(dropFarHomonymBusinessHits('해미읍성', hits), hits, 'Mapbox 단독은 기준점 없음 → 판단 안 함');
+
+  const names = dropFarHomonymBusinessHits('해미읍성', [...local, ...hits], { anchors: local }).map((h) => h.name);
+  for (const drop of ['해미읍성왕꽈배기', '해미읍성 왕꽈배기 대부도점', '해미읍성 왕꽈배기 창원점']) {
+    assert.ok(!names.includes(drop), `${drop}가 남음`);
+  }
+  for (const keep of [hub.name, '김추일수제돈까스 해미읍성점', '해미읍성감자탕']) {
+    assert.ok(names.includes(keep), `${keep} 누락`);
+  }
+});
+
+// 「남산」 — 서울 남산·경주 남산은 둘 다 관광 POI(산). 거리 규칙은 업소에만.
+const NAMSAN_HITS = [
+  poi('남산', '서울특별시, 04340, South Korea', ['mountain', 'park'], ['mountain', 'park'], 126.991, 37.551, 'a'),
+  poi('경주 남산', '경주시, 38170, South Korea', ['mountain'], ['mountain'], 129.222, 35.769, 'b'),
+  poi('남산', '광주광역시, 61400, South Korea', [], [], 126.92, 35.15, 'c'),
+  poi('남산타워치킨', '대구광역시, 41900, South Korea', ['restaurant', 'food'], ['restaurant', 'food'], 128.6, 35.87, 'd'),
+].map((f) => featureToSuggestion(f, { source: 'mapbox' }));
+
+test('남산 — 서울 남산이 기준점이어도 경주 남산(관광 POI)은 유지, 먼 동명 업소만 제외', () => {
+  const names = dropFarHomonymBusinessHits('남산', NAMSAN_HITS).map((h) => `${h.name}|${h.lat}`);
+  assert.ok(names.includes('남산|37.551'), '서울 남산 누락');
+  assert.ok(names.includes('경주 남산|35.769'), `경주 남산이 빠짐: ${names.join(', ')}`);
+  assert.ok(!names.includes('남산|35.15'), '광주 무분류 「남산」 상호가 남음');
+  assert.ok(!names.includes('남산타워치킨|35.87'), '대구 「남산…」 업소가 남음');
+});
+
+// 「용궁사」 — 인천 용궁사·부산 해동용궁사 모두 사찰(관광)
+const YONGGUNGSA_HITS = [
+  poi('용궁사', '인천광역시, 22300, South Korea', ['buddhist_temple'], ['buddhist temple'], 126.62, 37.46, 'a'),
+  poi('해동용궁사', '부산광역시, 46083, South Korea', ['buddhist_temple'], ['buddhist temple'], 129.224, 35.188, 'b'),
+  poi('용궁사', '포항시, 37900, South Korea', ['buddhist_temple'], ['buddhist temple'], 129.4, 36.1, 'c'),
+].map((f) => featureToSuggestion(f, { source: 'mapbox' }));
+
+test('용궁사 — 인천 용궁사가 기준점이어도 부산 해동용궁사·다른 지역 용궁사(사찰)는 유지', async () => {
+  assert.deepEqual(dropFarHomonymBusinessHits('용궁사', YONGGUNGSA_HITS), YONGGUNGSA_HITS);
+  const { buildLocalSearchSuggestions } = await import('../../src/pages/Home/lib/searchSuggestions.js');
+  const local = buildLocalSearchSuggestions('용궁사');
+  const names = dropFarHomonymBusinessHits('용궁사', [...local, ...YONGGUNGSA_HITS], { anchors: local }).map(
+    (h) => `${h.name}|${h.lat}`,
+  );
+  for (const keep of ['용궁사|37.46', '해동용궁사|35.188', '용궁사|36.1']) {
+    assert.ok(names.includes(keep), `${keep} 누락: ${names.join(', ')}`);
+  }
+});
+
+test('하이브리드 — 이름이 다른 내장 결과(남산 → 춘천·남산면)는 기준점이 아니어서 대전 「남산」 업소 유지', async () => {
+  const { buildLocalSearchSuggestions } = await import('../../src/pages/Home/lib/searchSuggestions.js');
+  const local = buildLocalSearchSuggestions('남산');
+  assert.ok(local.length && local.every((item) => item.name !== '남산'), '로컬은 춘천 권역 결과');
+  const shop = featureToSuggestion(
+    poi('남산', '대전광역시, 34800, South Korea', [], [], 127.38, 36.35, 's'),
+    { source: 'mapbox' },
+  );
+  const out = dropFarHomonymBusinessHits('남산', [...local, shop], { anchors: local });
+  assert.ok(out.includes(shop), '춘천 내장 결과를 기준점으로 대전 「남산」을 뺌');
+});
+
+test('지점 표시 — 사찰 분류여도 「Mission of the 검색어」「검색어 포교당」은 거리 규칙 대상, 본 사찰은 아님', () => {
+  const [taean, , gwacheon] = ANMYEONAM_FEATURES.map((f) => featureToSuggestion(f, { source: 'mapbox' }));
+  assert.equal(isBranchLikeSearchHit(gwacheon, 'Anmyeonam'), true);
+  assert.equal(isBranchLikeSearchHit(taean, 'Anmyeonam'), false);
+  assert.equal(isBranchLikeSearchHit(YONGGUNGSA_HITS[1], '용궁사'), false);
+  assert.equal(isBranchLikeSearchHit(NAMSAN_HITS[1], '남산'), false);
+  const pogyo = featureToSuggestion(
+    poi('안면암 서울포교당', '서울특별시, 03000, South Korea', ['buddhist_temple'], ['buddhist temple'], 126.98, 37.57, 'p'),
+    { source: 'mapbox' },
+  );
+  assert.equal(isBranchLikeSearchHit(pogyo, '안면암'), true);
+  assert.equal(isBranchLikeSearchHit(pogyo, '수덕사'), false, '검색어 없이 붙은 표시는 지점이 아님');
+});
+
+const MISSION_DOLORES = featureToSuggestion(
+  poi('Mission Dolores', 'San Francisco, California 94114, United States', ['historic_site'], ['historic site'], -122.4269, 37.7643, 'md'),
+  { source: 'mapbox' },
+);
+const MISSION_CAPISTRANO = featureToSuggestion(
+  poi('Mission San Juan Capistrano', 'San Juan Capistrano, California 92675, United States', ['historic_site'], ['historic site'], -117.6631, 33.5025, 'mc'),
+  { source: 'mapbox' },
+);
+
+test('Mission Dolores·Mission San Juan Capistrano — 사적지 이름의 Mission은 지점 표시가 아님', () => {
+  assert.equal(isBranchLikeSearchHit(MISSION_DOLORES, 'Mission Dolores'), false);
+  assert.equal(isBranchLikeSearchHit(MISSION_DOLORES, 'Dolores'), false);
+  assert.equal(isBranchLikeSearchHit(MISSION_CAPISTRANO, 'Mission San Juan Capistrano'), false);
+  assert.equal(isBranchLikeSearchHit(MISSION_CAPISTRANO, 'Capistrano'), false);
+
+  const dolores = { name: 'Dolores', kind: 'city', source: 'mapbox-geocode', lat: -33.53, lng: -58.21 };
+  const doloresOut = dropFarHomonymBusinessHits('Dolores', [dolores, MISSION_DOLORES]);
+  assert.ok(doloresOut.includes(MISSION_DOLORES), '우루과이 Dolores 기준점 때문에 Mission Dolores가 빠짐');
+
+  const capistrano = { name: 'Capistrano', kind: 'city', source: 'mapbox-geocode', lat: 38.69, lng: 16.29 };
+  const capistranoOut = dropFarHomonymBusinessHits('Capistrano', [capistrano, MISSION_CAPISTRANO]);
+  assert.ok(capistranoOut.includes(MISSION_CAPISTRANO), '이탈리아 Capistrano 기준점 때문에 Mission San Juan Capistrano가 빠짐');
+});
+
+test('「한반도 땅끝 최북단 지점」 — 관광 분류의 「지점」은 지점 표시가 아님, 해남 땅끝과 멀어도 유지', () => {
+  const north = featureToSuggestion(
+    poi('한반도 땅끝 최북단 지점', '고성군, 24700, South Korea', ['tourist_attraction', 'viewpoint'], ['tourist attraction', 'viewpoint'], 128.35, 38.61, 'tk'),
+    { source: 'mapbox' },
+  );
+  assert.equal(isBranchLikeSearchHit(north, '땅끝'), false);
+  const haenam = { name: '땅끝', kind: 'spot', source: 'local', lat: 34.3, lng: 126.53 };
+  const out = dropFarHomonymBusinessHits('땅끝', [north], { anchors: [haenam] });
+  assert.ok(out.includes(north), '해남 땅끝 기준점 때문에 고성 최북단 지점이 빠짐');
+
+  const shop = featureToSuggestion(
+    poi('땅끝횟집 부산지점', '부산광역시, 48000, South Korea', ['restaurant', 'food'], ['restaurant', 'food'], 129.1, 35.15, 'ts'),
+    { source: 'mapbox' },
+  );
+  assert.ok(!dropFarHomonymBusinessHits('땅끝', [north, shop], { anchors: [haenam] }).includes(shop), '먼 「…지점」 업소는 그대로 제외');
+});
+
+test('하이브리드 검색은 Mapbox 결과를 로컬 SSOT 기준점으로 한 번 더 거른다', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const src = await readFile(new URL('../../src/pages/Home/lib/searchSuggestions.js', import.meta.url), 'utf8');
+  assert.match(src, /dropFarHomonymBusinessHits\(q, out, \{ anchors: local \}\)/);
+});
+
+test('가까운 방문 행·해외 동명·기준점 없음은 그대로', () => {
+  const near = visitedRowToSearchSpot({ ...VISITED_CHUJADO_ROW, lat: 33.96, lng: 126.30 });
+  const anchors = tourKeywordItemsToRegionAnchors(TOUR_CHUJADO_ITEMS, '추자도');
+  assert.deepEqual(alignVisitedSpotsToRegionAnchors([near], anchors, { isDomestic: coordsInKorea }), [near]);
+
+  const abroad = { name: '추자도', lat: 35.68, lng: 139.65, source: 'visited' };
+  assert.deepEqual(alignVisitedSpotsToRegionAnchors([abroad], anchors, { isDomestic: coordsInKorea }), [abroad]);
+
+  const far = visitedRowToSearchSpot(VISITED_CHUJADO_ROW);
+  assert.deepEqual(alignVisitedSpotsToRegionAnchors([far], [], { isDomestic: coordsInKorea }), [far]);
+});
