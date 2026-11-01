@@ -122,7 +122,7 @@ export function FestivalPhotoFrame({
     setTimedOut(false);
     setBroken(false);
     setLoaded(true);
-    if (onLoadedRef.current) onLoadedRef.current();
+    if (onLoadedRef.current) onLoadedRef.current(el);
   };
 
   const markBroken = (el) => {

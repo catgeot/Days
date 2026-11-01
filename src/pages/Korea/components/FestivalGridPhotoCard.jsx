@@ -13,6 +13,7 @@ import { formatFestivalDistKm } from '../lib/formatFestivalDistKm.js';
 import { festivalListDisplayTitleLines } from '../festivalDisplayTitle.js';
 import { festivalGridPlaceLabel } from '../festivalGridPlaceLabel.js';
 import { hasFestivalThumbnail } from '../socialPromoFestivalsLogic.js';
+import { festivalHubPhotoLayout } from '../festivalHubGridLayout.js';
 
 function FestivalGridThumbLoadingShimmer() {
   return (
@@ -42,8 +43,6 @@ function FestivalGridThumbLoadingShimmer() {
  *   areaCode?: string,
  *   cityName?: string,
  *   priorityThumb?: boolean,
- *   thumbAspectClass?: string,
- *   wide?: boolean,
  * }} props
  */
 export default function FestivalGridPhotoCard({
@@ -56,14 +55,13 @@ export default function FestivalGridPhotoCard({
   areaCode = 'all',
   cityName = 'all',
   priorityThumb = false,
-  thumbAspectClass = 'aspect-[4/3]',
-  wide = false,
 }) {
   const { t } = useTranslation();
   const { isEnglish, locale } = useLocale();
   const koText = koreanApiTextProps(isEnglish);
   const [urlIndex, setUrlIndex] = useState(0);
   const [thumbDecoded, setThumbDecoded] = useState(false);
+  const [photoSize, setPhotoSize] = useState(null);
 
   const thumbCandidates = React.useMemo(
     () => festivalItemThumbCandidateUrls(item),
@@ -79,7 +77,10 @@ export default function FestivalGridPhotoCard({
 
   useEffect(() => {
     setThumbDecoded(false);
+    setPhotoSize(null);
   }, [activeUrl]);
+
+  const photoLayout = festivalHubPhotoLayout(photoSize?.width, photoSize?.height);
 
   const range = formatFestivalDetailDateRange(
     item.eventStartDate,
@@ -94,12 +95,13 @@ export default function FestivalGridPhotoCard({
 
   return (
     <article
-      className={`relative mb-1.5 flex min-w-0 break-inside-avoid flex-col overflow-hidden rounded-xl border bg-white text-left shadow-sm transition-colors md:mb-2 lg:mb-2.5 ${wide ? '[column-span:all]' : ''} ${
+      className={`relative mb-1.5 flex min-w-0 break-inside-avoid flex-col overflow-hidden rounded-xl border bg-white text-left shadow-sm transition-colors md:mb-2 lg:mb-2.5 ${photoLayout.wide ? '[column-span:all]' : ''} ${
         active
           ? 'border-amber-400 ring-1 ring-amber-200'
           : 'border-stone-200 [@media(hover:hover)]:hover:border-amber-300'
       }`}
       data-festival-grid-card=""
+      data-festival-grid-card-wide={photoLayout.wide ? 'true' : undefined}
     >
       <button
         type="button"
@@ -107,7 +109,11 @@ export default function FestivalGridPhotoCard({
         onClick={() => onSelect(item)}
         className="flex min-w-0 flex-1 flex-col text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-300/90 focus-visible:ring-offset-1"
       >
-        <div className={`relative ${thumbAspectClass} w-full overflow-hidden bg-gradient-to-br from-amber-100 to-stone-200`}>
+        <div
+          className="relative aspect-[4/5] w-full overflow-hidden bg-gradient-to-br from-amber-100 to-stone-200"
+          style={photoLayout.aspectRatio ? { aspectRatio: photoLayout.aspectRatio } : undefined}
+          data-festival-grid-thumb-frame=""
+        >
           {showStaticFallback ? (
             <span className="absolute inset-0" data-festival-grid-thumb-fallback="">
               <FestivalListThumbFallback size="lg" />
@@ -122,14 +128,19 @@ export default function FestivalGridPhotoCard({
                 fetchPriority={priorityThumb ? 'high' : undefined}
                 decoding="async"
                 referrerPolicy="no-referrer"
-                className="absolute inset-0 z-[1] h-full w-full object-cover"
+                className="absolute inset-0 z-[1] h-full w-full object-contain"
                 pendingShimmer={!thumbDecoded}
                 fallback={
                   <span className="absolute inset-0" data-festival-grid-thumb-fallback="">
                     <FestivalListThumbFallback size="lg" />
                   </span>
                 }
-                onLoaded={() => setThumbDecoded(true)}
+                onLoaded={(img) => {
+                  setThumbDecoded(true);
+                  if (img?.naturalWidth > 0 && img?.naturalHeight > 0) {
+                    setPhotoSize({ width: img.naturalWidth, height: img.naturalHeight });
+                  }
+                }}
                 onFailed={() => {
                   if (urlIndex + 1 < thumbCandidates.length) {
                     setUrlIndex((i) => i + 1);
@@ -206,13 +217,13 @@ export default function FestivalGridPhotoCard({
   );
 }
 
-export function FestivalGridSkeleton({ thumbAspectClass = 'aspect-[4/3]', wide = false }) {
+export function FestivalGridSkeleton() {
   return (
     <div
-      className={`mb-1.5 break-inside-avoid overflow-hidden rounded-xl border border-stone-200 bg-white md:mb-2 lg:mb-2.5 ${wide ? '[column-span:all]' : ''}`}
+      className="mb-1.5 break-inside-avoid overflow-hidden rounded-xl border border-stone-200 bg-white md:mb-2 lg:mb-2.5"
       aria-hidden="true"
     >
-      <div className={`${thumbAspectClass} animate-pulse bg-stone-200`} />
+      <div className="aspect-[4/5] animate-pulse bg-stone-200" />
       <div className="space-y-1 px-1.5 py-1.5">
         <div className="h-3 animate-pulse rounded bg-stone-200" />
         <div className="h-2.5 w-4/5 animate-pulse rounded bg-stone-100" />

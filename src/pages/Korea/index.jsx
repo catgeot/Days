@@ -66,8 +66,6 @@ import {
   FESTIVAL_HUB_GRID_CLASS,
   FESTIVAL_HUB_GRID_MOBILE_SCROLL_PAD_CLASS,
   FESTIVAL_HUB_GRID_SCROLL_TOP_BOTTOM_CLASS,
-  festivalHubMasonryIsWide,
-  festivalHubMasonryThumbAspectClass,
 } from './festivalHubGridLayout.js';
 import {
   festivalHubGridThumbLoadKey,
@@ -766,11 +764,7 @@ function FestivalListLoadingSkeletons({ useGrid }) {
     >
       {Array.from({ length: useGrid ? 6 : 5 }, (_, i) =>
         useGrid ? (
-          <FestivalGridSkeleton
-            key={`sk-${i}`}
-            thumbAspectClass={festivalHubMasonryThumbAspectClass(i)}
-            wide={festivalHubMasonryIsWide(i)}
-          />
+          <FestivalGridSkeleton key={`sk-${i}`} />
         ) : (
           <FestivalRowSkeleton key={`sk-${i}`} />
         ),
@@ -997,8 +991,6 @@ function FestivalEntries({
             key={cardKey}
             item={item}
             priorityThumb={priorityThumb}
-            thumbAspectClass={festivalHubMasonryThumbAspectClass(index)}
-            wide={festivalHubMasonryIsWide(index)}
             areaCode={areaCode}
             cityName={cityName}
             active={

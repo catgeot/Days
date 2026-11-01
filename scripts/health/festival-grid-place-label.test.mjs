@@ -5,8 +5,8 @@ import { festivalItemThumbCandidateUrls } from '../../src/pages/Korea/festivalLi
 import { festivalGridPlaceLabel } from '../../src/pages/Korea/festivalGridPlaceLabel.js';
 import {
   FESTIVAL_HUB_GRID_CLASS,
-  festivalHubMasonryIsWide,
-  festivalHubMasonryThumbAspectClass,
+  FESTIVAL_HUB_PHOTO_WIDE_MIN_RATIO,
+  festivalHubPhotoLayout,
 } from '../../src/pages/Korea/festivalHubGridLayout.js';
 import {
   readFestivalHubLegacyListFromSession,
@@ -19,19 +19,39 @@ test('festival hub grid class — masonry columns 2 mobile, 3 md, 4 lg', () => {
   assert.match(FESTIVAL_HUB_GRID_CLASS, /lg:columns-4/);
 });
 
-test('festival hub masonry — first card wide, then every 6th, portrait-led aspects', () => {
-  const aspects = Array.from({ length: 7 }, (_, i) =>
-    festivalHubMasonryThumbAspectClass(i),
-  );
-  assert.ok(new Set(aspects).size >= 4);
-  assert.equal(festivalHubMasonryIsWide(0), true);
-  assert.equal(festivalHubMasonryIsWide(5), false);
-  assert.equal(festivalHubMasonryIsWide(6), true);
-  assert.equal(festivalHubMasonryIsWide(12), true);
-  assert.equal(aspects[0], 'aspect-[4/3] md:aspect-[16/9]');
-  for (const aspect of aspects.slice(1, 6)) {
-    assert.doesNotMatch(aspect, /aspect-\[(?:4\/3|5\/4|16\/9)\]/);
-  }
+test('festival hub masonry — layout follows each photo, not list index', () => {
+  assert.deepEqual(festivalHubPhotoLayout(800, 1000), {
+    aspectRatio: '0.8 / 1',
+    wide: false,
+  });
+  assert.deepEqual(festivalHubPhotoLayout(1000, 1000), {
+    aspectRatio: '1 / 1',
+    wide: false,
+  });
+  assert.deepEqual(festivalHubPhotoLayout(1200, 800), {
+    aspectRatio: `${FESTIVAL_HUB_PHOTO_WIDE_MIN_RATIO} / 1`,
+    wide: true,
+  });
+  assert.deepEqual(festivalHubPhotoLayout(1600, 900), {
+    aspectRatio: `${1600 / 900} / 1`,
+    wide: true,
+  });
+  assert.deepEqual(festivalHubPhotoLayout(3000, 1000), {
+    aspectRatio: '2 / 1',
+    wide: true,
+  });
+  assert.deepEqual(festivalHubPhotoLayout(400, 2000), {
+    aspectRatio: '0.5 / 1',
+    wide: false,
+  });
+  assert.deepEqual(festivalHubPhotoLayout(0, 100), {
+    aspectRatio: null,
+    wide: false,
+  });
+  assert.deepEqual(festivalHubPhotoLayout(undefined, undefined), {
+    aspectRatio: null,
+    wide: false,
+  });
 });
 
 test('festivalGridPlaceLabel — nationwide uses short sido + city', () => {
