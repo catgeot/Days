@@ -5,6 +5,7 @@ import test from 'node:test';
 const {
   alignVisitedSpotsToRegionAnchors,
   dropFarHomonymBusinessHits,
+  isBranchLikeSearchHit,
   isBusinessLikeSearchHit,
   tourKeywordItemsToRegionAnchors,
 } = await import('../../src/pages/Home/lib/searchHomonymRegion.js');
@@ -158,6 +159,66 @@ test('해미읍성 — SSOT 명소를 기준점으로 안산·태안·창원 지
   for (const keep of [hub.name, '김추일수제돈까스 해미읍성점', '해미읍성감자탕']) {
     assert.ok(names.includes(keep), `${keep} 누락`);
   }
+});
+
+// 「남산」 — 서울 남산·경주 남산은 둘 다 관광 POI(산). 거리 규칙은 업소에만.
+const NAMSAN_HITS = [
+  poi('남산', '서울특별시, 04340, South Korea', ['mountain', 'park'], ['mountain', 'park'], 126.991, 37.551, 'a'),
+  poi('경주 남산', '경주시, 38170, South Korea', ['mountain'], ['mountain'], 129.222, 35.769, 'b'),
+  poi('남산', '광주광역시, 61400, South Korea', [], [], 126.92, 35.15, 'c'),
+  poi('남산타워치킨', '대구광역시, 41900, South Korea', ['restaurant', 'food'], ['restaurant', 'food'], 128.6, 35.87, 'd'),
+].map((f) => featureToSuggestion(f, { source: 'mapbox' }));
+
+test('남산 — 서울 남산이 기준점이어도 경주 남산(관광 POI)은 유지, 먼 동명 업소만 제외', () => {
+  const names = dropFarHomonymBusinessHits('남산', NAMSAN_HITS).map((h) => `${h.name}|${h.lat}`);
+  assert.ok(names.includes('남산|37.551'), '서울 남산 누락');
+  assert.ok(names.includes('경주 남산|35.769'), `경주 남산이 빠짐: ${names.join(', ')}`);
+  assert.ok(!names.includes('남산|35.15'), '광주 무분류 「남산」 상호가 남음');
+  assert.ok(!names.includes('남산타워치킨|35.87'), '대구 「남산…」 업소가 남음');
+});
+
+// 「용궁사」 — 인천 용궁사·부산 해동용궁사 모두 사찰(관광)
+const YONGGUNGSA_HITS = [
+  poi('용궁사', '인천광역시, 22300, South Korea', ['buddhist_temple'], ['buddhist temple'], 126.62, 37.46, 'a'),
+  poi('해동용궁사', '부산광역시, 46083, South Korea', ['buddhist_temple'], ['buddhist temple'], 129.224, 35.188, 'b'),
+  poi('용궁사', '포항시, 37900, South Korea', ['buddhist_temple'], ['buddhist temple'], 129.4, 36.1, 'c'),
+].map((f) => featureToSuggestion(f, { source: 'mapbox' }));
+
+test('용궁사 — 인천 용궁사가 기준점이어도 부산 해동용궁사·다른 지역 용궁사(사찰)는 유지', async () => {
+  assert.deepEqual(dropFarHomonymBusinessHits('용궁사', YONGGUNGSA_HITS), YONGGUNGSA_HITS);
+  const { buildLocalSearchSuggestions } = await import('../../src/pages/Home/lib/searchSuggestions.js');
+  const local = buildLocalSearchSuggestions('용궁사');
+  const names = dropFarHomonymBusinessHits('용궁사', [...local, ...YONGGUNGSA_HITS], { anchors: local }).map(
+    (h) => `${h.name}|${h.lat}`,
+  );
+  for (const keep of ['용궁사|37.46', '해동용궁사|35.188', '용궁사|36.1']) {
+    assert.ok(names.includes(keep), `${keep} 누락: ${names.join(', ')}`);
+  }
+});
+
+test('하이브리드 — 이름이 다른 내장 결과(남산 → 춘천·남산면)는 기준점이 아니어서 대전 「남산」 업소 유지', async () => {
+  const { buildLocalSearchSuggestions } = await import('../../src/pages/Home/lib/searchSuggestions.js');
+  const local = buildLocalSearchSuggestions('남산');
+  assert.ok(local.length && local.every((item) => item.name !== '남산'), '로컬은 춘천 권역 결과');
+  const shop = featureToSuggestion(
+    poi('남산', '대전광역시, 34800, South Korea', [], [], 127.38, 36.35, 's'),
+    { source: 'mapbox' },
+  );
+  const out = dropFarHomonymBusinessHits('남산', [...local, shop], { anchors: local });
+  assert.ok(out.includes(shop), '춘천 내장 결과를 기준점으로 대전 「남산」을 뺌');
+});
+
+test('지점 표시 — 사찰 분류여도 「Mission of」「포교당」「…점」 이름은 거리 규칙 대상, 본 사찰은 아님', () => {
+  const [taean, , gwacheon] = ANMYEONAM_FEATURES.map((f) => featureToSuggestion(f, { source: 'mapbox' }));
+  assert.equal(isBranchLikeSearchHit(gwacheon), true);
+  assert.equal(isBranchLikeSearchHit(taean), false);
+  assert.equal(isBranchLikeSearchHit(YONGGUNGSA_HITS[1]), false);
+  assert.equal(isBranchLikeSearchHit(NAMSAN_HITS[1]), false);
+  const pogyo = featureToSuggestion(
+    poi('안면암 서울포교당', '서울특별시, 03000, South Korea', ['buddhist_temple'], ['buddhist temple'], 126.98, 37.57, 'p'),
+    { source: 'mapbox' },
+  );
+  assert.equal(isBranchLikeSearchHit(pogyo), true);
 });
 
 test('하이브리드 검색은 Mapbox 결과를 로컬 SSOT 기준점으로 한 번 더 거른다', async () => {
