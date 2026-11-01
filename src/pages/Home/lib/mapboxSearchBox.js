@@ -6,7 +6,6 @@ import { isIslandPlaceQuery } from './exploreSearchAliases.js';
 import { geocodeForwardSuggestionHits } from './mapboxGeocodeSuggestions.js';
 import { shouldSupplementGeocodeHits } from './travelSearchHomonyms.js';
 import { placeUrlSlug } from './cityAttractionHubs.js';
-import { dropFarHomonymBusinessHits } from './searchHomonymRegion.js';
 import {
   ensureLatinPlaceSlug,
   isLatinPlaceName,
@@ -264,15 +263,12 @@ export async function searchBoxForward(query, opts = {}) {
     const campusHits = await searchBoxForwardMerged(uni.campus, forwardOpts);
     if (campusHits.length) merged = [...campusHits, ...merged];
   }
-  merged = dropFarHomonymBusinessHits(query, resolveUniversitySearchHits(query, merged));
+  merged = resolveUniversitySearchHits(query, merged);
   if (opts.skipGeocodeFallback) return merged;
   if (!shouldSupplementGeocodeHits(query, merged)) return merged;
   const geoHits = await geocodeForwardSuggestionHits(query, { limit: opts.limit ?? 6 });
   if (!geoHits.length) return merged;
-  return dropFarHomonymBusinessHits(
-    query,
-    resolveUniversitySearchHits(query, mergeSearchBoxWithGeocodeHits(merged, geoHits)),
-  );
+  return resolveUniversitySearchHits(query, mergeSearchBoxWithGeocodeHits(merged, geoHits));
 }
 
 /**

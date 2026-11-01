@@ -5,14 +5,8 @@ import { supabase } from '../../../shared/api/supabase.js';
 import { fetchPlaceChatIntroSummaryForLocation } from './placeChatIntro.js';
 import { geocodeReversePlaceFields } from './mapboxGeocodeSuggestions.js';
 import { applyOfficialTourSearchMedia } from './koreaLocalScenicLists.js';
-import { invokeTourApiProxy } from '../../../utils/tourApiProxy.js';
-import {
-  alignVisitedSpotsToRegionAnchors,
-  tourKeywordItemsToRegionAnchors,
-} from './searchHomonymRegion.js';
 import {
   buildVisitedLookupTokens,
-  coordsInKorea,
   collapseDuplicateVisitedSpots,
   isSafeVisitedSearchQuery,
   overlayGeoFieldsOnVisitedSpot,
@@ -33,28 +27,6 @@ async function healVisitedSpot(spot) {
     return overlayGeoFieldsOnVisitedSpot(spot, [reverse]);
   } catch {
     return spot;
-  }
-}
-
-const HANGUL_RE = /[\uAC00-\uD7A3]/;
-
-/**
- * 한글 검색어 + 국내 좌표 방문 행만 — TourAPI 공식 제목과 지역이 다르면 공식 좌표로 맞춘다.
- * 조회 실패·결과 없음이면 원본 유지.
- */
-async function alignVisitedSpotsWithOfficialTour(query, spots) {
-  if (!HANGUL_RE.test(query)) return spots;
-  if (!spots.some((spot) => coordsInKorea(Number(spot?.lat), Number(spot?.lng)))) return spots;
-  try {
-    const res = await invokeTourApiProxy(
-      'searchKeyword',
-      { keyword: query, numOfRows: 8, pageNo: 1 },
-      { locale: 'ko' },
-    );
-    const anchors = tourKeywordItemsToRegionAnchors(res?.items, query);
-    return alignVisitedSpotsToRegionAnchors(spots, anchors, { isDomestic: coordsInKorea });
-  } catch {
-    return spots;
   }
 }
 
@@ -109,8 +81,7 @@ export async function lookupVisitedPlacesForSearch(query) {
     const collapsed = collapseDuplicateVisitedSpots(spots).map((spot) =>
       applyOfficialTourSearchMedia(spot),
     );
-    const aligned = await alignVisitedSpotsWithOfficialTour(q, collapsed);
-    const healed = await Promise.all(aligned.map((spot) => healVisitedSpot(spot)));
+    const healed = await Promise.all(collapsed.map((spot) => healVisitedSpot(spot)));
     return Promise.all(healed.map((spot) => attachIntroDesc(spot)));
   } catch {
     return [];

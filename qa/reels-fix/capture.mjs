@@ -73,32 +73,8 @@ async function summaryFlightState(page) {
   };
 }
 
-// ONLY=4,5 → 해당 문제 장면만
-const ONLY = new Set(String(process.env.ONLY || '1,2,3,4,5,6,7').split(',').map((s) => s.trim()));
-
-async function captureSearchRows(browser, viewport, name, query) {
-  const context = await newGuardedContext(browser, viewport);
-  const page = await context.newPage();
-  await openExploreSearch(page, query);
-  const rows = await page
-    .locator('[data-search-popover] button')
-    .filter({ hasNotText: 'MOONi' })
-    .allInnerTexts();
-  console.log(LABEL, viewport.width, name, rows.map((r) => r.replace(/\s+/g, ' ').trim()));
-  await shot(page, viewport, name);
-  await context.close();
-}
-
-async function captureSearchTap(browser, viewport, name, query) {
-  const context = await newGuardedContext(browser, viewport);
-  const page = await context.newPage();
-  await openExploreSearch(page, query);
-  await page.locator('[data-search-popover] button').filter({ hasNotText: 'MOONi' }).first().click();
-  await page.waitForTimeout(10_000);
-  console.log(LABEL, viewport.width, name, decodeURIComponent(page.url()));
-  await shot(page, viewport, name);
-  await context.close();
-}
+// ONLY=1,3 → 해당 장면만
+const ONLY = new Set(String(process.env.ONLY || '1,3,7').split(',').map((s) => s.trim()));
 
 async function captureMooniAccessOrigin(browser, viewport, name, placePath) {
   const context = await newGuardedContext(browser, viewport);
@@ -118,24 +94,6 @@ async function captureMooniAccessOrigin(browser, viewport, name, placePath) {
 const browser = await chromium.launch();
 try {
   for (const viewport of VIEWPORTS) {
-    if (ONLY.has('6')) {
-      await captureSearchRows(browser, viewport, '6-search-region-anmyeonam', 'Anmyeonam');
-      await captureSearchRows(browser, viewport, '6-search-region-haemieupseong', '해미읍성');
-    }
-    if (ONLY.has('7')) {
-      await captureMooniAccessOrigin(browser, viewport, '7-seosan-access-origin', '/place/seosan');
-      await captureMooniAccessOrigin(browser, viewport, '7-seocheon-access-origin', '/place/seocheon');
-    }
-    if (ONLY.has('4')) {
-      await captureSearchRows(browser, viewport, '4-search-alias-yongnuni', '용눈이');
-      await captureSearchRows(browser, viewport, '4-search-alias-anmyeonam', 'Anmyeonam');
-    }
-    if (ONLY.has('5')) {
-      await captureSearchTap(browser, viewport, '5-tap-hyeongjeseom', '형제섬');
-      await captureSearchTap(browser, viewport, '5-tap-yongnuni', '용눈이오름');
-      await captureSearchTap(browser, viewport, '5-tap-anmyeonam', '안면암');
-    }
-    if (!ONLY.has('1') && !ONLY.has('2') && !ONLY.has('3')) continue;
     if (ONLY.has('1')) {
       const context = await newGuardedContext(browser, viewport);
       const page = await context.newPage();
@@ -145,10 +103,6 @@ try {
       await shot(page, viewport, '1-jeju-flight-origin');
       await context.close();
     }
-    if (ONLY.has('2')) {
-      await captureSearchRows(browser, viewport, '2-search-chujado-ko', '추자도');
-      await captureSearchRows(browser, viewport, '2-search-chujado-en', 'Chujado');
-    }
     if (ONLY.has('3')) {
       const context = await newGuardedContext(browser, viewport, { hangFlightRoute: true });
       const page = await context.newPage();
@@ -157,6 +111,10 @@ try {
       console.log(LABEL, viewport.width, '3-chujado-card-edge-hang', await summaryFlightState(page));
       await shot(page, viewport, '3-chujado-card-edge-hang');
       await context.close();
+    }
+    if (ONLY.has('7')) {
+      await captureMooniAccessOrigin(browser, viewport, '7-seosan-access-origin', '/place/seosan');
+      await captureMooniAccessOrigin(browser, viewport, '7-seocheon-access-origin', '/place/seocheon');
     }
   }
 } finally {

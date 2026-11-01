@@ -516,22 +516,7 @@ export const KO_EXPLORE_SEARCH_ALIASES = [
       also: ['평창 광천선굴'],
     },
   ],
-  ...expandScenicNameVariants(),
 ];
-
-/**
- * 방문 기록·TourAPI에 이미 있는 국내 명소의 띄어쓰기·약칭·로마자 표기 → 정식 한글명.
- * 좌표·새 장소는 넣지 않는다. romanized도 없음: Mapbox 영문 쿼리는 「제주특별자치도」·해외 동명 도시만 돌려준다.
- */
-function expandScenicNameVariants() {
-  const places = [
-    ['형제섬', ['hyeongjeseom', 'hyeongje island', 'hyeongjeseom island']],
-    ['추자도', ['추자군도', 'chujado', 'chujado island', 'chuja islands']],
-    ['용눈이오름', ['용눈이', 'yongnuni oreum', 'yongnuni-oreum', 'yongnuni']],
-    ['안면암', ['안면암(태안)', '태안 안면암', 'anmyeonam', 'anmyeonam temple']],
-  ];
-  return places.flatMap(([canonical, keys]) => keys.map((key) => [key, { canonical }]));
-}
 
 /**
  * 6. 국내 장소 갤러리 검색어 오버라이드
