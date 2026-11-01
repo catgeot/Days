@@ -19,15 +19,19 @@ test('festival hub grid class — masonry columns 2 mobile, 3 md, 4 lg', () => {
   assert.match(FESTIVAL_HUB_GRID_CLASS, /lg:columns-4/);
 });
 
-test('festival hub masonry — irregular thumb aspects with wide every 6th', () => {
-  const aspects = Array.from({ length: 6 }, (_, i) =>
+test('festival hub masonry — first card wide, then every 6th, portrait-led aspects', () => {
+  const aspects = Array.from({ length: 7 }, (_, i) =>
     festivalHubMasonryThumbAspectClass(i),
   );
   assert.ok(new Set(aspects).size >= 4);
-  assert.equal(festivalHubMasonryIsWide(4), false);
-  assert.equal(festivalHubMasonryIsWide(5), true);
-  assert.equal(festivalHubMasonryIsWide(11), true);
-  assert.equal(aspects[5], 'aspect-[16/9]');
+  assert.equal(festivalHubMasonryIsWide(0), true);
+  assert.equal(festivalHubMasonryIsWide(5), false);
+  assert.equal(festivalHubMasonryIsWide(6), true);
+  assert.equal(festivalHubMasonryIsWide(12), true);
+  assert.equal(aspects[0], 'aspect-[4/3] md:aspect-[16/9]');
+  for (const aspect of aspects.slice(1, 6)) {
+    assert.doesNotMatch(aspect, /aspect-\[(?:4\/3|5\/4|16\/9)\]/);
+  }
 });
 
 test('festivalGridPlaceLabel — nationwide uses short sido + city', () => {
