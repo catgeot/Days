@@ -29,7 +29,7 @@ export const GATEO_ENV_FLAG_NAMES = {
   PLACE_GALLERY_OVERVIEW_FALLBACK: 'VITE_GATEO_PLACE_GALLERY_OVERVIEW_FALLBACK',
   /** MOONi scoped last-chat + verified festival list replies. Default on; `0`/`false`/`off` disables. */
   MOONI_SCOPED_FESTIVAL: 'VITE_GATEO_MOONI_SCOPED_FESTIVAL',
-  /** Explore page v2 — monthly picks row (step 1+). Default off. */
+  /** Explore page v2 (step 2+). Default off. Monthly picks row is code default ON and ignores this flag. */
   EXPLORE_V2: 'VITE_GATEO_EXPLORE_V2',
 };
 

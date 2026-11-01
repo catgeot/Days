@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
@@ -14,8 +14,6 @@ import {
 import {
   isValidMonthlyPickSource,
   normalizeMonthlyPickSource,
-  readExploreV2QueryParam,
-  readExploreV2LayoutParam,
   isExploreV2MonthlyRowVisible,
   buildVisibleMonthlyPickCards,
   resolveExploreMonthlyPickHeroUrl,
@@ -83,18 +81,15 @@ test('VITE_GATEO_EXPLORE_V2 defaults off when unset', () => {
   }
 });
 
-test('explore_v2=1 query enables monthly row without env flag or storage', () => {
-  assert.equal(readExploreV2QueryParam(''), false);
-  assert.equal(readExploreV2QueryParam('?foo=1'), false);
-  assert.equal(readExploreV2QueryParam('?explore_v2=1'), true);
-  assert.equal(readExploreV2QueryParam('?explore_v2=0'), false);
-
+test('monthly row is code default ON; VITE_GATEO_EXPLORE_V2 stays off', () => {
   const key = GATEO_ENV_FLAG_NAMES.EXPLORE_V2;
   const prev = globalThis.__VITE_ENV__[key];
   try {
     delete globalThis.__VITE_ENV__[key];
-    assert.equal(isExploreV2MonthlyRowVisible(''), false);
-    assert.equal(isExploreV2MonthlyRowVisible('?explore_v2=1'), true);
+    assert.equal(isGateoExploreV2Enabled(), false);
+    assert.equal(isExploreV2MonthlyRowVisible(), true);
+    globalThis.__VITE_ENV__[key] = '1';
+    assert.equal(isExploreV2MonthlyRowVisible(), true);
   } finally {
     if (prev === undefined) delete globalThis.__VITE_ENV__[key];
     else globalThis.__VITE_ENV__[key] = prev;
@@ -122,19 +117,17 @@ test('2026-11 monthly picks resolve verified place gallery hero (no OG overrides
   }
 });
 
-test('explore_v2 layout query selects mosaic b or default a', () => {
-  assert.equal(readExploreV2LayoutParam(''), 'a');
-  assert.equal(readExploreV2LayoutParam('?explore_v2=1'), 'a');
-  assert.equal(readExploreV2LayoutParam('?explore_v2=1&layout=a'), 'a');
-  assert.equal(readExploreV2LayoutParam('?explore_v2=1&layout=b'), 'b');
-  assert.equal(readExploreV2LayoutParam('?layout=b'), 'b');
-  assert.equal(readExploreV2LayoutParam('?layout=c'), 'a');
+test('monthly row renders mosaic B only (no layout query branch)', () => {
+  const dir = join(root, 'src/pages/Home/components/SearchDiscovery');
+  const section = readFileSync(join(dir, 'ExploreMonthlyPicksSection.jsx'), 'utf8');
+  assert.match(section, /ExploreMonthlyPicksLayoutB/);
+  assert.doesNotMatch(section, /LayoutA|readExploreV2LayoutParam|layout === /);
+  assert.equal(existsSync(join(dir, 'ExploreMonthlyPicksLayoutA.jsx')), false);
+  const lib = readFileSync(join(root, 'src/pages/Home/lib/exploreMonthlyPicks.js'), 'utf8');
+  assert.doesNotMatch(lib, /readExploreV2LayoutParam|readExploreV2QueryParam/);
 });
 
-test('explore_v2=1 query sets robots noindex on Home SEO only', () => {
+test('Home /explore SEO has no explore_v2 query noindex', () => {
   const home = readFileSync(join(root, 'src/pages/Home/index.jsx'), 'utf8');
-  const seo = readFileSync(join(root, 'src/components/SEO/index.jsx'), 'utf8');
-  assert.match(home, /readExploreV2QueryParam\(routeLocation\.search\)/);
-  assert.match(home, /robotsNoIndex=\{exploreV2QueryNoIndex\}/);
-  assert.match(seo, /robotsNoIndex \? <meta name="robots" content="noindex" \/>/);
+  assert.doesNotMatch(home, /readExploreV2QueryParam|exploreV2QueryNoIndex|robotsNoIndex=/);
 });

@@ -34,7 +34,7 @@ const ExploreMonthlyPickItem = ({
   imageUrl,
   onSelect,
   onImageError,
-  variant = 'scroll',
+  variant = 'tile',
   sourcesBelow = true,
   className = '',
   mediaClassName = '',
@@ -51,26 +51,20 @@ const ExploreMonthlyPickItem = ({
   });
 
   const isHero = variant === 'hero';
-  const isTile = variant === 'tile';
-  const isScroll = variant === 'scroll';
-  const wrapperWidth = isScroll ? 'w-[min(78vw,300px)] shrink-0 snap-center sm:w-[300px]' : '';
+  const isTile = !isHero;
   const titleClass = isHero
     ? 'text-xl font-bold leading-tight sm:text-2xl'
-    : isTile
-      ? 'text-sm font-bold leading-snug sm:text-base'
-      : 'text-lg font-bold leading-tight';
+    : 'text-sm font-bold leading-snug sm:text-base';
   const reasonClass = isHero
     ? 'mt-2 text-sm leading-snug text-gray-100 line-clamp-2 sm:text-[15px]'
-    : isTile
-      ? 'mt-1 text-[11px] leading-snug text-gray-100 line-clamp-2 sm:text-xs'
-      : 'mt-2 text-sm leading-snug text-gray-100 line-clamp-2';
+    : 'mt-1 text-[11px] leading-snug text-gray-100 line-clamp-2 sm:text-xs';
   const gradientHeight = isTile ? 'h-[62%] min-h-[72px]' : 'h-[52%] min-h-[108px]';
 
   if (!imageUrl) return null;
 
   return (
     <div
-      className={`flex min-w-0 flex-col ${wrapperWidth} ${className}`}
+      className={`flex min-w-0 flex-col ${className}`}
       data-testid={`explore-v2-monthly-item-${slug}`}
     >
       <article
@@ -81,7 +75,7 @@ const ExploreMonthlyPickItem = ({
         onPointerLeave={handleCancel}
         onPointerCancel={handleCancel}
         className={`group relative cursor-pointer overflow-hidden rounded-2xl border border-white/[0.08] bg-black/30 text-left transition hover:border-white/25 ${
-          isHero ? 'min-h-[220px] sm:min-h-[280px]' : isTile ? 'min-h-[108px] sm:min-h-[120px]' : 'h-[min(72vw,320px)] w-full sm:h-[340px]'
+          isHero ? 'min-h-[220px] sm:min-h-[280px]' : 'min-h-[108px] sm:min-h-[120px]'
         } ${mediaClassName}`}
       >
         <ExploreMonthlyPickMedia

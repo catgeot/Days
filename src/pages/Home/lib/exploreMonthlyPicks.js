@@ -3,39 +3,13 @@ import {
   EXPLORE_V2_MONTHLY_PICK_KEY,
   MONTHLY_PICKS,
 } from '../data/spotTraits';
-import { isGateoExploreV2Enabled } from '../../../shared/gateoFeatureFlags';
 import { EXPLORE_MONTHLY_PICK_VERIFIED_HERO_URLS } from '../data/exploreMonthlyPickHeroUrls.js';
 import { resolveListImageUrl } from '../../../utils/listImageUrl.js';
 import { getLocalizedPlaceName } from '../../../components/PlaceCard/common/locationDisplay';
 
-/** `/explore?explore_v2=1` — request-scoped preview; no storage. */
-export function readExploreV2QueryParam(search = '') {
-  const raw = String(search || '').trim();
-  if (!raw) return false;
-  try {
-    const query = raw.startsWith('?') ? raw.slice(1) : raw;
-    return new URLSearchParams(query).get('explore_v2') === '1';
-  } catch {
-    return false;
-  }
-}
-
-/** `layout=a` (default) | `layout=b` — monthly row visual variant. */
-export function readExploreV2LayoutParam(search = '') {
-  const raw = String(search || '').trim();
-  if (!raw) return 'a';
-  try {
-    const query = raw.startsWith('?') ? raw.slice(1) : raw;
-    const value = new URLSearchParams(query).get('layout');
-    if (value === 'b') return 'b';
-    return 'a';
-  } catch {
-    return 'a';
-  }
-}
-
-export function isExploreV2MonthlyRowVisible(search = '') {
-  return isGateoExploreV2Enabled() || readExploreV2QueryParam(search);
+/** 「11월의 여행지」 행 — 코드 기본 ON (VITE_GATEO_EXPLORE_V2·쿼리와 무관). */
+export function isExploreV2MonthlyRowVisible() {
+  return true;
 }
 
 const HTTPS_SOURCE = /^https:\/\/.+/i;

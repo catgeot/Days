@@ -1,23 +1,15 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { useLocation } from 'react-router-dom';
 import {
   buildVisibleMonthlyPickCards,
   exploreV2MonthlyPickHeadline,
   monthlyPickDisplayName,
   partitionExploreMonthlyPickCardsByHero,
-  readExploreV2LayoutParam,
   resolveExploreV2MonthlyPickKey,
 } from '../../lib/exploreMonthlyPicks';
 import { EXPLORE_V2_MONTHLY_PICK_KEY } from '../../data/spotTraits';
-import ExploreMonthlyPicksLayoutA from './ExploreMonthlyPicksLayoutA';
 import ExploreMonthlyPicksLayoutB from './ExploreMonthlyPicksLayoutB';
 
 const ExploreMonthlyPicksSection = ({ onSelectSpot }) => {
-  const location = useLocation();
-  const layout = useMemo(
-    () => readExploreV2LayoutParam(location.search),
-    [location.search],
-  );
   const monthKey = resolveExploreV2MonthlyPickKey(EXPLORE_V2_MONTHLY_PICK_KEY);
   const cards = useMemo(
     () => (monthKey ? buildVisibleMonthlyPickCards(monthKey) : []),
@@ -69,7 +61,6 @@ const ExploreMonthlyPicksSection = ({ onSelectSpot }) => {
   return (
     <section
       data-testid="explore-v2-monthly-section"
-      data-explore-v2-layout={layout}
       data-explore-v2-excluded={excludedLabels.join(',') || undefined}
       className="mb-10 w-full animate-fade-in"
       aria-label={headline}
@@ -80,19 +71,11 @@ const ExploreMonthlyPicksSection = ({ onSelectSpot }) => {
       >
         {headline}
       </h2>
-      {layout === 'b' ? (
-        <ExploreMonthlyPicksLayoutB
-          cards={visibleCards}
-          onSelectSpot={onSelectSpot}
-          onImageError={handleImageError}
-        />
-      ) : (
-        <ExploreMonthlyPicksLayoutA
-          cards={visibleCards}
-          onSelectSpot={onSelectSpot}
-          onImageError={handleImageError}
-        />
-      )}
+      <ExploreMonthlyPicksLayoutB
+        cards={visibleCards}
+        onSelectSpot={onSelectSpot}
+        onImageError={handleImageError}
+      />
     </section>
   );
 };
