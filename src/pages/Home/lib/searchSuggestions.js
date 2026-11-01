@@ -43,6 +43,7 @@ import {
 } from './citiesSearch';
 import { searchBoxForward, searchBoxTypesForQuery } from './mapboxSearchBox';
 import { lookupVisitedPlacesForSearch } from './visitedPlaceSearchLookup.js';
+import { dropFarHomonymBusinessHits } from './searchHomonymRegion.js';
 import { overlayGeoFieldsOnVisitedSpots } from './visitedPlaceSearch.js';
 import { buildMapboxSearchQueries, canonicalizeExploreSearchQuery } from './exploreSearchAliases';
 import {
@@ -468,10 +469,11 @@ export async function buildHybridSearchSuggestions(query, opts = {}) {
   } catch {
     // degrade: local only
   }
+  const regionChecked = dropFarHomonymBusinessHits(q, out, { anchors: local });
 
   try {
     const visited = await visitedPromise;
-    const overlaid = overlayGeoFieldsOnVisitedSpots(visited || [], out);
+    const overlaid = overlayGeoFieldsOnVisitedSpots(visited || [], regionChecked);
     const localKeys = new Set(local.map(dedupeKey).filter(Boolean));
     const withVisited = [];
     const visitedSeen = new Set();
@@ -479,10 +481,10 @@ export async function buildHybridSearchSuggestions(query, opts = {}) {
       if (localKeys.has(dedupeKey(item))) continue;
       pushUnique(withVisited, visitedSeen, item);
     }
-    for (const item of out) pushUnique(withVisited, visitedSeen, item);
+    for (const item of regionChecked) pushUnique(withVisited, visitedSeen, item);
     return withVisited.slice(0, 24);
   } catch {
-    return out.slice(0, 24);
+    return regionChecked.slice(0, 24);
   }
 }
 

@@ -82,25 +82,41 @@ function minDistanceKm(item, anchors) {
   return best;
 }
 
+/** 「해미읍성감자탕」「… 대부도점」처럼 검색어를 상호에 붙인 업소 — 그 장소 바로 옆일 때만 의미가 있다. */
+export const DERIVED_NAME_BUSINESS_MAX_KM = 15;
+
+function isMapboxPoiHit(item) {
+  return item?.source === 'mapbox' && (item.poiAttraction || item.kind === 'attraction');
+}
+
 /**
- * 검색어와 같은 이름의 무분류·상호 POI가 기준점들과 멀리 떨어져 있으면 뺀다
- * (Chujado → 부천 「Chujado」 상호 제외, 제주 추자도 등대·추자도 섬은 유지).
+ * 검색어와 이름이 겹치는 Mapbox POI가 그 장소와 멀리 떨어져 있으면 뺀다.
+ * - 이름이 같은 무분류·상호 POI: 이름이 겹치는 기준점에서 maxKm 초과 (Chujado → 부천 상호)
+ * - 이름에 검색어만 들어간 POI: 이름이 같은 기준점(또는 opts.anchors)에서
+ *   상호는 DERIVED_NAME_BUSINESS_MAX_KM, 관광 POI는 maxKm 초과
+ *   (해미읍성 → 안산·창원 상호, Anmyeonam → 과천 사찰)
+ * 기준점이 없으면 판단하지 않는다.
  * @param {string} query
  * @param {object[]} hits
- * @param {{ anchors?: object[], maxKm?: number }} [opts]
+ * @param {{ anchors?: object[], maxKm?: number }} [opts] anchors = 호출부가 아는 정답 장소(SSOT 결과 등)
  */
 export function dropFarHomonymBusinessHits(query, hits, opts = {}) {
   const list = Array.isArray(hits) ? hits : [];
   const maxKm = opts.maxKm ?? HOMONYM_REGION_MAX_KM;
-  const anchors = [
-    ...(opts.anchors || []).filter(hasCoords),
-    ...list.filter((item) => isRegionAnchorHit(item) && nameContainsQuery(item, query)),
-  ];
-  if (!anchors.length) return list;
+  const given = (opts.anchors || []).filter(hasCoords);
+  const regionHits = list.filter(isRegionAnchorHit);
+  const looseAnchors = [...given, ...regionHits.filter((item) => nameContainsQuery(item, query))];
+  const exactAnchors = [...given, ...regionHits.filter((item) => nameEqualsQuery(item, query))];
+  if (!looseAnchors.length) return list;
   return list.filter((item) => {
-    if (!isBusinessLikeSearchHit(item) || !hasCoords(item)) return true;
-    if (!nameEqualsQuery(item, query)) return true;
-    return minDistanceKm(item, anchors) <= maxKm;
+    if (!isMapboxPoiHit(item) || !hasCoords(item)) return true;
+    const business = isBusinessLikeSearchHit(item);
+    if (nameEqualsQuery(item, query)) {
+      return !business || minDistanceKm(item, looseAnchors) <= maxKm;
+    }
+    if (!nameContainsQuery(item, query) || !exactAnchors.length) return true;
+    const limit = business ? DERIVED_NAME_BUSINESS_MAX_KM : maxKm;
+    return minDistanceKm(item, exactAnchors) <= limit;
   });
 }
 
