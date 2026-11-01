@@ -12,7 +12,7 @@ import {
 } from '../lib/globeFlightCinema.js';
 import {
   persistFlightOriginIata,
-  resolveDefaultFlightOriginIata,
+  resolveDefaultFlightOriginIataForLocation,
 } from '../lib/flightOriginPreference.js';
 import { shouldResolveFlightRouteViaEdge } from '../../../utils/rentalAirportMatch.js';
 import { resolveFlightRouteHubsForCinema } from '../../../utils/resolveFlightRouteEdge.js';
@@ -53,7 +53,9 @@ export default function HomePlaceCardSummary({
   /** place_toolkit essential_guide가 있을 때만 써머리 「플래너 보기」링크 */
   const plannerUrl = essentialGuide ? buildPlacePlannerPath(slug) : null;
 
-  const [selectedOriginIata, setSelectedOriginIata] = useState(() => resolveDefaultFlightOriginIata());
+  const [selectedOriginIata, setSelectedOriginIata] = useState(() =>
+    resolveDefaultFlightOriginIataForLocation(location)
+  );
   const [isImmersed, setIsImmersed] = useState(false);
   const [stayOpen, setStayOpen] = useState(false);
   const [tourOpen, setTourOpen] = useState(false);
@@ -90,7 +92,8 @@ export default function HomePlaceCardSummary({
   }, []);
 
   useEffect(() => {
-    queueMicrotask(() => setSelectedOriginIata(resolveDefaultFlightOriginIata()));
+    queueMicrotask(() => setSelectedOriginIata(resolveDefaultFlightOriginIataForLocation(location)));
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- 장소가 바뀔 때만 기본값 재계산 (사용자 선택 유지)
   }, [location?.id]);
 
   useEffect(() => {

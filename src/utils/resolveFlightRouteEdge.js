@@ -37,6 +37,26 @@ function pickEdgeHubsPreferConnecting(edge) {
   return null;
 }
 
+/** 장소카드 「조회 중…」 상한 — 넘으면 null(정적 graph·직항 폴백) */
+export const FLIGHT_ROUTE_EDGE_TIMEOUT_MS = 8000;
+
+/**
+ * invoke가 끝나지 않아도(네트워크 정지·콜드스타트) timeoutMs 뒤 null로 settle.
+ * @template T
+ * @param {Promise<T>} promise
+ * @param {number} timeoutMs
+ * @returns {Promise<T | null>}
+ */
+export function withEdgeTimeout(promise, timeoutMs) {
+  let timer = null;
+  const timeout = new Promise((resolve) => {
+    timer = setTimeout(() => resolve(null), Math.max(0, Number(timeoutMs) || 0));
+  });
+  return Promise.race([Promise.resolve(promise).catch(() => null), timeout]).finally(() => {
+    if (timer) clearTimeout(timer);
+  });
+}
+
 /** @type {Map<string, { hubIatas: string[] | null, source: string, path: string[] | null, resolvedDestIata: string, fetchedAt: number }>} */
 const cache = new Map();
 const CACHE_TTL_MS = 10 * 60 * 1000;
@@ -47,7 +67,7 @@ function cacheKey(originIata, destIata, lat, lng, topN = 1) {
 }
 
 /**
- * @param {{ originIata?: string, destIata?: string, lat?: number, lng?: number, maxNearestKm?: number, topN?: number }} params
+ * @param {{ originIata?: string, destIata?: string, lat?: number, lng?: number, maxNearestKm?: number, topN?: number, timeoutMs?: number, invoke?: (name: string, options: object) => Promise<{ data?: any, error?: any }> }} params
  * @returns {Promise<{ destIata: string, hubIatas: string[] | null, source: string, path: string[] | null, nearestAirport?: object, alternatives?: Array<{ hubIatas: string[], source: string, path: string[] | null }> } | null>}
  */
 export async function resolveFlightRouteViaEdge(params = {}) {
@@ -72,15 +92,22 @@ export async function resolveFlightRouteViaEdge(params = {}) {
   }
 
   try {
-    const { data, error } = await supabase.functions.invoke('resolve-flight-route', {
-      body: {
-        originIata,
-        ...(destIata.length === 3 ? { destIata } : {}),
-        ...(Number.isFinite(lat) && Number.isFinite(lng) ? { lat, lng } : {}),
-        maxNearestKm: params.maxNearestKm ?? 650,
-        topN,
-      },
-    });
+    const invoke = params.invoke ?? ((name, options) => supabase.functions.invoke(name, options));
+    const timeoutMs = params.timeoutMs ?? FLIGHT_ROUTE_EDGE_TIMEOUT_MS;
+    const response = await withEdgeTimeout(
+      invoke('resolve-flight-route', {
+        body: {
+          originIata,
+          ...(destIata.length === 3 ? { destIata } : {}),
+          ...(Number.isFinite(lat) && Number.isFinite(lng) ? { lat, lng } : {}),
+          maxNearestKm: params.maxNearestKm ?? 650,
+          topN,
+        },
+        timeout: timeoutMs,
+      }),
+      timeoutMs,
+    );
+    const { data, error } = response ?? {};
 
     if (error || !data?.ok) return null;
 
@@ -120,7 +147,7 @@ export function clearFlightRouteEdgeCache() {
  * shouldResolveFlightRouteViaEdge가 false면 null(동기 resolveFlightRoutePlan 사용).
  *
  * @param {Record<string, unknown> | null | undefined} location
- * @param {{ originIata?: string, destIata?: string, essentialGuide?: Record<string, unknown> | null, ignoreStaticAirportMap?: boolean }} [options]
+ * @param {{ originIata?: string, destIata?: string, essentialGuide?: Record<string, unknown> | null, ignoreStaticAirportMap?: boolean, timeoutMs?: number, invoke?: Function }} [options]
  * @returns {Promise<{ hubIatas: string[], destIata: string, routeSource: string } | null>}
  */
 export async function resolveFlightRouteHubsForCinema(location, options = {}) {
@@ -149,6 +176,8 @@ export async function resolveFlightRouteHubsForCinema(location, options = {}) {
     ...(destIata.length === 3 ? { destIata } : {}),
     ...(Number.isFinite(lat) && Number.isFinite(lng) ? { lat, lng } : {}),
     topN: 3,
+    ...(options.invoke ? { invoke: options.invoke } : {}),
+    ...(options.timeoutMs != null ? { timeoutMs: options.timeoutMs } : {}),
   });
 
   const resolvedDest = String(edge?.destIata ?? destIata).trim().toUpperCase();

@@ -7,7 +7,10 @@ import {
     openTripcomExternalUrl,
 } from './partnerNavigation';
 import { useTryOpenTripcomFlightSearch } from '../tabs/planner/TripcomFlightSearchContext';
-import { TRIPCOM_DEFAULT_DEPARTURE_AIRPORT } from '../../../utils/affiliate';
+import {
+    getPlannerFlightArrivalIata,
+    resolveTripcomDefaultDepartureIata,
+} from '../../../utils/affiliate';
 import { resolveFlightDepartureIataForTrip } from '../../../pages/Home/lib/flightOriginPreference.js';
 
 /**
@@ -38,8 +41,8 @@ const WhiteLabelWidget = ({
     const { t } = useTranslation();
     const departureIata = useMemo(() => {
         if (departureOverride) return resolveFlightDepartureIataForTrip(departureOverride);
-        return TRIPCOM_DEFAULT_DEPARTURE_AIRPORT;
-    }, [departureOverride]);
+        return resolveTripcomDefaultDepartureIata(getPlannerFlightArrivalIata(location, { essentialGuide }));
+    }, [departureOverride, location, essentialGuide]);
     const flightSearchOpts = useMemo(
         () => ({
             essentialGuide,

@@ -1,7 +1,7 @@
 import {
   buildTripcomPlannerFlightUrl,
   getPlannerFlightArrivalIata,
-  TRIPCOM_DEFAULT_DEPARTURE_AIRPORT,
+  resolveTripcomDefaultDepartureIata,
 } from './affiliate.js';
 import { RENTAL_AIRPORT_HUBS } from './rentalAirportHubs.js';
 import {
@@ -126,10 +126,10 @@ export function formatChatFlightCtaLabel(destinationName) {
 
 /** Trip URL(`buildTripcomPlannerFlightUrl`)과 동일 SSOT — 출발 미언급 시 ICN */
 export function formatChatFlightLabel({ departureIata, arrivalIata, destinationName }) {
-  const depart = String(departureIata || TRIPCOM_DEFAULT_DEPARTURE_AIRPORT)
+  const arrive = arrivalIata ? String(arrivalIata).trim().toUpperCase() : null;
+  const depart = String(departureIata || resolveTripcomDefaultDepartureIata(arrive))
     .trim()
     .toUpperCase();
-  const arrive = arrivalIata ? String(arrivalIata).trim().toUpperCase() : null;
   const locale = i18n.language?.slice?.(0, 2) ?? i18n.language;
 
   if (arrive) {
