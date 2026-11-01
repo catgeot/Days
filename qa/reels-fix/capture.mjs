@@ -73,8 +73,21 @@ async function summaryFlightState(page) {
   };
 }
 
-// ONLY=1,3 → 해당 장면만
-const ONLY = new Set(String(process.env.ONLY || '1,3,7').split(',').map((s) => s.trim()));
+// ONLY=2,4,6 → 해당 장면만
+const ONLY = new Set(String(process.env.ONLY || '1,2,3,4,6,7').split(',').map((s) => s.trim()));
+
+async function captureSearchRows(browser, viewport, name, query) {
+  const context = await newGuardedContext(browser, viewport);
+  const page = await context.newPage();
+  await openExploreSearch(page, query);
+  const rows = await page
+    .locator('[data-search-popover] button')
+    .filter({ hasNotText: 'MOONi' })
+    .allInnerTexts();
+  console.log(LABEL, viewport.width, name, rows.map((r) => r.replace(/\s+/g, ' ').trim()));
+  await shot(page, viewport, name);
+  await context.close();
+}
 
 async function captureMooniAccessOrigin(browser, viewport, name, placePath) {
   const context = await newGuardedContext(browser, viewport);
@@ -111,6 +124,18 @@ try {
       console.log(LABEL, viewport.width, '3-chujado-card-edge-hang', await summaryFlightState(page));
       await shot(page, viewport, '3-chujado-card-edge-hang');
       await context.close();
+    }
+    if (ONLY.has('2')) {
+      await captureSearchRows(browser, viewport, '2-search-chujado-ko', '추자도');
+      await captureSearchRows(browser, viewport, '2-search-chujado-en', 'Chujado');
+    }
+    if (ONLY.has('4')) {
+      await captureSearchRows(browser, viewport, '4-search-alias-yongnuni', '용눈이');
+      await captureSearchRows(browser, viewport, '4-search-alias-anmyeonam', 'Anmyeonam');
+    }
+    if (ONLY.has('6')) {
+      await captureSearchRows(browser, viewport, '6-search-region-anmyeonam', 'Anmyeonam');
+      await captureSearchRows(browser, viewport, '6-search-region-haemieupseong', '해미읍성');
     }
     if (ONLY.has('7')) {
       await captureMooniAccessOrigin(browser, viewport, '7-seosan-access-origin', '/place/seosan');
