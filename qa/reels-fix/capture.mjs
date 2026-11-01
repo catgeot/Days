@@ -74,7 +74,7 @@ async function summaryFlightState(page) {
 }
 
 // ONLY=4,5 → 해당 문제 장면만
-const ONLY = new Set(String(process.env.ONLY || '1,2,3,4,5').split(',').map((s) => s.trim()));
+const ONLY = new Set(String(process.env.ONLY || '1,2,3,4,5,6,7').split(',').map((s) => s.trim()));
 
 async function captureSearchRows(browser, viewport, name, query) {
   const context = await newGuardedContext(browser, viewport);
@@ -100,9 +100,32 @@ async function captureSearchTap(browser, viewport, name, query) {
   await context.close();
 }
 
+async function captureMooniAccessOrigin(browser, viewport, name, placePath) {
+  const context = await newGuardedContext(browser, viewport);
+  const page = await context.newPage();
+  await page.goto(`${BASE}${placePath}`);
+  await page.waitForTimeout(10_000);
+  await page.locator('button:visible').filter({ hasText: /^\s*MOONi\s*$/ }).first().click();
+  await page.waitForTimeout(4000);
+  await page.locator('button:visible').filter({ hasText: /가는 방법/ }).first().click();
+  await page.waitForTimeout(4000);
+  const text = (await page.locator('body').innerText()).replace(/\s+/g, ' ');
+  console.log(LABEL, viewport.width, name, text.match(/출발 \S+ \([A-Z]{3}\)/)?.[0] ?? null);
+  await shot(page, viewport, name);
+  await context.close();
+}
+
 const browser = await chromium.launch();
 try {
   for (const viewport of VIEWPORTS) {
+    if (ONLY.has('6')) {
+      await captureSearchRows(browser, viewport, '6-search-region-anmyeonam', 'Anmyeonam');
+      await captureSearchRows(browser, viewport, '6-search-region-haemieupseong', '해미읍성');
+    }
+    if (ONLY.has('7')) {
+      await captureMooniAccessOrigin(browser, viewport, '7-seosan-access-origin', '/place/seosan');
+      await captureMooniAccessOrigin(browser, viewport, '7-seocheon-access-origin', '/place/seocheon');
+    }
     if (ONLY.has('4')) {
       await captureSearchRows(browser, viewport, '4-search-alias-yongnuni', '용눈이');
       await captureSearchRows(browser, viewport, '4-search-alias-anmyeonam', 'Anmyeonam');
