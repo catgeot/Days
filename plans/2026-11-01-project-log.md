@@ -8,3 +8,4 @@
 - 조치: 신규 `exploreMonthlyPickSearchSuggestions.js`가 `MONTHLY_PICKS` 전 monthKey에서 검색 카드를 자동 파생해 `buildLocalSearchSuggestions` 앞에 삽입. 새 달·새 픽을 추가하면 검색 등록 없이 자동 반영. `11월 해외여행`은 제주 제외, 월+여행 의도 없는 쿼리(`교토 11월`)는 오탐 방지, 히트 시 Mapbox 보강 생략.
 - 검증: 신규 테스트 7개 + `npm run test:health` 929 PASS · `npm run build` PASS. `scripts/site-search-open.test.mjs` 실패 1건은 main에서도 재현되는 기존 실패.
 - 브랜치 `cursor/explore-monthly-search-4c7d` · tip `f44cc299` · PR [#635](https://github.com/catgeot/Days/pull/635). 사람 체크: Preview 탐색 검색창에 `11월 여행` → 6곳, `11월 해외여행` → 제주 제외 5곳.
+- #2 후속 확인(2026-11-01 16:33 KST): PR #635는 `main` 병합·PROD 배포 완료. 병합 직후 사람 화면에는 종전 나트랑 단일 카드가 남아 있었으나 배포 반영이 늦었던 것으로 확인 — 같은 날 16:33 KST 재확인 스크린샷에서 `11월 해외 여행` → 「11월의 여행지」 교토·치앙마이 등 해외 픽 목록 정상 노출. 추가 코드 조치 없음.
