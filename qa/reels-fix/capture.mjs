@@ -73,10 +73,47 @@ async function summaryFlightState(page) {
   };
 }
 
+// ONLY=4,5 → 해당 문제 장면만
+const ONLY = new Set(String(process.env.ONLY || '1,2,3,4,5').split(',').map((s) => s.trim()));
+
+async function captureSearchRows(browser, viewport, name, query) {
+  const context = await newGuardedContext(browser, viewport);
+  const page = await context.newPage();
+  await openExploreSearch(page, query);
+  const rows = await page
+    .locator('[data-search-popover] button')
+    .filter({ hasNotText: 'MOONi' })
+    .allInnerTexts();
+  console.log(LABEL, viewport.width, name, rows.map((r) => r.replace(/\s+/g, ' ').trim()));
+  await shot(page, viewport, name);
+  await context.close();
+}
+
+async function captureSearchTap(browser, viewport, name, query) {
+  const context = await newGuardedContext(browser, viewport);
+  const page = await context.newPage();
+  await openExploreSearch(page, query);
+  await page.locator('[data-search-popover] button').filter({ hasNotText: 'MOONi' }).first().click();
+  await page.waitForTimeout(10_000);
+  console.log(LABEL, viewport.width, name, decodeURIComponent(page.url()));
+  await shot(page, viewport, name);
+  await context.close();
+}
+
 const browser = await chromium.launch();
 try {
   for (const viewport of VIEWPORTS) {
-    {
+    if (ONLY.has('4')) {
+      await captureSearchRows(browser, viewport, '4-search-alias-suwolbong', '수월봉');
+      await captureSearchRows(browser, viewport, '4-search-alias-dakmeoru', '닭머르해안');
+    }
+    if (ONLY.has('5')) {
+      await captureSearchTap(browser, viewport, '5-tap-hyeongjeseom', '형제섬');
+      await captureSearchTap(browser, viewport, '5-tap-yongnuni', '용눈이오름');
+      await captureSearchTap(browser, viewport, '5-tap-anmyeonam', '안면암');
+    }
+    if (!ONLY.has('1') && !ONLY.has('2') && !ONLY.has('3')) continue;
+    if (ONLY.has('1')) {
       const context = await newGuardedContext(browser, viewport);
       const page = await context.newPage();
       await openChujadoIslandCard(page);
@@ -85,22 +122,11 @@ try {
       await shot(page, viewport, '1-jeju-flight-origin');
       await context.close();
     }
-    for (const [name, query] of [
-      ['2-search-chujado-ko', '추자도'],
-      ['2-search-chujado-en', 'Chujado'],
-    ]) {
-      const context = await newGuardedContext(browser, viewport);
-      const page = await context.newPage();
-      await openExploreSearch(page, query);
-      const rows = await page
-        .locator('[data-search-popover] button')
-        .filter({ hasNotText: 'MOONi' })
-        .allInnerTexts();
-      console.log(LABEL, viewport.width, name, rows.map((r) => r.replace(/\s+/g, ' ').trim()));
-      await shot(page, viewport, name);
-      await context.close();
+    if (ONLY.has('2')) {
+      await captureSearchRows(browser, viewport, '2-search-chujado-ko', '추자도');
+      await captureSearchRows(browser, viewport, '2-search-chujado-en', 'Chujado');
     }
-    {
+    if (ONLY.has('3')) {
       const context = await newGuardedContext(browser, viewport, { hangFlightRoute: true });
       const page = await context.newPage();
       await openChujadoIslandCard(page);
