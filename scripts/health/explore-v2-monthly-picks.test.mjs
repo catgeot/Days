@@ -20,6 +20,7 @@ import {
   buildVisibleMonthlyPickCards,
   resolveExploreMonthlyPickHeroUrl,
   partitionExploreMonthlyPickCardsByHero,
+  exploreV2MonthlyPickHeadline,
 } from '../../src/pages/Home/lib/exploreMonthlyPicks.js';
 import {
   GATEO_ENV_FLAG_NAMES,
@@ -98,6 +99,10 @@ test('explore_v2=1 query enables monthly row without env flag or storage', () =>
     if (prev === undefined) delete globalThis.__VITE_ENV__[key];
     else globalThis.__VITE_ENV__[key] = prev;
   }
+});
+
+test('explore_v2 monthly heading is month label only (no spot count)', () => {
+  assert.equal(exploreV2MonthlyPickHeadline(MONTH_KEY), '11월의 여행지');
 });
 
 test('2026-11 monthly picks resolve gateo hero image (no color fallback row)', () => {

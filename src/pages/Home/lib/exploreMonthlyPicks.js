@@ -140,13 +140,7 @@ export function partitionExploreMonthlyPickCardsByHero(cards) {
   return { withHero, excluded };
 }
 
-export function exploreV2MonthlyPickHeadline(
-  monthKey = EXPLORE_V2_MONTHLY_PICK_KEY,
-  visibleCount = null,
-) {
-  const cards = buildVisibleMonthlyPickCards(monthKey);
+export function exploreV2MonthlyPickHeadline(monthKey = EXPLORE_V2_MONTHLY_PICK_KEY) {
   const monthLabel = monthlyPickHeadingMonthLabel(monthKey);
-  const total = TRAVEL_SPOTS.length;
-  const shown = visibleCount == null ? cards.length : visibleCount;
-  return `${monthLabel}의 여행지 · ${total}곳 중 ${shown}곳`;
+  return `${monthLabel}의 여행지`;
 }

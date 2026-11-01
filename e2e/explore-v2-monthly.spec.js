@@ -1,13 +1,10 @@
 // Explore v2 step 1 — monthly picks row (flag off = legacy /explore unchanged)
 import { test, expect } from './fixtures.js';
-import travelSpotsList from '../src/pages/Home/data/travelSpots-list.json' with { type: 'json' };
 
-const TRAVEL_SPOT_COUNT = travelSpotsList.length;
-/** 2026-11 pick list size (SSOT entries) */
-const MONTHLY_PICK_COUNT = 6;
 /** chiang-mai place SEO OG URL is 404 — row drops it after img onError */
 const MONTHLY_VISIBLE_COUNT = 5;
 const MONTHLY_EXCLUDED_LABEL = '치앙마이';
+const MONTHLY_HEADING = '11월의 여행지';
 
 const monthlySection = (page) => page.getByTestId('explore-v2-monthly-section');
 const SCROLL_AREA = (page) => page.locator('.modal-scroll-area').first();
@@ -23,9 +20,7 @@ async function expectMonthlyRowWithPhotos(page) {
   await expect(section).toBeVisible({ timeout: 45_000 });
   await page.waitForTimeout(2000);
   await expect(section).toHaveAttribute('data-explore-v2-excluded', MONTHLY_EXCLUDED_LABEL);
-  await expect(page.getByTestId('explore-v2-monthly-heading')).toContainText(
-    `${TRAVEL_SPOT_COUNT}곳 중 ${MONTHLY_VISIBLE_COUNT}곳`,
-  );
+  await expect(page.getByTestId('explore-v2-monthly-heading')).toHaveText(MONTHLY_HEADING);
   await expect(page.locator('[data-testid^="explore-v2-monthly-card-"]')).toHaveCount(
     MONTHLY_VISIBLE_COUNT,
   );

@@ -61,8 +61,8 @@ const ExploreMonthlyPicksSection = ({ onSelectSpot }) => {
 
   const headline = useMemo(() => {
     if (!monthKey) return '';
-    return exploreV2MonthlyPickHeadline(monthKey, visibleCards.length);
-  }, [monthKey, visibleCards.length]);
+    return exploreV2MonthlyPickHeadline(monthKey);
+  }, [monthKey]);
 
   if (!monthKey || cards.length === 0 || visibleCards.length === 0) return null;
 
