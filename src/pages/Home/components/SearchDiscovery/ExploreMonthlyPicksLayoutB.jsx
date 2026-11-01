@@ -1,14 +1,17 @@
 import React from 'react';
 import ExploreMonthlyPickItem from './ExploreMonthlyPickItem';
 
-const TILE_GRID_CLASS = [
-  'col-span-12 row-span-2 min-h-[220px] sm:min-h-[260px]',
-  'col-span-7 row-span-2 min-h-[132px]',
-  'col-span-5 row-span-1 min-h-[88px]',
-  'col-span-5 row-span-1 min-h-[88px]',
-  'col-span-5 row-span-2 min-h-[132px]',
-  'col-span-7 row-span-2 min-h-[132px]',
-];
+/** 6장: hero → 2×2 타일 → 제주 전폭 → 2열 (390·1280 공통, 그리드 구멍 없음) */
+function resolveLayoutBGridClass(index, slug) {
+  if (index === 0) return 'col-span-12 min-h-[220px] sm:min-h-[280px]';
+  if (index === 1 || index === 2 || index === 4 || index === 5) {
+    return 'col-span-6 min-h-[120px] sm:min-h-[140px]';
+  }
+  if (index === 3 || slug === 'jeju') {
+    return 'col-span-12 min-h-[140px] sm:min-h-[160px]';
+  }
+  return 'col-span-6 min-h-[120px] sm:min-h-[140px]';
+}
 
 const ExploreMonthlyPicksLayoutB = ({ cards, onSelectSpot, onImageError }) => (
   <div
@@ -16,8 +19,9 @@ const ExploreMonthlyPicksLayoutB = ({ cards, onSelectSpot, onImageError }) => (
     className="grid grid-cols-12 auto-rows-min gap-2 sm:gap-3"
   >
     {cards.map(({ spot, entry, imageUrl }, index) => {
+      const slug = String(spot?.slug || entry?.slug || '').toLowerCase();
       const variant = index === 0 ? 'hero' : 'tile';
-      const gridClass = TILE_GRID_CLASS[index] || 'col-span-6 min-h-[100px]';
+      const gridClass = resolveLayoutBGridClass(index, slug);
       return (
         <ExploreMonthlyPickItem
           key={spot.id ?? entry.slug}
