@@ -14,6 +14,27 @@
 
 ## 활성 목록
 
+### 탐색 월별 여행지 검색
+
+| | |
+|--|--|
+| **상태** | **#1 자동 연동** · tip `f44cc299` · PR [#635](https://github.com/catgeot/Days/pull/635) · 사람 Preview 확인 대기 |
+| **브랜치** | `cursor/explore-monthly-search-4c7d` |
+| **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
+| **일지** | [`2026-11-01-project-log.md`](./2026-11-01-project-log.md) |
+| **Preview** | git Preview `cursor/explore-monthly-search-4c7d` 브랜치 배포에서 탐색홈 검색. `MONTHLY_PICKS`에 새 달·픽 추가 = 검색 자동 반영(별도 등록 없음) |
+| **금지** | PR 병합 전 코드를 `origin/main`에 push · feature에 `plans/**` 커밋 · 검색용 별도 등록 파일 신설 |
+| **VERIFY** | `npm run test:health` · `npm run build` |
+| **남은 일** | 사람이 PR #635 Preview에서 `11월 여행` → 6곳, `11월 해외여행` → 제주 제외 5곳인지 본다. |
+
+**다음 제시어**
+
+```
+탐색 월별 여행지 검색 #2, 다음 작업
+@plans/feature-handoff-index.md
+@plans/2026-11-01-project-log.md
+```
+
 ### 현지 정보 LI-1 레지스트리
 
 | | |
