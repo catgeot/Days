@@ -101,43 +101,6 @@ export function buildMapboxSearchQueries(query) {
   return out;
 }
 
-/**
- * 별칭 표의 공식 좌표 → 검색 행 (Mapbox 명소 행과 같은 모양).
- * @param {string} query
- * @returns {object | null}
- */
-export function exploreSearchAliasPinSuggestion(query) {
-  const alias = resolveExploreSearchAlias(query);
-  const pin = alias?.pin;
-  if (!pin || !Number.isFinite(pin.lat) || !Number.isFinite(pin.lng)) return null;
-  return {
-    id: `alias-${alias.canonical}`,
-    kind: 'attraction',
-    badge: '명소',
-    name: alias.canonical,
-    name_ko: alias.canonical,
-    name_en: pin.name_en || '',
-    country: '대한민국',
-    country_en: 'South Korea',
-    lat: pin.lat,
-    lng: pin.lng,
-    parentCity: pin.parentCity || undefined,
-    poiAttraction: true,
-    source: 'alias',
-    uiPlace: true,
-  };
-}
-
-/**
- * 별칭 표 공식 좌표 → alignVisitedSpotsToRegionAnchors 앵커.
- * @param {string} name
- * @returns {{ name: string, lat: number, lng: number, source: string }[]}
- */
-export function exploreSearchAliasRegionAnchors(name) {
-  const row = exploreSearchAliasPinSuggestion(name);
-  return row ? [{ name: row.name, lat: row.lat, lng: row.lng, source: 'alias' }] : [];
-}
-
 /** 해외 섬 한글명 — KR 우선·POI·「섬」수식어 제거하면 사바↔사보·사바 사헤브로 어긋남 */
 export function isIslandPlaceQuery(query) {
   return /섬$|\bislands?\b/i.test(String(query || '').trim());

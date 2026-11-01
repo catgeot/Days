@@ -286,9 +286,11 @@ function knownPlaceSlug(param) {
 /**
  * 방문 place_stats 행의 한글 place_id — `/place/<한글>`은 새로고침 때 placeStatsSlugHydrate가 place_id로 복원.
  * slug가 아니라 id에서 읽는다: 탭 직전 ensureLatinPlaceSlug가 겹친 행정명(Seogwipo)으로 slug를 덮는다.
+ * 검색에서 좌표를 공식 장소로 옮긴 행(regionAlignedFrom, 추자도 → 포항 행)은 새로고침 시 DB 좌표로 열리므로 홈 유지.
  */
 function visitedPlaceStatsSlug(pin) {
   if (String(pin?.source || '') !== 'visited') return null;
+  if (pin?.regionAlignedFrom) return null;
   const id = String(pin?.id || '');
   if (!id.startsWith('visited-')) return null;
   const placeId = id.slice('visited-'.length).trim();

@@ -3,10 +3,9 @@ import test from 'node:test';
 import fs from 'node:fs';
 import { resolveSearchResultSelect } from '../../src/pages/Home/lib/exploreRecentHistory.js';
 import { visitedRowToSearchSpot } from '../../src/pages/Home/lib/visitedPlaceSearch.js';
-import { exploreSearchAliasPinSuggestion } from '../../src/pages/Home/lib/exploreSearchAliases.js';
 import { ensureLatinPlaceSlug } from '../../src/pages/Home/lib/uiPlaceAssetQuery.js';
 import { getPlaceUrlParam } from '../../src/pages/Home/lib/formatUrlName.js';
-import { alignPlaceStatsPinToAlias } from '../../src/pages/Home/lib/placeStatsSlugHydrate.js';
+import { alignVisitedSpotsToRegionAnchors } from '../../src/pages/Home/lib/searchHomonymRegion.js';
 
 // place_stats 실제 행 (anon SELECT, 2026-11).
 const ROWS = {
@@ -44,8 +43,7 @@ test('visited rows that /place cannot restore stay on the home summary', () => {
   assert.equal(resolveSearchResultSelect(latin)?.type, 'home', 'latin non-SSOT place_id');
 });
 
-test('alias and mapbox rows with Hangul names still open the home summary', () => {
-  assert.equal(resolveSearchResultSelect(exploreSearchAliasPinSuggestion('수월봉'))?.type, 'home');
+test('mapbox rows with Hangul names still open the home summary', () => {
   const mapbox = resolveSearchResultSelect({
     id: 'mapbox-abc',
     name: '형제섬',
@@ -58,7 +56,7 @@ test('alias and mapbox rows with Hangul names still open the home summary', () =
   assert.equal(mapbox?.type, 'home');
 });
 
-test('/place/추자도 reload uses official Jeju coords, not the Pohang place_stats row', () => {
+test('row moved off its place_stats coords (추자도 → 포항 행) stays on the home summary', () => {
   const pohang = visitedRowToSearchSpot({
     place_id: '추자도',
     name_ko: '추자도',
@@ -66,13 +64,12 @@ test('/place/추자도 reload uses official Jeju coords, not the Pohang place_st
     lat: 36.01184993,
     lng: 129.36822414,
   });
-  const aligned = alignPlaceStatsPinToAlias({ ...pohang, slug: '추자도', place_id: '추자도' });
-  assert.ok(Math.abs(aligned.lat - 33.9518) < 0.01 && Math.abs(aligned.lng - 126.3076) < 0.01);
-  assert.equal(aligned.slug, '추자도');
-  assert.deepEqual(aligned.regionAlignedFrom, { lat: 36.01184993, lng: 129.36822414 });
-
-  const ok = visitedRowToSearchSpot(ROWS.형제섬);
-  assert.equal(alignPlaceStatsPinToAlias(ok).lat, ok.lat, 'already near the official pin');
+  const [aligned] = alignVisitedSpotsToRegionAnchors(
+    [pohang],
+    [{ name: '추자도', lat: 33.9518128033, lng: 126.3076233112, source: 'tourapi' }],
+  );
+  assert.ok(aligned.regionAlignedFrom, 'fixture is region-aligned');
+  assert.equal(resolveSearchResultSelect(aligned)?.type, 'home', '/place reload would use Pohang coords');
 });
 
 test('/place/<한글> route restores place_stats rows by place_id', () => {
