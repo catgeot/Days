@@ -3,22 +3,13 @@ import {
   EXPLORE_V2_MONTHLY_PICK_KEY,
   MONTHLY_PICKS,
 } from '../data/spotTraits';
-import { isGateoExploreV2Enabled } from '../../../shared/gateoFeatureFlags';
+import { EXPLORE_MONTHLY_PICK_VERIFIED_HERO_URLS } from '../data/exploreMonthlyPickHeroUrls.js';
+import { resolveListImageUrl } from '../../../utils/listImageUrl.js';
+import { getLocalizedPlaceName } from '../../../components/PlaceCard/common/locationDisplay';
 
-/** `/explore?explore_v2=1` — request-scoped preview; no storage. */
-export function readExploreV2QueryParam(search = '') {
-  const raw = String(search || '').trim();
-  if (!raw) return false;
-  try {
-    const query = raw.startsWith('?') ? raw.slice(1) : raw;
-    return new URLSearchParams(query).get('explore_v2') === '1';
-  } catch {
-    return false;
-  }
-}
-
-export function isExploreV2MonthlyRowVisible(search = '') {
-  return isGateoExploreV2Enabled() || readExploreV2QueryParam(search);
+/** 「11월의 여행지」 행 — 코드 기본 ON (VITE_GATEO_EXPLORE_V2·쿼리와 무관). */
+export function isExploreV2MonthlyRowVisible() {
+  return true;
 }
 
 const HTTPS_SOURCE = /^https:\/\/.+/i;
@@ -80,9 +71,41 @@ export function buildVisibleMonthlyPickCards(monthKey = EXPLORE_V2_MONTHLY_PICK_
   return cards;
 }
 
+export function resolveExploreMonthlyPickHeroUrl(spot) {
+  const slug = String(spot?.slug || '').toLowerCase();
+  if (!slug) return '';
+  const raw = EXPLORE_MONTHLY_PICK_VERIFIED_HERO_URLS[slug] || '';
+  if (!raw) return '';
+  return resolveListImageUrl(raw, { role: 'list', width: 640 });
+}
+
+export function monthlyPickDisplayName(spot, slug = '') {
+  return (
+    getLocalizedPlaceName(spot, 'ko') ||
+    String(spot?.name || slug || '').trim()
+  );
+}
+
+/**
+ * @param {ReturnType<typeof buildVisibleMonthlyPickCards>} cards
+ */
+export function partitionExploreMonthlyPickCardsByHero(cards) {
+  const withHero = [];
+  const excluded = [];
+  for (const card of cards) {
+    const imageUrl = resolveExploreMonthlyPickHeroUrl(card.spot);
+    if (imageUrl) withHero.push({ ...card, imageUrl });
+    else {
+      excluded.push({
+        slug: card.entry.slug,
+        name: monthlyPickDisplayName(card.spot, card.entry.slug),
+      });
+    }
+  }
+  return { withHero, excluded };
+}
+
 export function exploreV2MonthlyPickHeadline(monthKey = EXPLORE_V2_MONTHLY_PICK_KEY) {
-  const cards = buildVisibleMonthlyPickCards(monthKey);
   const monthLabel = monthlyPickHeadingMonthLabel(monthKey);
-  const total = TRAVEL_SPOTS.length;
-  return `${monthLabel}의 여행지 · ${total}곳 중 ${cards.length}곳`;
+  return `${monthLabel}의 여행지`;
 }

@@ -124,10 +124,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, onAskMooni,
   const pendingExploreScrollRef = useRef(null);
   const suppressSearchHistoryRef = useRef(false);
 
-  const exploreV2MonthlyVisible = useMemo(
-    () => isExploreV2MonthlyRowVisible(location.search),
-    [location.search],
-  );
+  const exploreV2MonthlyVisible = isExploreV2MonthlyRowVisible();
 
   // URL Path 분석하여 상태 동기화
   useEffect(() => {
