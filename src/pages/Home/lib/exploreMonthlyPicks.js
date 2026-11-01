@@ -4,6 +4,15 @@ import {
   MONTHLY_PICKS,
 } from '../data/spotTraits';
 import { isGateoExploreV2Enabled } from '../../../shared/gateoFeatureFlags';
+import { PLACE_SEO_OG_IMAGE_OVERRIDES } from '../../../data/placeSeoOgImageOverrides.js';
+import { resolveListImageUrl } from '../../../utils/listImageUrl.js';
+import { getLocalizedPlaceName } from '../../../components/PlaceCard/common/locationDisplay';
+
+/** gateo place SEO SSOT에 없는 이달 pick slug — crawler gallery ogImage와 동일 */
+const EXPLORE_MONTHLY_PICK_HERO_OVERRIDES = {
+  'phu-quoc':
+    'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&h=630&q=80',
+};
 
 /** `/explore?explore_v2=1` — request-scoped preview; no storage. */
 export function readExploreV2QueryParam(search = '') {
@@ -94,9 +103,50 @@ export function buildVisibleMonthlyPickCards(monthKey = EXPLORE_V2_MONTHLY_PICK_
   return cards;
 }
 
-export function exploreV2MonthlyPickHeadline(monthKey = EXPLORE_V2_MONTHLY_PICK_KEY) {
+export function resolveExploreMonthlyPickHeroUrl(spot) {
+  const slug = String(spot?.slug || '').toLowerCase();
+  if (!slug) return '';
+  const raw =
+    PLACE_SEO_OG_IMAGE_OVERRIDES[slug] ||
+    EXPLORE_MONTHLY_PICK_HERO_OVERRIDES[slug] ||
+    '';
+  if (!raw) return '';
+  return resolveListImageUrl(raw, { role: 'list', width: 640 });
+}
+
+export function monthlyPickDisplayName(spot, slug = '') {
+  return (
+    getLocalizedPlaceName(spot, 'ko') ||
+    String(spot?.name || slug || '').trim()
+  );
+}
+
+/**
+ * @param {ReturnType<typeof buildVisibleMonthlyPickCards>} cards
+ */
+export function partitionExploreMonthlyPickCardsByHero(cards) {
+  const withHero = [];
+  const excluded = [];
+  for (const card of cards) {
+    const imageUrl = resolveExploreMonthlyPickHeroUrl(card.spot);
+    if (imageUrl) withHero.push({ ...card, imageUrl });
+    else {
+      excluded.push({
+        slug: card.entry.slug,
+        name: monthlyPickDisplayName(card.spot, card.entry.slug),
+      });
+    }
+  }
+  return { withHero, excluded };
+}
+
+export function exploreV2MonthlyPickHeadline(
+  monthKey = EXPLORE_V2_MONTHLY_PICK_KEY,
+  visibleCount = null,
+) {
   const cards = buildVisibleMonthlyPickCards(monthKey);
   const monthLabel = monthlyPickHeadingMonthLabel(monthKey);
   const total = TRAVEL_SPOTS.length;
-  return `${monthLabel}의 여행지 · ${total}곳 중 ${cards.length}곳`;
+  const shown = visibleCount == null ? cards.length : visibleCount;
+  return `${monthLabel}의 여행지 · ${total}곳 중 ${shown}곳`;
 }

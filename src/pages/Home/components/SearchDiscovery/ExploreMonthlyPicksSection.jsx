@@ -1,8 +1,10 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import {
   buildVisibleMonthlyPickCards,
   exploreV2MonthlyPickHeadline,
+  monthlyPickDisplayName,
+  partitionExploreMonthlyPickCardsByHero,
   readExploreV2LayoutParam,
   resolveExploreV2MonthlyPickKey,
 } from '../../lib/exploreMonthlyPicks';
@@ -21,17 +23,54 @@ const ExploreMonthlyPicksSection = ({ onSelectSpot }) => {
     () => (monthKey ? buildVisibleMonthlyPickCards(monthKey) : []),
     [monthKey],
   );
-  const headline = useMemo(
-    () => (monthKey ? exploreV2MonthlyPickHeadline(monthKey) : ''),
-    [monthKey],
+  const { withHero, excluded: excludedNoHero } = useMemo(
+    () => partitionExploreMonthlyPickCardsByHero(cards),
+    [cards],
+  );
+  const [brokenSlugs, setBrokenSlugs] = useState(() => new Set());
+
+  const handleImageError = useCallback((slug) => {
+    const key = String(slug || '').toLowerCase();
+    if (!key) return;
+    setBrokenSlugs((prev) => {
+      if (prev.has(key)) return prev;
+      const next = new Set(prev);
+      next.add(key);
+      return next;
+    });
+  }, []);
+
+  const visibleCards = useMemo(
+    () =>
+      withHero.filter(
+        (card) => !brokenSlugs.has(String(card.entry.slug || '').toLowerCase()),
+      ),
+    [withHero, brokenSlugs],
   );
 
-  if (!monthKey || cards.length === 0) return null;
+  const excludedLabels = useMemo(() => {
+    const names = excludedNoHero.map((row) => row.name);
+    for (const card of withHero) {
+      const slug = String(card.entry.slug || '').toLowerCase();
+      if (brokenSlugs.has(slug)) {
+        names.push(monthlyPickDisplayName(card.spot, slug));
+      }
+    }
+    return names;
+  }, [brokenSlugs, excludedNoHero, withHero]);
+
+  const headline = useMemo(() => {
+    if (!monthKey) return '';
+    return exploreV2MonthlyPickHeadline(monthKey, visibleCards.length);
+  }, [monthKey, visibleCards.length]);
+
+  if (!monthKey || cards.length === 0 || visibleCards.length === 0) return null;
 
   return (
     <section
       data-testid="explore-v2-monthly-section"
       data-explore-v2-layout={layout}
+      data-explore-v2-excluded={excludedLabels.join(',') || undefined}
       className="mb-10 w-full animate-fade-in"
       aria-label={headline}
     >
@@ -42,9 +81,17 @@ const ExploreMonthlyPicksSection = ({ onSelectSpot }) => {
         {headline}
       </h2>
       {layout === 'b' ? (
-        <ExploreMonthlyPicksLayoutB cards={cards} onSelectSpot={onSelectSpot} />
+        <ExploreMonthlyPicksLayoutB
+          cards={visibleCards}
+          onSelectSpot={onSelectSpot}
+          onImageError={handleImageError}
+        />
       ) : (
-        <ExploreMonthlyPicksLayoutA cards={cards} onSelectSpot={onSelectSpot} />
+        <ExploreMonthlyPicksLayoutA
+          cards={visibleCards}
+          onSelectSpot={onSelectSpot}
+          onImageError={handleImageError}
+        />
       )}
     </section>
   );

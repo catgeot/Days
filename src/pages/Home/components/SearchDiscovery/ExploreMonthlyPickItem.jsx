@@ -31,12 +31,14 @@ const SourceLinks = ({ sources, compact = false }) => (
 const ExploreMonthlyPickItem = ({
   spot,
   entry,
+  imageUrl,
   onSelect,
+  onImageError,
   variant = 'scroll',
   sourcesBelow = true,
   className = '',
   mediaClassName = '',
-  overlayClassName = 'from-black/85 via-black/45 to-black/20',
+  overlayClassName = 'from-black/95 via-black/80 to-black/35',
 }) => {
   const displayName = getLocalizedPlaceName(spot, 'ko') || String(spot?.name || '').trim();
   const rawCountry = getLocalizedCountryName(spot, 'ko') || String(spot?.country || '').trim();
@@ -64,6 +66,8 @@ const ExploreMonthlyPickItem = ({
       ? 'mt-1 text-[11px] leading-snug text-gray-200 line-clamp-2 sm:text-xs'
       : 'mt-2 text-sm leading-snug text-gray-100 line-clamp-2';
 
+  if (!imageUrl) return null;
+
   return (
     <div
       className={`flex min-w-0 flex-col ${wrapperWidth} ${className}`}
@@ -80,14 +84,17 @@ const ExploreMonthlyPickItem = ({
           isHero ? 'min-h-[220px] sm:min-h-[280px]' : isTile ? 'min-h-[108px] sm:min-h-[120px]' : 'h-[min(72vw,320px)] w-full sm:h-[340px]'
         } ${mediaClassName}`}
       >
-        <ExploreMonthlyPickMedia spot={spot} />
+        <ExploreMonthlyPickMedia
+          imageUrl={imageUrl}
+          onError={() => onImageError?.(slug)}
+        />
         <div className={`absolute inset-0 bg-gradient-to-t ${overlayClassName}`} />
-        <div className="relative z-10 flex h-full flex-col p-3 sm:p-4">
+        <div className="relative z-10 flex h-full flex-col bg-black/25 p-3 sm:p-4">
           <div className="mb-auto flex items-start justify-between gap-2">
             <div className="min-w-0 flex-1">
-              <h3 className={`break-keep text-white ${titleClass}`}>{displayName}</h3>
+              <h3 className={`break-keep text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.95)] ${titleClass}`}>{displayName}</h3>
               {countryLabel ? (
-                <p className={`mt-0.5 text-gray-300 ${isTile ? 'text-[10px] sm:text-[11px]' : 'text-xs'}`}>
+                <p className={`mt-0.5 text-gray-100 drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)] ${isTile ? 'text-[10px] sm:text-[11px]' : 'text-xs'}`}>
                   {countryLabel}
                 </p>
               ) : null}
@@ -101,7 +108,7 @@ const ExploreMonthlyPickItem = ({
               </span>
             ) : null}
           </div>
-          <p className={`break-keep ${reasonClass}`}>{entry.reason}</p>
+          <p className={`break-keep text-gray-50 drop-shadow-[0_1px_2px_rgba(0,0,0,0.92)] ${reasonClass}`}>{entry.reason}</p>
           {!sourcesBelow ? <SourceLinks sources={entry.sources} compact={isTile} /> : null}
         </div>
       </article>

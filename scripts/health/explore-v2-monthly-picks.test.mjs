@@ -17,6 +17,9 @@ import {
   readExploreV2QueryParam,
   readExploreV2LayoutParam,
   isExploreV2MonthlyRowVisible,
+  buildVisibleMonthlyPickCards,
+  resolveExploreMonthlyPickHeroUrl,
+  partitionExploreMonthlyPickCardsByHero,
 } from '../../src/pages/Home/lib/exploreMonthlyPicks.js';
 import {
   GATEO_ENV_FLAG_NAMES,
@@ -94,6 +97,16 @@ test('explore_v2=1 query enables monthly row without env flag or storage', () =>
   } finally {
     if (prev === undefined) delete globalThis.__VITE_ENV__[key];
     else globalThis.__VITE_ENV__[key] = prev;
+  }
+});
+
+test('2026-11 monthly picks resolve gateo hero image (no color fallback row)', () => {
+  const cards = buildVisibleMonthlyPickCards(MONTH_KEY);
+  const { withHero, excluded } = partitionExploreMonthlyPickCardsByHero(cards);
+  assert.equal(excluded.length, 0, `missing hero: ${excluded.map((e) => e.slug).join(', ')}`);
+  assert.equal(withHero.length, 6);
+  for (const slug of EXPECTED_SLUGS) {
+    assert.ok(resolveExploreMonthlyPickHeroUrl({ slug }), `no hero for ${slug}`);
   }
 });
 
