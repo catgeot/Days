@@ -1,5 +1,9 @@
 /** Mapbox·OSM attribution SSOT — FooterModal Credits · 지도 컨트롤과 동일 링크 */
 
+import { MRT_PACKAGE_SHORT_URLS } from '../pages/Home/data/mrtPackageThemeLinks.js';
+import { getGygHomeUrl } from '../utils/gygAffiliateLinks.js';
+import { buildKlookAffiliateUrl } from '../utils/klookAffiliateUrl.js';
+
 export const MAPBOX_ATTRIBUTION_LINKS = [
   { label: '© Mapbox', href: 'https://www.mapbox.com/about/maps/' },
   { label: '© OpenStreetMap', href: 'https://www.openstreetmap.org/about' },
@@ -48,12 +52,19 @@ export const GATEO_DATA_SOURCES = [
   },
 ];
 
-/** 플래너·배너 제휴 파트너 — Credits 탭 (예약·결제는 각 사) */
+/**
+ * 플래너·배너 제휴 파트너 — Credits 탭 (예약·결제는 각 사).
+ * 방문한 여행사 기록이 클릭 URL을 그대로 저장하므로 href는 제휴 URL이어야 한다.
+ * Trip.com 식별자는 affiliate.js TRIPCOM_KR_PARTNER와 동일 값 (affiliate.js는 Node 순수 import 불가).
+ */
 export const GATEO_TRAVEL_PARTNERS = [
-  { name: 'Trip.com', href: 'https://www.trip.com/' },
-  { name: 'Klook', href: 'https://www.klook.com/' },
-  { name: 'GetYourGuide', href: 'https://www.getyourguide.com/' },
-  { name: 'MyRealTrip', href: 'https://www.myrealtrip.com/' },
+  {
+    name: 'Trip.com',
+    href: 'https://kr.trip.com/?locale=ko-KR&curr=KRW&Allianceid=8182427&SID=309563143&trip_sub1=credits',
+  },
+  { name: 'Klook', href: buildKlookAffiliateUrl('https://www.klook.com/ko/') },
+  { name: 'GetYourGuide', href: getGygHomeUrl({ locale: 'ko', cmp: 'gateo_credits' }) },
+  { name: 'MyRealTrip', href: MRT_PACKAGE_SHORT_URLS.home },
 ];
 
 /** gateo.kr 기술·서비스 스택 — Credits 탭 요약 */
