@@ -44,7 +44,11 @@ import {
 import { searchBoxForward, searchBoxTypesForQuery } from './mapboxSearchBox';
 import { lookupVisitedPlacesForSearch } from './visitedPlaceSearchLookup.js';
 import { overlayGeoFieldsOnVisitedSpots } from './visitedPlaceSearch.js';
-import { buildMapboxSearchQueries } from './exploreSearchAliases';
+import {
+  buildMapboxSearchQueries,
+  canonicalizeExploreSearchQuery,
+  exploreSearchAliasPinSuggestion,
+} from './exploreSearchAliases';
 import {
   collectKnownTravelHomonyms,
   homonymIdentityKey,
@@ -454,7 +458,8 @@ export async function buildHybridSearchSuggestions(query, opts = {}) {
   const mapboxQueries = local.length < 3 ? buildMapboxSearchQueries(q) : [q];
   const searchBoxTypes = searchBoxTypesForQuery(q);
 
-  const visitedPromise = lookupVisitedPlacesForSearch(q);
+  const visitedPromise = lookupVisitedPlacesForSearch(canonicalizeExploreSearchQuery(q));
+  pushUnique(out, seen, exploreSearchAliasPinSuggestion(q));
   try {
     for (const mq of mapboxQueries) {
       const remote = await searchBoxForward(mq, {

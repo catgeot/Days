@@ -516,7 +516,55 @@ export const KO_EXPLORE_SEARCH_ALIASES = [
       also: ['평창 광천선굴'],
     },
   ],
+  ...expandScenicPinAliases(),
 ];
+
+/**
+ * Mapbox·SSOT에 없는 국내 명소 — TourAPI searchKeyword 공식 좌표.
+ * romanized를 두지 않음: Mapbox 영문 쿼리는 「제주특별자치도」·해외 동명 도시만 돌려준다.
+ */
+function expandScenicPinAliases() {
+  const places = [
+    {
+      canonical: '닭머르해안',
+      keys: ['닭머르', '닭머르 해안', '닭머르해안길', 'dakmeoru', 'dakmeoru coast'],
+      pin: { lat: 33.5368, lng: 126.6174, name_en: 'Dakmeoru Coast', parentCity: '제주시' },
+    },
+    {
+      canonical: '형제섬',
+      keys: ['hyeongjeseom', 'hyeongje island', 'hyeongjeseom island'],
+      pin: { lat: 33.208, lng: 126.3092, name_en: 'Hyeongjeseom Island', parentCity: '서귀포시' },
+    },
+    {
+      canonical: '수월봉',
+      keys: ['suwolbong', 'suwolbong peak'],
+      pin: { lat: 33.2948, lng: 126.1634, name_en: 'Suwolbong Peak', parentCity: '제주시' },
+    },
+    {
+      canonical: '차귀도',
+      keys: ['chagwido', 'chagwido island'],
+      pin: { lat: 33.3116, lng: 126.1485, name_en: 'Chagwido Island', parentCity: '제주시' },
+    },
+    {
+      canonical: '추자도',
+      keys: ['추자군도', 'chujado', 'chujado island', 'chuja islands'],
+      pin: { lat: 33.9518, lng: 126.3076, name_en: 'Chujado Island', parentCity: '제주시' },
+    },
+    {
+      canonical: '용눈이오름',
+      keys: ['용눈이', 'yongnuni oreum', 'yongnuni-oreum', 'yongnuni'],
+      pin: { lat: 33.4588, lng: 126.832, name_en: 'Yongnuni Oreum', parentCity: '제주시' },
+    },
+    {
+      canonical: '안면암',
+      keys: ['안면암(태안)', '태안 안면암', 'anmyeonam', 'anmyeonam temple'],
+      pin: { lat: 36.5593, lng: 126.375, name_en: 'Anmyeonam Temple', parentCity: '태안군' },
+    },
+  ];
+  return places.flatMap(({ canonical, keys, pin }) =>
+    [canonical, ...keys].map((key) => [key, { canonical, pin }]),
+  );
+}
 
 /**
  * 6. 국내 장소 갤러리 검색어 오버라이드

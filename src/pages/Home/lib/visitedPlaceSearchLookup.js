@@ -6,6 +6,7 @@ import { fetchPlaceChatIntroSummaryForLocation } from './placeChatIntro.js';
 import { geocodeReversePlaceFields } from './mapboxGeocodeSuggestions.js';
 import { applyOfficialTourSearchMedia } from './koreaLocalScenicLists.js';
 import { invokeTourApiProxy } from '../../../utils/tourApiProxy.js';
+import { exploreSearchAliasRegionAnchors } from './exploreSearchAliases.js';
 import {
   alignVisitedSpotsToRegionAnchors,
   tourKeywordItemsToRegionAnchors,
@@ -45,17 +46,21 @@ const HANGUL_RE = /[\uAC00-\uD7A3]/;
 async function alignVisitedSpotsWithOfficialTour(query, spots) {
   if (!HANGUL_RE.test(query)) return spots;
   if (!spots.some((spot) => coordsInKorea(Number(spot?.lat), Number(spot?.lng)))) return spots;
+  const aliasAnchors = exploreSearchAliasRegionAnchors(query);
+  let tourAnchors = [];
   try {
     const res = await invokeTourApiProxy(
       'searchKeyword',
       { keyword: query, numOfRows: 8, pageNo: 1 },
       { locale: 'ko' },
     );
-    const anchors = tourKeywordItemsToRegionAnchors(res?.items, query);
-    return alignVisitedSpotsToRegionAnchors(spots, anchors, { isDomestic: coordsInKorea });
+    tourAnchors = tourKeywordItemsToRegionAnchors(res?.items, query);
   } catch {
-    return spots;
+    tourAnchors = [];
   }
+  return alignVisitedSpotsToRegionAnchors(spots, [...tourAnchors, ...aliasAnchors], {
+    isDomestic: coordsInKorea,
+  });
 }
 
 async function attachIntroDesc(spot) {
