@@ -54,6 +54,50 @@ test('제주·서귀포·추자도(영문 uiPlace) 장소카드 기본 출발지
   assert.equal(resolveDefaultFlightOriginIataForLocation(CHUJADO_UI), 'GMP');
 });
 
+// 충남 서해안 — 도착 공항이 인천으로 잡히는 국내 장소 (허브·명소·영문 uiPlace)
+const CHUNGNAM_WEST = [
+  { id: 'seosan', slug: 'seosan', name: '서산', name_en: 'Seosan', country: '대한민국', lat: 36.7845, lng: 126.4503 },
+  { id: 'taean', slug: 'taean', name: '태안', name_en: 'Taean', country: '대한민국', lat: 36.7456, lng: 126.298 },
+  { id: 'seocheon', slug: 'seocheon', name: '서천', name_en: 'Seocheon', country: '대한민국', lat: 36.0803, lng: 126.6914 },
+  { id: 'seosan-haemieupseong', name: '서산 해미읍성', country: '대한민국', lat: 36.7132, lng: 126.5493 },
+  { id: 'mapbox-haemi', name: 'Haemi-myeon', country: 'South Korea', lat: 36.712, lng: 126.545, uiPlace: true, source: 'mapbox' },
+  { id: 'mapbox-anmyeonam', name: 'Anmyeon-Am', lat: 36.5595, lng: 126.3744, uiPlace: true, source: 'mapbox' },
+];
+
+test('서산·태안·서천·해미 — 도착이 서울권(ICN)으로 잡혀도 국내 장소면 기본 출발지 GMP', async () => {
+  const { resolveCinemaDestIata } = await import('../../src/utils/rentalAirportMatch.js');
+  for (const place of CHUNGNAM_WEST) {
+    assert.ok(['ICN', 'GMP'].includes(resolveCinemaDestIata(place)), `${place.name} 도착 공항`);
+    assert.equal(resolveDefaultFlightOriginIataForLocation(place), 'GMP', place.name);
+  }
+  installStoredOrigin('ICN');
+  assert.equal(resolveDefaultFlightOriginIataForLocation(CHUNGNAM_WEST[0]), 'GMP', '저장된 ICN');
+  installStoredOrigin('CJU');
+  assert.equal(resolveDefaultFlightOriginIataForLocation(CHUNGNAM_WEST[0]), 'CJU', '저장된 다른 공항 유지');
+});
+
+test('서울권 도착이어도 해외 국가가 명시된 장소는 ICN 유지', () => {
+  assert.equal(
+    preferDomesticFlightOriginIata('ICN', 'ICN', { domesticPlace: false }),
+    'ICN',
+  );
+  const tsushima = { id: 'tsushima', name: '쓰시마', country: '일본', lat: 34.2, lng: 129.29 };
+  assert.equal(resolveDefaultFlightOriginIataForLocation(tsushima), 'ICN');
+});
+
+test('Trip.com 항공 링크 — 출발 미지정이면 국내선 도착은 GMP, 해외는 ICN, 명시 출발은 유지', async () => {
+  const { buildTripcomPlannerFlightUrl, resolveTripcomDefaultDepartureIata } = await import(
+    '../../src/utils/affiliate.js'
+  );
+  assert.equal(resolveTripcomDefaultDepartureIata('CJU'), 'GMP');
+  assert.equal(resolveTripcomDefaultDepartureIata('NRT'), 'ICN');
+  assert.equal(resolveTripcomDefaultDepartureIata(null), 'ICN');
+  const depart = (loc, opts) => new URL(buildTripcomPlannerFlightUrl(loc, opts)).searchParams.get('dAirportCode');
+  assert.equal(depart(JEJU), 'GMP');
+  assert.equal(depart(TOKYO), 'ICN');
+  assert.equal(depart(JEJU, { departureIata: 'PUS' }), 'PUS');
+});
+
 test('해외 장소카드는 기존처럼 ICN', () => {
   assert.equal(resolveDefaultFlightOriginIataForLocation(TOKYO), 'ICN');
   assert.equal(resolveDefaultFlightOriginIataForLocation(null), 'ICN');

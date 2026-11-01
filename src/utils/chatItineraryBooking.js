@@ -4,7 +4,7 @@ import {
   getMrtAccommodationSearchUrl,
   getMrtSearchUrl,
   getPlannerFlightArrivalIata,
-  TRIPCOM_DEFAULT_DEPARTURE_AIRPORT,
+  resolveTripcomDefaultDepartureIata,
 } from './affiliate.js';
 import { RENTAL_AIRPORT_HUBS } from './rentalAirportHubs.js';
 import {
@@ -39,10 +39,10 @@ function formatFlightCtaLabel(destinationName) {
 }
 
 function formatFlightRouteHint({ departureIata, arrivalIata, destinationName }) {
-  const depart = String(departureIata || TRIPCOM_DEFAULT_DEPARTURE_AIRPORT)
+  const arrive = arrivalIata ? String(arrivalIata).trim().toUpperCase() : null;
+  const depart = String(departureIata || resolveTripcomDefaultDepartureIata(arrive))
     .trim()
     .toUpperCase();
-  const arrive = arrivalIata ? String(arrivalIata).trim().toUpperCase() : null;
   const locale = i18n.language?.slice?.(0, 2) ?? i18n.language;
   if (arrive) {
     if (locale === 'en') {

@@ -5,6 +5,7 @@ import {
     TRIPCOM_DEFAULT_DEPARTURE_AIRPORT,
     buildTripcomPlannerFlightUrl,
     getPlannerFlightArrivalIata,
+    resolveTripcomDefaultDepartureIata,
 } from '../../../../../utils/affiliate';
 import { MOBILE_INPUT_TEXT_CLASS } from '../../../../../shared/hooks/useMobileInputViewport';
 import {
@@ -113,7 +114,7 @@ const TripcomFlightNativeSearch = ({
         [location, essentialGuide],
     );
     const [depart, setDepart] = useState(
-        () => String(departureIata || TRIPCOM_DEFAULT_DEPARTURE_AIRPORT).trim().toUpperCase()
+        () => String(departureIata || resolveTripcomDefaultDepartureIata(defaultArrival)).trim().toUpperCase()
             || TRIPCOM_DEFAULT_DEPARTURE_AIRPORT,
     );
     const [arrive, setArrive] = useState(() => defaultArrival || '');

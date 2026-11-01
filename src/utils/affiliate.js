@@ -6,6 +6,7 @@ import {
   MRT_PACKAGE_SHORT_URLS,
 } from '../pages/Home/data/mrtPackageThemeLinks.js';
 import { buildMrtStayListUrl } from './fetchMrtStays.js';
+import { isKoreaDomesticDestIata } from './koreaAirportIatas.js';
 import {
   resolveKlookRentalBannerSearchLabel,
   resolvePlannerFlightArrivalIata,
@@ -840,6 +841,15 @@ export const MRT_STAY_LOW_COUNT = 5;
 export const TRIPCOM_DEFAULT_DEPARTURE_AIRPORT = 'ICN';
 
 /**
+ * 출발 미지정 시 Trip 출발 공항 — 국내선 도착(CJU·PUS 등)이면 김포.
+ * @param {string | null | undefined} arrivalIata
+ * @returns {string}
+ */
+export function resolveTripcomDefaultDepartureIata(arrivalIata) {
+  return isKoreaDomesticDestIata(arrivalIata) ? 'GMP' : TRIPCOM_DEFAULT_DEPARTURE_AIRPORT;
+}
+
+/**
  * 플래너·배너용 도착 IATA (단일 또는 복수 공항의 linkHub).
  *
  * @param {Record<string, unknown> | null | undefined} location
@@ -939,8 +949,8 @@ export function buildTripcomPlannerFlightUrl(location, options = {}) {
     trip_sub3: sub3,
   });
 
-  let depart = normalizeTripcomIata(departureIata) || TRIPCOM_DEFAULT_DEPARTURE_AIRPORT;
   const arriveCode = arrival ? normalizeTripcomIata(arrival) : null;
+  let depart = normalizeTripcomIata(departureIata) || resolveTripcomDefaultDepartureIata(arriveCode);
   if (arriveCode && depart === arriveCode) {
     depart = TRIPCOM_DEFAULT_DEPARTURE_AIRPORT;
   }

@@ -2,8 +2,8 @@ import React, { useMemo } from 'react';
 import { ArrowRight, Plane, Search } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import {
-    TRIPCOM_DEFAULT_DEPARTURE_AIRPORT,
     getPlannerFlightArrivalIata,
+    resolveTripcomDefaultDepartureIata,
 } from '../../../../../utils/affiliate';
 import { getFlightTripDisclaimer } from '../../../../../utils/flightBookingMatch';
 import { getFlightDestinationSearchHint } from '../../../../../utils/rentalAirportMatch.js';
@@ -24,7 +24,7 @@ const FlightSearchCta = ({
         () => getPlannerFlightArrivalIata(location, { essentialGuide }),
         [location, essentialGuide],
     );
-    const departure = TRIPCOM_DEFAULT_DEPARTURE_AIRPORT || 'ICN';
+    const departure = resolveTripcomDefaultDepartureIata(arrivalIata);
 
     const subtitle = useMemo(() => {
         const tierDisclaimer = getFlightTripDisclaimer(location, { arrivalIata });
