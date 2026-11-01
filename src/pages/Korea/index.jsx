@@ -12,6 +12,7 @@ import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import {
   ArrowUp,
   CalendarDays,
+  Eye,
   Home,
   Loader2,
   LocateFixed,
@@ -112,8 +113,13 @@ import { fetchTourApiFestivalDetail } from '../../utils/fetchTourApiFestivals';
 import { projectFestivalDeepLink } from './festivalDeepLinkItem';
 import { FESTIVAL_PAGE_EVENT } from '../../shared/korea/mooniKoreaFestivalAssist.js';
 import {
+  excludePinnedFromPanelItems,
   festivalItemForSessionPin,
 } from './festivalSessionPin';
+import {
+  dedupeFestivalItems,
+  hasFestivalCardContent,
+} from './festivalCardList';
 import { festivalListDisplayTitleLines } from './festivalDisplayTitle.js';
 import { festivalItemThumbSrc } from './festivalListThumb';
 import { FestivalPhotoFrame } from './festivalPhotoFrame';
@@ -804,6 +810,7 @@ function FestivalRow({
   active,
   onSelect,
   favorited,
+  viewed = false,
   onToggleFavorite,
   distanceKm,
   large = false,
@@ -847,7 +854,7 @@ function FestivalRow({
           <FestivalPhotoFrame
             src={img}
             alt={item.title || ''}
-            className="w-full h-full object-cover"
+            className={`w-full h-full object-cover ${viewed ? 'opacity-75 saturate-[.55]' : ''}`}
             loading="lazy"
             decoding="async"
             referrerPolicy="no-referrer"
@@ -914,6 +921,15 @@ function FestivalRow({
               <span className="min-w-0 truncate">{range}</span>
             </p>
           )}
+          {viewed ? (
+            <p
+              data-festival-card-viewed-badge=""
+              className="flex items-center gap-1 text-[11px] font-bold text-stone-500"
+            >
+              <Eye size={11} className="shrink-0" aria-hidden="true" />
+              {t('korea.festival.viewedBadge')}
+            </p>
+          ) : null}
           {item.addr1 && (
             <p
               className={`text-stone-500 flex items-center gap-1 ${
@@ -967,6 +983,7 @@ function FestivalEntries({
   items,
   selected,
   favoriteIds,
+  viewedIds,
   onToggleFavorite,
   onSelect,
   nearKmByContentId,
@@ -974,10 +991,11 @@ function FestivalEntries({
   cityName,
   thumbListEpoch = '',
 }) {
+  const uniqueItems = dedupeFestivalItems(items).filter(hasFestivalCardContent);
   if (useGrid) {
     return (
       <div className={FESTIVAL_HUB_GRID_CLASS} data-festival-grid="">
-        {items.map((item, index) => {
+        {uniqueItems.map((item, index) => {
           const priorityThumb = isFestivalHubGridEagerThumb(index);
           const cardKey = priorityThumb
             ? festivalHubGridThumbLoadKey({
@@ -998,6 +1016,7 @@ function FestivalEntries({
               String(selected.contentId) === String(item.contentId)
             }
             favorited={favoriteIds.has(String(item.contentId))}
+            viewed={Boolean(viewedIds?.has(String(item.contentId)))}
             onToggleFavorite={onToggleFavorite}
             onSelect={onSelect}
             distanceKm={
@@ -1009,7 +1028,7 @@ function FestivalEntries({
       </div>
     );
   }
-  return items.map((item) => (
+  return uniqueItems.map((item) => (
     <FestivalRow
       key={festivalKey(item)}
       item={item}
@@ -1019,6 +1038,7 @@ function FestivalEntries({
         String(selected.contentId) === String(item.contentId)
       }
       favorited={favoriteIds.has(String(item.contentId))}
+      viewed={Boolean(viewedIds?.has(String(item.contentId)))}
       onToggleFavorite={onToggleFavorite}
       onSelect={onSelect}
       distanceKm={
@@ -1552,6 +1572,10 @@ export default function KoreaFestivalHub() {
   );
   const [favoriteList, setFavoriteList] = useState(() => loadFavorites());
   const [viewedList, setViewedList] = useState(() => loadViewed());
+  const viewedIds = useMemo(
+    () => new Set(viewedList.map((row) => String(row.contentId))),
+    [viewedList],
+  );
 
   useEffect(() => {
     if (!festivalId || festivalDeepLink.sheet !== 'open' || !selected?.contentId) {
@@ -1996,10 +2020,12 @@ export default function KoreaFestivalHub() {
   );
 
   /** Promo strip already surfaces these festivals — keep them out of the list and chip counts on this screen. */
-  const panelItemsForList = useMemo(
-    () => excludeFestivalsByContentId(panelItems, visiblePromoContentIds),
-    [panelItems, visiblePromoContentIds],
-  );
+  const panelItemsForList = useMemo(() => {
+    const withoutPromo = excludeFestivalsByContentId(panelItems, visiblePromoContentIds);
+    return showSessionPinnedRow
+      ? excludePinnedFromPanelItems(withoutPromo, sessionPinnedDisplay)
+      : withoutPromo;
+  }, [panelItems, visiblePromoContentIds, showSessionPinnedRow, sessionPinnedDisplay]);
 
   const timeChipCounts = useMemo(() => {
     /** @type {Record<string, number>} */
@@ -3573,7 +3599,7 @@ export default function KoreaFestivalHub() {
                         useGrid={useFestivalGrid}
                         items={group.items}
                         selected={selected}
-                        favoriteIds={favoriteIds}
+                        favoriteIds={favoriteIds} viewedIds={viewedIds}
                         onToggleFavorite={handleToggleFavorite}
                         onSelect={openItem}
                         nearKmByContentId={nearKmByContentId}
@@ -3641,7 +3667,7 @@ export default function KoreaFestivalHub() {
                         useGrid={useFestivalGrid}
                         items={[sessionPinnedDisplay]}
                         selected={selected}
-                        favoriteIds={favoriteIds}
+                        favoriteIds={favoriteIds} viewedIds={viewedIds}
                         onToggleFavorite={handleToggleFavorite}
                         onSelect={openItem}
                         nearKmByContentId={nearKmByContentId}
@@ -3664,7 +3690,7 @@ export default function KoreaFestivalHub() {
                       useGrid
                       items={panelGridFlatItems}
                       selected={selected}
-                      favoriteIds={favoriteIds}
+                      favoriteIds={favoriteIds} viewedIds={viewedIds}
                       onToggleFavorite={handleToggleFavorite}
                       onSelect={openItem}
                       nearKmByContentId={nearKmByContentId}
@@ -3686,7 +3712,7 @@ export default function KoreaFestivalHub() {
                             useGrid={false}
                             items={group.items}
                             selected={selected}
-                            favoriteIds={favoriteIds}
+                            favoriteIds={favoriteIds} viewedIds={viewedIds}
                             onToggleFavorite={handleToggleFavorite}
                             onSelect={openItem}
                             nearKmByContentId={nearKmByContentId}

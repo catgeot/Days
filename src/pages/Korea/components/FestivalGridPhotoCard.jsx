@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Star } from 'lucide-react';
+import { Eye, Star } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from '../../../i18n/LocaleProvider';
 import { koreanApiTextProps } from '../../../i18n/koreanApiText.js';
@@ -38,6 +38,7 @@ function FestivalGridThumbLoadingShimmer() {
  *   active?: boolean,
  *   onSelect: (item: Record<string, unknown>) => void,
  *   favorited?: boolean,
+ *   viewed?: boolean,
  *   onToggleFavorite?: (item: Record<string, unknown>) => void,
  *   distanceKm?: number,
  *   areaCode?: string,
@@ -50,6 +51,7 @@ export default function FestivalGridPhotoCard({
   active = false,
   onSelect,
   favorited = false,
+  viewed = false,
   onToggleFavorite,
   distanceKm,
   areaCode = 'all',
@@ -93,6 +95,8 @@ export default function FestivalGridPhotoCard({
   const distanceLabel = formatFestivalDistKm(distanceKm);
   const metaLine = [range, place].filter(Boolean).join(' · ');
 
+  if (!titleLines?.primary) return null;
+
   return (
     <article
       className={`relative mb-1.5 flex min-w-0 break-inside-avoid flex-col overflow-hidden rounded-xl border bg-white text-left shadow-sm transition-colors md:mb-2 lg:mb-2.5 ${photoLayout.wide ? '[column-span:all]' : ''} ${
@@ -102,6 +106,7 @@ export default function FestivalGridPhotoCard({
       }`}
       data-festival-grid-card=""
       data-festival-grid-card-wide={photoLayout.wide ? 'true' : undefined}
+      data-festival-grid-card-viewed={viewed ? 'true' : undefined}
     >
       <button
         type="button"
@@ -128,7 +133,7 @@ export default function FestivalGridPhotoCard({
                 fetchPriority={priorityThumb ? 'high' : undefined}
                 decoding="async"
                 referrerPolicy="no-referrer"
-                className="absolute inset-0 z-[1] h-full w-full object-contain"
+                className={`absolute inset-0 z-[1] h-full w-full object-contain ${viewed ? 'opacity-75 saturate-[.55]' : ''}`}
                 pendingShimmer={!thumbDecoded}
                 fallback={
                   <span className="absolute inset-0" data-festival-grid-thumb-fallback="">
@@ -156,12 +161,21 @@ export default function FestivalGridPhotoCard({
               {distanceLabel}
             </span>
           ) : null}
+          {viewed ? (
+            <span
+              data-festival-card-viewed-badge=""
+              className="absolute bottom-2 left-2 z-[1] inline-flex items-center gap-1 rounded-full bg-stone-900/75 px-2 py-0.5 text-[10px] font-bold text-white"
+            >
+              <Eye size={11} aria-hidden="true" />
+              {t('korea.festival.viewedBadge')}
+            </span>
+          ) : null}
         </div>
         <div className="flex min-w-0 flex-col gap-0.5 px-1.5 pb-1.5 pt-1">
           {titleLines?.secondary ? (
             <>
               <p
-                className="text-[11px] font-bold leading-[1.25] text-stone-900 line-clamp-2 break-keep"
+                className={`text-[11px] font-bold leading-[1.25] line-clamp-2 break-keep ${viewed ? 'text-stone-500' : 'text-stone-900'}`}
               >
                 {titleLines.primary}
               </p>
@@ -174,7 +188,7 @@ export default function FestivalGridPhotoCard({
             </>
           ) : (
             <p
-              className="text-[11px] font-bold leading-[1.25] text-stone-900 line-clamp-2 break-keep"
+              className={`text-[11px] font-bold leading-[1.25] line-clamp-2 break-keep ${viewed ? 'text-stone-500' : 'text-stone-900'}`}
               {...koText}
             >
               {titleLines?.primary}
