@@ -104,8 +104,8 @@ const browser = await chromium.launch();
 try {
   for (const viewport of VIEWPORTS) {
     if (ONLY.has('4')) {
-      await captureSearchRows(browser, viewport, '4-search-alias-suwolbong', '수월봉');
-      await captureSearchRows(browser, viewport, '4-search-alias-dakmeoru', '닭머르해안');
+      await captureSearchRows(browser, viewport, '4-search-alias-yongnuni', '용눈이');
+      await captureSearchRows(browser, viewport, '4-search-alias-anmyeonam', 'Anmyeonam');
     }
     if (ONLY.has('5')) {
       await captureSearchTap(browser, viewport, '5-tap-hyeongjeseom', '형제섬');
