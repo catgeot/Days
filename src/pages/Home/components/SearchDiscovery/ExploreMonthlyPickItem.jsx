@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import useClickWithDragPrevention from '../../../../hooks/useClickWithDragPrevention';
 import {
   getLocalizedCountryName,
@@ -39,7 +40,11 @@ const ExploreMonthlyPickItem = ({
   className = '',
   mediaClassName = '',
 }) => {
+  const { t, i18n } = useTranslation();
   const displayName = getLocalizedPlaceName(spot, 'ko') || String(spot?.name || '').trim();
+  const photoAlt = t('home.explore.monthlyPickPhotoAlt', {
+    name: getLocalizedPlaceName(spot, i18n.language) || displayName,
+  });
   const rawCountry = getLocalizedCountryName(spot, 'ko') || String(spot?.country || '').trim();
   const countryLabel = isPlaceholderCountry(rawCountry) ? '' : rawCountry;
   const slug = String(spot?.slug || entry?.slug || '').toLowerCase();
@@ -57,8 +62,12 @@ const ExploreMonthlyPickItem = ({
     : 'text-sm font-bold leading-snug sm:text-base';
   const reasonClass = isHero
     ? 'mt-2 text-sm leading-snug text-gray-100 line-clamp-2 sm:text-[15px]'
-    : 'mt-1 text-[11px] leading-snug text-gray-100 line-clamp-2 sm:text-xs';
+    : 'mt-1 text-[11px] leading-snug text-gray-100 line-clamp-3 sm:line-clamp-2 sm:text-xs';
   const gradientHeight = isTile ? 'h-[62%] min-h-[72px]' : 'h-[52%] min-h-[108px]';
+  /** Text sits on its own panel so contrast holds without text-shadow on bright photos (4.5:1). */
+  const textPanelClass = isHero
+    ? 'rounded-xl bg-black/70 px-3 py-2.5'
+    : 'rounded-lg bg-black/70 px-2 py-1.5';
 
   if (!imageUrl) return null;
 
@@ -75,11 +84,12 @@ const ExploreMonthlyPickItem = ({
         onPointerLeave={handleCancel}
         onPointerCancel={handleCancel}
         className={`group relative cursor-pointer overflow-hidden rounded-2xl border border-white/[0.08] bg-black/30 text-left transition hover:border-white/25 ${
-          isHero ? 'min-h-[220px] sm:min-h-[280px]' : 'min-h-[108px] sm:min-h-[120px]'
+          isHero ? 'min-h-[220px] sm:min-h-[280px]' : 'min-h-[156px] sm:min-h-[160px]'
         } ${mediaClassName}`}
       >
         <ExploreMonthlyPickMedia
           imageUrl={imageUrl}
+          alt={photoAlt}
           onError={() => onImageError?.(slug)}
         />
         <div
@@ -88,13 +98,13 @@ const ExploreMonthlyPickItem = ({
         {entry.estimate ? (
           <span
             data-testid="explore-v2-monthly-estimate"
-            className="absolute right-3 top-3 z-20 shrink-0 rounded-md border border-amber-500/40 bg-black/55 px-1.5 py-0.5 text-[10px] font-semibold text-amber-100 backdrop-blur-[2px]"
+            className="absolute right-3 top-3 z-20 shrink-0 rounded-md border border-amber-500/40 bg-black/75 px-1.5 py-0.5 text-[10px] font-semibold text-amber-100 backdrop-blur-[2px]"
           >
             추정
           </span>
         ) : null}
-        <div className="relative z-10 flex h-full flex-col justify-end p-3 sm:p-4">
-          <div className="min-w-0">
+        <div className={`relative z-10 flex h-full flex-col justify-end ${isHero ? 'p-3 sm:p-4' : 'p-2 sm:p-3'}`}>
+          <div data-testid="explore-v2-monthly-text-panel" className={`min-w-0 self-start max-w-full ${textPanelClass}`}>
             <h3 className={`break-keep text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.95)] ${titleClass}`}>
               {displayName}
             </h3>

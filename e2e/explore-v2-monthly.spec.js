@@ -28,6 +28,34 @@ async function expectMonthlyMosaic(page) {
   return section;
 }
 
+async function expectPhotoAltAndTextPanels(page, altForName) {
+  const cards = page.locator('[data-testid^="explore-v2-monthly-card-"]');
+  const count = await cards.count();
+  for (let i = 0; i < count; i += 1) {
+    const card = cards.nth(i);
+    const name = (await card.locator('h3').textContent()).trim();
+    await expect(card.locator('img')).toHaveAttribute('alt', altForName(name));
+  }
+  const alphas = await page
+    .getByTestId('explore-v2-monthly-text-panel')
+    .evaluateAll((panels) =>
+      panels.map((el) => {
+        const cv = document.createElement('canvas');
+        cv.width = cv.height = 1;
+        const ctx = cv.getContext('2d');
+        ctx.fillStyle = getComputedStyle(el).backgroundColor;
+        ctx.fillRect(0, 0, 1, 1);
+        const [r, g, b, a] = ctx.getImageData(0, 0, 1, 1).data;
+        return { dark: r + g + b === 0, alpha: a / 255 };
+      }),
+    );
+  expect(alphas).toHaveLength(count);
+  for (const { dark, alpha } of alphas) {
+    expect(dark).toBe(true);
+    expect(alpha).toBeGreaterThanOrEqual(0.69);
+  }
+}
+
 async function expectNoMosaicGap(page) {
   const gap = await page.getByTestId('explore-v2-monthly-layout-b').evaluate((grid) => {
     const gridRect = grid.getBoundingClientRect();
@@ -79,10 +107,30 @@ test.describe('Explore monthly picks @flagOff', () => {
     await expect(page).toHaveURL(/\/place\/jeju/, { timeout: 30_000 });
   });
 
+  test('390 — Korean photo alt and dark text panel on every card', async ({ page }) => {
+    await openExplore(page, { width: 390, height: 844 });
+    await expectMonthlyMosaic(page);
+    await expectPhotoAltAndTextPanels(page, (name) => `${name} 대표 사진`);
+  });
+
+  test('1280 — English UI uses English photo alt', async ({ page }) => {
+    await openExplore(page, { width: 1280, height: 720 }, 'lang=en');
+    await expect(monthlySection(page)).toBeVisible({ timeout: 45_000 });
+    await expect(page.getByTestId('explore-v2-monthly-card-kyoto').locator('img')).toHaveAttribute(
+      'alt',
+      'Featured photo of Kyoto',
+    );
+    await expect(page.getByTestId('explore-v2-monthly-card-jeju').locator('img')).toHaveAttribute(
+      'alt',
+      'Featured photo of Jeju',
+    );
+  });
+
   test('1280 — default /explore shows mosaic B without gaps', async ({ page }) => {
     await openExplore(page, { width: 1280, height: 720 });
     await expectMonthlyMosaic(page);
     await expectNoMosaicGap(page);
+    await expectPhotoAltAndTextPanels(page, (name) => `${name} 대표 사진`);
     await expect(page.getByText('에디터스 픽').first()).toBeVisible({ timeout: 45_000 });
   });
 });

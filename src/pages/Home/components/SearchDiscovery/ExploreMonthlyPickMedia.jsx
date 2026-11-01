@@ -1,12 +1,12 @@
 import React from 'react';
 
-const ExploreMonthlyPickMedia = ({ imageUrl, className = '', onError }) => {
+const ExploreMonthlyPickMedia = ({ imageUrl, alt = '', className = '', onError }) => {
   if (!imageUrl) return null;
 
   return (
     <img
       src={imageUrl}
-      alt=""
+      alt={alt}
       loading="lazy"
       onError={onError}
       className={`absolute inset-0 h-full w-full object-cover ${className}`}

@@ -482,6 +482,7 @@
     },
     "explore": {
       "backHome": "Home",
+      "monthlyPickPhotoAlt": "Featured photo of {{name}}",
       "filterTheme": "Theme",
       "filterContinent": "Region",
       "filterThemePc": "By theme",

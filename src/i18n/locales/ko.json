@@ -261,6 +261,7 @@
     },
     "explore": {
       "backHome": "홈으로",
+      "monthlyPickPhotoAlt": "{{name}} 대표 사진",
       "filterTheme": "테마",
       "filterContinent": "대륙",
       "filterThemePc": "테마별",
