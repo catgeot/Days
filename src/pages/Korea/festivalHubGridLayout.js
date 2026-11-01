@@ -4,19 +4,19 @@ export const FESTIVAL_HUB_GRID_CLASS =
 
 const FESTIVAL_HUB_MASONRY_THUMB_ASPECT_CLASSES = [
   'aspect-[3/4]',
-  'aspect-[4/3]',
   'aspect-[4/5]',
   'aspect-[1/1]',
-  'aspect-[5/4]',
+  'aspect-[4/5]',
   'aspect-[3/4]',
+  'aspect-[4/5]',
 ];
 
 export function festivalHubMasonryIsWide(index) {
-  return ((index % 6) + 6) % 6 === 5;
+  return ((index % 6) + 6) % 6 === 0;
 }
 
 export function festivalHubMasonryThumbAspectClass(index) {
-  if (festivalHubMasonryIsWide(index)) return 'aspect-[16/9]';
+  if (festivalHubMasonryIsWide(index)) return 'aspect-[4/3] md:aspect-[16/9]';
   const len = FESTIVAL_HUB_MASONRY_THUMB_ASPECT_CLASSES.length;
   return FESTIVAL_HUB_MASONRY_THUMB_ASPECT_CLASSES[((index % len) + len) % len];
 }
