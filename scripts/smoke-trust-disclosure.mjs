@@ -56,7 +56,7 @@ assert.match(bar, /openFooterModal\('credits'\)|tab: 'credits'/, '출처 탭 링
 assert.match(bar, /home\.footerModal\.trustBar/, '신뢰 바 i18n');
 
 const logo = read('src/pages/Home/components/LogoPanel.jsx');
-assert.match(logo, /openFooterModal/, '로고 패널이 전역 푸터 이벤트 사용');
+assert.match(logo, /<TrustLinkBar variant="stack"/, '로고 패널은 TrustLinkBar(전역 푸터 이벤트)로 푸터를 연다');
 assert.doesNotMatch(logo, /from '\.\/FooterModal'/, '로고 패널 FooterModal 이중 마운트 금지');
 
 const planner = read('src/components/PlaceCard/tabs/PlannerTab.jsx');
