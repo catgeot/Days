@@ -14,6 +14,31 @@
 
 ## 활성 목록
 
+### 축제 카드 배열
+
+| | |
+|--|--|
+| **상태** | **#1 A형 masonry+와이드** · tip `235dc7c9` · PR [#637](https://github.com/catgeot/Days/pull/637) · **병합 금지(사람 Preview 전)** |
+| **브랜치** | `cursor/festival-masonry-f535` |
+| **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
+| **일지** | [`2026-11-01-project-log.md`](./2026-11-01-project-log.md) |
+| **Preview** | git `https://days-git-cursor-festival-masonry-f535-catgeots-projects.vercel.app/korea` |
+| **금지** | PR 병합(사람 Preview 전) · 코드를 `origin/main`에 push · feature에 `plans/**` 커밋 · 정렬·필터 순서 변경 |
+| **VERIFY** | `npm run test:health` 934 pass · `npm run build` PASS |
+| **남은 일** | 사람이 PR #637 Preview에서 불규칙 높이 흐름, 6번째 와이드와 아래 컬럼 재개, 와이드 안 세로 포스터 크기를 본다 |
+
+**다음 제시어**
+
+```
+축제 카드 배열 #2, Preview 피드백 반영
+@plans/feature-handoff-index.md
+@plans/2026-11-01-project-log.md
+브랜치 cursor/festival-masonry-f535 · PR #637 · Preview git /korea
+금지: PR 병합(사람 Preview OK 전) · main 코드 push · feature에 plans 커밋 · 정렬·필터 순서 변경
+작업: Preview 피드백(와이드 주기·비율 패턴·세로 포스터 크기)만 같은 브랜치에서 조정
+검증: npm run test:health · npm run build
+```
+
 ### 현지 정보 LI-1 레지스트리
 
 | | |
