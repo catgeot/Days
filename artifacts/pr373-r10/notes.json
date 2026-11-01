@@ -1,0 +1,57 @@
+{
+  "branchBase": "https://127.0.0.1:4173",
+  "capturedAt": "2026-10-23T05:53:19.029Z",
+  "r9ImageNotesMismatch": "r9 copied branch-tokyo-390 from r8 run-04 while notes.json read stale __gateoGlobeQaMetrics from a later idle (post-fly). r10 logs atCapture immediately before screenshot.",
+  "wedgeMetric": "wedgeSuspectVoid uses RGB<18 void pixels; legacyDarkFraction uses mean<25 (pre-r9). See wedge-metric.md.",
+  "runs": [
+    {
+      "flow": "paris",
+      "file": "branch-paris-390-after-home-settled.jpg",
+      "atCapture": {
+        "centerLat": 48.856600000000014,
+        "centerLng": 2.352200000000039,
+        "zoom": 2.35,
+        "idleAt": 1792734774508,
+        "canvasBackingMismatch": false,
+        "summaryOpen": false
+      },
+      "voidFraction": 0.004814947897951851,
+      "legacyDarkFraction": 0.11171397772188287,
+      "meanRgb": 50.053766918193794,
+      "wedgeSuspectVoid": false
+    },
+    {
+      "flow": "tokyo",
+      "file": "branch-tokyo-390-after-home-settled.jpg",
+      "atCapture": {
+        "centerLat": 35.66999999999999,
+        "centerLng": 139.76,
+        "zoom": 2.35,
+        "idleAt": 1792734786405,
+        "canvasBackingMismatch": false,
+        "summaryOpen": false
+      },
+      "voidFraction": 0.8215594681997844,
+      "legacyDarkFraction": 0.9436219906575638,
+      "meanRgb": 11.629692178704035,
+      "wedgeSuspectVoid": true
+    },
+    {
+      "flow": "jeju",
+      "file": "branch-jeju-390-after-home-settled.jpg",
+      "atCapture": {
+        "centerLat": 33.49959999999997,
+        "centerLng": 126.53120000000001,
+        "zoom": 2.35,
+        "idleAt": 1792734797760,
+        "canvasBackingMismatch": false,
+        "summaryOpen": false
+      },
+      "voidFraction": 0.4482213438735178,
+      "legacyDarkFraction": 0.833201581027668,
+      "meanRgb": 18.190729428674093,
+      "wedgeSuspectVoid": true
+    }
+  ],
+  "pass": true
+}

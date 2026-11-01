@@ -1,0 +1,118 @@
+{
+  "branchBase": "https://127.0.0.1:4173",
+  "mainBase": "https://127.0.0.1:4174",
+  "runs": [
+    {
+      "flow": "paris",
+      "size": "390",
+      "prefix": "branch-",
+      "base": "https://127.0.0.1:4173",
+      "summaryOpen": false
+    },
+    {
+      "flow": "paris",
+      "size": "390",
+      "prefix": "main-",
+      "base": "https://127.0.0.1:4174",
+      "summaryOpen": true
+    },
+    {
+      "flow": "tokyo",
+      "size": "390",
+      "prefix": "branch-",
+      "base": "https://127.0.0.1:4173",
+      "summaryOpen": false
+    },
+    {
+      "flow": "tokyo",
+      "size": "390",
+      "prefix": "main-",
+      "base": "https://127.0.0.1:4174",
+      "summaryOpen": true
+    },
+    {
+      "flow": "jeju",
+      "size": "390",
+      "prefix": "branch-",
+      "base": "https://127.0.0.1:4173",
+      "summaryOpen": false
+    },
+    {
+      "flow": "jeju",
+      "size": "390",
+      "prefix": "main-",
+      "base": "https://127.0.0.1:4174",
+      "summaryOpen": true
+    },
+    {
+      "flow": "jeju-explore",
+      "size": "390",
+      "prefix": "branch-",
+      "base": "https://127.0.0.1:4173",
+      "summaryOpen": false
+    },
+    {
+      "flow": "jeju-explore",
+      "size": "390",
+      "prefix": "main-",
+      "base": "https://127.0.0.1:4174",
+      "summaryOpen": true
+    },
+    {
+      "flow": "paris",
+      "size": "1280",
+      "prefix": "branch-",
+      "base": "https://127.0.0.1:4173",
+      "summaryOpen": false
+    },
+    {
+      "flow": "paris",
+      "size": "1280",
+      "prefix": "main-",
+      "base": "https://127.0.0.1:4174",
+      "summaryOpen": true
+    },
+    {
+      "flow": "tokyo",
+      "size": "1280",
+      "prefix": "branch-",
+      "base": "https://127.0.0.1:4173",
+      "summaryOpen": false
+    },
+    {
+      "flow": "tokyo",
+      "size": "1280",
+      "prefix": "main-",
+      "base": "https://127.0.0.1:4174",
+      "summaryOpen": true
+    },
+    {
+      "flow": "jeju",
+      "size": "1280",
+      "prefix": "branch-",
+      "base": "https://127.0.0.1:4173",
+      "summaryOpen": false
+    },
+    {
+      "flow": "jeju",
+      "size": "1280",
+      "prefix": "main-",
+      "base": "https://127.0.0.1:4174",
+      "summaryOpen": true
+    },
+    {
+      "flow": "jeju-explore",
+      "size": "1280",
+      "prefix": "branch-",
+      "base": "https://127.0.0.1:4173",
+      "summaryOpen": false
+    },
+    {
+      "flow": "jeju-explore",
+      "size": "1280",
+      "prefix": "main-",
+      "base": "https://127.0.0.1:4174",
+      "summaryOpen": true
+    }
+  ]
+}
