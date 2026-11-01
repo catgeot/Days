@@ -67,6 +67,9 @@ import {
   FESTIVAL_HUB_GRID_CLASS,
   FESTIVAL_HUB_GRID_MOBILE_SCROLL_PAD_CLASS,
   FESTIVAL_HUB_GRID_SCROLL_TOP_BOTTOM_CLASS,
+  distributeFestivalHubMasonryColumns,
+  festivalHubPhotoLayout,
+  partitionFestivalHubSegments,
 } from './festivalHubGridLayout.js';
 import {
   festivalHubGridThumbLoadKey,
@@ -118,6 +121,7 @@ import {
 } from './festivalSessionPin';
 import {
   dedupeFestivalItems,
+  festivalCardDedupeKey,
   hasFestivalCardContent,
 } from './festivalCardList';
 import { festivalListDisplayTitleLines } from './festivalDisplayTitle.js';
@@ -978,6 +982,35 @@ function FestivalRow({
   );
 }
 
+function useFestivalHubMasonryColumnCount() {
+  const [columnCount, setColumnCount] = useState(() => {
+    if (typeof window === 'undefined' || !window.matchMedia) return 2;
+    if (window.matchMedia('(min-width: 1024px)').matches) return 4;
+    if (window.matchMedia('(min-width: 768px)').matches) return 3;
+    return 2;
+  });
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || !window.matchMedia) return undefined;
+    const lgQuery = window.matchMedia('(min-width: 1024px)');
+    const mdQuery = window.matchMedia('(min-width: 768px)');
+    const sync = () => {
+      if (lgQuery.matches) setColumnCount(4);
+      else if (mdQuery.matches) setColumnCount(3);
+      else setColumnCount(2);
+    };
+    sync();
+    lgQuery.addEventListener?.('change', sync);
+    mdQuery.addEventListener?.('change', sync);
+    return () => {
+      lgQuery.removeEventListener?.('change', sync);
+      mdQuery.removeEventListener?.('change', sync);
+    };
+  }, []);
+
+  return columnCount;
+}
+
 function FestivalEntries({
   useGrid,
   items,
@@ -992,37 +1025,92 @@ function FestivalEntries({
   thumbListEpoch = '',
 }) {
   const uniqueItems = dedupeFestivalItems(items).filter(hasFestivalCardContent);
+  const columnCount = useFestivalHubMasonryColumnCount();
+  const [photoSizesByKey, setPhotoSizesByKey] = useState(() => new Map());
+  const handlePhotoSize = useCallback((item, size) => {
+    const key = festivalCardDedupeKey(item) || festivalKey(item);
+    if (!key || !size?.width || !size?.height) return;
+    setPhotoSizesByKey((prev) => {
+      const cur = prev.get(key);
+      if (cur && cur.width === size.width && cur.height === size.height) {
+        return prev;
+      }
+      const next = new Map(prev);
+      next.set(key, size);
+      return next;
+    });
+  }, []);
   if (useGrid) {
+    const segments = partitionFestivalHubSegments(
+      uniqueItems,
+      (item) => {
+        const size = photoSizesByKey.get(
+          festivalCardDedupeKey(item) || festivalKey(item),
+        );
+        return festivalHubPhotoLayout(size?.width, size?.height).wide;
+      },
+      columnCount,
+    );
+    const renderGridCard = (item, index) => {
+      const priorityThumb = isFestivalHubGridEagerThumb(index);
+      const cardKey = priorityThumb
+        ? festivalHubGridThumbLoadKey({
+            listEpoch: thumbListEpoch,
+            index,
+            contentId: item?.contentId,
+          })
+        : festivalKey(item);
+      const dedupeKey = festivalCardDedupeKey(item) || festivalKey(item);
+      return (
+        <FestivalGridPhotoCard
+          key={cardKey}
+          item={item}
+          priorityThumb={priorityThumb}
+          areaCode={areaCode}
+          cityName={cityName}
+          active={
+            selected?.contentId != null &&
+            String(selected.contentId) === String(item.contentId)
+          }
+          favorited={favoriteIds.has(String(item.contentId))}
+          viewed={Boolean(viewedIds?.has(String(item.contentId)))}
+          onToggleFavorite={onToggleFavorite}
+          initialPhotoSize={photoSizesByKey.get(dedupeKey) ?? null}
+          onPhotoSize={handlePhotoSize}
+          onSelect={onSelect}
+          distanceKm={
+            nearKmByContentId.get(String(item.contentId)) ?? undefined
+          }
+        />
+      );
+    };
     return (
-      <div className={FESTIVAL_HUB_GRID_CLASS} data-festival-grid="">
-        {uniqueItems.map((item, index) => {
-          const priorityThumb = isFestivalHubGridEagerThumb(index);
-          const cardKey = priorityThumb
-            ? festivalHubGridThumbLoadKey({
-                listEpoch: thumbListEpoch,
-                index,
-                contentId: item?.contentId,
-              })
-            : festivalKey(item);
+      <div className="w-full" data-festival-grid="">
+        {segments.map((seg, segIdx) => {
+          if (seg.type === 'wide') {
+            return (
+              <div key={`wide-${seg.entry.index}`} className="w-full">
+                {renderGridCard(seg.entry.item, seg.entry.index)}
+              </div>
+            );
+          }
+          const cols = distributeFestivalHubMasonryColumns(
+            seg.entries,
+            columnCount,
+          );
           return (
-          <FestivalGridPhotoCard
-            key={cardKey}
-            item={item}
-            priorityThumb={priorityThumb}
-            areaCode={areaCode}
-            cityName={cityName}
-            active={
-              selected?.contentId != null &&
-              String(selected.contentId) === String(item.contentId)
-            }
-            favorited={favoriteIds.has(String(item.contentId))}
-            viewed={Boolean(viewedIds?.has(String(item.contentId)))}
-            onToggleFavorite={onToggleFavorite}
-            onSelect={onSelect}
-            distanceKm={
-              nearKmByContentId.get(String(item.contentId)) ?? undefined
-            }
-          />
+            <div
+              key={`cols-${segIdx}-${seg.entries[0]?.index ?? 0}`}
+              className={FESTIVAL_HUB_GRID_CLASS}
+            >
+              {cols.map((colEntries, colIdx) => (
+                <div key={`col-${colIdx}`} className="flex min-w-0 flex-col">
+                  {colEntries.map(({ item, index }) =>
+                    renderGridCard(item, index),
+                  )}
+                </div>
+              ))}
+            </div>
           );
         })}
       </div>

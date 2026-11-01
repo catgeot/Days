@@ -56,7 +56,7 @@ test('hub list dedupes, drops empty cards, and excludes the session pin from the
   assert.match(hub, /new Set\(viewedList\.map/);
 });
 
-test('grid and row cards mark viewed festivals with a badge and dimmed photo', () => {
+test('grid and row cards mark viewed festivals with a badge and dimmed photo without CSS column-span fragmentation', () => {
   const card = readFileSync(
     join(root, 'src/pages/Korea/components/FestivalGridPhotoCard.jsx'),
     'utf8',
@@ -65,8 +65,11 @@ test('grid and row cards mark viewed festivals with a badge and dimmed photo', (
   assert.match(card, /data-festival-grid-card-viewed/);
   assert.match(card, /korea\.festival\.viewedBadge/);
   assert.match(card, /if \(!titleLines\?\.primary\) return null;/);
+  assert.doesNotMatch(card, /column-span:all/);
   const hub = readFileSync(join(root, 'src/pages/Korea/index.jsx'), 'utf8');
   assert.match(hub, /data-festival-card-viewed-badge/);
+  assert.match(hub, /partitionFestivalHubSegments/);
+  assert.match(hub, /distributeFestivalHubMasonryColumns/);
 });
 
 test('viewed badge copy exists in ko/en locales', () => {
