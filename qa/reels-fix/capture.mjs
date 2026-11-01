@@ -73,8 +73,8 @@ async function summaryFlightState(page) {
   };
 }
 
-// ONLY=2,4,6 → 해당 장면만
-const ONLY = new Set(String(process.env.ONLY || '1,2,3,4,6,7').split(',').map((s) => s.trim()));
+// ONLY=5 → 해당 장면만
+const ONLY = new Set(String(process.env.ONLY || '1,2,3,4,5,6,7').split(',').map((s) => s.trim()));
 
 async function captureSearchRows(browser, viewport, name, query) {
   const context = await newGuardedContext(browser, viewport);
@@ -85,6 +85,17 @@ async function captureSearchRows(browser, viewport, name, query) {
     .filter({ hasNotText: 'MOONi' })
     .allInnerTexts();
   console.log(LABEL, viewport.width, name, rows.map((r) => r.replace(/\s+/g, ' ').trim()));
+  await shot(page, viewport, name);
+  await context.close();
+}
+
+async function captureSearchTap(browser, viewport, name, query) {
+  const context = await newGuardedContext(browser, viewport);
+  const page = await context.newPage();
+  await openExploreSearch(page, query);
+  await page.locator('[data-search-popover] button').filter({ hasNotText: 'MOONi' }).first().click();
+  await page.waitForTimeout(10_000);
+  console.log(LABEL, viewport.width, name, decodeURIComponent(page.url()));
   await shot(page, viewport, name);
   await context.close();
 }
@@ -132,6 +143,11 @@ try {
     if (ONLY.has('4')) {
       await captureSearchRows(browser, viewport, '4-search-alias-yongnuni', '용눈이');
       await captureSearchRows(browser, viewport, '4-search-alias-anmyeonam', 'Anmyeonam');
+    }
+    if (ONLY.has('5')) {
+      await captureSearchTap(browser, viewport, '5-tap-hyeongjeseom', '형제섬');
+      await captureSearchTap(browser, viewport, '5-tap-yongnuni', '용눈이오름');
+      await captureSearchTap(browser, viewport, '5-tap-anmyeonam', '안면암');
     }
     if (ONLY.has('6')) {
       await captureSearchRows(browser, viewport, '6-search-region-anmyeonam', 'Anmyeonam');
