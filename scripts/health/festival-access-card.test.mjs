@@ -101,6 +101,9 @@ test('display keeps real train and bus values and drops blanks', () => {
   assert.equal(bookingLink(option(), 'en').text, 'Book on Korail ↗');
   const trip = tripComLink(option());
   assert.equal(trip.href, TRIP_COM_KORAIL_HREF);
+  assert.match(trip.href, /^https:\/\/www\.trip\.com\/trains\/korail\/\?/);
+  assert.match(trip.href, /Allianceid=8182427/);
+  assert.match(trip.href, /SID=309563143/);
   assert.equal(trip.text, '외국어 예매 (Trip.com) ↗');
   assert.equal(tripComLink(option({ bookingOperator: 'SR' })), null);
   assert.equal(tripComLink(option({ mode: 'expBus', bookingOperator: null })), null);

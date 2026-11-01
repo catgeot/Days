@@ -183,7 +183,9 @@ function bookingText(option, locale) {
   return en ? 'Book' : '예매';
 }
 
-export const TRIP_COM_KORAIL_HREF = 'https://www.trip.com/trains/korail/';
+// Allianceid/SID = affiliate.js TRIPCOM_KR_PARTNER (이 모듈은 Node 순수 유지 — affiliate.js import 금지)
+export const TRIP_COM_KORAIL_HREF =
+  'https://www.trip.com/trains/korail/?Allianceid=8182427&SID=309563143&trip_sub1=festival-access';
 
 export function bookingLink(option, locale = 'ko') {
   const home = String(option?.bookingUrl || '');

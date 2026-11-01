@@ -28,6 +28,18 @@ assert.deepEqual(
   creditsKo.partners.map((item) => item.name),
   ['Trip.com', 'Klook', 'GetYourGuide', 'MyRealTrip'],
 );
+const PARTNER_AFFILIATE_MARK = {
+  'Trip.com': /Allianceid=8182427.*SID=309563143|SID=309563143.*Allianceid=8182427/,
+  Klook: /aid=118544/,
+  GetYourGuide: /partner_id=LRKVVU4/,
+  MyRealTrip: /myrealt\.rip\//,
+};
+for (const item of GATEO_TRAVEL_PARTNERS) {
+  assert.match(item.href, PARTNER_AFFILIATE_MARK[item.name], `${item.name} Credits 링크는 제휴 URL`);
+}
+const affiliateSrc = read('src/utils/affiliate.js');
+assert.match(affiliateSrc, /allianceId: '8182427'/, 'Trip.com Alliance SSOT와 Credits 값 동기');
+assert.match(affiliateSrc, /sid: '309563143'/, 'Trip.com SID SSOT와 Credits 값 동기');
 assert.match(creditsEn.dataSources[0].name, /Korea Tourism Organization/);
 
 const layout = read('src/shared/layout/MainLayout.jsx');
