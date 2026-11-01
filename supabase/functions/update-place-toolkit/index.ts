@@ -8,6 +8,7 @@ import { isRegionalGatewayIata, REGIONAL_GATEWAY_IATAS_BY_SLUG } from "../_share
 import { parseGeminiJsonText } from "../_shared/parseGeminiJson.ts";
 import { GEMINI_WRITE_TRY_ORDER } from "../_shared/geminiModels.ts";
 import { thinkingConfigForBodyText } from "../_shared/gemini/thinkingConfig.js";
+import { resolveToolkitCreationGate } from "../_shared/toolkitCreationGate.js";
 import toolkitAirportCoords from "../_shared/toolkitAirportCoords.json" with { type: "json" };
 
 const corsHeaders = {
@@ -245,8 +246,9 @@ URL이 있다면 반드시 해당 공식 사이트의 유효한 예약 링크나
 // ---------------------------------------------------------------------------
 // Caller auth + cost guard (security 2026-10-02)
 // - 기존 내용이 있는 행 덮어쓰기(Force Update 포함) = 관리자만 (TOOLKIT_ADMIN_USER_IDS)
-// - 빈 툴킷 최초 생성 = canonicalPlaceIdMap slug만 (place_alias 폴백 없음), 익명 허용
-// - 비관리자 프롬프트 지명 = slug 또는 그 slug의 place_alias.alias 와 일치할 때만
+// - 빈 툴킷 최초 생성 = 모든 사용자(익명 포함). 등록 slug는 canonicalPlaceIdMap 기준,
+//   미등록 장소(uiPlace 등)는 검증된 place_id 키로 허용 (toolkitCreationGate)
+// - 등록 slug의 비관리자 프롬프트 지명 = slug 또는 그 slug의 place_alias.alias 와 일치할 때만
 // - 비관리자 최종 저장 = 이 요청의 claim 시각 + 본문이 여전히 비어 있을 때만
 // - 최초 생성 Gemini 비용 가드: slug별 시도 쿨다운 + 전역 시간당 상한 (새 테이블 없음)
 // ---------------------------------------------------------------------------
@@ -527,9 +529,14 @@ serve(async (req) => {
           : jsonResponse({ success: false, error: 'unauthorized: toolkit overwrite requires admin login' }, 401);
       }
 
-      // ---- 최초 생성 (행 없음 또는 본문 빈 행). canonical map slug만 — place_alias 전용 slug 거부 ----
-      if (!slugNorm || canonicalPlaceId !== slugNorm || !isKnownTravelSpotSlug(slugNorm)) {
-        return jsonResponse({ success: false, error: 'forbidden: unregistered place' }, 403);
+      // ---- 최초 생성 (행 없음 또는 본문 빈 행) — 등록 slug·미등록 장소 모두 허용 ----
+      const creationGate = resolveToolkitCreationGate({
+        slug: slugNorm,
+        canonicalPlaceId,
+        isKnownSlug: slugNorm ? isKnownTravelSpotSlug(slugNorm) : false,
+      });
+      if (!creationGate.ok) {
+        return jsonResponse({ success: false, error: creationGate.error }, creationGate.status);
       }
       if (typeof locationName !== 'string') {
         return jsonResponse({ success: false, error: 'locationName invalid' }, 400);
@@ -548,7 +555,10 @@ serve(async (req) => {
       if (!coordCheck.ok) {
         return jsonResponse({ success: false, error: coordCheck.error }, 400);
       }
-      generationLocationName = await resolveNonAdminLocationName(supabaseAdmin, slugNorm, locationName);
+      generationLocationName =
+        creationGate.mode === 'registered'
+          ? await resolveNonAdminLocationName(supabaseAdmin, slugNorm, locationName)
+          : locationName.trim();
       generationCountry = countryCheck.value;
       generationLat = coordCheck.lat;
       generationLng = coordCheck.lng;
