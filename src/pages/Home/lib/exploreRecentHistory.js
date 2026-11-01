@@ -4,6 +4,7 @@ import { resolveTravelSpotFromSearchQuery } from '../../../utils/travelSpotResol
 import { placeUrlSlug, resolveCityAttractionHub, resolveHubPlaceFromSlug } from './cityAttractionHubs';
 import { getPlaceUrlParam, isEphemeralSlug, resolveCatalogPlaceSlug } from './formatUrlName';
 import { resolveSettlementPlaceFromSlug } from './mapboxSettlementPlaces';
+import { isHangulPlaceStatsSlug } from './placeStatsSlugHydrate.js';
 
 export const RECENT_SEARCH_KEY = 'gateo_recent_search_keywords';
 export const RECENT_VISITED_KEY = 'gateo_recent_visited_destinations';
@@ -283,8 +284,21 @@ function knownPlaceSlug(param) {
 }
 
 /**
+ * 방문 place_stats 행의 한글 place_id — `/place/<한글>`은 새로고침 때 placeStatsSlugHydrate가 place_id로 복원.
+ * slug가 아니라 id에서 읽는다: 탭 직전 ensureLatinPlaceSlug가 겹친 행정명(Seogwipo)으로 slug를 덮는다.
+ */
+function visitedPlaceStatsSlug(pin) {
+  if (String(pin?.source || '') !== 'visited') return null;
+  const id = String(pin?.id || '');
+  if (!id.startsWith('visited-')) return null;
+  const placeId = id.slice('visited-'.length).trim();
+  if (isEphemeralSlug(placeId)) return null;
+  return isHangulPlaceStatsSlug(placeId) ? placeId : null;
+}
+
+/**
  * 홈·탐색 검색 결과 탭.
- * `/place`는 SSOT slug만 (카탈로그·허브·정착지·도시).
+ * `/place`는 SSOT slug(카탈로그·허브·정착지·도시) 또는 방문 place_stats 한글 place_id.
  * mapbox-/geocode- 는 search- 핀과 같이 홈 써머리 — 이름 slug가 카탈로그와 겹쳐도.
  * @param {object | null | undefined} spot
  * @returns {{ type: 'place', spot: object, param: string } | { type: 'home', spot: object } | null}
@@ -295,6 +309,10 @@ export function resolveSearchResultSelect(spot) {
   const lng = Number(spot.lng);
   if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
   const pin = { ...spot, lat, lng };
+  const statsSlug = visitedPlaceStatsSlug(pin);
+  if (statsSlug) {
+    return { type: 'place', spot: { ...pin, slug: statsSlug, canonical_slug: statsSlug }, param: statsSlug };
+  }
   const param = knownPlaceSlug(getPlaceUrlParam(pin));
   const known = param ? knownPlaceForParam(param) : null;
   const countyMismatch = Boolean(known) && !pinNameOwnsPlace(pin, known);

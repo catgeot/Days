@@ -2,7 +2,9 @@
  * place_stats 행 — 한글 place_id URL (/place/흥정계곡) 복원.
  */
 import { supabase } from '../../../shared/api/supabase.js';
-import { visitedRowToSearchSpot } from './visitedPlaceSearch.js';
+import { coordsInKorea, visitedRowToSearchSpot } from './visitedPlaceSearch.js';
+import { exploreSearchAliasRegionAnchors } from './exploreSearchAliases.js';
+import { alignVisitedSpotsToRegionAnchors } from './searchHomonymRegion.js';
 
 const HANGUL_PLACE_SLUG_RE = /[\uAC00-\uD7A3]/;
 
@@ -13,6 +15,13 @@ export function isHangulPlaceStatsSlug(slug) {
 
 function postgrestQuoted(value) {
   return `"${String(value).replace(/"/g, '')}"`;
+}
+
+/** 동명 업소 좌표로 저장된 행(추자도 → 포항)은 별칭 표 공식 좌표로 — 새로고침·공유도 검색 탭과 같은 위치. */
+export function alignPlaceStatsPinToAlias(pin) {
+  if (!pin) return pin;
+  const anchors = exploreSearchAliasRegionAnchors(pin.name_ko || pin.name);
+  return alignVisitedSpotsToRegionAnchors([pin], anchors, { isDomestic: coordsInKorea })[0];
 }
 
 /**
@@ -33,12 +42,12 @@ export async function fetchUiPlacePinFromPlaceStatsSlug(slug) {
     if (!idError && byId) {
       const spot = visitedRowToSearchSpot(byId);
       if (spot) {
-        return {
+        return alignPlaceStatsPinToAlias({
           ...spot,
           slug: raw,
           canonical_slug: raw,
           place_id: raw,
-        };
+        });
       }
     }
 
@@ -51,12 +60,12 @@ export async function fetchUiPlacePinFromPlaceStatsSlug(slug) {
       const placeId = String(byName.place_id || raw).trim();
       const spot = visitedRowToSearchSpot(byName);
       if (spot) {
-        return {
+        return alignPlaceStatsPinToAlias({
           ...spot,
           slug: placeId,
           canonical_slug: placeId,
           place_id: placeId,
-        };
+        });
       }
     }
   } catch {
