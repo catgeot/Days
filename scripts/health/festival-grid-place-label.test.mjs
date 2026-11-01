@@ -6,17 +6,53 @@ import { festivalGridPlaceLabel } from '../../src/pages/Korea/festivalGridPlaceL
 import {
   FESTIVAL_HUB_GRID_CLASS,
   FESTIVAL_HUB_PHOTO_WIDE_MIN_RATIO,
+  distributeFestivalHubMasonryColumns,
   festivalHubPhotoLayout,
+  partitionFestivalHubSegments,
 } from '../../src/pages/Korea/festivalHubGridLayout.js';
 import {
   readFestivalHubLegacyListFromSession,
   writeFestivalHubLegacyListToSession,
 } from '../../src/pages/Korea/festivalListViewSession.js';
 
-test('festival hub grid class — masonry columns 2 mobile, 3 md, 4 lg', () => {
-  assert.match(FESTIVAL_HUB_GRID_CLASS, /columns-2/);
-  assert.match(FESTIVAL_HUB_GRID_CLASS, /md:columns-3/);
-  assert.match(FESTIVAL_HUB_GRID_CLASS, /lg:columns-4/);
+test('festival hub grid class — 2 col mobile, 3 md, 4 lg, items-start masonry wrapper', () => {
+  assert.match(FESTIVAL_HUB_GRID_CLASS, /grid-cols-2/);
+  assert.match(FESTIVAL_HUB_GRID_CLASS, /md:grid-cols-3/);
+  assert.match(FESTIVAL_HUB_GRID_CLASS, /lg:grid-cols-4/);
+  assert.match(FESTIVAL_HUB_GRID_CLASS, /items-start/);
+  assert.doesNotMatch(FESTIVAL_HUB_GRID_CLASS, /columns-/);
+});
+
+test('partitionFestivalHubSegments and distributeFestivalHubMasonryColumns avoid lone-card holes and column-span fragmentation', () => {
+  const items = [
+    { id: 'w0', wide: true },
+    { id: 'p1', wide: false },
+    { id: 'w2', wide: true },
+    { id: 'p3', wide: false },
+    { id: 'p4', wide: false },
+    { id: 'w5', wide: true },
+  ];
+  const segs = partitionFestivalHubSegments(items, (item) => item.wide, 2);
+  assert.deepEqual(
+    segs.map((s) =>
+      s.type === 'wide'
+        ? { type: 'wide', id: s.entry.item.id }
+        : { type: 'columns', ids: s.entries.map((e) => e.item.id) },
+    ),
+    [
+      { type: 'wide', id: 'w0' },
+      { type: 'columns', ids: ['p1', 'w2', 'p3', 'p4'] },
+      { type: 'wide', id: 'w5' },
+    ],
+  );
+  const cols = distributeFestivalHubMasonryColumns(segs[1].entries, 2);
+  assert.deepEqual(
+    cols.map((col) => col.map((e) => e.item.id)),
+    [
+      ['p1', 'p3'],
+      ['w2', 'p4'],
+    ],
+  );
 });
 
 test('festival hub masonry — layout follows each photo, not list index', () => {

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Eye, Star } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from '../../../i18n/LocaleProvider';
@@ -53,6 +53,8 @@ export default function FestivalGridPhotoCard({
   favorited = false,
   viewed = false,
   onToggleFavorite,
+  onPhotoSize,
+  initialPhotoSize = null,
   distanceKm,
   areaCode = 'all',
   cityName = 'all',
@@ -62,8 +64,7 @@ export default function FestivalGridPhotoCard({
   const { isEnglish, locale } = useLocale();
   const koText = koreanApiTextProps(isEnglish);
   const [urlIndex, setUrlIndex] = useState(0);
-  const [thumbDecoded, setThumbDecoded] = useState(false);
-  const [photoSize, setPhotoSize] = useState(null);
+  const [loadedPhoto, setLoadedPhoto] = useState(null);
 
   const thumbCandidates = React.useMemo(
     () => festivalItemThumbCandidateUrls(item),
@@ -77,10 +78,10 @@ export default function FestivalGridPhotoCard({
       : '';
   const showStaticFallback = !canTryImage || !activeUrl;
 
-  useEffect(() => {
-    setThumbDecoded(false);
-    setPhotoSize(null);
-  }, [activeUrl]);
+  const currentLoaded =
+    loadedPhoto && loadedPhoto.url === activeUrl ? loadedPhoto : null;
+  const thumbDecoded = Boolean(currentLoaded?.decoded || initialPhotoSize);
+  const photoSize = currentLoaded?.size ?? initialPhotoSize;
 
   const photoLayout = festivalHubPhotoLayout(photoSize?.width, photoSize?.height);
 
@@ -99,7 +100,7 @@ export default function FestivalGridPhotoCard({
 
   return (
     <article
-      className={`relative mb-1.5 flex min-w-0 break-inside-avoid flex-col overflow-hidden rounded-xl border bg-white text-left shadow-sm transition-colors md:mb-2 lg:mb-2.5 ${photoLayout.wide ? '[column-span:all]' : ''} ${
+      className={`relative mb-1.5 flex w-full min-w-0 break-inside-avoid flex-col overflow-hidden rounded-xl border bg-white text-left shadow-sm transition-colors md:mb-2 lg:mb-2.5 ${
         active
           ? 'border-amber-400 ring-1 ring-amber-200'
           : 'border-stone-200 [@media(hover:hover)]:hover:border-amber-300'
@@ -141,9 +142,17 @@ export default function FestivalGridPhotoCard({
                   </span>
                 }
                 onLoaded={(img) => {
-                  setThumbDecoded(true);
-                  if (img?.naturalWidth > 0 && img?.naturalHeight > 0) {
-                    setPhotoSize({ width: img.naturalWidth, height: img.naturalHeight });
+                  const nextSize =
+                    img?.naturalWidth > 0 && img?.naturalHeight > 0
+                      ? { width: img.naturalWidth, height: img.naturalHeight }
+                      : null;
+                  setLoadedPhoto({
+                    url: activeUrl,
+                    decoded: true,
+                    size: nextSize,
+                  });
+                  if (nextSize) {
+                    onPhotoSize?.(item, nextSize);
                   }
                 }}
                 onFailed={() => {
