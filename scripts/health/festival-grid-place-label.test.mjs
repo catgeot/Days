@@ -3,16 +3,31 @@ import test from 'node:test';
 
 import { festivalItemThumbCandidateUrls } from '../../src/pages/Korea/festivalListThumb.js';
 import { festivalGridPlaceLabel } from '../../src/pages/Korea/festivalGridPlaceLabel.js';
-import { FESTIVAL_HUB_GRID_CLASS } from '../../src/pages/Korea/festivalHubGridLayout.js';
+import {
+  FESTIVAL_HUB_GRID_CLASS,
+  festivalHubMasonryIsWide,
+  festivalHubMasonryThumbAspectClass,
+} from '../../src/pages/Korea/festivalHubGridLayout.js';
 import {
   readFestivalHubLegacyListFromSession,
   writeFestivalHubLegacyListToSession,
 } from '../../src/pages/Korea/festivalListViewSession.js';
 
-test('festival hub grid class — 2 col mobile, 3 md, 4 lg', () => {
-  assert.match(FESTIVAL_HUB_GRID_CLASS, /grid-cols-2/);
-  assert.match(FESTIVAL_HUB_GRID_CLASS, /md:grid-cols-3/);
-  assert.match(FESTIVAL_HUB_GRID_CLASS, /lg:grid-cols-4/);
+test('festival hub grid class — masonry columns 2 mobile, 3 md, 4 lg', () => {
+  assert.match(FESTIVAL_HUB_GRID_CLASS, /columns-2/);
+  assert.match(FESTIVAL_HUB_GRID_CLASS, /md:columns-3/);
+  assert.match(FESTIVAL_HUB_GRID_CLASS, /lg:columns-4/);
+});
+
+test('festival hub masonry — irregular thumb aspects with wide every 6th', () => {
+  const aspects = Array.from({ length: 6 }, (_, i) =>
+    festivalHubMasonryThumbAspectClass(i),
+  );
+  assert.ok(new Set(aspects).size >= 4);
+  assert.equal(festivalHubMasonryIsWide(4), false);
+  assert.equal(festivalHubMasonryIsWide(5), true);
+  assert.equal(festivalHubMasonryIsWide(11), true);
+  assert.equal(aspects[5], 'aspect-[16/9]');
 });
 
 test('festivalGridPlaceLabel — nationwide uses short sido + city', () => {

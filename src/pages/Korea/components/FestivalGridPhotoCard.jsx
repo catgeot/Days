@@ -42,6 +42,8 @@ function FestivalGridThumbLoadingShimmer() {
  *   areaCode?: string,
  *   cityName?: string,
  *   priorityThumb?: boolean,
+ *   thumbAspectClass?: string,
+ *   wide?: boolean,
  * }} props
  */
 export default function FestivalGridPhotoCard({
@@ -54,6 +56,8 @@ export default function FestivalGridPhotoCard({
   areaCode = 'all',
   cityName = 'all',
   priorityThumb = false,
+  thumbAspectClass = 'aspect-[4/3]',
+  wide = false,
 }) {
   const { t } = useTranslation();
   const { isEnglish, locale } = useLocale();
@@ -97,7 +101,7 @@ export default function FestivalGridPhotoCard({
 
   return (
     <article
-      className={`relative flex min-w-0 flex-col overflow-hidden rounded-xl border bg-white text-left shadow-sm transition-colors ${
+      className={`relative mb-1.5 flex min-w-0 break-inside-avoid flex-col overflow-hidden rounded-xl border bg-white text-left shadow-sm transition-colors md:mb-2 lg:mb-2.5 ${wide ? '[column-span:all]' : ''} ${
         active
           ? 'border-amber-400 ring-1 ring-amber-200'
           : 'border-stone-200 [@media(hover:hover)]:hover:border-amber-300'
@@ -110,7 +114,7 @@ export default function FestivalGridPhotoCard({
         onClick={() => onSelect(item)}
         className="flex min-w-0 flex-1 flex-col text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-300/90 focus-visible:ring-offset-1"
       >
-        <div className="relative aspect-[4/3] w-full overflow-hidden bg-gradient-to-br from-amber-100 to-stone-200">
+        <div className={`relative ${thumbAspectClass} w-full overflow-hidden bg-gradient-to-br from-amber-100 to-stone-200`}>
           {showStaticFallback ? (
             <span className="absolute inset-0" data-festival-grid-thumb-fallback="">
               <FestivalListThumbFallback size="lg" />
@@ -228,13 +232,13 @@ export default function FestivalGridPhotoCard({
   );
 }
 
-export function FestivalGridSkeleton() {
+export function FestivalGridSkeleton({ thumbAspectClass = 'aspect-[4/3]', wide = false }) {
   return (
     <div
-      className="overflow-hidden rounded-xl border border-stone-200 bg-white"
+      className={`mb-1.5 break-inside-avoid overflow-hidden rounded-xl border border-stone-200 bg-white md:mb-2 lg:mb-2.5 ${wide ? '[column-span:all]' : ''}`}
       aria-hidden="true"
     >
-      <div className="aspect-[4/3] animate-pulse bg-stone-200" />
+      <div className={`${thumbAspectClass} animate-pulse bg-stone-200`} />
       <div className="space-y-1 px-1.5 py-1.5">
         <div className="h-3 animate-pulse rounded bg-stone-200" />
         <div className="h-2.5 w-4/5 animate-pulse rounded bg-stone-100" />
