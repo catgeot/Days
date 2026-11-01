@@ -11,12 +11,14 @@ import {
 import {
   NEARBY_BAND_DRIVE_KM,
   NEARBY_BAND_WALK_KM,
+  NEARBY_PHOTO_WIDE_ASPECT_CLASS,
   countNearbyDistanceBands,
   flattenNearbyDisplayGroups,
   groupFestivalNearbyBlocks,
   groupFestivalNearbyItems,
   nearbyBandCountsTotal,
   nearbyDistanceBand,
+  partitionNearbyPhotoMasonrySegments,
   sortNearbyBandItemsPhotoFirst,
   summarizeNearbyListItems,
 } from '../../src/pages/Korea/lib/festivalNearbyDistanceGroups.js';
@@ -139,4 +141,65 @@ test('nearby cards section does not reserve mobile FAB gutter in layout', () => 
   assert.doesNotMatch(cardsSection, /max-md:pb-\[max\(11\.5rem/);
   assert.doesNotMatch(cardsSection, /max-md:pr-\[max\(3\.25rem/);
   assert.match(cardsSection, /data-nearby-cards-section/);
+  assert.match(cardsSection, /partitionNearbyPhotoMasonrySegments/);
+  assert.match(cardsSection, /data-nearby-masonry-columns/);
+});
+
+test('partitionNearbyPhotoMasonrySegments produces irregular staggered columns and wide rows without lone cards', () => {
+  for (let count = 1; count <= 12; count += 1) {
+    const items = Array.from({ length: count }, (_, i) => ({ id: `spot-${i}` }));
+    const segs = partitionNearbyPhotoMasonrySegments(items);
+    const seenIndices = [];
+
+    for (const seg of segs) {
+      if (seg.type === 'wide') {
+        assert.equal(seg.entry.wide, true);
+        assert.equal(seg.entry.thumbAspectClass, NEARBY_PHOTO_WIDE_ASPECT_CLASS);
+        seenIndices.push(seg.entry.index);
+      } else {
+        assert.equal(seg.type, 'columns');
+        assert.equal(seg.columns.length, 2);
+        assert.equal(
+          seg.columns[0].length,
+          seg.columns[1].length,
+          `count=${count} should keep equal left/right column counts`,
+        );
+        assert.notEqual(
+          seg.columns[0][0].thumbAspectClass,
+          seg.columns[1][0].thumbAspectClass,
+          `count=${count} should stagger top left/right aspect ratios`,
+        );
+        for (const entry of seg.entries) {
+          seenIndices.push(entry.index);
+        }
+      }
+    }
+
+    assert.deepEqual(
+      seenIndices,
+      items.map((_, i) => i),
+      `count=${count} should preserve input item order`,
+    );
+  }
+
+  const eightSegs = partitionNearbyPhotoMasonrySegments(
+    Array.from({ length: 8 }, (_, i) => ({ id: `s-${i}` })),
+  );
+  assert.deepEqual(
+    eightSegs.map((seg) =>
+      seg.type === 'wide'
+        ? { type: 'wide', index: seg.entry.index }
+        : {
+            type: 'columns',
+            left: seg.columns[0].map((c) => c.index),
+            right: seg.columns[1].map((c) => c.index),
+          },
+    ),
+    [
+      { type: 'columns', left: [0, 2], right: [1, 3] },
+      { type: 'wide', index: 4 },
+      { type: 'columns', left: [5], right: [6] },
+      { type: 'wide', index: 7 },
+    ],
+  );
 });

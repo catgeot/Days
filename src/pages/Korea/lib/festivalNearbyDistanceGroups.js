@@ -1,8 +1,19 @@
 /** Distance bands for festival nearby cards (flag ON). */
 export const NEARBY_BAND_WALK_KM = 1;
 export const NEARBY_BAND_DRIVE_KM = 5;
+export const NEARBY_PHOTO_WIDE_ASPECT_CLASS = 'aspect-[16/9]';
 
 const BAND_ORDER = ['walk', 'drive', 'far', 'unknown'];
+
+const NEARBY_MASONRY_FOUR_ASPECT_SETS = [
+  ['aspect-[3/4]', 'aspect-[4/3]', 'aspect-[5/4]', 'aspect-[4/5]'],
+  ['aspect-[4/3]', 'aspect-[3/4]', 'aspect-[4/5]', 'aspect-[5/4]'],
+];
+
+const NEARBY_MASONRY_TWO_ASPECT_SETS = [
+  ['aspect-[4/5]', 'aspect-[4/3]'],
+  ['aspect-[4/3]', 'aspect-[3/4]'],
+];
 
 /**
  * @param {number | null | undefined} distKm
@@ -184,4 +195,109 @@ export function flattenNearbyDisplayGroups(groups) {
     for (const spot of g.items || []) out.push(spot);
   }
   return out;
+}
+
+/**
+ * Partition photo card entries into staggered 2-column masonry segments and standalone wide rows
+ * while keeping column counts even so no lone half-width card is left next to an empty column.
+ */
+export function partitionNearbyPhotoMasonrySegments(entries) {
+  const list = Array.isArray(entries) ? entries : [];
+  const total = list.length;
+  const segments = [];
+  let cursor = 0;
+  let columnBlockIndex = 0;
+
+  while (cursor < total) {
+    const remaining = total - cursor;
+    if (remaining === 1) {
+      segments.push({
+        type: 'wide',
+        entry: {
+          item: list[cursor],
+          index: cursor,
+          thumbAspectClass: NEARBY_PHOTO_WIDE_ASPECT_CLASS,
+          wide: true,
+        },
+      });
+      cursor += 1;
+      continue;
+    }
+
+    if (remaining === 2 || remaining === 3 || remaining === 6) {
+      const aspects =
+        NEARBY_MASONRY_TWO_ASPECT_SETS[
+          columnBlockIndex % NEARBY_MASONRY_TWO_ASPECT_SETS.length
+        ];
+      columnBlockIndex += 1;
+      const e0 = {
+        item: list[cursor],
+        index: cursor,
+        thumbAspectClass: aspects[0],
+        wide: false,
+      };
+      const e1 = {
+        item: list[cursor + 1],
+        index: cursor + 1,
+        thumbAspectClass: aspects[1],
+        wide: false,
+      };
+      segments.push({
+        type: 'columns',
+        entries: [e0, e1],
+        columns: [[e0], [e1]],
+      });
+      cursor += 2;
+
+      if (remaining === 3 || remaining === 6) {
+        segments.push({
+          type: 'wide',
+          entry: {
+            item: list[cursor],
+            index: cursor,
+            thumbAspectClass: NEARBY_PHOTO_WIDE_ASPECT_CLASS,
+            wide: true,
+          },
+        });
+        cursor += 1;
+      }
+      continue;
+    }
+
+    const aspects =
+      NEARBY_MASONRY_FOUR_ASPECT_SETS[
+        columnBlockIndex % NEARBY_MASONRY_FOUR_ASPECT_SETS.length
+      ];
+    columnBlockIndex += 1;
+    const block = [0, 1, 2, 3].map((offset) => ({
+      item: list[cursor + offset],
+      index: cursor + offset,
+      thumbAspectClass: aspects[offset],
+      wide: false,
+    }));
+    segments.push({
+      type: 'columns',
+      entries: block,
+      columns: [
+        [block[0], block[2]],
+        [block[1], block[3]],
+      ],
+    });
+    cursor += 4;
+
+    if (remaining !== 4) {
+      segments.push({
+        type: 'wide',
+        entry: {
+          item: list[cursor],
+          index: cursor,
+          thumbAspectClass: NEARBY_PHOTO_WIDE_ASPECT_CLASS,
+          wide: true,
+        },
+      });
+      cursor += 1;
+    }
+  }
+
+  return segments;
 }
