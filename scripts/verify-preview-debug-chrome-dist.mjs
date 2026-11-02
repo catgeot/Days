@@ -11,6 +11,13 @@ const FORBIDDEN = ['모바일 위젯 로그', '작업 로그 닫기', 'cloud-pre
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const assetsDir = join(root, 'dist/assets');
 
+if (process.env.VERCEL_ENV === 'preview') {
+  console.log(
+    'OK  skip preview debug chrome dist verify on Vercel Preview (debug UI bundled by design)',
+  );
+  process.exit(0);
+}
+
 if (!existsSync(assetsDir)) {
   console.error('FAIL  dist/assets missing — run vite build first');
   process.exit(1);
