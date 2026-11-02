@@ -24,9 +24,12 @@ export default function FestivalNearbyPhotoCard({
   thumbUrls = [],
   imagePending = false,
   onActivate,
+  onPhotoExhausted,
   clickable = false,
   variant = 'sights',
   eagerImage = false,
+  thumbAspectClass = 'aspect-[4/3]',
+  wide = false,
 }) {
   const [urlIndex, setUrlIndex] = useState(0);
   const [photoReady, setPhotoReady] = useState(false);
@@ -55,8 +58,8 @@ export default function FestivalNearbyPhotoCard({
     : {};
 
   const cardTone = clickable
-    ? 'flex h-full w-full min-w-0 flex-col rounded-2xl border border-stone-200 bg-white text-left shadow-sm transition-colors [@media(hover:hover)]:hover:border-amber-300 [@media(hover:hover)]:hover:bg-amber-50/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-300/90'
-    : 'flex h-full w-full min-w-0 flex-col rounded-2xl border border-stone-200 bg-white text-left shadow-sm';
+    ? 'flex w-full min-w-0 flex-col rounded-2xl border border-stone-200 bg-white text-left shadow-sm transition-colors [@media(hover:hover)]:hover:border-amber-300 [@media(hover:hover)]:hover:bg-amber-50/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-300/90'
+    : 'flex w-full min-w-0 flex-col rounded-2xl border border-stone-200 bg-white text-left shadow-sm';
 
   const CategoryIcon = variant === 'food' ? UtensilsCrossed : MapPin;
 
@@ -65,6 +68,7 @@ export default function FestivalNearbyPhotoCard({
       {...tagProps}
       className={cardTone}
       data-nearby-photo-card=""
+      data-nearby-photo-card-wide={wide && !showCompact ? 'true' : undefined}
       data-nearby-card-variant={variant}
     >
       {showCompact ? (
@@ -103,7 +107,10 @@ export default function FestivalNearbyPhotoCard({
         </div>
       ) : (
         <>
-          <div className="relative aspect-[4/3] w-full shrink-0 overflow-hidden rounded-t-2xl bg-stone-200">
+          <div
+            className={`relative ${thumbAspectClass || 'aspect-[4/3]'} w-full shrink-0 overflow-hidden rounded-t-2xl bg-stone-200`}
+            data-nearby-photo-frame=""
+          >
             <FestivalPhotoFrame
               src={activeUrl}
               alt={title}
@@ -123,7 +130,10 @@ export default function FestivalNearbyPhotoCard({
               onFailed={() => {
                 setPhotoReady(false);
                 if (urlIndex + 1 < urls.length) setUrlIndex((i) => i + 1);
-                else setForceCompact(true);
+                else {
+                  setForceCompact(true);
+                  onPhotoExhausted?.();
+                }
               }}
             />
             <span

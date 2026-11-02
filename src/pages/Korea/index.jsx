@@ -12,6 +12,7 @@ import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import {
   ArrowUp,
   CalendarDays,
+  Eye,
   Home,
   Loader2,
   LocateFixed,
@@ -66,6 +67,9 @@ import {
   FESTIVAL_HUB_GRID_CLASS,
   FESTIVAL_HUB_GRID_MOBILE_SCROLL_PAD_CLASS,
   FESTIVAL_HUB_GRID_SCROLL_TOP_BOTTOM_CLASS,
+  distributeFestivalHubMasonryColumns,
+  festivalHubPhotoLayout,
+  partitionFestivalHubSegments,
 } from './festivalHubGridLayout.js';
 import {
   festivalHubGridThumbLoadKey,
@@ -112,8 +116,14 @@ import { fetchTourApiFestivalDetail } from '../../utils/fetchTourApiFestivals';
 import { projectFestivalDeepLink } from './festivalDeepLinkItem';
 import { FESTIVAL_PAGE_EVENT } from '../../shared/korea/mooniKoreaFestivalAssist.js';
 import {
+  excludePinnedFromPanelItems,
   festivalItemForSessionPin,
 } from './festivalSessionPin';
+import {
+  dedupeFestivalItems,
+  festivalCardDedupeKey,
+  hasFestivalCardContent,
+} from './festivalCardList';
 import { festivalListDisplayTitleLines } from './festivalDisplayTitle.js';
 import { festivalItemThumbSrc } from './festivalListThumb';
 import { FestivalPhotoFrame } from './festivalPhotoFrame';
@@ -804,6 +814,7 @@ function FestivalRow({
   active,
   onSelect,
   favorited,
+  viewed = false,
   onToggleFavorite,
   distanceKm,
   large = false,
@@ -847,7 +858,7 @@ function FestivalRow({
           <FestivalPhotoFrame
             src={img}
             alt={item.title || ''}
-            className="w-full h-full object-cover"
+            className={`w-full h-full object-cover ${viewed ? 'opacity-75 saturate-[.55]' : ''}`}
             loading="lazy"
             decoding="async"
             referrerPolicy="no-referrer"
@@ -914,6 +925,15 @@ function FestivalRow({
               <span className="min-w-0 truncate">{range}</span>
             </p>
           )}
+          {viewed ? (
+            <p
+              data-festival-card-viewed-badge=""
+              className="flex items-center gap-1 text-[11px] font-bold text-stone-500"
+            >
+              <Eye size={11} className="shrink-0" aria-hidden="true" />
+              {t('korea.festival.viewedBadge')}
+            </p>
+          ) : null}
           {item.addr1 && (
             <p
               className={`text-stone-500 flex items-center gap-1 ${
@@ -962,11 +982,41 @@ function FestivalRow({
   );
 }
 
+function useFestivalHubMasonryColumnCount() {
+  const [columnCount, setColumnCount] = useState(() => {
+    if (typeof window === 'undefined' || !window.matchMedia) return 2;
+    if (window.matchMedia('(min-width: 1024px)').matches) return 4;
+    if (window.matchMedia('(min-width: 768px)').matches) return 3;
+    return 2;
+  });
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || !window.matchMedia) return undefined;
+    const lgQuery = window.matchMedia('(min-width: 1024px)');
+    const mdQuery = window.matchMedia('(min-width: 768px)');
+    const sync = () => {
+      if (lgQuery.matches) setColumnCount(4);
+      else if (mdQuery.matches) setColumnCount(3);
+      else setColumnCount(2);
+    };
+    sync();
+    lgQuery.addEventListener?.('change', sync);
+    mdQuery.addEventListener?.('change', sync);
+    return () => {
+      lgQuery.removeEventListener?.('change', sync);
+      mdQuery.removeEventListener?.('change', sync);
+    };
+  }, []);
+
+  return columnCount;
+}
+
 function FestivalEntries({
   useGrid,
   items,
   selected,
   favoriteIds,
+  viewedIds,
   onToggleFavorite,
   onSelect,
   nearKmByContentId,
@@ -974,42 +1024,99 @@ function FestivalEntries({
   cityName,
   thumbListEpoch = '',
 }) {
+  const uniqueItems = dedupeFestivalItems(items).filter(hasFestivalCardContent);
+  const columnCount = useFestivalHubMasonryColumnCount();
+  const [photoSizesByKey, setPhotoSizesByKey] = useState(() => new Map());
+  const handlePhotoSize = useCallback((item, size) => {
+    const key = festivalCardDedupeKey(item) || festivalKey(item);
+    if (!key || !size?.width || !size?.height) return;
+    setPhotoSizesByKey((prev) => {
+      const cur = prev.get(key);
+      if (cur && cur.width === size.width && cur.height === size.height) {
+        return prev;
+      }
+      const next = new Map(prev);
+      next.set(key, size);
+      return next;
+    });
+  }, []);
   if (useGrid) {
+    const segments = partitionFestivalHubSegments(
+      uniqueItems,
+      (item) => {
+        const size = photoSizesByKey.get(
+          festivalCardDedupeKey(item) || festivalKey(item),
+        );
+        return festivalHubPhotoLayout(size?.width, size?.height).wide;
+      },
+      columnCount,
+    );
+    const renderGridCard = (item, index) => {
+      const priorityThumb = isFestivalHubGridEagerThumb(index);
+      const cardKey = priorityThumb
+        ? festivalHubGridThumbLoadKey({
+            listEpoch: thumbListEpoch,
+            index,
+            contentId: item?.contentId,
+          })
+        : festivalKey(item);
+      const dedupeKey = festivalCardDedupeKey(item) || festivalKey(item);
+      return (
+        <FestivalGridPhotoCard
+          key={cardKey}
+          item={item}
+          priorityThumb={priorityThumb}
+          areaCode={areaCode}
+          cityName={cityName}
+          active={
+            selected?.contentId != null &&
+            String(selected.contentId) === String(item.contentId)
+          }
+          favorited={favoriteIds.has(String(item.contentId))}
+          viewed={Boolean(viewedIds?.has(String(item.contentId)))}
+          onToggleFavorite={onToggleFavorite}
+          initialPhotoSize={photoSizesByKey.get(dedupeKey) ?? null}
+          onPhotoSize={handlePhotoSize}
+          onSelect={onSelect}
+          distanceKm={
+            nearKmByContentId.get(String(item.contentId)) ?? undefined
+          }
+        />
+      );
+    };
     return (
-      <div className={FESTIVAL_HUB_GRID_CLASS} data-festival-grid="">
-        {items.map((item, index) => {
-          const priorityThumb = isFestivalHubGridEagerThumb(index);
-          const cardKey = priorityThumb
-            ? festivalHubGridThumbLoadKey({
-                listEpoch: thumbListEpoch,
-                index,
-                contentId: item?.contentId,
-              })
-            : festivalKey(item);
+      <div className="w-full" data-festival-grid="">
+        {segments.map((seg, segIdx) => {
+          if (seg.type === 'wide') {
+            return (
+              <div key={`wide-${seg.entry.index}`} className="w-full">
+                {renderGridCard(seg.entry.item, seg.entry.index)}
+              </div>
+            );
+          }
+          const cols = distributeFestivalHubMasonryColumns(
+            seg.entries,
+            columnCount,
+          );
           return (
-          <FestivalGridPhotoCard
-            key={cardKey}
-            item={item}
-            priorityThumb={priorityThumb}
-            areaCode={areaCode}
-            cityName={cityName}
-            active={
-              selected?.contentId != null &&
-              String(selected.contentId) === String(item.contentId)
-            }
-            favorited={favoriteIds.has(String(item.contentId))}
-            onToggleFavorite={onToggleFavorite}
-            onSelect={onSelect}
-            distanceKm={
-              nearKmByContentId.get(String(item.contentId)) ?? undefined
-            }
-          />
+            <div
+              key={`cols-${segIdx}-${seg.entries[0]?.index ?? 0}`}
+              className={FESTIVAL_HUB_GRID_CLASS}
+            >
+              {cols.map((colEntries, colIdx) => (
+                <div key={`col-${colIdx}`} className="flex min-w-0 flex-col">
+                  {colEntries.map(({ item, index }) =>
+                    renderGridCard(item, index),
+                  )}
+                </div>
+              ))}
+            </div>
           );
         })}
       </div>
     );
   }
-  return items.map((item) => (
+  return uniqueItems.map((item) => (
     <FestivalRow
       key={festivalKey(item)}
       item={item}
@@ -1019,6 +1126,7 @@ function FestivalEntries({
         String(selected.contentId) === String(item.contentId)
       }
       favorited={favoriteIds.has(String(item.contentId))}
+      viewed={Boolean(viewedIds?.has(String(item.contentId)))}
       onToggleFavorite={onToggleFavorite}
       onSelect={onSelect}
       distanceKm={
@@ -1552,6 +1660,10 @@ export default function KoreaFestivalHub() {
   );
   const [favoriteList, setFavoriteList] = useState(() => loadFavorites());
   const [viewedList, setViewedList] = useState(() => loadViewed());
+  const viewedIds = useMemo(
+    () => new Set(viewedList.map((row) => String(row.contentId))),
+    [viewedList],
+  );
 
   useEffect(() => {
     if (!festivalId || festivalDeepLink.sheet !== 'open' || !selected?.contentId) {
@@ -1996,10 +2108,12 @@ export default function KoreaFestivalHub() {
   );
 
   /** Promo strip already surfaces these festivals — keep them out of the list and chip counts on this screen. */
-  const panelItemsForList = useMemo(
-    () => excludeFestivalsByContentId(panelItems, visiblePromoContentIds),
-    [panelItems, visiblePromoContentIds],
-  );
+  const panelItemsForList = useMemo(() => {
+    const withoutPromo = excludeFestivalsByContentId(panelItems, visiblePromoContentIds);
+    return showSessionPinnedRow
+      ? excludePinnedFromPanelItems(withoutPromo, sessionPinnedDisplay)
+      : withoutPromo;
+  }, [panelItems, visiblePromoContentIds, showSessionPinnedRow, sessionPinnedDisplay]);
 
   const timeChipCounts = useMemo(() => {
     /** @type {Record<string, number>} */
@@ -3573,7 +3687,7 @@ export default function KoreaFestivalHub() {
                         useGrid={useFestivalGrid}
                         items={group.items}
                         selected={selected}
-                        favoriteIds={favoriteIds}
+                        favoriteIds={favoriteIds} viewedIds={viewedIds}
                         onToggleFavorite={handleToggleFavorite}
                         onSelect={openItem}
                         nearKmByContentId={nearKmByContentId}
@@ -3641,7 +3755,7 @@ export default function KoreaFestivalHub() {
                         useGrid={useFestivalGrid}
                         items={[sessionPinnedDisplay]}
                         selected={selected}
-                        favoriteIds={favoriteIds}
+                        favoriteIds={favoriteIds} viewedIds={viewedIds}
                         onToggleFavorite={handleToggleFavorite}
                         onSelect={openItem}
                         nearKmByContentId={nearKmByContentId}
@@ -3664,7 +3778,7 @@ export default function KoreaFestivalHub() {
                       useGrid
                       items={panelGridFlatItems}
                       selected={selected}
-                      favoriteIds={favoriteIds}
+                      favoriteIds={favoriteIds} viewedIds={viewedIds}
                       onToggleFavorite={handleToggleFavorite}
                       onSelect={openItem}
                       nearKmByContentId={nearKmByContentId}
@@ -3686,7 +3800,7 @@ export default function KoreaFestivalHub() {
                             useGrid={false}
                             items={group.items}
                             selected={selected}
-                            favoriteIds={favoriteIds}
+                            favoriteIds={favoriteIds} viewedIds={viewedIds}
                             onToggleFavorite={handleToggleFavorite}
                             onSelect={openItem}
                             nearKmByContentId={nearKmByContentId}

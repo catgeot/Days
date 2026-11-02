@@ -698,5 +698,5 @@ test('session pin section label in hub', () => {
   const hub = readFileSync(join(root, 'src/pages/Korea/index.jsx'), 'utf8');
   assert.match(hub, /sessionPinnedSectionTitle/);
   assert.match(hub, /data-session-pinned-festival/);
-  assert.doesNotMatch(hub, /excludePinnedFromPanelItems/);
+  assert.match(hub, /excludePinnedFromPanelItems/);
 });

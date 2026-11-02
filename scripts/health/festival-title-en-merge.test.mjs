@@ -84,16 +84,14 @@ test('festival grid card uses festivalListDisplayTitleLines for EN titles', () =
   assert.match(grid, /festivalListDisplayTitleLines/);
   assert.doesNotMatch(grid, /\{item\.title\}/);
   assert.match(grid, /FestivalPhotoFrame[\s\S]*object-contain/);
-  assert.match(grid, /data-festival-grid-thumb-bg/);
+  assert.match(grid, /festivalHubPhotoLayout\(photoSize\?\.width, photoSize\?\.height\)/);
+  assert.match(grid, /photoLayout\.aspectRatio/);
+  assert.doesNotMatch(grid, /festivalHubMasonryIsWide|thumbAspectClass/);
+  assert.doesNotMatch(grid, /data-festival-grid-thumb-bg/);
+  assert.doesNotMatch(grid, /blur-\[16px\]/);
   assert.match(grid, /function FestivalGridThumbLoadingShimmer/);
   assert.match(grid, /data-festival-grid-thumb-loading/);
   assert.match(grid, /pendingShimmer=\{!thumbDecoded\}/);
-  assert.match(
-    grid,
-    /data-festival-grid-thumb-bg[\s\S]*<img[\s\S]*loading=\{priorityThumb \? 'eager' : 'lazy'\}/,
-  );
-  assert.match(grid, /blur-\[16px\]/);
-  assert.match(grid, /scale-110/);
 
   const lines = festivalListDisplayTitleLines(
     {

@@ -98,9 +98,13 @@ test('paris rollout hides the money row and does not call ETIAS required', () =>
   assert.equal(/유로|환전|카드|통화|Banque/i.test(safety.value), false);
   assert.equal(/\beuro\b|currency|exchange|\bcard\b/i.test(enSafety.value), false);
   assert.equal(safety.sources[0].url, 'https://www.0404.go.kr/bbs/safetyNtc/1335043/detail2?ntnCd=248');
-  assert.equal(safety.checkedAt, '2026-10-29');
+  assert.equal(
+    safety.sources.some((source) => source.url === 'https://www.0404.go.kr/bbs/safetyNtc/1335045/detail2?ntnCd=248'),
+    true,
+  );
+  assert.equal(safety.checkedAt, '2026-11-02');
   assert.equal(safety.kind, 'event');
-  assert.equal(safety.checkedOn, '2026-10-29');
+  assert.equal(safety.checkedOn, '2026-11-02');
   assert.equal(safety.endsAt, '2026-11-05');
   assert.equal(enSafety.sources[0].name, 'MOFA safety notice (Embassy of Korea in France)');
   assert.match(factValueForLocale('paris', enSafety, 'en'), /third nationwide protest/i);
@@ -149,7 +153,7 @@ test('paris rollout hides the money row and does not call ETIAS required', () =>
   assert.equal(cairoMoney.checkedAt, '');
   assert.match(cairoMoney.value, /EGP/);
   assert.equal(cairoSafety.kind, 'standing');
-  assert.equal(cairoSafety.checkedOn, '2026-10-29');
+  assert.equal(cairoSafety.checkedOn, '2026-11-02');
   assert.match(cairoSafety.value, /여행유의/);
   assert.equal(/EGP/.test(cairoSafety.value), false);
 });

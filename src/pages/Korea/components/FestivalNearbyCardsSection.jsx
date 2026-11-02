@@ -7,6 +7,7 @@ import {
   groupFestivalNearbyBlocks,
   groupFestivalNearbyItems,
   nearbyBandCountsTotal,
+  partitionNearbyPhotoMasonrySegments,
   summarizeNearbyListItems,
 } from '../lib/festivalNearbyDistanceGroups.js';
 import FestivalNearbyPhotoCard, { nearbyCardThumbUrls } from './FestivalNearbyPhotoCard.jsx';
@@ -41,7 +42,18 @@ export default function FestivalNearbyCardsSection({
 }) {
   const { t } = useTranslation();
   const [highlightBand, setHighlightBand] = useState(null);
+  const [exhaustedPhotoKeys, setExhaustedPhotoKeys] = useState(() => new Set());
   const sectionRootRef = useRef(null);
+
+  const markPhotoExhausted = useCallback((key) => {
+    if (!key) return;
+    setExhaustedPhotoKeys((prev) => {
+      if (prev.has(key)) return prev;
+      const next = new Set(prev);
+      next.add(key);
+      return next;
+    });
+  }, []);
 
   const scrollToBand = useCallback((band) => {
     scrollFestivalNearbyBandIntoView(sectionRootRef.current, band);
@@ -192,11 +204,8 @@ export default function FestivalNearbyCardsSection({
                   {group.venueNote}
                 </p>
               ) : null}
-              <ul
-                className="grid grid-cols-2 gap-2"
-                data-nearby-cards-grid=""
-              >
-                {group.items.map((spot) => {
+              {(() => {
+                const entries = group.items.map((spot) => {
                   const meta = renderSpotMeta?.(spot) || {
                     title: String(spot?.name || ''),
                     subtitleLines: [],
@@ -204,26 +213,81 @@ export default function FestivalNearbyCardsSection({
                     imagePending: false,
                     clickable: false,
                   };
-                  const key = spot.contentId || spot.id || meta.title;
-                  const eagerImage = photoCardIndex < 4;
-                  photoCardIndex += 1;
-                  return (
-                    <li key={key} className="min-w-0 list-none">
-                      <FestivalNearbyPhotoCard
-                        title={meta.title}
-                        distKm={spot.distKm}
-                        subtitleLines={meta.subtitleLines}
-                        thumbUrls={meta.thumbUrls}
-                        imagePending={meta.imagePending}
-                        clickable={meta.clickable}
-                        variant={variant}
-                        eagerImage={eagerImage}
-                        onActivate={() => onSpotActivate?.(spot)}
-                      />
-                    </li>
-                  );
-                })}
-              </ul>
+                  const key = String(spot.contentId || spot.id || meta.title || '');
+                  const hasPhoto =
+                    !exhaustedPhotoKeys.has(key) &&
+                    Array.isArray(meta.thumbUrls) &&
+                    meta.thumbUrls.length > 0;
+                  const eagerImage = hasPhoto && photoCardIndex < 4;
+                  if (hasPhoto) photoCardIndex += 1;
+                  return { spot, meta, key, hasPhoto, eagerImage };
+                });
+                const photoEntries = entries.filter((entry) => entry.hasPhoto);
+                const compactEntries = entries.filter((entry) => !entry.hasPhoto);
+                const photoSegments = partitionNearbyPhotoMasonrySegments(photoEntries);
+
+                const renderEntryCard = (entry, { thumbAspectClass = 'aspect-[4/3]', wide = false } = {}) => (
+                  <div key={entry.key} className="min-w-0">
+                    <FestivalNearbyPhotoCard
+                      title={entry.meta.title}
+                      distKm={entry.spot.distKm}
+                      subtitleLines={entry.meta.subtitleLines}
+                      thumbUrls={entry.meta.thumbUrls}
+                      imagePending={entry.meta.imagePending}
+                      clickable={entry.meta.clickable}
+                      variant={variant}
+                      eagerImage={entry.eagerImage}
+                      thumbAspectClass={thumbAspectClass}
+                      wide={wide}
+                      onPhotoExhausted={() => markPhotoExhausted(entry.key)}
+                      onActivate={() => onSpotActivate?.(entry.spot)}
+                    />
+                  </div>
+                );
+
+                return (
+                  <div className="space-y-2" data-nearby-cards-grid="">
+                    {photoSegments.map((seg, segIdx) => {
+                      if (seg.type === 'wide') {
+                        return (
+                          <div key={`wide-${seg.entry.item.key}`} className="w-full">
+                            {renderEntryCard(seg.entry.item, {
+                              thumbAspectClass: seg.entry.thumbAspectClass,
+                              wide: true,
+                            })}
+                          </div>
+                        );
+                      }
+                      return (
+                        <div
+                          key={`cols-${segIdx}-${seg.entries[0]?.item.key ?? 0}`}
+                          className="grid w-full grid-cols-2 items-start gap-2"
+                          data-nearby-masonry-columns=""
+                        >
+                          {seg.columns.map((colEntries, colIdx) => (
+                            <div key={`col-${colIdx}`} className="flex min-w-0 flex-col gap-2">
+                              {colEntries.map((cell) =>
+                                renderEntryCard(cell.item, {
+                                  thumbAspectClass: cell.thumbAspectClass,
+                                  wide: false,
+                                }),
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      );
+                    })}
+                    {compactEntries.length > 0 ? (
+                      <div
+                        className="grid w-full grid-cols-2 items-start gap-2"
+                        data-nearby-compact-grid=""
+                      >
+                        {compactEntries.map((entry) => renderEntryCard(entry))}
+                      </div>
+                    ) : null}
+                  </div>
+                );
+              })()}
             </section>
           );
         })}

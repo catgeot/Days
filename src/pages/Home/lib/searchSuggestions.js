@@ -62,6 +62,7 @@ import {
   parseKoreaPoiTypeQuery,
   shouldExpandKoreaPoiTypeSearch,
 } from './koreaPoiTypeSearch.js';
+import { buildExploreMonthlyPickSearchSuggestions } from './exploreMonthlyPickSearchSuggestions.js';
 
 const normalizeKey = (s) =>
   String(s ?? '')
@@ -273,6 +274,10 @@ export function buildLocalSearchSuggestions(query, opts = {}) {
     return out.slice(0, 24).map(enrichSearchCandidateScenicMedia);
   }
 
+  for (const item of buildExploreMonthlyPickSearchSuggestions(q)) {
+    pushUnique(out, seen, item);
+  }
+
   const exactListHit = resolveLocalScenicListFromSearchQuery(q);
   const exactHub = exactListHit
     ? exactListHit.hub || resolveCityAttractionHub(exactListHit.list.hubId)
@@ -443,6 +448,7 @@ export async function buildHybridSearchSuggestions(query, opts = {}) {
     exactListHit ||
     exactAttraction ||
     exactSettlement ||
+    local.some((item) => item?.source === 'monthly-pick') ||
     shouldSkipGeocodeForMood(q) ||
     shouldOfferKoreaHomonymDisambiguation(q)
   ) {
