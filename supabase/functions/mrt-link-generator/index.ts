@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { mrtFetch } from "../_shared/mrtFetch.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -26,7 +27,7 @@ serve(async (req) => {
     // 현재는 API 스펙을 정확히 알 수 없으므로, 시뮬레이션 코드만 배치하고 원본 URL 반환
     if (API_KEY) {
       try {
-        const response = await fetch("https://api.myrealtrip.com/partner/v1/links", {
+        const response = await mrtFetch("https://api.myrealtrip.com/partner/v1/links", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

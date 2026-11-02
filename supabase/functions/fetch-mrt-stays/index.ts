@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
+import { mrtFetch } from "../_shared/mrtFetch.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -569,7 +570,7 @@ function uniqueKeywords(list: string[]) {
 }
 
 async function mrtPost(path: string, apiKey: string, body: Record<string, unknown>) {
-  const res = await fetch(`${MRT_BASE}${path}`, {
+  const res = await mrtFetch(`${MRT_BASE}${path}`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${apiKey}`,
