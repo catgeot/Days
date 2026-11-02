@@ -97,12 +97,22 @@ const ANMYEONAM_FEATURES = [
   poi('Anmyeon-Am', 'Taean, 32133, South Korea', ['buddhist_temple'], ['buddhist temple'], 126.375, 36.559, 'a'),
   poi('Anmyeon-Am', 'Taean, 32133, South Korea', ['bus_stop'], ['bus stop'], 126.349, 36.554, 'b'),
   poi('Gwacheon Mission of the Anmyeonam', 'Gwacheon, 13800, South Korea', ['buddhist_temple'], ['buddhist temple'], 126.983, 37.403, 'c'),
+  poi('Anmyeonam Seoul Branch', 'Seoul, 03000, South Korea', ['buddhist_temple'], ['buddhist temple'], 126.98, 37.57, 'd'),
+  poi('Anmyeonam-Seoul Branch', 'Seoul, 03000, South Korea', ['buddhist_temple'], ['buddhist temple'], 126.99, 37.56, 'e'),
+  poi('Mission of Anmyeon-am', 'Seoul, 03000, South Korea', ['buddhist_temple'], ['buddhist temple'], 126.97, 37.58, 'f'),
 ];
 
-test('Anmyeonam — 과천 「… of the Anmyeonam」 사찰 제외, 태안 안면암 유지', () => {
+test('Anmyeonam — 과천·서울 분원/지점 사찰 제외, 태안 안면암 유지', () => {
   const hits = ANMYEONAM_FEATURES.map((f) => featureToSuggestion(f, { source: 'mapbox' }));
   const names = dropFarHomonymBusinessHits('Anmyeonam', hits).map((h) => `${h.name}|${h.lat}`);
-  assert.ok(!names.some((n) => n.startsWith('Gwacheon')), `과천 결과가 남음: ${names.join(', ')}`);
+  for (const drop of [
+    'Gwacheon Mission of the Anmyeonam',
+    'Anmyeonam Seoul Branch',
+    'Anmyeonam-Seoul Branch',
+    'Mission of Anmyeon-am',
+  ]) {
+    assert.ok(!names.some((n) => n.startsWith(`${drop}|`)), `${drop}가 남음: ${names.join(', ')}`);
+  }
   assert.ok(names.includes('Anmyeon-Am|36.559'), '태안 안면암 누락');
 });
 
@@ -209,8 +219,12 @@ test('하이브리드 — 이름이 다른 내장 결과(남산 → 춘천·남�
 });
 
 test('지점 표시 — 사찰 분류여도 「Mission of the 검색어」「검색어 포교당」은 거리 규칙 대상, 본 사찰은 아님', () => {
-  const [taean, , gwacheon] = ANMYEONAM_FEATURES.map((f) => featureToSuggestion(f, { source: 'mapbox' }));
+  const hits = ANMYEONAM_FEATURES.map((f) => featureToSuggestion(f, { source: 'mapbox' }));
+  const [taean, , gwacheon, seoulBranch, seoulBranchHyphen, missionHyphen] = hits;
   assert.equal(isBranchLikeSearchHit(gwacheon, 'Anmyeonam'), true);
+  assert.equal(isBranchLikeSearchHit(seoulBranch, 'Anmyeonam'), true);
+  assert.equal(isBranchLikeSearchHit(seoulBranchHyphen, 'Anmyeonam'), true);
+  assert.equal(isBranchLikeSearchHit(missionHyphen, 'Anmyeonam'), true);
   assert.equal(isBranchLikeSearchHit(taean, 'Anmyeonam'), false);
   assert.equal(isBranchLikeSearchHit(YONGGUNGSA_HITS[1], '용궁사'), false);
   assert.equal(isBranchLikeSearchHit(NAMSAN_HITS[1], '남산'), false);

@@ -97,7 +97,10 @@ function nameMarksBranchOfQuery(name, query) {
   if (KO_BRANCH_MARKERS.some((marker) => key.includes(marker) && !q.includes(marker))) return true;
   const words = String(query).trim().split(/\s+/).map(escapeRegExp).join('[\\s\\-]*');
   const english = new RegExp(`\\b(mission|branch)\\s+of\\s+(the\\s+)?${words}\\b|\\b${words}\\s+(mission|branch)\\b`, 'i');
-  return english.test(raw);
+  if (english.test(raw)) return true;
+  const missionOfMatch = raw.match(/\bmission\s+of\s+(?:the\s+)?(.+)$/i);
+  if (missionOfMatch && normalizeKey(missionOfMatch[1]) === q) return true;
+  return new RegExp(`\\b${words}(?:[\\s\\-][\\w-]+)*\\s+branch\\b`, 'i').test(raw);
 }
 
 /** 거리 규칙 대상 — 업소(상호·무분류) 또는 검색어 장소의 지점·분원인 관광 POI. 관광·명소는 제외하지 않는다. */
