@@ -34,6 +34,28 @@ function hubIdFromParentheticalTitle(title) {
   return resolveCityAttractionHub(region)?.hubId || '';
 }
 
+/** «고산사(홍성)» → { base: '고산사', region: '홍성' }. DB·searchKeyword는 괄호 sanitize로 «고산사홍성» 0건 */
+export function splitParentheticalRegionTitle(title) {
+  const m = String(title || '')
+    .trim()
+    .match(/^(.+?)\s*\(([^)]+)\)\s*$/u);
+  if (!m) return null;
+  const base = m[1].trim();
+  const region = m[2].trim();
+  if (base.length < 2 || region.length < 1) return null;
+  return { base, region };
+}
+
+function tourRowInRegion(row, region, hubId) {
+  const hay = [row?.addr1, row?.addr2, row?.title, row?.name].map((s) => String(s || '')).join(' ');
+  if (hay.includes(region)) return true;
+  if (!hubId) return false;
+  const hub = resolveCityAttractionHub(hubId);
+  const hubName = String(hub?.name || '').trim();
+  const bare = hubName.replace(/(특별자치시|광역시|특별시|자치시|시|군|구)$/u, '').trim();
+  return [hubName, bare].some((h) => h.length >= 2 && hay.includes(h));
+}
+
 /**
  * @param {string} query
  * @param {{ lookupRows?: (title: string) => Promise<object[]> }} [opts]
@@ -60,19 +82,30 @@ export async function collectKoreaTourTitleSearchCandidates(query, opts = {}) {
   const titleKey = compactKey(title);
   if (titleKey.length < 2) return [];
 
+  const paren = /\s/.test(q) ? null : splitParentheticalRegionTitle(title);
+  const lookupTitle = paren ? paren.base : title;
+
   let rows = [];
   if (typeof opts.lookupRows === 'function') {
-    rows = await opts.lookupRows(title);
+    rows = await opts.lookupRows(lookupTitle);
   } else {
     const { lookupKoreaTourAttractionsMatchingTitle } = await import('./koreaTourAttractions.js');
-    rows = await lookupKoreaTourAttractionsMatchingTitle(title, {
+    rows = await lookupKoreaTourAttractionsMatchingTitle(lookupTitle, {
       limit: 40,
       hubId: hubId || undefined,
     });
   }
 
   const matchTitle = /\s/.test(q) ? q : title;
-  const exact = (rows || []).filter((row) => tourRowTitleMatchesCompactQuery(row, matchTitle));
+  const exact = (rows || []).filter((row) => {
+    if (tourRowTitleMatchesCompactQuery(row, matchTitle)) return true;
+    if (!paren) return false;
+    const baseKey = compactKey(paren.base);
+    const titleMatchesBase = [row?.title, row?.name]
+      .map(compactKey)
+      .some((k) => k === baseKey || k.startsWith(`${baseKey}(`));
+    return titleMatchesBase && tourRowInRegion(row, paren.region, hubId);
+  });
   const out = [];
   const seen = new Set();
   for (const row of exact) {
