@@ -36,6 +36,7 @@ function rowTitleMatchesQuery(row, titleKey) {
     if (idx < 0) continue;
     const after = k.slice(idx + titleKey.length);
     if (!after) return true;
+    if (/^\([^)]+\)$/u.test(after)) return true;
     if (/^(?:대웅전|루|전|각|암|탑|동|리|사|터|원|당|문|각|채|각)$/u.test(after)) return true;
   }
   return false;
