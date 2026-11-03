@@ -4,6 +4,12 @@ import { resolveCityAttractionHub } from './cityAttractionHubs.js';
 import { resolveExploreCityHubExact } from './exploreHubResolve.js';
 import { getLocalizedParentCityLabel } from '../../../components/PlaceCard/common/locationDisplay.js';
 import { koreaTourContentPlaceParam } from './formatUrlName.js';
+import {
+  expandKoreaAdminPlaceQueries,
+  isKoreaProvinceLevelName,
+  isMapboxRegionFeatureAdminPin,
+  resolveKoreaProvinceCatalogHub,
+} from './koreaExploreProvincePlace.js';
 
 const MAPBOX_SOURCES = new Set(['mapbox', 'mapbox-geocode']);
 
@@ -51,7 +57,12 @@ export function isDomesticMapboxAdminAreaPin(pin) {
   if (!isMapboxOrGeocodeSource(source) && !isMapboxOrGeocodePinId(pin)) return false;
 
   const featureType = String(pin.feature_type || pin.featureType || '').toLowerCase();
-  if (featureType === 'country' || featureType === 'region') return true;
+  if (featureType === 'country') return true;
+  if (isMapboxRegionFeatureAdminPin(pin)) return true;
+  const name = String(pin.name || pin.name_ko || '').trim();
+  if (name && (isKoreaProvinceLevelName(name) || resolveKoreaProvinceCatalogHub(name))) {
+    return true;
+  }
   return isDomesticMapboxCountryName(pin);
 }
 
@@ -63,10 +74,10 @@ export function resolveDomesticMapboxAdminHub(pin) {
   const featureType = String(pin.feature_type || pin.featureType || '').toLowerCase();
   if (featureType === 'country' || isDomesticMapboxCountryName(pin)) return null;
 
-  const rawName = String(pin.name || pin.name_ko || '').trim();
+  const rawName = String(pin.name || pin.name_ko || pin.place_formatted || '').trim();
   if (!rawName) return null;
 
-  const queries = new Set([rawName]);
+  const queries = new Set(expandKoreaAdminPlaceQueries(rawName));
   let stripped = rawName.replace(ADMIN_REGION_SUFFIX_RE, '').trim();
   if (stripped) queries.add(stripped);
   if (/특별자치도$/u.test(rawName)) {
@@ -75,7 +86,10 @@ export function resolveDomesticMapboxAdminHub(pin) {
   }
 
   for (const q of queries) {
-    const hub = resolveExploreCityHubExact(q) || resolveCityAttractionHub(q);
+    const hub =
+      resolveKoreaProvinceCatalogHub(q) ||
+      resolveExploreCityHubExact(q) ||
+      resolveCityAttractionHub(q);
     if (hub?.hubId) return hub;
   }
   return null;
@@ -189,8 +203,13 @@ export async function attachKoreaTourContentToExplorePin(pin) {
   const title = String(normalized.name || normalized.name_ko || '').trim();
   if (!title || title.length < 2) return normalized;
 
-  const hubId =
+  let hubId =
     String(normalized.hubId || '').trim() || hubIdFromParentCity(normalized.parentCity);
+  if (!hubId) {
+    const formatted = String(normalized.place_formatted || '').trim();
+    const head = formatted.split(',')[0]?.trim();
+    if (head) hubId = hubIdFromParentCity(head);
+  }
 
   try {
     const { lookupKoreaTourAttractionByTitle } = await import('./koreaTourAttractions.js');

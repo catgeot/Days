@@ -14,6 +14,7 @@ import {
   isDomesticMapboxCountryOrProvincePin,
   resolveDomesticMapboxAdminHub,
 } from '../../src/pages/Home/lib/explorePlaceNav.js';
+import { resolveKoreaTourContentId } from '../../src/pages/Home/lib/koreaTourAttractions.js';
 
 test('허브 명소 — getPlaceUrlParam이 SSOT slug 유지 (tour-* 덮어쓰기 0건 / main 대비)', () => {
   let total = 0;
@@ -56,15 +57,16 @@ test('허브 도시 카드 — hubId slug 유지 (contentId 있어도 tour-* 금
   assert.equal(drift.length, 0, JSON.stringify(drift.slice(0, 8)));
 });
 
-test('고산사 tour attach — Mapbox+tourapi는 tour-127982·127937 유지', () => {
+test('고산사 tour attach — Mapbox+tourapi는 tour-125901·127937 유지 (127982→125901 alias)', () => {
   const hongseong = normalizeExploreSelectionPin({
-    name: '홍성 고산사 대웅전',
+    name: '고산사(홍성)',
     source: 'tourapi',
-    contentId: '127982',
-    lat: 36.4544,
-    lng: 126.6608,
+    contentId: '125901',
+    lat: 36.545,
+    lng: 126.537,
   });
-  assert.equal(getPlaceUrlParam(hongseong), 'tour-127982');
+  assert.equal(getPlaceUrlParam(hongseong), 'tour-125901');
+  assert.equal(resolveKoreaTourContentId('127982'), '125901');
 
   const jangheung = normalizeExploreSelectionPin({
     name: '고산사',
@@ -120,6 +122,21 @@ test('Mapbox region 제주특별자치도 — 허브 slug /place/jeju', () => {
   assert.equal(decision?.type, 'place');
   assert.equal(decision?.param, 'jeju');
   assert.ok(!String(decision?.param || '').startsWith('mapbox-'));
+});
+
+test('Mapbox place Jeju-do — /place/jeju (feature_type place 라이브)', () => {
+  const decision = resolveSearchResultSelect({
+    id: 'mapbox-jeju-en',
+    name: 'Jeju-do',
+    lat: 33.4996,
+    lng: 126.5312,
+    source: 'mapbox',
+    feature_type: 'place',
+    country_en: 'South Korea',
+    uiPlace: true,
+  });
+  assert.equal(decision?.type, 'place');
+  assert.equal(decision?.param, 'jeju');
 });
 
 test('Mapbox country South Korea — 홈 (허브 없음)', () => {

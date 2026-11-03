@@ -14,9 +14,13 @@ const DAKMEORU = '\uB2ED\uBA38\uB974';
 const JEJU = '\uC81C\uC8FC';
 const GOSANSA = '\uACE0\uC0B0\uC0AC';
 const JANGHEUNG = '\uC7A5\uD765';
-const HONGSEONG_GOSANSA = '\uD64D\uC131 \uACE0\uC0B0\uC0AC \uB300\uC6C5\uC804';
+const HONGSEONG_GOSANSA = '\uACE0\uC0B0\uC0AC(\uD64D\uC131)';
 const HONGSEONG_TOUR_PATH = `/place/tour-${EXPLORE_GOSANSA_HONGSEONG_ROW.content_id}`;
 const JANGHEUNG_TOUR_PATH = `/place/tour-${EXPLORE_GOSANSA_JANGHEUNG_ROW.content_id}`;
+
+function escapeRegExp(text) {
+  return String(text).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
 
 test.use({ ignoreHTTPSErrors: true });
 
@@ -75,7 +79,7 @@ test.describe('Explore bare KO — 고산사 (390·1280)', () => {
     test(`고산사 @${viewport.label} — 홍성 Tour /place/tour-* · 새로고침`, async ({ page }) => {
       await page.setViewportSize({ width: viewport.width, height: viewport.height });
       await submitExploreQuery(page, GOSANSA);
-      const card = page.getByRole('button', { name: new RegExp(HONGSEONG_GOSANSA) }).first();
+      const card = page.getByRole('button', { name: new RegExp(escapeRegExp(HONGSEONG_GOSANSA)) }).first();
       await expect(card).toBeVisible({ timeout: 120_000 });
       await card.click();
       await page.waitForURL(new RegExp(HONGSEONG_TOUR_PATH.replace(/\//g, '\\/')), {
@@ -84,7 +88,7 @@ test.describe('Explore bare KO — 고산사 (390·1280)', () => {
       expect(new URL(page.url()).pathname).toBe(HONGSEONG_TOUR_PATH);
       await page.reload();
       await expect(page).toHaveURL(new RegExp(HONGSEONG_TOUR_PATH.replace(/\//g, '\\/')));
-      await expect(page.getByText(new RegExp(HONGSEONG_GOSANSA)).first()).toBeVisible({
+      await expect(page.getByText(new RegExp(escapeRegExp(HONGSEONG_GOSANSA))).first()).toBeVisible({
         timeout: 60_000,
       });
     });

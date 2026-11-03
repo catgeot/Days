@@ -25,6 +25,8 @@ import {
   pickTourAttractionRowForTitle,
   pickUniqueTourAttractionRowForTitle,
 } from './koreaTourAttractionTitleMatch';
+import { invokeTourApiProxy, TOUR_API_BODY_LOCALE } from '../../../utils/tourApiProxy.js';
+import { pickTourKeywordContentId } from '../../../utils/tourKeywordPick.js';
 
 export { pickTourAttractionRowForTitle } from './koreaTourAttractionTitleMatch';
 
@@ -41,6 +43,20 @@ export {
 
 const LIST_SELECT =
   'content_id, title, addr1, addr2, area_code, sigungu_code, mapx, mapy, first_image, active, cat1, cat2, cat3, modified_time';
+
+/** PR #653 mock·공유 URL — TourAPI LIVE canonical id */
+const LEGACY_TOUR_CONTENT_ID_ALIASES = {
+  '127982': '125901',
+};
+
+/**
+ * @param {string | number | null | undefined} contentId
+ */
+export function resolveKoreaTourContentId(contentId) {
+  const id = String(contentId ?? '').trim();
+  if (!/^\d{1,32}$/.test(id)) return '';
+  return LEGACY_TOUR_CONTENT_ID_ALIASES[id] || id;
+}
 
 /**
  * hub 시·군명 → addr1 ilike 패턴 (보령 / 보령시 / 보령군).
@@ -504,7 +520,7 @@ export async function fetchKoreaTourAttractionsNear(opts = {}) {
  * @param {string} contentId
  */
 export async function fetchKoreaTourAttractionById(contentId) {
-  const id = String(contentId || '').trim();
+  const id = resolveKoreaTourContentId(contentId);
   if (!/^\d{1,32}$/.test(id)) return null;
   const { data, error } = await supabase
     .from('tourapi_attraction')
@@ -516,7 +532,141 @@ export async function fetchKoreaTourAttractionById(contentId) {
     console.warn('[koreaTourAttractions] byId', error.message || error);
     return null;
   }
-  return data ? mapTourAttractionRow(data) : null;
+  if (data) return mapTourAttractionRow(data);
+  return fetchKoreaTourAttractionByIdLive(id);
+}
+
+function mapSearchKeywordItemToDbRow(item) {
+  const contentId = String(item?.contentId || item?.contentid || '').trim();
+  const title = String(item?.title || '').trim();
+  if (!contentId || !title) return null;
+  return {
+    content_id: contentId,
+    title,
+    addr1: item?.addr1 != null ? String(item.addr1) : '',
+    addr2: item?.addr2 != null ? String(item.addr2) : '',
+    area_code: item?.areaCode != null ? String(item.areaCode) : item?.areacode,
+    sigungu_code: item?.sigunguCode != null ? String(item.sigunguCode) : item?.sigungucode,
+    mapx: item?.mapx,
+    mapy: item?.mapy,
+    first_image: item?.firstimage || item?.firstImage || item?.imageUrl || '',
+    active: true,
+    cat1: item?.cat1,
+    cat2: item?.cat2,
+    cat3: item?.cat3,
+    modified_time: item?.modifiedtime || item?.modifiedTime,
+  };
+}
+
+function mapDetailCommonItemToDbRow(contentId, item) {
+  if (!item) return null;
+  const title = String(item?.title || '').trim();
+  if (!title) return null;
+  return {
+    content_id: String(contentId),
+    title,
+    addr1: item?.addr1 != null ? String(item.addr1) : '',
+    addr2: item?.addr2 != null ? String(item.addr2) : '',
+    area_code: item?.areacode != null ? String(item.areacode) : item?.areaCode,
+    sigungu_code: item?.sigungucode != null ? String(item.sigungucode) : item?.sigunguCode,
+    mapx: item?.mapx,
+    mapy: item?.mapy,
+    first_image: item?.firstimage || item?.firstimage2 || item?.imageUrl || '',
+    active: true,
+    cat1: item?.cat1,
+    cat2: item?.cat2,
+    cat3: item?.cat3,
+    modified_time: item?.modifiedtime || item?.modifiedTime,
+  };
+}
+
+async function fetchKoreaTourAttractionByIdLive(contentId) {
+  try {
+    const res = await invokeTourApiProxy(
+      'detailCommon',
+      { contentId },
+      { locale: TOUR_API_BODY_LOCALE },
+    );
+    const item = res?.items?.[0] || res?.common || null;
+    const row = mapDetailCommonItemToDbRow(contentId, item);
+    return row ? mapTourAttractionRow(row) : null;
+  } catch (err) {
+    console.warn('[koreaTourAttractions] byIdLive', err?.message || err);
+    return null;
+  }
+}
+
+async function lookupKoreaTourAttractionByTitleLive(title, hubId) {
+  const hints = hubNameHints(hubId);
+  const keywords = new Set([title]);
+  for (const part of String(title || '').trim().split(/\s+/)) {
+    if (part.length >= 2) keywords.add(part);
+  }
+  if (String(title || '').includes('고산사')) keywords.add('고산사');
+
+  /** @type {object[]} */
+  const merged = [];
+  const seen = new Set();
+  for (const keyword of keywords) {
+    try {
+      const res = await invokeTourApiProxy(
+        'searchKeyword',
+        { keyword, numOfRows: 20, pageNo: 1 },
+        { locale: TOUR_API_BODY_LOCALE },
+      );
+      for (const item of res?.items || []) {
+        const row = mapSearchKeywordItemToDbRow(item);
+        if (!row?.content_id || seen.has(row.content_id)) continue;
+        seen.add(row.content_id);
+        merged.push(row);
+      }
+    } catch {
+      /* next keyword */
+    }
+  }
+  if (!merged.length) {
+    const id = await lookupTourContentIdByTitleLive(title, hints);
+    if (!id) return null;
+    return fetchKoreaTourAttractionByIdLive(id);
+  }
+  const mapped = merged.map((row) => mapTourAttractionRow(row)).filter(Boolean);
+  const picked = pickTourAttractionRowForTitle(mapped, title, hints);
+  if (picked) return picked;
+  if (hubId === 'hongseong') {
+    return (
+      mapped.find((row) => String(row?.name || '').includes('홍성')) ||
+      mapped.find((row) => String(row?.addr1 || '').includes('홍성')) ||
+      null
+    );
+  }
+  return null;
+}
+
+async function lookupTourContentIdByTitleLive(title, hints) {
+  const keywords = new Set([title]);
+  for (const part of String(title || '').trim().split(/\s+/)) {
+    if (part.length >= 2) keywords.add(part);
+  }
+  for (const keyword of keywords) {
+    try {
+      const res = await invokeTourApiProxy(
+        'searchKeyword',
+        { keyword, numOfRows: 12, pageNo: 1 },
+        { locale: TOUR_API_BODY_LOCALE },
+      );
+      const id = pickTourKeywordContentId(res?.items, title);
+      if (!id) continue;
+      const item = (res?.items || []).find(
+        (row) => String(row?.contentId || row?.contentid || '').trim() === id,
+      );
+      const mapped = item ? mapTourAttractionRow(mapSearchKeywordItemToDbRow(item)) : null;
+      if (mapped && pickTourAttractionRowForTitle([mapped], title, hints)) return id;
+      if (!hints.length) return id;
+    } catch {
+      /* next */
+    }
+  }
+  return '';
 }
 
 const FIRST_IMAGE_CHUNK = 80;
@@ -691,7 +841,9 @@ export async function lookupKoreaTourAttractionByTitle(opts = {}) {
 
   let rows = await run(true);
   if (!rows.length) rows = await run(false);
-  return pickTourAttractionRowForTitle(rows, title, hints);
+  const picked = pickTourAttractionRowForTitle(rows, title, hints);
+  if (picked) return picked;
+  return lookupKoreaTourAttractionByTitleLive(title, hubId);
 }
 
 /**

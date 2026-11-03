@@ -144,6 +144,14 @@ test('collectKoreaTourTitleSearchCandidates — exact·suffix title filter (고�
   const rows = await collectKoreaTourTitleSearchCandidates('\uACE0\uC0B0\uC0AC', {
     lookupRows: async () => [
       {
+        title: '\uACE0\uC0B0\uC0AC(\uD64D\uC131)',
+        name: '\uACE0\uC0B0\uC0AC(\uD64D\uC131)',
+        addr1: '\uCD98\uCCAD\uB0A8\uB3C4 \uD64D\uC131\uAD70',
+        lat: 36.55,
+        lng: 126.54,
+        contentId: '125901',
+      },
+      {
         title: '\uACE0\uC0B0\uC0AC',
         name: '\uACE0\uC0B0\uC0AC',
         addr1: '\uCD98\uCCAD\uBCD1\uCC28\uB3C4 \uC81C\uCC9C\uC2DC',
@@ -161,8 +169,7 @@ test('collectKoreaTourTitleSearchCandidates — exact·suffix title filter (고�
       },
     ],
   });
-  assert.equal(rows.length, 2);
-  assert.equal(rows[0]?.contentId, '111');
-  assert.equal(rows[1]?.contentId, '222');
+  assert.equal(rows.length, 3);
+  assert.ok(rows.some((r) => r.contentId === '125901'));
   assert.equal(rows[0]?.source, 'tourapi');
 });
