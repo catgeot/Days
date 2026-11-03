@@ -10,6 +10,7 @@ import {
   isBlockedCountryOnlyPlaceParam,
   normalizeExploreSelectionPin,
   resolveDomesticMapboxAdminHub,
+  resolveDomesticProvinceNameHub,
 } from './explorePlaceNav.js';
 import { isKoreaProvinceLevelTourResult, isKoreaProvinceLevelName } from './koreaExploreProvincePlace.js';
 
@@ -348,6 +349,17 @@ export function resolveSearchResultSelect(spot) {
   if (param) return { type: 'place', spot: pin, param };
   if (rawParam && (pin.contentId || pin.source === 'tourapi')) {
     return { type: 'place', spot: pin, param: rawParam };
+  }
+  const provinceHub = resolveDomesticProvinceNameHub(pin);
+  const provinceSlug = String(provinceHub?.hubId || '').trim();
+  if (provinceSlug && !isBlockedCountryOnlyPlaceParam(provinceSlug)) {
+    const hubPin = normalizeExploreSelectionPin({
+      ...pin,
+      hubId: provinceSlug,
+      slug: provinceSlug,
+      canonical_slug: provinceSlug,
+    });
+    return { type: 'place', spot: hubPin, param: provinceSlug };
   }
   return { type: 'home', spot: pin };
 }
