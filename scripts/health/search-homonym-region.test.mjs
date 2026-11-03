@@ -280,7 +280,7 @@ test('「한반도 땅끝 최북단 지점」 — 관광 분류의 「지점」�
 test('하이브리드 검색은 Mapbox 결과를 로컬 SSOT 기준점으로 한 번 더 거른다', async () => {
   const { readFile } = await import('node:fs/promises');
   const src = await readFile(new URL('../../src/pages/Home/lib/searchSuggestions.js', import.meta.url), 'utf8');
-  assert.match(src, /dropFarHomonymBusinessHits\(q, out, \{ anchors: local \}\)/);
+  assert.match(src, /dropFarHomonymBusinessHits\(mapboxQuery, out, \{ anchors: local \}\)/);
 });
 
 test('가까운 방문 행·해외 동명·기준점 없음은 그대로', () => {

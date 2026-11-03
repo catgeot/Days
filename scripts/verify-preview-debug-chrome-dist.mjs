@@ -1,12 +1,18 @@
 #!/usr/bin/env node
 /**
  * Production deploy build (CI `npm run build`) must not ship Preview-only debug UI strings.
+ * Vercel Preview (`VERCEL_ENV=preview`)는 작업 로그 패널을 포함하므로 검증 생략.
  */
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const FORBIDDEN = ['모바일 위젯 로그', '작업 로그 닫기', 'cloud-preview-work-log-panel'];
+
+if (process.env.VERCEL_ENV === 'preview') {
+  console.log('OK  preview debug chrome check skipped (Vercel Preview build)');
+  process.exit(0);
+}
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const assetsDir = join(root, 'dist/assets');
