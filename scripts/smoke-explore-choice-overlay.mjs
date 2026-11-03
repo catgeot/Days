@@ -159,9 +159,10 @@ assert.match(suggestionListSrc, /resolveSearchScenicMedia/);
 
 const qa = readFileSync(join(root, 'src/shared/cloudPreview/cloudQaShareLinks.js'), 'utf8');
 assert.match(qa, /slug:\s*'explore-search'/);
+assert.match(qa, /cursor\/explore-search-fix-bfa1/);
 assert.match(
   qa,
-  /slug:\s*'explore-search'[\s\S]{0,280}?destination:\s*'https:\/\/www\.gateo\.kr\/explore'[\s\S]{0,80}?active:\s*false/,
+  /slug:\s*'explore-search'[\s\S]{0,320}?days-git-cursor-explore-search-fix-bfa1-catgeots-projects\.vercel\.app\/explore[\s\S]{0,80}?active:\s*true/,
 );
 assert.doesNotMatch(qa, /explore-search-d14b/);
 assert.match(qa, /slug:\s*'search-enter-hub'/);
@@ -169,7 +170,7 @@ assert.match(qa, /cursor\/search-enter-hub-2018/);
 const vercel = readFileSync(join(root, 'vercel.json'), 'utf8');
 assert.match(
   vercel,
-  /"source":\s*"\/qa\/explore-search"[\s\S]{0,180}?"destination":\s*"https:\/\/www\.gateo\.kr\/explore"/,
+  /"source":\s*"\/qa\/explore-search"[\s\S]{0,220}?"destination":\s*"https:\/\/days-git-cursor-explore-search-fix-bfa1-catgeots-projects\.vercel\.app\/explore"/,
 );
 assert.doesNotMatch(vercel, /explore-search-d14b/);
 assert.match(vercel, /\/qa\/search-enter-hub/);
