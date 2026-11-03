@@ -170,8 +170,9 @@ assert.match(qa, /cursor\/search-enter-hub-2018/);
 const vercel = readFileSync(join(root, 'vercel.json'), 'utf8');
 assert.match(
   vercel,
-  /"source":\s*"\/qa\/explore-search"[\s\S]{0,220}?"destination":\s*"https:\/\/days-git-cursor-explore-search-fix-bfa1-catgeots-projects\.vercel\.app\/explore"/,
+  /"source":\s*"\/qa\/explore-search"[\s\S]{0,180}?"destination":\s*"https:\/\/www\.gateo\.kr\/explore"/,
 );
+assert.match(vercel, /cursor\/explore-search-fix-bfa1":\s*true/);
 assert.doesNotMatch(vercel, /explore-search-d14b/);
 assert.match(vercel, /\/qa\/search-enter-hub/);
 assert.match(vercel, /days-git-cursor-search-enter-hub-2018/);

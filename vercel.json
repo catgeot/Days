@@ -64,7 +64,7 @@
     },
     {
       "source": "/qa/explore-search",
-      "destination": "https://days-git-cursor-explore-search-fix-bfa1-catgeots-projects.vercel.app/explore",
+      "destination": "https://www.gateo.kr/explore",
       "permanent": false
     },
     {
