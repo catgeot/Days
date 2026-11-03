@@ -80,6 +80,8 @@ test('Home gallery PR drift guard; MOONi session wiring line allowlist', () => {
   const handlersAllow = [
     /^[+-].*(exploreRegionalPlaceQuery|EXPLORE_SEARCH|shouldSkipOverseas|KoreaDestinationFirstPass|effectiveExploreSearchQuery|filterRegionalExploreHits|regionalExploreMapboxOpts|parseKoreaRegionalExploreQuery|regionalScope|filteredRemote|allowAiTypo|treatAsMoodQuery|__noResults|explore-search-ai|firstPassHitToUiPlace|TourAPI|hybrid 실패|isDomesticKoreaLocation|originalQuery|rawLat|rawLng|getCoordinatesFromAddress|searchBoxForward|searchBoxTypesForQuery|pickEnterSuggestionMatches|buildHybridSearchSuggestions|buildLocalSearchSuggestions|ensureDisambiguation|Promise\.race|commitLocation|remoteHits|invokeGeminiTask|localChoices|hybridMatches|koreaRetry|searchMode|apiClient|requireChoice|isCorrected|isFacilityQuery|shouldSkipGeocodeForMoodIntent|EXPLORE_SEARCH_HANGUL_RE|filteredRemote|regionalExploreMapboxOpts|query,|mode:|limit: 5)/,
     /^[+-]\s*\|\|$/,
+    /^[+-]\s*\}\),$/,
+    /^[+-]\s*\]\);$/,
     /^[+-]\s*import .*tripChatUtils/,
     /^[+-].*tripHasPersistedDialogue/,
     /^[+-].*mooniLastChatScopeInput/,
