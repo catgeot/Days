@@ -8,6 +8,11 @@ import {
 } from './explore-tourapi-mock.js';
 import { installExploreMapboxGosansaMock } from './explore-mapbox-gosansa-mock.js';
 import { installExploreJejuGeocodeMock } from './explore-mapbox-jeju-geocode-mock.js';
+import {
+  installExplorePlaceStatsVisitedMock,
+  LIVE_PLACE_STATS_JEJU_DO,
+} from './explore-place-stats-visited-mock.js';
+import { installExplorePyongyangGeocodeMock } from './explore-mapbox-pyongyang-geocode-mock.js';
 
 const UDO = '\uC6B0\uB3C4';
 const GAUDO = '\uAC00\uC6B0\uB3C4';
@@ -19,6 +24,11 @@ const HONGSEONG_GOSANSA = '\uACE0\uC0B0\uC0AC(\uD64D\uC131)';
 const HONGSEONG_SPACED = '\uD64D\uC131 \uACE0\uC0B0\uC0AC';
 const HONGSEONG_TOUR_PATH = `/place/tour-${EXPLORE_GOSANSA_HONGSEONG_ROW.content_id}`;
 const JANGHEUNG_TOUR_PATH = `/place/tour-${EXPLORE_GOSANSA_JANGHEUNG_ROW.content_id}`;
+const PYONGYANG = '\uD3C9\uC591';
+const SOUTH_PACIFIC = '\uB0A8\uD0DC\uD3C9\uC591';
+const ATLANTIC = '\uB300\uC11C\uC591';
+const NORTH_ATLANTIC = '\uBD81\uB300\uC11C\uC591';
+const MACARONESIA = '\uB9C8\uCE74\uB85C\uB124\uC2DC\uC544';
 
 function escapeRegExp(text) {
   return String(text).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -178,5 +188,37 @@ test.describe('Explore bare KO — Mapbox-only parity', () => {
     await expect(row).toBeVisible({ timeout: 30_000 });
     await row.click();
     await expect(page).toHaveURL(/\/place\/jeju(?:\/|$|\?)/, { timeout: 60_000 });
+  });
+
+  test('제주특별자치도 Enter — 장소 카드(visited-jeju-do) → /place/jeju', async ({ page }) => {
+    await installExplorePlaceStatsVisitedMock(page.context());
+    await submitExploreQuery(page, LIVE_PLACE_STATS_JEJU_DO.name_ko);
+    const card = page
+      .getByRole('button')
+      .filter({ hasText: LIVE_PLACE_STATS_JEJU_DO.name_ko })
+      .filter({ hasText: LIVE_PLACE_STATS_JEJU_DO.name_en })
+      .first();
+    await expect(card).toBeVisible({ timeout: 120_000 });
+    await card.click();
+    await expect(page).toHaveURL(/\/place\/jeju(?:\/|$|\?)/, { timeout: 60_000 });
+  });
+
+  test('대서양 Enter — north-atlantic(북대서양) 큐레이션 · 마카로네시아 아님', async ({ page }) => {
+    await submitExploreQuery(page, ATLANTIC);
+    await expect(
+      page.getByRole('heading', { name: new RegExp(`'${NORTH_ATLANTIC}' 해역`) }),
+    ).toBeVisible({ timeout: 120_000 });
+    await expect(page.getByRole('heading', { name: new RegExp(MACARONESIA) })).toHaveCount(0);
+  });
+
+  test('평양 Enter — 남태평양 해역 큐레이션 없음 · 홈 유지', async ({ page }) => {
+    await installExplorePyongyangGeocodeMock(page.context());
+    await submitExploreQuery(page, PYONGYANG);
+    const card = page.getByRole('button').filter({ hasText: 'Pyongyang' }).first();
+    await expect(card).toBeVisible({ timeout: 120_000 });
+    await expect(page.getByRole('button').filter({ hasText: SOUTH_PACIFIC })).toHaveCount(0);
+    await card.click();
+    await expect(page).toHaveURL(/127\.0\.0\.1:\d+\/(?:\?|$)/, { timeout: 60_000 });
+    expect(new URL(page.url()).pathname).toBe('/');
   });
 });

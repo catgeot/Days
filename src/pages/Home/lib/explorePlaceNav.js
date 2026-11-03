@@ -99,6 +99,24 @@ export function resolveDomesticMapboxAdminHub(pin) {
   return null;
 }
 
+/**
+ * 시·도명 핀 → 카탈로그 허브. Mapbox·Geocode 외 place_stats(visited, id visited-jeju-do) 등도 포함.
+ * TourAPI 행(지자체 대표 콘텐츠)은 tour-{contentId} 경로를 유지하므로 제외.
+ */
+export function resolveDomesticProvinceNameHub(pin) {
+  if (!pin || typeof pin !== 'object') return null;
+  const mapboxHub = resolveDomesticMapboxAdminHub(pin);
+  if (mapboxHub?.hubId) return mapboxHub;
+  if (isMapboxOrGeocodeSource(pin.source) || isMapboxOrGeocodePinId(pin)) return null;
+  const source = String(pin.source ?? '').trim().toLowerCase();
+  if (source === 'tourapi' || hasKoreaTourContentId(pin)) return null;
+  const name = String(pin.name_ko || pin.name || '').trim();
+  if (!name || !isKoreaProvinceLevelName(name)) return null;
+  if (!isDomesticExplorePinForRouting(pin)) return null;
+  const hub = resolveKoreaProvinceCatalogHub(name);
+  return hub?.hubId ? hub : null;
+}
+
 /** @deprecated use isDomesticMapboxAdminAreaPin + resolveDomesticMapboxAdminHub */
 export function isDomesticMapboxCountryOrProvincePin(pin) {
   if (!isDomesticMapboxAdminAreaPin(pin)) return false;

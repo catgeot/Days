@@ -73,6 +73,24 @@ const CORS = {
   'access-control-allow-methods': 'GET, HEAD, OPTIONS, POST',
 };
 
+/** PostgREST title ilike(%needle%) — 운영 DB와 같이 needle 부분 일치만 반환 («고산사홍성» → 0건) */
+function rowMatchesTitleIlike(row, decodedUrl) {
+  const needles = [...decodedUrl.matchAll(/title[.=]ilike\.\*?%?([^%,)&*]+)%?\*?/gi)].map((m) =>
+    m[1].trim().toLowerCase(),
+  );
+  if (!needles.length) return true;
+  const title = String(row.title || '').toLowerCase();
+  return needles.some((n) => n && title.includes(n));
+}
+
+/** TourAPI searchKeyword2 — title 부분 일치 */
+function itemMatchesKeyword(item, keyword) {
+  const k = String(keyword || '').trim().toLowerCase();
+  if (!k) return true;
+  const title = String(item.title || '').toLowerCase();
+  return title.includes(k) || title.replace(/\s+/g, '').includes(k.replace(/\s+/g, ''));
+}
+
 function rowByContentId(id) {
   const resolved = String(id || '').trim() === '127982' ? '125901' : String(id || '').trim();
   return GOSANSA_ROWS.find((r) => r.content_id === resolved) || null;
@@ -109,6 +127,7 @@ export async function installExploreTourapiMock(contextOrPage) {
     } else {
       rows = [...GOSANSA_ROWS];
     }
+    rows = rows.filter((r) => rowMatchesTitleIlike(r, hay));
     await route.fulfill({
       status: 200,
       contentType: 'application/json',
@@ -202,7 +221,7 @@ export async function installExploreTourapiMock(contextOrPage) {
               contentTypeId: '12',
             })),
             courseRow,
-          ],
+          ].filter((item) => itemMatchesKeyword(item, body.keyword)),
         }),
       });
       return;
