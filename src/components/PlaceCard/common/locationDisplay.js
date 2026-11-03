@@ -4,6 +4,7 @@ import { formatScenicSpotPlaceLabel } from '../../../pages/Home/lib/scenicSpotPl
 import { citiesData } from '../../../pages/Home/data/citiesData.js';
 import { isPlaceholderCountry } from '../../../utils/travelSpotResolve.js';
 import { latinFromVisitedSlug } from '../../../pages/Home/lib/visitedPlaceSearch.js';
+import { sanitizeTourContentIdEnglishFallback } from '../../../pages/Home/lib/formatUrlName.js';
 import { TRAVEL_SPOT_TOOLKIT_SYNONYMS } from '../../../../scripts/data/travel-spot-place-id-aliases.mjs';
 
 const HANGUL_REGEX = /[\u3131-\u318e\uac00-\ud7a3]/i;
@@ -62,12 +63,16 @@ function englishFromToolkitSynonymRegistry(location) {
 
 /** 검색·카드 — name_en 없을 때 slug/place_id 라틴 슬러그에서 영문 표기 */
 export function resolveEnglishPlaceLabel(location) {
-  const direct = normalizeText(location?.name_en || location?.curation_data?.locationEn);
+  const direct = sanitizeTourContentIdEnglishFallback(
+    location?.name_en || location?.curation_data?.locationEn,
+  );
   if (direct && hasLatin(direct) && !hasHangul(direct)) return direct;
-  const fromSlug = latinFromVisitedSlug({
-    slug: location?.slug || location?.place_id,
-    place_id: location?.place_id,
-  });
+  const fromSlug = sanitizeTourContentIdEnglishFallback(
+    latinFromVisitedSlug({
+      slug: location?.slug || location?.place_id,
+      place_id: location?.place_id,
+    }),
+  );
   if (fromSlug) return fromSlug;
   return englishFromToolkitSynonymRegistry(location);
 }
@@ -115,7 +120,9 @@ export const getPlaceTitleLines = (location) => {
 /** locale별 표시명 — en일 때 name_en·country_en 우선 */
 export function getLocalizedPlaceName(location, locale = 'ko') {
   if (locale === 'en') {
-    const english = normalizeText(location?.name_en || location?.curation_data?.locationEn);
+    const english = sanitizeTourContentIdEnglishFallback(
+      location?.name_en || location?.curation_data?.locationEn,
+    );
     if (english) return english;
   }
   return normalizeText(location?.name) || '';

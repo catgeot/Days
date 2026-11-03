@@ -26,8 +26,8 @@ export const formatUrlName = (nameEn) => {
 export function pickUrlSafeEnglishName(loc) {
   if (!loc || typeof loc !== 'object') return '';
   for (const key of ['name_en', 'country_en', 'name']) {
-    const v = loc[key];
-    if (isUrlSafeEnglishLabel(v)) return String(v).trim();
+    const v = sanitizeTourContentIdEnglishFallback(loc[key]);
+    if (isUrlSafeEnglishLabel(v)) return v;
   }
   return '';
 }
@@ -57,6 +57,18 @@ export function koreaTourContentPlaceParam(contentId) {
   const id = String(contentId ?? '').trim();
   if (!/^\d{1,32}$/.test(id)) return '';
   return `tour-${id}`;
+}
+
+const TOUR_CONTENT_ID_EN_FALLBACK_RE = /^Tour\s+\d{1,32}$/i;
+
+/** slug→영문 추론·name_en — TourAPI contentId 자리표시(Tour 126444)는 영문명 아님 */
+export function isTourContentIdEnglishFallback(value) {
+  const text = String(value ?? '').trim();
+  return Boolean(text && TOUR_CONTENT_ID_EN_FALLBACK_RE.test(text));
+}
+
+export function sanitizeTourContentIdEnglishFallback(value) {
+  return isTourContentIdEnglishFallback(value) ? '' : String(value ?? '').trim();
 }
 
 /**
