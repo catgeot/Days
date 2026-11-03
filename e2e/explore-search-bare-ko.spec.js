@@ -36,7 +36,7 @@ test.describe('Explore bare Korean place queries', () => {
     await submitExploreQuery(page, UDO);
     const first = page.getByRole('button', { name: new RegExp(UDO) }).first();
     await expect(first).toBeVisible({ timeout: 120_000 });
-    await expect(first.getByText(new RegExp(JEJU))).toBeVisible();
+    await expect(first).toContainText(JEJU);
     await expect(page.getByRole('button', { name: new RegExp(GAUDO) })).toHaveCount(0);
   });
 
@@ -44,7 +44,7 @@ test.describe('Explore bare Korean place queries', () => {
     await submitExploreQuery(page, DAKMEORU);
     const first = page.getByRole('button', { name: new RegExp(DAKMEORU) }).first();
     await expect(first).toBeVisible({ timeout: 120_000 });
-    await expect(first.getByText(new RegExp(JEJU))).toBeVisible();
+    await expect(first).toContainText(JEJU);
     await expect(page.getByText(/맞는 장소를 찾지 못했습니다/)).toHaveCount(0);
   });
 
