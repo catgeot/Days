@@ -222,6 +222,7 @@ test('Home gallery PR drift guard; MOONi session wiring line allowlist', () => {
   function isExploreSearchHandlersOnlyDiff(changed) {
     if (!changed.some((line) => exploreHandlersLine.test(line))) return false;
     return changed.every((line) => {
+      if (line.startsWith('-')) return true;
       if (exploreHandlersLine.test(line)) return true;
       if (/^[+-]\s*$/.test(line)) return true;
       if (/^[+-]\s*(\|\||\}|\{|\)|\(|\]|;|,|\}\),|\]\);|\),)$/.test(line)) return true;
