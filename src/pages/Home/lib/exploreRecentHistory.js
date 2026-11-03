@@ -8,6 +8,7 @@ import {
   isMapboxOrGeocodeSource,
   shouldRouteDomesticExplorePinToPlace,
   isBlockedCountryOnlyPlaceParam,
+  normalizeExploreSelectionPin,
 } from './explorePlaceNav.js';
 
 export const RECENT_SEARCH_KEY = 'gateo_recent_search_keywords';
@@ -298,7 +299,7 @@ export function resolveSearchResultSelect(spot) {
   const lat = Number(spot.lat);
   const lng = Number(spot.lng);
   if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
-  const pin = { ...spot, lat, lng };
+  const pin = normalizeExploreSelectionPin({ ...spot, lat, lng });
   const source = String(pin.source ?? '').trim().toLowerCase();
   const tourParam = getPlaceUrlParam(pin);
   if (source === 'tourapi' && tourParam && !isBlockedCountryOnlyPlaceParam(tourParam)) {
@@ -317,7 +318,9 @@ export function resolveSearchResultSelect(spot) {
   const known = param ? knownPlaceForParam(param) : null;
   const countyMismatch = Boolean(known) && !pinNameOwnsPlace(pin, known);
   const spotForOpen = countyMismatch ? detachCountySlug(pin, known) : pin;
-  if (isMapboxOrGeocodePin(pin) || countyMismatch) return { type: 'home', spot: spotForOpen };
+  if ((isMapboxOrGeocodePin(pin) || countyMismatch) && !shouldRouteDomesticExplorePinToPlace(pin)) {
+    return { type: 'home', spot: spotForOpen };
+  }
   if (param) return { type: 'place', spot: pin, param };
   if (rawParam && (pin.contentId || pin.source === 'tourapi')) {
     return { type: 'place', spot: pin, param: rawParam };

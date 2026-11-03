@@ -78,6 +78,7 @@ export function tourAttractionToPoiSuggestion(spot) {
     '';
   const thumb = String(spot.firstImage || spot.imageUrl || '').trim() || null;
   const contentId = String(spot.contentId || '').trim();
+  const tourSlug = contentId ? `tour-${contentId}` : '';
   const groupTitle = parentCity ? `${parentCity} 명소` : '';
   return {
     id: `tour-attr-${contentId || `${lat}-${lng}`}`,
@@ -89,7 +90,8 @@ export function tourAttractionToPoiSuggestion(spot) {
     country_en: 'South Korea',
     lat,
     lng,
-    slug: placeUrlSlug(spot.attractionNameEn || name, name),
+    slug: tourSlug || placeUrlSlug(spot.attractionNameEn || name, name),
+    ...(tourSlug ? { canonical_slug: tourSlug } : {}),
     hubId: hub?.hubId || undefined,
     source: 'tourapi',
     uiPlace: true,

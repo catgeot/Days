@@ -607,7 +607,7 @@ export function locationToChoiceCandidate(loc) {
     lat,
     lng,
     slug: loc.slug,
-    source: loc.source || 'search',
+    source: loc.source || (String(loc.id || '').startsWith('mapbox-') ? 'mapbox' : 'search'),
     uiPlace: loc.uiPlace,
     desc: loc.desc,
     parentCity: loc.parentCity,
