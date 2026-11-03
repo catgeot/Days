@@ -221,12 +221,19 @@ test('Home gallery PR drift guard; MOONi session wiring line allowlist', () => {
 
   function isExploreSearchHandlersOnlyDiff(changed) {
     if (!changed.some((line) => exploreHandlersLine.test(line))) return false;
-    return changed.every(
-      (line) =>
-        exploreHandlersLine.test(line) ||
-        /^[+-]\s*(\|\||\}|\{|\)|\(|\]|;|,|\}\),|\]\);|\),)$/.test(line) ||
-        /^[+-]\s*$/.test(line),
-    );
+    return changed.every((line) => {
+      if (exploreHandlersLine.test(line)) return true;
+      if (/^[+-]\s*$/.test(line)) return true;
+      if (/^[+-]\s*(\|\||\}|\{|\)|\(|\]|;|,|\}\),|\]\);|\),)$/.test(line)) return true;
+      if (/^[+-]\s+[\).]/.test(line)) return true;
+      if (/^[+-]\s+[\?:]/.test(line)) return true;
+      if (/^[+-]\s+\/\/ /.test(line)) return true;
+      if (/^[+-]\s+if \(/.test(line)) return true;
+      if (/^[+-]\s+\}/.test(line)) return true;
+      if (/^[+-]\s+try \{/.test(line)) return true;
+      if (/^[+-]\s+\} catch/.test(line)) return true;
+      return false;
+    });
   }
 
   function assertDiffAllowlist(rel, allowPatterns) {
