@@ -22,7 +22,36 @@ export function hasKoreaTourContentId(pin) {
   return /^\d{1,32}$/.test(contentId);
 }
 
-/** 국내 탐색 후보 — Mapbox·명승·tourapi 포함 contentId 또는 한글 POI는 /place 로 */
+function compactExploreNameKey(s) {
+  return String(s ?? '')
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, '');
+}
+
+/** Mapbox 나라·광역(도) — 홈 지구본 유지, /place/mapbox-kr 금지 */
+export function isDomesticMapboxCountryOrProvincePin(pin) {
+  if (!pin || typeof pin !== 'object') return false;
+  const source = String(pin.source ?? '').trim().toLowerCase();
+  if (!isMapboxOrGeocodeSource(source) && !isMapboxOrGeocodePinId(pin)) return false;
+
+  const featureType = String(pin.feature_type || pin.featureType || '').toLowerCase();
+  if (featureType === 'country' || featureType === 'region') return true;
+
+  const nameKey = compactExploreNameKey(pin.name || pin.name_en);
+  if (
+    nameKey === 'southkorea' ||
+    nameKey === 'korea' ||
+    nameKey === 'republicofkorea' ||
+    nameKey === '대한민국' ||
+    nameKey === '한국'
+  ) {
+    return true;
+  }
+  return false;
+}
+
+/** 국내 탐색 후보 — tourapi·국내 Mapbox POI(나라·도 제외)는 /place */
 export function shouldRouteDomesticExplorePinToPlace(pin) {
   if (!pin || typeof pin !== 'object') return false;
   if (!pinCoordsInKorea(pin)) return false;
@@ -30,9 +59,11 @@ export function shouldRouteDomesticExplorePinToPlace(pin) {
 
   const source = String(pin.source ?? '').trim().toLowerCase();
   if (source === 'tourapi') return true;
-  if (hasKoreaTourContentId(pin)) return true;
 
-  if (isMapboxOrGeocodeSource(source) || isMapboxOrGeocodePinId(pin)) return true;
+  if (isMapboxOrGeocodeSource(source) || isMapboxOrGeocodePinId(pin)) {
+    if (isDomesticMapboxCountryOrProvincePin(pin)) return false;
+    return true;
+  }
   return false;
 }
 
@@ -72,12 +103,15 @@ export function normalizeExploreSelectionPin(pin) {
 
   const contentId = String(next.contentId ?? '').trim();
   const tourParam = koreaTourContentPlaceParam(contentId);
-  if (tourParam) {
+  const source = String(next.source ?? '').trim().toLowerCase();
+  const tourAttached = next.exploreTourAttached === true;
+  if (tourParam && (source === 'tourapi' || tourAttached)) {
     next.source = 'tourapi';
     next.contentId = contentId;
     next.slug = tourParam;
     next.canonical_slug = tourParam;
     next.uiPlace = true;
+    delete next.exploreTourAttached;
   }
 
   return next;
@@ -113,6 +147,7 @@ export async function attachKoreaTourContentToExplorePin(pin) {
     return normalizeExploreSelectionPin({
       ...normalized,
       ...tourPin,
+      exploreTourAttached: true,
       name: normalized.name || tourPin.name,
       name_ko: normalized.name_ko || normalized.name || tourPin.name,
       parentCity: normalized.parentCity || tourPin.parentCity,

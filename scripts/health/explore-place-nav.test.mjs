@@ -11,7 +11,7 @@ import { buildExploreSearchLocationLine, getLocalizedParentCityLabel } from '../
 
 test('koreaTourContentPlaceParam — contentId별 고유 URL', () => {
   assert.equal(koreaTourContentPlaceParam('127982'), 'tour-127982');
-  assert.equal(getPlaceUrlParam({ contentId: '127982', country_en: 'South Korea', name: '고산사' }), 'tour-127982');
+  assert.equal(getPlaceUrlParam({ contentId: '127982', source: 'tourapi', country_en: 'South Korea', name: '고산사' }), 'tour-127982');
 });
 
 test('resolveSearchResultSelect — 국내 Mapbox 한글 POI는 /place (홈 금지)', () => {

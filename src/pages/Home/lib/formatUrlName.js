@@ -83,7 +83,7 @@ export function getPlaceUrlParam(loc) {
     return slug;
   }
 
-  if (tourContentParam) {
+  if (tourContentParam && source === 'tourapi') {
     return tourContentParam;
   }
 

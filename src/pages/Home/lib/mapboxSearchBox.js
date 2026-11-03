@@ -199,6 +199,7 @@ export function featureToSuggestion(feature, { hubId, parentCity, source = 'mapb
     attractionKind: firstCat || undefined,
     source,
     uiPlace: true,
+    feature_type: featureType || undefined,
     place_formatted: String(props.place_formatted || props.full_address || '').trim(),
     // 선택 카드: 제목·위치 줄과 겹치는 합성 desc 생략 (full_address는 suggest 경로에서만)
   };
