@@ -5,10 +5,15 @@
 import { resolveCityAttractionHub, resolveHubAttraction } from './cityAttractionHubs.js';
 import { resolveExploreCityHubExact } from './exploreHubResolve.js';
 import { resolveExploreSearchAlias } from './exploreSearchAliases.js';
+import { KO_EXPLORE_BARE_PLACE_SCOPES, normalizePlaceMatchKey } from './koreaPlaceMatchDictionary.js';
 import { resolveTravelSpotFromSearchQuery } from '../../../utils/travelSpotResolve.js';
 import { haversineKm } from './searchHomonymRegion.js';
 
 const HAS_HANGUL_RE = /[\uAC00-\uD7A3]/;
+
+const BARE_PLACE_SCOPE_MAP = new Map(
+  KO_EXPLORE_BARE_PLACE_SCOPES.map(([key, value]) => [normalizePlaceMatchKey(key), value]),
+);
 
 const GENERIC_TAIL_RE =
   /^(?:커피|맛집|카페|술|펍|바|호텔|숙소|맥주|와인|치킨|피자|버거|국수|밥|면|식당|레스토랑|브런치|디저트|베이커리|빵|산책|드라이브|캠핑|글램핑|수영|골프|스키|서핑|갈만한|핫플|추천|근처|주변|코스)$/u;
@@ -120,11 +125,58 @@ export function parseKoreaRegionalExploreQuery(query) {
 }
 
 /**
+ * 단독 「우do」「닭머르」 — SSOT bare scope + 허브 anchor (regional과 동일 필터).
+ * @param {string} query
+ * @returns {object | null}
+ */
+export function parseBareKoreaExploreScope(query) {
+  const raw = String(query || '').trim();
+  if (!raw || /\s/.test(raw) || !HAS_HANGUL_RE.test(raw)) return null;
+
+  const scopeRow = BARE_PLACE_SCOPE_MAP.get(normalizePlaceMatchKey(raw));
+  if (!scopeRow?.hubId) return null;
+
+  const hub =
+    resolveCityAttractionHub(scopeRow.hubId) ||
+    resolveExploreCityHubExact(scopeRow.regionQuery);
+  if (!hub || !isKoreaCountry(hub.country)) return null;
+
+  const lat = Number(hub.lat);
+  const lng = Number(hub.lng);
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+
+  const placeQuery = String(scopeRow.placeQuery || raw).trim();
+  const regionQuery = String(scopeRow.regionQuery || hub.name || '').trim();
+  const hubHints = [hub.name, regionQuery, ...(hub.aliases || []), placeQuery]
+    .map((s) => String(s || '').trim())
+    .filter((s) => s.length >= 2);
+
+  return {
+    originalQuery: raw,
+    regionQuery,
+    placeQuery,
+    hub,
+    hubHints: [...new Set(hubHints)],
+    proximity: [lng, lat],
+    anchor: { lat, lng },
+    bareScope: true,
+  };
+}
+
+/**
+ * @param {string} query
+ * @returns {object | null}
+ */
+export function parseExploreSearchScope(query) {
+  return parseKoreaRegionalExploreQuery(query) || parseBareKoreaExploreScope(query);
+}
+
+/**
  * @param {string} query
  */
 export function effectiveExploreSearchQuery(query) {
-  const regional = parseKoreaRegionalExploreQuery(query);
-  return regional?.placeQuery || String(query || '').trim();
+  const scope = parseExploreSearchScope(query);
+  return scope?.placeQuery || String(query || '').trim();
 }
 
 /** @param {object | null | undefined} regional */

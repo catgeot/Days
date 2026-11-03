@@ -376,6 +376,20 @@
         "kind": "park",
         "lat": 33.4466495807,
         "lng": 126.6640038158
+      },
+      {
+        "name": "\uC6B0\uB3C4",
+        "name_en": "Udo Island",
+        "kind": "island",
+        "lat": 33.506,
+        "lng": 126.953
+      },
+      {
+        "name": "\uB2ED\uBA38\uB974\uD574\uC548",
+        "name_en": "Dakmeoru Coast",
+        "kind": "trail",
+        "lat": 33.5367354,
+        "lng": 126.616124
       }
     ]
   },

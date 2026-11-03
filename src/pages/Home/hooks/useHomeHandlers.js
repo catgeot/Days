@@ -89,7 +89,7 @@ import {
   effectiveExploreSearchQuery,
   applyRegionalHubLabels,
   filterRegionalExploreHits,
-  parseKoreaRegionalExploreQuery,
+  parseExploreSearchScope,
   regionalExploreMapboxOpts,
 } from '../lib/exploreRegionalPlaceQuery.js';
 import { searchBoxForward, searchBoxTypesForQuery } from '../lib/mapboxSearchBox.js';
@@ -1345,9 +1345,9 @@ export function useHomeHandlers({
             const remoteHits = await searchBoxForward(effectiveExploreSearchQuery(query), {
             limit: 5,
             types: searchBoxTypesForQuery(effectiveExploreSearchQuery(query)),
-            ...regionalExploreMapboxOpts(parseKoreaRegionalExploreQuery(query)),
+            ...regionalExploreMapboxOpts(parseExploreSearchScope(query)),
           });
-          const regionalScope = parseKoreaRegionalExploreQuery(query);
+          const regionalScope = parseExploreSearchScope(query);
           const filteredRemote = regionalScope
             ? applyRegionalHubLabels(
                 regionalScope,

@@ -10,10 +10,11 @@ import {
   resolveHubAttraction,
 } from './cityAttractionHubs.js';
 import { isHiddenHubScenicAttraction } from './koreaScenicSpotVisibility.js';
-import { resolveExploreSearchAlias } from './exploreSearchAliases.js';
+import { resolveExploreSearchAlias, canonicalizeExploreSearchQuery } from './exploreSearchAliases.js';
 import {
   effectiveExploreSearchQuery,
   parseKoreaRegionalExploreQuery,
+  parseExploreSearchScope,
 } from './exploreRegionalPlaceQuery.js';
 import { placeNameMatchesSearchQuery } from './searchEnterMatch.js';
 import { shouldSkipGeocodeForMood } from './moodSearchIntent.js';
@@ -222,7 +223,7 @@ export function resolveKoreaDestinationFirstPassSync(query) {
   const q = String(query || '').trim();
   if (!q) return null;
 
-  const regional = parseKoreaRegionalExploreQuery(q);
+  const regional = parseExploreSearchScope(q);
   const placeQ = regional?.placeQuery || q;
 
   const hubMatch = resolveKoreaHubAttractionMatch(placeQ);
@@ -267,8 +268,8 @@ export async function resolveKoreaDestinationFirstPass(query, opts = {}) {
   const sync = resolveKoreaDestinationFirstPassSync(q);
   if (sync) return sync;
 
-  const regional = parseKoreaRegionalExploreQuery(q);
-  const tourQuery = effectiveExploreSearchQuery(q);
+  const regional = parseExploreSearchScope(q);
+  const tourQuery = canonicalizeExploreSearchQuery(effectiveExploreSearchQuery(q));
 
   if (!shouldLookupTourapi(tourQuery) && !regional) return null;
 
