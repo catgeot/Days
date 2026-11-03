@@ -525,7 +525,7 @@ export const KO_EXPLORE_SEARCH_ALIASES = [
  */
 export const KO_EXPLORE_BARE_PLACE_SCOPES = [
   ['\uC6B0\uB3C4', { hubId: 'jeju', regionQuery: '\uC81C\uC8FC', placeQuery: '\uC6B0\uB3C4' }],
-  ['\uB2ED\uBA38\uB974', { hubId: 'seogwipo', regionQuery: '\uC81C\uC8FC', placeQuery: '\uB2ED\uBA38\uB974\uD574\uC548' }],
+  ['\uB2ED\uBA38\uB974', { hubId: 'jeju', regionQuery: '\uC81C\uC8FC', placeQuery: '\uB2ED\uBA38\uB974\uD574\uC548' }],
 ];
 
 /**

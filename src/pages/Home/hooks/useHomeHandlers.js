@@ -92,7 +92,6 @@ import {
   parseExploreSearchScope,
   regionalExploreMapboxOpts,
 } from '../lib/exploreRegionalPlaceQuery.js';
-import { buildKoreaTourTitleEnterDisambiguation } from '../lib/exploreKoreaTourTitleCandidates.js';
 import { searchBoxForward, searchBoxTypesForQuery } from '../lib/mapboxSearchBox.js';
 import {
   overlayGeocodeLatinOnHits,
@@ -873,13 +872,6 @@ export function useHomeHandlers({
         }
       } catch {
         // TourAPI 실패 시 기존 경로
-      }
-
-      try {
-        const tourTitleChoice = await buildKoreaTourTitleEnterDisambiguation(query);
-        if (tourTitleChoice) return tourTitleChoice;
-      } catch {
-        // TourAPI 다건 조회 실패
       }
 
       if (isGateoExploreSearchSubmitParityEnabled()) {

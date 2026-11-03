@@ -383,6 +383,13 @@
         "kind": "island",
         "lat": 33.506,
         "lng": 126.953
+      },
+      {
+        "name": "\uB2ED\uBA38\uB974\uD574\uC548",
+        "name_en": "Dakmeoru Coast",
+        "kind": "trail",
+        "lat": 33.246,
+        "lng": 126.57
       }
     ]
   },
@@ -448,13 +455,6 @@
         "kind": "viewpoint",
         "lat": 33.2375,
         "lng": 126.425
-      },
-      {
-        "name": "\uB2ED\uBA38\uB974\uD574\uC548",
-        "name_en": "Dakmeoru Coast",
-        "kind": "trail",
-        "lat": 33.246,
-        "lng": 126.57
       }
     ]
   },

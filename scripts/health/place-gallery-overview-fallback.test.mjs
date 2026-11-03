@@ -217,7 +217,7 @@ test('Home gallery PR drift guard; MOONi session wiring line allowlist', () => {
   ];
 
   const exploreHandlersLine =
-    /^[+-].*(exploreRegionalPlaceQuery|EXPLORE_SEARCH|shouldSkipOverseas|KoreaDestinationFirstPass|effectiveExploreSearchQuery|filterRegionalExploreHits|regionalExploreMapboxOpts|parseKoreaRegionalExploreQuery|regionalScope|filteredRemote|allowAiTypo|treatAsMoodQuery|__noResults|explore-search-ai|firstPassHitToUiPlace|TourAPI|hybrid|isDomesticKoreaLocation|originalQuery|rawLat|rawLng|getCoordinatesFromAddress|searchBoxForward|pickEnterSuggestionMatches|buildHybridSearchSuggestions|buildLocalSearchSuggestions|ensureDisambiguation|Promise|commitLocation|remoteHits|invokeGeminiTask|localChoices|hybridMatches|koreaRetry|searchMode|apiClient|requireChoice|isCorrected|isFacilityQuery|shouldSkipGeocodeForMoodIntent|EXPLORE_SEARCH_HANGUL_RE|query,|mode:|limit: 5|new Promise|setTimeout|reject|verifyAndNormalizeCandidate|for \(const hit|import \{|exploreRegionalPlaceQuery\.js|return null|return commitLocation|return ensureDisambiguation|Explore Enter|country: candidate|원하는 장소를 선택하세요|function shouldSkipOverseasAiTypoForQuery)/;
+    /^[+-].*(exploreRegionalPlaceQuery|exploreKoreaTourTitleCandidates|buildKoreaTourTitleEnterDisambiguation|parseExploreSearchScope|parseBareKoreaExploreScope|tourTitleChoice|TourAPI 다건|EXPLORE_SEARCH|shouldSkipOverseas|KoreaDestinationFirstPass|effectiveExploreSearchQuery|filterRegionalExploreHits|regionalExploreMapboxOpts|parseKoreaRegionalExploreQuery|regionalScope|filteredRemote|allowAiTypo|treatAsMoodQuery|__noResults|explore-search-ai|firstPassHitToUiPlace|TourAPI|hybrid|isDomesticKoreaLocation|originalQuery|rawLat|rawLng|getCoordinatesFromAddress|searchBoxForward|pickEnterSuggestionMatches|buildHybridSearchSuggestions|buildLocalSearchSuggestions|ensureDisambiguation|Promise|commitLocation|remoteHits|invokeGeminiTask|localChoices|hybridMatches|koreaRetry|searchMode|apiClient|requireChoice|isCorrected|isFacilityQuery|shouldSkipGeocodeForMoodIntent|EXPLORE_SEARCH_HANGUL_RE|query,|mode:|limit: 5|new Promise|setTimeout|reject|verifyAndNormalizeCandidate|for \(const hit|import \{|exploreRegionalPlaceQuery\.js|return null|return commitLocation|return ensureDisambiguation|Explore Enter|country: candidate|원하는 장소를 선택하세요|function shouldSkipOverseasAiTypoForQuery)/;
 
   function isExploreSearchHandlersOnlyDiff(changed) {
     if (!changed.some((line) => exploreHandlersLine.test(line))) return false;
@@ -237,6 +237,7 @@ test('Home gallery PR drift guard; MOONi session wiring line allowlist', () => {
       if (/^[+-]\s+country_en:/.test(line)) return true;
       if (/^[+-]\s+lat: rawLat/.test(line)) return true;
       if (/^[+-]\s+lng: rawLng/.test(line)) return true;
+      if (/^[+-]\s+try \{/.test(line)) return true;
       if (/^[+-]\s+\} catch/.test(line)) return true;
       return false;
     });

@@ -360,5 +360,18 @@ export default defineConfig({
         ignoreHTTPSErrors: true,
       },
     },
+    {
+      name: 'chromium-explore-bare-ko-390',
+      testMatch: /explore-search-bare-ko\.spec\.js/,
+      timeout: 180_000,
+      use: {
+        ...devices['Desktop Chrome'],
+        baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://127.0.0.1:5201',
+        locale: 'ko-KR',
+        viewport: { width: 390, height: 844 },
+        deviceScaleFactor: 1,
+        ignoreHTTPSErrors: true,
+      },
+    },
   ],
 });

@@ -29,28 +29,30 @@ test.describe('Explore bare Korean place queries', () => {
     await installExploreGeminiMock(page.context());
   });
 
-  test('우do — 제주 우do choice first, not 가우do', async ({ page }) => {
+  test('우do — 맨 위 결과 행에 제주, 가우do 없음', async ({ page }) => {
     await submitExploreQuery(page, UDO);
     const first = page.getByRole('button', { name: new RegExp(UDO) }).first();
     await expect(first).toBeVisible({ timeout: 120_000 });
-    await expect(page.getByText(new RegExp(JEJU))).toBeVisible();
+    await expect(first.getByText(new RegExp(JEJU))).toBeVisible();
     await expect(page.getByRole('button', { name: new RegExp(GAUDO) })).toHaveCount(0);
   });
 
   test('닭머르 — 제주 해안 choice visible', async ({ page }) => {
     await submitExploreQuery(page, DAKMEORU);
-    await expect(page.getByRole('button', { name: new RegExp(DAKMEORU) }).first()).toBeVisible({
-      timeout: 120_000,
-    });
+    const first = page.getByRole('button', { name: new RegExp(DAKMEORU) }).first();
+    await expect(first).toBeVisible({ timeout: 120_000 });
+    await expect(first.getByText(new RegExp(JEJU))).toBeVisible();
     await expect(page.getByText(/맞는 장소를 찾지 못했습니다/)).toHaveCount(0);
   });
 
-  test('고산사 — choice card navigates off explore root', async ({ page }) => {
+  test('고산사 — 카드 클릭 시 /place/ 상세', async ({ page }) => {
     await submitExploreQuery(page, GOSANSA);
     const card = page.getByRole('button', { name: new RegExp(GOSANSA) }).first();
     await expect(card).toBeVisible({ timeout: 120_000 });
     await card.click();
-    await page.waitForURL((url) => !url.pathname.endsWith('/explore'), { timeout: 60_000 });
-    expect(page.url()).not.toMatch(/\/explore\/?$/);
+    await page.waitForURL(/\/place\//, { timeout: 60_000 });
+    const path = new URL(page.url()).pathname;
+    expect(path).toMatch(/^\/place\//);
+    expect(path).not.toBe('/');
   });
 });

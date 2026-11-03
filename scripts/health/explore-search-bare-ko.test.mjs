@@ -49,7 +49,39 @@ test('sync first-pass — 우do·닭머르 resolve jeju hub attractions', () => 
   assert.equal(udo?.hubId, 'jeju');
   const dak = resolveKoreaDestinationFirstPassSync('\uB2ED\uBA38\uB974');
   assert.equal(dak?.name, '\uB2ED\uBA38\uB974\uD574\uC548');
-  assert.equal(dak?.hubId, 'seogwipo');
+  assert.equal(dak?.hubId, 'jeju');
+});
+
+test('buildCuratedEnterDisambiguation — 제주·강릉은 Tour title보다 hub 우선', async () => {
+  const { buildCuratedEnterDisambiguation } = await import('../../src/pages/Home/lib/searchSuggestions.js');
+  const { buildKoreaTourTitleEnterDisambiguation } = await import(
+    '../../src/pages/Home/lib/exploreKoreaTourTitleCandidates.js',
+  );
+
+  for (const city of ['\uC81C\uC8FC', '\uAC15\uB989']) {
+    const hubChoice = await buildCuratedEnterDisambiguation(city);
+    assert.ok(hubChoice?.__disambiguation, city);
+    assert.ok(
+      hubChoice.candidates.some(
+        (c) => c.hubId === (city === '\uC81C\uC8FC' ? 'jeju' : 'gangneung') || c.slug === (city === '\uC81C\uC8FC' ? 'jeju' : 'gangneung'),
+      ),
+      city,
+    );
+    const tourOnly = await buildKoreaTourTitleEnterDisambiguation(city, {
+      lookupRows: async () => [
+        {
+          title: city,
+          name: city,
+          addr1: '\uD14C\uC2A4\uD2B8',
+          lat: 33.5,
+          lng: 126.5,
+          contentId: '999',
+        },
+      ],
+    });
+    assert.ok(tourOnly?.__disambiguation, `${city} tour mock`);
+    assert.ok(hubChoice.candidates[0]?.hubId || hubChoice.candidates[0]?.kind === 'city', city);
+  }
 });
 
 test('local suggestions — 우do exact row labeled 제주 first', () => {
@@ -76,6 +108,21 @@ test('tourapi search rows open /place even when slug overlaps catalog', () => {
   });
   assert.equal(decision?.type, 'place');
   assert.ok(decision?.param);
+});
+
+test('catalog contentId without tourapi source keeps county-safe home routing', () => {
+  const decision = resolveSearchResultSelect({
+    id: 'spot-jeju',
+    name: '\uC81C\uC8FC',
+    slug: 'jeju',
+    source: 'ssot',
+    contentId: '9999999',
+    lat: 33.4996,
+    lng: 126.5312,
+    uiPlace: false,
+  });
+  assert.equal(decision?.type, 'place');
+  assert.equal(decision?.param, 'jeju');
 });
 
 test('collectKoreaTourTitleSearchCandidates — exact title filter', async () => {

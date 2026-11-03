@@ -297,7 +297,7 @@ export function resolveSearchResultSelect(spot) {
   const pin = { ...spot, lat, lng };
   const source = String(pin.source ?? '').trim().toLowerCase();
   const tourParam = getPlaceUrlParam(pin);
-  if ((pin.contentId || source === 'tourapi') && tourParam) {
+  if (source === 'tourapi' && tourParam) {
     return { type: 'place', spot: pin, param: tourParam };
   }
   const rawParam = tourParam;
