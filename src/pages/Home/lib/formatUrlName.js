@@ -83,16 +83,23 @@ export function getPlaceUrlParam(loc) {
     return slug;
   }
 
-  if (tourContentParam) {
+  if (tourContentParam && source === 'tourapi') {
     return tourContentParam;
-  }
-
-  if (slug && typeof slug === 'string' && !isEphemeralSlug(slug)) {
-    return slug;
   }
 
   const lat = Number(merged.lat);
   const lng = Number(merged.lng);
+
+  if (slug && typeof slug === 'string' && !isEphemeralSlug(slug)) {
+    if (/[\uAC00-\uD7A3]/.test(slug)) {
+      if (merged.uiPlace && Number.isFinite(lat) && Number.isFinite(lng)) {
+        return `search-${lat}-${lng}`;
+      }
+    } else {
+      return slug;
+    }
+  }
+
   const id = merged.id != null ? String(merged.id) : '';
   if (/^\d+$/.test(id)) {
     const spot = TRAVEL_SPOTS.find((s) => String(s.id) === id);

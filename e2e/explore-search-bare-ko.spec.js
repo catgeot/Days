@@ -4,6 +4,7 @@ import { installExploreGeminiMock } from './explore-gemini-mock.js';
 import {
   installExploreTourapiMock,
   EXPLORE_GOSANSA_HONGSEONG_ROW,
+  EXPLORE_GOSANSA_JANGHEUNG_ROW,
 } from './explore-tourapi-mock.js';
 import { installExploreMapboxGosansaMock } from './explore-mapbox-gosansa-mock.js';
 
@@ -12,8 +13,10 @@ const GAUDO = '\uAC00\uC6B0\uB3C4';
 const DAKMEORU = '\uB2ED\uBA38\uB974';
 const JEJU = '\uC81C\uC8FC';
 const GOSANSA = '\uACE0\uC0B0\uC0AC';
+const JANGHEUNG = '\uC7A5\uD765';
 const HONGSEONG_GOSANSA = '\uD64D\uC131 \uACE0\uC0B0\uC0AC \uB300\uC6C5\uC804';
-const TOUR_PLACE_PATH = `/place/tour-${EXPLORE_GOSANSA_HONGSEONG_ROW.content_id}`;
+const HONGSEONG_TOUR_PATH = `/place/tour-${EXPLORE_GOSANSA_HONGSEONG_ROW.content_id}`;
+const JANGHEUNG_TOUR_PATH = `/place/tour-${EXPLORE_GOSANSA_JANGHEUNG_ROW.content_id}`;
 
 test.use({ ignoreHTTPSErrors: true });
 
@@ -31,12 +34,16 @@ async function submitExploreQuery(page, query) {
   return searchInput;
 }
 
+async function installExploreMocks(page) {
+  const ctx = page.context();
+  await installExploreGeminiMock(ctx);
+  await installExploreTourapiMock(ctx);
+  await installExploreMapboxGosansaMock(ctx);
+}
+
 test.describe('Explore bare Korean place queries', () => {
   test.beforeEach(async ({ page }) => {
-    const ctx = page.context();
-    await installExploreGeminiMock(ctx);
-    await installExploreTourapiMock(ctx);
-    await installExploreMapboxGosansaMock(ctx);
+    await installExploreMocks(page);
   });
 
   test('우do — 맨 위 결과 행에 제주, 가우do 없음', async ({ page }) => {
@@ -54,37 +61,56 @@ test.describe('Explore bare Korean place queries', () => {
     await expect(first).toContainText(JEJU);
     await expect(page.getByText(/맞는 장소를 찾지 못했습니다/)).toHaveCount(0);
   });
+});
 
-  test('고산사 — 홍성 Tour 카드 클릭 /place/tour-* · 새로고침 유지', async ({ page }) => {
-    await submitExploreQuery(page, GOSANSA);
-    const card = page.getByRole('button', { name: new RegExp(HONGSEONG_GOSANSA) }).first();
-    await expect(card).toBeVisible({ timeout: 120_000 });
-    await card.click();
-    await page.waitForURL(new RegExp(`/place/tour-${EXPLORE_GOSANSA_HONGSEONG_ROW.content_id}`), {
-      timeout: 60_000,
-    });
-    expect(new URL(page.url()).pathname).toBe(TOUR_PLACE_PATH);
-    await page.reload();
-    await expect(page).toHaveURL(new RegExp(TOUR_PLACE_PATH.replace(/\//g, '\\/')));
-    await expect(page.getByText(new RegExp(HONGSEONG_GOSANSA)).first()).toBeVisible({
-      timeout: 60_000,
-    });
+test.describe('Explore bare KO — 고산사 (390·1280)', () => {
+  test.beforeEach(async ({ page }) => {
+    await installExploreMocks(page);
   });
 
-  test('고산사 — Mapbox 장소 후보도 /place (홈 금지)', async ({ page }) => {
-    await submitExploreQuery(page, GOSANSA);
-    const mapboxCard = page
-      .getByRole('button', { name: new RegExp(GOSANSA) })
-      .filter({ hasText: /장흥/ })
-      .first();
-    await expect(mapboxCard).toBeVisible({ timeout: 120_000 });
-    await mapboxCard.click();
-    await page.waitForURL(/\/place\//, { timeout: 60_000 });
-    const path = new URL(page.url()).pathname;
-    expect(path).toMatch(/^\/place\//);
-    expect(path).not.toBe('/');
-    expect(path).not.toBe('/place/south-korea');
-  });
+  for (const viewport of [
+    { width: 390, height: 844, label: '390' },
+    { width: 1280, height: 800, label: '1280' },
+  ]) {
+    test(`고산사 @${viewport.label} — 홍성 Tour /place/tour-* · 새로고침`, async ({ page }) => {
+      await page.setViewportSize({ width: viewport.width, height: viewport.height });
+      await submitExploreQuery(page, GOSANSA);
+      const card = page.getByRole('button', { name: new RegExp(HONGSEONG_GOSANSA) }).first();
+      await expect(card).toBeVisible({ timeout: 120_000 });
+      await card.click();
+      await page.waitForURL(new RegExp(HONGSEONG_TOUR_PATH.replace(/\//g, '\\/')), {
+        timeout: 60_000,
+      });
+      expect(new URL(page.url()).pathname).toBe(HONGSEONG_TOUR_PATH);
+      await page.reload();
+      await expect(page).toHaveURL(new RegExp(HONGSEONG_TOUR_PATH.replace(/\//g, '\\/')));
+      await expect(page.getByText(new RegExp(HONGSEONG_GOSANSA)).first()).toBeVisible({
+        timeout: 60_000,
+      });
+    });
+
+    test(`고산사 @${viewport.label} — 장흥 Mapbox /place/tour-* · 장흥 라벨 · 홈 금지`, async ({
+      page,
+    }) => {
+      await page.setViewportSize({ width: viewport.width, height: viewport.height });
+      await submitExploreQuery(page, GOSANSA);
+      const mapboxCard = page
+        .getByRole('button', { name: new RegExp(GOSANSA) })
+        .filter({ hasText: new RegExp(JANGHEUNG) })
+        .first();
+      await expect(mapboxCard).toBeVisible({ timeout: 120_000 });
+      await expect(mapboxCard).not.toContainText(/Jangheung/i);
+      await mapboxCard.click();
+      await page.waitForURL(new RegExp(JANGHEUNG_TOUR_PATH.replace(/\//g, '\\/')), {
+        timeout: 60_000,
+      });
+      const path = new URL(page.url()).pathname;
+      expect(path).toBe(JANGHEUNG_TOUR_PATH);
+      expect(path).not.toBe('/');
+      await page.reload();
+      await expect(page).toHaveURL(new RegExp(JANGHEUNG_TOUR_PATH.replace(/\//g, '\\/')));
+    });
+  }
 });
 
 test.describe('Explore bare KO — Mapbox-only parity', () => {
