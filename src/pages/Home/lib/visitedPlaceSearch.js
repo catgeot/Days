@@ -2,7 +2,11 @@
  * 방문으로 생긴 place_stats 행을 검색 카드로 쓰기 위한 순수 매칭.
  * DB 조회는 visitedPlaceSearchLookup.js — 이 파일은 supabase를 넣지 않는다.
  */
-import { formatUrlName, isUrlSafeEnglishLabel } from './formatUrlName.js';
+import {
+  formatUrlName,
+  isUrlSafeEnglishLabel,
+  sanitizeTourContentIdEnglishFallback,
+} from './formatUrlName.js';
 import { getPlaceStatsId, isPlaceholderCountry } from '../../../utils/travelSpotResolve.js';
 import {
   placeUrlSlug,
@@ -381,6 +385,7 @@ export function isSamePinKeepVisitorLabel(visited, geo) {
 export function latinFromVisitedSlug(visited) {
   const slug = String(visited?.slug || visited?.place_id || '').trim();
   if (!slug || !/^[a-z][a-z0-9-]*$/i.test(slug)) return '';
+  if (/^tour-\d{1,32}$/i.test(slug)) return '';
   return slug
     .split('-')
     .filter(Boolean)
