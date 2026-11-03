@@ -12,6 +12,7 @@ import { resolveSearchResultSelect } from '../../src/pages/Home/lib/exploreRecen
 import {
   normalizeExploreSelectionPin,
   isDomesticMapboxCountryOrProvincePin,
+  resolveDomesticMapboxAdminHub,
 } from '../../src/pages/Home/lib/explorePlaceNav.js';
 
 test('허브 명소 — getPlaceUrlParam이 SSOT slug 유지 (tour-* 덮어쓰기 0건 / main 대비)', () => {
@@ -76,7 +77,7 @@ test('고산사 tour attach — Mapbox+tourapi는 tour-127982·127937 유지', (
   assert.equal(getPlaceUrlParam(jangheung), 'tour-127937');
 });
 
-test('국내 Mapbox 나라·도 핀 — /place 라우팅 제외', () => {
+test('국내 Mapbox 나라·무매칭 도 — 홈 유지 (mapbox-* URL 금지)', () => {
   assert.equal(
     isDomesticMapboxCountryOrProvincePin({
       id: 'mapbox-country-kr',
@@ -89,4 +90,48 @@ test('국내 Mapbox 나라·도 핀 — /place 라우팅 제외', () => {
     }),
     true,
   );
+  assert.equal(
+    resolveDomesticMapboxAdminHub({
+      id: 'mapbox-gw',
+      name: '강원특별자치도',
+      lat: 37.8,
+      lng: 128.5,
+      source: 'mapbox',
+      feature_type: 'region',
+      country_en: 'South Korea',
+    }),
+    null,
+  );
+});
+
+test('Mapbox region 제주특별자치도 — 허브 slug /place/jeju', () => {
+  assert.equal(resolveDomesticMapboxAdminHub({ name: '제주특별자치도', source: 'mapbox', feature_type: 'region' })?.hubId, 'jeju');
+  const decision = resolveSearchResultSelect({
+    id: 'mapbox-jeju-do',
+    name: '제주특별자치도',
+    lat: 33.4996,
+    lng: 126.5312,
+    source: 'mapbox',
+    feature_type: 'region',
+    country: '대한민국',
+    country_en: 'South Korea',
+    uiPlace: true,
+  });
+  assert.equal(decision?.type, 'place');
+  assert.equal(decision?.param, 'jeju');
+  assert.ok(!String(decision?.param || '').startsWith('mapbox-'));
+});
+
+test('Mapbox country South Korea — 홈 (허브 없음)', () => {
+  const decision = resolveSearchResultSelect({
+    id: 'mapbox-country-kr',
+    name: 'South Korea',
+    lat: 36.5,
+    lng: 127.9,
+    source: 'mapbox',
+    feature_type: 'country',
+    country_en: 'South Korea',
+    uiPlace: true,
+  });
+  assert.equal(decision?.type, 'home');
 });

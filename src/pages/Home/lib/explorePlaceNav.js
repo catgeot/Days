@@ -1,6 +1,7 @@
 import { coordsInKorea } from './visitedPlaceSearch.js';
 import { isDomesticKoreaLocation } from '../../../utils/tourApiMatch.js';
 import { resolveCityAttractionHub } from './cityAttractionHubs.js';
+import { resolveExploreCityHubExact } from './exploreHubResolve.js';
 import { getLocalizedParentCityLabel } from '../../../components/PlaceCard/common/locationDisplay.js';
 import { koreaTourContentPlaceParam } from './formatUrlName.js';
 
@@ -29,26 +30,71 @@ function compactExploreNameKey(s) {
     .replace(/\s+/g, '');
 }
 
-/** Mapbox 나라·광역(도) — 홈 지구본 유지, /place/mapbox-kr 금지 */
-export function isDomesticMapboxCountryOrProvincePin(pin) {
+const ADMIN_REGION_SUFFIX_RE =
+  /(?:특별자치도|특별자치시|특별시|광역시|자치시|자치군|도)$/u;
+
+function isDomesticMapboxCountryName(pin) {
+  const nameKey = compactExploreNameKey(pin?.name || pin?.name_en);
+  return (
+    nameKey === 'southkorea' ||
+    nameKey === 'korea' ||
+    nameKey === 'republicofkorea' ||
+    nameKey === '대한민국' ||
+    nameKey === '한국'
+  );
+}
+
+/** Mapbox country·region(도) 행정 — POI가 아닌 핀 */
+export function isDomesticMapboxAdminAreaPin(pin) {
   if (!pin || typeof pin !== 'object') return false;
   const source = String(pin.source ?? '').trim().toLowerCase();
   if (!isMapboxOrGeocodeSource(source) && !isMapboxOrGeocodePinId(pin)) return false;
 
   const featureType = String(pin.feature_type || pin.featureType || '').toLowerCase();
   if (featureType === 'country' || featureType === 'region') return true;
+  return isDomesticMapboxCountryName(pin);
+}
 
-  const nameKey = compactExploreNameKey(pin.name || pin.name_en);
-  if (
-    nameKey === 'southkorea' ||
-    nameKey === 'korea' ||
-    nameKey === 'republicofkorea' ||
-    nameKey === '대한민국' ||
-    nameKey === '한국'
-  ) {
-    return true;
+/** region(도) Mapbox — 허브 exact(제주특별자치도→jeju). 나라·무매칭 도는 null */
+export function resolveDomesticMapboxAdminHub(pin) {
+  if (!pin || typeof pin !== 'object') return null;
+  if (!isDomesticMapboxAdminAreaPin(pin)) return null;
+
+  const featureType = String(pin.feature_type || pin.featureType || '').toLowerCase();
+  if (featureType === 'country' || isDomesticMapboxCountryName(pin)) return null;
+
+  const rawName = String(pin.name || pin.name_ko || '').trim();
+  if (!rawName) return null;
+
+  const queries = new Set([rawName]);
+  let stripped = rawName.replace(ADMIN_REGION_SUFFIX_RE, '').trim();
+  if (stripped) queries.add(stripped);
+  if (/특별자치도$/u.test(rawName)) {
+    const prefix = rawName.replace(/특별자치도$/u, '').trim();
+    if (prefix) queries.add(prefix);
   }
-  return false;
+
+  for (const q of queries) {
+    const hub = resolveExploreCityHubExact(q) || resolveCityAttractionHub(q);
+    if (hub?.hubId) return hub;
+  }
+  return null;
+}
+
+/** @deprecated use isDomesticMapboxAdminAreaPin + resolveDomesticMapboxAdminHub */
+export function isDomesticMapboxCountryOrProvincePin(pin) {
+  if (!isDomesticMapboxAdminAreaPin(pin)) return false;
+  if (String(pin.feature_type || pin.featureType || '').toLowerCase() === 'country') return true;
+  if (isDomesticMapboxCountryName(pin)) return true;
+  return !resolveDomesticMapboxAdminHub(pin);
+}
+
+/** Mapbox 나라·무매칭 도 — 홈 지구본 (/place/mapbox-* 금지) */
+export function shouldKeepDomesticMapboxAdminPinOnHome(pin) {
+  if (!isDomesticMapboxAdminAreaPin(pin)) return false;
+  if (String(pin.feature_type || pin.featureType || '').toLowerCase() === 'country') return true;
+  if (isDomesticMapboxCountryName(pin)) return true;
+  return !resolveDomesticMapboxAdminHub(pin);
 }
 
 /** 국내 탐색 후보 — tourapi·국내 Mapbox POI(나라·도 제외)는 /place */
@@ -61,7 +107,8 @@ export function shouldRouteDomesticExplorePinToPlace(pin) {
   if (source === 'tourapi') return true;
 
   if (isMapboxOrGeocodeSource(source) || isMapboxOrGeocodePinId(pin)) {
-    if (isDomesticMapboxCountryOrProvincePin(pin)) return false;
+    if (shouldKeepDomesticMapboxAdminPinOnHome(pin)) return false;
+    if (resolveDomesticMapboxAdminHub(pin)) return true;
     return true;
   }
   return false;
@@ -99,6 +146,14 @@ export function normalizeExploreSelectionPin(pin) {
       const hubId = hubIdFromParentCity(localized || parentRaw);
       if (hubId) next.hubId = hubId;
     }
+  }
+
+  const adminHub = resolveDomesticMapboxAdminHub(next);
+  if (adminHub?.hubId) {
+    const hubSlug = String(adminHub.hubId).trim();
+    next.hubId = hubSlug;
+    next.slug = hubSlug;
+    next.canonical_slug = hubSlug;
   }
 
   const contentId = String(next.contentId ?? '').trim();
