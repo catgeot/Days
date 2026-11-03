@@ -865,15 +865,6 @@ export function useHomeHandlers({
       const dictChoice = dictHomonymResult();
       if (dictChoice) return dictChoice;
 
-      try {
-        const koreaFirstAsync = await resolveKoreaDestinationFirstPass(query);
-        if (koreaFirstAsync) {
-          return commitLocation(firstPassHitToUiPlace(koreaFirstAsync, query), `'${query}' → 원하는 장소를 선택하세요`);
-        }
-      } catch {
-        // TourAPI 실패 시 기존 경로
-      }
-
       if (isGateoExploreSearchSubmitParityEnabled()) {
         if (resolveExploreCityHubExact(query)) {
           const parityChoice = await buildExploreSubmitParityDisambiguation(query);
@@ -889,6 +880,15 @@ export function useHomeHandlers({
           const broadParity = await buildExploreSubmitParityBroadDisambiguation(query);
           if (broadParity) return broadParity;
         }
+      }
+
+      try {
+        const koreaFirstAsync = await resolveKoreaDestinationFirstPass(query);
+        if (koreaFirstAsync) {
+          return commitLocation(firstPassHitToUiPlace(koreaFirstAsync, query), `'${query}' → 원하는 장소를 선택하세요`);
+        }
+      } catch {
+        // TourAPI 실패 시 기존 경로
       }
 
       const poiTypeChoices = await collectKoreaPoiTypeSearchCandidates(query);

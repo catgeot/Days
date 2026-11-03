@@ -413,7 +413,7 @@ jobs:
           PLAYWRIGHT_BASE_URL=http://127.0.0.1:5199 npx playwright test e2e/logbook-public-owner-edit-390.spec.js e2e/logbook-detail-toolbar-layout.spec.js --project=chromium-logbook-owner-edit --reporter=line
 
   explore-search-bare-ko-e2e:
-    name: Explore bare KO search E2E (390)
+    name: Explore bare KO search E2E (390·1280)
     runs-on: ubuntu-latest
     needs: lint-and-build
     timeout-minutes: 25
@@ -440,7 +440,7 @@ jobs:
           VITE_MAPBOX_TOKEN: pk.e2e-explore-bare-ko-placeholder
         run: npm run build
 
-      - name: Playwright — explore-search-bare-ko (390)
+      - name: Playwright — explore-search-bare-ko (390·1280)
         env:
           DEV_SSL: '0'
           CI: 'true'

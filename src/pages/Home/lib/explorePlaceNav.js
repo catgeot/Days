@@ -1,5 +1,8 @@
 import { coordsInKorea } from './visitedPlaceSearch.js';
 import { isDomesticKoreaLocation } from '../../../utils/tourApiMatch.js';
+import { resolveCityAttractionHub } from './cityAttractionHubs.js';
+import { getLocalizedParentCityLabel } from '../../../components/PlaceCard/common/locationDisplay.js';
+import { koreaTourContentPlaceParam } from './formatUrlName.js';
 
 const MAPBOX_SOURCES = new Set(['mapbox', 'mapbox-geocode']);
 
@@ -29,11 +32,95 @@ export function shouldRouteDomesticExplorePinToPlace(pin) {
   if (source === 'tourapi') return true;
   if (hasKoreaTourContentId(pin)) return true;
 
-  if (isMapboxOrGeocodeSource(source)) {
-    const name = String(pin.name || pin.name_ko || '').trim();
-    if (/[\uAC00-\uD7A3]/.test(name)) return true;
-  }
+  if (isMapboxOrGeocodeSource(source) || isMapboxOrGeocodePinId(pin)) return true;
   return false;
+}
+
+function isMapboxOrGeocodePinId(pin) {
+  const id = String(pin?.id ?? '').trim().toLowerCase();
+  return id.startsWith('mapbox-') || id.startsWith('geocode-');
+}
+
+function hubIdFromParentCity(parentCity) {
+  const raw = String(parentCity || '').trim();
+  if (!raw) return '';
+  const hub = resolveCityAttractionHub(raw);
+  return hub?.hubId ? String(hub.hubId) : '';
+}
+
+/** 탐색 선택 직전 — tour-{contentId}·mapbox source·한글 parentCity 정규화 */
+export function normalizeExploreSelectionPin(pin) {
+  if (!pin || typeof pin !== 'object') return pin;
+  let next = { ...pin };
+
+  const id = String(next.id ?? '').trim().toLowerCase();
+  if (!next.source && isMapboxOrGeocodePinId(next)) {
+    next.source = id.startsWith('geocode-') ? 'mapbox-geocode' : 'mapbox';
+  }
+
+  const parentRaw = String(next.parentCity || '').trim();
+  if (parentRaw) {
+    const localized = getLocalizedParentCityLabel(parentRaw, 'ko');
+    if (localized && localized !== parentRaw) {
+      next.parentCity = localized;
+    }
+    if (!next.hubId) {
+      const hubId = hubIdFromParentCity(localized || parentRaw);
+      if (hubId) next.hubId = hubId;
+    }
+  }
+
+  const contentId = String(next.contentId ?? '').trim();
+  const tourParam = koreaTourContentPlaceParam(contentId);
+  if (tourParam) {
+    next.source = 'tourapi';
+    next.contentId = contentId;
+    next.slug = tourParam;
+    next.canonical_slug = tourParam;
+    next.uiPlace = true;
+  }
+
+  return next;
+}
+
+/**
+ * 국내 Mapbox POI — TourAPI title·hub로 contentId 연결 (장흥 고산사 tour-127937 등).
+ * @param {object} pin
+ */
+export async function attachKoreaTourContentToExplorePin(pin) {
+  const normalized = normalizeExploreSelectionPin(pin);
+  if (hasKoreaTourContentId(normalized)) return normalized;
+
+  const source = String(normalized.source ?? '').trim().toLowerCase();
+  if (!isMapboxOrGeocodeSource(source) && !isMapboxOrGeocodePinId(normalized)) {
+    return normalized;
+  }
+  if (!shouldRouteDomesticExplorePinToPlace(normalized)) return normalized;
+
+  const title = String(normalized.name || normalized.name_ko || '').trim();
+  if (!title || title.length < 2) return normalized;
+
+  const hubId =
+    String(normalized.hubId || '').trim() || hubIdFromParentCity(normalized.parentCity);
+
+  try {
+    const { lookupKoreaTourAttractionByTitle } = await import('./koreaTourAttractions.js');
+    const row = await lookupKoreaTourAttractionByTitle({ title, hubId: hubId || undefined });
+    if (!row?.contentId) return normalized;
+    const { tourAttractionToPoiSuggestion } = await import('./koreaPoiTypeSearch.js');
+    const tourPin = tourAttractionToPoiSuggestion(row);
+    if (!tourPin) return normalized;
+    return normalizeExploreSelectionPin({
+      ...normalized,
+      ...tourPin,
+      name: normalized.name || tourPin.name,
+      name_ko: normalized.name_ko || normalized.name || tourPin.name,
+      parentCity: normalized.parentCity || tourPin.parentCity,
+      hubId: normalized.hubId || tourPin.hubId,
+    });
+  } catch {
+    return normalized;
+  }
 }
 
 export function isBlockedCountryOnlyPlaceParam(param) {

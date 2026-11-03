@@ -5,7 +5,7 @@
 import { isIslandPlaceQuery } from './exploreSearchAliases.js';
 import { geocodeForwardSuggestionHits } from './mapboxGeocodeSuggestions.js';
 import { shouldSupplementGeocodeHits } from './travelSearchHomonyms.js';
-import { placeUrlSlug } from './cityAttractionHubs.js';
+import { placeUrlSlug, resolveCityAttractionHub } from './cityAttractionHubs.js';
 import { dropFarHomonymBusinessHits } from './searchHomonymRegion.js';
 import {
   ensureLatinPlaceSlug,
@@ -169,7 +169,11 @@ export function featureToSuggestion(feature, { hubId, parentCity, source = 'mapb
       ? name
       : '';
   const adminPlace = searchBoxAdminPlaceName(props);
-  const county = isPoi ? poiCountyLabel(parentCity, adminPlace, name) : parentCity;
+  let county = isPoi ? poiCountyLabel(parentCity, adminPlace, name) : parentCity;
+  if (county) {
+    const hub = resolveCityAttractionHub(county);
+    if (hub?.name) county = hub.name;
+  }
   // POI 영문명은 기능 자신의 라틴 이름만. context.place / place_formatted(평창)는 parentCity.
   const latinName =
     rawLatin && !(isPoi && county && latinNameIsAdminArea(rawLatin, county))

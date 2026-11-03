@@ -3,7 +3,10 @@ import test from 'node:test';
 
 import { getPlaceUrlParam, koreaTourContentPlaceParam } from '../../src/pages/Home/lib/formatUrlName.js';
 import { resolveSearchResultSelect } from '../../src/pages/Home/lib/exploreRecentHistory.js';
-import { shouldRouteDomesticExplorePinToPlace } from '../../src/pages/Home/lib/explorePlaceNav.js';
+import {
+  shouldRouteDomesticExplorePinToPlace,
+  normalizeExploreSelectionPin,
+} from '../../src/pages/Home/lib/explorePlaceNav.js';
 import { buildExploreSearchLocationLine, getLocalizedParentCityLabel } from '../../src/components/PlaceCard/common/locationDisplay.js';
 
 test('koreaTourContentPlaceParam — contentId별 고유 URL', () => {
@@ -40,6 +43,35 @@ test('resolveSearchResultSelect — contentId tourapi는 tour slug', () => {
   });
   assert.equal(decision?.type, 'place');
   assert.equal(decision?.param, 'tour-127982');
+});
+
+test('normalizeExploreSelectionPin — contentId면 slug tour-*', () => {
+  const pin = normalizeExploreSelectionPin({
+    name: '홍성 고산사 대웅전',
+    slug: '홍성고산사대웅전',
+    contentId: '127982',
+    source: 'tourapi',
+    lat: 36.4544,
+    lng: 126.6608,
+  });
+  assert.equal(pin.slug, 'tour-127982');
+  assert.equal(getPlaceUrlParam(pin), 'tour-127982');
+});
+
+test('resolveSearchResultSelect — 라틴명 Mapbox 국내 POI도 /place (홈 금지)', () => {
+  const decision = resolveSearchResultSelect({
+    id: 'mapbox-gosansa-jangheung',
+    name: 'Gosansa Temple',
+    name_ko: '고산사',
+    lat: 34.6415,
+    lng: 126.7842,
+    source: 'mapbox',
+    country: '대한민국',
+    country_en: 'South Korea',
+    uiPlace: true,
+  });
+  assert.equal(decision?.type, 'place');
+  assert.notEqual(decision?.param, 'south-korea');
 });
 
 test('shouldRouteDomesticExplorePinToPlace — 해외 Mapbox는 false', () => {

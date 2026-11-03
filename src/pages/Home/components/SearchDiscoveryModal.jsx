@@ -43,6 +43,7 @@ import {
   rememberExploreReturn,
 } from '../lib/exploreReturnSnapshot';
 import { hydrateSearchBoxLatinName } from '../lib/mapboxSearchBox';
+import { attachKoreaTourContentToExplorePin, normalizeExploreSelectionPin } from '../lib/explorePlaceNav';
 import { needsLatinPlaceName } from '../lib/uiPlaceAssetQuery';
 import { syncHomeViewportAfterInput } from '../../../shared/lib/mobileViewport';
 import {
@@ -580,6 +581,8 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, onAskMooni,
     if (needsLatinHydrate) setIsAILoading(true);
     try {
       place = await hydrateSearchBoxLatinName(item);
+      place = await attachKoreaTourContentToExplorePin(place);
+      place = normalizeExploreSelectionPin(place);
     } finally {
       if (needsLatinHydrate) setIsAILoading(false);
     }
