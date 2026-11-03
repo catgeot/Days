@@ -1,19 +1,19 @@
 /** Explore Enter — 고산사 등 title exact TourAPI (CI fake Supabase 대체) */
 export const EXPLORE_GOSANSA_HONGSEONG_ROW = {
-  content_id: '127982',
-  title: '홍성 고산사 대웅전',
-  addr1: '충청남도 홍성군',
-  addr2: '갈마면 고산사길 50',
+  content_id: '125901',
+  title: '고산사(홍성)',
+  addr1: '충청남도 홍성군 결성면',
+  addr2: '만해로127번길 35-99',
   area_code: '34',
   sigungu_code: '6',
-  mapx: '126.6608333',
-  mapy: '36.4544444',
-  first_image: 'https://tong.visitkorea.or.kr/cms/e2e-gosansa-hongseong.jpg',
+  mapx: '126.5373285055',
+  mapy: '36.5450325186',
+  first_image: 'https://tong.visitkorea.or.kr/cms/resource/25/4125825_image2_1.jpg',
   active: true,
   cat1: 'A02',
   cat2: 'A0201',
   cat3: 'A02010800',
-  modified_time: '20260101000000',
+  modified_time: '20261021171150',
 };
 
 export const EXPLORE_GOSANSA_JANGHEUNG_ROW = {
@@ -60,8 +60,10 @@ const GOSANSA_ROWS = [
 ];
 
 const TOUR_OVERVIEW_BY_ID = {
+  '125901':
+    '고산사는 충남 홍성 청룡산에 있으며, 창건연대는 미상이나 신라말에 도선국사가 창건하였다고 전해진다.',
   '127982':
-    '홍성 고산사 대웅전은 충청남도 홍성군 갈마면에 있는 고찰로, 대웅전 등 문화재가 남아 있는 사찰입니다.',
+    '고산사는 충남 홍성 청룡산에 있으며, 창건연대는 미상이나 신라말에 도선국사가 창건하였다고 전해진다.',
   '127937': '장흥 고산사는 전라남도 장흥군 회진면에 있는 사찰입니다.',
 };
 
@@ -72,7 +74,8 @@ const CORS = {
 };
 
 function rowByContentId(id) {
-  return GOSANSA_ROWS.find((r) => r.content_id === String(id || '').trim()) || null;
+  const resolved = String(id || '').trim() === '127982' ? '125901' : String(id || '').trim();
+  return GOSANSA_ROWS.find((r) => r.content_id === resolved) || null;
 }
 
 export async function installExploreTourapiMock(contextOrPage) {
@@ -141,6 +144,19 @@ export async function installExploreTourapiMock(contextOrPage) {
         headers: CORS,
         body: JSON.stringify({
           ok: true,
+          items: [
+            {
+              contentid: row.content_id,
+              contenttypeid: '12',
+              title: row.title,
+              addr1: row.addr1,
+              addr2: row.addr2,
+              mapx: row.mapx,
+              mapy: row.mapy,
+              overview: TOUR_OVERVIEW_BY_ID[row.content_id] || row.title,
+              firstimage: row.first_image,
+            },
+          ],
           common: {
             contentid: row.content_id,
             contenttypeid: '12',
@@ -152,6 +168,29 @@ export async function installExploreTourapiMock(contextOrPage) {
             overview: TOUR_OVERVIEW_BY_ID[row.content_id] || row.title,
             firstimage: row.first_image,
           },
+        }),
+      });
+      return;
+    }
+
+    if (action === 'searchKeyword') {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        headers: CORS,
+        body: JSON.stringify({
+          ok: true,
+          items: GOSANSA_ROWS.map((row) => ({
+            contentId: row.content_id,
+            contentid: row.content_id,
+            title: row.title,
+            addr1: row.addr1,
+            addr2: row.addr2,
+            mapx: row.mapx,
+            mapy: row.mapy,
+            firstimage: row.first_image,
+            contentTypeId: '12',
+          })),
         }),
       });
       return;

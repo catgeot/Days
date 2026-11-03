@@ -10,6 +10,7 @@ import {
   isBlockedCountryOnlyPlaceParam,
   normalizeExploreSelectionPin,
 } from './explorePlaceNav.js';
+import { isKoreaProvinceLevelTourResult } from './koreaExploreProvincePlace.js';
 
 export const RECENT_SEARCH_KEY = 'gateo_recent_search_keywords';
 export const RECENT_VISITED_KEY = 'gateo_recent_visited_destinations';
@@ -301,6 +302,9 @@ export function resolveSearchResultSelect(spot) {
   if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
   const pin = normalizeExploreSelectionPin({ ...spot, lat, lng });
   const source = String(pin.source ?? '').trim().toLowerCase();
+  if (isKoreaProvinceLevelTourResult(pin)) {
+    return { type: 'home', spot: pin };
+  }
   const tourParam = getPlaceUrlParam(pin);
   if (source === 'tourapi' && tourParam && !isBlockedCountryOnlyPlaceParam(tourParam)) {
     return { type: 'place', spot: pin, param: tourParam };
