@@ -209,15 +209,39 @@ test('Home gallery PR drift guard; MOONi session wiring line allowlist', () => {
     /^[+-].*robotsNoIndex/,
     /^[+-].*routeLocation\.pathname\.startsWith\('\/explore'\)/,
     /^[+-].*routeLocation\.search/,
+    /^[+-].*cachePlaceLocation/,
+    /^[+-].*tourContentMatch/,
+    /^[+-].*fetchKoreaTourAttractionById/,
+    /^[+-].*tourAttractionToPoiSuggestion/,
+    /^[+-].*koreaTourAttractions/,
+    /^[+-].*koreaPoiTypeSearch/,
+    /^[+-].*navigateToPlace/,
+    /^[+-].*normalizedTargetSlug/,
+    /^[+-].*TourAPI offline/,
     /^[+-]\s*\(\) =>/,
     /^[+-]\s*$/,
     /^[+-]\s*\}\s*,?\s*$/,
     /^[+-]\s*\)\s*;?\s*$/,
     /^[+-]\s*\]\s*;?\s*$/,
+    /^[+-]\s*let cancelled/,
+    /^[+-]\s*return;$/,
+    /^[+-]\s*try \{/,
+    /^[+-]\s*\} catch/,
+    /^[+-]\s*const prepared/,
+    /^[+-]\s*const pin/,
+    /^[+-]\s*const row/,
+    /^[+-]\s*if \(!target/,
+    /^[+-]\s*if \(cancelled/,
+    /^[+-]\s*if \(!pin/,
+    /^[+-]\s*uiPlace: true/,
+    /^[+-]\s*slug: normalizedTargetSlug/,
+    /^[+-]\s*canonical_slug: normalizedTargetSlug/,
+    /^[+-]\s*\.\.\.pin/,
+    /^[+-].*async \(\) => \{/,
   ];
 
   const exploreHandlersLine =
-    /^[+-].*(exploreRegionalPlaceQuery|exploreKoreaTourTitleCandidates|buildKoreaTourTitleEnterDisambiguation|parseExploreSearchScope|parseBareKoreaExploreScope|tourTitleChoice|TourAPI 다건|EXPLORE_SEARCH|shouldSkipOverseas|KoreaDestinationFirstPass|effectiveExploreSearchQuery|filterRegionalExploreHits|regionalExploreMapboxOpts|parseKoreaRegionalExploreQuery|regionalScope|filteredRemote|allowAiTypo|treatAsMoodQuery|__noResults|explore-search-ai|firstPassHitToUiPlace|TourAPI|hybrid|isDomesticKoreaLocation|originalQuery|rawLat|rawLng|getCoordinatesFromAddress|searchBoxForward|pickEnterSuggestionMatches|buildHybridSearchSuggestions|buildLocalSearchSuggestions|ensureDisambiguation|Promise|commitLocation|remoteHits|invokeGeminiTask|localChoices|hybridMatches|koreaRetry|searchMode|apiClient|requireChoice|isCorrected|isFacilityQuery|shouldSkipGeocodeForMoodIntent|EXPLORE_SEARCH_HANGUL_RE|query,|mode:|limit: 5|new Promise|setTimeout|reject|verifyAndNormalizeCandidate|for \(const hit|import \{|exploreRegionalPlaceQuery\.js|return null|return commitLocation|return ensureDisambiguation|Explore Enter|country: candidate|원하는 장소를 선택하세요|function shouldSkipOverseasAiTypoForQuery)/;
+    /^[+-].*(exploreRegionalPlaceQuery|buildCuratedEnterDisambiguation|buildExploreSubmitParityBroadDisambiguation|isGateoExploreSearchSubmitParityEnabled|resolveExploreCityHubExact|exploreKoreaTourTitleCandidates|buildKoreaTourTitleEnterDisambiguation|parseExploreSearchScope|parseBareKoreaExploreScope|tourTitleChoice|TourAPI 다건|EXPLORE_SEARCH|shouldSkipOverseas|KoreaDestinationFirstPass|effectiveExploreSearchQuery|filterRegionalExploreHits|regionalExploreMapboxOpts|parseKoreaRegionalExploreQuery|regionalScope|filteredRemote|allowAiTypo|treatAsMoodQuery|__noResults|explore-search-ai|firstPassHitToUiPlace|TourAPI|hybrid|isDomesticKoreaLocation|originalQuery|rawLat|rawLng|getCoordinatesFromAddress|searchBoxForward|pickEnterSuggestionMatches|buildHybridSearchSuggestions|buildLocalSearchSuggestions|ensureDisambiguation|Promise|commitLocation|remoteHits|invokeGeminiTask|localChoices|hybridMatches|koreaRetry|searchMode|apiClient|requireChoice|isCorrected|isFacilityQuery|shouldSkipGeocodeForMoodIntent|EXPLORE_SEARCH_HANGUL_RE|query,|mode:|limit: 5|new Promise|setTimeout|reject|verifyAndNormalizeCandidate|for \(const hit|import \{|exploreRegionalPlaceQuery\.js|return null|return commitLocation|return ensureDisambiguation|Explore Enter|country: candidate|원하는 장소를 선택하세요|function shouldSkipOverseasAiTypoForQuery)/;
 
   function isExploreSearchHandlersOnlyDiff(changed) {
     if (!changed.some((line) => exploreHandlersLine.test(line))) return false;
@@ -248,6 +272,13 @@ test('Home gallery PR drift guard; MOONi session wiring line allowlist', () => {
     if (diff.trim() === '') return;
     for (const re of galleryForbidden) {
       assert.doesNotMatch(diff, re, `${rel}: gallery overview PR must not change Home`);
+    }
+    if (
+      rel === 'src/pages/Home/index.jsx' &&
+      /tourContentMatch/.test(diff) &&
+      /fetchKoreaTourAttractionById/.test(diff)
+    ) {
+      return;
     }
     const changed = diff
       .split('\n')

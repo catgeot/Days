@@ -4,6 +4,11 @@ import { resolveTravelSpotFromSearchQuery } from '../../../utils/travelSpotResol
 import { placeUrlSlug, resolveCityAttractionHub, resolveHubPlaceFromSlug } from './cityAttractionHubs';
 import { getPlaceUrlParam, isEphemeralSlug, resolveCatalogPlaceSlug } from './formatUrlName';
 import { resolveSettlementPlaceFromSlug } from './mapboxSettlementPlaces';
+import {
+  isMapboxOrGeocodeSource,
+  shouldRouteDomesticExplorePinToPlace,
+  isBlockedCountryOnlyPlaceParam,
+} from './explorePlaceNav.js';
 
 export const RECENT_SEARCH_KEY = 'gateo_recent_search_keywords';
 export const RECENT_VISITED_KEY = 'gateo_recent_visited_destinations';
@@ -264,8 +269,7 @@ function detachCountySlug(pin, known) {
 function isMapboxOrGeocodePin(spot) {
   const id = String(spot?.id ?? '').trim().toLowerCase();
   if (id.startsWith('mapbox-') || id.startsWith('geocode-')) return true;
-  const source = String(spot?.source ?? '').trim().toLowerCase();
-  return source === 'mapbox' || source === 'mapbox-geocode';
+  return isMapboxOrGeocodeSource(spot?.source);
 }
 
 /** 새로고침·공유가 홈으로 튕기지 않는 slug. 이름 kebab(hallstatt)는 제외. */
@@ -297,9 +301,17 @@ export function resolveSearchResultSelect(spot) {
   const pin = { ...spot, lat, lng };
   const source = String(pin.source ?? '').trim().toLowerCase();
   const tourParam = getPlaceUrlParam(pin);
-  if (source === 'tourapi' && tourParam) {
+  if (source === 'tourapi' && tourParam && !isBlockedCountryOnlyPlaceParam(tourParam)) {
     return { type: 'place', spot: pin, param: tourParam };
   }
+
+  if (shouldRouteDomesticExplorePinToPlace(pin)) {
+    const domesticParam = getPlaceUrlParam(pin);
+    if (domesticParam && !isBlockedCountryOnlyPlaceParam(domesticParam)) {
+      return { type: 'place', spot: pin, param: domesticParam };
+    }
+  }
+
   const rawParam = tourParam;
   const param = knownPlaceSlug(rawParam);
   const known = param ? knownPlaceForParam(param) : null;

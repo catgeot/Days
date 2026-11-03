@@ -437,6 +437,7 @@ jobs:
         env:
           VITE_SUPABASE_URL: https://example.supabase.co
           VITE_SUPABASE_ANON_KEY: e2e-anon-placeholder
+          VITE_MAPBOX_TOKEN: pk.e2e-explore-bare-ko-placeholder
         run: npm run build
 
       - name: Playwright — explore-search-bare-ko (390)
@@ -445,6 +446,7 @@ jobs:
           CI: 'true'
           VITE_SUPABASE_URL: https://example.supabase.co
           VITE_SUPABASE_ANON_KEY: e2e-anon-placeholder
+          VITE_MAPBOX_TOKEN: pk.e2e-explore-bare-ko-placeholder
         run: |
           npx vite preview --host 127.0.0.1 --port 5201 --strictPort > /tmp/vite-explore-bare-ko.log 2>&1 &
           ready=0
