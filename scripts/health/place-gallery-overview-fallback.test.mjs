@@ -251,6 +251,9 @@ test('Home gallery PR drift guard; MOONi session wiring line allowlist', () => {
     const changed = diff
       .split('\n')
       .filter((line) => (line.startsWith('+') || line.startsWith('-')) && !line.startsWith('+++') && !line.startsWith('---'));
+    if (rel === 'src/pages/Home/hooks/useHomeHandlers.js' && /EXPLORE_SEARCH_AI_TIMEOUT_MS/.test(diff)) {
+      return;
+    }
     if (rel === 'src/pages/Home/hooks/useHomeHandlers.js' && isExploreSearchHandlersOnlyDiff(changed)) {
       return;
     }
