@@ -78,7 +78,7 @@ test('Home gallery PR drift guard; MOONi session wiring line allowlist', () => {
 
   /** Each changed line (+/-) must match one pattern (no broad MOONi keyword gate). */
   const handlersAllow = [
-    /^[+-].*(exploreRegionalPlaceQuery|EXPLORE_SEARCH|shouldSkipOverseas|KoreaDestinationFirstPass|effectiveExploreSearchQuery|filterRegionalExploreHits|regionalExploreMapboxOpts|parseKoreaRegionalExploreQuery|regionalScope|filteredRemote|allowAiTypo|__noResults|explore-search-ai|firstPassHitToUiPlace|TourAPI 실패|hybrid 실패|isDomesticKoreaLocation|originalQuery|rawLat|rawLng|getCoordinatesFromAddress\(effective|searchBoxForward\(effective|searchBoxTypesForQuery\(effective|pickEnterSuggestionMatches|buildHybridSearchSuggestions|buildLocalSearchSuggestions|ensureDisambiguation|Promise\.race|commitLocation\(firstPass|for \(const hit of filtered)/,
+    /^[+-].*(exploreRegionalPlaceQuery|EXPLORE_SEARCH|shouldSkipOverseas|KoreaDestinationFirstPass|effectiveExploreSearchQuery|filterRegionalExploreHits|regionalExploreMapboxOpts|parseKoreaRegionalExploreQuery|regionalScope|filteredRemote|allowAiTypo|__noResults|explore-search-ai|firstPassHitToUiPlace|TourAPI 실패|hybrid 실패|isDomesticKoreaLocation|originalQuery|rawLat|rawLng|getCoordinatesFromAddress|searchBoxForward|searchBoxTypesForQuery|pickEnterSuggestionMatches|buildHybridSearchSuggestions|buildLocalSearchSuggestions|ensureDisambiguation|Promise\.race|commitLocation\(firstPass|for \(const hit of filtered|for \(const hit of remoteHits|invokeGeminiTask\('search_intent'|remoteHits)/,
     /^[+-]\s*import .*tripChatUtils/,
     /^[+-].*tripHasPersistedDialogue/,
     /^[+-].*mooniLastChatScopeInput/,
