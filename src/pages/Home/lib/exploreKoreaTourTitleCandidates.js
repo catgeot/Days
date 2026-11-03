@@ -62,7 +62,9 @@ function tourRowInRegion(row, region, hubId) {
  * @returns {Promise<object[]>}
  */
 export async function collectKoreaTourTitleSearchCandidates(query, opts = {}) {
-  const q = String(query || '').trim();
+  const q = String(query || '')
+    .trim()
+    .replace(/\s+\(/g, '(');
   if (!q || !HAS_HANGUL_RE.test(q)) return [];
 
   let title = canonicalizeExploreSearchQuery(q);
