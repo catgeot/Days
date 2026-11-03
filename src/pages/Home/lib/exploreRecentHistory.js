@@ -295,7 +295,12 @@ export function resolveSearchResultSelect(spot) {
   const lng = Number(spot.lng);
   if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
   const pin = { ...spot, lat, lng };
-  const rawParam = getPlaceUrlParam(pin);
+  const source = String(pin.source ?? '').trim().toLowerCase();
+  const tourParam = getPlaceUrlParam(pin);
+  if ((pin.contentId || source === 'tourapi') && tourParam) {
+    return { type: 'place', spot: pin, param: tourParam };
+  }
+  const rawParam = tourParam;
   const param = knownPlaceSlug(rawParam);
   const known = param ? knownPlaceForParam(param) : null;
   const countyMismatch = Boolean(known) && !pinNameOwnsPlace(pin, known);

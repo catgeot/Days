@@ -51,8 +51,13 @@ import {
   applyRegionalHubLabels,
   filterRegionalExploreHits,
   parseKoreaRegionalExploreQuery,
+  parseExploreSearchScope,
   regionalExploreMapboxOpts,
 } from './exploreRegionalPlaceQuery.js';
+import {
+  resolveKoreaDestinationFirstPassSync,
+  firstPassHitToUiPlace,
+} from './resolveKoreaDestinationFirstPass.js';
 import {
   collectKnownTravelHomonyms,
   homonymIdentityKey,
@@ -268,7 +273,7 @@ export function buildLocalSearchSuggestions(query, opts = {}) {
   const q = String(query || '').trim();
   if (!q) return [];
 
-  const regional = opts.regional ?? parseKoreaRegionalExploreQuery(q);
+  const regional = opts.regional ?? parseExploreSearchScope(q);
   const innerQuery = regional ? regional.placeQuery : q;
   if (regional && !opts._regionalInner) {
     const inner = buildLocalSearchSuggestions(innerQuery, {
@@ -439,10 +444,9 @@ export async function buildHybridSearchSuggestions(query, opts = {}) {
   const q = String(query || '').trim();
   if (!q) return [];
 
-  const regional = parseKoreaRegionalExploreQuery(q);
+  const regional = parseExploreSearchScope(q);
   const mapboxQuery = effectiveExploreSearchQuery(q);
   const regionalMapbox = regionalExploreMapboxOpts(regional);
-
   const local = buildLocalSearchSuggestions(q, { spotLimit: opts.spotLimit ?? 5 });
   const includeMapbox = opts.includeMapbox !== false;
   const exactListHit = resolveLocalScenicListFromSearchQuery(mapboxQuery);
@@ -454,14 +458,31 @@ export async function buildHybridSearchSuggestions(query, opts = {}) {
   const exactSettlement =
     exactHub || exactListHit || exactAttraction ? null : resolveSettlement(mapboxQuery);
 
+  const applyScope = (list) => {
+    if (!regional?.anchor) return list;
+    return applyRegionalHubLabels(regional, filterRegionalExploreHits(regional, list));
+  };
+
+  const prependScopeSync = (list) => {
+    if (!regional) return list;
+    const sync = resolveKoreaDestinationFirstPassSync(q);
+    if (!sync) return list;
+    const pin = firstPassHitToUiPlace(sync, q);
+    const merged = [];
+    const seenMerge = new Set();
+    pushUnique(merged, seenMerge, pin);
+    for (const item of list) pushUnique(merged, seenMerge, item);
+    return merged;
+  };
+
   if (shouldExpandKoreaPoiTypeSearch(q)) {
     const poi = await collectKoreaPoiTypeSearchCandidates(q);
     const seenPoi = new Set();
     const merged = [];
-    for (const item of [...poi, ...local]) {
+    for (const item of [...poi, ...prependScopeSync(local)]) {
       pushUnique(merged, seenPoi, enrichSearchCandidateScenicMedia(item));
     }
-    if (merged.length >= 1) return merged.slice(0, 180);
+    if (merged.length >= 1) return applyScope(merged).slice(0, 180);
   }
 
   // 허브/명소/정착지/지자체리스트 exact는 큐레이션만 — Mapbox 대기로 지연시키지 않음
@@ -476,11 +497,14 @@ export async function buildHybridSearchSuggestions(query, opts = {}) {
     shouldSkipGeocodeForMood(q) ||
     shouldOfferKoreaHomonymDisambiguation(q)
   ) {
-    return local;
+    return applyScope(prependScopeSync(local))
+      .slice(0, 24)
+      .map(enrichSearchCandidateScenicMedia);
   }
 
-  const out = [...local];
-  const seen = new Set(local.map(dedupeKey).filter(Boolean));
+  const mergedLocal = prependScopeSync(local);
+  const out = [...mergedLocal];
+  const seen = new Set(mergedLocal.map(dedupeKey).filter(Boolean));
   const mapboxLimit = opts.mapboxLimit ?? 6;
   const mapboxQueries = local.length < 3 ? buildMapboxSearchQueries(mapboxQuery) : [mapboxQuery];
   const searchBoxTypes = searchBoxTypesForQuery(mapboxQuery);
@@ -502,13 +526,8 @@ export async function buildHybridSearchSuggestions(query, opts = {}) {
   } catch {
     // degrade: local only
   }
-  let regionChecked = dropFarHomonymBusinessHits(mapboxQuery, out, { anchors: local });
-  if (regional) {
-    regionChecked = applyRegionalHubLabels(
-      regional,
-      filterRegionalExploreHits(regional, regionChecked),
-    );
-  }
+  let regionChecked = dropFarHomonymBusinessHits(mapboxQuery, out, { anchors: mergedLocal });
+  regionChecked = applyScope(regionChecked);
 
   try {
     const visited = await visitedPromise;
@@ -720,6 +739,14 @@ export async function buildCuratedEnterDisambiguation(query) {
       seaHit.spots.map((spot) => spotToSuggestion(spot)),
       `'${seaHit.basin.name}' 해역 — 여행지를 골라주세요`,
     );
+  }
+
+  try {
+    const { buildKoreaTourTitleEnterDisambiguation } = await import('./exploreKoreaTourTitleCandidates.js');
+    const tourChoice = await buildKoreaTourTitleEnterDisambiguation(q);
+    if (tourChoice) return tourChoice;
+  } catch {
+    // TourAPI offline
   }
 
   return null;

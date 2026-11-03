@@ -89,9 +89,10 @@ import {
   effectiveExploreSearchQuery,
   applyRegionalHubLabels,
   filterRegionalExploreHits,
-  parseKoreaRegionalExploreQuery,
+  parseExploreSearchScope,
   regionalExploreMapboxOpts,
 } from '../lib/exploreRegionalPlaceQuery.js';
+import { buildKoreaTourTitleEnterDisambiguation } from '../lib/exploreKoreaTourTitleCandidates.js';
 import { searchBoxForward, searchBoxTypesForQuery } from '../lib/mapboxSearchBox.js';
 import {
   overlayGeocodeLatinOnHits,
@@ -874,6 +875,13 @@ export function useHomeHandlers({
         // TourAPI 실패 시 기존 경로
       }
 
+      try {
+        const tourTitleChoice = await buildKoreaTourTitleEnterDisambiguation(query);
+        if (tourTitleChoice) return tourTitleChoice;
+      } catch {
+        // TourAPI 다건 조회 실패
+      }
+
       if (isGateoExploreSearchSubmitParityEnabled()) {
         if (resolveExploreCityHubExact(query)) {
           const parityChoice = await buildExploreSubmitParityDisambiguation(query);
@@ -1345,9 +1353,9 @@ export function useHomeHandlers({
             const remoteHits = await searchBoxForward(effectiveExploreSearchQuery(query), {
             limit: 5,
             types: searchBoxTypesForQuery(effectiveExploreSearchQuery(query)),
-            ...regionalExploreMapboxOpts(parseKoreaRegionalExploreQuery(query)),
+            ...regionalExploreMapboxOpts(parseExploreSearchScope(query)),
           });
-          const regionalScope = parseKoreaRegionalExploreQuery(query);
+          const regionalScope = parseExploreSearchScope(query);
           const filteredRemote = regionalScope
             ? applyRegionalHubLabels(
                 regionalScope,

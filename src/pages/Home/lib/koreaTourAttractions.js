@@ -20,6 +20,7 @@ import {
 import { sanitizeScenicDbSearchQuery } from './scenicSearch';
 import { resolveTourAreaForHub } from './koreaSigunguByHub';
 import { resolveCityAttractionHub } from './cityAttractionHubs';
+import { resolveExploreSearchAlias } from './exploreSearchAliases.js';
 import {
   pickTourAttractionRowForTitle,
   pickUniqueTourAttractionRowForTitle,
@@ -157,6 +158,13 @@ function tourTitleSearchNeedles(title) {
   const needles = [];
   if (q.length >= 2) needles.push(q);
   if (compact.length >= 2 && compact !== q) needles.push(compact);
+  const alias = resolveExploreSearchAlias(title);
+  const canonical = alias?.canonical ? sanitizeScenicDbSearchQuery(alias.canonical) : '';
+  const canonicalCompact = canonical.replace(/\s+/g, '');
+  if (canonical.length >= 2 && !needles.includes(canonical)) needles.push(canonical);
+  if (canonicalCompact.length >= 2 && canonicalCompact !== canonical && !needles.includes(canonicalCompact)) {
+    needles.push(canonicalCompact);
+  }
   return needles;
 }
 

@@ -520,6 +520,15 @@ export const KO_EXPLORE_SEARCH_ALIASES = [
 ];
 
 /**
+ * 단독 한글 검색(우도·닭머르) — 「제주 우도」 없이도 허브 proximity·부분일치(가우도) 필터.
+ * @type {[string, { hubId: string, regionQuery: string, placeQuery?: string }][]}
+ */
+export const KO_EXPLORE_BARE_PLACE_SCOPES = [
+  ['\uC6B0\uB3C4', { hubId: 'jeju', regionQuery: '\uC81C\uC8FC', placeQuery: '\uC6B0\uB3C4' }],
+  ['\uB2ED\uBA38\uB974', { hubId: 'seogwipo', regionQuery: '\uC81C\uC8FC', placeQuery: '\uB2ED\uBA38\uB974\uD574\uC548' }],
+];
+
+/**
  * 방문 기록·TourAPI에 이미 있는 국내 명소의 띄어쓰기·약칭·로마자 표기 → 정식 한글명.
  * 좌표·새 장소는 넣지 않는다. romanized도 없음: Mapbox 영문 쿼리는 「제주특별자치도」·해외 동명 도시만 돌려준다.
  */
