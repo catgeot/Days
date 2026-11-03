@@ -5,6 +5,8 @@ import { canonicalizeExploreSearchQuery } from './exploreSearchAliases.js';
 import { makeDisambiguationResult } from './cityAttractionHubs.js';
 import { enrichSearchCandidateScenicMedia } from './koreaLocalScenicLists.js';
 import { tourAttractionToPoiSuggestion } from './koreaPoiTypeSearch.js';
+import { tourRowTitleMatchesCompactQuery } from './koreaTourAttractionTitleMatch.js';
+import { resolveCityAttractionHub } from './cityAttractionHubs.js';
 
 const HAS_HANGUL_RE = /[\uAC00-\uD7A3]/;
 
@@ -26,20 +28,10 @@ function compactKey(s) {
     .replace(/\s+/g, '');
 }
 
-function rowTitleMatchesQuery(row, titleKey) {
-  const keys = [row?.title, row?.name].map(compactKey).filter(Boolean);
-  for (const k of keys) {
-    if (k === titleKey) return true;
-    if (titleKey.length < 2) continue;
-    if (k.endsWith(titleKey)) return true;
-    const idx = k.indexOf(titleKey);
-    if (idx < 0) continue;
-    const after = k.slice(idx + titleKey.length);
-    if (!after) return true;
-    if (/^\([^)]+\)$/u.test(after)) return true;
-    if (/^(?:대웅전|루|전|각|암|탑|동|리|사|터|원|당|문|각|채|각)$/u.test(after)) return true;
-  }
-  return false;
+function hubIdFromParentheticalTitle(title) {
+  const region = String(title || '').match(/\(([^)]+)\)/)?.[1]?.trim();
+  if (!region) return '';
+  return resolveCityAttractionHub(region)?.hubId || '';
 }
 
 /**
@@ -60,10 +52,14 @@ export async function collectKoreaTourTitleSearchCandidates(query, opts = {}) {
     rows = await opts.lookupRows(title);
   } else {
     const { lookupKoreaTourAttractionsMatchingTitle } = await import('./koreaTourAttractions.js');
-    rows = await lookupKoreaTourAttractionsMatchingTitle(title, { limit: 40 });
+    const hubId = hubIdFromParentheticalTitle(title);
+    rows = await lookupKoreaTourAttractionsMatchingTitle(title, {
+      limit: 40,
+      hubId: hubId || undefined,
+    });
   }
 
-  const exact = (rows || []).filter((row) => rowTitleMatchesQuery(row, titleKey));
+  const exact = (rows || []).filter((row) => tourRowTitleMatchesCompactQuery(row, title));
   const out = [];
   const seen = new Set();
   for (const row of exact) {

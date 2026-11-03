@@ -8,6 +8,7 @@ import {
   placeUrlSlug,
   resolveCityAttractionHub,
 } from './cityAttractionHubs.js';
+import { resolveKoreaTourContentId } from './koreaTourAttractions.js';
 import { isHiddenHubScenicAttraction } from './koreaScenicSpotVisibility.js';
 import {
   parseKoreaPoiTypeQuery,
@@ -77,7 +78,7 @@ export function tourAttractionToPoiSuggestion(spot) {
     String(spot.locality || '').split(/\s+/)[0] ||
     '';
   const thumb = String(spot.firstImage || spot.imageUrl || '').trim() || null;
-  const contentId = String(spot.contentId || '').trim();
+  const contentId = resolveKoreaTourContentId(spot.contentId || spot.id || '');
   const tourSlug = contentId ? `tour-${contentId}` : '';
   const groupTitle = parentCity ? `${parentCity} 명소` : '';
   return {

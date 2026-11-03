@@ -10,6 +10,41 @@ function normalizeTourTitleKey(s) {
     .replace(/\s+/g, '');
 }
 
+/** Enter·제안 title exact — «고산사»↔«고산사(홍성)», «대웅전» 접미 */
+export function tourRowTitleMatchesCompactQuery(row, title) {
+  const titleKey = normalizeTourTitleKey(title);
+  if (titleKey.length < 2) return false;
+  const keys = [row?.title, row?.name].map(normalizeTourTitleKey).filter(Boolean);
+  const parenRegion = String(title || '').match(/\(([^)]+)\)/)?.[1]?.trim();
+  if (parenRegion) {
+    const regionKey = normalizeTourTitleKey(parenRegion);
+    const baseKey = normalizeTourTitleKey(String(title || '').replace(/\([^)]*\)/g, ''));
+    for (const k of keys) {
+      if (k === titleKey) return true;
+      if (baseKey.length >= 2 && k === `${baseKey}(${regionKey})`) return true;
+      if (baseKey.length >= 2 && k.startsWith(`${baseKey}(`) && k.includes(regionKey)) return true;
+    }
+    return false;
+  }
+  for (const k of keys) {
+    if (k === titleKey) return true;
+    if (k.endsWith(titleKey)) return true;
+    const idx = k.indexOf(titleKey);
+    if (idx < 0) continue;
+    const after = k.slice(idx + titleKey.length);
+    if (!after) return true;
+    if (/^\([^)]+\)$/u.test(after)) return true;
+    if (/^(?:대웅전|루|전|각|암|탑|동|리|사|터|원|당|문|각|채|각)$/u.test(after)) return true;
+  }
+  const queryParen = titleKey.match(/^(.+)\(([^)]+)\)$/)?.[1];
+  if (queryParen && queryParen.length >= 2) {
+    for (const k of keys) {
+      if (k === queryParen || k.startsWith(`${queryParen}(`)) return true;
+    }
+  }
+  return false;
+}
+
 function scoreTourTitleRow(row, q, hints) {
   const t = normalizeTourTitleKey(row?.name || row?.title);
   if (!t) return 0;

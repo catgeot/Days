@@ -132,4 +132,19 @@ test.describe('Explore bare KO — Mapbox-only parity', () => {
     await page.waitForURL(/\/place\//, { timeout: 60_000 });
     expect(new URL(page.url()).pathname).not.toBe('/');
   });
+
+  test('고산사(홍성) Enter — tour-125901 · 코스 2677792 미노출', async ({ page }) => {
+    await installExploreTourapiMock(page.context());
+    await submitExploreQuery(page, HONGSEONG_GOSANSA);
+    const card = page
+      .getByRole('button', { name: new RegExp(escapeRegExp(HONGSEONG_GOSANSA)) })
+      .first();
+    await expect(card).toBeVisible({ timeout: 120_000 });
+    await expect(page.getByRole('button', { name: /2677792|대웅전 여행/i })).toHaveCount(0);
+    await card.click();
+    await page.waitForURL(new RegExp(HONGSEONG_TOUR_PATH.replace(/\//g, '\\/')), {
+      timeout: 60_000,
+    });
+    expect(new URL(page.url()).pathname).toBe(HONGSEONG_TOUR_PATH);
+  });
 });

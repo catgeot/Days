@@ -1,0 +1,29 @@
+{
+  "keyword": "고산사(홍성)",
+  "items": [
+    {
+      "contentId": "125901",
+      "title": "고산사(홍성)",
+      "addr1": "충청남도 홍성군 결성면",
+      "mapx": "126.5373285055",
+      "mapy": "36.5450325186",
+      "contentTypeId": "12"
+    },
+    {
+      "contentId": "2677792",
+      "title": "홍성 고산사 대웅전",
+      "addr1": "충청남도 홍성군",
+      "mapx": "126.66",
+      "mapy": "36.6",
+      "contentTypeId": "25"
+    },
+    {
+      "contentId": "127937",
+      "title": "고산사",
+      "addr1": "전라남도 장흥군",
+      "mapx": "126.7842",
+      "mapy": "34.6415",
+      "contentTypeId": "12"
+    }
+  ]
+}

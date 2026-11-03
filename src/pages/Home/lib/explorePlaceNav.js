@@ -121,8 +121,8 @@ export function shouldRouteDomesticExplorePinToPlace(pin) {
   if (source === 'tourapi') return true;
 
   if (isMapboxOrGeocodeSource(source) || isMapboxOrGeocodePinId(pin)) {
-    if (shouldKeepDomesticMapboxAdminPinOnHome(pin)) return false;
     if (resolveDomesticMapboxAdminHub(pin)) return true;
+    if (shouldKeepDomesticMapboxAdminPinOnHome(pin)) return false;
     return true;
   }
   return false;

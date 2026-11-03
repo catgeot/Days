@@ -173,3 +173,28 @@ test('collectKoreaTourTitleSearchCandidates — exact·suffix title filter (고�
   assert.ok(rows.some((r) => r.contentId === '125901'));
   assert.equal(rows[0]?.source, 'tourapi');
 });
+
+test('collectKoreaTourTitleSearchCandidates — 고산사(홍성) 괄호 Enter', async () => {
+  const rows = await collectKoreaTourTitleSearchCandidates('\uACE0\uC0B0\uC0AC(\uD64D\uC131)', {
+    lookupRows: async () => [
+      {
+        title: '\uACE0\uC0B0\uC0AC(\uD64D\uC131)',
+        name: '\uACE0\uC0B0\uC0AC(\uD64D\uC131)',
+        contentId: '125901',
+        lat: 36.55,
+        lng: 126.54,
+        addr1: '\uCD98\uCCAD\uB0A8\uB3C4 \uD64D\uC131\uAD70',
+      },
+      {
+        title: '\uD64D\uC131 \uACE0\uC0B0\uC0AC \uB300\uC6C5\uC804',
+        name: '\uD64D\uC131 \uACE0\uC0B0\uC0AC \uB300\uC6C5\uC804',
+        contentId: '2677792',
+        lat: 36.6,
+        lng: 126.66,
+        addr1: '\uCD98\uCCAD\uB0A8\uB3C4 \uD64D\uC131\uAD70',
+      },
+    ],
+  });
+  assert.equal(rows.length, 1);
+  assert.equal(rows[0]?.contentId, '125901');
+});

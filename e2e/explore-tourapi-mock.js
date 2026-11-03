@@ -174,23 +174,35 @@ export async function installExploreTourapiMock(contextOrPage) {
     }
 
     if (action === 'searchKeyword') {
+      const courseRow = {
+        contentId: '2677792',
+        contentid: '2677792',
+        title: '홍성 고산사 대웅전',
+        addr1: '충청남도 홍성군',
+        mapx: '126.66',
+        mapy: '36.6',
+        contentTypeId: '25',
+      };
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
         headers: CORS,
         body: JSON.stringify({
           ok: true,
-          items: GOSANSA_ROWS.map((row) => ({
-            contentId: row.content_id,
-            contentid: row.content_id,
-            title: row.title,
-            addr1: row.addr1,
-            addr2: row.addr2,
-            mapx: row.mapx,
-            mapy: row.mapy,
-            firstimage: row.first_image,
-            contentTypeId: '12',
-          })),
+          items: [
+            ...GOSANSA_ROWS.map((row) => ({
+              contentId: row.content_id,
+              contentid: row.content_id,
+              title: row.title,
+              addr1: row.addr1,
+              addr2: row.addr2,
+              mapx: row.mapx,
+              mapy: row.mapy,
+              firstimage: row.first_image,
+              contentTypeId: '12',
+            })),
+            courseRow,
+          ],
         }),
       });
       return;
