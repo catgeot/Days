@@ -208,7 +208,7 @@ function shouldSkipOverseasAiTypoForQuery(query) {
   return (
     EXPLORE_SEARCH_HANGUL_RE.test(String(query || '')) &&
     !isFacilityQuery(query) &&
-    !shouldSkipGeocodeForMood(query)
+    !shouldSkipGeocodeForMoodIntent(query)
   );
 }
 
