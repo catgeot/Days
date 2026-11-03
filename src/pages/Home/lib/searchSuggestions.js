@@ -115,10 +115,13 @@ async function prependKoreaTourTitleCandidates(query, regional, list) {
   const titleQ = regional
     ? String(regional.placeQuery || '').trim()
     : canonicalizeExploreSearchQuery(effectiveExploreSearchQuery(query));
-  if (!titleQ || !/[\uAC00-\uD7A3]/.test(titleQ) || /\s/.test(titleQ)) return list;
+  if (!titleQ || !/[\uAC00-\uD7A3]/.test(titleQ)) return list;
+  if (/\s/.test(String(query || '').trim()) && !regional?.placeQuery) return list;
   try {
     const { collectKoreaTourTitleSearchCandidates } = await import('./exploreKoreaTourTitleCandidates.js');
-    const tourItems = await collectKoreaTourTitleSearchCandidates(titleQ);
+    const tourItems = await collectKoreaTourTitleSearchCandidates(
+      regional ? `${regional.regionQuery} ${regional.placeQuery}`.trim() : String(query || '').trim(),
+    );
     if (!tourItems.length) return list;
     const merged = [];
     const seen = new Set();

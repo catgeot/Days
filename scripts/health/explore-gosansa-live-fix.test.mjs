@@ -74,10 +74,11 @@ test('TourAPI 시·도명 — 강원도·강원특별자치도는 /place/tour-* 
   }
 });
 
-test('tourRowTitleMatchesCompactQuery — 고산사(홍성) exact·역방향', () => {
+test('tourRowTitleMatchesCompactQuery — 고산사(홍성) exact·역방향·홍성 고산사', () => {
   const row = { title: '고산사(홍성)', name: '고산사(홍성)' };
   assert.ok(tourRowTitleMatchesCompactQuery(row, '고산사(홍성)'));
   assert.ok(tourRowTitleMatchesCompactQuery(row, '고산사'));
+  assert.ok(tourRowTitleMatchesCompactQuery(row, '홍성 고산사'));
   assert.equal(tourRowTitleMatchesCompactQuery(row, '고산사(장흥)'), false);
 });
 
@@ -105,6 +106,23 @@ test('collectKoreaTourTitleSearchCandidates — 고산사(홍성) Enter · 코�
   assert.equal(rows.length, 1);
   assert.equal(rows[0]?.contentId, '125901');
   assert.equal(rows[0]?.slug, 'tour-125901');
+});
+
+test('collectKoreaTourTitleSearchCandidates — 홍성 고산사 → 125901', async () => {
+  const rows = await collectKoreaTourTitleSearchCandidates('홍성 고산사', {
+    lookupRows: async () => [
+      {
+        title: '고산사(홍성)',
+        name: '고산사(홍성)',
+        contentId: '125901',
+        lat: 36.55,
+        lng: 126.54,
+        addr1: '충청남도 홍성군',
+      },
+    ],
+  });
+  assert.equal(rows.length, 1);
+  assert.equal(rows[0]?.contentId, '125901');
 });
 
 test('shouldRouteDomesticExplorePinToPlace — 제주 place feature 허브 우선(홈 금지)', () => {

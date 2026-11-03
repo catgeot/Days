@@ -7,6 +7,7 @@ import {
   EXPLORE_GOSANSA_JANGHEUNG_ROW,
 } from './explore-tourapi-mock.js';
 import { installExploreMapboxGosansaMock } from './explore-mapbox-gosansa-mock.js';
+import { installExploreJejuGeocodeMock } from './explore-mapbox-jeju-geocode-mock.js';
 
 const UDO = '\uC6B0\uB3C4';
 const GAUDO = '\uAC00\uC6B0\uB3C4';
@@ -15,6 +16,7 @@ const JEJU = '\uC81C\uC8FC';
 const GOSANSA = '\uACE0\uC0B0\uC0AC';
 const JANGHEUNG = '\uC7A5\uD765';
 const HONGSEONG_GOSANSA = '\uACE0\uC0B0\uC0AC(\uD64D\uC131)';
+const HONGSEONG_SPACED = '\uD64D\uC131 \uACE0\uC0B0\uC0AC';
 const HONGSEONG_TOUR_PATH = `/place/tour-${EXPLORE_GOSANSA_HONGSEONG_ROW.content_id}`;
 const JANGHEUNG_TOUR_PATH = `/place/tour-${EXPLORE_GOSANSA_JANGHEUNG_ROW.content_id}`;
 
@@ -146,5 +148,35 @@ test.describe('Explore bare KO — Mapbox-only parity', () => {
       timeout: 60_000,
     });
     expect(new URL(page.url()).pathname).toBe(HONGSEONG_TOUR_PATH);
+  });
+
+  test('홍성 고산사 Enter — tour-125901', async ({ page }) => {
+    await installExploreTourapiMock(page.context());
+    await submitExploreQuery(page, HONGSEONG_SPACED);
+    const card = page
+      .getByRole('button', { name: new RegExp(escapeRegExp(HONGSEONG_GOSANSA)) })
+      .first();
+    await expect(card).toBeVisible({ timeout: 120_000 });
+    await card.click();
+    await page.waitForURL(new RegExp(HONGSEONG_TOUR_PATH.replace(/\//g, '\\/')), {
+      timeout: 60_000,
+    });
+    expect(new URL(page.url()).pathname).toBe(HONGSEONG_TOUR_PATH);
+  });
+
+  test('제주특별자치도 suggestion tap — /place/jeju (live geocode pin)', async ({ page }) => {
+    await installExploreJejuGeocodeMock(page.context());
+    await page.goto('/explore');
+    const input = page.getByRole('textbox', { name: /예: 속초|e\.g\. Sokcho/i }).first();
+    await expect(input).toBeVisible({ timeout: 60_000 });
+    await input.fill('제주특별자치도');
+    const row = page
+      .locator('[data-search-popover] button')
+      .filter({ hasNotText: 'MOONi' })
+      .filter({ has: page.getByText('제주특별자치도', { exact: true }) })
+      .first();
+    await expect(row).toBeVisible({ timeout: 30_000 });
+    await row.click();
+    await expect(page).toHaveURL(/\/place\/jeju(?:\/|$|\?)/, { timeout: 60_000 });
   });
 });

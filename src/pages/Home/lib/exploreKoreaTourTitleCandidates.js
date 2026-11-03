@@ -41,9 +41,22 @@ function hubIdFromParentheticalTitle(title) {
  */
 export async function collectKoreaTourTitleSearchCandidates(query, opts = {}) {
   const q = String(query || '').trim();
-  if (!q || !HAS_HANGUL_RE.test(q) || /\s/.test(q)) return [];
+  if (!q || !HAS_HANGUL_RE.test(q)) return [];
 
-  const title = canonicalizeExploreSearchQuery(q);
+  let title = canonicalizeExploreSearchQuery(q);
+  let hubId = hubIdFromParentheticalTitle(title);
+
+  if (/\s/.test(q)) {
+    const { parseKoreaRegionalExploreQuery } = await import('./exploreRegionalPlaceQuery.js');
+    const regional = parseKoreaRegionalExploreQuery(q);
+    if (!regional?.placeQuery) return [];
+    title = String(regional.placeQuery || '').trim();
+    hubId = String(regional.hub?.hubId || hubId || '').trim();
+    if (title.length < 2) return [];
+  } else if (/\s/.test(title)) {
+    return [];
+  }
+
   const titleKey = compactKey(title);
   if (titleKey.length < 2) return [];
 
@@ -52,14 +65,14 @@ export async function collectKoreaTourTitleSearchCandidates(query, opts = {}) {
     rows = await opts.lookupRows(title);
   } else {
     const { lookupKoreaTourAttractionsMatchingTitle } = await import('./koreaTourAttractions.js');
-    const hubId = hubIdFromParentheticalTitle(title);
     rows = await lookupKoreaTourAttractionsMatchingTitle(title, {
       limit: 40,
       hubId: hubId || undefined,
     });
   }
 
-  const exact = (rows || []).filter((row) => tourRowTitleMatchesCompactQuery(row, title));
+  const matchTitle = /\s/.test(q) ? q : title;
+  const exact = (rows || []).filter((row) => tourRowTitleMatchesCompactQuery(row, matchTitle));
   const out = [];
   const seen = new Set();
   for (const row of exact) {

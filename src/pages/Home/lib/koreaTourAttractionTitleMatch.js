@@ -14,7 +14,17 @@ function normalizeTourTitleKey(s) {
 export function tourRowTitleMatchesCompactQuery(row, title) {
   const titleKey = normalizeTourTitleKey(title);
   if (titleKey.length < 2) return false;
+  const queryTokens = String(title || '')
+    .trim()
+    .split(/\s+/)
+    .map(normalizeTourTitleKey)
+    .filter((t) => t.length >= 2);
   const keys = [row?.title, row?.name].map(normalizeTourTitleKey).filter(Boolean);
+  if (queryTokens.length >= 2) {
+    for (const k of keys) {
+      if (queryTokens.every((t) => k.includes(t))) return true;
+    }
+  }
   const parenRegion = String(title || '').match(/\(([^)]+)\)/)?.[1]?.trim();
   if (parenRegion) {
     const regionKey = normalizeTourTitleKey(parenRegion);

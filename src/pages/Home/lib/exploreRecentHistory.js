@@ -9,8 +9,9 @@ import {
   shouldRouteDomesticExplorePinToPlace,
   isBlockedCountryOnlyPlaceParam,
   normalizeExploreSelectionPin,
+  resolveDomesticMapboxAdminHub,
 } from './explorePlaceNav.js';
-import { isKoreaProvinceLevelTourResult } from './koreaExploreProvincePlace.js';
+import { isKoreaProvinceLevelTourResult, isKoreaProvinceLevelName } from './koreaExploreProvincePlace.js';
 
 export const RECENT_SEARCH_KEY = 'gateo_recent_search_keywords';
 export const RECENT_VISITED_KEY = 'gateo_recent_visited_destinations';
@@ -305,6 +306,25 @@ export function resolveSearchResultSelect(spot) {
   if (isKoreaProvinceLevelTourResult(pin)) {
     return { type: 'home', spot: pin };
   }
+
+  const adminHub = resolveDomesticMapboxAdminHub(pin);
+  if (
+    adminHub?.hubId &&
+    (shouldRouteDomesticExplorePinToPlace(pin) ||
+      isKoreaProvinceLevelName(String(pin.name || pin.name_ko || '').trim()))
+  ) {
+    const hubSlug = String(adminHub.hubId).trim();
+    if (hubSlug && !isBlockedCountryOnlyPlaceParam(hubSlug)) {
+      const hubPin = normalizeExploreSelectionPin({
+        ...pin,
+        hubId: hubSlug,
+        slug: hubSlug,
+        canonical_slug: hubSlug,
+      });
+      return { type: 'place', spot: hubPin, param: hubSlug };
+    }
+  }
+
   const tourParam = getPlaceUrlParam(pin);
   if (source === 'tourapi' && tourParam && !isBlockedCountryOnlyPlaceParam(tourParam)) {
     return { type: 'place', spot: pin, param: tourParam };

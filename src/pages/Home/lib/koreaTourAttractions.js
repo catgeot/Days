@@ -565,8 +565,6 @@ function mapSearchKeywordItemToDbRow(item) {
 
 function mapDetailCommonItemToDbRow(contentId, item) {
   if (!item) return null;
-  const type = String(item?.contenttypeid || item?.contentTypeId || '12').trim();
-  if (type && type !== '12') return null;
   const title = String(item?.title || '').trim();
   if (!title) return null;
   return {
@@ -603,6 +601,38 @@ async function fetchKoreaTourAttractionByIdLive(contentId) {
   }
 }
 
+/** @type {Map<string, Promise<unknown>>} */
+const searchKeywordInflight = new Map();
+/** @type {Map<string, unknown>} */
+const searchKeywordCache = new Map();
+
+function searchKeywordCacheKey(keyword, numOfRows, pageNo) {
+  return `${String(keyword || '').trim()}|${numOfRows}|${pageNo}`;
+}
+
+async function invokeSearchKeywordCached(keyword, { numOfRows = 20, pageNo = 1 } = {}) {
+  const key = searchKeywordCacheKey(keyword, numOfRows, pageNo);
+  if (searchKeywordCache.has(key)) return searchKeywordCache.get(key);
+  const inflight = searchKeywordInflight.get(key);
+  if (inflight) return inflight;
+  const promise = invokeTourApiProxy(
+    'searchKeyword',
+    { keyword, numOfRows, pageNo },
+    { locale: TOUR_API_BODY_LOCALE },
+  )
+    .then((res) => {
+      searchKeywordCache.set(key, res);
+      searchKeywordInflight.delete(key);
+      return res;
+    })
+    .catch((err) => {
+      searchKeywordInflight.delete(key);
+      throw err;
+    });
+  searchKeywordInflight.set(key, promise);
+  return promise;
+}
+
 async function lookupKoreaTourAttractionByTitleLive(title, hubId) {
   const hints = hubNameHints(hubId);
   const keywords = new Set([title]);
@@ -620,11 +650,7 @@ async function lookupKoreaTourAttractionByTitleLive(title, hubId) {
   const seen = new Set();
   for (const keyword of keywords) {
     try {
-      const res = await invokeTourApiProxy(
-        'searchKeyword',
-        { keyword, numOfRows: 20, pageNo: 1 },
-        { locale: TOUR_API_BODY_LOCALE },
-      );
+      const res = await invokeSearchKeywordCached(keyword, { numOfRows: 20, pageNo: 1 });
       for (const item of res?.items || []) {
         const row = mapSearchKeywordItemToDbRow(item);
         if (!row?.content_id || seen.has(row.content_id)) continue;
@@ -660,11 +686,7 @@ async function lookupTourContentIdByTitleLive(title, hints) {
   }
   for (const keyword of keywords) {
     try {
-      const res = await invokeTourApiProxy(
-        'searchKeyword',
-        { keyword, numOfRows: 12, pageNo: 1 },
-        { locale: TOUR_API_BODY_LOCALE },
-      );
+      const res = await invokeSearchKeywordCached(keyword, { numOfRows: 12, pageNo: 1 });
       const id = pickTourKeywordContentId(res?.items, title);
       if (!id) continue;
       const item = (res?.items || []).find(
@@ -717,11 +739,7 @@ async function lookupKoreaTourAttractionsMatchingTitleLive(title, { hubId = '', 
   const seen = new Set();
   for (const keyword of keywords) {
     try {
-      const res = await invokeTourApiProxy(
-        'searchKeyword',
-        { keyword, numOfRows: 20, pageNo: 1 },
-        { locale: TOUR_API_BODY_LOCALE },
-      );
+      const res = await invokeSearchKeywordCached(keyword, { numOfRows: 20, pageNo: 1 });
       for (const item of res?.items || []) {
         const row = mapSearchKeywordItemToDbRow(item);
         if (!row?.content_id) continue;
