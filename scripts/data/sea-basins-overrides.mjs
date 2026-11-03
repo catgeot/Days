@@ -269,7 +269,7 @@ export const SEA_BASINS_OVERRIDES = [
     tier: 2,
     center: { lat: 40.0, lng: -40.0 },
     bbox: [-80.0, 20.0, 0.0, 65.0],
-    aliases: ['북대서양', 'North Atlantic', 'North Atlantic Ocean'],
+    aliases: ['북대서양', '대서양', 'North Atlantic', 'North Atlantic Ocean'],
   },
   {
     id: 'south-atlantic',

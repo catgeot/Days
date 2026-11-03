@@ -46,6 +46,11 @@ const southPacific = resolveSeaBasinFromQuery('남태평양');
 assert.ok(southPacific, '남태평양 exact resolve');
 assert.equal(southPacific.basin.id, 'south-pacific');
 
+assert.equal(resolveSeaBasinFromQuery('대서양')?.basin?.id, 'north-atlantic', '대서양 exact → north-atlantic');
+assert.equal(pickSeaBasinCurationSpot('대서양')?.seaBasinId, 'north-atlantic');
+assert.equal(resolveSeaBasinFromQuery('대서양 화산섬')?.basin?.id, 'macaronesia');
+assert.equal(resolveSeaBasinFromQuery('남대서양')?.basin?.id, 'south-atlantic');
+
 const sargasso = resolveSeaBasinFromQuery('사르가소해');
 assert.equal(sargasso, null, '사르가소해 has no coast spots → null');
 

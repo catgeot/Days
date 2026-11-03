@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generatedAt": "2026-08-19T05:06:14.083Z",
+    "generatedAt": "2026-11-03T13:30:39.764Z",
     "basinCount": 45,
     "source": "scripts/data/sea-basins-overrides.mjs"
   },
@@ -545,6 +545,7 @@
       ],
       "aliases": [
         "북대서양",
+        "대서양",
         "North Atlantic",
         "North Atlantic Ocean"
       ]

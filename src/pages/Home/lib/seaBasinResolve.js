@@ -109,13 +109,15 @@ export function resolveSeaBasinFromQuery(query) {
   let typoCorrected = false;
   let matchedAlias = n;
   if (!basin) {
+    let bestAlias = '';
     for (const [alias, b] of aliasToBasin) {
-      if (alias.length >= 3 && (n.startsWith(alias) || alias.startsWith(n))) {
+      if (alias.length < 3 || !(n.startsWith(alias) || alias.startsWith(n))) continue;
+      if (!bestAlias || alias.length < bestAlias.length) {
+        bestAlias = alias;
         basin = b;
-        matchedAlias = alias;
-        break;
       }
     }
+    if (bestAlias) matchedAlias = bestAlias;
   }
   if (!basin) {
     const fuzzy = findFuzzyBasin(n);
