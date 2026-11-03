@@ -110,7 +110,7 @@ export function resolveSeaBasinFromQuery(query) {
   let matchedAlias = n;
   if (!basin) {
     for (const [alias, b] of aliasToBasin) {
-      if (alias.length >= 3 && (n.includes(alias) || alias.includes(n))) {
+      if (alias.length >= 3 && (n.startsWith(alias) || alias.startsWith(n))) {
         basin = b;
         matchedAlias = alias;
         break;
