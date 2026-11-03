@@ -185,3 +185,28 @@ export function filterRegionalExploreHits(regional, hits, opts = {}) {
     return da - db;
   });
 }
+
+/**
+ * 「제주 우도」 등 권역 쿼리 — Mapbox·방문 DB parentCity(서울) 오염을 허브·regionQuery로 덮는다.
+ * @param {object | null | undefined} regional
+ * @param {object[]} hits
+ */
+export function applyRegionalHubLabels(regional, hits) {
+  const list = Array.isArray(hits) ? hits : [];
+  if (!regional || !list.length) return list;
+  const hubId = String(regional.hub?.hubId || '').trim();
+  const parentCity =
+    String(regional.regionQuery || regional.hub?.name || '').trim() || undefined;
+  if (!hubId && !parentCity) return list;
+  return list.map((item) => {
+    if (!item || typeof item !== 'object') return item;
+    const next = { ...item };
+    if (hubId) next.hubId = hubId;
+    if (parentCity) next.parentCity = parentCity;
+    if (hubId || parentCity) {
+      next.country = next.country || '대한민국';
+      next.country_en = next.country_en || 'South Korea';
+    }
+    return next;
+  });
+}

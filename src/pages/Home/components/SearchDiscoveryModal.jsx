@@ -498,13 +498,13 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, onAskMooni,
         return;
       }
       if (result?.__noResults) {
-        clearExploreReturn();
         setSearchSubmitError(
           t('home.explore.searchNoResults', {
             defaultValue: '「{{query}}」에 맞는 장소를 찾지 못했습니다. 검색어를 바꿔 보세요.',
             query: finalQuery,
           }),
         );
+        setIsSearchHistoryOpen(true);
         dismissSearchKeyboard();
         return;
       }
@@ -515,13 +515,13 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, onAskMooni,
         return;
       }
       if (!result?.name) {
-        clearExploreReturn();
         setSearchSubmitError(
           t('home.explore.searchNoResults', {
             defaultValue: '「{{query}}」에 맞는 장소를 찾지 못했습니다. 검색어를 바꿔 보세요.',
             query: finalQuery,
           }),
         );
+        setIsSearchHistoryOpen(true);
       }
     } catch (err) {
       console.warn('[SearchDiscovery] onSearch failed', err);

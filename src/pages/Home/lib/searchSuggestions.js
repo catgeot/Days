@@ -48,6 +48,7 @@ import { overlayGeoFieldsOnVisitedSpots } from './visitedPlaceSearch.js';
 import { buildMapboxSearchQueries, canonicalizeExploreSearchQuery } from './exploreSearchAliases';
 import {
   effectiveExploreSearchQuery,
+  applyRegionalHubLabels,
   filterRegionalExploreHits,
   parseKoreaRegionalExploreQuery,
   regionalExploreMapboxOpts,
@@ -275,7 +276,9 @@ export function buildLocalSearchSuggestions(query, opts = {}) {
       regional,
       _regionalInner: true,
     });
-    return filterRegionalExploreHits(regional, inner).slice(0, 24).map(enrichSearchCandidateScenicMedia);
+    return applyRegionalHubLabels(regional, filterRegionalExploreHits(regional, inner))
+      .slice(0, 24)
+      .map(enrichSearchCandidateScenicMedia);
   }
 
   const spotLimit = opts.spotLimit ?? 5;
@@ -501,7 +504,10 @@ export async function buildHybridSearchSuggestions(query, opts = {}) {
   }
   let regionChecked = dropFarHomonymBusinessHits(mapboxQuery, out, { anchors: local });
   if (regional) {
-    regionChecked = filterRegionalExploreHits(regional, regionChecked);
+    regionChecked = applyRegionalHubLabels(
+      regional,
+      filterRegionalExploreHits(regional, regionChecked),
+    );
   }
 
   try {

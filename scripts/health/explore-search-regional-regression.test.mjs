@@ -3,9 +3,11 @@ import test from 'node:test';
 
 import {
   effectiveExploreSearchQuery,
+  applyRegionalHubLabels,
   filterRegionalExploreHits,
   parseKoreaRegionalExploreQuery,
 } from '../../src/pages/Home/lib/exploreRegionalPlaceQuery.js';
+import { buildExploreSearchLocationLine } from '../../src/components/PlaceCard/common/locationDisplay.js';
 import { resolveExploreSearchAlias } from '../../src/pages/Home/lib/exploreSearchAliases.js';
 import { pickUniqueTourAttractionRowForTitle } from '../../src/pages/Home/lib/koreaTourAttractionTitleMatch.js';
 import { featureToSuggestion } from '../../src/pages/Home/lib/mapboxSearchBox.js';
@@ -135,4 +137,25 @@ test('Mapbox feature filter — Capital District removed under 제주 regional s
   );
   const filtered = filterRegionalExploreHits(regional, [capital]);
   assert.equal(filtered.length, 0);
+});
+
+test('applyRegionalHubLabels — 우도 parentCity 서울 → 제주 (제주 우도)', () => {
+  const regional = parseKoreaRegionalExploreQuery('제주 우도');
+  assert.ok(regional);
+  const udo = {
+    id: 'visited-udo',
+    kind: 'attraction',
+    name: '우도',
+    parentCity: '서울',
+    country: '대한민국',
+    lat: 33.506,
+    lng: 126.953,
+    uiPlace: true,
+  };
+  const [labeled] = applyRegionalHubLabels(regional, [udo]);
+  assert.equal(labeled.hubId, 'jeju');
+  assert.equal(labeled.parentCity, '제주');
+  const line = buildExploreSearchLocationLine(labeled, 'ko');
+  assert.match(line, /제주/);
+  assert.doesNotMatch(line, /서울/);
 });

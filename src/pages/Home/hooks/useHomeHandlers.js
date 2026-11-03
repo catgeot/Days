@@ -87,6 +87,7 @@ import {
 } from '../lib/searchEnterMatch.js';
 import {
   effectiveExploreSearchQuery,
+  applyRegionalHubLabels,
   filterRegionalExploreHits,
   parseKoreaRegionalExploreQuery,
   regionalExploreMapboxOpts,
@@ -930,6 +931,23 @@ export function useHomeHandlers({
           category,
         });
       }
+
+      try {
+        const hybridMatches = pickEnterSuggestionMatches(
+          query,
+          await buildHybridSearchSuggestions(query),
+        ).slice(0, 8);
+        if (hybridMatches.length >= 1) {
+          return ensureDisambiguation(
+            query,
+            hybridMatches,
+            `'${query}' → 원하는 장소를 선택하세요`,
+          );
+        }
+      } catch {
+        // hybrid 실패 — 결과 없음
+      }
+      return { __noResults: true, query };
     } else {
       const querySpot = resolveTravelSpotFromSearchQuery(query);
       if (querySpot) {
@@ -1331,7 +1349,10 @@ export function useHomeHandlers({
           });
           const regionalScope = parseKoreaRegionalExploreQuery(query);
           const filteredRemote = regionalScope
-            ? filterRegionalExploreHits(regionalScope, remoteHits)
+            ? applyRegionalHubLabels(
+                regionalScope,
+                filterRegionalExploreHits(regionalScope, remoteHits),
+              )
             : remoteHits;
           const seenNames = new Set();
           const distinct = [];
