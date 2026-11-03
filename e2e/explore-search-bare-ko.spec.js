@@ -1,6 +1,7 @@
 // Explore Enter — 단독 한글 검색어 (PR #650 회귀: 지역 접두 없이 우do·닭머르·고산사)
 import { test, expect } from './fixtures.js';
 import { installExploreGeminiMock } from './explore-gemini-mock.js';
+import { installExploreTourapiMock } from './explore-tourapi-mock.js';
 
 const UDO = '\uC6B0\uB3C4';
 const GAUDO = '\uAC00\uC6B0\uB3C4';
@@ -26,7 +27,9 @@ async function submitExploreQuery(page, query) {
 
 test.describe('Explore bare Korean place queries', () => {
   test.beforeEach(async ({ page }) => {
-    await installExploreGeminiMock(page.context());
+    const ctx = page.context();
+    await installExploreGeminiMock(ctx);
+    await installExploreTourapiMock(ctx);
   });
 
   test('우do — 맨 위 결과 행에 제주, 가우do 없음', async ({ page }) => {

@@ -52,35 +52,49 @@ test('sync first-pass — 우do·닭머르 resolve jeju hub attractions', () => 
   assert.equal(dak?.hubId, 'jeju');
 });
 
-test('buildCuratedEnterDisambiguation — 제주·강릉은 Tour title보다 hub 우선', async () => {
+test('buildCuratedEnterDisambiguation — hub exact 일치 시 Tour Enter lookup 미호출', async (t) => {
+  const tourMod = await import('../../src/pages/Home/lib/exploreKoreaTourTitleCandidates.js');
+  const tourCalls = [];
+  tourMod.__testSetTourEnterCallLog(tourCalls);
+  t.after(() => tourMod.__testResetTourEnterCallLog());
   const { buildCuratedEnterDisambiguation } = await import('../../src/pages/Home/lib/searchSuggestions.js');
-  const { buildKoreaTourTitleEnterDisambiguation } = await import(
-    '../../src/pages/Home/lib/exploreKoreaTourTitleCandidates.js',
-  );
 
   for (const city of ['\uC81C\uC8FC', '\uAC15\uB989']) {
     const hubChoice = await buildCuratedEnterDisambiguation(city);
     assert.ok(hubChoice?.__disambiguation, city);
     assert.ok(
       hubChoice.candidates.some(
-        (c) => c.hubId === (city === '\uC81C\uC8FC' ? 'jeju' : 'gangneung') || c.slug === (city === '\uC81C\uC8FC' ? 'jeju' : 'gangneung'),
+        (c) =>
+          c.hubId === (city === '\uC81C\uC8FC' ? 'jeju' : 'gangneung') ||
+          c.slug === (city === '\uC81C\uC8FC' ? 'jeju' : 'gangneung'),
       ),
       city,
     );
-    const tourOnly = await buildKoreaTourTitleEnterDisambiguation(city, {
-      lookupRows: async () => [
-        {
-          title: city,
-          name: city,
-          addr1: '\uD14C\uC2A4\uD2B8',
-          lat: 33.5,
-          lng: 126.5,
-          contentId: '999',
-        },
-      ],
-    });
-    assert.ok(tourOnly?.__disambiguation, `${city} tour mock`);
-    assert.ok(hubChoice.candidates[0]?.hubId || hubChoice.candidates[0]?.kind === 'city', city);
+  }
+  assert.equal(tourCalls.length, 0, 'hub short-circuit — tour lookup must not run');
+});
+
+test('buildCuratedEnterDisambiguation — hub 없을 때 Tour Enter lookup 호출', async (t) => {
+  const tourMod = await import('../../src/pages/Home/lib/exploreKoreaTourTitleCandidates.js');
+  const tourCalls = [];
+  tourMod.__testSetTourEnterCallLog(tourCalls);
+  t.after(() => tourMod.__testResetTourEnterCallLog());
+  const { buildCuratedEnterDisambiguation } = await import('../../src/pages/Home/lib/searchSuggestions.js');
+  await buildCuratedEnterDisambiguation('\uACE0\uC0B0\uC0AC');
+  assert.deepEqual(tourCalls, ['\uACE0\uC0B0\uC0AC']);
+});
+
+test('buildCuratedEnterDisambiguation — Tour title 분기는 hub·명소 분기 뒤(소스 순서)', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const src = await readFile(new URL('../../src/pages/Home/lib/searchSuggestions.js', import.meta.url), 'utf8');
+  const start = src.indexOf('export async function buildCuratedEnterDisambiguation');
+  assert.ok(start >= 0);
+  const body = src.slice(start);
+  const tourAt = body.indexOf('buildKoreaTourTitleEnterDisambiguation');
+  assert.ok(tourAt > 0);
+  for (const needle of ['resolveExploreCityHubExact', 'resolveHubAttraction', 'resolveSettlement']) {
+    const at = body.indexOf(needle);
+    if (at >= 0) assert.ok(at < tourAt, needle);
   }
 });
 

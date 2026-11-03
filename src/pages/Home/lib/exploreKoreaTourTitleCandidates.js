@@ -8,6 +8,17 @@ import { tourAttractionToPoiSuggestion } from './koreaPoiTypeSearch.js';
 
 const HAS_HANGUL_RE = /[\uAC00-\uD7A3]/;
 
+/** @type {string[] | null} */
+let tourEnterCallLog = null;
+
+export function __testSetTourEnterCallLog(log) {
+  tourEnterCallLog = log;
+}
+
+export function __testResetTourEnterCallLog() {
+  tourEnterCallLog = null;
+}
+
 function compactKey(s) {
   return String(s ?? '')
     .trim()
@@ -61,6 +72,7 @@ export async function collectKoreaTourTitleSearchCandidates(query, opts = {}) {
  */
 export async function buildKoreaTourTitleEnterDisambiguation(query, opts = {}) {
   const q = String(query || '').trim();
+  if (tourEnterCallLog) tourEnterCallLog.push(q);
   if (!q) return null;
   const candidates = await collectKoreaTourTitleSearchCandidates(q, opts);
   if (!candidates.length) return null;
