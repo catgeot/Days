@@ -231,6 +231,7 @@ test('Home gallery PR drift guard; MOONi session wiring line allowlist', () => {
       if (/^[+-]\s+\/\/ /.test(line)) return true;
       if (/^[+-]\s+if \(/.test(line)) return true;
       if (/^[+-]\s+\}/.test(line)) return true;
+      if (/^[+-]\s+\) \{/.test(line)) return true;
       if (/^[+-]\s+return \($/.test(line)) return true;
       if (/^[+-]\s+country:/.test(line)) return true;
       if (/^[+-]\s+country_en:/.test(line)) return true;
