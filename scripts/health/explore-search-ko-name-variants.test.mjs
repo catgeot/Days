@@ -31,7 +31,12 @@ test('alias table adds no places: no coords, no entries for names without a sour
     assert.equal(value.lat, undefined, key);
   }
   for (const name of ['닭머르해안', '수월봉', '차귀도']) {
-    assert.equal(resolveExploreSearchAlias(name), null, name);
+    const alias = resolveExploreSearchAlias(name);
+    if (name === '닭머르해안') {
+      assert.equal(alias?.canonical, '닭머르해안');
+    } else {
+      assert.equal(alias, null, name);
+    }
   }
 });
 

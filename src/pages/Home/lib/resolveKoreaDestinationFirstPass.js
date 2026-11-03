@@ -11,6 +11,10 @@ import {
 } from './cityAttractionHubs.js';
 import { isHiddenHubScenicAttraction } from './koreaScenicSpotVisibility.js';
 import { resolveExploreSearchAlias } from './exploreSearchAliases.js';
+import {
+  effectiveExploreSearchQuery,
+  parseKoreaRegionalExploreQuery,
+} from './exploreRegionalPlaceQuery.js';
 import { placeNameMatchesSearchQuery } from './searchEnterMatch.js';
 import { shouldSkipGeocodeForMood } from './moodSearchIntent.js';
 import {
@@ -218,10 +222,13 @@ export function resolveKoreaDestinationFirstPassSync(query) {
   const q = String(query || '').trim();
   if (!q) return null;
 
-  const hubMatch = resolveKoreaHubAttractionMatch(q);
+  const regional = parseKoreaRegionalExploreQuery(q);
+  const placeQ = regional?.placeQuery || q;
+
+  const hubMatch = resolveKoreaHubAttractionMatch(placeQ);
   if (hubMatch) return hitFromHub(hubMatch);
 
-  const station = resolveKoStationAlias(q);
+  const station = resolveKoStationAlias(placeQ);
   if (station) return hitFromStation(station);
 
   return null;
@@ -239,11 +246,11 @@ function shouldLookupTourapi(query) {
   return true;
 }
 
-async function lookupTourAttractionRow(query, lookup) {
-  if (typeof lookup === 'function') return lookup(query);
+async function lookupTourAttractionRow(query, lookup, opts = {}) {
+  if (typeof lookup === 'function') return lookup(query, opts);
   try {
     const { lookupKoreaTourAttractionFirstPass } = await import('./koreaTourAttractions.js');
-    return lookupKoreaTourAttractionFirstPass(query);
+    return lookupKoreaTourAttractionFirstPass(query, { hubHints: opts.hubHints });
   } catch {
     return null;
   }
@@ -254,10 +261,21 @@ async function lookupTourAttractionRow(query, lookup) {
  * @param {{ lookupTourAttraction?: (q: string) => Promise<object | null> }} [opts]
  */
 export async function resolveKoreaDestinationFirstPass(query, opts = {}) {
-  const sync = resolveKoreaDestinationFirstPassSync(query);
+  const q = String(query || '').trim();
+  if (!q) return null;
+
+  const sync = resolveKoreaDestinationFirstPassSync(q);
   if (sync) return sync;
-  if (!shouldLookupTourapi(query)) return null;
-  const row = await lookupTourAttractionRow(query, opts.lookupTourAttraction);
+
+  const regional = parseKoreaRegionalExploreQuery(q);
+  const tourQuery = effectiveExploreSearchQuery(q);
+
+  if (!shouldLookupTourapi(tourQuery) && !regional) return null;
+
+  const lookupTitle = tourQuery || q;
+  const row = await lookupTourAttractionRow(lookupTitle, opts.lookupTourAttraction, {
+    hubHints: regional?.hubHints,
+  });
   if (!row) return null;
   return hitFromTourRow(row);
 }

@@ -525,6 +525,7 @@ export const KO_EXPLORE_SEARCH_ALIASES = [
  */
 function expandScenicNameVariants() {
   const places = [
+    ['닭머르해안', ['닭머르', '닭머르 해안', '닭머르해안길', 'dakmeoru', 'dakmeoru coast']],
     ['형제섬', ['hyeongjeseom', 'hyeongje island', 'hyeongjeseom island']],
     ['추자도', ['추자군도', 'chujado', 'chujado island', 'chuja islands']],
     ['용눈이오름', ['용눈이', 'yongnuni oreum', 'yongnuni-oreum', 'yongnuni']],

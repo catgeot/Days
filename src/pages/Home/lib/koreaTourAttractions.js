@@ -690,13 +690,14 @@ export async function lookupKoreaTourAttractionByTitle(opts = {}) {
  * Mapbox 전 First-Pass — 전국 title 조회, 동점 다후보는 null.
  * @param {string} title
  */
-export async function lookupKoreaTourAttractionFirstPass(title) {
+export async function lookupKoreaTourAttractionFirstPass(title, opts = {}) {
   const needles = tourTitleSearchNeedles(title);
   const compact = String(title || '')
     .trim()
     .toLowerCase()
     .replace(/\s+/g, '');
   if (compact.length < 3 || !needles.length) return null;
+  const hubHints = Array.isArray(opts.hubHints) ? opts.hubHints : [];
   let q = supabase
     .from('tourapi_attraction')
     .select(LIST_SELECT)
@@ -709,7 +710,7 @@ export async function lookupKoreaTourAttractionFirstPass(title) {
     return null;
   }
   const rows = (data || []).map(mapTourAttractionRow).filter(Boolean);
-  return pickUniqueTourAttractionRowForTitle(rows, compact || needles[0], [], 88);
+  return pickUniqueTourAttractionRowForTitle(rows, compact || needles[0], hubHints, 88);
 }
 
 /**

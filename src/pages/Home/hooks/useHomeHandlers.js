@@ -56,6 +56,7 @@ import {
 } from '../lib/cityAttractionHubs.js';
 import {
   firstPassHitToUiPlace,
+  resolveKoreaDestinationFirstPass,
   resolveKoreaDestinationFirstPassSync,
 } from '../lib/resolveKoreaDestinationFirstPass.js';
 import { resolveSettlement, settlementToPlacePin } from '../lib/mapboxSettlementPlaces.js';
@@ -193,6 +194,8 @@ const isAdminRegionName = (name) => {
   return /(?:gun|si|gu|-gun|-si|city\s*hall|town\s*hall)$/i.test(n);
 };
 const MOOD_VARIANT_RECENT_COOLDOWN_HOURS = 24;
+/** Explore Enter — AI 교정 대기 상한(초과 시 결과 없음) */
+const EXPLORE_SEARCH_AI_TIMEOUT_MS = 5500;
 
 const normalizeSearchKey = (s) => String(s || '').replace(/\s+/g, '').toLowerCase();
 
@@ -845,6 +848,15 @@ export function useHomeHandlers({
     if (requireChoice && !skipEnterDirectForQa) {
       const dictChoice = dictHomonymResult();
       if (dictChoice) return dictChoice;
+
+      try {
+        const koreaFirstAsync = await resolveKoreaDestinationFirstPass(query);
+        if (koreaFirstAsync) {
+          return commitLocation(firstPassHitToUiPlace(koreaFirstAsync, query), `'${query}' → 원하는 장소를 선택하세요`);
+        }
+      } catch {
+        // TourAPI 실패 시 기존 경로
+      }
 
       if (isGateoExploreSearchSubmitParityEnabled()) {
         if (resolveExploreCityHubExact(query)) {
@@ -1561,10 +1573,15 @@ export function useHomeHandlers({
           // 2. 캐시가 없으면 Proxy를 통해 AI 호출
           try {
             const searchMode = treatAsMoodQuery ? 'mood' : isFacilityQuery(query) ? 'facility' : 'typo';
-            const aiResponse = await apiClient.invokeGeminiTask('search_intent', {
-              mode: searchMode,
-              query,
-            });
+            const aiResponse = await Promise.race([
+              apiClient.invokeGeminiTask('search_intent', {
+                mode: searchMode,
+                query,
+              }),
+              new Promise((_, reject) => {
+                setTimeout(() => reject(new Error('explore-search-ai-timeout')), EXPLORE_SEARCH_AI_TIMEOUT_MS);
+              }),
+            ]);
 
             const cleanJsonString = String(aiResponse?.text ?? '')
               .replace(/```json/g, '')
@@ -1795,6 +1812,9 @@ export function useHomeHandlers({
       }
 
       if (!isCorrected) {
+        if (requireChoice) {
+          return { __noResults: true, query };
+        }
         const wantsAiChat = window.confirm(`정확한 지도 위치를 찾을 수 없습니다.\n대신 AI 가이드에게 '${query}'에 대해 물어보시겠습니까?`);
         if (wantsAiChat) {
           setSelectedLocation(null);
