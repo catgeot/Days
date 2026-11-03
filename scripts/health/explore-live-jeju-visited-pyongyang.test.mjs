@@ -166,3 +166,27 @@ test('평양 — 남태평양 부분 일치 금지(해역 큐레이션 없음)',
   assert.equal(resolveSeaBasinFromQuery('남태평양')?.basin?.id, 'south-pacific');
   assert.equal(resolveSeaBasinFromQuery('멕시코')?.basin?.id, 'gulf-of-mexico');
 });
+
+test('대서양 — 완전 일치 north-atlantic (앞부분 «대서양 화산섬» macaronesia 금지)', () => {
+  assert.equal(resolveSeaBasinFromQuery('대서양')?.basin?.id, 'north-atlantic');
+  assert.equal(resolveSeaBasinFromQuery('대서양 화산섬')?.basin?.id, 'macaronesia');
+  assert.equal(resolveSeaBasinFromQuery('멕시코만')?.basin?.id, 'gulf-of-mexico');
+  for (const typo of ['산호헤', '맥시코']) {
+    assert.equal(resolveSeaBasinFromQuery(typo)?.typoCorrected, true, typo);
+  }
+});
+
+test('고산사 (홍성) 띄어 쓴 괄호 — 고산사(홍성)과 같게 125901', async () => {
+  const asked = [];
+  const rows = await collectKoreaTourTitleSearchCandidates('고산사 (홍성)', {
+    lookupRows: async (title) => {
+      asked.push(title);
+      return LIVE_GOSANSA_BASE_ROWS;
+    },
+  });
+  assert.deepEqual(asked, ['고산사']);
+  assert.deepEqual(
+    rows.map((r) => r.contentId),
+    ['125901'],
+  );
+});

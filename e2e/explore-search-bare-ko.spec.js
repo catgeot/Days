@@ -26,6 +26,9 @@ const HONGSEONG_TOUR_PATH = `/place/tour-${EXPLORE_GOSANSA_HONGSEONG_ROW.content
 const JANGHEUNG_TOUR_PATH = `/place/tour-${EXPLORE_GOSANSA_JANGHEUNG_ROW.content_id}`;
 const PYONGYANG = '\uD3C9\uC591';
 const SOUTH_PACIFIC = '\uB0A8\uD0DC\uD3C9\uC591';
+const ATLANTIC = '\uB300\uC11C\uC591';
+const NORTH_ATLANTIC = '\uBD81\uB300\uC11C\uC591';
+const MACARONESIA = '\uB9C8\uCE74\uB85C\uB124\uC2DC\uC544';
 
 function escapeRegExp(text) {
   return String(text).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -198,6 +201,14 @@ test.describe('Explore bare KO — Mapbox-only parity', () => {
     await expect(card).toBeVisible({ timeout: 120_000 });
     await card.click();
     await expect(page).toHaveURL(/\/place\/jeju(?:\/|$|\?)/, { timeout: 60_000 });
+  });
+
+  test('대서양 Enter — north-atlantic(북대서양) 큐레이션 · 마카로네시아 아님', async ({ page }) => {
+    await submitExploreQuery(page, ATLANTIC);
+    await expect(
+      page.getByRole('heading', { name: new RegExp(`'${NORTH_ATLANTIC}' 해역`) }),
+    ).toBeVisible({ timeout: 120_000 });
+    await expect(page.getByRole('heading', { name: new RegExp(MACARONESIA) })).toHaveCount(0);
   });
 
   test('평양 Enter — 남태평양 해역 큐레이션 없음 · 홈 유지', async ({ page }) => {
