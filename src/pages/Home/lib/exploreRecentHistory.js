@@ -295,12 +295,16 @@ export function resolveSearchResultSelect(spot) {
   const lng = Number(spot.lng);
   if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
   const pin = { ...spot, lat, lng };
-  const param = knownPlaceSlug(getPlaceUrlParam(pin));
+  const rawParam = getPlaceUrlParam(pin);
+  const param = knownPlaceSlug(rawParam);
   const known = param ? knownPlaceForParam(param) : null;
   const countyMismatch = Boolean(known) && !pinNameOwnsPlace(pin, known);
   const spotForOpen = countyMismatch ? detachCountySlug(pin, known) : pin;
   if (isMapboxOrGeocodePin(pin) || countyMismatch) return { type: 'home', spot: spotForOpen };
   if (param) return { type: 'place', spot: pin, param };
+  if (rawParam && (pin.contentId || pin.source === 'tourapi')) {
+    return { type: 'place', spot: pin, param: rawParam };
+  }
   return { type: 'home', spot: pin };
 }
 

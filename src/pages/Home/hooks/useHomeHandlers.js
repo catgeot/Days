@@ -85,6 +85,12 @@ import {
   placeNameMatchesSearchQuery,
   pickEnterSuggestionMatches,
 } from '../lib/searchEnterMatch.js';
+import {
+  effectiveExploreSearchQuery,
+  filterRegionalExploreHits,
+  parseKoreaRegionalExploreQuery,
+  regionalExploreMapboxOpts,
+} from '../lib/exploreRegionalPlaceQuery.js';
 import { searchBoxForward, searchBoxTypesForQuery } from '../lib/mapboxSearchBox.js';
 import {
   overlayGeocodeLatinOnHits,
@@ -194,8 +200,17 @@ const isAdminRegionName = (name) => {
   return /(?:gun|si|gu|-gun|-si|city\s*hall|town\s*hall)$/i.test(n);
 };
 const MOOD_VARIANT_RECENT_COOLDOWN_HOURS = 24;
-/** Explore Enter — AI 교정 대기 상한(초과 시 결과 없음) */
+/** Explore Enter — AI 교정 대기 상한(초과 시 국내 후보 재시도) */
 const EXPLORE_SEARCH_AI_TIMEOUT_MS = 5500;
+const EXPLORE_SEARCH_HANGUL_RE = /[\uAC00-\uD7A3]/;
+
+function shouldSkipOverseasAiTypoForQuery(query) {
+  return (
+    EXPLORE_SEARCH_HANGUL_RE.test(String(query || '')) &&
+    !isFacilityQuery(query) &&
+    !shouldSkipGeocodeForMood(query)
+  );
+}
 
 const normalizeSearchKey = (s) => String(s || '').replace(/\s+/g, '').toLowerCase();
 
@@ -1073,6 +1088,18 @@ export function useHomeHandlers({
       const nameForLookup = candidate?.name_en || candidate?.name || "";
       if (!nameForLookup) return null;
 
+      if (
+        shouldSkipOverseasAiTypoForQuery(originalQuery) &&
+        !isDomesticKoreaLocation({
+          country: candidate?.country,
+          country_en: candidate?.country_en,
+          lat: rawLat,
+          lng: rawLng,
+        })
+      ) {
+        return null;
+      }
+
       const countryForLookup = candidate?.country_en || candidate?.country || "";
       const verifiedByNameCountry = await getCoordinatesFromAddress(
         countryForLookup ? `${nameForLookup}, ${countryForLookup}` : nameForLookup
@@ -1268,7 +1295,7 @@ export function useHomeHandlers({
       ? null
       : shouldSkipGeocodeForMood(query)
         ? null
-        : await getCoordinatesFromAddress(query);
+        : await getCoordinatesFromAddress(effectiveExploreSearchQuery(query));
     if (isWeakGeocodeHitForMood(query, coords)) {
       coords = null;
     }
@@ -1297,13 +1324,18 @@ export function useHomeHandlers({
       // requireChoice면 Mapbox 후보가 있으면 항상 선택 카드
       if (!isFacilityQuery(query)) {
         try {
-          const remoteHits = await searchBoxForward(query, {
+            const remoteHits = await searchBoxForward(effectiveExploreSearchQuery(query), {
             limit: 5,
-            types: searchBoxTypesForQuery(query),
+            types: searchBoxTypesForQuery(effectiveExploreSearchQuery(query)),
+            ...regionalExploreMapboxOpts(parseKoreaRegionalExploreQuery(query)),
           });
+          const regionalScope = parseKoreaRegionalExploreQuery(query);
+          const filteredRemote = regionalScope
+            ? filterRegionalExploreHits(regionalScope, remoteHits)
+            : remoteHits;
           const seenNames = new Set();
           const distinct = [];
-          for (const hit of remoteHits) {
+          for (const hit of filteredRemote) {
             const key = String(hit.name || '')
               .trim()
               .toLowerCase()
@@ -1570,6 +1602,11 @@ export function useHomeHandlers({
         }
 
         if (!isCorrected) {
+          const allowAiTypo =
+            treatAsMoodQuery ||
+            isFacilityQuery(query) ||
+            !shouldSkipOverseasAiTypoForQuery(query);
+          if (allowAiTypo) {
           // 2. 캐시가 없으면 Proxy를 통해 AI 호출
           try {
             const searchMode = treatAsMoodQuery ? 'mood' : isFacilityQuery(query) ? 'facility' : 'typo';
@@ -1750,6 +1787,7 @@ export function useHomeHandlers({
             console.warn("Smart Search AI Proxy Error:", aiErr);
             if (isGeminiFeatureLimitError(aiErr)) aiLimitHit = true;
           }
+          }
         }
       } catch (err) {
         console.warn("Smart Search Fallback Error:", err);
@@ -1813,6 +1851,40 @@ export function useHomeHandlers({
 
       if (!isCorrected) {
         if (requireChoice) {
+          try {
+            const hybridMatches = pickEnterSuggestionMatches(
+              query,
+              await buildHybridSearchSuggestions(query),
+            ).slice(0, 8);
+            if (hybridMatches.length >= 1) {
+              return ensureDisambiguation(
+                query,
+                hybridMatches,
+                `'${query}' → 원하는 장소를 선택하세요`,
+              );
+            }
+          } catch {
+            // hybrid 실패 시 local·first-pass
+          }
+          const localChoices = buildLocalSearchSuggestions(query);
+          if (localChoices.length >= 1) {
+            return ensureDisambiguation(
+              query,
+              localChoices,
+              `'${query}' → 원하는 장소를 선택하세요`,
+            );
+          }
+          try {
+            const koreaRetry = await resolveKoreaDestinationFirstPass(query);
+            if (koreaRetry) {
+              return commitLocation(
+                firstPassHitToUiPlace(koreaRetry, query),
+                `'${query}' → 원하는 장소를 선택하세요`,
+              );
+            }
+          } catch {
+            // TourAPI 실패
+          }
           return { __noResults: true, query };
         }
         const wantsAiChat = window.confirm(`정확한 지도 위치를 찾을 수 없습니다.\n대신 AI 가이드에게 '${query}'에 대해 물어보시겠습니까?`);

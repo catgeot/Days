@@ -319,9 +319,13 @@ export function firstPassHitToUiPlace(hit, query = '') {
     };
   }
   const nameEn = hit.name_en || hit.name;
+  const lat = Number(hit.lat);
+  const lng = Number(hit.lng);
+  const coordKey = Number.isFinite(lat) && Number.isFinite(lng) ? `search-${lat}-${lng}` : '';
+  const tourPin = hit.source === 'tourapi' && coordKey;
   return {
-    id: `${hit.source || 'first-pass'}-${hit.lat}-${hit.lng}`,
-    slug: placeUrlSlug(nameEn, hit.name),
+    id: hit.contentId ? `tour-${hit.contentId}` : coordKey || `${hit.source || 'first-pass'}-${hit.lat}-${hit.lng}`,
+    slug: tourPin ? coordKey : placeUrlSlug(nameEn, hit.name),
     name: hit.name,
     name_en: nameEn,
     name_ko: hit.name,
@@ -330,7 +334,10 @@ export function firstPassHitToUiPlace(hit, query = '') {
     lat: hit.lat,
     lng: hit.lng,
     type: 'temp-base',
-    uiPlace: true,
+    uiPlace: hit.uiPlace !== false && hit.source !== 'tourapi',
+    source: hit.source || 'first-pass',
+    kind: hit.source === 'tourapi' ? 'poi' : hit.kind,
+    badge: hit.source === 'tourapi' ? '명소' : hit.badge,
     originalQuery,
     desc: hit.parentCity ? `${hit.parentCity} · ${hit.name}` : hit.name,
     ...(hit.stayAdmin ? { stayAdmin: hit.stayAdmin } : {}),

@@ -53,6 +53,38 @@ test('filterRegionalExploreHits drops overseas Udomlya for 제주 우도 context
   );
 });
 
+test('filterRegionalExploreHits drops 강진 가우도 partial match for 제주 우도', () => {
+  const regional = parseKoreaRegionalExploreQuery('제주 우도');
+  assert.ok(regional);
+  const gaudo = {
+    name: '가우도',
+    country: '대한민국',
+    country_en: 'South Korea',
+    lat: 34.52,
+    lng: 126.59,
+    source: 'mapbox',
+  };
+  const jejuUdo = {
+    name: '우도',
+    country: '대한민국',
+    country_en: 'South Korea',
+    addr1: '제주특별자치도 제주시 우도면',
+    lat: 33.506,
+    lng: 126.953,
+    source: 'mapbox',
+  };
+  const filtered = filterRegionalExploreHits(regional, [gaudo, jejuUdo]);
+  assert.deepEqual(
+    filtered.map((h) => h.name),
+    ['우도'],
+  );
+});
+
+test('parseKoreaRegionalExploreQuery — 강릉 커피·제주 파리는 분리하지 않음', () => {
+  assert.equal(parseKoreaRegionalExploreQuery('강릉 커피'), null);
+  assert.equal(parseKoreaRegionalExploreQuery('제주 파리'), null);
+});
+
 test('TourAPI row pick — 우도 + 제주 addr hint beats homonym', () => {
   const rows = [
     {
