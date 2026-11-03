@@ -1,5 +1,8 @@
 import { coordsInKorea } from './visitedPlaceSearch.js';
-import { isDomesticKoreaLocation } from '../../../utils/tourApiMatch.js';
+import {
+  hasExplicitNonKoreaCountry,
+  isDomesticKoreaLocation,
+} from '../../../utils/tourApiMatch.js';
 import { resolveCityAttractionHub } from './cityAttractionHubs.js';
 import { resolveExploreCityHubExact } from './exploreHubResolve.js';
 import { getLocalizedParentCityLabel } from '../../../components/PlaceCard/common/locationDisplay.js';
@@ -60,7 +63,8 @@ export function isDomesticMapboxAdminAreaPin(pin) {
   if (featureType === 'country') return true;
   if (isMapboxRegionFeatureAdminPin(pin)) return true;
   const name = String(pin.name || pin.name_ko || '').trim();
-  if (name && (isKoreaProvinceLevelName(name) || resolveKoreaProvinceCatalogHub(name))) {
+  if (name && isKoreaProvinceLevelName(name)) return true;
+  if (name && resolveKoreaProvinceCatalogHub(name) && isDomesticExplorePinForRouting(pin)) {
     return true;
   }
   return isDomesticMapboxCountryName(pin);
@@ -103,6 +107,13 @@ export function isDomesticMapboxCountryOrProvincePin(pin) {
   return !resolveDomesticMapboxAdminHub(pin);
 }
 
+/** Mapbox·Geocode — 명시적 해외만 제외, 좌표가 한반도면 국내 탐색 라우팅 허용 */
+function isDomesticExplorePinForRouting(pin) {
+  if (hasExplicitNonKoreaCountry(pin)) return false;
+  if (isDomesticKoreaLocation(pin)) return true;
+  return pinCoordsInKorea(pin);
+}
+
 /** Mapbox 나라·무매칭 도 — 홈 지구본 (/place/mapbox-* 금지) */
 export function shouldKeepDomesticMapboxAdminPinOnHome(pin) {
   if (!isDomesticMapboxAdminAreaPin(pin)) return false;
@@ -115,14 +126,14 @@ export function shouldKeepDomesticMapboxAdminPinOnHome(pin) {
 export function shouldRouteDomesticExplorePinToPlace(pin) {
   if (!pin || typeof pin !== 'object') return false;
   if (!pinCoordsInKorea(pin)) return false;
-  if (!isDomesticKoreaLocation(pin)) return false;
+  if (!isDomesticExplorePinForRouting(pin)) return false;
 
   const source = String(pin.source ?? '').trim().toLowerCase();
   if (source === 'tourapi') return true;
 
   if (isMapboxOrGeocodeSource(source) || isMapboxOrGeocodePinId(pin)) {
-    if (shouldKeepDomesticMapboxAdminPinOnHome(pin)) return false;
     if (resolveDomesticMapboxAdminHub(pin)) return true;
+    if (shouldKeepDomesticMapboxAdminPinOnHome(pin)) return false;
     return true;
   }
   return false;
@@ -198,6 +209,7 @@ export async function attachKoreaTourContentToExplorePin(pin) {
   if (!isMapboxOrGeocodeSource(source) && !isMapboxOrGeocodePinId(normalized)) {
     return normalized;
   }
+  if (resolveDomesticMapboxAdminHub(normalized)) return normalized;
   if (!shouldRouteDomesticExplorePinToPlace(normalized)) return normalized;
 
   const title = String(normalized.name || normalized.name_ko || '').trim();

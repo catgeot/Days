@@ -111,6 +111,33 @@ function pushUnique(out, seen, item) {
   out.push(item);
 }
 
+async function prependKoreaTourTitleCandidates(query, regional, list) {
+  const titleQ = regional
+    ? String(regional.placeQuery || '').trim()
+    : canonicalizeExploreSearchQuery(effectiveExploreSearchQuery(query));
+  if (!titleQ || !/[\uAC00-\uD7A3]/.test(titleQ)) return list;
+  if (/\s/.test(String(query || '').trim()) && !regional?.placeQuery) return list;
+  try {
+    const { collectKoreaTourTitleSearchCandidates } = await import('./exploreKoreaTourTitleCandidates.js');
+    const tourItems = await collectKoreaTourTitleSearchCandidates(
+      regional ? `${regional.regionQuery} ${regional.placeQuery}`.trim() : String(query || '').trim(),
+    );
+    if (!tourItems.length) return list;
+    const merged = [];
+    const seen = new Set();
+    for (const item of tourItems) pushUnique(merged, seen, item);
+    for (const item of list) pushUnique(merged, seen, item);
+    return merged;
+  } catch {
+    return list;
+  }
+}
+
+async function finalizeHybridSuggestions(query, regional, list, max = 24) {
+  const withTour = await prependKoreaTourTitleCandidates(query, regional, list);
+  return withTour.slice(0, max).map(enrichSearchCandidateScenicMedia);
+}
+
 /**
  * SSOT 여행지 Enter 카드에, 멀리 떨어진 동명을 붙인다 (사바↔카리브 사바).
  * 고정 동명이 먼저 — Mapbox ko 표기가 SSOT와 같은 한글명이면 둘째 카드가 사라진다.
@@ -482,7 +509,9 @@ export async function buildHybridSearchSuggestions(query, opts = {}) {
     for (const item of [...poi, ...prependScopeSync(local)]) {
       pushUnique(merged, seenPoi, enrichSearchCandidateScenicMedia(item));
     }
-    if (merged.length >= 1) return applyScope(merged).slice(0, 180);
+    if (merged.length >= 1) {
+      return finalizeHybridSuggestions(q, regional, applyScope(merged), 180);
+    }
   }
 
   // 허브/명소/정착지/지자체리스트 exact는 큐레이션만 — Mapbox 대기로 지연시키지 않음
@@ -497,9 +526,7 @@ export async function buildHybridSearchSuggestions(query, opts = {}) {
     shouldSkipGeocodeForMood(q) ||
     shouldOfferKoreaHomonymDisambiguation(q)
   ) {
-    return applyScope(prependScopeSync(local))
-      .slice(0, 24)
-      .map(enrichSearchCandidateScenicMedia);
+    return finalizeHybridSuggestions(q, regional, applyScope(prependScopeSync(local)));
   }
 
   const mergedLocal = prependScopeSync(local);
@@ -540,9 +567,9 @@ export async function buildHybridSearchSuggestions(query, opts = {}) {
       pushUnique(withVisited, visitedSeen, item);
     }
     for (const item of regionChecked) pushUnique(withVisited, visitedSeen, item);
-    return withVisited.slice(0, 24);
+    return finalizeHybridSuggestions(q, regional, withVisited);
   } catch {
-    return regionChecked.slice(0, 24);
+    return finalizeHybridSuggestions(q, regional, regionChecked);
   }
 }
 
