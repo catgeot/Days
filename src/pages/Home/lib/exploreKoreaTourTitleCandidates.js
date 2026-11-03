@@ -28,7 +28,17 @@ function compactKey(s) {
 
 function rowTitleMatchesQuery(row, titleKey) {
   const keys = [row?.title, row?.name].map(compactKey).filter(Boolean);
-  return keys.some((k) => k === titleKey);
+  for (const k of keys) {
+    if (k === titleKey) return true;
+    if (titleKey.length < 2) continue;
+    if (k.endsWith(titleKey)) return true;
+    const idx = k.indexOf(titleKey);
+    if (idx < 0) continue;
+    const after = k.slice(idx + titleKey.length);
+    if (!after) return true;
+    if (/^(?:대웅전|루|전|각|암|탑|동|리|사|터|원|당|문|각|채|각)$/u.test(after)) return true;
+  }
+  return false;
 }
 
 /**
@@ -76,7 +86,24 @@ export async function buildKoreaTourTitleEnterDisambiguation(query, opts = {}) {
   if (!q) return null;
   const candidates = await collectKoreaTourTitleSearchCandidates(q, opts);
   if (!candidates.length) return null;
-  const list = candidates.map(enrichSearchCandidateScenicMedia);
+  let list = candidates.map(enrichSearchCandidateScenicMedia);
+  try {
+    const { searchBoxForward, searchBoxTypesForQuery } = await import('./mapboxSearchBox.js');
+    const remote = await searchBoxForward(q, {
+      limit: 4,
+      types: searchBoxTypesForQuery(q),
+      language: 'ko',
+    });
+    const seen = new Set(list.map((item) => String(item?.id || item?.name || '')));
+    for (const item of remote || []) {
+      const key = String(item?.id || item?.name || '');
+      if (!key || seen.has(key)) continue;
+      seen.add(key);
+      list.push(enrichSearchCandidateScenicMedia(item));
+    }
+  } catch {
+    // Mapbox offline — Tour 후보만
+  }
   return makeDisambiguationResult(q, list, {
     title: `'${q}' → 도시·명소·여행지`,
   });

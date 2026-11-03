@@ -119,9 +119,10 @@ test('tourapi search rows open /place even when slug overlaps catalog', () => {
     contentId: '1234567',
     uiPlace: true,
     country: '\uB300\uD55C\uBBFC\uAD6D',
+    country_en: 'South Korea',
   });
   assert.equal(decision?.type, 'place');
-  assert.ok(decision?.param);
+  assert.equal(decision?.param, 'tour-1234567');
 });
 
 test('catalog contentId without tourapi source keeps county-safe home routing', () => {
@@ -139,7 +140,7 @@ test('catalog contentId without tourapi source keeps county-safe home routing', 
   assert.equal(decision?.param, 'jeju');
 });
 
-test('collectKoreaTourTitleSearchCandidates — exact title filter', async () => {
+test('collectKoreaTourTitleSearchCandidates — exact·suffix title filter (고산사 동명)', async () => {
   const rows = await collectKoreaTourTitleSearchCandidates('\uACE0\uC0B0\uC0AC', {
     lookupRows: async () => [
       {
@@ -160,8 +161,8 @@ test('collectKoreaTourTitleSearchCandidates — exact title filter', async () =>
       },
     ],
   });
-  assert.equal(rows.length, 1);
-  assert.equal(rows[0]?.name, '\uACE0\uC0B0\uC0AC');
+  assert.equal(rows.length, 2);
   assert.equal(rows[0]?.contentId, '111');
+  assert.equal(rows[1]?.contentId, '222');
   assert.equal(rows[0]?.source, 'tourapi');
 });

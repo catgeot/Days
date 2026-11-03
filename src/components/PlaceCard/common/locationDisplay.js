@@ -1,4 +1,4 @@
-import { resolveCityAttractionHub } from '../../../pages/Home/lib/cityAttractionHubs.js';
+import { resolveCityAttractionHub, listCityAttractionHubs } from '../../../pages/Home/lib/cityAttractionHubs.js';
 import { lookupCuratedScenicSpot } from '../../../pages/Home/lib/koreaLocalScenicLists.js';
 import { formatScenicSpotPlaceLabel } from '../../../pages/Home/lib/scenicSpotPlaceLabel.js';
 import { citiesData } from '../../../pages/Home/data/citiesData.js';
@@ -141,7 +141,18 @@ export function getLocalizedParentCityLabel(parentCity, locale = 'ko') {
     return city?.name_en || raw;
   }
   if (hasHangul(raw)) return raw;
-  const hub = resolveCityAttractionHub(raw);
+  let hub = resolveCityAttractionHub(raw);
+  if (!hub?.name) {
+    const key = raw.toLowerCase().replace(/\s+/g, '');
+    hub =
+      listCityAttractionHubs().find(
+        (h) =>
+          String(h.name_en || '')
+            .trim()
+            .toLowerCase()
+            .replace(/\s+/g, '') === key,
+      ) || null;
+  }
   if (hub?.name) return hub.name;
   const city = (citiesData || []).find(
     (c) =>

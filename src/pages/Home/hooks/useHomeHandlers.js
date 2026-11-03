@@ -878,14 +878,18 @@ export function useHomeHandlers({
         if (resolveExploreCityHubExact(query)) {
           const parityChoice = await buildExploreSubmitParityDisambiguation(query);
           if (parityChoice) return parityChoice;
-        } else {
-          const broadParity = await buildExploreSubmitParityBroadDisambiguation(query);
-          if (broadParity) return broadParity;
         }
       }
 
       const curated = await buildCuratedEnterDisambiguation(query);
       if (curated) return curated;
+
+      if (isGateoExploreSearchSubmitParityEnabled()) {
+        if (!resolveExploreCityHubExact(query)) {
+          const broadParity = await buildExploreSubmitParityBroadDisambiguation(query);
+          if (broadParity) return broadParity;
+        }
+      }
 
       const poiTypeChoices = await collectKoreaPoiTypeSearchCandidates(query);
       if (poiTypeChoices.length >= 1) {

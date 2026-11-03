@@ -28,7 +28,7 @@ function purgeLegacyPlaceCacheOnce() {
 function isCacheableId(id) {
   if (id == null) return false;
   const s = String(id);
-  return s.startsWith('search-') || s.startsWith('loc-') || s.startsWith('label-');
+  return s.startsWith('search-') || s.startsWith('loc-') || s.startsWith('label-') || s.startsWith('tour-');
 }
 
 function isCacheableSlug(slug) {

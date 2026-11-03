@@ -865,6 +865,11 @@ function Home() {
     setSelectedLocation(prepared);
     addScoutPin(prepared);
     moveToLocation(prepared.lat, prepared.lng, prepared.name, prepared.category || category, { location: prepared });
+    if (param.startsWith('tour-')) {
+      prepared.slug = param;
+      prepared.canonical_slug = param;
+    }
+    cachePlaceLocation(prepared);
     navigate(`/place/${param}${tabSuffix}`);
   }, [category, navigate, addScoutPin, moveToLocation, rememberGlobeFocus, setSelectedLocation]);
 
@@ -1015,6 +1020,32 @@ function Home() {
             }
           }
         }
+      }
+
+      const tourContentMatch = normalizedTargetSlug.match(/^tour-(\d{1,32})$/);
+      if (!target && tourContentMatch) {
+        let cancelled = false;
+        (async () => {
+          try {
+            const { fetchKoreaTourAttractionById } = await import('./lib/koreaTourAttractions.js');
+            const { tourAttractionToPoiSuggestion } = await import('./lib/koreaPoiTypeSearch.js');
+            const row = await fetchKoreaTourAttractionById(tourContentMatch[1]);
+            if (cancelled || !row) return;
+            const pin = tourAttractionToPoiSuggestion(row);
+            if (!pin || !Number.isFinite(Number(pin.lat))) return;
+            const prepared = {
+              ...pin,
+              uiPlace: true,
+              slug: normalizedTargetSlug,
+              canonical_slug: normalizedTargetSlug,
+            };
+            cachePlaceLocation(prepared);
+            navigateToPlace(prepared);
+          } catch {
+            // TourAPI offline — /place/tour-* 공유 URL은 캐시·fetch 없으면 빈 화면
+          }
+        })();
+        return;
       }
 
       if (target) {
