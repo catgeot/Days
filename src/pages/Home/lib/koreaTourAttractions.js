@@ -43,7 +43,7 @@ export {
 };
 
 const LIST_SELECT =
-  'content_id, title, addr1, addr2, area_code, sigungu_code, mapx, mapy, first_image, active, cat1, cat2, cat3, modified_time';
+  'content_id, title, addr1, addr2, area_code, sigungu_code, mapx, mapy, first_image, active, cat1, cat2, cat3, modified_time, source';
 
 /** PR #653 mock·공유 URL — TourAPI LIVE canonical id */
 const LEGACY_TOUR_CONTENT_ID_ALIASES = {
@@ -534,6 +534,7 @@ export async function fetchKoreaTourAttractionById(contentId) {
     return null;
   }
   if (data) return mapTourAttractionRow(data);
+  if (/^99\d{8,30}$/.test(id)) return null;
   return fetchKoreaTourAttractionByIdLive(id);
 }
 

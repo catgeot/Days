@@ -21,6 +21,10 @@ import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import { TOURAPI_AREA_CODES } from './lib/tourapi-attraction-areas.mjs';
 import { fillTourAttractionMeta } from './lib/tourapi-attraction-infer.mjs';
+import {
+  TOUR_ATTRACTION_SOURCE_TOURAPI,
+  TOUR_ATTRACTION_SOURCE_MANUAL,
+} from './lib/tourapi-attraction-source.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const KEY = String(process.env.TOUR_API_SERVICE_KEY || '').trim();
@@ -106,6 +110,7 @@ function mapRow(item, syncedAt) {
     tel: pickStr(filled, 'tel'),
     modified_time: pickStr(filled, 'modifiedtime', 'modifiedTime'),
     active: true,
+    source: TOUR_ATTRACTION_SOURCE_TOURAPI,
     synced_at: syncedAt,
     updated_at: syncedAt,
   };
@@ -264,7 +269,18 @@ async function fetchAreaAll(areaCode) {
 }
 
 async function upsertChunk(sb, chunk) {
-  const { error } = await sb.from('tourapi_attraction').upsert(chunk, {
+  if (!chunk.length) return;
+  const ids = chunk.map((r) => r.content_id).filter(Boolean);
+  const { data: manualRows, error: guardErr } = await sb
+    .from('tourapi_attraction')
+    .select('content_id')
+    .in('content_id', ids)
+    .eq('source', TOUR_ATTRACTION_SOURCE_MANUAL);
+  if (guardErr) throw new Error(`upsert guard: ${guardErr.message}`);
+  const skip = new Set((manualRows || []).map((r) => r.content_id));
+  const filtered = chunk.filter((r) => r.content_id && !skip.has(r.content_id));
+  if (!filtered.length) return;
+  const { error } = await sb.from('tourapi_attraction').upsert(filtered, {
     onConflict: 'content_id',
   });
   if (error) throw new Error(`upsert: ${error.message}`);
@@ -273,9 +289,10 @@ async function upsertChunk(sb, chunk) {
 async function deactivateMissing(sb, keepIds, syncedAt) {
   const { data, error } = await sb
     .from('tourapi_attraction')
-    .select('content_id')
+    .select('content_id, source')
     .eq('content_type_id', CONTENT_TYPE_ID)
-    .eq('active', true);
+    .eq('active', true)
+    .eq('source', TOUR_ATTRACTION_SOURCE_TOURAPI);
   if (error) throw new Error(`select active: ${error.message}`);
   const keep = new Set(keepIds);
   const toOff = (data || [])
