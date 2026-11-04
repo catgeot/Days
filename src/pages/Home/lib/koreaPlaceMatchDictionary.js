@@ -544,6 +544,7 @@ export const KO_EXPLORE_SEARCH_ALIASES = [
     {
       canonical: '평양',
       romanized: 'Pyongyang, North Korea',
+      placeSlug: 'pyongyang',
     },
   ],
   ...expandScenicNameVariants(),
@@ -654,6 +655,21 @@ export function resolveKoExploreSearchAlias(query) {
   const k = normalizePlaceMatchKey(query);
   if (!k) return null;
   return KO_EXPLORE_SEARCH_ALIAS_MAP.get(k) || null;
+}
+
+/** Mapbox·geocode 핀 표시명이 SSOT 별칭 canonical과 같을 때 직행할 /place slug */
+export function resolveExploreAliasDirectPlaceSlug(label) {
+  const cfg = resolveKoExploreSearchAlias(label);
+  if (cfg?.placeSlug) return String(cfg.placeSlug).trim();
+  const key = normalizePlaceMatchKey(label);
+  if (!key) return null;
+  for (const row of KO_EXPLORE_SEARCH_ALIAS_MAP.values()) {
+    if (!row?.placeSlug) continue;
+    if (normalizePlaceMatchKey(row.canonical) === key) {
+      return String(row.placeSlug).trim();
+    }
+  }
+  return null;
 }
 
 /**
