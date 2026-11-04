@@ -545,15 +545,25 @@ export const KO_EXPLORE_SEARCH_ALIASES = [
       canonical: '평양',
       romanized: 'Pyongyang, North Korea',
       placeSlug: 'pyongyang',
-      lat: 39.0392,
-      lng: 125.7625,
-      name_en: 'Pyongyang',
-      country: '북한',
-      country_en: 'North Korea',
     },
   ],
   ...expandScenicNameVariants(),
 ];
+
+/**
+ * 탐색 별칭 placeSlug — /place/:slug 직접 열기·새로고침 (카탈로그·cities 미등록).
+ * KO_EXPLORE_SEARCH_ALIASES에는 좌표 금지(health 게이트) — 좌표는 여기만.
+ */
+export const EXPLORE_ALIAS_PLACE_ROUTE_PINS = {
+  pyongyang: {
+    name: '평양',
+    name_en: 'Pyongyang',
+    lat: 39.0392,
+    lng: 125.7625,
+    country: '북한',
+    country_en: 'North Korea',
+  },
+};
 
 /**
  * 단독 한글 검색(우도·닭머르) — 「제주 우도」 없이도 허브 proximity·부분일치(가우도) 필터.
@@ -602,18 +612,6 @@ export const KO_MRT_STAY_KEYWORD_OVERRIDES = {};
 const KO_EXPLORE_SEARCH_ALIAS_MAP = new Map(
   KO_EXPLORE_SEARCH_ALIASES.map(([k, v]) => [normalizePlaceMatchKey(k), v]),
 );
-
-/** placeSlug + 좌표가 있는 탐색 별칭 — /place/:slug 직접 열기·새로고침 */
-const EXPLORE_ALIAS_PLACE_PIN_BY_SLUG = new Map();
-for (const row of KO_EXPLORE_SEARCH_ALIAS_MAP.values()) {
-  if (!row?.placeSlug) continue;
-  const lat = Number(row.lat);
-  const lng = Number(row.lng);
-  if (!Number.isFinite(lat) || !Number.isFinite(lng)) continue;
-  const slugKey = String(row.placeSlug).trim().toLowerCase();
-  if (!slugKey || EXPLORE_ALIAS_PLACE_PIN_BY_SLUG.has(slugKey)) continue;
-  EXPLORE_ALIAS_PLACE_PIN_BY_SLUG.set(slugKey, { ...row, lat, lng });
-}
 
 /**
  * @param {string} raw
@@ -693,17 +691,20 @@ export function resolveExploreAliasDirectPlaceSlug(label) {
 export function resolveExploreAliasPlaceFromSlug(slug) {
   const key = String(slug ?? '').trim().toLowerCase();
   if (!key) return null;
-  const row = EXPLORE_ALIAS_PLACE_PIN_BY_SLUG.get(key);
+  const row = EXPLORE_ALIAS_PLACE_ROUTE_PINS[key];
   if (!row) return null;
+  const lat = Number(row.lat);
+  const lng = Number(row.lng);
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
   return {
     id: `explore-alias-${key}`,
     slug: key,
     canonical_slug: key,
-    name: row.canonical,
-    name_ko: row.canonical,
-    name_en: row.name_en || row.canonical,
-    lat: row.lat,
-    lng: row.lng,
+    name: row.name,
+    name_ko: row.name,
+    name_en: row.name_en || row.name,
+    lat,
+    lng,
     country: row.country || 'Explore',
     country_en: row.country_en || 'Explore',
     uiPlace: true,
