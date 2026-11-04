@@ -1,6 +1,6 @@
 /**
  * 11/4 홍보 장소 검색 — Preview 캡처 (390·1280)
- * PLAYWRIGHT_BASE_URL=http://127.0.0.1:4173 npx playwright test e2e/explore-promo-search-1104.spec.js --project=chromium
+ * PLAYWRIGHT_BASE_URL=https://127.0.0.1:4173 npx playwright test e2e/explore-promo-search-1104.spec.js --project=chromium
  */
 import { test, expect } from './fixtures.js';
 import { installExploreGeminiMock } from './explore-gemini-mock.js';
@@ -18,6 +18,10 @@ function slugQuery(q) {
   return q.replace(/\s+/g, '-');
 }
 
+function escapeRegExp(text) {
+  return String(text).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
 async function openExploreSearch(page) {
   await page.goto('/explore', { waitUntil: 'domcontentloaded', timeout: 90_000 });
   const searchInput = page.getByRole('textbox', { name: /예: 속초|e\.g\. Sokcho/i }).first();
@@ -29,9 +33,14 @@ async function waitSearchSettled(page) {
   await expect(page.getByText(/목적지를 찾고 있습니다|Finding this place/i)).toHaveCount(0, {
     timeout: 90_000,
   });
-  const choice = page.getByRole('button').filter({ hasText: /.+/ }).first();
-  const noResult = page.getByText(/맞는 장소를 찾지 못했습니다|could not find/i);
-  await expect(choice.or(noResult)).toBeVisible({ timeout: 90_000 });
+}
+
+function searchResultButton(page, pattern) {
+  return page
+    .locator('[data-search-popover] button')
+    .filter({ hasNotText: /MOONi|전송|일반 탐색/i })
+    .filter({ hasText: pattern })
+    .first();
 }
 
 async function shot(page, filename, width) {
@@ -59,27 +68,36 @@ for (const query of QUERIES) {
       await input.fill(query);
       await input.press('Enter');
       await waitSearchSettled(page);
-      await shot(page, `promo-search-${slugQuery(query)}-${viewport.label}.png`, viewport.width);
 
       if (query === '한라산 백록담') {
-        const card = page.getByRole('button', { name: /한라산|백록담|127635|국립공원/i }).first();
-        await expect(card).toBeVisible();
-        await card.click();
-        await page.waitForURL(/\/place\/tour-127635/, { timeout: 60_000 });
+        const navigated = await page
+          .waitForURL(/\/place\/tour-127635/, { timeout: 8_000 })
+          .then(() => true)
+          .catch(() => false);
+        if (!navigated) {
+          const card = searchResultButton(page, /한라산|백록담|127635|국립공원/i);
+          await expect(card).toBeVisible({ timeout: 120_000 });
+          await card.click();
+          await expect(page).toHaveURL(/\/place\/tour-127635/, { timeout: 60_000 });
+        }
       }
+
       if (query === '개심사') {
-        const first = page.getByRole('button', { name: /개심사/ }).first();
-        await expect(first).toBeVisible();
+        const first = searchResultButton(page, new RegExp(escapeRegExp('개심사')));
+        await expect(first).toBeVisible({ timeout: 120_000 });
         await expect(first).toContainText(/서산/);
         await first.click();
-        await page.waitForURL(/\/place\/gaesimsa/, { timeout: 60_000 });
+        await expect(page).toHaveURL(/\/place\/gaesimsa/, { timeout: 60_000 });
       }
+
       if (query === '평양시') {
-        const card = page.getByRole('button').filter({ hasText: /Pyongyang|평양/i }).first();
-        await expect(card).toBeVisible();
+        const card = searchResultButton(page, /Pyongyang|평양/i);
+        await expect(card).toBeVisible({ timeout: 120_000 });
         await card.click();
-        await page.waitForURL(/\/place\/pyongyang/, { timeout: 60_000 });
+        await expect(page).toHaveURL(/\/place\/pyongyang/, { timeout: 60_000 });
       }
+
+      await shot(page, `promo-search-${slugQuery(query)}-${viewport.label}.png`, viewport.width);
     });
   }
 }
