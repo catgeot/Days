@@ -43,7 +43,7 @@ export {
 };
 
 const LIST_SELECT =
-  'content_id, title, addr1, addr2, area_code, sigungu_code, mapx, mapy, first_image, active, cat1, cat2, cat3, modified_time, source';
+  'content_id, title, addr1, addr2, area_code, sigungu_code, mapx, mapy, first_image, active, cat1, cat2, cat3, modified_time';
 
 /** PR #653 mock·공유 URL — TourAPI LIVE canonical id */
 const LEGACY_TOUR_CONTENT_ID_ALIASES = {
