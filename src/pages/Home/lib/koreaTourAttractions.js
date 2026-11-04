@@ -534,6 +534,7 @@ export async function fetchKoreaTourAttractionById(contentId) {
     return null;
   }
   if (data) return mapTourAttractionRow(data);
+  if (/^99\d{8,30}$/.test(id)) return null;
   return fetchKoreaTourAttractionByIdLive(id);
 }
 
