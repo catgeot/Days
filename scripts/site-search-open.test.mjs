@@ -131,6 +131,37 @@ test('flag on — Explore Enter single POI skips disambiguation (흥정계곡)',
   });
 });
 
+test('flag on — 개심사 Enter prefers 서산 gaesimsa over homonym tour row', () => {
+  withSiteSearchFlag(true, () => {
+    const seosan = {
+      name: '개심사',
+      slug: 'gaesimsa',
+      hubId: 'seosan',
+      contentId: '125908',
+      source: 'hub',
+      parentCity: '서산',
+      lat: 36.7468958,
+      lng: 126.5902297,
+      uiPlace: true,
+      country: '대한민국',
+    };
+    const goesan = {
+      name: '개심사',
+      slug: 'tour-999001',
+      contentId: '999001',
+      source: 'tourapi',
+      parentCity: '괴산',
+      lat: 36.8,
+      lng: 127.79,
+      uiPlace: true,
+      country: '대한민국',
+    };
+    const direct = resolveSiteSearchEnterSinglePoi('개심사', [goesan, seosan]);
+    assert.ok(direct);
+    assert.equal(direct.slug, 'gaesimsa');
+  });
+});
+
 test('flag on — county hub query keeps disambiguation path (평창)', () => {
   withSiteSearchFlag(true, () => {
     const local = buildLocalSearchSuggestions('평창');

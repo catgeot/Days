@@ -344,6 +344,16 @@ export function resolveSearchResultSelect(spot) {
   const countyMismatch = Boolean(known) && !pinNameOwnsPlace(pin, known);
   const spotForOpen = countyMismatch ? detachCountySlug(pin, known) : pin;
   if ((isMapboxOrGeocodePin(pin) || countyMismatch) && !shouldRouteDomesticExplorePinToPlace(pin)) {
+    const foreignParam = rawParam;
+    if (
+      foreignParam &&
+      !isBlockedCountryOnlyPlaceParam(foreignParam) &&
+      (foreignParam.startsWith('search-') ||
+        foreignParam.startsWith('tour-') ||
+        !isEphemeralSlug(foreignParam))
+    ) {
+      return { type: 'place', spot: spotForOpen, param: foreignParam };
+    }
     return { type: 'home', spot: spotForOpen };
   }
   if (param) return { type: 'place', spot: pin, param };

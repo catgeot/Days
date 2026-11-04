@@ -23,6 +23,16 @@ import {
   formatTourAttractionLocality,
 } from './koreaTourAttractionLocality.js';
 import { resolveKoStationAlias } from './koreaPlaceMatchDictionary.js';
+
+function applyExploreAliasTourContentId(hit, query) {
+  if (!hit) return hit;
+  const alias = resolveExploreSearchAlias(query);
+  const contentId = String(alias?.contentId || '').trim();
+  if (!/^\d{1,32}$/.test(contentId)) return hit;
+  hit.contentId = contentId;
+  hit.source = 'tourapi';
+  return hit;
+}
 import { inferPlaceMatchCategory } from './placeMatchCategory.js';
 
 const HAS_HANGUL_RE = /[\uAC00-\uD7A3]/;
@@ -227,7 +237,7 @@ export function resolveKoreaDestinationFirstPassSync(query) {
   const placeQ = regional?.placeQuery || q;
 
   const hubMatch = resolveKoreaHubAttractionMatch(placeQ);
-  if (hubMatch) return hitFromHub(hubMatch);
+  if (hubMatch) return applyExploreAliasTourContentId(hitFromHub(hubMatch), q);
 
   const station = resolveKoStationAlias(placeQ);
   if (station) return hitFromStation(station);

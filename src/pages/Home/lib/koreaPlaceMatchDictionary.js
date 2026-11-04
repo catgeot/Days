@@ -516,6 +516,36 @@ export const KO_EXPLORE_SEARCH_ALIASES = [
       also: ['평창 광천선굴'],
     },
   ],
+  [
+    '한라산 백록담',
+    {
+      canonical: '한라산국립공원',
+      contentId: '127635',
+      romanized: 'Hallasan Baengnokdam, Jeju',
+    },
+  ],
+  [
+    '백록담',
+    {
+      canonical: '한라산국립공원',
+      contentId: '127635',
+      also: ['한라산 백록담'],
+    },
+  ],
+  [
+    '화구벽',
+    {
+      canonical: '한라산국립공원',
+      contentId: '127635',
+    },
+  ],
+  [
+    '평양시',
+    {
+      canonical: '평양',
+      romanized: 'Pyongyang, North Korea',
+    },
+  ],
   ...expandScenicNameVariants(),
 ];
 

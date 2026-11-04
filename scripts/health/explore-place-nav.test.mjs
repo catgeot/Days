@@ -87,6 +87,21 @@ test('shouldRouteDomesticExplorePinToPlace — 해외 Mapbox는 false', () => {
   );
 });
 
+test('resolveSearchResultSelect — 해외 Mapbox 도시는 /place (평양시)', () => {
+  const decision = resolveSearchResultSelect({
+    id: 'mapbox-pyongyang',
+    name: '평양',
+    name_en: 'Pyongyang',
+    lat: 39.0392,
+    lng: 125.7625,
+    source: 'mapbox',
+    country_en: 'North Korea',
+    uiPlace: true,
+  });
+  assert.equal(decision?.type, 'place');
+  assert.equal(decision?.param, 'pyongyang');
+});
+
 test('getLocalizedParentCityLabel — Jangheung → 장흥', () => {
   assert.equal(getLocalizedParentCityLabel('Jangheung', 'ko'), '장흥');
 });
