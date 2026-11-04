@@ -545,6 +545,11 @@ export const KO_EXPLORE_SEARCH_ALIASES = [
       canonical: '평양',
       romanized: 'Pyongyang, North Korea',
       placeSlug: 'pyongyang',
+      lat: 39.0392,
+      lng: 125.7625,
+      name_en: 'Pyongyang',
+      country: '북한',
+      country_en: 'North Korea',
     },
   ],
   ...expandScenicNameVariants(),
@@ -597,6 +602,18 @@ export const KO_MRT_STAY_KEYWORD_OVERRIDES = {};
 const KO_EXPLORE_SEARCH_ALIAS_MAP = new Map(
   KO_EXPLORE_SEARCH_ALIASES.map(([k, v]) => [normalizePlaceMatchKey(k), v]),
 );
+
+/** placeSlug + 좌표가 있는 탐색 별칭 — /place/:slug 직접 열기·새로고침 */
+const EXPLORE_ALIAS_PLACE_PIN_BY_SLUG = new Map();
+for (const row of KO_EXPLORE_SEARCH_ALIAS_MAP.values()) {
+  if (!row?.placeSlug) continue;
+  const lat = Number(row.lat);
+  const lng = Number(row.lng);
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) continue;
+  const slugKey = String(row.placeSlug).trim().toLowerCase();
+  if (!slugKey || EXPLORE_ALIAS_PLACE_PIN_BY_SLUG.has(slugKey)) continue;
+  EXPLORE_ALIAS_PLACE_PIN_BY_SLUG.set(slugKey, { ...row, lat, lng });
+}
 
 /**
  * @param {string} raw
@@ -670,6 +687,29 @@ export function resolveExploreAliasDirectPlaceSlug(label) {
     }
   }
   return null;
+}
+
+/** /place/:slug — 탐색 별칭 SSOT (카탈로그·cities 미등록 slug) */
+export function resolveExploreAliasPlaceFromSlug(slug) {
+  const key = String(slug ?? '').trim().toLowerCase();
+  if (!key) return null;
+  const row = EXPLORE_ALIAS_PLACE_PIN_BY_SLUG.get(key);
+  if (!row) return null;
+  return {
+    id: `explore-alias-${key}`,
+    slug: key,
+    canonical_slug: key,
+    name: row.canonical,
+    name_ko: row.canonical,
+    name_en: row.name_en || row.canonical,
+    lat: row.lat,
+    lng: row.lng,
+    country: row.country || 'Explore',
+    country_en: row.country_en || 'Explore',
+    uiPlace: true,
+    source: 'explore-alias',
+    type: 'temp-base',
+  };
 }
 
 /**

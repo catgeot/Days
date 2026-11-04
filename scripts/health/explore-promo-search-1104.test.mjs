@@ -16,6 +16,7 @@ import {
   resolveSeaBasinFromQuery,
 } from '../../src/pages/Home/lib/seaBasinResolve.js';
 import { LIVE_JEJU_DO_VISITED_CANDIDATE } from './explore-live-jeju-visited-pyongyang.test.mjs';
+import { resolvePlaceTargetFromSlug } from '../../src/pages/Home/lib/placeRouteHydrate.js';
 import { collectKoreaTourTitleSearchCandidates } from '../../src/pages/Home/lib/exploreKoreaTourTitleCandidates.js';
 
 function withSiteSearchFlag(enabled, fn) {
@@ -90,6 +91,15 @@ test('평양시 Mapbox — /place/pyongyang (홈 지구본만 금지)', () => {
   const decision = resolveSearchResultSelect(pin);
   assert.equal(decision?.type, 'place');
   assert.equal(decision?.param, 'pyongyang');
+});
+
+test('/place/pyongyang 직접 URL — resolvePlaceTargetFromSlug hydrate', () => {
+  const target = resolvePlaceTargetFromSlug('pyongyang');
+  assert.ok(target, 'pyongyang slug');
+  assert.equal(target.slug, 'pyongyang');
+  assert.match(String(target.name || ''), /평양/);
+  assert.equal(Number(target.lat).toFixed(4), '39.0392');
+  assert.equal(Number(target.lng).toFixed(4), '125.7625');
 });
 
 test('회귀 — 제주특별자치도 visited → /place/jeju', () => {

@@ -101,3 +101,27 @@ for (const query of QUERIES) {
     });
   }
 }
+
+async function expectPyongyangPlaceDetail(page) {
+  await expect(page).toHaveURL(/\/place\/pyongyang(?:\/|$|\?)/, { timeout: 90_000 });
+  await expect(page.getByText(/평양|Pyongyang/).first()).toBeVisible({ timeout: 90_000 });
+  await expect(
+    page.getByRole('button', { name: /플래너|갤러리|Planner|Gallery/i }).first(),
+  ).toBeVisible({ timeout: 90_000 });
+}
+
+for (const viewport of [
+  { width: 390, label: '390' },
+  { width: 1280, label: '1280' },
+]) {
+  test(`/place/pyongyang 직접 열기·새로고침 @${viewport.label}`, async ({ page }) => {
+    await page.setViewportSize({ width: viewport.width, height: 844 });
+    await page.goto('/place/pyongyang?lang=ko', { waitUntil: 'domcontentloaded', timeout: 90_000 });
+    await expectPyongyangPlaceDetail(page);
+    await shot(page, `pyongyang-direct-${viewport.label}-open.png`, viewport.width);
+
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await expectPyongyangPlaceDetail(page);
+    await shot(page, `pyongyang-direct-${viewport.label}-reload.png`, viewport.width);
+  });
+}

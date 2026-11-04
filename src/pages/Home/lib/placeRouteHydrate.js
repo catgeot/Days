@@ -15,6 +15,7 @@ import {
 import { isSyntheticOrEmptyPlaceDesc } from './placeDescText.js';
 import { readCachedPlaceBySlug, readCachedPlaceLocation } from './placeLocationCache.js';
 import { resolveLegacyMishealPlace } from './legacyMishealPlaceSlugs.js';
+import { resolveExploreAliasPlaceFromSlug } from './koreaPlaceMatchDictionary.js';
 import { isFreeSearchPlaceId } from './freeSearchYouTubeLink.js';
 
 function hasReusableSessionDesc(loc) {
@@ -253,6 +254,9 @@ export function resolvePlaceTargetFromSlug(slug, options = {}) {
       options,
     );
   }
+
+  const exploreAliasPlace = resolveExploreAliasPlaceFromSlug(normalized);
+  if (exploreAliasPlace) return overlaySessionCuration(exploreAliasPlace, options);
 
   // 4) alias · fuzzy catalog (hub에 없는 slug만)
   const aliasResolved = resolveTravelSpotFromPlaceId(
