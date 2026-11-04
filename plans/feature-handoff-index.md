@@ -14,6 +14,20 @@
 
 ## 활성 목록
 
+### 탐색 월별 여행지 검색
+
+| | |
+|--|--|
+| **상태** | **#2 PROD 반영 확인 · 주제 종료** · PR [#635](https://github.com/catgeot/Days/pull/635) MERGED `0e6629ed` · 2026-11-01 16:33 KST 사람 재확인에서 `11월 해외 여행` → 「11월의 여행지」 해외 픽 목록 정상 노출. 병합 직후 나트랑 단일 카드는 배포 반영 지연이었음 |
+| **브랜치** | `cursor/explore-monthly-search-4c7d` (종료) |
+| **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
+| **일지** | [`2026-11-01-project-log.md`](./2026-11-01-project-log.md) |
+| **PROD** | `https://www.gateo.kr/explore` — `11월 여행` → 6곳, `11월 해외 여행` → 제주 제외 5곳. `MONTHLY_PICKS`에 새 달·픽 추가 = 검색 자동 반영(별도 등록 없음) |
+| **금지** | 검색용 별도 등록 파일 신설 · feature에 `plans/**` 커밋 |
+| **VERIFY** | `node --import ./scripts/register-src-esm.mjs --test scripts/health/explore-monthly-pick-search.test.mjs` 7 PASS · `npm run test:health` · `npm run build` |
+
+**다음 제시어 없음** (주제 종료). 확인은 PROD `/explore`.
+
 ### 현지 정보 LI-1 레지스트리
 
 | | |
