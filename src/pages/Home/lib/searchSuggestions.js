@@ -19,6 +19,7 @@ import {
   makeDisambiguationResult,
 } from './cityAttractionHubs';
 import { resolveEnglishPlaceLabel } from '../../../components/PlaceCard/common/locationDisplay.js';
+import { rankSiteSearchExploreCandidates } from './siteSearchOpen.js';
 import { isHiddenHubScenicAttraction } from './koreaScenicSpotVisibility.js';
 import { resolveExploreCityHubExact } from './exploreHubResolve.js';
 import {
@@ -135,7 +136,8 @@ async function prependKoreaTourTitleCandidates(query, regional, list) {
 
 async function finalizeHybridSuggestions(query, regional, list, max = 24) {
   const withTour = await prependKoreaTourTitleCandidates(query, regional, list);
-  return withTour.slice(0, max).map(enrichSearchCandidateScenicMedia);
+  const enriched = withTour.slice(0, max).map(enrichSearchCandidateScenicMedia);
+  return rankSiteSearchExploreCandidates(query, enriched);
 }
 
 /**
@@ -459,7 +461,10 @@ export function buildLocalSearchSuggestions(query, opts = {}) {
     }
   }
 
-  return out.slice(0, poiType ? 180 : 24).map(enrichSearchCandidateScenicMedia);
+  return rankSiteSearchExploreCandidates(
+    innerQuery,
+    out.slice(0, poiType ? 180 : 24).map(enrichSearchCandidateScenicMedia),
+  );
 }
 
 /**

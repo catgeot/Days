@@ -1,6 +1,7 @@
 import { TRAVEL_SPOTS } from '../data/travelSpots';
 import { citiesData } from '../data/citiesData';
 import { resolveTravelSpotFromSearchQuery } from '../../../utils/travelSpotResolve';
+import { resolveExploreAliasDirectPlaceSlug } from './koreaPlaceMatchDictionary.js';
 import { placeUrlSlug, resolveCityAttractionHub, resolveHubPlaceFromSlug } from './cityAttractionHubs';
 import { getPlaceUrlParam, isEphemeralSlug, resolveCatalogPlaceSlug } from './formatUrlName';
 import { resolveSettlementPlaceFromSlug } from './mapboxSettlementPlaces';
@@ -344,6 +345,30 @@ export function resolveSearchResultSelect(spot) {
   const countyMismatch = Boolean(known) && !pinNameOwnsPlace(pin, known);
   const spotForOpen = countyMismatch ? detachCountySlug(pin, known) : pin;
   if ((isMapboxOrGeocodePin(pin) || countyMismatch) && !shouldRouteDomesticExplorePinToPlace(pin)) {
+    const foreignParam = rawParam;
+    const explicitCatalogSlug = resolveCatalogPlaceSlug(
+      String(pin.slug || pin.canonical_slug || '').trim(),
+    );
+    if (explicitCatalogSlug) {
+      return { type: 'home', spot: spotForOpen };
+    }
+    if (foreignParam?.startsWith('search-')) {
+      return { type: 'home', spot: spotForOpen };
+    }
+    if (foreignParam?.startsWith('tour-') && !isBlockedCountryOnlyPlaceParam(foreignParam)) {
+      return { type: 'place', spot: spotForOpen, param: foreignParam };
+    }
+    const aliasPlaceSlug =
+      resolveExploreAliasDirectPlaceSlug(pin.name) ||
+      resolveExploreAliasDirectPlaceSlug(pin.name_ko) ||
+      resolveExploreAliasDirectPlaceSlug(pin.name_en);
+    if (
+      aliasPlaceSlug &&
+      foreignParam === aliasPlaceSlug &&
+      !isBlockedCountryOnlyPlaceParam(aliasPlaceSlug)
+    ) {
+      return { type: 'place', spot: spotForOpen, param: aliasPlaceSlug };
+    }
     return { type: 'home', spot: spotForOpen };
   }
   if (param) return { type: 'place', spot: pin, param };

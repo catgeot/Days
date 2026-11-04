@@ -26,7 +26,7 @@ export async function installExplorePyongyangGeocodeMock(contextOrPage) {
 
   await target.route(/api\.mapbox\.com\/geocoding\/v5\/mapbox\.places\/.*\.json/i, async (route) => {
     const url = decodeURIComponent(route.request().url());
-    const hit = /평양|pyongyang/i.test(url);
+    const hit = /평양|평양시|pyongyang/i.test(url);
     const features = hit ? [/language=en/.test(url) ? GEOCODE_PYONGYANG_EN : GEOCODE_PYONGYANG_KO] : [];
     await route.fulfill({
       status: 200,

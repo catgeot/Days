@@ -211,14 +211,14 @@ test.describe('Explore bare KO — Mapbox-only parity', () => {
     await expect(page.getByRole('heading', { name: new RegExp(MACARONESIA) })).toHaveCount(0);
   });
 
-  test('평양 Enter — 남태평양 해역 큐레이션 없음 · 홈 유지', async ({ page }) => {
+  test('평양 Enter — 남태평양 해역 큐레이션 없음 · Pyongyang 탭 /place', async ({ page }) => {
     await installExplorePyongyangGeocodeMock(page.context());
     await submitExploreQuery(page, PYONGYANG);
     const card = page.getByRole('button').filter({ hasText: 'Pyongyang' }).first();
     await expect(card).toBeVisible({ timeout: 120_000 });
     await expect(page.getByRole('button').filter({ hasText: SOUTH_PACIFIC })).toHaveCount(0);
     await card.click();
-    await expect(page).toHaveURL(/127\.0\.0\.1:\d+\/(?:\?|$)/, { timeout: 60_000 });
-    expect(new URL(page.url()).pathname).toBe('/');
+    await page.waitForURL(/\/place\/pyongyang/, { timeout: 60_000 });
+    expect(new URL(page.url()).pathname).toBe('/place/pyongyang');
   });
 });
