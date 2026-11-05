@@ -644,6 +644,34 @@ export const PLANNER_TRIPCOM_HOTEL_CITY_IDS = {
    * city 10279는 이탈리아 아풀리아 오매핑.
    */
   hawaii: '757',
+  /**
+   * 배치 1 제도·섬 (2026-11-05). 목록 destinationInputValue가 비지 않은 IntlCity만.
+   * 주 province ID는 검색창이 비므로 넣지 않음. 호놀룰루 slug는 757로 묶지 않음.
+   */
+  /** 괌 */
+  guam: '753',
+  /** 몰디브 — 말레 */
+  maldives: '1207',
+  /** 세이셸 — 빅토리아 (캐나다 빅토리아 62407 아님) */
+  seychelles: '20672',
+  /** 팔라완 — 푸에르토프린세사 (엘니도 아님) */
+  palawan: '7515',
+  /** 카나리아 제도 — 라스팔마스 (province 10127 아님) */
+  'canary-islands': '3174',
+  /** 갈라파고스 — 푸에르토 아요라 (province 10485 아님) */
+  galapagos: '59342',
+  /** 모리셔스 — 포트루이스 */
+  mauritius: '76783',
+  /** 잔지바르 — 잔지바르시티 (스톤타운 76927 아님) */
+  zanzibar: '316972',
+  /** 뉴칼레도니아 — 누메아 */
+  'new-caledonia': '4086',
+  /** 사이판 — 북마리아나 */
+  saipan: '4081',
+  /** 오키나와 — 나하 (province 11059·볼리비아 오키나와 아님) */
+  okinawa: '92573',
+  /** 홋카이도 — 삿포로 (province 11055 아님) */
+  hokkaido: '641',
 };
 
 /**
