@@ -1051,7 +1051,7 @@ function FestivalEntries({
       },
       columnCount,
     );
-    const renderGridCard = (item, index) => {
+    const renderGridCard = (item, index, layoutOpts = {}) => {
       const priorityThumb = isFestivalHubGridEagerThumb(index);
       const cardKey = priorityThumb
         ? festivalHubGridThumbLoadKey({
@@ -1077,6 +1077,8 @@ function FestivalEntries({
           onToggleFavorite={onToggleFavorite}
           initialPhotoSize={photoSizesByKey.get(dedupeKey) ?? null}
           onPhotoSize={handlePhotoSize}
+          inColumn={Boolean(layoutOpts.inColumn)}
+          slotIndex={layoutOpts.slotIndex ?? index}
           onSelect={onSelect}
           distanceKm={
             nearKmByContentId.get(String(item.contentId)) ?? undefined
@@ -1090,7 +1092,10 @@ function FestivalEntries({
           if (seg.type === 'wide') {
             return (
               <div key={`wide-${seg.entry.index}`} className="w-full">
-                {renderGridCard(seg.entry.item, seg.entry.index)}
+                {renderGridCard(seg.entry.item, seg.entry.index, {
+                  inColumn: false,
+                  slotIndex: seg.entry.index,
+                })}
               </div>
             );
           }
@@ -1105,8 +1110,11 @@ function FestivalEntries({
             >
               {cols.map((colEntries, colIdx) => (
                 <div key={`col-${colIdx}`} className="flex min-w-0 flex-col">
-                  {colEntries.map(({ item, index }) =>
-                    renderGridCard(item, index),
+                  {colEntries.map(({ item, index }, rowIdx) =>
+                    renderGridCard(item, index, {
+                      inColumn: true,
+                      slotIndex: colIdx + rowIdx * columnCount + segIdx,
+                    }),
                   )}
                 </div>
               ))}

@@ -4,6 +4,7 @@ import test from 'node:test';
 import { festivalItemThumbCandidateUrls } from '../../src/pages/Korea/festivalListThumb.js';
 import { festivalGridPlaceLabel } from '../../src/pages/Korea/festivalGridPlaceLabel.js';
 import {
+  FESTIVAL_HUB_COLUMN_LANDSCAPE_ASPECT_RATIOS,
   FESTIVAL_HUB_GRID_CLASS,
   FESTIVAL_HUB_PHOTO_WIDE_MIN_RATIO,
   distributeFestivalHubMasonryColumns,
@@ -55,38 +56,65 @@ test('partitionFestivalHubSegments and distributeFestivalHubMasonryColumns avoid
   );
 });
 
-test('festival hub masonry — layout follows each photo, not list index', () => {
+test('festival hub masonry — layout follows each photo, enlarges column landscape cards with staggered ratios', () => {
   assert.deepEqual(festivalHubPhotoLayout(800, 1000), {
     aspectRatio: '0.8 / 1',
     wide: false,
+    enlargedLandscape: false,
   });
   assert.deepEqual(festivalHubPhotoLayout(1000, 1000), {
     aspectRatio: '1 / 1',
     wide: false,
+    enlargedLandscape: false,
   });
-  assert.deepEqual(festivalHubPhotoLayout(1200, 800), {
+  assert.deepEqual(festivalHubPhotoLayout(1040, 800), {
     aspectRatio: `${FESTIVAL_HUB_PHOTO_WIDE_MIN_RATIO} / 1`,
     wide: true,
+    enlargedLandscape: false,
+  });
+  assert.deepEqual(festivalHubPhotoLayout(1200, 800), {
+    aspectRatio: '1.5 / 1',
+    wide: true,
+    enlargedLandscape: false,
   });
   assert.deepEqual(festivalHubPhotoLayout(1600, 900), {
     aspectRatio: `${1600 / 900} / 1`,
     wide: true,
+    enlargedLandscape: false,
   });
   assert.deepEqual(festivalHubPhotoLayout(3000, 1000), {
     aspectRatio: '2 / 1',
     wide: true,
+    enlargedLandscape: false,
   });
   assert.deepEqual(festivalHubPhotoLayout(400, 2000), {
     aspectRatio: '0.5 / 1',
     wide: false,
+    enlargedLandscape: false,
   });
+  assert.deepEqual(festivalHubPhotoLayout(940, 705, { inColumn: true, slotIndex: 0 }), {
+    aspectRatio: FESTIVAL_HUB_COLUMN_LANDSCAPE_ASPECT_RATIOS[0],
+    wide: false,
+    enlargedLandscape: true,
+  });
+  assert.deepEqual(festivalHubPhotoLayout(940, 627, { inColumn: true, slotIndex: 1 }), {
+    aspectRatio: FESTIVAL_HUB_COLUMN_LANDSCAPE_ASPECT_RATIOS[1],
+    wide: false,
+    enlargedLandscape: true,
+  });
+  assert.notEqual(
+    festivalHubPhotoLayout(940, 705, { inColumn: true, slotIndex: 0 }).aspectRatio,
+    festivalHubPhotoLayout(940, 705, { inColumn: true, slotIndex: 1 }).aspectRatio,
+  );
   assert.deepEqual(festivalHubPhotoLayout(0, 100), {
     aspectRatio: null,
     wide: false,
+    enlargedLandscape: false,
   });
   assert.deepEqual(festivalHubPhotoLayout(undefined, undefined), {
     aspectRatio: null,
     wide: false,
+    enlargedLandscape: false,
   });
 });
 
