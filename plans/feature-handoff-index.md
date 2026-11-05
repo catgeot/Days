@@ -22,7 +22,7 @@
 | **브랜치** | `cursor/hawaii-tripcom-stay-c4ed` |
 | **플랜** | 없음 · 일지 핸드오프 |
 | **일지** | [`2026-11-05-project-log.md`](./2026-11-05-project-log.md) |
-| **Preview** | git `https://days-git-cursor-hawaii-tripcom-stay-c4ed-catgeots-projects.vercel.app` · 하와이 숙소 찾기 |
+| **Preview** | `cursor/*`는 배포 꺼짐. 이 브랜치만 허용. git `https://days-git-cursor-hawaii-tripcom-stay-c4ed-catgeots-projects.vercel.app/place/hawaii` |
 | **금지** | 코드 `origin/main` push · `city=10279`(이탈리아) · province만으로 검색창 채우기 · feature에 `plans/**` 커밋 |
 | **VERIFY** | `city=757` 목록이 호놀룰루·하와이 · 아피아 0 |
 | **남은 일** | 사람 Preview에서 트립닷컴 검색창이 호놀룰루인지 확인 후 PR 병합 |
