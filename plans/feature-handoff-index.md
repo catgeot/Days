@@ -14,6 +14,27 @@
 
 ## 활성 목록
 
+### 하와이 숙소 트립닷컴
+
+| | |
+|--|--|
+| **상태** | **#1 트립닷컴 도시 연결** · tip `b5d5d35c` · PR [#662](https://github.com/catgeot/Days/pull/662) |
+| **브랜치** | `cursor/hawaii-tripcom-stay-c4ed` |
+| **플랜** | 없음 · 일지 핸드오프 |
+| **일지** | [`2026-11-05-project-log.md`](./2026-11-05-project-log.md) |
+| **Preview** | git `https://days-git-cursor-hawaii-tripcom-stay-c4ed-catgeots-projects.vercel.app` · 하와이 숙소 찾기 |
+| **금지** | 코드 `origin/main` push · `city=10279`(이탈리아) · province만으로 검색창 채우기 · feature에 `plans/**` 커밋 |
+| **VERIFY** | `city=757` 목록이 호놀룰루·하와이 · 아피아 0 |
+| **남은 일** | 사람 Preview에서 트립닷컴 검색창이 호놀룰루인지 확인 후 PR 병합 |
+
+**다음 제시어**
+
+```
+하와이 숙소 #2, Preview OK면 PR 병합
+@plans/feature-handoff-index.md
+@plans/2026-11-05-project-log.md
+```
+
 ### 현지 정보 LI-1 레지스트리
 
 | | |
