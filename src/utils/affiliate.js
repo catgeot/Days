@@ -836,6 +836,7 @@ export const TRIPCOM_HOTEL_TRACKING = {
   emptyResult: '숙소찾기 빈결과',
   emptyResultMobile: '숙소찾기 빈결과 모바일',
   lowInventory: '숙소찾기 저재고',
+  listFooter: '숙소찾기 목록하단',
   fullScreen: '숙소찾기 전체화면',
   plannerOverride: '플래너 숙소 오버라이드',
 };

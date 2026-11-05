@@ -891,26 +891,45 @@ function StayAgencyAlwaysFooter({
   );
 }
 
-/** 목록 스크롤 끝 — 마이리얼트립 사이트(보조 CTA · 앱 내 더보기와 구분) */
-function StayMrtMoreFooter({ href, compact = false }) {
+/** 목록 스크롤 끝 — 마이리얼트립 더 보기 아래 트립닷컴 숙소 검색 */
+function StayMrtMoreFooter({
+  href,
+  tripcomHref,
+  tripcomTarget,
+  tripcomRel,
+  compact = false,
+}) {
   const { t } = useTranslation();
-  if (!href) return null;
+  if (!href && !tripcomHref) return null;
+  const linkClass = compact
+    ? 'inline-flex items-center gap-1 rounded-md px-2 py-1 text-[12px] font-semibold underline-offset-2 transition-colors hover:underline'
+    : 'inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-[13px] font-semibold underline-offset-2 transition-colors hover:underline';
   return (
-    <div className="mt-6 flex w-full flex-col items-center pt-1">
-      <a
-        href={href}
-        target="_blank"
-        rel="noopener noreferrer sponsored"
-        onClick={(e) => e.stopPropagation()}
-        className={
-          compact
-            ? 'inline-flex items-center gap-1 rounded-md px-2 py-1 text-[12px] font-semibold text-amber-100/70 underline-offset-2 transition-colors hover:text-amber-50 hover:underline'
-            : 'inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-[13px] font-semibold text-amber-100/75 underline-offset-2 transition-colors hover:text-amber-50 hover:underline'
-        }
-      >
-        <span>{t('home.stayStrip.viewMoreOnMrt')}</span>
-        <ExternalLink size={compact ? 12 : 13} className="shrink-0 opacity-70" aria-hidden />
-      </a>
+    <div className="mt-6 flex w-full flex-col items-center gap-1.5 pt-1">
+      {href ? (
+        <a
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer sponsored"
+          onClick={(e) => e.stopPropagation()}
+          className={`${linkClass} text-amber-100/75 hover:text-amber-50`}
+        >
+          <span>{t('home.stayStrip.viewMoreOnMrt')}</span>
+          <ExternalLink size={compact ? 12 : 13} className="shrink-0 opacity-70" aria-hidden />
+        </a>
+      ) : null}
+      {tripcomHref ? (
+        <a
+          href={tripcomHref}
+          target={tripcomTarget}
+          rel={tripcomRel}
+          onClick={(e) => e.stopPropagation()}
+          className={`${linkClass} text-sky-100/80 hover:text-sky-50`}
+        >
+          <span>{t('home.stayStrip.searchStaysOnTripcom')}</span>
+          <ExternalLink size={compact ? 12 : 13} className="shrink-0 opacity-70" aria-hidden />
+        </a>
+      ) : null}
     </div>
   );
 }
@@ -1540,6 +1559,11 @@ export default function GlobeStayStrip({
     mode: 'list',
     campaign: TRIPCOM_HOTEL_TRACKING.emptyResult,
   });
+  const tripcomListMoreUrl = buildTripcomHotelSearchUrl(location, {
+    ...tripcomStayOptions,
+    mode: 'list',
+    campaign: TRIPCOM_HOTEL_TRACKING.listFooter,
+  });
   const tripcomLinkTarget = getPartnerLinkTarget();
   const tripcomLinkRel = getTripcomLinkRel(tripcomLinkTarget);
 
@@ -1737,7 +1761,7 @@ export default function GlobeStayStrip({
           />
         </div>
         <StayListLoadMore remaining={listRemaining} onLoadMore={loadMoreStays} />
-        {/* 저재고: 관광청·Trip만 · 일반: MRT 사이트 더 보기(+ 필요 시 관광청) */}
+        {/* 저재고: 관광청·Trip만 · 일반: MRT 더 보기 아래 트립닷컴 숙소 검색 */}
         {showLowInventoryCta ? (
           <StayLowInventoryFooter
             href={tripcomLowUrl}
@@ -1748,7 +1772,12 @@ export default function GlobeStayStrip({
             moreWithDateChange={Boolean(mrtListMeta?.moreWithDateChange)}
           />
         ) : (
-          <StayMrtMoreFooter href={mrtStayListUrl} />
+          <StayMrtMoreFooter
+            href={mrtStayListUrl}
+            tripcomHref={tripcomListMoreUrl}
+            tripcomTarget={tripcomLinkTarget}
+            tripcomRel={tripcomLinkRel}
+          />
         )}
         {showAgencyAlwaysFooter ? (
           <StayAgencyAlwaysFooter
@@ -1956,7 +1985,7 @@ export default function GlobeStayStrip({
                     onLoadMore={loadMoreStays}
                     compact
                   />
-                  {/* 저재고: 관광청·Trip만 · 일반: MRT 사이트 더 보기(+ 필요 시 관광청) */}
+                  {/* 저재고: 관광청·Trip만 · 일반: MRT 더 보기 아래 트립닷컴 숙소 검색 */}
                   {showLowInventoryCta ? (
                     <StayLowInventoryFooter
                       href={tripcomLowUrl}
@@ -1967,7 +1996,13 @@ export default function GlobeStayStrip({
                       moreWithDateChange={Boolean(mrtListMeta?.moreWithDateChange)}
                     />
                   ) : (
-                    <StayMrtMoreFooter href={mrtStayListUrl} compact />
+                    <StayMrtMoreFooter
+                      href={mrtStayListUrl}
+                      tripcomHref={tripcomListMoreUrl}
+                      tripcomTarget={tripcomLinkTarget}
+                      tripcomRel={tripcomLinkRel}
+                      compact
+                    />
                   )}
                   {showAgencyAlwaysFooter ? (
                     <StayAgencyAlwaysFooter
