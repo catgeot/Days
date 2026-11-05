@@ -694,6 +694,30 @@ export const PLANNER_TRIPCOM_HOTEL_CITY_IDS = {
   'uyuni-salt-flat': '71478',
   /** 코모도 — 라부한바조 */
   'komodo-island': '7291',
+  /**
+   * R03 대도시 (2026-11-05). 목록 destinationInputValue가 그 도시인 IntlCity만.
+   * 파리·뉴욕·시드니는 같은 영문 다른 나라 후보를 거절. 제주 737은 제주시.
+   */
+  /** 도쿄 */
+  tokyo: '228',
+  /** 오사카 */
+  osaka: '219',
+  /** 싱가포르 */
+  singapore: '73',
+  /** 방콕 */
+  bangkok: '359',
+  /** 파리 (텍사스 파리 아님) */
+  paris: '192',
+  /** 뉴욕 (영국 York 아님) */
+  'new-york': '633',
+  /** 시드니 (캐나다 시드니 아님) */
+  sydney: '501',
+  /** 서울 */
+  seoul: '274',
+  /** 제주 — 제주시 (서귀포 35796 아님) */
+  jeju: '737',
+  /** 서귀포 */
+  seogwipo: '35796',
 };
 
 /**
