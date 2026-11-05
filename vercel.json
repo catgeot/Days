@@ -3,8 +3,7 @@
     "deploymentEnabled": {
       "cursor/*": false,
       "cursor/festival-access-promo-5b7f": true,
-      "cursor/explore-search-fix-bfa1": true,
-      "cursor/hawaii-tripcom-stay-c4ed": true
+      "cursor/explore-search-fix-bfa1": true
     }
   },
   "redirects": [
