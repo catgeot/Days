@@ -382,6 +382,7 @@
       "scrollTopAria": "맨 위로",
       "scrollTop": "맨 위",
       "priceFrom": "{{price}}원~",
+      "hotelStarRating": "{{count}}성급",
       "checkInOutAria": "체크인·체크아웃 날짜 선택",
       "checkIn": "체크인",
       "checkOut": "체크아웃",

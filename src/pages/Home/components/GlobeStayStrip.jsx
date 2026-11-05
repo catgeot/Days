@@ -55,6 +55,11 @@ import {
   resolveTripcomPartnerLocale,
 } from '../../../utils/affiliate';
 import PartnerBookingHandoff from '../../../shared/affiliate/PartnerBookingHandoff.jsx';
+import StayListPartnerNotice from '../../../shared/affiliate/StayListPartnerNotice.jsx';
+import {
+  resolveMrtStayReviewDisplay,
+  resolveMrtStayStarCount,
+} from '../../../utils/mrtStayCardDisplay.js';
 import {
   getStayAgencyKindLabel,
   getStayAgencyDisclaimer,
@@ -579,6 +584,9 @@ function StayCard({
   const productHref = item.productUrl
     ? buildMrtMylinkUrl(item.productUrl)
     : MRT_AFFILIATE_HOME_URL;
+  const starCount = resolveMrtStayStarCount(item);
+  const starLine = starCount ? t('home.stayStrip.hotelStarRating', { count: starCount }) : '';
+  const review = resolveMrtStayReviewDisplay(item);
 
   const shellClass = `flex flex-col rounded-2xl border overflow-hidden transition-colors ${
     dateFlexible
@@ -625,12 +633,24 @@ function StayCard({
               {distanceText}
             </p>
           ) : null}
+          {starLine ? (
+            <p
+              className={`truncate font-medium text-white/65 ${
+                large ? 'text-[11px]' : 'text-[10px]'
+              }`}
+            >
+              {starLine}
+            </p>
+          ) : null}
           <div className="flex min-w-0 items-center justify-between gap-1">
-            {item.reviewScore ? (
+            {review.score ? (
               <span
                 className={`tabular-nums text-amber-100/80 ${large ? 'text-xs' : 'text-[10px]'}`}
               >
-                ★ {item.reviewScore}
+                ★ {review.score}
+                {review.count != null ? (
+                  <span className="font-normal text-amber-100/60"> ({review.count})</span>
+                ) : null}
               </span>
             ) : (
               <span />
@@ -662,6 +682,8 @@ function StayCard({
           item={item}
           theme="dark"
           emphasis="low"
+          showNotice={false}
+          showPartnerLabel={false}
         />
       </div>
     </div>
@@ -1747,6 +1769,7 @@ export default function GlobeStayStrip({
           onDensityChange={setDesktopGridDensity}
           naverMapUrl={naverNearbyStayUrl}
         />
+        <StayListPartnerNotice theme="dark" className="mb-3" />
         <div
           className={`grid gap-3 ${
             desktopDensity.cols === 3 ? 'grid-cols-3' : 'grid-cols-4'
@@ -1964,6 +1987,7 @@ export default function GlobeStayStrip({
                     flightChildCount={guests.childCount}
                     naverMapUrl={naverNearbyStayUrl}
                   />
+                  <StayListPartnerNotice theme="dark" className="mb-2.5" />
                   <div
                     className={`grid gap-2.5 ${
                       mobileGridCols === 1 ? 'grid-cols-1' : 'grid-cols-2'
