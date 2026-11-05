@@ -649,6 +649,7 @@
       "flexibleSectionHint": "Change check-in or check-out to book the stays below",
       "flexibleOnlyHint": "Change dates to book the stays below",
       "loadMore": "Show {{count}} more",
+      "hotelStars": "{{count}}-star",
       "emptyAgencyFallback": "Check trusted official guides and travel agencies below",
       "packageCta": "View {{keyword}} package deals",
       "packageCtaDefault": "View package deals"

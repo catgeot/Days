@@ -55,6 +55,8 @@ import {
   resolveTripcomPartnerLocale,
 } from '../../../utils/affiliate';
 import PartnerBookingHandoff from '../../../shared/affiliate/PartnerBookingHandoff.jsx';
+import StayListPartnerNotice from '../../../shared/affiliate/StayListPartnerNotice.jsx';
+import { mrtStayCardMetaLines } from '../../../utils/mrtStayCardMeta.js';
 import {
   getStayAgencyKindLabel,
   getStayAgencyDisclaimer,
@@ -579,6 +581,7 @@ function StayCard({
   const productHref = item.productUrl
     ? buildMrtMylinkUrl(item.productUrl)
     : MRT_AFFILIATE_HOME_URL;
+  const { starLine, detailLine } = mrtStayCardMetaLines(item, t);
 
   const shellClass = `flex flex-col rounded-2xl border overflow-hidden transition-colors ${
     dateFlexible
@@ -616,6 +619,24 @@ function StayCard({
           >
             {item.itemName}
           </p>
+          {starLine ? (
+            <p
+              className={`truncate text-amber-100/70 ${
+                large ? 'text-[11px]' : 'text-[10px]'
+              }`}
+            >
+              {starLine}
+            </p>
+          ) : null}
+          {detailLine ? (
+            <p
+              className={`line-clamp-2 break-keep text-white/55 ${
+                large ? 'text-[11px]' : 'text-[10px]'
+              }`}
+            >
+              {detailLine}
+            </p>
+          ) : null}
           {distanceText ? (
             <p
               className={`truncate font-semibold text-amber-100/75 ${
@@ -662,6 +683,8 @@ function StayCard({
           item={item}
           theme="dark"
           emphasis="low"
+          showNotice={false}
+          showPartnerLabel={false}
         />
       </div>
     </div>
@@ -1747,6 +1770,7 @@ export default function GlobeStayStrip({
           onDensityChange={setDesktopGridDensity}
           naverMapUrl={naverNearbyStayUrl}
         />
+        <StayListPartnerNotice theme="dark" />
         <div
           className={`grid gap-3 ${
             desktopDensity.cols === 3 ? 'grid-cols-3' : 'grid-cols-4'
@@ -1964,6 +1988,7 @@ export default function GlobeStayStrip({
                     flightChildCount={guests.childCount}
                     naverMapUrl={naverNearbyStayUrl}
                   />
+                  <StayListPartnerNotice theme="dark" />
                   <div
                     className={`grid gap-2.5 ${
                       mobileGridCols === 1 ? 'grid-cols-1' : 'grid-cols-2'

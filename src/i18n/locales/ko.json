@@ -419,6 +419,7 @@
       "flexibleSectionHint": "아래 숙소는 체크인·체크아웃을 바꾸면 예약할 수 있어요",
       "flexibleOnlyHint": "체크인·체크아웃을 바꾸면 아래 숙소를 예약할 수 있어요",
       "loadMore": "{{count}}곳 더 보기",
+      "hotelStars": "{{count}}성급",
       "emptyAgencyFallback": "아래 공신력 있는 안내·여행사로 루트를 확인해 보세요",
       "packageCta": "{{keyword}} 패키지 상품보기",
       "packageCtaDefault": "패키지 상품보기"
