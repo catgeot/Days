@@ -44,17 +44,44 @@ export function mrtProxyEnabled(): boolean {
 }
 
 /**
+ * Relay sometimes returns a gzip body without Content-Encoding.
+ * fetch() then leaves the bytes compressed, JSON parse fails, and
+ * region lookup is reported as an empty list.
+ */
+async function responseWithGzipDecoded(res: Response): Promise<Response> {
+  const buf = new Uint8Array(await res.arrayBuffer());
+  if (buf.length < 2 || buf[0] !== 0x1f || buf[1] !== 0x8b) {
+    return new Response(buf, {
+      status: res.status,
+      statusText: res.statusText,
+      headers: res.headers,
+    });
+  }
+  const decoded = await new Response(
+    new Blob([buf]).stream().pipeThrough(new DecompressionStream("gzip")),
+  ).arrayBuffer();
+  const headers = new Headers(res.headers);
+  headers.delete("content-encoding");
+  headers.delete("content-length");
+  return new Response(decoded, {
+    status: res.status,
+    statusText: res.statusText,
+    headers,
+  });
+}
+
+/**
  * Fetch MRT APIs via Vultr application relay when MRT_PROXY_URL is set.
  * Relay auth uses X-Gateo-Proxy-Auth (Basic from URL userinfo) so the
  * upstream Authorization: Bearer API key is preserved.
  * Falls back to direct fetch when unset / unparsable.
  */
-export function mrtFetch(
+export async function mrtFetch(
   input: RequestInfo | URL,
   init?: RequestInit,
 ): Promise<Response> {
   if (!mrtProxyEnabled()) {
-    return fetch(input, init);
+    return responseWithGzipDecoded(await fetch(input, init));
   }
 
   const proxyUrl = proxyUrlFromEnv()!;
@@ -69,7 +96,7 @@ export function mrtFetch(
   try {
     targetUrl = new URL(target);
   } catch {
-    return fetch(input, init);
+    return responseWithGzipDecoded(await fetch(input, init));
   }
 
   if (
@@ -77,7 +104,7 @@ export function mrtFetch(
     !ALLOWED_MRT_HOSTS.has(targetUrl.hostname)
   ) {
     console.warn("[mrtFetch] host not allowlisted for relay; direct fetch");
-    return fetch(input, init);
+    return responseWithGzipDecoded(await fetch(input, init));
   }
 
   const proxy = new URL(proxyUrl);
@@ -89,16 +116,16 @@ export function mrtFetch(
   const token = basicTokenFromProxyUrl(proxyUrl);
   if (!token) {
     console.warn("[mrtFetch] proxy URL missing credentials; direct fetch");
-    return fetch(input, init);
+    return responseWithGzipDecoded(await fetch(input, init));
   }
   headers.set("X-Gateo-Proxy-Auth", token);
 
-  return fetch(relay.toString(), {
+  return responseWithGzipDecoded(await fetch(relay.toString(), {
     method: init?.method ?? "GET",
     headers,
     body: init?.body,
     redirect: init?.redirect,
-  });
+  }));
 }
 
 /** Test-only: clear lazy relay config so env changes take effect. */

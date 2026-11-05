@@ -91,3 +91,30 @@ Deno.test("mrtFetch with proxy rewrites to /forward and sets X-Gateo-Proxy-Auth"
     resetMrtFetchProxyClientForTests();
   }
 });
+
+Deno.test("mrtFetch inflates gzip bodies that omit Content-Encoding", async () => {
+  Deno.env.set("MRT_PROXY_URL", "http://relayuser:relaypass@127.0.0.1:8888");
+  resetMrtFetchProxyClientForTests();
+  const payload = new TextEncoder().encode('{"result":{"status":200},"data":{"regions":[1]}}');
+  const gzipped = await new Response(
+    new Blob([payload]).stream().pipeThrough(new CompressionStream("gzip")),
+  ).arrayBuffer();
+  const original = globalThis.fetch;
+  globalThis.fetch = (() =>
+    Promise.resolve(new Response(gzipped, {
+      status: 200,
+      headers: { "content-type": "application/json" },
+    }))) as typeof fetch;
+  try {
+    const res = await mrtFetch("https://partner-ext-api.myrealtrip.com/v1/products/accommodation/region-autocomplete", {
+      method: "POST",
+    });
+    const data = await res.json();
+    assertEquals(data.result.status, 200);
+    assertEquals(data.data.regions.length, 1);
+  } finally {
+    globalThis.fetch = original;
+    Deno.env.delete("MRT_PROXY_URL");
+    resetMrtFetchProxyClientForTests();
+  }
+});
