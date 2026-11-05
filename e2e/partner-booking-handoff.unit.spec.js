@@ -16,7 +16,11 @@ test('partner booking handoff CTA stays external (no GATEO checkout)', () => {
   expect(src).not.toMatch(/예약하기/);
 });
 
-test('stay and tour card strips wire PartnerBookingHandoff', () => {
+test('stay and tour card strips wire booking handoff', () => {
+  const stayCardLink = readFileSync(
+    join(root, 'src/shared/affiliate/StayCardBookingLink.jsx'),
+    'utf8',
+  );
   const eventStay = readFileSync(
     join(root, 'src/pages/WorldEvents/EventStayStrip.jsx'),
     'utf8',
@@ -25,8 +29,9 @@ test('stay and tour card strips wire PartnerBookingHandoff', () => {
     join(root, 'src/pages/WorldEvents/EventTnaStrip.jsx'),
     'utf8',
   );
-  expect(eventStay).toContain('PartnerBookingHandoff');
-  expect(eventStay).toContain('kind="lodging"');
+  expect(stayCardLink).toMatch(/data-partner-booking-handoff="cta"/);
+  expect(eventStay).toContain('StayCardBookingLink');
+  expect(eventStay).not.toMatch(/PartnerBookingHandoff[\s\S]*kind="lodging"/);
   expect(eventTna).toContain('PartnerBookingHandoff');
   expect(eventTna).toContain('kind="tour"');
 });

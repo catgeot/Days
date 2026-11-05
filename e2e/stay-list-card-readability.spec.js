@@ -104,9 +104,17 @@ test.describe('GlobeStayStrip list partner notice', () => {
     await expect(page.getByText('4성급').first()).toBeVisible();
     await expect(page.getByText('5성급').first()).toBeVisible();
 
-    const cta = page.getByRole('link', { name: '호텔 보고 예약 시작' }).first();
-    await expect(cta).toBeVisible();
-    await expect(cta).toHaveAttribute('href', /1190340/);
+    await expect(page.getByRole('link', { name: '호텔 보고 예약 시작' })).toHaveCount(4);
+    await expect(page.getByRole('link', { name: '호텔 보고 예약 시작' }).first()).toHaveAttribute(
+      'href',
+      /1190340/,
+    );
+
+    const cardLinks = page.getByRole('dialog', { name: '숙소 전체 목록' }).locator(
+      'a[data-partner-booking-handoff="cta"]',
+    );
+    await expect(cardLinks).toHaveCount(4);
+    await expect(page.getByText('호텔 보고 예약 시작', { exact: true })).toHaveCount(0);
 
     await page.screenshot({
       path: '/opt/cursor/artifacts/stay-list-card-readability-390-iguazu.png',
@@ -174,11 +182,24 @@ test.describe('GlobeStayStrip list partner notice', () => {
     await expect(page.getByText('No image')).toBeVisible();
     await expect(page.getByText('5성급')).toHaveCount(1);
 
-    const href = await page
-      .getByRole('link', { name: '호텔 보고 예약 시작' })
-      .first()
-      .getAttribute('href');
-    expect(href).toMatch(/1190343/);
+    await expect(
+      page.locator('a[data-partner-booking-handoff="cta"][href*="9999001"]'),
+    ).toHaveCount(1);
+
+    await page.screenshot({
+      path: '/opt/cursor/artifacts/stay-card-image-link-mock-regression-390.png',
+      clip: { x: 0, y: 0, width: 390, height: 844 },
+    });
+  });
+
+  test('390 — 카드 링크 focus·sponsored (mock)', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await goHomeFromPlace(page, '/place/iguazu-falls?lang=ko', '이구아수 폭포');
+    await openStayListMobile(page, { findStays: '숙소 찾기', dialogName: '숙소 전체 목록' });
+    const link = page.locator('a[data-partner-booking-handoff="cta"]').first();
+    await link.focus();
+    await expect(link).toBeFocused();
+    await expect(link).toHaveAttribute('rel', /sponsored/);
   });
 
   test('이구아수 fixture — distanceLabel 없음(좌표 없음)', async ({ page }) => {

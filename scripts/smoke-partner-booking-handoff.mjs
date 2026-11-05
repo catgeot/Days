@@ -19,6 +19,7 @@ const root = join(__dirname, '..');
 const paths = {
   handoffJs: join(root, 'src/shared/affiliate/partnerBookingHandoff.js'),
   handoffJsx: join(root, 'src/shared/affiliate/PartnerBookingHandoff.jsx'),
+  stayCardLink: join(root, 'src/shared/affiliate/StayCardBookingLink.jsx'),
   eventStay: join(root, 'src/pages/WorldEvents/EventStayStrip.jsx'),
   eventTna: join(root, 'src/pages/WorldEvents/EventTnaStrip.jsx'),
   globeStay: join(root, 'src/pages/Home/components/GlobeStayStrip.jsx'),
@@ -34,6 +35,7 @@ for (const [label, p] of Object.entries(paths)) {
 }
 
 const handoffJsx = readFileSync(paths.handoffJsx, 'utf8');
+const stayCardLink = readFileSync(paths.stayCardLink, 'utf8');
 const eventStay = readFileSync(paths.eventStay, 'utf8');
 const eventTna = readFileSync(paths.eventTna, 'utf8');
 const globeStay = readFileSync(paths.globeStay, 'utf8');
@@ -44,22 +46,23 @@ assert.match(handoffJsx, /data-partner-booking-handoff="cta"/, 'handoff CTA mark
 assert.match(handoffJsx, /target="_blank"/, 'handoff opens external tab');
 assert.doesNotMatch(handoffJsx, /gateo\.kr\/pay|checkout|결제창/i, 'no in-GATEO payment UI');
 
-for (const src of [eventStay, eventTna, globeStay, mrtTnaWidget]) {
+for (const src of [eventTna, mrtTnaWidget]) {
   assert.match(src, /PartnerBookingHandoff/, 'card strip uses PartnerBookingHandoff');
 }
 
-assert.match(eventStay, /kind="lodging"/, 'EventStayStrip lodging handoff kind');
-assert.match(eventTna, /kind="tour"/, 'EventTnaStrip tour handoff kind');
-assert.match(globeStay, /kind="lodging"/, 'GlobeStayStrip lodging handoff kind');
-assert.match(globeStay, /StayListPartnerNotice/, 'GlobeStayStrip list-level partner notice');
+assert.match(globeStay, /StayCardBookingLink/, 'GlobeStayStrip card uses StayCardBookingLink');
+assert.match(eventStay, /StayCardBookingLink/, 'EventStayStrip card uses StayCardBookingLink');
+assert.match(stayCardLink, /data-partner-booking-handoff="cta"/, 'StayCardBookingLink booking marker');
+assert.match(stayCardLink, /rel="noopener noreferrer sponsored"/, 'StayCardBookingLink sponsored rel');
+
 assert.match(eventStay, /StayListPartnerNotice/, 'EventStayStrip list-level partner notice');
-assert.match(eventStay, /showNotice=\{false\}/, 'EventStayStrip card hides per-card notice');
-assert.match(eventStay, /showPartnerLabel=\{false\}/, 'EventStayStrip card hides per-card affiliate');
-assert.match(globeStay, /showNotice=\{false\}/, 'GlobeStayStrip card hides per-card notice');
-assert.match(globeStay, /showPartnerLabel=\{false\}/, 'GlobeStayStrip card hides per-card affiliate');
+assert.doesNotMatch(eventStay, /PartnerBookingHandoff[\s\S]*kind="lodging"/, 'EventStayStrip card no PartnerBookingHandoff CTA');
+assert.match(globeStay, /StayListPartnerNotice/, 'GlobeStayStrip list-level partner notice');
+assert.doesNotMatch(globeStay, /PartnerBookingHandoff[\s\S]*kind="lodging"/, 'GlobeStayStrip card no PartnerBookingHandoff CTA');
 assert.doesNotMatch(eventTna, /showNotice=\{false\}/, 'EventTnaStrip keeps default partner notice');
 assert.doesNotMatch(mrtTnaWidget, /showNotice=\{false\}/, 'MrtTnaActivitiesWidget keeps default partner notice');
 assert.match(mrtTnaWidget, /kind="tour"/, 'MrtTnaActivitiesWidget tour handoff kind');
+assert.match(eventTna, /kind="tour"/, 'EventTnaStrip tour handoff kind');
 
 assert.match(ko, /파트너 예약 페이지로 이동합니다 · 가격·잔여석은 그쪽 기준/, 'ko notice default');
 assert.match(ko, /호텔 보고 예약 시작/, 'ko lodging hotel CTA');
