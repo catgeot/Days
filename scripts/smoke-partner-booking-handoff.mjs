@@ -51,6 +51,14 @@ for (const src of [eventStay, eventTna, globeStay, mrtTnaWidget]) {
 assert.match(eventStay, /kind="lodging"/, 'EventStayStrip lodging handoff kind');
 assert.match(eventTna, /kind="tour"/, 'EventTnaStrip tour handoff kind');
 assert.match(globeStay, /kind="lodging"/, 'GlobeStayStrip lodging handoff kind');
+assert.match(globeStay, /StayListPartnerNotice/, 'GlobeStayStrip list-level partner notice');
+assert.match(eventStay, /StayListPartnerNotice/, 'EventStayStrip list-level partner notice');
+assert.match(eventStay, /showNotice=\{false\}/, 'EventStayStrip card hides per-card notice');
+assert.match(eventStay, /showPartnerLabel=\{false\}/, 'EventStayStrip card hides per-card affiliate');
+assert.match(globeStay, /showNotice=\{false\}/, 'GlobeStayStrip card hides per-card notice');
+assert.match(globeStay, /showPartnerLabel=\{false\}/, 'GlobeStayStrip card hides per-card affiliate');
+assert.doesNotMatch(eventTna, /showNotice=\{false\}/, 'EventTnaStrip keeps default partner notice');
+assert.doesNotMatch(mrtTnaWidget, /showNotice=\{false\}/, 'MrtTnaActivitiesWidget keeps default partner notice');
 assert.match(mrtTnaWidget, /kind="tour"/, 'MrtTnaActivitiesWidget tour handoff kind');
 
 assert.match(ko, /파트너 예약 페이지로 이동합니다 · 가격·잔여석은 그쪽 기준/, 'ko notice default');
