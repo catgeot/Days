@@ -32,22 +32,7 @@ type StayItem = {
   productUrl: string;
   lat?: number;
   lng?: number;
-  address?: string | null;
-  categoryLabel?: string | null;
 };
-
-function pickStayTextField(
-  it: Record<string, unknown>,
-  keys: string[],
-): string | null {
-  for (const k of keys) {
-    const v = it[k];
-    if (v == null) continue;
-    const s = String(v).replace(/\s+/g, " ").trim();
-    if (s) return s;
-  }
-  return null;
-}
 
 function finiteCoord(v: unknown): number | null {
   const n = Number(v);
@@ -728,20 +713,6 @@ async function searchStays(
       const productUrl = rawUrl ||
         `https://accommodation.myrealtrip.com/union/products/${itemId}`;
       const coords = pickStayCoords(it);
-      const address = pickStayTextField(it, [
-        "address",
-        "addressName",
-        "addressLine",
-        "locationName",
-      ]);
-      const categoryLabel = pickStayTextField(it, [
-        "categoryName",
-        "category",
-        "propertyType",
-        "type",
-        "accommodationType",
-        "grade",
-      ]);
       mapped.push({
         itemId,
         itemName: String(it.itemName || it.name || ""),
@@ -753,8 +724,6 @@ async function searchStays(
         imageUrl: it.imageUrl ? String(it.imageUrl) : (it.thumbnailUrl ? String(it.thumbnailUrl) : null),
         productUrl,
         ...(coords ? { lat: coords.lat, lng: coords.lng } : {}),
-        ...(address ? { address } : {}),
-        ...(categoryLabel ? { categoryLabel } : {}),
       });
     }
     const items = mapped.sort((a, b) => {

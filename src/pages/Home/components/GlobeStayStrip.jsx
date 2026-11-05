@@ -581,7 +581,7 @@ function StayCard({
   const productHref = item.productUrl
     ? buildMrtMylinkUrl(item.productUrl)
     : MRT_AFFILIATE_HOME_URL;
-  const { starLine, detailLine } = mrtStayCardMetaLines(item, t);
+  const { starLine } = mrtStayCardMetaLines(item, t);
 
   const shellClass = `flex flex-col rounded-2xl border overflow-hidden transition-colors ${
     dateFlexible
@@ -626,15 +626,6 @@ function StayCard({
               }`}
             >
               {starLine}
-            </p>
-          ) : null}
-          {detailLine ? (
-            <p
-              className={`line-clamp-2 break-keep text-white/55 ${
-                large ? 'text-[11px]' : 'text-[10px]'
-              }`}
-            >
-              {detailLine}
             </p>
           ) : null}
           {distanceText ? (
