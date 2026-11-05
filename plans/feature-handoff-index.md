@@ -14,6 +14,28 @@
 
 ## 활성 목록
 
+### 트립닷컴 숙소 도시 연결
+
+| | |
+|--|--|
+| **상태** | **#2 미연결 점검** · 하와이 #1 사람 확인 완료 · PR [#662](https://github.com/catgeot/Days/pull/662) 메인 반영 |
+| **브랜치** | 점검·소수 ID 추가는 `main`. Preview가 필요해지면 짧은 `cursor/tripcom-stay-cities` 한 번만 |
+| **플랜** | [`tripcom-stay-city-audit.md`](./tripcom-stay-city-audit.md) |
+| **일지** | [`2026-11-05-project-log.md`](./2026-11-05-project-log.md) |
+| **Preview** | 하와이 확인분 배포 후에는 `www.gateo.kr`. `cursor/*` 배포는 다시 꺼 둠 |
+| **금지** | city ID 일괄 추가 · `city=10279`(이탈리아) · province만으로 검색창 채우기 · 호놀룰루 slug를 `757`로 묶기 · 키워드 API 첫 결과만으로 ID 확정 |
+| **VERIFY** | `node scripts/audit-tripcom-stay-cities.mjs` · 배치 1은 시크릿 창 `kr.trip.com/hotels/list?city=` 의 잡힌 도시 |
+| **남은 일** | 배치 1 24곳 연결 상태만 기록. 라이브로 맞은 곳만 city ID 추가하고 플래너 버튼 전환을 일지에 적는다 |
+
+**다음 제시어**
+
+```
+트립닷컴 숙소 #2, 미연결 여행지 점검
+@plans/feature-handoff-index.md
+@plans/2026-11-05-project-log.md
+@plans/tripcom-stay-city-audit.md
+```
+
 ### 현지 정보 LI-1 레지스트리
 
 | | |

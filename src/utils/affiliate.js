@@ -638,6 +638,12 @@ export const PLANNER_TRIPCOM_HOTEL_CITY_IDS = {
   azores: '3737',
   /** 타히티 — 섬 허브(파페에테 포함 · 보라보라 61019 아님) */
   tahiti: '61672',
+  /**
+   * 하와이 — 호놀룰루(HNL·와이키키). city 없으면 직전 세션(사모아 아피아 등)이 검색창에 남음.
+   * 주 province 10279는 destinationInputValue가 비어 자동완성되지 않음.
+   * city 10279는 이탈리아 아풀리아 오매핑.
+   */
+  hawaii: '757',
 };
 
 /**
@@ -830,6 +836,7 @@ export const TRIPCOM_HOTEL_TRACKING = {
   emptyResult: '숙소찾기 빈결과',
   emptyResultMobile: '숙소찾기 빈결과 모바일',
   lowInventory: '숙소찾기 저재고',
+  listFooter: '숙소찾기 목록하단',
   fullScreen: '숙소찾기 전체화면',
   plannerOverride: '플래너 숙소 오버라이드',
 };
