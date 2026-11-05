@@ -27,14 +27,20 @@ city ID를 넣으면 부작용이 있다. 플래너 숙소 카드에 `[@지역@]
 
 ## 배치 1 (R01–R02 기록)
 
-23곳 연결, `raja-ampat` 보류(와이사이는 서파푸아). ID와 관문 도시는 `affiliate.js` 주석과 일지. 다음 세션은 큐 **R03**(대도시 10곳)부터 라운드 2개.
+23곳 연결, `raja-ampat` 보류(와이사이는 서파푸아). ID와 관문 도시는 `affiliate.js` 주석과 일지. R03–R04는 PR #665. 다음 세션은 큐 **R05**부터 라운드 2개.
 
 제도·섬·권역. 하와이처럼 도시 이름이 아니라 세션 잔존이 나기 쉽다.
 
 `guam` `maldives` `seychelles` `palawan` `canary-islands` `galapagos` `mauritius` `zanzibar` `new-caledonia` `saipan` `okinawa` `hokkaido` `phuket` `boracay` `cebu` `crete` `sicily` `madeira` `bahamas` `cape-verde` `la-reunion` `uyuni-salt-flat` `komodo-island` `raja-ampat`
 
-대도시(도쿄·오사카·싱가포르·방콕·파리·뉴욕·시드니·서울·제주)와 나머지 미연결 200곳은 배치 1 기록 다음이다. 한 세션에 220곳을 라이브로 보지 않는다.
+R03 대도시 10곳과 R04 12곳은 목록에 잡힌 도시만 연결했다. 남은 곳은 큐 R05부터다. 한 세션에 220곳을 라이브로 보지 않는다.
 
 ## 기록
 
 각 slug: 연 도시 / 맞음·틀림 / 넣은 city ID 또는 보류 이유. 일지 `plans/2026-11-05-project-log.md`에 배치 결과만 남긴다.
+
+## 9. 핸드오프
+
+- 브랜치 `cursor/tripcom-stay-cities-de61` · R03–R04 PR [#665](https://github.com/catgeot/Days/pull/665) · 코드 `4577d03d` `634894f1`
+- 다음 세션은 큐 R05–R06만. 목록에 잡힌 IntlCity만. 라자 암팟·호놀룰루·sparse 재시도 금지.
+- `cursor/*` Preview는 꺼져 있다. 사람 확인은 PR 병합 후 `www.gateo.kr`.
