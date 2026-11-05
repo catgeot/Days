@@ -638,6 +638,62 @@ export const PLANNER_TRIPCOM_HOTEL_CITY_IDS = {
   azores: '3737',
   /** 타히티 — 섬 허브(파페에테 포함 · 보라보라 61019 아님) */
   tahiti: '61672',
+  /**
+   * 하와이 — 호놀룰루(HNL·와이키키). city 없으면 직전 세션(사모아 아피아 등)이 검색창에 남음.
+   * 주 province 10279는 destinationInputValue가 비어 자동완성되지 않음.
+   * city 10279는 이탈리아 아풀리아 오매핑.
+   */
+  hawaii: '757',
+  /**
+   * 배치 1 제도·섬 (2026-11-05). 목록 destinationInputValue가 비지 않은 IntlCity만.
+   * 주 province ID는 검색창이 비므로 넣지 않음. 호놀룰루 slug는 757로 묶지 않음.
+   */
+  /** 괌 */
+  guam: '753',
+  /** 몰디브 — 말레 */
+  maldives: '1207',
+  /** 세이셸 — 빅토리아 (캐나다 빅토리아 62407 아님) */
+  seychelles: '20672',
+  /** 팔라완 — 푸에르토프린세사 (엘니도 아님) */
+  palawan: '7515',
+  /** 카나리아 제도 — 라스팔마스 (province 10127 아님) */
+  'canary-islands': '3174',
+  /** 갈라파고스 — 푸에르토 아요라 (province 10485 아님) */
+  galapagos: '59342',
+  /** 모리셔스 — 포트루이스 */
+  mauritius: '76783',
+  /** 잔지바르 — 잔지바르시티 (스톤타운 76927 아님) */
+  zanzibar: '316972',
+  /** 뉴칼레도니아 — 누메아 */
+  'new-caledonia': '4086',
+  /** 사이판 — 북마리아나 */
+  saipan: '4081',
+  /** 오키나와 — 나하 (province 11059·볼리비아 오키나와 아님) */
+  okinawa: '92573',
+  /** 홋카이도 — 삿포로 (province 11055 아님) */
+  hokkaido: '641',
+  /** 푸켓 */
+  phuket: '725',
+  /** 보라카이 섬 */
+  boracay: '1391',
+  /** 세부 — 세부 시티 (도미니카 세부 258236 아님) */
+  cebu: '35831',
+  /** 크레타 — 헤라크리온 (province만 쓰지 않음) */
+  crete: '6890',
+  /** 시칠리아 — 팔레르모 */
+  sicily: '3640',
+  /** 마데이라 — 푼샬 */
+  madeira: '3298',
+  /** 바하마 — 나소 */
+  bahamas: '3330',
+  /** 카보베르데 — 프라이아 */
+  'cape-verde': '5720',
+  /** 레위니옹 — 생드니 (프랑스 본토 생드니 아님) */
+  'la-reunion': '5797',
+  /** 우유니 소금사막 — 우유니 */
+  'uyuni-salt-flat': '71478',
+  /** 코모도 — 라부한바조 */
+  'komodo-island': '7291',
 };
 
 /**
@@ -830,6 +886,7 @@ export const TRIPCOM_HOTEL_TRACKING = {
   emptyResult: '숙소찾기 빈결과',
   emptyResultMobile: '숙소찾기 빈결과 모바일',
   lowInventory: '숙소찾기 저재고',
+  listFooter: '숙소찾기 목록하단',
   fullScreen: '숙소찾기 전체화면',
   plannerOverride: '플래너 숙소 오버라이드',
 };

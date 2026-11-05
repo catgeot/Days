@@ -1214,6 +1214,27 @@ async function main() {
       stripSrc.includes('distance_asc'),
     'GlobeStayStrip wires distance + naver chip',
   );
+  const mrtMoreAt = stripSrc.indexOf("t('home.stayStrip.viewMoreOnMrt')");
+  const tripListAt = stripSrc.indexOf("t('home.stayStrip.searchStaysOnTripcom')");
+  assert(
+    mrtMoreAt !== -1 && tripListAt !== -1 && mrtMoreAt < tripListAt,
+    'stay list footer puts Trip.com search under the MyRealTrip more link',
+  );
+  assert(
+    stripSrc.includes('TRIPCOM_HOTEL_TRACKING.listFooter') &&
+      stripSrc.includes('tripcomHref={tripcomListMoreUrl}'),
+    'ready stay list passes Trip.com list URL into the more footer',
+  );
+  const koStay = readFileSync(
+    join(dirname(fileURLToPath(import.meta.url)), '../src/i18n/locales/ko.json'),
+    'utf8',
+  );
+  const enStay = readFileSync(
+    join(dirname(fileURLToPath(import.meta.url)), '../src/i18n/locales/en.json'),
+    'utf8',
+  );
+  assert(koStay.includes('"searchStaysOnTripcom": "트립닷컴에서 숙소 검색"'), 'ko trip list link');
+  assert(enStay.includes('"searchStaysOnTripcom": "Search stays on Trip.com"'), 'en trip list link');
   assert(stripSrc.includes('isCurrentMrtStayFetch'), 'first-entry photon apply is not cancelled by location identity');
   assert(
     stripSrc.includes('inflightKeyRef') && stripSrc.includes('[eligible, expanded, fetchKey]'),
