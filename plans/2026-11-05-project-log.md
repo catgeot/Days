@@ -31,6 +31,15 @@
 - 코드 `73d6fa75` `a6439a7d` · 브랜치 `cursor/tripcom-stay-cities-de61` · PR [#664](https://github.com/catgeot/Days/pull/664). audit: mapped 74 · 배치 1 열림 1 · 미연결 200. `cursor/*` Preview는 꺼져 있다.
 - 다음: 큐 R03–R04(대도시 10 + 다음 12). 한 세션 2라운드. 큐 [`tripcom-stay-city-queue.md`](./tripcom-stay-city-queue.md).
 
+## 트립닷컴 숙소 #3, 대도시 연결
+
+- 오케스트레이터 2라운드 · 워커 2. 목록 `destinationInputValue`가 그 여행지인 IntlCity만 넣었다. 주 ID·키워드 첫 행·`city=10279`·다른 나라 동명은 쓰지 않았다.
+- R03 10: 도쿄 228, 오사카 219, 싱가포르 73, 방콕 359, 파리 192, 뉴욕 633, 시드니 501, 서울 274, 제주 제주시 737, 서귀포 35796.
+- R04 12: 아부심벨 6605, 아콩카과 멘도사 3397, 알래스카 앵커리지 752, 앨리스스프링스 3404, 아마존 마나우스 1256, 암스테르담 176, 안다만 포트 블레어 7050, 앙코르 톰 309747, 앙코르 와트 시엠립 1369, 안나푸르나 포카라 3332, 아레키파 3718, 아테네 710.
+- 플래너: 이 22곳은 `[@지역@]`이 없으면 숙소 버튼이 트립닷컴으로 바뀐다.
+- 코드 `4577d03d` `634894f1` · 브랜치 `cursor/tripcom-stay-cities-de61` · PR [#665](https://github.com/catgeot/Days/pull/665). audit: mapped 96 · 미연결 178 · 한국 0 · 배치 1 열림은 라자 암팟. `cursor/*` Preview는 꺼져 있다.
+- 다음: 큐 R05–R06. 한 세션 2라운드.
+
 ## 마이리얼트립 API, gzip 응답 복구
 
 - 증상: 숙소·투어 Edge가 200이지만 지역·상품이 0건. 릴레이 본문이 `Content-Encoding` 없는 gzip이라 JSON 파싱이 실패하고 빈 목록으로 처리됐다.
