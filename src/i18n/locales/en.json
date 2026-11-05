@@ -8,7 +8,9 @@
     "noticeDefault": "Opens the partner booking page · price and availability are on their site",
     "noticeNarrow": "Book on the partner site · price and seats are on their site",
     "ctaLodgingHotel": "View hotel & start booking",
+    "ctaLodgingHotelNamed": "{{name}} — view hotel & start booking",
     "ctaLodgingMixed": "View stay & start booking",
+    "ctaLodgingMixedNamed": "{{name}} — view stay & start booking",
     "ctaTourProduct": "View product & start booking",
     "affiliatePartner": "Affiliate · {{partner}}",
     "partnerMyRealTrip": "MyRealTrip"

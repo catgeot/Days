@@ -11,6 +11,7 @@ import { fileURLToPath } from 'node:url';
 import {
   PARTNER_BOOKING_HANDOFF_FORBIDDEN_CTA,
   resolveLodgingHandoffVariant,
+  stayCardBookingAccessibleName,
 } from '../src/shared/affiliate/partnerBookingHandoff.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -66,6 +67,7 @@ assert.match(eventTna, /kind="tour"/, 'EventTnaStrip tour handoff kind');
 
 assert.match(ko, /파트너 예약 페이지로 이동합니다 · 가격·잔여석은 그쪽 기준/, 'ko notice default');
 assert.match(ko, /호텔 보고 예약 시작/, 'ko lodging hotel CTA');
+assert.match(ko, /ctaLodgingHotelNamed/, 'ko named lodging aria i18n');
 assert.match(ko, /상품 보고 예약 시작/, 'ko tour CTA');
 
 for (const forbidden of PARTNER_BOOKING_HANDOFF_FORBIDDEN_CTA) {
@@ -78,5 +80,14 @@ for (const forbidden of PARTNER_BOOKING_HANDOFF_FORBIDDEN_CTA) {
 
 assert.equal(resolveLodgingHandoffVariant({ itemName: '서울 호텔' }), 'lodging-hotel');
 assert.equal(resolveLodgingHandoffVariant({ itemName: '제주 펜션' }), 'lodging-mixed');
+assert.match(
+  stayCardBookingAccessibleName({ itemName: 'KEX 호텔' }, (k) =>
+    k === 'partnerBookingHandoff.ctaLodgingHotelNamed'
+      ? 'KEX 호텔 — 호텔 보고 예약 시작'
+      : '호텔 보고 예약 시작',
+  ),
+  /KEX 호텔/,
+  'stay card aria includes hotel name',
+);
 
 console.log('OK smoke:partner-booking-handoff');

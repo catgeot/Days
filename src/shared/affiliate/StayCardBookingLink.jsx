@@ -1,9 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  partnerBookingHandoffCtaKey,
-  resolveLodgingHandoffVariant,
-} from './partnerBookingHandoff.js';
+import { stayCardBookingAccessibleName } from './partnerBookingHandoff.js';
 
 /**
  * 숙소 카드 전체 — 기존 PartnerBookingHandoff CTA와 동일 href·rel·접근 가능 이름.
@@ -19,7 +16,7 @@ export default function StayCardBookingLink({
   if (!url) return null;
 
   const variant = resolveLodgingHandoffVariant(item);
-  const ariaLabel = t(partnerBookingHandoffCtaKey(variant));
+  const ariaLabel = stayCardBookingAccessibleName(item, t);
 
   return (
     <a
