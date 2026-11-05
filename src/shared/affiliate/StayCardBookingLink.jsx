@@ -15,7 +15,6 @@ export default function StayCardBookingLink({
   const url = String(href || '').trim();
   if (!url) return null;
 
-  const variant = resolveLodgingHandoffVariant(item);
   const ariaLabel = stayCardBookingAccessibleName(item, t);
 
   return (
