@@ -39,3 +39,10 @@
 - 플래너: 이 22곳은 `[@지역@]`이 없으면 숙소 버튼이 트립닷컴으로 바뀐다.
 - 코드 `4577d03d` `634894f1` · 브랜치 `cursor/tripcom-stay-cities-de61` · PR [#665](https://github.com/catgeot/Days/pull/665). audit: mapped 96 · 미연결 178 · 한국 0 · 배치 1 열림은 라자 암팟. `cursor/*` Preview는 꺼져 있다.
 - 다음: 큐 R05–R06. 한 세션 2라운드.
+
+## 마이리얼트립 API, gzip 응답 복구
+
+- 증상: 숙소·투어 Edge가 200이지만 지역·상품이 0건. 릴레이 본문이 `Content-Encoding` 없는 gzip이라 JSON 파싱이 실패하고 빈 목록으로 처리됐다.
+- 수정: `mrtFetch`가 gzip 매직 바이트를 푼다. Edge `fetch-mrt-stays`·`fetch-mrt-tnas`·`mrt-link-generator` 배포함. 코드는 `cursor/mrt-api-0b3f` · PR [#666](https://github.com/catgeot/Days/pull/666). `main` 재배포 전에 머지해야 수정이 유지된다.
+- 확인: 제주 숙소(제주시), 종로 숙소(신라스테이 광화문), 제주 투어(제주투어패스) 반환. Deno `mrtFetch_test.ts` 6건 PASS.
+- 사람 체크: [www.gateo.kr](https://www.gateo.kr) 제주·종로 숙소 찾기와 제주 투어에 카드가 보이는지.
