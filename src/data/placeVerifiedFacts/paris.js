@@ -24,21 +24,13 @@ const LOUVRE = {
   name: '루브르 박물관 방문 안내',
   url: 'https://www.louvre.fr/en/visit',
 };
-const SAFETY_OCT31 = {
+const SAFETY_NOV5 = {
   name: '외교부 안전공지 (주프랑스대사관)',
-  url: 'https://www.0404.go.kr/bbs/safetyNtc/1335043/detail2?ntnCd=248',
+  url: 'https://www.0404.go.kr/bbs/safetyNtc/1335046/detail2?ntnCd=248',
 };
 const SAFETY_OCT31_DAY = {
   name: '외교부 안전공지 (주프랑스대사관)',
   url: 'https://www.0404.go.kr/bbs/safetyNtc/1335045/detail2?ntnCd=248',
-};
-const SAFETY = {
-  name: '외교부 안전공지 (주프랑스대사관)',
-  url: 'https://www.0404.go.kr/bbs/safetyNtc/1335041/detail2?ntnCd=248',
-};
-const SAFETY_PROTESTS = {
-  name: '외교부 안전공지 (주프랑스대사관)',
-  url: 'https://www.0404.go.kr/bbs/safetyNtc/1335039/detail2?ntnCd=248',
 };
 
 export const PARIS_CITY_FACTS = {
@@ -66,14 +58,14 @@ export const PARIS_CITY_FACTS = {
     ),
     verifiedSlot(
       '치안',
-      '외교부 안전공지(2026-10-31·주프랑스대사관)는 10.31(토) 전국 3차 시위가 있을 예정이라고 안내됐어요.\n파리 행진은 14:00 포르트 드 바뇰레에서 포르트 드 샤랑통까지 진행될 예정이라고 했고, 바스티유 등 도심 행진과 국회 앞 집회는 계속 금지된다고 했어요.\n경찰 요청으로 다수 지하철·RER 역이 폐쇄될 수 있고, 레퓌블리크·레알 일부 구역에는 10.31~11.1 밤 23:00~06:00 통행금지가 시행될 예정이라고 했어요.\n외교부 안전공지(2026-10-20·주프랑스대사관)는 11.5(목) 주요 노조 전국 파업·시위가 예정돼 대중교통 차질 가능성이 있다고 해요.\n주프랑스대사관 야간·휴일 긴급연락은 +33-6-8028-5396이고, 영사콜센터는 +82-2-3210-0404예요.',
-      [SAFETY_OCT31, SAFETY_OCT31_DAY, SAFETY, SAFETY_PROTESTS],
-      '2026-11-02',
+      '외교부 안전공지(2026-11-05·주프랑스대사관)는 11.5(목) 전국 파업·시위로 대중교통·항공 운행 차질 가능성을 안내해요.\n10.31(토) 전국 3차 시위가 있었어요.\n11.4 오후 언론 보도 기준(변경될 수 있음) 노조는 바스티유 광장~콩코르드 광장 행진(13:00~14:00경 출발)을 신고했지만 경찰청 승인이 나지 않아 법원에서 다투는 중이고, 직전에 금지되거나 외곽 경로로 바뀔 수 있어요.\nRATP 지하철·버스는 대체로 정상이지만 행진 경로 주변 역은 임시 폐쇄될 수 있어요.\nRER A는 정상, B는 차질(샤를드골 공항 이용 시 유의, 평소보다 일찍 출발), D는 큰 차질이에요.\nSNCF TGV 일부 차질, TER·Intercités·Transilien 차질이에요.\nDGAC·공항 지상직 파업으로 샤를드골·오를리 항공편 감축·출국 수속 지연 가능성이 있어요.\n일부 학교·구청 업무 차질이 있을 수 있어요.\n바스티유~콩코르드 일대와 집회 장소에는 가지 말고, 집회를 마주치면 구경·촬영하지 말고 바로 떠나라고 해요.\n11.7(토) 14:00 콩코르드 광장에서 노란조끼 4차 시위가 예고돼 주말까지 도심 집회가 이어질 수 있어요.\n이동 전 RATP·SNCF·항공사·파리경찰청 공식 안내를 확인해요.\n주프랑스대사관 야간·휴일 긴급연락은 +33-6-8028-5396이고, 영사콜센터는 +82-2-3210-0404예요.',
+      [SAFETY_NOV5, SAFETY_OCT31_DAY],
+      '2026-11-05',
       {
         id: 'safety',
         kind: 'event',
-        checkedOn: '2026-11-02',
-        endsAt: '2026-11-05',
+        checkedOn: '2026-11-05',
+        endsAt: '2026-11-07',
       },
     ),
     emptySlot('season', '시즌'),
