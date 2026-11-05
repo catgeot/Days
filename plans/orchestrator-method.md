@@ -492,6 +492,20 @@ LIVE R: 메인만 · searchKeyword 금지(워커).
 
 제시어: `오케스트레이터` + `팔경contentId` · 큐 다음 ⬜ · 플랜 §9 복붙 블록. Cloud는 같은 메인 워커 재기동 · **2회 정지 금지**.
 
+### 5.8 트립닷컴 숙소 도시 (라이브 목록)
+
+| 항목 | 값 |
+|------|-----|
+| SSOT | `src/utils/affiliate.js` `PLANNER_TRIPCOM_HOTEL_CITY_IDS` |
+| 큐 | [`tripcom-stay-city-queue.md`](./tripcom-stay-city-queue.md) |
+| 브랜치 | `cursor/tripcom-stay-cities-de61` · PR #664 |
+| 라운드 | 워커 A 6 + B 6 · **한 세션 2라운드에서 멈춘다** (라이브 확인. 220곳 한 세션 금지) |
+| 게이트 | 목록 `destinationInputValue`가 비지 않고 그 여행지 · `node scripts/audit-tripcom-stay-cities.mjs` |
+
+IntlCity만. Province·Hotel·Markland·cityId `-1`/`10279`·키워드 첫 행 거절. 큐의 보류·sparse는 배정하지 않는다. ID를 넣으면 `[@지역@]` 없는 플래너 숙소 버튼이 트립닷컴으로 바뀐다.
+
+제시어: `오케스트레이터` + `트립닷컴숙소` · 큐 다음 ⬜ · **2라운드 후 다음 세션**.
+
 ---
 
 ## 6. 제시어 (복붙 · 최초·복구용)
@@ -507,6 +521,7 @@ LIVE R: 메인만 · searchKeyword 금지(워커).
 | 지자체 팔경·구경 | `오케스트레이터` + `지자체팔경` — **수집 종료. 재개 금지.** 활용은 아래 팔경contentId |
 | 팔경 Tour contentId | `오케스트레이터` + `팔경contentId` + [`korea-local-scenic-contentid-queue.md`](./korea-local-scenic-contentid-queue.md) · 브랜치 **`cursor/palgyeong-cid`** · 「§5.7 · P0 잔여 **K04 other apply-unique** · 본명 keyword 로또 금지 · 워커 병렬 LIVE 금지 · 429 정지 · UI 금지 · AI가 ID 기입 금지 · §3.6」 |
 | 정착지 재개/복구 | `오케스트레이터` + `맵박스정착지` + `@plans/mapbox-settlement-queue.md` · 「큐 다음 R · 워커2 · 목표3/최대5/최소2 · §3.3·§3.4·§4.2」 |
+| 트립닷컴 숙소 도시 | `오케스트레이터` + `트립닷컴숙소` + [`tripcom-stay-city-queue.md`](./tripcom-stay-city-queue.md) · 브랜치 **`cursor/tripcom-stay-cities-de61`** · 「§5.8 · 다음 ⬜ 부터 **2라운드** · 목록에 잡힌 도시만 · 라자암팟·호놀룰루·sparse 재시도 금지」 |
 | 파이프 단절 복구 | `오케스트레이터` · 「같은 지휘자 워커 N 재기동 · Cloud 중첩 후임 넣지 말 것 · §3.4」 |
 
 ---
