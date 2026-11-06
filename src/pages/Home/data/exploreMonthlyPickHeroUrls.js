@@ -34,3 +34,43 @@ export const EXPLORE_MONTHLY_PICK_HERO_INTRINSIC_SIZE = {
   dubai: { width: 1280, height: 853 },
   melbourne: { width: 1280, height: 960 },
 };
+
+/**
+ * 카드 출처 링크 아래 표시 — Wikimedia는 파일 페이지·라이선스명, VisitKorea는 매체 고지 링크.
+ * @type {Record<string, { ko: string, en: string, filePageUrl: string }>}
+ */
+export const EXPLORE_MONTHLY_PICK_PHOTO_CREDIT = {
+  kyoto: {
+    ko: '저작 Luka Peternel (Path-x21) · CC BY-SA 4.0',
+    en: 'By Luka Peternel (Path-x21) · CC BY-SA 4.0',
+    filePageUrl: 'https://commons.wikimedia.org/wiki/File:Tofukuji-maple-autumn-2017-Luka-Peternel.jpg',
+  },
+  'chiang-mai': {
+    ko: '저작 Nik Cyclist (Flickr) · CC BY 2.0',
+    en: 'By Nik Cyclist (Flickr) · CC BY 2.0',
+    filePageUrl: 'https://commons.wikimedia.org/wiki/File:Yi_Peng_lanterns_in_Chiang_Mai_%2811067469754%29.jpg',
+  },
+  'phu-quoc': {
+    ko: '저작 dronepicr (Flickr) · CC BY 2.0',
+    en: 'By dronepicr (Flickr) · CC BY 2.0',
+    filePageUrl:
+      'https://commons.wikimedia.org/wiki/File:Beautiful_beach_on_Phu_Quoc_island_Vietnam_%2839543775721%29.jpg',
+  },
+  jeju: {
+    ko: '한국관광공사 VisitJeju 매체 — 이용·표기는 출처 페이지 안내에 따름',
+    en: 'KTO VisitJeju media — see source page for terms',
+    filePageUrl:
+      'https://www.visitjeju.net/kr/detail/view?contentsid=CONT_000000000500309',
+  },
+  dubai: {
+    ko: '저작 Norlando Pobre · CC BY 2.0',
+    en: 'By Norlando Pobre · CC BY 2.0',
+    filePageUrl: 'https://commons.wikimedia.org/wiki/File:Dubai_Marina_Skyline.jpg',
+  },
+  melbourne: {
+    ko: '저작 Jupiter Firelyte (Flickr) · CC BY 2.0',
+    en: 'By Jupiter Firelyte (Flickr) · CC BY 2.0',
+    filePageUrl:
+      'https://commons.wikimedia.org/wiki/File:Flemington_main_stand%2C_2013_Melbourne_Cup.jpg',
+  },
+};

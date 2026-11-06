@@ -10,6 +10,7 @@ import { festivalHubPhotoLayout } from '../../../Korea/festivalHubGridLayout.js'
 import {
   EXPLORE_MONTHLY_PICK_HERO_INTRINSIC_SIZE,
   EXPLORE_MONTHLY_PICK_HERO_OBJECT_POSITION,
+  EXPLORE_MONTHLY_PICK_PHOTO_CREDIT,
 } from '../../data/exploreMonthlyPickHeroUrls.js';
 import ExploreMonthlyPickMedia from './ExploreMonthlyPickMedia';
 
@@ -34,6 +35,30 @@ const SourceLinks = ({ sources, compact = false }) => (
   </div>
 );
 
+const PhotoCreditLine = ({ slug, compact, isEn }) => {
+  const c = EXPLORE_MONTHLY_PICK_PHOTO_CREDIT[String(slug || '').toLowerCase()];
+  if (!c?.filePageUrl) return null;
+  const text = isEn ? c.en : c.ko;
+  const linkLabel = isEn ? 'File / policy' : '파일·정책 페이지';
+  return (
+    <p
+      className={`px-0.5 text-gray-500 ${compact ? 'mt-1 text-[9px] leading-snug' : 'mt-1.5 text-[10px] leading-snug'}`}
+    >
+      {text}{' '}
+      <a
+        href={c.filePageUrl}
+        target="_blank"
+        rel="noopener noreferrer license"
+        className="font-medium text-blue-400/90 underline decoration-blue-500/30 underline-offset-2 hover:text-blue-300"
+        onClick={(e) => e.stopPropagation()}
+        onPointerDown={(e) => e.stopPropagation()}
+      >
+        {linkLabel}
+      </a>
+    </p>
+  );
+};
+
 const ExploreMonthlyPickItem = ({
   spot,
   entry,
@@ -55,6 +80,9 @@ const ExploreMonthlyPickItem = ({
   const rawCountry = getLocalizedCountryName(spot, 'ko') || String(spot?.country || '').trim();
   const countryLabel = isPlaceholderCountry(rawCountry) ? '' : rawCountry;
   const slug = String(spot?.slug || entry?.slug || '').toLowerCase();
+  const isEnUi = String(i18n.language || '')
+    .toLowerCase()
+    .startsWith('en');
   const [naturalSize, setNaturalSize] = useState(null);
   const fallbackSize = EXPLORE_MONTHLY_PICK_HERO_INTRINSIC_SIZE[slug] || {
     width: 3,
@@ -113,7 +141,7 @@ const ExploreMonthlyPickItem = ({
 
   return (
     <div
-      className={`flex min-w-0 flex-col ${className}`}
+      className={`flex w-full min-w-0 flex-col ${className}`}
       data-testid={`explore-v2-monthly-item-${slug}`}
     >
       <article
@@ -123,7 +151,7 @@ const ExploreMonthlyPickItem = ({
         onPointerUp={(e) => handleEnd(e, spot)}
         onPointerLeave={handleCancel}
         onPointerCancel={handleCancel}
-        className={`group flex flex-1 cursor-pointer flex-col overflow-hidden rounded-2xl border border-white/[0.1] bg-black/40 text-left transition hover:border-white/25 ${mediaClassName}`}
+        className={`group flex cursor-pointer flex-col overflow-hidden rounded-2xl border border-white/[0.1] bg-black/40 text-left transition hover:border-white/25 ${mediaClassName}`}
       >
         <div
           data-testid={`explore-v2-monthly-photo-${slug}`}
@@ -152,7 +180,7 @@ const ExploreMonthlyPickItem = ({
         </div>
         <div
           data-testid="explore-v2-monthly-text-panel"
-          className={`flex min-w-0 flex-1 flex-col justify-between border-t border-white/[0.08] ${textPanelClass}`}
+          className={`flex min-w-0 flex-col border-t border-white/[0.08] ${textPanelClass}`}
         >
           <div>
             <div className="flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5">
@@ -176,7 +204,12 @@ const ExploreMonthlyPickItem = ({
           {!sourcesBelow ? <SourceLinks sources={entry.sources} compact={isTile} /> : null}
         </div>
       </article>
-      {sourcesBelow ? <SourceLinks sources={entry.sources} compact={isTile} /> : null}
+      {sourcesBelow ? (
+        <>
+          <SourceLinks sources={entry.sources} compact={isTile} />
+          <PhotoCreditLine slug={slug} compact={isTile} isEn={isEnUi} />
+        </>
+      ) : null}
     </div>
   );
 };
