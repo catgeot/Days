@@ -1,8 +1,7 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import {
   buildVisibleMonthlyPickCards,
   exploreV2MonthlyPickHeadline,
-  monthlyPickDisplayName,
   partitionExploreMonthlyPickCardsByHero,
   resolveExploreV2MonthlyPickKey,
 } from '../../lib/exploreMonthlyPicks';
@@ -19,44 +18,18 @@ const ExploreMonthlyPicksSection = ({ onSelectSpot }) => {
     () => partitionExploreMonthlyPickCardsByHero(cards),
     [cards],
   );
-  const [brokenSlugs, setBrokenSlugs] = useState(() => new Set());
 
-  const handleImageError = useCallback((slug) => {
-    const key = String(slug || '').toLowerCase();
-    if (!key) return;
-    setBrokenSlugs((prev) => {
-      if (prev.has(key)) return prev;
-      const next = new Set(prev);
-      next.add(key);
-      return next;
-    });
-  }, []);
-
-  const visibleCards = useMemo(
-    () =>
-      withHero.filter(
-        (card) => !brokenSlugs.has(String(card.entry.slug || '').toLowerCase()),
-      ),
-    [withHero, brokenSlugs],
+  const excludedLabels = useMemo(
+    () => excludedNoHero.map((row) => row.name),
+    [excludedNoHero],
   );
-
-  const excludedLabels = useMemo(() => {
-    const names = excludedNoHero.map((row) => row.name);
-    for (const card of withHero) {
-      const slug = String(card.entry.slug || '').toLowerCase();
-      if (brokenSlugs.has(slug)) {
-        names.push(monthlyPickDisplayName(card.spot, slug));
-      }
-    }
-    return names;
-  }, [brokenSlugs, excludedNoHero, withHero]);
 
   const headline = useMemo(() => {
     if (!monthKey) return '';
     return exploreV2MonthlyPickHeadline(monthKey);
   }, [monthKey]);
 
-  if (!monthKey || cards.length === 0 || visibleCards.length === 0) return null;
+  if (!monthKey || cards.length === 0 || withHero.length === 0) return null;
 
   return (
     <section
@@ -71,11 +44,7 @@ const ExploreMonthlyPicksSection = ({ onSelectSpot }) => {
       >
         {headline}
       </h2>
-      <ExploreMonthlyPicksLayoutB
-        cards={visibleCards}
-        onSelectSpot={onSelectSpot}
-        onImageError={handleImageError}
-      />
+      <ExploreMonthlyPicksLayoutB cards={withHero} onSelectSpot={onSelectSpot} />
     </section>
   );
 };

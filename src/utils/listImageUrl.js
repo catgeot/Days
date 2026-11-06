@@ -4,8 +4,20 @@
 
 const VISITKOREA_HOSTS = ['tong.visitkorea.or.kr', 'cdn.visitkorea.or.kr'];
 
+const WIKIMEDIA_IMAGE_HOSTS = [
+  'upload.wikimedia.org',
+  'commons.wikimedia.org',
+  'thumb.wikimedia.org',
+];
+
 function isVisitKoreaHost(hostname) {
   return VISITKOREA_HOSTS.some(
+    (host) => hostname === host || hostname.endsWith(`.${host}`),
+  );
+}
+
+function isWikimediaImageHost(hostname) {
+  return WIKIMEDIA_IMAGE_HOSTS.some(
     (host) => hostname === host || hostname.endsWith(`.${host}`),
   );
 }
@@ -34,6 +46,9 @@ export function resolveListImageUrl(url, opts = {}) {
       parsed.searchParams.set('w', String(maxWidth));
       parsed.searchParams.set('q', '80');
       return parsed.toString();
+    }
+    if (isWikimediaImageHost(parsed.hostname)) {
+      return raw;
     }
   } catch {
     return raw;

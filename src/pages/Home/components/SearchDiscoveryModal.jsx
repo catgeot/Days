@@ -1304,7 +1304,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, onAskMooni,
           {/* 모바일 전용 Header (스크롤 시 네이티브하게 자연스럽게 올라감) */}
           {headerContent(true)}
 
-          <div className="p-4 md:p-8 xl:p-10 pb-32">
+          <div className="mx-auto w-full min-w-0 max-w-6xl p-4 md:p-8 xl:p-10 pb-32">
             {/* 2단 분류 탭 영역 */}
             {!isSearching && (
               <div className="-mx-4 px-4 md:mx-0 md:px-0 pb-4 mb-6 md:mb-8 border-b border-white/[0.05] md:border-white/[0.08]">
