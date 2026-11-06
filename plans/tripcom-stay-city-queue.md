@@ -1,8 +1,8 @@
 # 트립닷컴 숙소 도시 — 오케스트레이터 큐
 
-**상태**: 2026-11-05 · R01–R04 ✅ (45 연결 · 라자 암팟 보류) · **다음 ⬜ R05**
+**상태**: 2026-11-06 · R01–R06 ✅ (69 연결 · 라자 암팟 보류) · **다음 ⬜ R07**
 **방법**: [`orchestrator-method.md`](./orchestrator-method.md) §5.8 · 점검 [`tripcom-stay-city-audit.md`](./tripcom-stay-city-audit.md)
-**브랜치**: `cursor/tripcom-stay-cities-de61` · R03–R04 PR [#665](https://github.com/catgeot/Days/pull/665) · 배치 1 PR [#664](https://github.com/catgeot/Days/pull/664) 병합됨
+**브랜치**: `cursor/tripcom-stay-cities-de61` · R05–R06 PR [#672](https://github.com/catgeot/Days/pull/672) · R03–R04 PR [#665](https://github.com/catgeot/Days/pull/665) 병합 · 배치 1 PR [#664](https://github.com/catgeot/Days/pull/664) 병합됨
 
 ### 가드
 
@@ -38,9 +38,9 @@
 | **R02** | `phuket` · `boracay` · `cebu` · `crete` · `sicily` · `madeira` | `bahamas` · `cape-verde` · `la-reunion` · `uyuni-salt-flat` · `komodo-island` | ✅ 11 · `raja-ampat` 보류 |
 | **R03** | `tokyo` · `osaka` · `singapore` · `bangkok` · `paris` · `new-york` | `sydney` · `seoul` · `jeju` · `seogwipo` | ✅ 10 |
 | **R04** | `abu-simbel` · `aconcagua` · `alaska` · `alice-springs` · `amazon-rainforest` · `amsterdam` | `andaman-islands` · `angkor-thom` · `angkor-wat` · `annapurna-circuit` · `arequipa` · `athens` | ✅ 12 |
-| **R05** | `auckland` · `ayutthaya` · `bagan` · `banff-national-park` · `barcelona` · `berlin` | `bodrum` · `bohol` · `borobudur` · `boston` · `brisbane` · `brunei` | ⬜ 다음 |
-| **R06** | `brussels` · `budapest` · `buenos-aires` · `cairo` · `cancun` · `cape-town` | `cappadocia` · `carstensz-pyramid` · `chiang-mai` · `chicago` · `cinque-terre` · `copenhagen` | ⬜ |
-| **R07** | `costa-rica` · `cusco` · `da-nang` · `delhi` · `denali` · `dolomites` | `dubai` · `dublin` · `dubrovnik` · `dunhuang` · `easter-island` · `edinburgh` | ⬜ |
+| **R05** | `auckland` · `ayutthaya` · `bagan` · `banff-national-park` · `barcelona` · `berlin` | `bodrum` · `bohol` · `borobudur` · `boston` · `brisbane` · `brunei` | ✅ 12 |
+| **R06** | `brussels` · `budapest` · `buenos-aires` · `cairo` · `cancun` · `cape-town` | `cappadocia` · `carstensz-pyramid` · `chiang-mai` · `chicago` · `cinque-terre` · `copenhagen` | ✅ 12 |
+| **R07** | `costa-rica` · `cusco` · `da-nang` · `delhi` · `denali` · `dolomites` | `dubai` · `dublin` · `dubrovnik` · `dunhuang` · `easter-island` · `edinburgh` | ⬜ 다음 |
 | **R08** | `el-calafate` · `el-nido` · `ephesus` · `fernando-de-noronha` · `fez` · `fiordland` | `florence` · `forbidden-city` · `fukuoka` · `geneva` · `gili-meno` · `giza-pyramids` | ⬜ |
 | **R09** | `gold-coast` · `grand-canyon` · `great-barrier-reef` · `great-wall` · `halong-bay` · `hamburg` | `hampi` · `hanoi` · `helsinki` · `hoi-an` · `hue` · `hvar` | ⬜ |
 | **R10** | `ibiza` · `iguazu-falls` · `inca-trail` · `ishigaki` · `jaipur` · `jakarta` | `jerusalem` · `kala-patthar` · `kanazawa` · `kilimanjaro` · `kobe` · `koh-samui` | ⬜ |
@@ -53,4 +53,4 @@
 | **R17** | `taipei` · `taj-mahal` · `terracotta-army` · `toronto` · `ubud` · `ulaanbaatar` | `ushuaia` · `vancouver` · `vang-vieng` · `varanasi` · `venice` · `victoria-falls` | ⬜ |
 | **R18** | `vienna` · `vientiane` · `wadi-rum` · `warsaw` · `washington-dc` · `yellowknife` | `yokohama` · `zagreb` · `zermatt` · `zhangjiajie` · `zurich` | ⬜ |
 
-나머지 라이브 대상 167곳 · 라운드 R05–R18. R04 관문: 아콩카과 멘도사, 알래스카 앵커리지, 아마존 마나우스, 안다만 포트 블레어, 앙코르 와트 시엠립, 안나푸르나 포카라. 앙코르 톰은 본시.
+나머지 라이브 대상 143곳 · 라운드 R07–R18. R06 관문: 밴프는 앨버타 밴프, 브루나이는 반다르세리베가완, 카파도키아는 괴레메, 카르스텐츠는 파푸아 티미카, 친퀘테레는 몬테로소알마레(라스페치아 아님).

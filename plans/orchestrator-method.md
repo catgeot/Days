@@ -498,7 +498,7 @@ LIVE R: 메인만 · searchKeyword 금지(워커).
 |------|-----|
 | SSOT | `src/utils/affiliate.js` `PLANNER_TRIPCOM_HOTEL_CITY_IDS` |
 | 큐 | [`tripcom-stay-city-queue.md`](./tripcom-stay-city-queue.md) |
-| 브랜치 | `cursor/tripcom-stay-cities-de61` · PR #665 (R03–R04) · #664 병합됨 |
+| 브랜치 | `cursor/tripcom-stay-cities-de61` · PR #672 (R05–R06) · #665·#664 병합됨 |
 | 라운드 | 워커 A 6 + B 6 · **한 세션 2라운드에서 멈춘다** (라이브 확인. 220곳 한 세션 금지) |
 | 게이트 | 목록 `destinationInputValue`가 비지 않고 그 여행지 · `node scripts/audit-tripcom-stay-cities.mjs` |
 
