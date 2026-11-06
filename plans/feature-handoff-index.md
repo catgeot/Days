@@ -14,6 +14,31 @@
 
 ## 활성 목록
 
+### 항공경로 검색 버튼
+
+| | |
+|--|--|
+| **상태** | **#1 상태창 검색 버튼** · tip `e0c8ab8c` · PR [#679](https://github.com/catgeot/Days/pull/679) · **병합 금지(사람 Preview 전)** |
+| **브랜치** | `cursor/flight-search-tap-b675` |
+| **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
+| **일지** | [`2026-11-06-project-log.md`](./2026-11-06-project-log.md) |
+| **Preview** | git `https://days-git-cursor-flight-search-tap-b675-catgeots-projects.vercel.app` · `vercel.json`에서 이 브랜치만 배포 켬 |
+| **금지** | PR 병합(사람 Preview 전) · 코드를 `origin/main`에 push · feature에 `plans/**` 커밋 · 검색 버튼 문구·색 변경 |
+| **VERIFY** | `npm run smoke:tripcom-flight-planner` PASS |
+| **남은 일** | 사람이 Preview에서 항공 경로 → 항공권 검색 → 일정 입력 → 「검색」이 트립닷컴 항공 결과로 열리는지 본다 |
+
+**다음 제시어**
+
+```
+항공경로 #2, 검색 피드백
+@plans/feature-handoff-index.md
+@plans/2026-11-06-project-log.md
+브랜치 cursor/flight-search-tap-b675 · PR #679
+금지: PR 병합(사람 Preview OK 전) · main 코드 push · feature에 plans 커밋
+작업: Preview에서 검색이 안 열리거나 날짜·공항이 빠지면 그 경우만 같은 브랜치에서 수정
+검증: npm run smoke:tripcom-flight-planner
+```
+
 ### 트립닷컴 숙소 도시 연결
 
 | | |
