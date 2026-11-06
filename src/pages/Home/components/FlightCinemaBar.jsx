@@ -448,8 +448,6 @@ export default function FlightCinemaBar({
             <FlightOriginSelector variant="bar" {...originSelectorProps} />
           )}
 
-          {!isOriginCompact ? (
-          <>
           <div className="flex min-w-0 items-start gap-2">
             {isRouteUpdatePending ? (
               <Loader2 size={16} className="mt-0.5 shrink-0 animate-spin text-sky-300" aria-hidden="true" />
@@ -512,8 +510,6 @@ export default function FlightCinemaBar({
               {t('home.flightCinema.close')}
             </button>
           </div>
-          </>
-          ) : null}
         </div>
       </div>
     </div>

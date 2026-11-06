@@ -158,6 +158,11 @@ assert.match(context, /tickets 직행 금지/, 'no tickets skip from summary/cin
 const cinemaBar = read('src/pages/Home/components/FlightCinemaBar.jsx');
 assert.match(cinemaBar, /WhiteLabelWidget/, 'summary cinema search uses WhiteLabelWidget');
 assert.match(cinemaBar, /searchFlights/, 'summary cinema has 항공권 검색');
+assert.doesNotMatch(
+  cinemaBar,
+  /!isOriginCompact\s*\?\s*\([\s\S]*flight-cinema-bar-cta/,
+  '모바일 출발지 펼침(compact)에서도 항공권 검색 CTA 숨김 금지',
+);
 
 assert.match(whiteLabel, /tryOpenFlightSearch/, 'globe CTA tries in-app form first');
 
