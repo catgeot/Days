@@ -29,7 +29,7 @@
 - **한·영 검색 노출 (외부 SEO)**: [`en-seo-followup-plan.md`](./en-seo-followup-plan.md) · 세션 `검색노출 #{N}` · [`feature-handoff-index.md`](./feature-handoff-index.md)
 - **국내 역·랜드마크 숙소 매핑 및 인근 추천 (P0~P1 4단계 계획)**: [`korea-station-stay-plan.md`](./korea-station-stay-plan.md) · 지하철역 약칭 지오코딩 및 NEIGHBORHOOD 래더 연계 · 세션 `종각역 숙소 #{N}`
 - **국내 여행지·숙소·갤러리 매칭 아키텍처 혁신 (4단계 8세션 계획)**: [`korea-destination-matching-architecture-plan.md`](./korea-destination-matching-architecture-plan.md) · First-Pass 지명 리졸버, 숙소 Geo-Sanity 가드, 갤러리 시설컷 정밀 필터, 동음이의어 다후보 UI
-- **자체 공공누리 세로 피드 (계획만 · 구현 전)**: [`2026-11-07-self-reels-page-session-plan.md`](./2026-11-07-self-reels-page-session-plan.md) · 플래그 기본 OFF · 세션 6개 · 확인된 편만 · R2/DB/공개는 별도 승인
+- **자체 공공누리 세로 피드 (계획만 · 구현 전)**: [`2026-11-07-self-reels-page-session-plan.md`](./2026-11-07-self-reels-page-session-plan.md) · 플래그 기본 OFF · 세션 6개 · 확인된 편만 · 공개 승인은 사이트 기획 채팅 · R2/DB/공개는 별도 승인
 - **일별 작업 로그**: `YYYY-MM-DD-project-log.md`  
   - 최신: [`2026-11-07-project-log.md`](./2026-11-07-project-log.md) · 직전 [`2026-11-06-project-log.md`](./2026-11-06-project-log.md)  
 - **해안·해양 탐색 칩 (플랜+SSOT)**: [`coast-sea-explore-plan.md`](./coast-sea-explore-plan.md) · Phase 1–2 ✅ · `audit:sea-basins` · 일지 `2026-08-16`
