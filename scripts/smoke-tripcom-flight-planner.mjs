@@ -26,6 +26,13 @@ assert.match(
   /export function shouldUseTripcomFlightSearchModal/,
   'mobile search modal helper',
 );
+assert.match(nav, /openRecordedTripcomUrl/, 'trip.com open goes through the recorded helper');
+assert.doesNotMatch(nav, /anchor\.click\(\)/, 'synthetic noreferrer click is not used');
+
+const tripNav = read('src/components/PlaceCard/common/tripcomExternalNav.js');
+assert.match(tripNav, /assignTripcomWithoutReferrer/, 'same-tab uses location.assign');
+assert.match(tripNav, /no-referrer/, 'same-tab strips Referer');
+assert.doesNotMatch(tripNav, /anchor\.click\(\)/, 'helper does not synthetic-click');
 
 const whiteLabel = read('src/components/PlaceCard/common/WhiteLabelWidget.jsx');
 assert.match(whiteLabel, /openTripcomExternalUrl/, 'external fallback');
@@ -134,6 +141,9 @@ assert.match(native, /AirportSlot/, 'combined origin-destination picker');
 assert.match(native, /TripcomFlightDateRangeCalendar/, 'single date-range calendar');
 assert.match(native, /hasCompleteFlightDates/, 'search waits for picked dates');
 assert.match(native, /data-tripcom-schedule-complete/, 'incomplete schedule marker');
+assert.match(native, /pointerType === 'mouse'/, 'touch search runs on pointerdown');
+assert.match(native, /searchLockRef/, 'one gesture does not open twice');
+assert.match(native, /linkTarget !== '_self'/, 'same-tab search stays until navigation');
 assert.doesNotMatch(native, /addDaysYmd\(todayYmd\(\), 14\)/, 'form does not auto-fill +14');
 
 const calendar = read(
@@ -282,6 +292,71 @@ assert.equal(
   true,
   'one-way complete with depart only',
 );
+
+const { JSDOM } = await import('jsdom');
+const dom = new JSDOM('<!doctype html><html><head></head><body></body></html>', {
+  url: 'https://www.gateo.kr/',
+});
+const assigned = [];
+const opened = [];
+const recorded = [];
+const navWindow = {
+  location: {
+    assign: (next) => {
+      assigned.push(String(next));
+    },
+  },
+  open: (next) => {
+    opened.push(String(next));
+    return { closed: false };
+  },
+};
+const { openRecordedTripcomUrl } = await import(
+  '../src/components/PlaceCard/common/tripcomExternalNav.js'
+);
+const ticketsUrl =
+  'https://kr.trip.com/flights/icn-to-yzf/tickets-icn-yzf?ddate=2026-11-11&rdate=2026-11-18';
+openRecordedTripcomUrl(ticketsUrl, {
+  target: '_self',
+  placeLabel: '옐로나이프',
+  window: navWindow,
+  document: dom.window.document,
+  recordVisit: (input) => {
+    recorded.push(input);
+  },
+});
+assert.deepEqual(assigned, [ticketsUrl], 'same-tab search assigns the tickets URL');
+assert.equal(opened.length, 0, 'same-tab search does not window.open');
+assert.equal(recorded.length, 1, 'same-tab search records the visit');
+assert.equal(
+  dom.window.document.querySelector('meta[name="referrer"]')?.getAttribute('content'),
+  'no-referrer',
+  'same-tab search strips Referer',
+);
+
+const desktopUrl = 'https://kr.trip.com/flights/icn-to-cdg/tickets-icn-cdg?ddate=2026-12-01';
+openRecordedTripcomUrl(desktopUrl, {
+  target: '_blank',
+  placeLabel: '파리',
+  window: navWindow,
+  document: dom.window.document,
+  recordVisit: () => {
+    throw new Error('storage down');
+  },
+});
+assert.deepEqual(opened, [desktopUrl], 'desktop search opens a tab');
+assert.equal(assigned.length, 1, 'desktop search does not replace the tab');
+
+assigned.length = 0;
+openRecordedTripcomUrl(ticketsUrl, {
+  target: '_blank',
+  window: {
+    open: () => null,
+    location: navWindow.location,
+  },
+  document: dom.window.document,
+});
+assert.deepEqual(assigned, [ticketsUrl], 'blocked popup falls back to same-tab');
 
 console.log('OK: tripcom-flight-planner — native form in flight card · tickets URL');
 console.log('SMOKE OK');
