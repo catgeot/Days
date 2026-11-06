@@ -43,24 +43,24 @@
 
 | | |
 |--|--|
-| **상태** | **#6 큐 R09–R10** · 24곳 · tip `01c1f692` `00cb058e` · PR [#677](https://github.com/catgeot/Days/pull/677) · #5는 PR [#672](https://github.com/catgeot/Days/pull/672) 병합 · 라자 암팟 보류 |
+| **상태** | **#7 큐 R11–R12** · 24곳 · tip `bffc2931` `070b6e25` · PR [#686](https://github.com/catgeot/Days/pull/686) · #6은 PR [#677](https://github.com/catgeot/Days/pull/677) 병합 · 라자 암팟 보류 |
 | **브랜치** | `cursor/tripcom-stay-cities-de61` (이 주제 고정. 세션마다 새 브랜치 금지) |
 | **플랜** | [`tripcom-stay-city-audit.md`](./tripcom-stay-city-audit.md) · 큐 [`tripcom-stay-city-queue.md`](./tripcom-stay-city-queue.md) |
-| **일지** | [`2026-11-06-project-log.md`](./2026-11-06-project-log.md) |
+| **일지** | [`2026-11-07-project-log.md`](./2026-11-07-project-log.md) |
 | **Preview** | `cursor/*` 배포는 꺼져 있다. 사람 확인은 PR 병합 후 `www.gateo.kr` |
 | **금지** | city ID 일괄 추가 · `city=10279` · province만으로 검색창 채우기 · 호놀룰루를 `757`로 묶기 · 라자 암팟 재시도 · sparse에 city 단정 · 키워드 첫 결과만으로 ID 확정 · 한 세션에 라운드 3개 이상 · 중국 국내 City를 목록 확인 없이 거절 |
 | **VERIFY** | `node scripts/audit-tripcom-stay-cities.mjs` · PASS는 목록 `destinationInputValue`가 그 여행지 |
-| **남은 일** | 큐 R11부터. 미연결 106(해외). 한국 서울·제주·서귀포는 연결됨. 다음 세션은 R11–R12만 |
+| **남은 일** | 큐 R13부터. 미연결 82(해외). 한국 서울·제주·서귀포는 연결됨. 다음 세션은 R13–R14만 |
 
 **다음 제시어**
 
 ```
-트립닷컴 숙소 #7, 큐 R11
+트립닷컴 숙소 #8, 큐 R13
 @plans/feature-handoff-index.md
-@plans/2026-11-06-project-log.md
+@plans/2026-11-07-project-log.md
 @plans/tripcom-stay-city-queue.md
-오케스트레이터 · 트립닷컴숙소 · 큐 R11부터 2라운드 · 워커 2 · 목록에 잡힌 도시만
-브랜치 cursor/tripcom-stay-cities-de61 · PR #677
+오케스트레이터 · 트립닷컴숙소 · 큐 R13부터 2라운드 · 워커 2 · 목록에 잡힌 도시만
+브랜치 cursor/tripcom-stay-cities-de61 · PR #686
 ```
 
 ### 축제 카드 배열
