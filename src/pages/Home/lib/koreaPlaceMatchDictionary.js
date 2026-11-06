@@ -547,6 +547,22 @@ export const KO_EXPLORE_SEARCH_ALIASES = [
       placeSlug: 'pyongyang',
     },
   ],
+  [
+    '우금치',
+    {
+      canonical: '공주 우금치 전적',
+      contentId: '128113',
+      also: ['공주 우금치'],
+    },
+  ],
+  [
+    '우금치전적',
+    {
+      canonical: '공주 우금치 전적',
+      contentId: '128113',
+      also: ['공주 우금치'],
+    },
+  ],
   ...expandScenicNameVariants(),
 ];
 
