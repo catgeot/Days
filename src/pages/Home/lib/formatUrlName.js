@@ -1,5 +1,6 @@
 import { TRAVEL_SPOTS } from '../data/travelSpots.js';
 import { mergeCanonicalTravelSpot } from '../../../utils/travelSpotResolve.js';
+import { isDomesticKoreaLocation } from '../../../utils/tourApiMatch.js';
 
 /** slug·name_en용 — 한글/CJK만 있으면 false (레소토·에스와티니 라벨 등) */
 export function isUrlSafeEnglishLabel(value) {
@@ -25,8 +26,8 @@ export const formatUrlName = (nameEn) => {
 export function pickUrlSafeEnglishName(loc) {
   if (!loc || typeof loc !== 'object') return '';
   for (const key of ['name_en', 'country_en', 'name']) {
-    const v = loc[key];
-    if (isUrlSafeEnglishLabel(v)) return String(v).trim();
+    const v = sanitizeTourContentIdEnglishFallback(loc[key]);
+    if (isUrlSafeEnglishLabel(v)) return v;
   }
   return '';
 }
@@ -51,6 +52,25 @@ export function resolveCatalogPlaceSlug(slug) {
   return TRAVEL_SPOTS.find((x) => String(x.slug).toLowerCase() === s)?.slug ?? null;
 }
 
+/** TourAPI contentId — 장소별 고유 /place/tour-{id} (공유·새로고침 SSOT) */
+export function koreaTourContentPlaceParam(contentId) {
+  const id = String(contentId ?? '').trim();
+  if (!/^\d{1,32}$/.test(id)) return '';
+  return `tour-${id}`;
+}
+
+const TOUR_CONTENT_ID_EN_FALLBACK_RE = /^Tour\s+\d{1,32}$/i;
+
+/** slug→영문 추론·name_en — TourAPI contentId 자리표시(Tour 126444)는 영문명 아님 */
+export function isTourContentIdEnglishFallback(value) {
+  const text = String(value ?? '').trim();
+  return Boolean(text && TOUR_CONTENT_ID_EN_FALLBACK_RE.test(text));
+}
+
+export function sanitizeTourContentIdEnglishFallback(value) {
+  return isTourContentIdEnglishFallback(value) ? '' : String(value ?? '').trim();
+}
+
 /**
  * `/place/...` 라우팅용. SSOT slug(canonical) 우선 — 숫자 id(700)·지오코딩 보조지명(ruul) URL 통일.
  */
@@ -58,10 +78,38 @@ export function getPlaceUrlParam(loc) {
   if (!loc) return '';
 
   const merged = typeof loc === 'object' ? mergeCanonicalTravelSpot(loc) : loc;
+  const source = String(merged.source ?? '').trim().toLowerCase();
+
+  const tourContentParam = koreaTourContentPlaceParam(merged.contentId);
+  if (tourContentParam && source === 'tourapi') {
+    return tourContentParam;
+  }
+
+  const catalogSlug = resolveCatalogPlaceSlug(merged.slug || merged.canonical_slug);
+  if (catalogSlug && source !== 'tourapi') {
+    return catalogSlug;
+  }
+
   const slug = merged.canonical_slug || merged.slug;
+  if (slug && typeof slug === 'string' && !isEphemeralSlug(slug) && (source === 'hub' || source === 'ssot')) {
+    return slug;
+  }
+
+  if (tourContentParam && source === 'tourapi') {
+    return tourContentParam;
+  }
+
+  const lat = Number(merged.lat);
+  const lng = Number(merged.lng);
 
   if (slug && typeof slug === 'string' && !isEphemeralSlug(slug)) {
-    return slug;
+    if (/[\uAC00-\uD7A3]/.test(slug)) {
+      if (merged.uiPlace && Number.isFinite(lat) && Number.isFinite(lng)) {
+        return `search-${lat}-${lng}`;
+      }
+    } else {
+      return slug;
+    }
   }
 
   const id = merged.id != null ? String(merged.id) : '';
@@ -72,10 +120,19 @@ export function getPlaceUrlParam(loc) {
     if (fromName) return fromName;
   }
 
-  if (id.startsWith('search-') || id.startsWith('loc-')) {
+  if (id.startsWith('search-') || id.startsWith('loc-') || id.startsWith('tour-')) {
     return id;
   }
 
-  const nameSlug = formatUrlName(pickUrlSafeEnglishName(merged) || merged.name_en || merged.name);
-  return nameSlug || slug || id || merged.name || '';
+  let nameSlug = formatUrlName(pickUrlSafeEnglishName(merged) || merged.name_en || merged.name);
+  if (isDomesticKoreaLocation(merged) && (nameSlug === 'south-korea' || nameSlug === 'korea')) {
+    nameSlug = '';
+  }
+  if (nameSlug) return nameSlug;
+
+  if (merged.uiPlace && Number.isFinite(lat) && Number.isFinite(lng)) {
+    return `search-${lat}-${lng}`;
+  }
+
+  return slug || id || merged.name || '';
 }

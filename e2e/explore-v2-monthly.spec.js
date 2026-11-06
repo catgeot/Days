@@ -46,13 +46,22 @@ async function expectPhotoAltAndTextPanels(page, altForName) {
         ctx.fillStyle = getComputedStyle(el).backgroundColor;
         ctx.fillRect(0, 0, 1, 1);
         const [r, g, b, a] = ctx.getImageData(0, 0, 1, 1).data;
-        return { dark: r + g + b === 0, alpha: a / 255 };
+        const card = el.closest('[data-testid^="explore-v2-monthly-card-"]');
+        const img = card?.querySelector('img');
+        const imgRect = img?.getBoundingClientRect();
+        const panelRect = el.getBoundingClientRect();
+        return {
+          dark: r + g + b === 0,
+          alpha: a / 255,
+          overlapsPhoto: imgRect ? panelRect.top < imgRect.bottom - 1 : true,
+        };
       }),
     );
   expect(alphas).toHaveLength(count);
-  for (const { dark, alpha } of alphas) {
+  for (const { dark, alpha, overlapsPhoto } of alphas) {
     expect(dark).toBe(true);
     expect(alpha).toBeGreaterThanOrEqual(0.69);
+    expect(overlapsPhoto).toBe(false);
   }
 }
 

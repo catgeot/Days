@@ -131,3 +131,13 @@ test('Home /explore SEO has no explore_v2 query noindex', () => {
   const home = readFileSync(join(root, 'src/pages/Home/index.jsx'), 'utf8');
   assert.doesNotMatch(home, /readExploreV2QueryParam|exploreV2QueryNoIndex|robotsNoIndex=/);
 });
+
+test('monthly pick card places text panel below photo frame so caption does not cover photo', () => {
+  const item = readFileSync(
+    join(root, 'src/pages/Home/components/SearchDiscovery/ExploreMonthlyPickItem.jsx'),
+    'utf8',
+  );
+  assert.match(item, /explore-v2-monthly-photo-/);
+  assert.match(item, /explore-v2-monthly-text-panel/);
+  assert.doesNotMatch(item, /bg-gradient-to-t from-black\/95/);
+});

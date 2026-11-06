@@ -50,6 +50,7 @@ assert.ok(getTravelAgencyById('twelve_go').kinds.includes('train'));
 
 assert.equal(matchTravelAgencyFromUrl('https://www.myrealtrip.com/accommodations?q=파리')?.id, 'mrt');
 assert.equal(matchTravelAgencyFromUrl('https://experiences.myrealtrip.com/products/1')?.id, 'mrt');
+assert.equal(matchTravelAgencyFromUrl('https://myrealt.rip/fOey96')?.id, 'mrt', 'MRT 제휴 단축 링크');
 assert.equal(matchTravelAgencyFromUrl('https://affiliate.klook.com/redirect?aid=1')?.id, 'klook');
 assert.equal(matchTravelAgencyFromUrl('https://www.klook.com/ko/car-rentals/')?.id, 'klook');
 assert.equal(matchTravelAgencyFromUrl('https://kr.trip.com/flights/')?.id, 'tripcom');

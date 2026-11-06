@@ -54,7 +54,9 @@ import {
   getTripcomHotelErrorCopy,
   resolveTripcomPartnerLocale,
 } from '../../../utils/affiliate';
-import PartnerBookingHandoff from '../../../shared/affiliate/PartnerBookingHandoff.jsx';
+import StayListPartnerNotice from '../../../shared/affiliate/StayListPartnerNotice.jsx';
+import StayCardBookingLink from '../../../shared/affiliate/StayCardBookingLink.jsx';
+import { mrtStayCardMetaLines } from '../../../utils/mrtStayCardMeta.js';
 import {
   getStayAgencyKindLabel,
   getStayAgencyDisclaimer,
@@ -108,13 +110,13 @@ function getStaySortOptions(t) {
 
 /** 모바일 목록 열 수 — 기본 2열, 1열은 확대 */
 const MOBILE_GRID_IMAGE = {
-  2: 'h-[100px]',
-  1: 'h-[180px]',
+  2: 'h-[140px]',
+  1: 'h-[220px]',
 };
 /** PC 목록 — 기본 4열, 확대는 3열 */
 const DESKTOP_GRID_DENSITY = {
-  default: { cols: 4, imageClassName: 'h-[132px]' },
-  zoom: { cols: 3, imageClassName: 'h-[168px]' },
+  default: { cols: 4, imageClassName: 'h-[172px]' },
+  zoom: { cols: 3, imageClassName: 'h-[208px]' },
 };
 
 function reviewScoreNum(item) {
@@ -568,7 +570,7 @@ function StayCard({
   /** 선택 일정 요금無 — 일정 변경 후 예약 유도 */
   dateFlexible = false,
   className = '',
-  imageClassName = 'h-[72px] lg:h-[96px]',
+  imageClassName = 'h-[112px] lg:h-[136px]',
   /** PC 확장 목록용 — 이미지·타이포 한 단계 확대 */
   size = 'md',
   /** 검색 중심점 거리 — 「종각역 350m」 */
@@ -579,92 +581,91 @@ function StayCard({
   const productHref = item.productUrl
     ? buildMrtMylinkUrl(item.productUrl)
     : MRT_AFFILIATE_HOME_URL;
+  const { starLine } = mrtStayCardMetaLines(item, t);
 
-  const shellClass = `flex flex-col rounded-2xl border overflow-hidden transition-colors ${
+  const shellClass = `flex min-h-0 flex-1 flex-col rounded-2xl border overflow-hidden transition-colors ${
     dateFlexible
       ? 'border-white/15 bg-white/5 opacity-95'
-      : 'border-amber-400/30 bg-amber-500/10'
+      : 'border-amber-400/30 bg-amber-500/10 hover:border-amber-300/50'
   } ${className}`;
 
   return (
-    <div className={shellClass}>
-      <div className="flex min-h-0 flex-1 flex-col">
-        <div className={`relative w-full shrink-0 bg-white/5 ${imageClassName}`}>
-          {item.imageUrl ? (
-            <img
-              src={item.imageUrl}
-              alt=""
-              loading="lazy"
-              draggable={false}
-              className={`h-full w-full object-cover ${dateFlexible ? 'opacity-80' : ''}`}
-            />
+    <StayCardBookingLink href={productHref} item={item} className={shellClass}>
+      <div className={`relative w-full shrink-0 bg-white/5 ${imageClassName}`}>
+        {item.imageUrl ? (
+          <img
+            src={item.imageUrl}
+            alt=""
+            loading="lazy"
+            draggable={false}
+            className={`h-full w-full object-cover ${dateFlexible ? 'opacity-80' : ''}`}
+          />
+        ) : (
+          <div
+            className={`flex h-full w-full items-center justify-center text-white/30 ${
+              large ? 'text-xs' : 'text-[10px]'
+            }`}
+          >
+            No image
+          </div>
+        )}
+      </div>
+      <div className={`${large ? 'space-y-1 p-2.5 pb-2' : 'space-y-0.5 p-2 pb-1.5'}`}>
+        <p
+          className={`line-clamp-2 break-keep font-semibold leading-snug text-white ${
+            large ? 'text-[13px]' : 'text-[11px]'
+          }`}
+        >
+          {item.itemName}
+        </p>
+        {starLine ? (
+          <p
+            className={`truncate text-amber-100/70 ${
+              large ? 'text-[11px]' : 'text-[10px]'
+            }`}
+          >
+            {starLine}
+          </p>
+        ) : null}
+        {distanceText ? (
+          <p
+            className={`truncate font-semibold text-amber-100/75 ${
+              large ? 'text-[11px]' : 'text-[10px]'
+            }`}
+          >
+            {distanceText}
+          </p>
+        ) : null}
+        <div className="flex min-w-0 items-center justify-between gap-1">
+          {item.reviewScore ? (
+            <span
+              className={`tabular-nums text-amber-100/80 ${large ? 'text-xs' : 'text-[10px]'}`}
+            >
+              ★ {item.reviewScore}
+            </span>
           ) : (
-            <div
-              className={`flex h-full w-full items-center justify-center text-white/30 ${
+            <span />
+          )}
+          {price ? (
+            <span
+              className={`truncate font-bold tabular-nums text-white/90 ${
                 large ? 'text-xs' : 'text-[10px]'
               }`}
             >
-              No image
-            </div>
-          )}
-        </div>
-        <div className={`${large ? 'space-y-1 p-2.5' : 'space-y-0.5 p-2'}`}>
-          <p
-            className={`line-clamp-2 break-keep font-semibold leading-snug text-white ${
-              large ? 'text-[13px]' : 'text-[11px]'
-            }`}
-          >
-            {item.itemName}
-          </p>
-          {distanceText ? (
-            <p
-              className={`truncate font-semibold text-amber-100/75 ${
-                large ? 'text-[11px]' : 'text-[10px]'
+              {price}
+            </span>
+          ) : dateFlexible ? (
+            <span
+              className={`truncate font-semibold text-amber-100/70 ${
+                large ? 'text-xs' : 'text-[10px]'
               }`}
             >
-              {distanceText}
-            </p>
+              {t('home.stayStrip.bookAfterAdjust')}
+            </span>
           ) : null}
-          <div className="flex min-w-0 items-center justify-between gap-1">
-            {item.reviewScore ? (
-              <span
-                className={`tabular-nums text-amber-100/80 ${large ? 'text-xs' : 'text-[10px]'}`}
-              >
-                ★ {item.reviewScore}
-              </span>
-            ) : (
-              <span />
-            )}
-            {price ? (
-              <span
-                className={`truncate font-bold tabular-nums text-white/90 ${
-                  large ? 'text-xs' : 'text-[10px]'
-                }`}
-              >
-                {price}
-              </span>
-            ) : dateFlexible ? (
-              <span
-                className={`truncate font-semibold text-amber-100/70 ${
-                  large ? 'text-xs' : 'text-[10px]'
-                }`}
-              >
-                {t('home.stayStrip.bookAfterAdjust')}
-              </span>
-            ) : null}
-          </div>
         </div>
       </div>
-      <div className={`border-t border-white/10 ${large ? 'p-2.5 pt-2' : 'p-2 pt-1.5'}`}>
-        <PartnerBookingHandoff
-          href={productHref}
-          kind="lodging"
-          item={item}
-          theme="dark"
-          emphasis="low"
-        />
-      </div>
-    </div>
+    </StayCardBookingLink>
   );
 }
 
@@ -891,26 +892,45 @@ function StayAgencyAlwaysFooter({
   );
 }
 
-/** 목록 스크롤 끝 — 마이리얼트립 사이트(보조 CTA · 앱 내 더보기와 구분) */
-function StayMrtMoreFooter({ href, compact = false }) {
+/** 목록 스크롤 끝 — 마이리얼트립 더 보기 아래 트립닷컴 숙소 검색 */
+function StayMrtMoreFooter({
+  href,
+  tripcomHref,
+  tripcomTarget,
+  tripcomRel,
+  compact = false,
+}) {
   const { t } = useTranslation();
-  if (!href) return null;
+  if (!href && !tripcomHref) return null;
+  const linkClass = compact
+    ? 'inline-flex items-center gap-1 rounded-md px-2 py-1 text-[12px] font-semibold underline-offset-2 transition-colors hover:underline'
+    : 'inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-[13px] font-semibold underline-offset-2 transition-colors hover:underline';
   return (
-    <div className="mt-6 flex w-full flex-col items-center pt-1">
-      <a
-        href={href}
-        target="_blank"
-        rel="noopener noreferrer sponsored"
-        onClick={(e) => e.stopPropagation()}
-        className={
-          compact
-            ? 'inline-flex items-center gap-1 rounded-md px-2 py-1 text-[12px] font-semibold text-amber-100/70 underline-offset-2 transition-colors hover:text-amber-50 hover:underline'
-            : 'inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-[13px] font-semibold text-amber-100/75 underline-offset-2 transition-colors hover:text-amber-50 hover:underline'
-        }
-      >
-        <span>{t('home.stayStrip.viewMoreOnMrt')}</span>
-        <ExternalLink size={compact ? 12 : 13} className="shrink-0 opacity-70" aria-hidden />
-      </a>
+    <div className="mt-6 flex w-full flex-col items-center gap-1.5 pt-1">
+      {href ? (
+        <a
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer sponsored"
+          onClick={(e) => e.stopPropagation()}
+          className={`${linkClass} text-amber-100/75 hover:text-amber-50`}
+        >
+          <span>{t('home.stayStrip.viewMoreOnMrt')}</span>
+          <ExternalLink size={compact ? 12 : 13} className="shrink-0 opacity-70" aria-hidden />
+        </a>
+      ) : null}
+      {tripcomHref ? (
+        <a
+          href={tripcomHref}
+          target={tripcomTarget}
+          rel={tripcomRel}
+          onClick={(e) => e.stopPropagation()}
+          className={`${linkClass} text-sky-100/80 hover:text-sky-50`}
+        >
+          <span>{t('home.stayStrip.searchStaysOnTripcom')}</span>
+          <ExternalLink size={compact ? 12 : 13} className="shrink-0 opacity-70" aria-hidden />
+        </a>
+      ) : null}
     </div>
   );
 }
@@ -1540,6 +1560,11 @@ export default function GlobeStayStrip({
     mode: 'list',
     campaign: TRIPCOM_HOTEL_TRACKING.emptyResult,
   });
+  const tripcomListMoreUrl = buildTripcomHotelSearchUrl(location, {
+    ...tripcomStayOptions,
+    mode: 'list',
+    campaign: TRIPCOM_HOTEL_TRACKING.listFooter,
+  });
   const tripcomLinkTarget = getPartnerLinkTarget();
   const tripcomLinkRel = getTripcomLinkRel(tripcomLinkTarget);
 
@@ -1723,6 +1748,7 @@ export default function GlobeStayStrip({
           onDensityChange={setDesktopGridDensity}
           naverMapUrl={naverNearbyStayUrl}
         />
+        <StayListPartnerNotice theme="dark" />
         <div
           className={`grid gap-3 ${
             desktopDensity.cols === 3 ? 'grid-cols-3' : 'grid-cols-4'
@@ -1737,7 +1763,7 @@ export default function GlobeStayStrip({
           />
         </div>
         <StayListLoadMore remaining={listRemaining} onLoadMore={loadMoreStays} />
-        {/* 저재고: 관광청·Trip만 · 일반: MRT 사이트 더 보기(+ 필요 시 관광청) */}
+        {/* 저재고: 관광청·Trip만 · 일반: MRT 더 보기 아래 트립닷컴 숙소 검색 */}
         {showLowInventoryCta ? (
           <StayLowInventoryFooter
             href={tripcomLowUrl}
@@ -1748,7 +1774,12 @@ export default function GlobeStayStrip({
             moreWithDateChange={Boolean(mrtListMeta?.moreWithDateChange)}
           />
         ) : (
-          <StayMrtMoreFooter href={mrtStayListUrl} />
+          <StayMrtMoreFooter
+            href={mrtStayListUrl}
+            tripcomHref={tripcomListMoreUrl}
+            tripcomTarget={tripcomLinkTarget}
+            tripcomRel={tripcomLinkRel}
+          />
         )}
         {showAgencyAlwaysFooter ? (
           <StayAgencyAlwaysFooter
@@ -1935,6 +1966,7 @@ export default function GlobeStayStrip({
                     flightChildCount={guests.childCount}
                     naverMapUrl={naverNearbyStayUrl}
                   />
+                  <StayListPartnerNotice theme="dark" />
                   <div
                     className={`grid gap-2.5 ${
                       mobileGridCols === 1 ? 'grid-cols-1' : 'grid-cols-2'
@@ -1956,7 +1988,7 @@ export default function GlobeStayStrip({
                     onLoadMore={loadMoreStays}
                     compact
                   />
-                  {/* 저재고: 관광청·Trip만 · 일반: MRT 사이트 더 보기(+ 필요 시 관광청) */}
+                  {/* 저재고: 관광청·Trip만 · 일반: MRT 더 보기 아래 트립닷컴 숙소 검색 */}
                   {showLowInventoryCta ? (
                     <StayLowInventoryFooter
                       href={tripcomLowUrl}
@@ -1967,7 +1999,13 @@ export default function GlobeStayStrip({
                       moreWithDateChange={Boolean(mrtListMeta?.moreWithDateChange)}
                     />
                   ) : (
-                    <StayMrtMoreFooter href={mrtStayListUrl} compact />
+                    <StayMrtMoreFooter
+                      href={mrtStayListUrl}
+                      tripcomHref={tripcomListMoreUrl}
+                      tripcomTarget={tripcomLinkTarget}
+                      tripcomRel={tripcomLinkRel}
+                      compact
+                    />
                   )}
                   {showAgencyAlwaysFooter ? (
                     <StayAgencyAlwaysFooter

@@ -5,7 +5,8 @@
 import { isIslandPlaceQuery } from './exploreSearchAliases.js';
 import { geocodeForwardSuggestionHits } from './mapboxGeocodeSuggestions.js';
 import { shouldSupplementGeocodeHits } from './travelSearchHomonyms.js';
-import { placeUrlSlug } from './cityAttractionHubs.js';
+import { placeUrlSlug, resolveCityAttractionHub } from './cityAttractionHubs.js';
+import { dropFarHomonymBusinessHits } from './searchHomonymRegion.js';
 import {
   ensureLatinPlaceSlug,
   isLatinPlaceName,
@@ -168,7 +169,11 @@ export function featureToSuggestion(feature, { hubId, parentCity, source = 'mapb
       ? name
       : '';
   const adminPlace = searchBoxAdminPlaceName(props);
-  const county = isPoi ? poiCountyLabel(parentCity, adminPlace, name) : parentCity;
+  let county = isPoi ? poiCountyLabel(parentCity, adminPlace, name) : parentCity;
+  if (county) {
+    const hub = resolveCityAttractionHub(county);
+    if (hub?.name) county = hub.name;
+  }
   // POI 영문명은 기능 자신의 라틴 이름만. context.place / place_formatted(평창)는 parentCity.
   const latinName =
     rawLatin && !(isPoi && county && latinNameIsAdminArea(rawLatin, county))
@@ -194,6 +199,7 @@ export function featureToSuggestion(feature, { hubId, parentCity, source = 'mapb
     attractionKind: firstCat || undefined,
     source,
     uiPlace: true,
+    feature_type: featureType || undefined,
     place_formatted: String(props.place_formatted || props.full_address || '').trim(),
     // 선택 카드: 제목·위치 줄과 겹치는 합성 desc 생략 (full_address는 suggest 경로에서만)
   };
@@ -263,12 +269,15 @@ export async function searchBoxForward(query, opts = {}) {
     const campusHits = await searchBoxForwardMerged(uni.campus, forwardOpts);
     if (campusHits.length) merged = [...campusHits, ...merged];
   }
-  merged = resolveUniversitySearchHits(query, merged);
+  merged = dropFarHomonymBusinessHits(query, resolveUniversitySearchHits(query, merged));
   if (opts.skipGeocodeFallback) return merged;
   if (!shouldSupplementGeocodeHits(query, merged)) return merged;
   const geoHits = await geocodeForwardSuggestionHits(query, { limit: opts.limit ?? 6 });
   if (!geoHits.length) return merged;
-  return resolveUniversitySearchHits(query, mergeSearchBoxWithGeocodeHits(merged, geoHits));
+  return dropFarHomonymBusinessHits(
+    query,
+    resolveUniversitySearchHits(query, mergeSearchBoxWithGeocodeHits(merged, geoHits)),
+  );
 }
 
 /**

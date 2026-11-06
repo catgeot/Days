@@ -12,6 +12,8 @@ const OVERVIEW_BASELINE_POLL_MS = IS_CI ? 35_000 : 60_000;
 const SKELETON_WAIT_MS = IS_CI ? 30_000 : 45_000;
 const MIN_PRE_TAP_SCROLL_TOP_PX = 2000;
 const OVERVIEW_SCROLL_HEIGHT_FACTOR = 1.5;
+/** scrollTop must stay within reachable range (short 사진/영상 tabs). */
+const PRE_TAP_MAX_SCROLL_BOTTOM_SLACK_PX = 8;
 const VIEWPORT = { width: 390, height: 844 };
 const TITLE_TOP_MIN_RATIO = 0.05;
 const TITLE_TOP_MAX_RATIO = 0.58;
@@ -153,10 +155,15 @@ async function assertPreTapScrollDepth({
   testInfo,
 }) {
   const preTap = await measurePrimaryScroller(dialog);
-  const minRequired = Math.max(
+  const scrollBudget = Math.max(
     MIN_PRE_TAP_SCROLL_TOP_PX,
     Math.floor(overviewExtent * OVERVIEW_SCROLL_HEIGHT_FACTOR),
   );
+  const reachableMaxScrollTop = Math.max(
+    0,
+    preTap.maxScrollTop - PRE_TAP_MAX_SCROLL_BOTTOM_SLACK_PX,
+  );
+  const minRequired = Math.min(scrollBudget, reachableMaxScrollTop);
   testInfo.annotations.push({
     type: 'pre-tap-scroll',
     description: JSON.stringify({
@@ -165,6 +172,8 @@ async function assertPreTapScrollDepth({
       overviewScrollHeight,
       overviewTabContentHeight,
       overviewExtent,
+      scrollBudget,
+      reachableMaxScrollTop,
       minRequired,
       preTapScrollTop: preTap.scrollTop,
       preTapScrollHeight: preTap.scrollHeight,
@@ -173,12 +182,12 @@ async function assertPreTapScrollDepth({
   });
   expect(
     preTap.scrollTop,
-    `${slug} · ${tabKey}: scrollTop ${preTap.scrollTop} must be ≥ max(${MIN_PRE_TAP_SCROLL_TOP_PX}, ${OVERVIEW_SCROLL_HEIGHT_FACTOR}× overview extent ${overviewExtent}px) [tab content ${overviewTabContentHeight}px · sheet scrollHeight ${overviewScrollHeight}]`,
+    `${slug} · ${tabKey}: scrollTop ${preTap.scrollTop} must be ≥ min(scroll budget max(${MIN_PRE_TAP_SCROLL_TOP_PX}, ${OVERVIEW_SCROLL_HEIGHT_FACTOR}× overview extent ${overviewExtent}px)=${scrollBudget}, reachable max ${reachableMaxScrollTop}px) → ${minRequired}px [tab content ${overviewTabContentHeight}px · sheet scrollHeight ${overviewScrollHeight}]`,
   ).toBeGreaterThanOrEqual(minRequired);
   expect(
     preTap.scrollTop,
-    `${slug} · ${tabKey}: must be scrolled to bottom (within 4px of max)`,
-  ).toBeGreaterThanOrEqual(preTap.maxScrollTop - 4);
+    `${slug} · ${tabKey}: must be scrolled to bottom (within ${PRE_TAP_MAX_SCROLL_BOTTOM_SLACK_PX}px of max)`,
+  ).toBeGreaterThanOrEqual(preTap.maxScrollTop - PRE_TAP_MAX_SCROLL_BOTTOM_SLACK_PX);
 }
 
 async function assertOverviewTopInViewport(dialog) {

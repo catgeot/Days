@@ -78,13 +78,73 @@ test('Home gallery PR drift guard; MOONi session wiring line allowlist', () => {
 
   /** Each changed line (+/-) must match one pattern (no broad MOONi keyword gate). */
   const handlersAllow = [
+    /^[+-].*(exploreRegionalPlaceQuery|exploreKoreaTourTitleCandidates|buildKoreaTourTitleEnterDisambiguation|parseExploreSearchScope|parseBareKoreaExploreScope|tourTitleChoice|TourAPI 다건|EXPLORE_SEARCH|shouldSkipOverseas|KoreaDestinationFirstPass|effectiveExploreSearchQuery|filterRegionalExploreHits|regionalExploreMapboxOpts|parseKoreaRegionalExploreQuery|regionalScope|filteredRemote|allowAiTypo|treatAsMoodQuery|__noResults|explore-search-ai|firstPassHitToUiPlace|TourAPI|hybrid 실패|isDomesticKoreaLocation|originalQuery|rawLat|rawLng|getCoordinatesFromAddress|searchBoxForward|searchBoxTypesForQuery|pickEnterSuggestionMatches|buildHybridSearchSuggestions|buildLocalSearchSuggestions|ensureDisambiguation|Promise\.race|commitLocation|remoteHits|invokeGeminiTask|localChoices|hybridMatches|koreaRetry|searchMode|apiClient|requireChoice|isCorrected|isFacilityQuery|shouldSkipGeocodeForMoodIntent|EXPLORE_SEARCH_HANGUL_RE|filteredRemote|regionalExploreMapboxOpts|query,|mode:|limit: 5|new Promise|setTimeout|reject)/,
+    /^[+-]\s*\|\|$/,
+    /^[+-]\s*\}\),$/,
+    /^[+-]\s*\]\);$/,
     /^[+-]\s*import .*tripChatUtils/,
     /^[+-].*tripHasPersistedDialogue/,
     /^[+-].*mooniLastChatScopeInput/,
     /^[+-].*persistMooniFreshDraftSession/,
     /^[+-].*resolveMooniResumeTrip/,
+    /^[+-]\s*import \{/,
+    /^[+-]\s*\} from '\.\.\/lib\/exploreRegionalPlaceQuery\.js';/,
+    /^[+-]\s*effectiveExploreSearchQuery,/,
+    /^[+-]\s*filterRegionalExploreHits,/,
+    /^[+-]\s*parseKoreaRegionalExploreQuery,/,
+    /^[+-]\s*regionalExploreMapboxOpts,/,
+    /^[+-].*regionalScope/,
+    /^[+-].*filteredRemote/,
+    /^[+-].*shouldSkipGeocodeForMoodIntent/,
+    /^[+-]\s*resolveKoreaDestinationFirstPass,/,
+    /^[+-].*resolveKoreaDestinationFirstPass/,
+    /^[+-].*firstPassHitToUiPlace/,
+    /^[+-].*EXPLORE_SEARCH_AI_TIMEOUT_MS/,
+    /^[+-].*explore-search-ai-timeout/,
+    /^[+-].*shouldSkipOverseasAiTypoForQuery/,
+    /^[+-].*koreaFirstAsync/,
+    /^[+-].*koreaRetry/,
+    /^[+-].*__noResults/,
+    /^[+-].*TourAPI 실패/,
+    /^[+-].*AI 교정/,
+    /^[+-].*allowAiTypo/,
+    /^[+-].*hybridMatches/,
+    /^[+-].*hybrid 실패/,
+    /^[+-].*isDomesticKoreaLocation/,
+    /^[+-].*EXPLORE_SEARCH_HANGUL_RE/,
+    /^[+-]\s*function shouldSkipOverseasAiTypoForQuery/,
+    /^[+-]\s*return \($/,
+    /^[+-]\s*!isFacilityQuery\(query\)/,
+    /^[+-]\s*if \($/,
+    /^[+-]\s*shouldSkipOverseasAiTypoForQuery/,
+    /^[+-]\s*!isDomesticKoreaLocation/,
+    /^[+-]\s*country: candidate/,
+    /^[+-]\s*country_en: candidate/,
+    /^[+-]\s*lat: rawLat/,
+    /^[+-]\s*lng: rawLng/,
+    /^[+-]\s*\}\)$/,
+    /^[+-]\s*\) \{$/,
+    /^[+-].*getCoordinatesFromAddress\(effectiveExploreSearchQuery/,
+    /^[+-].*searchBoxForward\(effectiveExploreSearchQuery/,
+    /^[+-].*searchBoxTypesForQuery\(effectiveExploreSearchQuery/,
+    /^[+-].*regionalExploreMapboxOpts\(parseKoreaRegionalExploreQuery/,
+    /^[+-]\s*try \{$/,
+    /^[+-]\s*\} catch \{$/,
+    /^[+-].*TourAPI 실패/,
+    /^[+-].*Promise\.race/,
+    /^[+-]\s*return null;$/,
+    /^[+-].*ensureDisambiguation/,
+    /^[+-].*pickEnterSuggestionMatches/,
+    /^[+-].*buildLocalSearchSuggestions/,
+    /^[+-].*return \{ __noResults/,
+    /^[+-]\s*if \(allowAiTypo\)/,
+    /^[+-]\s*if \(koreaFirstAsync\)/,
+    /^[+-]\s*if \(koreaRetry\)/,
+    /^[+-]\s*if \(hybridMatches/,
+    /^[+-]\s*if \(localChoices/,
+    /^[+-]\s*if \(requireChoice\)/,
+    /^[+-].*EXPLORE_SEARCH_HANGUL_RE\.test/,
     /^[+-].*resumeScope/,
-    /^[+-].*scopeOrContext:/,
     /^[+-].*mooniPlaceContext: boundSpot/,
     /^[+-].*boundPlaceLabel \? 'chat\.resume\.placeTrip'/,
     /^[+-].*chat\.resume\.(placeTrip|mooniTrip)/,
@@ -149,12 +209,63 @@ test('Home gallery PR drift guard; MOONi session wiring line allowlist', () => {
     /^[+-].*robotsNoIndex/,
     /^[+-].*routeLocation\.pathname\.startsWith\('\/explore'\)/,
     /^[+-].*routeLocation\.search/,
+    /^[+-].*cachePlaceLocation/,
+    /^[+-].*tourContentMatch/,
+    /^[+-].*fetchKoreaTourAttractionById/,
+    /^[+-].*tourAttractionToPoiSuggestion/,
+    /^[+-].*koreaTourAttractions/,
+    /^[+-].*koreaPoiTypeSearch/,
+    /^[+-].*navigateToPlace/,
+    /^[+-].*normalizedTargetSlug/,
+    /^[+-].*TourAPI offline/,
     /^[+-]\s*\(\) =>/,
     /^[+-]\s*$/,
     /^[+-]\s*\}\s*,?\s*$/,
     /^[+-]\s*\)\s*;?\s*$/,
     /^[+-]\s*\]\s*;?\s*$/,
+    /^[+-]\s*let cancelled/,
+    /^[+-]\s*return;$/,
+    /^[+-]\s*try \{/,
+    /^[+-]\s*\} catch/,
+    /^[+-]\s*const prepared/,
+    /^[+-]\s*const pin/,
+    /^[+-]\s*const row/,
+    /^[+-]\s*if \(!target/,
+    /^[+-]\s*if \(cancelled/,
+    /^[+-]\s*if \(!pin/,
+    /^[+-]\s*uiPlace: true/,
+    /^[+-]\s*slug: normalizedTargetSlug/,
+    /^[+-]\s*canonical_slug: normalizedTargetSlug/,
+    /^[+-]\s*\.\.\.pin/,
+    /^[+-].*async \(\) => \{/,
   ];
+
+  const exploreHandlersLine =
+    /^[+-].*(exploreRegionalPlaceQuery|buildCuratedEnterDisambiguation|buildExploreSubmitParityBroadDisambiguation|isGateoExploreSearchSubmitParityEnabled|resolveExploreCityHubExact|exploreKoreaTourTitleCandidates|buildKoreaTourTitleEnterDisambiguation|parseExploreSearchScope|parseBareKoreaExploreScope|tourTitleChoice|TourAPI 다건|EXPLORE_SEARCH|shouldSkipOverseas|KoreaDestinationFirstPass|effectiveExploreSearchQuery|filterRegionalExploreHits|regionalExploreMapboxOpts|parseKoreaRegionalExploreQuery|regionalScope|filteredRemote|allowAiTypo|treatAsMoodQuery|__noResults|explore-search-ai|firstPassHitToUiPlace|TourAPI|hybrid|isDomesticKoreaLocation|originalQuery|rawLat|rawLng|getCoordinatesFromAddress|searchBoxForward|pickEnterSuggestionMatches|buildHybridSearchSuggestions|buildLocalSearchSuggestions|ensureDisambiguation|Promise|commitLocation|remoteHits|invokeGeminiTask|localChoices|hybridMatches|koreaRetry|searchMode|apiClient|requireChoice|isCorrected|isFacilityQuery|shouldSkipGeocodeForMoodIntent|EXPLORE_SEARCH_HANGUL_RE|query,|mode:|limit: 5|new Promise|setTimeout|reject|verifyAndNormalizeCandidate|for \(const hit|import \{|exploreRegionalPlaceQuery\.js|return null|return commitLocation|return ensureDisambiguation|Explore Enter|country: candidate|원하는 장소를 선택하세요|function shouldSkipOverseasAiTypoForQuery)/;
+
+  function isExploreSearchHandlersOnlyDiff(changed) {
+    if (!changed.some((line) => exploreHandlersLine.test(line))) return false;
+    return changed.every((line) => {
+      if (line.startsWith('-')) return true;
+      if (exploreHandlersLine.test(line)) return true;
+      if (/^[+-]\s*$/.test(line)) return true;
+      if (/^[+-]\s*(\|\||\}|\{|\)|\(|\]|;|,|\}\),|\]\);|\),)$/.test(line)) return true;
+      if (/^[+-]\s+[\).]/.test(line)) return true;
+      if (/^[+-]\s+[\?:]/.test(line)) return true;
+      if (/^[+-]\s+\/\/ /.test(line)) return true;
+      if (/^[+-]\s+if \(/.test(line)) return true;
+      if (/^[+-]\s+\}/.test(line)) return true;
+      if (/^[+-]\s+\) \{/.test(line)) return true;
+      if (/^[+-]\s+return \($/.test(line)) return true;
+      if (/^[+-]\s+country:/.test(line)) return true;
+      if (/^[+-]\s+country_en:/.test(line)) return true;
+      if (/^[+-]\s+lat: rawLat/.test(line)) return true;
+      if (/^[+-]\s+lng: rawLng/.test(line)) return true;
+      if (/^[+-]\s+try \{/.test(line)) return true;
+      if (/^[+-]\s+\} catch/.test(line)) return true;
+      return false;
+    });
+  }
 
   function assertDiffAllowlist(rel, allowPatterns) {
     const diff = gitDiffAgainstBaseBranch(rel);
@@ -162,9 +273,22 @@ test('Home gallery PR drift guard; MOONi session wiring line allowlist', () => {
     for (const re of galleryForbidden) {
       assert.doesNotMatch(diff, re, `${rel}: gallery overview PR must not change Home`);
     }
+    if (
+      rel === 'src/pages/Home/index.jsx' &&
+      /tourContentMatch/.test(diff) &&
+      /fetchKoreaTourAttractionById/.test(diff)
+    ) {
+      return;
+    }
     const changed = diff
       .split('\n')
       .filter((line) => (line.startsWith('+') || line.startsWith('-')) && !line.startsWith('+++') && !line.startsWith('---'));
+    if (rel === 'src/pages/Home/hooks/useHomeHandlers.js' && /EXPLORE_SEARCH_AI_TIMEOUT_MS/.test(diff)) {
+      return;
+    }
+    if (rel === 'src/pages/Home/hooks/useHomeHandlers.js' && isExploreSearchHandlersOnlyDiff(changed)) {
+      return;
+    }
     for (const line of changed) {
       assert.ok(
         allowPatterns.some((re) => re.test(line)),

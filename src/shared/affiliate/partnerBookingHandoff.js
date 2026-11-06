@@ -23,6 +23,23 @@ export function partnerBookingHandoffCtaKey(variant) {
   return 'partnerBookingHandoff.ctaLodgingHotel';
 }
 
+/**
+ * 숙소 카드 전체 링크 — 스크린리더에서 숙소명·예약 CTA를 함께 읽도록.
+ * @param {{ itemName?: string, category?: string } | null | undefined} item
+ * @param {(key: string, opts?: object) => string} t
+ */
+export function stayCardBookingAccessibleName(item, t) {
+  const variant = resolveLodgingHandoffVariant(item);
+  const base = t(partnerBookingHandoffCtaKey(variant));
+  const name = String(item?.itemName || '').trim();
+  if (!name) return base;
+  const namedKey =
+    variant === 'lodging-mixed'
+      ? 'partnerBookingHandoff.ctaLodgingMixedNamed'
+      : 'partnerBookingHandoff.ctaLodgingHotelNamed';
+  return t(namedKey, { name, defaultValue: `${name} — ${base}` });
+}
+
 export const PARTNER_BOOKING_HANDOFF_FORBIDDEN_CTA = [
   '지금 결제',
   '바로 결제',

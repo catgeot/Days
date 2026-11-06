@@ -9,7 +9,7 @@ import { isPlaceholderCountry } from '../../../../utils/travelSpotResolve';
 import ExploreMonthlyPickMedia from './ExploreMonthlyPickMedia';
 
 const SourceLinks = ({ sources, compact = false }) => (
-  <div className={`flex flex-wrap gap-x-2 gap-y-1 ${compact ? 'mt-1.5' : 'mt-2'}`}>
+  <div className={`flex flex-wrap gap-x-2 gap-y-1 px-0.5 ${compact ? 'mt-1.5' : 'mt-2'}`}>
     {sources.map((source) => (
       <a
         key={source.url}
@@ -56,18 +56,28 @@ const ExploreMonthlyPickItem = ({
   });
 
   const isHero = variant === 'hero';
-  const isTile = !isHero;
+  const isWide = variant === 'wide';
+  const isTile = !isHero && !isWide;
   const titleClass = isHero
-    ? 'text-xl font-bold leading-tight sm:text-2xl'
-    : 'text-sm font-bold leading-snug sm:text-base';
+    ? 'text-lg font-bold leading-tight sm:text-xl'
+    : isWide
+      ? 'text-base font-bold leading-snug sm:text-lg'
+      : 'text-sm font-bold leading-snug sm:text-base';
   const reasonClass = isHero
-    ? 'mt-2 text-sm leading-snug text-gray-100 line-clamp-2 sm:text-[15px]'
-    : 'mt-1 text-[11px] leading-snug text-gray-100 line-clamp-3 sm:line-clamp-2 sm:text-xs';
-  const gradientHeight = isTile ? 'h-[62%] min-h-[72px]' : 'h-[52%] min-h-[108px]';
-  /** Text sits on its own panel so contrast holds without text-shadow on bright photos (4.5:1). */
+    ? 'mt-1 text-xs leading-relaxed text-gray-200 sm:text-sm'
+    : isWide
+      ? 'mt-1 text-xs leading-relaxed text-gray-200 sm:text-[13px]'
+      : 'mt-1 text-[11px] leading-snug text-gray-200 sm:text-xs';
+  const photoFrameClass = isHero
+    ? 'h-[208px] sm:h-[280px]'
+    : isWide
+      ? 'h-[164px] sm:h-[224px]'
+      : 'h-[132px] sm:h-[192px]';
   const textPanelClass = isHero
-    ? 'rounded-xl bg-black/70 px-3 py-2.5'
-    : 'rounded-lg bg-black/70 px-2 py-1.5';
+    ? 'bg-black/75 px-3.5 py-3 sm:px-4 sm:py-3.5'
+    : isWide
+      ? 'bg-black/75 px-3 py-2.5 sm:px-3.5 sm:py-3'
+      : 'bg-black/75 px-2.5 py-2 sm:px-3 sm:py-2.5';
 
   if (!imageUrl) return null;
 
@@ -83,45 +93,51 @@ const ExploreMonthlyPickItem = ({
         onPointerUp={(e) => handleEnd(e, spot)}
         onPointerLeave={handleCancel}
         onPointerCancel={handleCancel}
-        className={`group relative cursor-pointer overflow-hidden rounded-2xl border border-white/[0.08] bg-black/30 text-left transition hover:border-white/25 ${
-          isHero ? 'min-h-[220px] sm:min-h-[280px]' : 'min-h-[156px] sm:min-h-[160px]'
-        } ${mediaClassName}`}
+        className={`group flex flex-1 cursor-pointer flex-col overflow-hidden rounded-2xl border border-white/[0.1] bg-black/40 text-left transition hover:border-white/25 ${mediaClassName}`}
       >
-        <ExploreMonthlyPickMedia
-          imageUrl={imageUrl}
-          alt={photoAlt}
-          onError={() => onImageError?.(slug)}
-        />
         <div
-          className={`pointer-events-none absolute inset-x-0 bottom-0 ${gradientHeight} bg-gradient-to-t from-black/95 via-black/70 to-transparent`}
-        />
-        {entry.estimate ? (
-          <span
-            data-testid="explore-v2-monthly-estimate"
-            className="absolute right-3 top-3 z-20 shrink-0 rounded-md border border-amber-500/40 bg-black/75 px-1.5 py-0.5 text-[10px] font-semibold text-amber-100 backdrop-blur-[2px]"
-          >
-            추정
-          </span>
-        ) : null}
-        <div className={`relative z-10 flex h-full flex-col justify-end ${isHero ? 'p-3 sm:p-4' : 'p-2 sm:p-3'}`}>
-          <div data-testid="explore-v2-monthly-text-panel" className={`min-w-0 self-start max-w-full ${textPanelClass}`}>
-            <h3 className={`break-keep text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.95)] ${titleClass}`}>
-              {displayName}
-            </h3>
-            {countryLabel ? (
-              <p
-                className={`mt-0.5 text-gray-100 drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)] ${
-                  isTile ? 'text-[10px] sm:text-[11px]' : 'text-xs'
-                }`}
-              >
-                {countryLabel}
-              </p>
-            ) : null}
-            <p className={`break-keep text-gray-50 drop-shadow-[0_1px_2px_rgba(0,0,0,0.92)] ${reasonClass}`}>
+          data-testid={`explore-v2-monthly-photo-${slug}`}
+          className={`relative w-full shrink-0 overflow-hidden bg-black/30 ${photoFrameClass}`}
+        >
+          <ExploreMonthlyPickMedia
+            imageUrl={imageUrl}
+            alt={photoAlt}
+            onError={() => onImageError?.(slug)}
+            className="transition-transform duration-700 ease-out group-hover:scale-105"
+          />
+          {entry.estimate ? (
+            <span
+              data-testid="explore-v2-monthly-estimate"
+              className="absolute right-2.5 top-2.5 z-10 shrink-0 rounded-md border border-amber-500/40 bg-black/75 px-1.5 py-0.5 text-[10px] font-semibold text-amber-100 backdrop-blur-[2px]"
+            >
+              추정
+            </span>
+          ) : null}
+        </div>
+        <div
+          data-testid="explore-v2-monthly-text-panel"
+          className={`flex min-w-0 flex-1 flex-col justify-between border-t border-white/[0.08] ${textPanelClass}`}
+        >
+          <div>
+            <div className="flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5">
+              <h3 className={`break-keep text-white ${titleClass}`}>
+                {displayName}
+              </h3>
+              {countryLabel ? (
+                <span
+                  className={`font-medium text-gray-300 ${
+                    isTile ? 'text-[10px] sm:text-[11px]' : 'text-xs'
+                  }`}
+                >
+                  {countryLabel}
+                </span>
+              ) : null}
+            </div>
+            <p className={`break-keep ${reasonClass}`}>
               {entry.reason}
             </p>
-            {!sourcesBelow ? <SourceLinks sources={entry.sources} compact={isTile} /> : null}
           </div>
+          {!sourcesBelow ? <SourceLinks sources={entry.sources} compact={isTile} /> : null}
         </div>
       </article>
       {sourcesBelow ? <SourceLinks sources={entry.sources} compact={isTile} /> : null}
