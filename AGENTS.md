@@ -28,25 +28,27 @@
 **SSOT 판단표**: [`.ai-context.md`](.ai-context.md) **§1.5.3** — 막히면 여기만 본다.
 
 **원래 사고**: 검증 없이 **`origin/main` → PROD**에 깨진 빌드가 올라감.  
-**지금 규칙**: (1) **검증 PASS**면 커밋 OK — **사람 허가 요청 없음** · (2) **로컬** UI 미세 조율만 커밋 보류 · (3) **Cloud feature**는 Preview를 위해 **매 턴 feature push 필수** · (4) **핸드오프 문서 = `main`+`origin/main` 필수**(§1.5.4) · (5) **코드** `origin/main` = PR merge 또는 사람 요청.
+**지금 규칙**: (1) **검증 PASS**면 커밋 OK — **사람 허가 요청 없음** · (2) **로컬** UI 미세 조율만 커밋 보류 · (3) **Cloud feature**는 Preview를 위해 **매 턴 feature push 필수** · (4) **핸드오프 문서 = `main` 반영 필수**(§1.5.4) — **`docs/…` PR + squash auto-merge**(직접 `origin/main` push·GH006 우회 **금지**) · (5) **코드** `origin/main` = PR merge 또는 사람 요청.
 
 **로직 vs 문서**: [`plans/docs-on-main-workflow.md`](plans/docs-on-main-workflow.md)
 
-| | commit | push |
-|--|--------|------|
+| | commit | `origin`에 올리는 방법 |
+|--|--------|------------------------|
 | 로직·SSOT·버그픽스 | 검증 PASS → 즉시 | feature: 즉시 · main 코드: **PR/요청** |
-| 문서·핸드오프·일지 | 즉시 · **QA·허가 요청 없음** | **`origin/main` docs-only — feature 세션 종료 시 즉시** |
+| 문서·핸드오프·일지 | 즉시 · **QA·허가 요청 없음** | **`docs/…` 브랜치 → docs 전용 PR → squash auto-merge**(검사 통과 시). **`origin/main` 직접 push 금지** |
 | Cloud UI·Preview | 매 턴 | **매 턴 feature (필수)** |
 | `origin/main` 코드 → PROD | — | **PR merge 또는 사람 요청** |
 
 **에이전트 금지**: 「커밋/푸시해도 될까요?」·Cloud 턴을 push 없이 종료 · 문서-only에 사람 Preview QA 요청.
+
+**문서 → main (필수 절차)**: 문서만 변경 → `docs/<슬러그>` 브랜치(코드 파일 금지) → docs 전용 PR → **squash auto-merge**(저장소 `allow_auto_merge`가 꺼져 있으면 켜지 말고, 필수 검사 통과·머지 허용 시간에 squash 머지). 같은 내용 PR 중복 생성 금지. 상세 [`docs-on-main-workflow.md`](plans/docs-on-main-workflow.md).
 
 - 관련 audit/스모크/테스트 **PASS** · 알려진 깨짐 없음 → **커밋 OK**(한글 · **요청 불필요**) — 로직·SSOT·버그픽스
 - **디자인·소소한 UI · 로컬**: 사람 조율 승인 후 · 조율 중 **커밋 보류** → QA 확정 후 1회. 「커밋 보류」≠ 리디자인 허가
 - **디자인·소소한 UI · Cloud feature**: **매 턴 커밋·push**(로컬 커밋 보류 **적용 안 함**)
 - **브랜치**: 짧은 수정 `main` 직행 · 대형/Cloud UI feature(+PR). **§1.5.2**
 - Cloud 오케스트레이터 **§3.4**(커밋·push·PR)
-- **금지**: 검증 생략 · FAIL push · 로컬 미확정 UI 수시 커밋 · UI 임의 변경 · **코드를 `origin/main`에 에이전트 push** · feature 세션 **docs-on-main 생략** · **feature에 `plans/**` 커밋** · `main` docs push 후 **merge origin/main 생략** · force-push to main
+- **금지**: 검증 생략 · FAIL push · 로컬 미확정 UI 수시 커밋 · UI 임의 변경 · **코드를 `origin/main`에 에이전트 push** · **문서를 `origin/main`에 직접 push**(GH006 우회 포함) · feature 세션 **docs-on-main 생략** · **feature에 `plans/**` 커밋** · docs PR에 코드 섞기 · 같은 내용 중복 docs PR · docs 머지 후 **merge origin/main 생략** · force-push to main · 머지 금지 시간(17–19·01:30–04:30 KST)에 수동 머지(auto-merge만 허용)
 
 
 ## 검증 커맨드 (자주 씀)
@@ -126,7 +128,7 @@ Vercel은 **배포 해시 URL**(푸시마다 변경)과 **브랜치 git Preview 
 | 작업 종류 | 브랜치 · push |
 |-----------|----------------|
 | 짧은 SSOT·버그픽스 (`main` 직행) | **`main`** · 코드 `origin/main` = PR/사람 요청 |
-| UI · Preview QA · 대형/장기 · Cloud 오케 tip | **feature** · **매 턴 feature push** · **세션 종료 시 `main` docs push 필수** ([`docs-on-main-workflow.md`](plans/docs-on-main-workflow.md)) |
+| UI · Preview QA · 대형/장기 · Cloud 오케 tip | **feature** · **매 턴 feature push** · **세션 종료 시 docs 전용 PR(`docs/…`) + squash auto-merge 필수** ([`docs-on-main-workflow.md`](plans/docs-on-main-workflow.md)) |
 
 ### 브랜치·병합
 
@@ -160,6 +162,6 @@ VERIFY FAIL tip은 커밋하지 않는다. 워커는 commit/PR 금지.
 
 작업이 Preview·QA로 끝나면 일지에 **세션 표기 · 브랜치 · SHA · PR · `/qa/…` 공유 링크 · git Preview URL · QA path** · **작업 로그 제목** · **남은 일**을 명시한다.
 
-**열린 feature**는 추가로 [`plans/feature-handoff-index.md`](plans/feature-handoff-index.md) 해당 행 갱신 + [`cloud-preview-continuity.md`](plans/cloud-preview-continuity.md) **§1.2 다음 제시어** + **§6 [`docs-on-main-workflow.md`](plans/docs-on-main-workflow.md) main docs push 필수**.
+**열린 feature**는 추가로 [`plans/feature-handoff-index.md`](plans/feature-handoff-index.md) 해당 행 갱신 + [`cloud-preview-continuity.md`](plans/cloud-preview-continuity.md) **§1.2 다음 제시어** + **§6 [`docs-on-main-workflow.md`](plans/docs-on-main-workflow.md) docs 전용 PR + squash auto-merge 필수**.
 
 **다음 제시어**: 기본 = **다음 작업**. `{주제} #N, 사람 Preview QA`는 복잡 로직·토큰 과다 세션의 예외만. 사람은 작업 세션 요약의 Preview 링크로 같은 턴에 확인한다.
