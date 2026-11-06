@@ -1,19 +1,55 @@
 /**
- * 홈 `?search=` → 써머리 항공 시네마 → 상태 바 — 출발지 펼침 후 검색 CTA·Trip.com 모달.
+ * 홈 `?search=` → 써머리 항공 시네마 → 상태 바 — 출발지 펼침 전/후 항공권 검색 CTA·Trip.com 모달.
+ * CI: placeholder Supabase — readOnlyGuard가 Edge POST를 401 하므로 `resolve-flight-route` 응답을 모킹한다.
  */
 import { test, expect } from './fixtures.js';
+import { execSync } from 'node:child_process';
 
 const PARIS_QUERY = encodeURIComponent('파리');
 test.use({ ignoreHTTPSErrors: true });
 
-/** CI·로컬 증거 PNG (선택) */
 const SHOT_DIR = process.env.GATEO_FLIGHT_CINEMA_E2E_SHOTS || '';
 
-test('홈 검색 → 시네마 → 출발지 → 항공권 검색 (상태 바)', async ({ page }, testInfo) => {
+async function mockResolveFlightRoute(page) {
+  await page.route(/\/functions\/v1\/resolve-flight-route(?:\?|$)/i, async (route) => {
+    if (route.request().method() !== 'POST') {
+      await route.continue();
+      return;
+    }
+    let body = {};
+    try {
+      body = route.request().postDataJSON() || {};
+    } catch {
+      body = {};
+    }
+    const origin = String(body.originIata ?? 'ICN').trim().toUpperCase() || 'ICN';
+    const destRaw = String(body.destIata ?? 'CDG').trim().toUpperCase();
+    const dest = destRaw.length === 3 ? destRaw : 'CDG';
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        ok: true,
+        originIata: origin,
+        destIata: dest,
+        hubIatas: [],
+        source: 'graph-direct',
+        path: [origin, dest],
+        alternatives: [],
+      }),
+    });
+  });
+}
+
+/**
+ * @param {object} args
+ * @param {import('@playwright/test').Page} args.page
+ * @param {import('@playwright/test').TestInfo} args.testInfo
+ * @param {boolean} args.searchBeforeExpand
+ */
+async function runFlightCinemaBarScenario({ page, testInfo, searchBeforeExpand }) {
   const isDesktop = testInfo.project.name === 'chromium-flight-cinema-bar-1280';
-  const viewport = isDesktop
-    ? { width: 1280, height: 844 }
-    : { width: 390, height: 844 };
+  const viewport = isDesktop ? { width: 1280, height: 844 } : { width: 390, height: 844 };
 
   await page.setViewportSize(viewport);
   await page.setExtraHTTPHeaders({
@@ -30,8 +66,11 @@ test('홈 검색 → 시네마 → 출발지 → 항공권 검색 (상태 바)',
     }
   });
 
-  const suffix = `${isDesktop ? '1280' : '390'}-${testInfo.project.name}`;
+  const tag = searchBeforeExpand ? 'pre-expand' : 'post-expand';
+  const suffix = `${isDesktop ? '1280' : '390'}-${testInfo.project.name}-${tag}`;
   const started = Date.now();
+
+  await mockResolveFlightRoute(page);
 
   await page.goto(`/?search=${PARIS_QUERY}`, { waitUntil: 'domcontentloaded', timeout: 120_000 });
   await page.waitForURL((u) => !u.searchParams.has('search'), { timeout: 120_000 });
@@ -44,8 +83,71 @@ test('홈 검색 → 시네마 → 출발지 → 항공권 검색 (상태 바)',
   const bar = page.getByTestId('flight-cinema-bar');
   await expect(bar).toBeVisible({ timeout: 120_000 });
 
-  const searchCtaBefore = page.getByTestId('flight-cinema-bar-search-flights');
-  await expect(searchCtaBefore).toBeVisible();
+  const searchCta = page.getByTestId('flight-cinema-bar-search-flights');
+  await expect(searchCta).toBeVisible();
+
+  const barCard = bar.locator('.flight-cinema-bar-card').first();
+  await expect(barCard).toBeVisible();
+  if (!isDesktop) {
+    const cardBox = await barCard.boundingBox();
+    const vh = page.viewportSize()?.height ?? 844;
+    if (cardBox) {
+      const bottomDist = vh - (cardBox.y + cardBox.height);
+      expect(
+        bottomDist,
+        '컴팩트 바 카드 하단이 뷰포트 밖으로 과도하게 잘리지 않음 (하단 CTA·닫기 접근성)',
+      ).toBeLessThanOrEqual(120);
+    }
+  }
+
+  const assertTripcomModalFields = async (nativeModal, { expectDepartNrt } = { expectDepartNrt: false }) => {
+    await expect(nativeModal).toBeVisible();
+    await expect(page.locator('[data-tripcom-native-search="1"]')).toBeVisible();
+
+    const departSlot = nativeModal.getByRole('textbox', { name: '출발' });
+    const arriveSlot = nativeModal.getByRole('textbox', { name: '도착' });
+    await expect(departSlot).toBeVisible();
+    await expect(arriveSlot).toBeVisible();
+
+    const departVal = (await departSlot.inputValue()).toUpperCase();
+    const arriveVal = (await arriveSlot.inputValue()).toUpperCase();
+
+    if (expectDepartNrt) {
+      expect(departVal).toContain('NRT');
+    } else {
+      expect(departVal.length).toBeGreaterThan(0);
+    }
+    expect(arriveVal).toMatch(/CDG|PAR/);
+
+    const form = nativeModal.locator('form[data-tripcom-native-search="1"]');
+    await expect(form).toHaveAttribute('data-tripcom-schedule-complete');
+
+    const shotOpen = await nativeModal.screenshot({ type: 'png' });
+    await testInfo.attach(`tripcom-flight-modal-${suffix}.png`, {
+      body: shotOpen,
+      contentType: 'image/png',
+    });
+    if (SHOT_DIR) {
+      await nativeModal.screenshot({ path: `${SHOT_DIR}/tripcom-flight-modal-${suffix}.png`, type: 'png' });
+    }
+
+    const searchSubmit = nativeModal.getByRole('button', { name: /^검색$/ });
+    if (await searchSubmit.isVisible().catch(() => false)) {
+      const urlBefore = page.url();
+      await searchSubmit.click();
+      await page.waitForTimeout(400);
+      expect(page.url()).toBe(urlBefore);
+    }
+  };
+
+  if (searchBeforeExpand) {
+    await searchCta.click();
+    const preModal = page.locator('[data-tripcom-flight-modal="native"]');
+    await preModal.waitFor({ state: 'visible', timeout: 25_000 });
+    await assertTripcomModalFields(preModal, { expectDepartNrt: false });
+    await page.keyboard.press('Escape');
+    await expect(preModal).toBeHidden({ timeout: 10_000 });
+  }
 
   const expandOrigin = page.getByRole('button', { name: '출발지 검색 펼치기' });
   await expandOrigin.click();
@@ -60,8 +162,7 @@ test('홈 검색 → 시네마 → 출발지 → 항공권 검색 (상태 바)',
 
   await expect(bar.locator('.animate-spin')).toHaveCount(0, { timeout: 120_000 });
 
-  const searchCtaAfter = page.getByTestId('flight-cinema-bar-search-flights');
-  await expect(searchCtaAfter).toBeVisible();
+  await expect(searchCta).toBeVisible();
 
   const barBox = await bar.boundingBox();
   if (barBox) {
@@ -111,42 +212,13 @@ test('홈 검색 → 시네마 → 출발지 → 항공권 검색 (상태 바)',
     }
   }
 
-  await searchCtaAfter.click();
+  await searchCta.click();
 
   const nativeModal = page.locator('[data-tripcom-flight-modal="native"]');
-  let modalVisible = false;
   try {
     await nativeModal.waitFor({ state: 'visible', timeout: 25_000 });
-    modalVisible = true;
+    await assertTripcomModalFields(nativeModal, { expectDepartNrt: true });
   } catch {
-    modalVisible = false;
-  }
-
-  if (modalVisible) {
-    await expect(nativeModal).toBeVisible();
-    await expect(page.locator('[data-tripcom-native-search="1"]')).toBeVisible();
-    const departSlot = nativeModal.getByRole('textbox', { name: '출발' });
-    await expect(departSlot).toBeVisible();
-    const departVal = await departSlot.inputValue();
-    expect(departVal.toUpperCase()).toContain('NRT');
-
-    const shotOpen = await nativeModal.screenshot({ type: 'png' });
-    await testInfo.attach(`tripcom-flight-modal-open-${suffix}.png`, {
-      body: shotOpen,
-      contentType: 'image/png',
-    });
-    if (SHOT_DIR) {
-      await nativeModal.screenshot({ path: `${SHOT_DIR}/tripcom-flight-modal-open-${suffix}.png`, type: 'png' });
-    }
-
-    const searchSubmit = nativeModal.getByRole('button', { name: /^검색$/ });
-    if (await searchSubmit.isVisible().catch(() => false)) {
-      const urlBefore = page.url();
-      await searchSubmit.click();
-      await page.waitForTimeout(400);
-      expect(page.url()).toBe(urlBefore);
-    }
-  } else {
     const dialog = page.locator('[role="dialog"]').first();
     const iframeCount = await dialog.locator('iframe').count().catch(() => 0);
     test.info().annotations.push({
@@ -158,5 +230,25 @@ test('홈 검색 → 시네마 → 출발지 → 항공권 검색 (상태 바)',
   test.info().annotations.push({
     type: 'timing-ms',
     description: String(Date.now() - started),
+  });
+}
+
+test.describe('Flight cinema bar — Trip.com search', () => {
+  test.beforeAll(() => {
+    let head = '';
+    try {
+      head = execSync('git rev-parse HEAD', { encoding: 'utf8' }).trim();
+    } catch {
+      head = 'unknown';
+    }
+    test.info().annotations.push({ type: 'git-head', description: head });
+  });
+
+  test('출발지 펼침 후 검색 (390·1280)', async ({ page }, testInfo) => {
+    await runFlightCinemaBarScenario({ page, testInfo, searchBeforeExpand: false });
+  });
+
+  test('출발지 펼침 전에도 검색 CTA 동작 (390·1280)', async ({ page }, testInfo) => {
+    await runFlightCinemaBarScenario({ page, testInfo, searchBeforeExpand: true });
   });
 });

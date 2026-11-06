@@ -489,6 +489,7 @@ jobs:
           VITE_SUPABASE_URL: https://example.supabase.co
           VITE_SUPABASE_ANON_KEY: e2e-anon-placeholder
           VITE_MAPBOX_TOKEN: pk.e2e-flight-cinema-bar-placeholder
+          VITE_E2E_FLIGHT_CINEMA_BAR: '1'
         run: npm run build
 
       - name: Playwright — flight-cinema-bar-search (390·1280)
@@ -498,6 +499,7 @@ jobs:
           VITE_SUPABASE_URL: https://example.supabase.co
           VITE_SUPABASE_ANON_KEY: e2e-anon-placeholder
           VITE_MAPBOX_TOKEN: pk.e2e-flight-cinema-bar-placeholder
+          VITE_E2E_FLIGHT_CINEMA_BAR: '1'
         run: |
           npx vite preview --host 127.0.0.1 --port 5202 --strictPort > /tmp/vite-flight-cinema-bar.log 2>&1 &
           ready=0
