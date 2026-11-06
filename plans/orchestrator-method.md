@@ -498,11 +498,11 @@ LIVE R: 메인만 · searchKeyword 금지(워커).
 |------|-----|
 | SSOT | `src/utils/affiliate.js` `PLANNER_TRIPCOM_HOTEL_CITY_IDS` |
 | 큐 | [`tripcom-stay-city-queue.md`](./tripcom-stay-city-queue.md) |
-| 브랜치 | `cursor/tripcom-stay-cities-de61` · PR #672 (R05–R06) · #665·#664 병합됨 |
+| 브랜치 | `cursor/tripcom-stay-cities-de61` · PR #672 (R05–R08) · #665·#664 병합됨 |
 | 라운드 | 워커 A 6 + B 6 · **한 세션 2라운드에서 멈춘다** (라이브 확인. 220곳 한 세션 금지) |
 | 게이트 | 목록 `destinationInputValue`가 비지 않고 그 여행지 · `node scripts/audit-tripcom-stay-cities.mjs` |
 
-IntlCity만. Province·Hotel·Markland·cityId `-1`/`10279`·키워드 첫 행 거절. 큐의 보류·sparse는 배정하지 않는다. ID를 넣으면 `[@지역@]` 없는 플래너 숙소 버튼이 트립닷컴으로 바뀐다.
+IntlCity만. 중국 국내 도시는 키워드 type이 City여도 목록 `destinationInputValue`가 그 도시면 넣는다. Province·Hotel·Markland·cityId `-1`/`10279`·키워드 첫 행 거절. 큐의 보류·sparse는 배정하지 않는다. ID를 넣으면 `[@지역@]` 없는 플래너 숙소 버튼이 트립닷컴으로 바뀐다.
 
 제시어: `오케스트레이터` + `트립닷컴숙소` · 큐 다음 ⬜ · **2라운드 후 다음 세션**.
 
