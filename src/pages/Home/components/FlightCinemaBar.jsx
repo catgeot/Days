@@ -396,6 +396,7 @@ export default function FlightCinemaBar({
     <div
       className={`pointer-events-auto animate-fade-in-down ${className}`}
       role="region"
+      data-testid="flight-cinema-bar"
       aria-label={routeAria
         ? t('home.flightCinema.regionAriaFlight', { route: routeAria })
         : t('home.flightCinema.regionAriaDefault')}
@@ -494,6 +495,7 @@ export default function FlightCinemaBar({
                 customTrigger={
                   <button
                     type="button"
+                    data-testid="flight-cinema-bar-search-flights"
                     className={`flight-cinema-bar-cta shrink-0 ${BAR_BTN} border-sky-300/50 bg-sky-500/20 text-sky-50 hover:border-sky-200/60 hover:bg-sky-500/30`}
                   >
                     <Search size={12} aria-hidden="true" />
