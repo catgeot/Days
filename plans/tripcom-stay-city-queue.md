@@ -1,8 +1,8 @@
 # 트립닷컴 숙소 도시 — 오케스트레이터 큐
 
-**상태**: 2026-11-06 · R01–R08 ✅ (93 연결 · 라자 암팟 보류) · **다음 ⬜ R09**
+**상태**: 2026-11-06 · R01–R10 ✅ (117 연결 · 라자 암팟 보류) · **다음 ⬜ R11**
 **방법**: [`orchestrator-method.md`](./orchestrator-method.md) §5.8 · 점검 [`tripcom-stay-city-audit.md`](./tripcom-stay-city-audit.md)
-**브랜치**: `cursor/tripcom-stay-cities-de61` · R05–R08 PR [#672](https://github.com/catgeot/Days/pull/672) · R03–R04 PR [#665](https://github.com/catgeot/Days/pull/665) 병합 · 배치 1 PR [#664](https://github.com/catgeot/Days/pull/664) 병합됨
+**브랜치**: `cursor/tripcom-stay-cities-de61` · R09–R10 PR [#677](https://github.com/catgeot/Days/pull/677) · R05–R08 PR [#672](https://github.com/catgeot/Days/pull/672) 병합 · R03–R04 PR [#665](https://github.com/catgeot/Days/pull/665) 병합 · 배치 1 PR [#664](https://github.com/catgeot/Days/pull/664) 병합됨
 
 ### 가드
 
@@ -42,9 +42,9 @@
 | **R06** | `brussels` · `budapest` · `buenos-aires` · `cairo` · `cancun` · `cape-town` | `cappadocia` · `carstensz-pyramid` · `chiang-mai` · `chicago` · `cinque-terre` · `copenhagen` | ✅ 12 |
 | **R07** | `costa-rica` · `cusco` · `da-nang` · `delhi` · `denali` · `dolomites` | `dubai` · `dublin` · `dubrovnik` · `dunhuang` · `easter-island` · `edinburgh` | ✅ 12 |
 | **R08** | `el-calafate` · `el-nido` · `ephesus` · `fernando-de-noronha` · `fez` · `fiordland` | `florence` · `forbidden-city` · `fukuoka` · `geneva` · `gili-meno` · `giza-pyramids` | ✅ 12 |
-| **R09** | `gold-coast` · `grand-canyon` · `great-barrier-reef` · `great-wall` · `halong-bay` · `hamburg` | `hampi` · `hanoi` · `helsinki` · `hoi-an` · `hue` · `hvar` | ⬜ 다음 |
-| **R10** | `ibiza` · `iguazu-falls` · `inca-trail` · `ishigaki` · `jaipur` · `jakarta` | `jerusalem` · `kala-patthar` · `kanazawa` · `kilimanjaro` · `kobe` · `koh-samui` | ⬜ |
-| **R11** | `kota-kinabalu` · `kotor` · `krabi` · `kuala-lumpur` · `kumamoto` · `kyoto` | `la-spezia` · `lalibela` · `langkawi` · `las-vegas` · `lhasa` · `lisbon` | ⬜ |
+| **R09** | `gold-coast` · `grand-canyon` · `great-barrier-reef` · `great-wall` · `halong-bay` · `hamburg` | `hampi` · `hanoi` · `helsinki` · `hoi-an` · `hue` · `hvar` | ✅ 12 |
+| **R10** | `ibiza` · `iguazu-falls` · `inca-trail` · `ishigaki` · `jaipur` · `jakarta` | `jerusalem` · `kala-patthar` · `kanazawa` · `kilimanjaro` · `kobe` · `koh-samui` | ✅ 12 |
+| **R11** | `kota-kinabalu` · `kotor` · `krabi` · `kuala-lumpur` · `kumamoto` · `kyoto` | `la-spezia` · `lalibela` · `langkawi` · `las-vegas` · `lhasa` · `lisbon` | ⬜ 다음 |
 | **R12** | `lofoten` · `london` · `los-angeles` · `luang-prabang` · `luxor` · `machu-picchu` | `madagascar` · `madrid` · `manila` · `marrakech` · `melbourne` · `meteora` | ⬜ |
 | **R13** | `miami` · `milan` · `minneapolis` · `miyakojima` · `mont-blanc` · `montreal` | `mount-bromo` · `mount-fuji` · `munich` · `nagasaki` · `nairobi` · `nara` | ⬜ |
 | **R14** | `nazca-lines` · `nha-trang` · `oslo` · `patagonia` · `perth` · `petra` | `phi-phi-islands` · `philadelphia` · `phu-quoc` · `plitvice-lakes` · `porto` · `prague` | ⬜ |
@@ -53,4 +53,4 @@
 | **R17** | `taipei` · `taj-mahal` · `terracotta-army` · `toronto` · `ubud` · `ulaanbaatar` | `ushuaia` · `vancouver` · `vang-vieng` · `varanasi` · `venice` · `victoria-falls` | ⬜ |
 | **R18** | `vienna` · `vientiane` · `wadi-rum` · `warsaw` · `washington-dc` · `yellowknife` | `yokohama` · `zagreb` · `zermatt` · `zhangjiajie` · `zurich` | ⬜ |
 
-나머지 라이브 대상 119곳 · 라운드 R09–R18. R07 관문: 코스타리카는 산호세, 델리는 뉴델리, 데날리는 알래스카 드날리(앵커리지 아님), 돌로미티는 볼차노, 둔황은 간쑤(키워드 type City). R08 관문: 에페소스는 셀주크, 피오르드랜드는 티아나우(milford-sound와 3716), 자금성은 베이징(type City), 기자 피라미드는 기자 시(카이로 아님).
+나머지 라이브 대상 95곳 · 라운드 R11–R18. R09 관문: 배리어리프는 케언스, 만리장성은 베이징(자금성과 1·type City), 하롱은 할롱, 호이안은 Zone 1775(목록이 호이안). R10 관문: 이구아수는 푸에르토 이구아수, 잉카 트레일은 올란타이탐보(쿠스코 813 아님), 칼라파타르는 남체, 킬리만자로는 모시.
