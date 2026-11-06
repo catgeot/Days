@@ -22,3 +22,10 @@
 - 플래너: 이 24곳은 `[@지역@]`이 없으면 숙소 버튼이 트립닷컴으로 바뀐다.
 - 코드 `01c1f692` `00cb058e` · 브랜치 `cursor/tripcom-stay-cities-de61` · PR [#677](https://github.com/catgeot/Days/pull/677). audit: mapped 168 · 미연결 106 · 한국 0 · 배치 1 열림은 라자 암팟. `cursor/*` Preview는 꺼져 있다.
 - 다음: 큐 R11–R12. 한 세션 2라운드. 목록에 잡힌 도시만.
+
+## 항공경로 #1, 상태창 검색 버튼
+
+- 증상: 항공경로 상태창에서 항공권 검색 폼(ICN→YZF, 11월 11–18일)을 채운 뒤 「검색」이 트립닷컴으로 안 열림.
+- 수정: 아이폰이 취소하던 합성 `noreferrer` 클릭 대신 같은 탭 `location.assign`(Referer 없음). 터치 첫 탭은 키보드에 먹히지 않게 pointerdown에서 연다.
+- 코드 `e0c8ab8c` · 브랜치 `cursor/flight-search-tap-b675` · PR [#679](https://github.com/catgeot/Days/pull/679). `npm run smoke:tripcom-flight-planner` PASS. 이 브랜치만 Preview를 켰다.
+- 사람 체크: 항공 경로 → 항공권 검색 → 일정 입력 → 「검색」이 ICN–YZF와 그 날짜의 트립닷컴 항공 결과로 열리는지. Preview `https://days-git-cursor-flight-search-tap-b675-catgeots-projects.vercel.app`
