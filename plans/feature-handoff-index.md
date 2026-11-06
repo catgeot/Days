@@ -14,6 +14,30 @@
 
 ## 활성 목록
 
+### 트립닷컴 숙소 도시 연결
+
+| | |
+|--|--|
+| **상태** | **#3 대도시 연결** · R03–R04 22곳 · tip `634894f1` · PR [#665](https://github.com/catgeot/Days/pull/665) · 배치 1은 PR [#664](https://github.com/catgeot/Days/pull/664) 병합 · 라자 암팟 보류 |
+| **브랜치** | `cursor/tripcom-stay-cities-de61` (이 주제 고정. 세션마다 새 브랜치 금지) |
+| **플랜** | [`tripcom-stay-city-audit.md`](./tripcom-stay-city-audit.md) · 큐 [`tripcom-stay-city-queue.md`](./tripcom-stay-city-queue.md) |
+| **일지** | [`2026-11-05-project-log.md`](./2026-11-05-project-log.md) |
+| **Preview** | `cursor/*` 배포는 꺼져 있다. 사람 확인은 PR 병합 후 `www.gateo.kr` |
+| **금지** | city ID 일괄 추가 · `city=10279` · province만으로 검색창 채우기 · 호놀룰루를 `757`로 묶기 · 라자 암팟 재시도 · sparse에 city 단정 · 키워드 첫 결과만으로 ID 확정 · 한 세션에 라운드 3개 이상 |
+| **VERIFY** | `node scripts/audit-tripcom-stay-cities.mjs` · PASS는 목록 `destinationInputValue`가 그 여행지 |
+| **남은 일** | 큐 R05부터. 미연결 178(해외). 한국 서울·제주·서귀포는 연결됨. 다음 세션은 R05–R06만 |
+
+**다음 제시어**
+
+```
+트립닷컴 숙소 #4, 큐 R05
+@plans/feature-handoff-index.md
+@plans/2026-11-05-project-log.md
+@plans/tripcom-stay-city-queue.md
+오케스트레이터 · 트립닷컴숙소 · 큐 R05부터 2라운드 · 워커 2 · 목록에 잡힌 도시만
+브랜치 cursor/tripcom-stay-cities-de61 · PR #665
+```
+
 ### 현지 정보 LI-1 레지스트리
 
 | | |

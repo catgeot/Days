@@ -10,7 +10,12 @@ import {
   resolveHubAttraction,
 } from './cityAttractionHubs.js';
 import { isHiddenHubScenicAttraction } from './koreaScenicSpotVisibility.js';
-import { resolveExploreSearchAlias } from './exploreSearchAliases.js';
+import { resolveExploreSearchAlias, canonicalizeExploreSearchQuery } from './exploreSearchAliases.js';
+import {
+  effectiveExploreSearchQuery,
+  parseKoreaRegionalExploreQuery,
+  parseExploreSearchScope,
+} from './exploreRegionalPlaceQuery.js';
 import { placeNameMatchesSearchQuery } from './searchEnterMatch.js';
 import { shouldSkipGeocodeForMood } from './moodSearchIntent.js';
 import {
@@ -18,6 +23,16 @@ import {
   formatTourAttractionLocality,
 } from './koreaTourAttractionLocality.js';
 import { resolveKoStationAlias } from './koreaPlaceMatchDictionary.js';
+
+function applyExploreAliasTourContentId(hit, query) {
+  if (!hit) return hit;
+  const alias = resolveExploreSearchAlias(query);
+  const contentId = String(alias?.contentId || '').trim();
+  if (!/^\d{1,32}$/.test(contentId)) return hit;
+  hit.contentId = contentId;
+  hit.source = 'tourapi';
+  return hit;
+}
 import { inferPlaceMatchCategory } from './placeMatchCategory.js';
 
 const HAS_HANGUL_RE = /[\uAC00-\uD7A3]/;
@@ -218,10 +233,13 @@ export function resolveKoreaDestinationFirstPassSync(query) {
   const q = String(query || '').trim();
   if (!q) return null;
 
-  const hubMatch = resolveKoreaHubAttractionMatch(q);
-  if (hubMatch) return hitFromHub(hubMatch);
+  const regional = parseExploreSearchScope(q);
+  const placeQ = regional?.placeQuery || q;
 
-  const station = resolveKoStationAlias(q);
+  const hubMatch = resolveKoreaHubAttractionMatch(placeQ);
+  if (hubMatch) return applyExploreAliasTourContentId(hitFromHub(hubMatch), q);
+
+  const station = resolveKoStationAlias(placeQ);
   if (station) return hitFromStation(station);
 
   return null;
@@ -239,11 +257,11 @@ function shouldLookupTourapi(query) {
   return true;
 }
 
-async function lookupTourAttractionRow(query, lookup) {
-  if (typeof lookup === 'function') return lookup(query);
+async function lookupTourAttractionRow(query, lookup, opts = {}) {
+  if (typeof lookup === 'function') return lookup(query, opts);
   try {
     const { lookupKoreaTourAttractionFirstPass } = await import('./koreaTourAttractions.js');
-    return lookupKoreaTourAttractionFirstPass(query);
+    return lookupKoreaTourAttractionFirstPass(query, { hubHints: opts.hubHints });
   } catch {
     return null;
   }
@@ -254,10 +272,21 @@ async function lookupTourAttractionRow(query, lookup) {
  * @param {{ lookupTourAttraction?: (q: string) => Promise<object | null> }} [opts]
  */
 export async function resolveKoreaDestinationFirstPass(query, opts = {}) {
-  const sync = resolveKoreaDestinationFirstPassSync(query);
+  const q = String(query || '').trim();
+  if (!q) return null;
+
+  const sync = resolveKoreaDestinationFirstPassSync(q);
   if (sync) return sync;
-  if (!shouldLookupTourapi(query)) return null;
-  const row = await lookupTourAttractionRow(query, opts.lookupTourAttraction);
+
+  const regional = parseExploreSearchScope(q);
+  const tourQuery = canonicalizeExploreSearchQuery(effectiveExploreSearchQuery(q));
+
+  if (!shouldLookupTourapi(tourQuery) && !regional) return null;
+
+  const lookupTitle = tourQuery || q;
+  const row = await lookupTourAttractionRow(lookupTitle, opts.lookupTourAttraction, {
+    hubHints: regional?.hubHints,
+  });
   if (!row) return null;
   return hitFromTourRow(row);
 }
@@ -301,9 +330,13 @@ export function firstPassHitToUiPlace(hit, query = '') {
     };
   }
   const nameEn = hit.name_en || hit.name;
+  const lat = Number(hit.lat);
+  const lng = Number(hit.lng);
+  const coordKey = Number.isFinite(lat) && Number.isFinite(lng) ? `search-${lat}-${lng}` : '';
+  const tourPin = hit.source === 'tourapi' && coordKey;
   return {
-    id: `${hit.source || 'first-pass'}-${hit.lat}-${hit.lng}`,
-    slug: placeUrlSlug(nameEn, hit.name),
+    id: hit.contentId ? `tour-${hit.contentId}` : coordKey || `${hit.source || 'first-pass'}-${hit.lat}-${hit.lng}`,
+    slug: tourPin ? coordKey : placeUrlSlug(nameEn, hit.name),
     name: hit.name,
     name_en: nameEn,
     name_ko: hit.name,
@@ -312,7 +345,10 @@ export function firstPassHitToUiPlace(hit, query = '') {
     lat: hit.lat,
     lng: hit.lng,
     type: 'temp-base',
-    uiPlace: true,
+    uiPlace: hit.uiPlace !== false && hit.source !== 'tourapi',
+    source: hit.source || 'first-pass',
+    kind: hit.source === 'tourapi' ? 'poi' : hit.kind,
+    badge: hit.source === 'tourapi' ? '명소' : hit.badge,
     originalQuery,
     desc: hit.parentCity ? `${hit.parentCity} · ${hit.name}` : hit.name,
     ...(hit.stayAdmin ? { stayAdmin: hit.stayAdmin } : {}),

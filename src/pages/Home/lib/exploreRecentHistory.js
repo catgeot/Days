@@ -1,9 +1,19 @@
 import { TRAVEL_SPOTS } from '../data/travelSpots';
 import { citiesData } from '../data/citiesData';
 import { resolveTravelSpotFromSearchQuery } from '../../../utils/travelSpotResolve';
+import { resolveExploreAliasDirectPlaceSlug } from './koreaPlaceMatchDictionary.js';
 import { placeUrlSlug, resolveCityAttractionHub, resolveHubPlaceFromSlug } from './cityAttractionHubs';
 import { getPlaceUrlParam, isEphemeralSlug, resolveCatalogPlaceSlug } from './formatUrlName';
 import { resolveSettlementPlaceFromSlug } from './mapboxSettlementPlaces';
+import {
+  isMapboxOrGeocodeSource,
+  shouldRouteDomesticExplorePinToPlace,
+  isBlockedCountryOnlyPlaceParam,
+  normalizeExploreSelectionPin,
+  resolveDomesticMapboxAdminHub,
+  resolveDomesticProvinceNameHub,
+} from './explorePlaceNav.js';
+import { isKoreaProvinceLevelTourResult, isKoreaProvinceLevelName } from './koreaExploreProvincePlace.js';
 
 export const RECENT_SEARCH_KEY = 'gateo_recent_search_keywords';
 export const RECENT_VISITED_KEY = 'gateo_recent_visited_destinations';
@@ -264,8 +274,7 @@ function detachCountySlug(pin, known) {
 function isMapboxOrGeocodePin(spot) {
   const id = String(spot?.id ?? '').trim().toLowerCase();
   if (id.startsWith('mapbox-') || id.startsWith('geocode-')) return true;
-  const source = String(spot?.source ?? '').trim().toLowerCase();
-  return source === 'mapbox' || source === 'mapbox-geocode';
+  return isMapboxOrGeocodeSource(spot?.source);
 }
 
 /** 새로고침·공유가 홈으로 튕기지 않는 slug. 이름 kebab(hallstatt)는 제외. */
@@ -294,13 +303,89 @@ export function resolveSearchResultSelect(spot) {
   const lat = Number(spot.lat);
   const lng = Number(spot.lng);
   if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
-  const pin = { ...spot, lat, lng };
-  const param = knownPlaceSlug(getPlaceUrlParam(pin));
+  const pin = normalizeExploreSelectionPin({ ...spot, lat, lng });
+  const source = String(pin.source ?? '').trim().toLowerCase();
+  if (isKoreaProvinceLevelTourResult(pin)) {
+    return { type: 'home', spot: pin };
+  }
+
+  const adminHub = resolveDomesticMapboxAdminHub(pin);
+  if (
+    adminHub?.hubId &&
+    (shouldRouteDomesticExplorePinToPlace(pin) ||
+      isKoreaProvinceLevelName(String(pin.name || pin.name_ko || '').trim()))
+  ) {
+    const hubSlug = String(adminHub.hubId).trim();
+    if (hubSlug && !isBlockedCountryOnlyPlaceParam(hubSlug)) {
+      const hubPin = normalizeExploreSelectionPin({
+        ...pin,
+        hubId: hubSlug,
+        slug: hubSlug,
+        canonical_slug: hubSlug,
+      });
+      return { type: 'place', spot: hubPin, param: hubSlug };
+    }
+  }
+
+  const tourParam = getPlaceUrlParam(pin);
+  if (source === 'tourapi' && tourParam && !isBlockedCountryOnlyPlaceParam(tourParam)) {
+    return { type: 'place', spot: pin, param: tourParam };
+  }
+
+  if (shouldRouteDomesticExplorePinToPlace(pin)) {
+    const domesticParam = getPlaceUrlParam(pin);
+    if (domesticParam && !isBlockedCountryOnlyPlaceParam(domesticParam)) {
+      return { type: 'place', spot: pin, param: domesticParam };
+    }
+  }
+
+  const rawParam = tourParam;
+  const param = knownPlaceSlug(rawParam);
   const known = param ? knownPlaceForParam(param) : null;
   const countyMismatch = Boolean(known) && !pinNameOwnsPlace(pin, known);
   const spotForOpen = countyMismatch ? detachCountySlug(pin, known) : pin;
-  if (isMapboxOrGeocodePin(pin) || countyMismatch) return { type: 'home', spot: spotForOpen };
+  if ((isMapboxOrGeocodePin(pin) || countyMismatch) && !shouldRouteDomesticExplorePinToPlace(pin)) {
+    const foreignParam = rawParam;
+    const explicitCatalogSlug = resolveCatalogPlaceSlug(
+      String(pin.slug || pin.canonical_slug || '').trim(),
+    );
+    if (explicitCatalogSlug) {
+      return { type: 'home', spot: spotForOpen };
+    }
+    if (foreignParam?.startsWith('search-')) {
+      return { type: 'home', spot: spotForOpen };
+    }
+    if (foreignParam?.startsWith('tour-') && !isBlockedCountryOnlyPlaceParam(foreignParam)) {
+      return { type: 'place', spot: spotForOpen, param: foreignParam };
+    }
+    const aliasPlaceSlug =
+      resolveExploreAliasDirectPlaceSlug(pin.name) ||
+      resolveExploreAliasDirectPlaceSlug(pin.name_ko) ||
+      resolveExploreAliasDirectPlaceSlug(pin.name_en);
+    if (
+      aliasPlaceSlug &&
+      foreignParam === aliasPlaceSlug &&
+      !isBlockedCountryOnlyPlaceParam(aliasPlaceSlug)
+    ) {
+      return { type: 'place', spot: spotForOpen, param: aliasPlaceSlug };
+    }
+    return { type: 'home', spot: spotForOpen };
+  }
   if (param) return { type: 'place', spot: pin, param };
+  if (rawParam && (pin.contentId || pin.source === 'tourapi')) {
+    return { type: 'place', spot: pin, param: rawParam };
+  }
+  const provinceHub = resolveDomesticProvinceNameHub(pin);
+  const provinceSlug = String(provinceHub?.hubId || '').trim();
+  if (provinceSlug && !isBlockedCountryOnlyPlaceParam(provinceSlug)) {
+    const hubPin = normalizeExploreSelectionPin({
+      ...pin,
+      hubId: provinceSlug,
+      slug: provinceSlug,
+      canonical_slug: provinceSlug,
+    });
+    return { type: 'place', spot: hubPin, param: provinceSlug };
+  }
   return { type: 'home', spot: pin };
 }
 

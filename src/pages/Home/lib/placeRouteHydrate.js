@@ -13,8 +13,9 @@ import {
   isSameCanonicalPlace,
 } from '../../../utils/travelSpotResolve.js';
 import { isSyntheticOrEmptyPlaceDesc } from './placeDescText.js';
-import { readCachedPlaceBySlug } from './placeLocationCache.js';
+import { readCachedPlaceBySlug, readCachedPlaceLocation } from './placeLocationCache.js';
 import { resolveLegacyMishealPlace } from './legacyMishealPlaceSlugs.js';
+import { resolveExploreAliasPlaceFromSlug } from './koreaPlaceMatchDictionary.js';
 import { isFreeSearchPlaceId } from './freeSearchYouTubeLink.js';
 
 function hasReusableSessionDesc(loc) {
@@ -202,6 +203,16 @@ export function resolvePlaceTargetFromSlug(slug, options = {}) {
   const normalized = String(slug ?? '').trim().toLowerCase();
   if (!normalized) return null;
 
+  const tourMatch = normalized.match(/^tour-(\d{1,32})$/);
+  if (tourMatch) {
+    const cachedTour =
+      readCachedPlaceBySlug(normalized) ||
+      readCachedPlaceLocation(normalized) ||
+      readCachedPlaceLocation(`tour-${tourMatch[1]}`);
+    if (cachedTour) return overlaySessionCuration(cachedTour, options);
+    return null;
+  }
+
   // 1) exact catalog — slug/id/영문 kebab만 (fuzzy 금지)
   const exactSpot = TRAVEL_SPOTS.find(
     (s) =>
@@ -243,6 +254,9 @@ export function resolvePlaceTargetFromSlug(slug, options = {}) {
       options,
     );
   }
+
+  const exploreAliasPlace = resolveExploreAliasPlaceFromSlug(normalized);
+  if (exploreAliasPlace) return overlaySessionCuration(exploreAliasPlace, options);
 
   // 4) alias · fuzzy catalog (hub에 없는 slug만)
   const aliasResolved = resolveTravelSpotFromPlaceId(

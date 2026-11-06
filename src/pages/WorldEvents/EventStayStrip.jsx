@@ -38,7 +38,9 @@ import { MRT_HOME_MYLINK_ID } from '../Home/data/mrtPackageThemeLinks';
 import { resolveFlightDepartureIataForTrip } from '../Home/lib/flightOriginPreference.js';
 import { resolveTripcomPartnerLocale } from '../../utils/tripcomPartnerLocale.js';
 import { getWorldEventPlaceMeta, getWorldEventStayAreas } from '../../utils/worldEvents';
-import PartnerBookingHandoff from '../../shared/affiliate/PartnerBookingHandoff.jsx';
+import StayListPartnerNotice from '../../shared/affiliate/StayListPartnerNotice.jsx';
+import StayCardBookingLink from '../../shared/affiliate/StayCardBookingLink.jsx';
+import { formatMrtStayStarRatingLabel } from '../../utils/mrtStayCardMeta.js';
 
 function todayYmd() {
   const d = new Date();
@@ -107,50 +109,65 @@ function EventFlightHotelCta({
 }
 
 function StayCard({ item, price, large = false }) {
+  const { t } = useTranslation();
   const productHref = item.productUrl ? buildMrtMylinkUrl(item.productUrl) : null;
   if (!productHref) return null;
+
+  const starLine = formatMrtStayStarRatingLabel(item?.starRating, t);
+  const reviewScore = String(item?.reviewScore ?? '').trim();
 
   const shellClass = eventStripCardShellClass({ large });
 
   return (
-    <div className={shellClass}>
-      <div className="flex min-h-0 flex-1 flex-col">
-        <div className={`relative w-full shrink-0 bg-stone-100 ${large ? 'h-[132px]' : 'h-[88px]'}`}>
-          {item.imageUrl ? (
-            <img
-              src={resolveListImageUrl(item.imageUrl, { role: 'list' })}
-              alt=""
-              loading="lazy"
-              decoding="async"
-              className="h-full w-full object-cover"
-            />
-          ) : (
-            <div className="flex h-full items-center justify-center text-[10px] text-stone-400">—</div>
-          )}
-        </div>
-        <div className="space-y-0.5 p-2">
+    <StayCardBookingLink href={productHref} item={item} className={`${shellClass} hover:border-amber-300/60`}>
+      <div className={`relative w-full shrink-0 bg-stone-100 ${large ? 'h-[172px]' : 'h-[128px]'}`}>
+        {item.imageUrl ? (
+          <img
+            src={resolveListImageUrl(item.imageUrl, { role: 'list' })}
+            alt=""
+            loading="lazy"
+            decoding="async"
+            className="h-full w-full object-cover"
+          />
+        ) : (
+          <div className="flex h-full items-center justify-center text-[10px] text-stone-400">—</div>
+        )}
+      </div>
+      <div className="space-y-0.5 p-2 pb-1.5">
+        <p
+          className={`line-clamp-2 font-semibold leading-snug text-stone-900 ${
+            large ? 'text-sm' : 'text-[11px]'
+          }`}
+        >
+          {item.itemName}
+        </p>
+        {starLine ? (
           <p
-            className={`line-clamp-2 font-semibold leading-snug text-stone-900 ${
-              large ? 'text-sm' : 'text-[11px]'
+            className={`truncate font-medium text-stone-500 ${
+              large ? 'text-[11px]' : 'text-[10px]'
             }`}
           >
-            {item.itemName}
+            {starLine}
           </p>
-          {price ? (
-            <p
-              className={`truncate font-bold tabular-nums text-amber-800 ${
-                large ? 'text-xs' : 'text-[10px]'
-              }`}
-            >
-              {price}
-            </p>
-          ) : null}
-        </div>
+        ) : null}
+        {reviewScore ? (
+          <p
+            className={`tabular-nums text-stone-600 ${large ? 'text-xs' : 'text-[10px]'}`}
+          >
+            ★ {reviewScore}
+          </p>
+        ) : null}
+        {price ? (
+          <p
+            className={`truncate font-bold tabular-nums text-amber-800 ${
+              large ? 'text-xs' : 'text-[10px]'
+            }`}
+          >
+            {price}
+          </p>
+        ) : null}
       </div>
-      <div className="mt-auto border-t border-stone-100 p-2 pt-1.5">
-        <PartnerBookingHandoff href={productHref} kind="lodging" item={item} theme="light" />
-      </div>
-    </div>
+    </StayCardBookingLink>
   );
 }
 
@@ -595,16 +612,19 @@ export default function EventStayStrip({
         ) : null}
 
         {status === 'ready' && items?.length ? (
-          <div className={EVENT_STRIP_SCROLL_ROW_CLASS}>
-            {items.map((item) => (
-              <StayCard
-                key={item.itemId || item.productUrl || item.itemName}
-                item={item}
-                price={formatPrice(item.salePrice, t, i18n.language)}
-                large={listLarge}
-              />
-            ))}
-          </div>
+          <>
+            <StayListPartnerNotice theme="light" className="mb-2.5" />
+            <div className={EVENT_STRIP_SCROLL_ROW_CLASS}>
+              {items.map((item) => (
+                <StayCard
+                  key={item.itemId || item.productUrl || item.itemName}
+                  item={item}
+                  price={formatPrice(item.salePrice, t, i18n.language)}
+                  large={listLarge}
+                />
+              ))}
+            </div>
+          </>
         ) : null}
       </div>
     </section>

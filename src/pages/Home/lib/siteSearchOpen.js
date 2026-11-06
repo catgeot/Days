@@ -12,6 +12,52 @@ import {
 import { buildHybridSearchSuggestions, buildLocalSearchSuggestions } from './searchSuggestions.js';
 import { resolveLegacyMishealPlace } from './legacyMishealPlaceSlugs.js';
 
+const SITE_SEARCH_HOMONYM_QUERY_RANK = [
+  {
+    query: '개심사',
+    slug: 'gaesimsa',
+    hubId: 'seosan',
+    contentId: '125908',
+  },
+];
+
+function compactSiteSearchQueryKey(query) {
+  return String(query ?? '')
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, '');
+}
+
+function siteSearchHomonymRankRule(query) {
+  const key = compactSiteSearchQueryKey(query);
+  return SITE_SEARCH_HOMONYM_QUERY_RANK.find(
+    (row) => compactSiteSearchQueryKey(row.query) === key,
+  );
+}
+
+function scoreSiteSearchHomonymCandidate(item, rule) {
+  if (!rule || !item) return 0;
+  let score = 0;
+  const slug = String(item.slug || item.canonical_slug || '')
+    .trim()
+    .toLowerCase();
+  if (slug === rule.slug) score += 24;
+  if (String(item.hubId || '').trim() === rule.hubId) score += 16;
+  if (String(item.contentId || '').trim() === rule.contentId) score += 12;
+  if (String(item.placeSlug || '').trim().toLowerCase() === rule.slug) score += 20;
+  return score;
+}
+
+/** 탐색 제안·Enter 동명 순위 (홍보 장소 SSOT) */
+export function rankSiteSearchExploreCandidates(query, suggestions) {
+  if (!isSiteSearchOpenEnabled() || !suggestions?.length) return suggestions;
+  const rule = siteSearchHomonymRankRule(query);
+  if (!rule) return suggestions;
+  return [...suggestions].sort(
+    (a, b) => scoreSiteSearchHomonymCandidate(b, rule) - scoreSiteSearchHomonymCandidate(a, rule),
+  );
+}
+
 /**
  * Plan-2 sitewide search step 2 — county-safe open when flag ON.
  * Step 1 (POI vs 시군 slug, #466) stays on main unconditionally via resolveSearchResultSelect.
@@ -28,7 +74,7 @@ function visitedPlaceIdFromSpot(item) {
 }
 
 /** 동일 한글명(흥정계곡) 중복 행 — county 허브·캠핑장보다 명소(uiPlace) 우선 */
-function rankEnterExactPoiCandidate(item) {
+function rankEnterExactPoiCandidate(item, query = '') {
   let score = 0;
   if (item?.poiAttraction) score += 12;
   if (item?.parentCity) score += 8;
@@ -38,17 +84,18 @@ function rankEnterExactPoiCandidate(item) {
   const placeId = visitedPlaceIdFromSpot(item);
   if (placeId && resolveLegacyMishealPlace(placeId)) score += 16;
   if (item?.source === 'legacy-misheal') score += 16;
+  score += scoreSiteSearchHomonymCandidate(item, siteSearchHomonymRankRule(query));
   return score;
 }
 
-function pickSingleEnterExactPoi(exactMatches) {
+function pickSingleEnterExactPoi(exactMatches, query = '') {
   if (!exactMatches?.length) return null;
   if (exactMatches.length === 1) return exactMatches[0];
   const ranked = [...exactMatches].sort(
-    (a, b) => rankEnterExactPoiCandidate(b) - rankEnterExactPoiCandidate(a),
+    (a, b) => rankEnterExactPoiCandidate(b, query) - rankEnterExactPoiCandidate(a, query),
   );
-  const topScore = rankEnterExactPoiCandidate(ranked[0]);
-  const tied = ranked.filter((item) => rankEnterExactPoiCandidate(item) === topScore);
+  const topScore = rankEnterExactPoiCandidate(ranked[0], query);
+  const tied = ranked.filter((item) => rankEnterExactPoiCandidate(item, query) === topScore);
   return tied[0] || ranked[0];
 }
 
@@ -102,7 +149,7 @@ export function resolveSiteSearchEnterSinglePoi(query, suggestions) {
   const canonical = normalizeSearchName(resolveEnterSearchCanonical(q));
   const exactNameMatches = matches.filter((item) => normalizeSearchName(item.name) === canonical);
   if (exactNameMatches.length >= 1) {
-    const picked = pickSingleEnterExactPoi(exactNameMatches);
+    const picked = pickSingleEnterExactPoi(exactNameMatches, q);
     if (picked) return picked;
   }
   if (matches.length === 1 && placeNameMatchesSearchQuery(q, matches[0])) return matches[0];

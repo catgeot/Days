@@ -42,6 +42,7 @@ import {
   KO_GALLERY_QUERY_OVERRIDES,
   KOREA_HOMONYM_GROUPS,
 } from '../src/pages/Home/lib/koreaPlaceMatchDictionary.js';
+import { normalizeExploreSelectionPin } from '../src/pages/Home/lib/explorePlaceNav.js';
 
 const langCo = resolveHubAttraction('람코');
 assert.ok(langCo, '람코 → 랑코 해변 attraction');
@@ -300,4 +301,14 @@ assert.ok(
   '향교 includes 김포향교',
 );
 
-console.log('PASS explore-search-aliases (lang co + takamatsu + saba island types + 광천선굴 + korea first-pass + koreaPlaceMatchDictionary SSOT + 춘천 향교 hub)');
+for (const q of ['한라산 백록담', '백록담', '화구벽']) {
+  const alias = resolveKoExploreSearchAlias(q);
+  assert.equal(alias?.canonical, '한라산국립공원', q);
+  assert.equal(alias?.contentId, '127635', q);
+  const first = resolveKoreaDestinationFirstPassSync(q);
+  assert.equal(first?.contentId, '127635', q);
+  const pin = normalizeExploreSelectionPin(firstPassHitToUiPlace(first, q));
+  assert.equal(pin?.slug, 'tour-127635', q);
+}
+
+console.log('PASS explore-search-aliases (lang co + takamatsu + saba island types + 광천선굴 + korea first-pass + koreaPlaceMatchDictionary SSOT + 춘천 향교 hub + 한라산 별칭)');

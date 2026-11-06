@@ -55,6 +55,8 @@ export default function FestivalGridPhotoCard({
   onToggleFavorite,
   onPhotoSize,
   initialPhotoSize = null,
+  inColumn = false,
+  slotIndex = 0,
   distanceKm,
   areaCode = 'all',
   cityName = 'all',
@@ -83,7 +85,14 @@ export default function FestivalGridPhotoCard({
   const thumbDecoded = Boolean(currentLoaded?.decoded || initialPhotoSize);
   const photoSize = currentLoaded?.size ?? initialPhotoSize;
 
-  const photoLayout = festivalHubPhotoLayout(photoSize?.width, photoSize?.height);
+  const photoLayout = festivalHubPhotoLayout(photoSize?.width, photoSize?.height, {
+    inColumn,
+    slotIndex,
+  });
+  const isWideCard = photoLayout.wide && !inColumn;
+  const photoFitClass = photoLayout.enlargedLandscape
+    ? 'object-cover'
+    : 'object-contain';
 
   const range = formatFestivalDetailDateRange(
     item.eventStartDate,
@@ -106,7 +115,10 @@ export default function FestivalGridPhotoCard({
           : 'border-stone-200 [@media(hover:hover)]:hover:border-amber-300'
       }`}
       data-festival-grid-card=""
-      data-festival-grid-card-wide={photoLayout.wide ? 'true' : undefined}
+      data-festival-grid-card-wide={isWideCard ? 'true' : undefined}
+      data-festival-grid-card-landscape-enlarged={
+        photoLayout.enlargedLandscape ? 'true' : undefined
+      }
       data-festival-grid-card-viewed={viewed ? 'true' : undefined}
     >
       <button
@@ -134,7 +146,7 @@ export default function FestivalGridPhotoCard({
                 fetchPriority={priorityThumb ? 'high' : undefined}
                 decoding="async"
                 referrerPolicy="no-referrer"
-                className={`absolute inset-0 z-[1] h-full w-full object-contain ${viewed ? 'opacity-75 saturate-[.55]' : ''}`}
+                className={`absolute inset-0 z-[1] h-full w-full ${photoFitClass} ${viewed ? 'opacity-75 saturate-[.55]' : ''}`}
                 pendingShimmer={!thumbDecoded}
                 fallback={
                   <span className="absolute inset-0" data-festival-grid-thumb-fallback="">
@@ -180,16 +192,26 @@ export default function FestivalGridPhotoCard({
             </span>
           ) : null}
         </div>
-        <div className="flex min-w-0 flex-col gap-0.5 px-1.5 pb-1.5 pt-1">
+        <div
+          className={`flex min-w-0 flex-col gap-0.5 ${
+            isWideCard ? 'px-3 pb-2.5 pt-2' : 'px-2 pb-2 pt-1.5'
+          }`}
+        >
           {titleLines?.secondary ? (
             <>
               <p
-                className={`text-[11px] font-bold leading-[1.25] line-clamp-2 break-keep ${viewed ? 'text-stone-500' : 'text-stone-900'}`}
+                className={`${
+                  isWideCard ? 'text-[14px]' : 'text-[13px]'
+                } font-bold leading-[1.32] line-clamp-2 break-keep ${
+                  viewed ? 'text-stone-500' : 'text-stone-900'
+                }`}
               >
                 {titleLines.primary}
               </p>
               <p
-                className="text-[10px] font-semibold leading-snug text-stone-600 line-clamp-1 break-keep"
+                className={`${
+                  isWideCard ? 'text-[11.5px]' : 'text-[11px]'
+                } font-semibold leading-snug text-stone-600 line-clamp-1 break-keep`}
                 {...koText}
               >
                 {titleLines.secondary}
@@ -197,7 +219,11 @@ export default function FestivalGridPhotoCard({
             </>
           ) : (
             <p
-              className={`text-[11px] font-bold leading-[1.25] line-clamp-2 break-keep ${viewed ? 'text-stone-500' : 'text-stone-900'}`}
+              className={`${
+                isWideCard ? 'text-[14px]' : 'text-[13px]'
+              } font-bold leading-[1.32] line-clamp-2 break-keep ${
+                viewed ? 'text-stone-500' : 'text-stone-900'
+              }`}
               {...koText}
             >
               {titleLines?.primary}
@@ -205,7 +231,9 @@ export default function FestivalGridPhotoCard({
           )}
           {metaLine ? (
             <p
-              className="text-[10px] leading-snug text-stone-600 line-clamp-1 break-keep tabular-nums"
+              className={`${
+                isWideCard ? 'text-[11.5px]' : 'text-[11px]'
+              } leading-snug text-stone-600 line-clamp-1 break-keep tabular-nums`}
             >
               {metaLine}
             </p>

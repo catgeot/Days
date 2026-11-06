@@ -83,8 +83,8 @@ test('festival grid card uses festivalListDisplayTitleLines for EN titles', () =
   );
   assert.match(grid, /festivalListDisplayTitleLines/);
   assert.doesNotMatch(grid, /\{item\.title\}/);
-  assert.match(grid, /FestivalPhotoFrame[\s\S]*object-contain/);
-  assert.match(grid, /festivalHubPhotoLayout\(photoSize\?\.width, photoSize\?\.height\)/);
+  assert.match(grid, /photoLayout\.enlargedLandscape[\s\S]*object-cover[\s\S]*object-contain/);
+  assert.match(grid, /festivalHubPhotoLayout\(photoSize\?\.width, photoSize\?\.height/);
   assert.match(grid, /photoLayout\.aspectRatio/);
   assert.doesNotMatch(grid, /festivalHubMasonryIsWide|thumbAspectClass/);
   assert.doesNotMatch(grid, /data-festival-grid-thumb-bg/);

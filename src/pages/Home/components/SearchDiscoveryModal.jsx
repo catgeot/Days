@@ -43,6 +43,7 @@ import {
   rememberExploreReturn,
 } from '../lib/exploreReturnSnapshot';
 import { hydrateSearchBoxLatinName } from '../lib/mapboxSearchBox';
+import { attachKoreaTourContentToExplorePin, normalizeExploreSelectionPin } from '../lib/explorePlaceNav';
 import { needsLatinPlaceName } from '../lib/uiPlaceAssetQuery';
 import { syncHomeViewportAfterInput } from '../../../shared/lib/mobileViewport';
 import {
@@ -497,13 +498,32 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, onAskMooni,
         dismissSearchKeyboard();
         return;
       }
+      if (result?.__noResults) {
+        setSearchSubmitError(
+          t('home.explore.searchNoResults', {
+            defaultValue: '「{{query}}」에 맞는 장소를 찾지 못했습니다. 검색어를 바꿔 보세요.',
+            query: finalQuery,
+          }),
+        );
+        setIsSearchHistoryOpen(true);
+        dismissSearchKeyboard();
+        return;
+      }
       if (isSearchDisambiguation(result)) {
         clearExploreReturn();
         setDisambiguation(result);
         dismissSearchKeyboard();
         return;
       }
-      if (!result?.name) clearExploreReturn();
+      if (!result?.name) {
+        setSearchSubmitError(
+          t('home.explore.searchNoResults', {
+            defaultValue: '「{{query}}」에 맞는 장소를 찾지 못했습니다. 검색어를 바꿔 보세요.',
+            query: finalQuery,
+          }),
+        );
+        setIsSearchHistoryOpen(true);
+      }
     } catch (err) {
       console.warn('[SearchDiscovery] onSearch failed', err);
       clearExploreReturn();
@@ -561,6 +581,8 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, onAskMooni,
     if (needsLatinHydrate) setIsAILoading(true);
     try {
       place = await hydrateSearchBoxLatinName(item);
+      place = await attachKoreaTourContentToExplorePin(place);
+      place = normalizeExploreSelectionPin(place);
     } finally {
       if (needsLatinHydrate) setIsAILoading(false);
     }

@@ -80,10 +80,11 @@ export const CLOUD_QA_SHARE_LINKS = [
   },
   {
     slug: 'explore-search',
-    label: '탐색홈 검색 선택 카드',
-    branch: 'main',
-    destination: 'https://www.gateo.kr/explore',
-    active: false,
+    label: '탐색홈 검색 — 지역·Enter·TourAPI (PR #650)',
+    branch: 'cursor/explore-search-fix-bfa1',
+    destination:
+      'https://days-git-cursor-explore-search-fix-bfa1-catgeots-projects.vercel.app/explore',
+    active: true,
   },
   {
     slug: 'gallery-fresh',

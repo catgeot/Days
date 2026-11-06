@@ -516,7 +516,94 @@ export const KO_EXPLORE_SEARCH_ALIASES = [
       also: ['평창 광천선굴'],
     },
   ],
+  [
+    '한라산 백록담',
+    {
+      canonical: '한라산국립공원',
+      contentId: '127635',
+      romanized: 'Hallasan Baengnokdam, Jeju',
+    },
+  ],
+  [
+    '백록담',
+    {
+      canonical: '한라산국립공원',
+      contentId: '127635',
+      also: ['한라산 백록담'],
+    },
+  ],
+  [
+    '화구벽',
+    {
+      canonical: '한라산국립공원',
+      contentId: '127635',
+    },
+  ],
+  [
+    '평양시',
+    {
+      canonical: '평양',
+      romanized: 'Pyongyang, North Korea',
+      placeSlug: 'pyongyang',
+    },
+  ],
+  [
+    '우금치',
+    {
+      canonical: '공주 우금치 전적',
+      contentId: '128113',
+      also: ['공주 우금치'],
+    },
+  ],
+  [
+    '우금치전적',
+    {
+      canonical: '공주 우금치 전적',
+      contentId: '128113',
+      also: ['공주 우금치'],
+    },
+  ],
+  ...expandScenicNameVariants(),
 ];
+
+/**
+ * 탐색 별칭 placeSlug — /place/:slug 직접 열기·새로고침 (카탈로그·cities 미등록).
+ * KO_EXPLORE_SEARCH_ALIASES에는 좌표 금지(health 게이트) — 좌표는 여기만.
+ */
+export const EXPLORE_ALIAS_PLACE_ROUTE_PINS = {
+  pyongyang: {
+    name: '평양',
+    name_en: 'Pyongyang',
+    lat: 39.0392,
+    lng: 125.7625,
+    country: '북한',
+    country_en: 'North Korea',
+  },
+};
+
+/**
+ * 단독 한글 검색(우도·닭머르) — 「제주 우도」 없이도 허브 proximity·부분일치(가우도) 필터.
+ * @type {[string, { hubId: string, regionQuery: string, placeQuery?: string }][]}
+ */
+export const KO_EXPLORE_BARE_PLACE_SCOPES = [
+  ['\uC6B0\uB3C4', { hubId: 'jeju', regionQuery: '\uC81C\uC8FC', placeQuery: '\uC6B0\uB3C4' }],
+  ['\uB2ED\uBA38\uB974', { hubId: 'jeju', regionQuery: '\uC81C\uC8FC', placeQuery: '\uB2ED\uBA38\uB974\uD574\uC548' }],
+];
+
+/**
+ * 방문 기록·TourAPI에 이미 있는 국내 명소의 띄어쓰기·약칭·로마자 표기 → 정식 한글명.
+ * 좌표·새 장소는 넣지 않는다. romanized도 없음: Mapbox 영문 쿼리는 「제주특별자치도」·해외 동명 도시만 돌려준다.
+ */
+function expandScenicNameVariants() {
+  const places = [
+    ['닭머르해안', ['닭머르', '닭머르 해안', '닭머르해안길', 'dakmeoru', 'dakmeoru coast']],
+    ['형제섬', ['hyeongjeseom', 'hyeongje island', 'hyeongjeseom island']],
+    ['추자도', ['추자군도', 'chujado', 'chujado island', 'chuja islands']],
+    ['용눈이오름', ['용눈이', 'yongnuni oreum', 'yongnuni-oreum', 'yongnuni']],
+    ['안면암', ['안면암(태안)', '태안 안면암', 'anmyeonam', 'anmyeonam temple']],
+  ];
+  return places.flatMap(([canonical, keys]) => keys.map((key) => [key, { canonical }]));
+}
 
 /**
  * 6. 국내 장소 갤러리 검색어 오버라이드
@@ -599,6 +686,47 @@ export function resolveKoExploreSearchAlias(query) {
   const k = normalizePlaceMatchKey(query);
   if (!k) return null;
   return KO_EXPLORE_SEARCH_ALIAS_MAP.get(k) || null;
+}
+
+/** Mapbox·geocode 핀 표시명이 SSOT 별칭 canonical과 같을 때 직행할 /place slug */
+export function resolveExploreAliasDirectPlaceSlug(label) {
+  const cfg = resolveKoExploreSearchAlias(label);
+  if (cfg?.placeSlug) return String(cfg.placeSlug).trim();
+  const key = normalizePlaceMatchKey(label);
+  if (!key) return null;
+  for (const row of KO_EXPLORE_SEARCH_ALIAS_MAP.values()) {
+    if (!row?.placeSlug) continue;
+    if (normalizePlaceMatchKey(row.canonical) === key) {
+      return String(row.placeSlug).trim();
+    }
+  }
+  return null;
+}
+
+/** /place/:slug — 탐색 별칭 SSOT (카탈로그·cities 미등록 slug) */
+export function resolveExploreAliasPlaceFromSlug(slug) {
+  const key = String(slug ?? '').trim().toLowerCase();
+  if (!key) return null;
+  const row = EXPLORE_ALIAS_PLACE_ROUTE_PINS[key];
+  if (!row) return null;
+  const lat = Number(row.lat);
+  const lng = Number(row.lng);
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+  return {
+    id: `explore-alias-${key}`,
+    slug: key,
+    canonical_slug: key,
+    name: row.name,
+    name_ko: row.name,
+    name_en: row.name_en || row.name,
+    lat,
+    lng,
+    country: row.country || 'Explore',
+    country_en: row.country_en || 'Explore',
+    uiPlace: true,
+    source: 'explore-alias',
+    type: 'temp-base',
+  };
 }
 
 /**

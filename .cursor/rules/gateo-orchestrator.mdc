@@ -1,11 +1,11 @@
 ---
-description: "오케스트레이터 — 지휘자1+워커N(기본2). 제시어 오케스트레이터/명소-오케스트레이터/맵박스정착지/지자체팔경/팔경contentId"
+description: "오케스트레이터 — 지휘자1+워커N(기본2). 제시어 오케스트레이터/명소-오케스트레이터/맵박스정착지/지자체팔경/팔경contentId/트립닷컴숙소"
 alwaysApply: false
 ---
 
 # 오케스트레이터 세션
 
-사용자가 **`오케스트레이터`** · **`명소-오케스트레이터`** · **`맵박스정착지`** · **`지자체팔경`** · **`팔경contentId`** 를 쓰거나 `@plans/orchestrator-method.md` 를 연결하면 이 규칙을 따른다.  
+사용자가 **`오케스트레이터`** · **`명소-오케스트레이터`** · **`맵박스정착지`** · **`지자체팔경`** · **`팔경contentId`** · **`트립닷컴숙소`** 를 쓰거나 `@plans/orchestrator-method.md` 를 연결하면 이 규칙을 따른다.  
 방법 SSOT: [`plans/orchestrator-method.md`](plans/orchestrator-method.md) **v2.4.1**. Cloud **2회 하드캡 아님**. 워커는 파일+요약 · 커밋은 지휘자.
 
 ## 필수 읽기 (짧게)
@@ -15,6 +15,7 @@ alwaysApply: false
 3. 정착지: [`plans/mapbox-settlement-queue.md`](plans/mapbox-settlement-queue.md) **다음 ⬜ R** + [`mapbox-settlement-plan.md`](plans/mapbox-settlement-plan.md)
 4. 지자체 팔경 **수집**: 종료. 큐 [`korea-local-scenic-lists-queue.md`](plans/korea-local-scenic-lists-queue.md) F 재개 **금지**
 5. 팔경 contentId: 큐 [`korea-local-scenic-contentid-queue.md`](plans/korea-local-scenic-contentid-queue.md) **다음 ⬜** + [`korea-local-scenic-use-plan.md`](plans/korea-local-scenic-use-plan.md) **§9** · method **§5.7**
+5b. 트립닷컴 숙소: 큐 [`tripcom-stay-city-queue.md`](plans/tripcom-stay-city-queue.md) **다음 ⬜** · method **§5.8** · **한 세션 2라운드** · 브랜치 `cursor/tripcom-stay-cities-de61`
 6. [`.ai-context.md`](.ai-context.md) — **§1.5.3** · [`gateo-commit-push.mdc`](gateo-commit-push.mdc) · 관련 금지 1~2줄
 
 **전반 코드베이스 탐색·이전 워커 로그 전체 Read 금지.**
@@ -96,6 +97,13 @@ alwaysApply: false
 - 429 → 큐 `blocked: quota` · 같은 날 재시도 금지  
 - 큐: [`korea-local-scenic-contentid-queue.md`](plans/korea-local-scenic-contentid-queue.md) · S0 후 F  
 - 제시어: `오케스트레이터` + `팔경contentId`
+
+## 트립닷컴 숙소 도시 (§5.8)
+
+- SSOT: `PLANNER_TRIPCOM_HOTEL_CITY_IDS` · 큐 [`tripcom-stay-city-queue.md`](plans/tripcom-stay-city-queue.md) 순서만
+- 한 세션 **2라운드** · IntlCity · 목록에 잡힌 도시만 · 워커 커밋 금지
+- 금지: province · `10279` · 키워드 첫 행 · `honolulu`를 757로 · `raja-ampat` 재시도 · sparse에 city 단정
+- 제시어: `오케스트레이터` + `트립닷컴숙소` · 브랜치 `cursor/tripcom-stay-cities-de61`
 
 ## 세션 종료(체인 끝)
 

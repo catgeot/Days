@@ -40,6 +40,17 @@ const mexicoPrefix = resolveSeaBasinFromQuery('멕시코');
 assert.ok(mexicoPrefix, '멕시코 prefix resolve');
 assert.equal(mexicoPrefix.basin.id, 'gulf-of-mexico');
 
+assert.equal(resolveSeaBasinFromQuery('평양'), null, '평양 must not match 남태평양 (substring)');
+assert.equal(pickSeaBasinCurationSpot('평양'), null, '평양 no sea curation pin');
+const southPacific = resolveSeaBasinFromQuery('남태평양');
+assert.ok(southPacific, '남태평양 exact resolve');
+assert.equal(southPacific.basin.id, 'south-pacific');
+
+assert.equal(resolveSeaBasinFromQuery('대서양')?.basin?.id, 'north-atlantic', '대서양 exact → north-atlantic');
+assert.equal(pickSeaBasinCurationSpot('대서양')?.seaBasinId, 'north-atlantic');
+assert.equal(resolveSeaBasinFromQuery('대서양 화산섬')?.basin?.id, 'macaronesia');
+assert.equal(resolveSeaBasinFromQuery('남대서양')?.basin?.id, 'south-atlantic');
+
 const sargasso = resolveSeaBasinFromQuery('사르가소해');
 assert.equal(sargasso, null, '사르가소해 has no coast spots → null');
 

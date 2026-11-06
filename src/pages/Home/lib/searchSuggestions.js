@@ -19,6 +19,7 @@ import {
   makeDisambiguationResult,
 } from './cityAttractionHubs';
 import { resolveEnglishPlaceLabel } from '../../../components/PlaceCard/common/locationDisplay.js';
+import { rankSiteSearchExploreCandidates } from './siteSearchOpen.js';
 import { isHiddenHubScenicAttraction } from './koreaScenicSpotVisibility.js';
 import { resolveExploreCityHubExact } from './exploreHubResolve.js';
 import {
@@ -43,8 +44,21 @@ import {
 } from './citiesSearch';
 import { searchBoxForward, searchBoxTypesForQuery } from './mapboxSearchBox';
 import { lookupVisitedPlacesForSearch } from './visitedPlaceSearchLookup.js';
+import { dropFarHomonymBusinessHits } from './searchHomonymRegion.js';
 import { overlayGeoFieldsOnVisitedSpots } from './visitedPlaceSearch.js';
-import { buildMapboxSearchQueries } from './exploreSearchAliases';
+import { buildMapboxSearchQueries, canonicalizeExploreSearchQuery } from './exploreSearchAliases';
+import {
+  effectiveExploreSearchQuery,
+  applyRegionalHubLabels,
+  filterRegionalExploreHits,
+  parseKoreaRegionalExploreQuery,
+  parseExploreSearchScope,
+  regionalExploreMapboxOpts,
+} from './exploreRegionalPlaceQuery.js';
+import {
+  resolveKoreaDestinationFirstPassSync,
+  firstPassHitToUiPlace,
+} from './resolveKoreaDestinationFirstPass.js';
 import {
   collectKnownTravelHomonyms,
   homonymIdentityKey,
@@ -96,6 +110,34 @@ function pushUnique(out, seen, item) {
   if (!k || seen.has(k)) return;
   seen.add(k);
   out.push(item);
+}
+
+async function prependKoreaTourTitleCandidates(query, regional, list) {
+  const titleQ = regional
+    ? String(regional.placeQuery || '').trim()
+    : canonicalizeExploreSearchQuery(effectiveExploreSearchQuery(query));
+  if (!titleQ || !/[\uAC00-\uD7A3]/.test(titleQ)) return list;
+  if (/\s/.test(String(query || '').trim()) && !regional?.placeQuery) return list;
+  try {
+    const { collectKoreaTourTitleSearchCandidates } = await import('./exploreKoreaTourTitleCandidates.js');
+    const tourItems = await collectKoreaTourTitleSearchCandidates(
+      regional ? `${regional.regionQuery} ${regional.placeQuery}`.trim() : String(query || '').trim(),
+    );
+    if (!tourItems.length) return list;
+    const merged = [];
+    const seen = new Set();
+    for (const item of tourItems) pushUnique(merged, seen, item);
+    for (const item of list) pushUnique(merged, seen, item);
+    return merged;
+  } catch {
+    return list;
+  }
+}
+
+async function finalizeHybridSuggestions(query, regional, list, max = 24) {
+  const withTour = await prependKoreaTourTitleCandidates(query, regional, list);
+  const enriched = withTour.slice(0, max).map(enrichSearchCandidateScenicMedia);
+  return rankSiteSearchExploreCandidates(query, enriched);
 }
 
 /**
@@ -260,44 +302,57 @@ export function buildLocalSearchSuggestions(query, opts = {}) {
   const q = String(query || '').trim();
   if (!q) return [];
 
+  const regional = opts.regional ?? parseExploreSearchScope(q);
+  const innerQuery = regional ? regional.placeQuery : q;
+  if (regional && !opts._regionalInner) {
+    const inner = buildLocalSearchSuggestions(innerQuery, {
+      ...opts,
+      regional,
+      _regionalInner: true,
+    });
+    return applyRegionalHubLabels(regional, filterRegionalExploreHits(regional, inner))
+      .slice(0, 24)
+      .map(enrichSearchCandidateScenicMedia);
+  }
+
   const spotLimit = opts.spotLimit ?? 5;
-  const lower = q.toLowerCase();
-  const key = normalizeKey(q);
+  const lower = innerQuery.toLowerCase();
+  const key = normalizeKey(innerQuery);
   const out = [];
   const seen = new Set();
 
-  if (shouldOfferKoreaHomonymDisambiguation(q)) {
-    for (const item of collectKoreaHomonymDisambiguationCandidates(q)) {
+  if (shouldOfferKoreaHomonymDisambiguation(innerQuery)) {
+    for (const item of collectKoreaHomonymDisambiguationCandidates(innerQuery)) {
       pushUnique(out, seen, item);
     }
     return out.slice(0, 24).map(enrichSearchCandidateScenicMedia);
   }
 
-  for (const item of buildExploreMonthlyPickSearchSuggestions(q)) {
+  for (const item of buildExploreMonthlyPickSearchSuggestions(innerQuery)) {
     pushUnique(out, seen, item);
   }
 
-  const exactListHit = resolveLocalScenicListFromSearchQuery(q);
+  const exactListHit = resolveLocalScenicListFromSearchQuery(innerQuery);
   const exactHub = exactListHit
     ? exactListHit.hub || resolveCityAttractionHub(exactListHit.list.hubId)
-    : resolveExploreCityHubExact(q);
+    : resolveExploreCityHubExact(innerQuery);
   const exactHubCityQuery =
     Boolean(exactHub) &&
     !exactListHit &&
-    (normalizeKey(q) === normalizeKey(exactHub.name) ||
-      normalizeKey(q) === normalizeKey(exactHub.hubId) ||
-      (exactHub.aliases || []).some((alias) => normalizeKey(alias) === normalizeKey(q)));
+    (normalizeKey(innerQuery) === normalizeKey(exactHub.name) ||
+      normalizeKey(innerQuery) === normalizeKey(exactHub.hubId) ||
+      (exactHub.aliases || []).some((alias) => normalizeKey(alias) === normalizeKey(innerQuery)));
   const scenicLists = exactListHit
     ? [exactListHit.list]
     : exactHub
       ? listsForHub(exactHub.hubId)
       : [];
   const exactAttraction =
-    exactHub || exactListHit ? null : resolveHubAttraction(q);
+    exactHub || exactListHit ? null : resolveHubAttraction(innerQuery);
   const exactSettlement =
-    exactHub || exactListHit || exactAttraction ? null : resolveSettlement(q);
-  const poiType = parseKoreaPoiTypeQuery(q);
-  const { hubs, attractions } = matchCityAttractionHubsPrefix(q, {
+    exactHub || exactListHit || exactAttraction ? null : resolveSettlement(innerQuery);
+  const poiType = parseKoreaPoiTypeQuery(innerQuery);
+  const { hubs, attractions } = matchCityAttractionHubsPrefix(innerQuery, {
     limit: poiType ? 40 : 6,
   });
 
@@ -310,10 +365,10 @@ export function buildLocalSearchSuggestions(query, opts = {}) {
     }
   }
 
-  const officialSpot = poiType ? null : resolveTravelSpotFromSearchQuery(q);
+  const officialSpot = poiType ? null : resolveTravelSpotFromSearchQuery(innerQuery);
   if (officialSpot) pushUnique(out, seen, spotToSuggestion(officialSpot));
   if (!poiType) {
-    for (const extra of collectKnownTravelHomonyms(q, officialSpot ? [officialSpot] : [])) {
+    for (const extra of collectKnownTravelHomonyms(innerQuery, officialSpot ? [officialSpot] : [])) {
       pushUnique(out, seen, extra);
     }
   }
@@ -338,9 +393,9 @@ export function buildLocalSearchSuggestions(query, opts = {}) {
   for (const spot of spotHits) pushUnique(out, seen, spotToSuggestion(spot));
 
   if (!poiType) {
-    const exactCity = findCityBySearchQuery(q);
+    const exactCity = findCityBySearchQuery(innerQuery);
     if (exactCity) pushUnique(out, seen, cityToSuggestion(exactCity));
-    for (const city of matchCitiesPrefix(q, { limit: 4 })) {
+    for (const city of matchCitiesPrefix(innerQuery, { limit: 4 })) {
       pushUnique(out, seen, cityToSuggestion(city));
     }
   }
@@ -384,7 +439,7 @@ export function buildLocalSearchSuggestions(query, opts = {}) {
       );
     }
   } else {
-    const singleHubHit = uniqueHubFromAttractionHits(attractions, q);
+    const singleHubHit = uniqueHubFromAttractionHits(attractions, innerQuery);
     if (!poiType && singleHubHit && hubs.length === 0) {
       pushHubAttractionCluster(singleHubHit.hub, out, seen, {
         preferAttraction: singleHubHit.prefers[0],
@@ -400,13 +455,16 @@ export function buildLocalSearchSuggestions(query, opts = {}) {
       }
     }
     if (!poiType) {
-      for (const { row, settlement } of matchSettlementsPrefix(q, { limit: 4 })) {
+      for (const { row, settlement } of matchSettlementsPrefix(innerQuery, { limit: 4 })) {
         pushUnique(out, seen, settlementToSuggestion(row, settlement));
       }
     }
   }
 
-  return out.slice(0, poiType ? 180 : 24).map(enrichSearchCandidateScenicMedia);
+  return rankSiteSearchExploreCandidates(
+    innerQuery,
+    out.slice(0, poiType ? 180 : 24).map(enrichSearchCandidateScenicMedia),
+  );
 }
 
 /**
@@ -418,25 +476,47 @@ export async function buildHybridSearchSuggestions(query, opts = {}) {
   const q = String(query || '').trim();
   if (!q) return [];
 
+  const regional = parseExploreSearchScope(q);
+  const mapboxQuery = effectiveExploreSearchQuery(q);
+  const regionalMapbox = regionalExploreMapboxOpts(regional);
   const local = buildLocalSearchSuggestions(q, { spotLimit: opts.spotLimit ?? 5 });
   const includeMapbox = opts.includeMapbox !== false;
-  const exactListHit = resolveLocalScenicListFromSearchQuery(q);
+  const exactListHit = resolveLocalScenicListFromSearchQuery(mapboxQuery);
   const exactHub = exactListHit
     ? exactListHit.hub || resolveCityAttractionHub(exactListHit.list.hubId)
-    : resolveExploreCityHubExact(q);
+    : resolveExploreCityHubExact(mapboxQuery);
   const exactAttraction =
-    exactHub || exactListHit ? null : resolveHubAttraction(q);
+    exactHub || exactListHit ? null : resolveHubAttraction(mapboxQuery);
   const exactSettlement =
-    exactHub || exactListHit || exactAttraction ? null : resolveSettlement(q);
+    exactHub || exactListHit || exactAttraction ? null : resolveSettlement(mapboxQuery);
+
+  const applyScope = (list) => {
+    if (!regional?.anchor) return list;
+    return applyRegionalHubLabels(regional, filterRegionalExploreHits(regional, list));
+  };
+
+  const prependScopeSync = (list) => {
+    if (!regional) return list;
+    const sync = resolveKoreaDestinationFirstPassSync(q);
+    if (!sync) return list;
+    const pin = firstPassHitToUiPlace(sync, q);
+    const merged = [];
+    const seenMerge = new Set();
+    pushUnique(merged, seenMerge, pin);
+    for (const item of list) pushUnique(merged, seenMerge, item);
+    return merged;
+  };
 
   if (shouldExpandKoreaPoiTypeSearch(q)) {
     const poi = await collectKoreaPoiTypeSearchCandidates(q);
     const seenPoi = new Set();
     const merged = [];
-    for (const item of [...poi, ...local]) {
+    for (const item of [...poi, ...prependScopeSync(local)]) {
       pushUnique(merged, seenPoi, enrichSearchCandidateScenicMedia(item));
     }
-    if (merged.length >= 1) return merged.slice(0, 180);
+    if (merged.length >= 1) {
+      return finalizeHybridSuggestions(q, regional, applyScope(merged), 180);
+    }
   }
 
   // 허브/명소/정착지/지자체리스트 exact는 큐레이션만 — Mapbox 대기로 지연시키지 않음
@@ -451,22 +531,26 @@ export async function buildHybridSearchSuggestions(query, opts = {}) {
     shouldSkipGeocodeForMood(q) ||
     shouldOfferKoreaHomonymDisambiguation(q)
   ) {
-    return local;
+    return finalizeHybridSuggestions(q, regional, applyScope(prependScopeSync(local)));
   }
 
-  const out = [...local];
-  const seen = new Set(local.map(dedupeKey).filter(Boolean));
+  const mergedLocal = prependScopeSync(local);
+  const out = [...mergedLocal];
+  const seen = new Set(mergedLocal.map(dedupeKey).filter(Boolean));
   const mapboxLimit = opts.mapboxLimit ?? 6;
-  const mapboxQueries = local.length < 3 ? buildMapboxSearchQueries(q) : [q];
-  const searchBoxTypes = searchBoxTypesForQuery(q);
+  const mapboxQueries = local.length < 3 ? buildMapboxSearchQueries(mapboxQuery) : [mapboxQuery];
+  const searchBoxTypes = searchBoxTypesForQuery(mapboxQuery);
 
-  const visitedPromise = lookupVisitedPlacesForSearch(q);
+  const visitedPromise = lookupVisitedPlacesForSearch(
+    canonicalizeExploreSearchQuery(mapboxQuery),
+  );
   try {
     for (const mq of mapboxQueries) {
       const remote = await searchBoxForward(mq, {
         limit: mapboxLimit,
         types: searchBoxTypes,
         language: /[\uAC00-\uD7A3]/.test(mq) ? 'ko' : 'en',
+        ...regionalMapbox,
       });
       for (const item of remote) pushUnique(out, seen, item);
       if (out.length >= 8) break;
@@ -474,10 +558,12 @@ export async function buildHybridSearchSuggestions(query, opts = {}) {
   } catch {
     // degrade: local only
   }
+  let regionChecked = dropFarHomonymBusinessHits(mapboxQuery, out, { anchors: mergedLocal });
+  regionChecked = applyScope(regionChecked);
 
   try {
     const visited = await visitedPromise;
-    const overlaid = overlayGeoFieldsOnVisitedSpots(visited || [], out);
+    const overlaid = overlayGeoFieldsOnVisitedSpots(visited || [], regionChecked);
     const localKeys = new Set(local.map(dedupeKey).filter(Boolean));
     const withVisited = [];
     const visitedSeen = new Set();
@@ -485,10 +571,10 @@ export async function buildHybridSearchSuggestions(query, opts = {}) {
       if (localKeys.has(dedupeKey(item))) continue;
       pushUnique(withVisited, visitedSeen, item);
     }
-    for (const item of out) pushUnique(withVisited, visitedSeen, item);
-    return withVisited.slice(0, 24);
+    for (const item of regionChecked) pushUnique(withVisited, visitedSeen, item);
+    return finalizeHybridSuggestions(q, regional, withVisited);
   } catch {
-    return out.slice(0, 24);
+    return finalizeHybridSuggestions(q, regional, regionChecked);
   }
 }
 
@@ -553,7 +639,7 @@ export function locationToChoiceCandidate(loc) {
     lat,
     lng,
     slug: loc.slug,
-    source: loc.source || 'search',
+    source: loc.source || (String(loc.id || '').startsWith('mapbox-') ? 'mapbox' : 'search'),
     uiPlace: loc.uiPlace,
     desc: loc.desc,
     parentCity: loc.parentCity,
@@ -594,8 +680,10 @@ export async function buildCuratedEnterDisambiguation(query) {
   const q = String(query || '').trim();
   if (!q) return null;
 
-  const listHit = resolveLocalScenicListFromSearchQuery(q);
-  const hubHit = listHit?.hub || resolveExploreCityHubExact(q);
+  const searchQ = effectiveExploreSearchQuery(q);
+
+  const listHit = resolveLocalScenicListFromSearchQuery(searchQ);
+  const hubHit = listHit?.hub || resolveExploreCityHubExact(searchQ);
   if (hubHit) {
     let candidates = await buildHubCandidatesForEnter(hubHit);
     const spot =
@@ -627,7 +715,7 @@ export async function buildCuratedEnterDisambiguation(query) {
     }
   }
 
-  const attractionHit = resolveHubAttraction(q);
+  const attractionHit = resolveHubAttraction(searchQ);
   if (attractionHit) {
     const { hub, attraction } = attractionHit;
     const raw = buildHubDisambiguationCandidates(hub, []);
@@ -643,7 +731,7 @@ export async function buildCuratedEnterDisambiguation(query) {
     );
   }
 
-  const settlementHit = resolveSettlement(q);
+  const settlementHit = resolveSettlement(searchQ);
   if (settlementHit) {
     const { row, settlement } = settlementHit;
     const parentHub = resolveCityAttractionHub(row.hubId);
@@ -662,7 +750,7 @@ export async function buildCuratedEnterDisambiguation(query) {
     );
   }
 
-  const querySpot = resolveTravelSpotFromSearchQuery(q);
+  const querySpot = resolveTravelSpotFromSearchQuery(searchQ);
   if (querySpot) {
     const ssot = [spotToSuggestion(querySpot)];
     const extras = await collectDistinctMapboxHomonyms(q, ssot);
@@ -683,6 +771,14 @@ export async function buildCuratedEnterDisambiguation(query) {
       seaHit.spots.map((spot) => spotToSuggestion(spot)),
       `'${seaHit.basin.name}' 해역 — 여행지를 골라주세요`,
     );
+  }
+
+  try {
+    const { buildKoreaTourTitleEnterDisambiguation } = await import('./exploreKoreaTourTitleCandidates.js');
+    const tourChoice = await buildKoreaTourTitleEnterDisambiguation(q);
+    if (tourChoice) return tourChoice;
+  } catch {
+    // TourAPI offline
   }
 
   return null;

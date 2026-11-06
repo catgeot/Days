@@ -22,7 +22,7 @@ export const TRAVEL_AGENCIES = [
     nameKo: '마이리얼트립',
     nameEn: 'MyRealTrip',
     kinds: ['stay', 'tour', 'package', 'rental'],
-    hosts: ['myrealtrip.com', 'experiences.myrealtrip.com'],
+    hosts: ['myrealtrip.com', 'experiences.myrealtrip.com', 'myrealt.rip'],
   },
   {
     id: 'klook',

@@ -8,7 +8,9 @@
     "noticeDefault": "Opens the partner booking page · price and availability are on their site",
     "noticeNarrow": "Book on the partner site · price and seats are on their site",
     "ctaLodgingHotel": "View hotel & start booking",
+    "ctaLodgingHotelNamed": "{{name}} — view hotel & start booking",
     "ctaLodgingMixed": "View stay & start booking",
+    "ctaLodgingMixedNamed": "{{name}} — view stay & start booking",
     "ctaTourProduct": "View product & start booking",
     "affiliatePartner": "Affiliate · {{partner}}",
     "partnerMyRealTrip": "MyRealTrip"
@@ -635,6 +637,7 @@
       "officialGuide": "Official & licensed info",
       "sparseInfoNote": "Limited online info for this area. Check official tourism guides too.",
       "viewMoreOnMrt": "View more on MyRealTrip",
+      "searchStaysOnTripcom": "Search stays on Trip.com",
       "switchToTour": "Explore things to do nearby",
       "lowInventoryFewBookable": "Few stays are bookable for these dates.",
       "lowInventoryFlexibleShown": "We also show stays that need date changes",
@@ -648,6 +651,7 @@
       "flexibleSectionHint": "Change check-in or check-out to book the stays below",
       "flexibleOnlyHint": "Change dates to book the stays below",
       "loadMore": "Show {{count}} more",
+      "hotelStars": "{{count}}-star",
       "emptyAgencyFallback": "Check trusted official guides and travel agencies below",
       "packageCta": "View {{keyword}} package deals",
       "packageCtaDefault": "View package deals"
