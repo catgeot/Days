@@ -25,6 +25,24 @@ export function resolveGalleryPersistPlaceId(loadedPlaceId, canonicalPlaceId) {
   return String(canonicalPlaceId || '').trim();
 }
 
+/** place_stats 행 place_id가 조회 후보와 불일치하면 갤러리 RPC에 잘못된 키가 들어감 — canonical이 후보에 있으면 우선 */
+export function resolveGalleryPersistPlaceIdForModeration(
+  loadedPlaceId,
+  canonicalPlaceId,
+  dbIdCandidates,
+) {
+  const candidates = Array.isArray(dbIdCandidates)
+    ? dbIdCandidates.map((id) => String(id || '').trim()).filter(Boolean)
+    : [];
+  const loaded = String(loadedPlaceId || '').trim();
+  const canon = String(canonicalPlaceId || '').trim();
+  if (loaded && candidates.length > 0 && !candidates.includes(loaded)) {
+    return canon || loaded;
+  }
+  if (loaded) return loaded;
+  return canon;
+}
+
 /**
  * replace: 숨김 필터를 적용하지 않은 storage 전체.
  * merge_keep_hero / append: fresh만. thumb: null.

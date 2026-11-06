@@ -16,6 +16,7 @@ import {
   GALLERY_REPORT_REASONS,
   buildPersistPlaceGalleryArgs,
   droppedGalleryIds,
+  resolveGalleryPersistPlaceIdForModeration,
   galleryAdminFromProbe,
   galleryModerateFailureReason,
   galleryPersistDropsStoredImages,
@@ -400,6 +401,7 @@ export const usePlaceGallery = (locationSource, options = {}) => {
   const canonicalStatsIdRef = useRef('');
   /** 여행지(slug/id)별 갤러리 새로고침 쿨타임 — 장소 전환 시 다른 여행지에 영향 없음 */
   const lastRefreshAtByPlaceRef = useRef(new Map());
+  const dbIdCandidatesRef = useRef([]);
 
   const ACCESS_KEY = import.meta.env.VITE_UNSPLASH_ACCESS_KEY;
   const PEXELS_KEY = import.meta.env.VITE_PEXELS_API_KEY;
@@ -580,6 +582,7 @@ export const usePlaceGallery = (locationSource, options = {}) => {
         : koreanName
           ? [koreanName]
           : [];
+    dbIdCandidatesRef.current = dbCandidates;
     const fetchKey = `${stablePlaceKey}|${primaryQuery}`;
 
     // 상태 저장을 통한 삭제 시 활용
@@ -1508,9 +1511,10 @@ export const usePlaceGallery = (locationSource, options = {}) => {
     if (!sessionData?.session?.user) {
       return { ok: false, reason: 'login' };
     }
-    const placeId = resolveGalleryPersistPlaceId(
+    const placeId = resolveGalleryPersistPlaceIdForModeration(
       loadedStatsPlaceIdRef.current,
       canonicalStatsIdRef.current,
+      dbIdCandidatesRef.current,
     );
     if (!placeId) return { ok: false, reason: 'missing_ids' };
     const imageUrl = imageToReport.urls?.regular || imageToReport.urls?.small || null;
@@ -1554,9 +1558,10 @@ export const usePlaceGallery = (locationSource, options = {}) => {
   const handleAdminRemoveGalleryImage = useCallback(
     async (imageToRemove) => {
       if (!isGalleryAdmin || !imageToRemove?.id) return { ok: false, reason: 'forbidden' };
-      const placeId = resolveGalleryPersistPlaceId(
+      const placeId = resolveGalleryPersistPlaceIdForModeration(
         loadedStatsPlaceIdRef.current,
         canonicalStatsIdRef.current,
+        dbIdCandidatesRef.current,
       );
       if (!placeId) return { ok: false, reason: 'missing' };
       const { data, error } = await supabase.functions.invoke('gallery-moderate', {
