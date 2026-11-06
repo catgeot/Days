@@ -8,7 +8,8 @@ export const EXPLORE_MONTHLY_PICK_VERIFIED_HERO_URLS = {
     'https://upload.wikimedia.org/wikipedia/commons/thumb/3/32/Yi_Peng_lanterns_in_Chiang_Mai_%2811067469754%29.jpg/1280px-Yi_Peng_lanterns_in_Chiang_Mai_%2811067469754%29.jpg',
   'phu-quoc':
     'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0d/Beautiful_beach_on_Phu_Quoc_island_Vietnam_%2839543775721%29.jpg/1280px-Beautiful_beach_on_Phu_Quoc_island_Vietnam_%2839543775721%29.jpg',
-  jeju: 'https://tong.visitkorea.or.kr/cms2/website/26/1921326.jpg',
+  jeju:
+    'https://upload.wikimedia.org/wikipedia/commons/thumb/d/dc/Silver_Grass%2C_Sangumburi%2C_Jeju_%28%EC%96%B5%EC%83%88%2C_%EC%A0%9C%EC%A3%BC_%EC%82%B0%EA%B5%BC%EB%B6%80%EB%A6%AC%29_-_panoramio.jpg/1280px-Silver_Grass%2C_Sangumburi%2C_Jeju_%28%EC%96%B5%EC%83%88%2C_%EC%A0%9C%EC%A3%BC_%EC%82%B0%EA%B5%BC%EB%B6%80%EB%A6%AC%29_-_panoramio.jpg',
   dubai:
     'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Dubai_Marina_Skyline.jpg/1280px-Dubai_Marina_Skyline.jpg',
   melbourne:
@@ -30,7 +31,7 @@ export const EXPLORE_MONTHLY_PICK_HERO_INTRINSIC_SIZE = {
   kyoto: { width: 1280, height: 853 },
   'chiang-mai': { width: 1280, height: 854 },
   'phu-quoc': { width: 1280, height: 853 },
-  jeju: { width: 1280, height: 853 },
+  jeju: { width: 1280, height: 686 },
   dubai: { width: 1280, height: 853 },
   melbourne: { width: 1280, height: 960 },
 };
@@ -57,10 +58,10 @@ export const EXPLORE_MONTHLY_PICK_PHOTO_CREDIT = {
       'https://commons.wikimedia.org/wiki/File:Beautiful_beach_on_Phu_Quoc_island_Vietnam_%2839543775721%29.jpg',
   },
   jeju: {
-    ko: '한국관광공사 VisitJeju 매체 — 이용·표기는 출처 페이지 안내에 따름',
-    en: 'KTO VisitJeju media — see source page for terms',
+    ko: '저작 골뱅이 (Panoramio) · CC BY-SA 3.0 · 2차 저작(크롭) 표시',
+    en: 'By 골뱅이 (Panoramio) · CC BY-SA 3.0 · cropped (derivative)',
     filePageUrl:
-      'https://www.visitjeju.net/kr/detail/view?contentsid=CONT_000000000500309',
+      'https://commons.wikimedia.org/wiki/File:Silver_Grass,_Sangumburi,_Jeju_(%EC%96%B5%EC%83%88,_%EC%A0%9C%EC%A3%BC_%EC%82%B0%EA%B5%BC%EB%B6%80%EB%A6%AC)_-_panoramio.jpg',
   },
   dubai: {
     ko: '저작 Norlando Pobre · CC BY 2.0',

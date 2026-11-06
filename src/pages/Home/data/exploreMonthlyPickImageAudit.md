@@ -23,15 +23,19 @@ Commons 작가·라이선스·원문 설명은 2026-11-07 `commons.wikimedia.org
 | kyoto | Luka Peternel (User:Path-x21) | CC BY-SA 4.0 | https://commons.wikimedia.org/wiki/File:Tofukuji-maple-autumn-2017-Luka-Peternel.jpg | https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Tofukuji-maple-autumn-2017-Luka-Peternel.jpg/1280px-Tofukuji-maple-autumn-2017-Luka-Peternel.jpg | 5472×3648 | 도후쿠지 츠텐교·가을 단숲(파일 설명) |
 | chiang-mai | Nik Cyclist (Flickr) | CC BY 2.0 | https://commons.wikimedia.org/wiki/File:Yi_Peng_lanterns_in_Chiang_Mai_%2811067469754%29.jpg | https://upload.wikimedia.org/wikipedia/commons/thumb/3/32/Yi_Peng_lanterns_in_Chiang_Mai_%2811067469754%29.jpg/1280px-Yi_Peng_lanterns_in_Chiang_Mai_%2811067469754%29.jpg | 2000×1334 | 치앙마이 이펭 랜턴(파일 설명) |
 | phu-quoc | dronepicr (Flickr) | CC BY 2.0 | https://commons.wikimedia.org/wiki/File:Beautiful_beach_on_Phu_Quoc_island_Vietnam_%2839543775721%29.jpg | https://upload.wikimedia.org/wikipedia/commons/thumb/0/0d/Beautiful_beach_on_Phu_Quoc_island_Vietnam_%2839543775721%29.jpg/1280px-Beautiful_beach_on_Phu_Quoc_island_Vietnam_%2839543775721%29.jpg | 5313×3542 | 푸꾸옥 해변(파일 제목·설명) |
-| jeju | (매체 출처 VisitJeju — 저작자 표기는 [제주관광공사 매체·저작권 안내](https://www.visitjeju.net/kr/yy/kr/dcyc.ynych?menuId=DOM00000090164000100)에서 확인) | 이용약관·매체 정채(별도 확인 필요) | 카드 정책 출처: https://www.visitjeju.net/kr/detail/view?contentsid=CONT_000000000500309 | https://tong.visitkorea.or.kr/cms2/website/26/1921326.jpg | 1280×853 (`ffprobe`) | 제주 오름·가을(카드 문구는 spotTraits·추정 배지) |
+| jeju | 골뱅이 (Panoramio, Commons `Artist`) | CC BY-SA 3.0 (`LicenseShortName` / Panoramio 검수 기록) | https://commons.wikimedia.org/wiki/File:Silver_Grass,_Sangumburi,_Jeju_(%EC%96%B5%EC%83%88,_%EC%A0%9C%EC%A3%BC_%EC%82%B0%EA%B5%BC%EB%B6%80%EB%A6%AC)_-_panoramio.jpg | https://upload.wikimedia.org/wikipedia/commons/thumb/d/dc/Silver_Grass%2C_Sangumburi%2C_Jeju_%28%EC%96%B5%EC%83%88%2C_%EC%A0%9C%EC%A3%BC_%EC%82%B0%EA%B5%BC%EB%B6%80%EB%A6%AC%29_-_panoramio.jpg/1280px-Silver_Grass%2C_Sangumburi%2C_Jeju_%28%EC%96%B5%EC%83%88%2C_%EC%A0%9C%EC%A3%BC_%EC%82%B0%EA%B5%BC%EB%B6%80%EB%A6%AC%29_-_panoramio.jpg | 원본 1600×857 (`commons imageinfo`) · 렌더 1280px 썸 (`ffprobe`) | 제주 산굼부리(Sangumburi) 억새 — 파일 설명·좌표(Commons). 카드 카피는 spotTraits 가을 오름·억새. 방문 시기는 카드에 **추정** 배지 |
 | dubai | Norlando Pobre | CC BY 2.0 | https://commons.wikimedia.org/wiki/File:Dubai_Marina_Skyline.jpg | https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Dubai_Marina_Skyline.jpg/1280px-Dubai_Marina_Skyline.jpg | 6000×4000 | 두바이 마리나(파일 설명) |
 | melbourne | Jupiter Firelyte (Flickr) | CC BY 2.0 | https://commons.wikimedia.org/wiki/File:Flemington_main_stand%2C_2013_Melbourne_Cup.jpg | https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Flemington_main_stand,_2013_Melbourne_Cup.jpg/1280px-Flemington_main_stand,_2013_Melbourne_Cup.jpg | 1400×1050 | 2013 멜버른컵 당시 Flemington 스탠드(파일 설명) |
 
 ---
 
+## Commons 5장 재대조 (제주 교체 외 변경 없음)
+
+2026-11-06 `commons.wikimedia.org/w/api.php` `query` + `prop=imageinfo` + `iiprop=extmetadata|url|size` 스냅샷으로 `kyoto`·`chiang-mai`·`phu-quoc`·`dubai`·`melbourne` 파일 페이지의 `Artist`·`LicenseShortName`(또는 동등)·원본 `width`×`height`가 위 표와 일치함을 확인. 세부 JSON·명령은 검증 묶음 `explore-monthly-verify-pack.md` 참고.
+
 ## UI 표시
 
-카드 하단에 **저작·라이선스 한 줄**과 **파일/정책 페이지 링크**를 렌더한다 (`ExploreMonthlyPickItem.jsx`, `EXPLORE_MONTHLY_PICK_PHOTO_CREDIT`). 카피·링크는 한/영 UI에 맞게 전환한다.
+카드 하단에 **저작·라이선스 한 줄**과 **파일/정책 페이지 링크**를 렌더한다 (`ExploreMonthlyPickItem.jsx`, `EXPLORE_MONTHLY_PICK_PHOTO_CREDIT`). **CC BY(-SA)는 저작자 표시·라이선스 링크·SA/변경 표시** 요건을 안내 문구에 포함(제주: 크롭 사용으로 「2차 저작(크롭)」 명시). 카피·링크는 한/영 UI에 맞게 전환한다.
 
 ## 래스터 확대
 
