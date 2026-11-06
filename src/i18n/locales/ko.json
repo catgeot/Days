@@ -8,7 +8,9 @@
     "noticeDefault": "파트너 예약 페이지로 이동합니다 · 가격·잔여석은 그쪽 기준",
     "noticeNarrow": "파트너에서 예약합니다 · 가격·자리는 그쪽 기준",
     "ctaLodgingHotel": "호텔 보고 예약 시작",
+    "ctaLodgingHotelNamed": "{{name}} — 호텔 보고 예약 시작",
     "ctaLodgingMixed": "숙소 보고 예약 시작",
+    "ctaLodgingMixedNamed": "{{name}} — 숙소 보고 예약 시작",
     "ctaTourProduct": "상품 보고 예약 시작",
     "affiliatePartner": "제휴 · {{partner}}",
     "partnerMyRealTrip": "마이리얼트립"
@@ -419,6 +421,7 @@
       "flexibleSectionHint": "아래 숙소는 체크인·체크아웃을 바꾸면 예약할 수 있어요",
       "flexibleOnlyHint": "체크인·체크아웃을 바꾸면 아래 숙소를 예약할 수 있어요",
       "loadMore": "{{count}}곳 더 보기",
+      "hotelStars": "{{count}}성급",
       "emptyAgencyFallback": "아래 공신력 있는 안내·여행사로 루트를 확인해 보세요",
       "packageCta": "{{keyword}} 패키지 상품보기",
       "packageCtaDefault": "패키지 상품보기"
