@@ -60,6 +60,15 @@ const socialPromoFestivals = JSON.parse(
 const NOW = new Date('2026-10-10T03:00:00Z');
 
 const GUKHYANG = manualFestivalListItem(getManualFestivalEntry('638576'));
+const MASAN_PROMO_ENTRY = socialPromoFestivals[0];
+assert.equal(MASAN_PROMO_ENTRY.contentId, '637693');
+const GUKHYANG_PROMO_ENTRY = {
+  contentId: '638576',
+  showFrom: '2026-10-01',
+  showUntil: '2026-11-15',
+};
+/** Dual-slot promo config (legacy); SSOT JSON is single Masan card only. */
+const TWO_PROMO_ENTRIES = [GUKHYANG_PROMO_ENTRY, MASAN_PROMO_ENTRY];
 
 test('session pin helpers dedupe list row and keep contentId', () => {
   const pin = festivalItemForSessionPin({
@@ -80,20 +89,33 @@ test('session pin helpers dedupe list row and keep contentId', () => {
 });
 
 test('promo window and ended festival auto-hide', () => {
-  const entry = socialPromoFestivals[0];
+  const entry = MASAN_PROMO_ENTRY;
+  assert.equal(entry.showUntil, '2026-11-08');
   assert.equal(isSocialPromoEntryInWindow(entry, NOW), true);
-  assert.equal(isYmdWithinInclusive('20261010', '20261001', '20261115'), true);
-  assert.equal(isYmdWithinInclusive('20260930', '20261001', '20261115'), false);
+  assert.equal(isYmdWithinInclusive('20261108', '20261001', '20261108'), true);
+  assert.equal(isYmdWithinInclusive('20261109', '20261001', '20261108'), false);
   assert.equal(
     shouldShowSocialPromoItem(
-      { ...GUKHYANG, eventEndDate: '20261009' },
+      { contentId: '637693', eventEndDate: '20261009' },
       entry,
       NOW,
     ),
     false,
   );
-  assert.equal(shouldShowSocialPromoItem(GUKHYANG, entry, NOW), true);
-  const afterShowUntil = new Date('2026-11-20T03:00:00Z');
+  assert.equal(
+    shouldShowSocialPromoItem(
+      {
+        contentId: '637693',
+        title: '마산',
+        eventStartDate: '20261031',
+        eventEndDate: '20261108',
+      },
+      entry,
+      NOW,
+    ),
+    true,
+  );
+  const afterShowUntil = new Date('2026-11-09T03:00:00Z');
   assert.equal(isSocialPromoEntryInWindow(entry, afterShowUntil), false);
 });
 
@@ -109,12 +131,12 @@ test('promo row stays loading until every configured slot resolves (JSON order)'
       },
     ],
   ]);
-  const loading = resolveSocialPromoRow(socialPromoFestivals, partial, NOW, 2);
+  const loading = resolveSocialPromoRow(TWO_PROMO_ENTRIES, partial, NOW, 2);
   assert.equal(loading.status, 'loading');
   assert.equal(loading.cards.length, 2);
   assert.equal(loading.cards[0].entry.contentId, '638576');
   assert.equal(loading.cards[1].entry.contentId, '637693');
-  assert.equal(pickVisibleSocialPromoCards(socialPromoFestivals, partial, NOW, 2).length, 0);
+  assert.equal(pickVisibleSocialPromoCards(TWO_PROMO_ENTRIES, partial, NOW, 2).length, 0);
 
   const full = new Map([
     ['638576', GUKHYANG],
@@ -128,10 +150,15 @@ test('promo row stays loading until every configured slot resolves (JSON order)'
       },
     ],
   ]);
-  const ready = resolveSocialPromoRow(socialPromoFestivals, full, NOW, 2);
+  const ready = resolveSocialPromoRow(TWO_PROMO_ENTRIES, full, NOW, 2);
   assert.equal(ready.status, 'ready');
   assert.equal(ready.cards[0].item.contentId, '638576');
   assert.equal(ready.cards[1].item.contentId, '637693');
+
+  const masanOnlyLoading = resolveSocialPromoRow(socialPromoFestivals, new Map(), NOW, 2);
+  assert.equal(masanOnlyLoading.status, 'loading');
+  assert.equal(masanOnlyLoading.cards.length, 1);
+  assert.equal(masanOnlyLoading.cards[0].entry.contentId, '637693');
 });
 
 test('promo row caps at two cards', () => {
@@ -156,7 +183,7 @@ test('promo row caps at two cards', () => {
       },
     ],
   ]);
-  const cards = pickVisibleSocialPromoCards(socialPromoFestivals, map, NOW, 2);
+  const cards = pickVisibleSocialPromoCards(TWO_PROMO_ENTRIES, map, NOW, 2);
   assert.equal(cards.length, 2);
   assert.equal(cards[0].item.contentId, '638576');
   assert.equal(cards[1].item.contentId, '637693');
@@ -349,7 +376,7 @@ test('instagram session: record, dismiss, persistence', () => {
 
 test('promo strip only on default region chip for instagram; filterSocialPromoCardsByRegion still filters', () => {
   const ready = resolveSocialPromoRow(
-    socialPromoFestivals,
+    TWO_PROMO_ENTRIES,
     new Map([
       ['638576', GUKHYANG],
       [
@@ -438,7 +465,7 @@ test('promo strip only on default region chip for instagram; filterSocialPromoCa
 
 test('promo strip is this month only; 내 주변 is one nearest line', () => {
   const ready = resolveSocialPromoRow(
-    socialPromoFestivals,
+    TWO_PROMO_ENTRIES,
     new Map([
       ['638576', GUKHYANG],
       [
@@ -515,18 +542,29 @@ test('promo strip is this month only; 내 주변 is one nearest line', () => {
 
 test('merge adds configured IDs once and search finds 국향', () => {
   const base = [
-    { contentId: '637693', title: '마산가고파국화축제', eventStartDate: '20261031', eventEndDate: '20261108' },
+    { contentId: '999', title: '기타', eventStartDate: '20261101', eventEndDate: '20261102' },
   ];
-  const supplemental = new Map([['638576', GUKHYANG]]);
+  const supplemental = new Map([
+    ['638576', GUKHYANG],
+    [
+      '637693',
+      {
+        contentId: '637693',
+        title: '마산가고파국화축제',
+        eventStartDate: '20261031',
+        eventEndDate: '20261108',
+      },
+    ],
+  ]);
   const merged = mergeSocialPromoIntoFestivalItems(
     base,
-    socialPromoFestivals,
+    TWO_PROMO_ENTRIES,
     supplemental,
     NOW,
   );
-  assert.equal(merged.length, 2);
+  assert.equal(merged.length, 3);
   const ids = merged.map((row) => row.contentId);
-  assert.deepEqual(ids.sort(), ['637693', '638576']);
+  assert.deepEqual(ids.sort(), ['637693', '638576', '999']);
   assert.equal(
     merged.find((r) => r.contentId === '638576').detailAsOf.checkedOnDate,
     '2026.10.13',
@@ -534,15 +572,27 @@ test('merge adds configured IDs once and search finds 국향', () => {
 
   const mergedAgain = mergeSocialPromoIntoFestivalItems(
     merged,
-    socialPromoFestivals,
+    TWO_PROMO_ENTRIES,
     supplemental,
     NOW,
   );
-  assert.equal(mergedAgain.length, 2);
+  assert.equal(mergedAgain.length, 3);
 
   const hits = filterBySearchQuery(merged, '국향');
   assert.equal(hits.length, 1);
   assert.equal(hits[0].contentId, '638576');
+
+  const masanOnlyMerge = mergeSocialPromoIntoFestivalItems(
+    base,
+    socialPromoFestivals,
+    supplemental,
+    NOW,
+  );
+  assert.equal(masanOnlyMerge.length, 2);
+  assert.deepEqual(
+    masanOnlyMerge.map((r) => r.contentId).sort(),
+    ['637693', '999'],
+  );
 });
 
 test('chip pool excludes all configured promo IDs while a regional chip is active', () => {
