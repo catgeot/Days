@@ -25,7 +25,10 @@ export function resolveGalleryPersistPlaceId(loadedPlaceId, canonicalPlaceId) {
   return String(canonicalPlaceId || '').trim();
 }
 
-/** place_stats 행 place_id가 조회 후보와 불일치하면 갤러리 RPC에 잘못된 키가 들어감 — canonical이 후보에 있으면 우선 */
+/**
+ * 신고·gallery-moderate body.placeId — place_stats에서 고른 id가 후보 집합과 어긋나면 canonical을 쓰되,
+ * canonical도 후보에 없으면 loaded를 유지(무작정 canonical로 다른 행에 쏘지 않음).
+ */
 export function resolveGalleryPersistPlaceIdForModeration(
   loadedPlaceId,
   canonicalPlaceId,
@@ -36,9 +39,12 @@ export function resolveGalleryPersistPlaceIdForModeration(
     : [];
   const loaded = String(loadedPlaceId || '').trim();
   const canon = String(canonicalPlaceId || '').trim();
-  if (loaded && candidates.length > 0 && !candidates.includes(loaded)) {
-    return canon || loaded;
+  if (candidates.length === 0) {
+    if (loaded) return loaded;
+    return canon;
   }
+  if (loaded && candidates.includes(loaded)) return loaded;
+  if (canon && candidates.includes(canon)) return canon;
   if (loaded) return loaded;
   return canon;
 }
