@@ -104,9 +104,19 @@ test.describe('GlobeStayStrip list partner notice', () => {
     await expect(page.getByText('4성급').first()).toBeVisible();
     await expect(page.getByText('5성급').first()).toBeVisible();
 
-    const cta = page.getByRole('link', { name: '호텔 보고 예약 시작' }).first();
-    await expect(cta).toBeVisible();
-    await expect(cta).toHaveAttribute('href', /1190340/);
+    await expect(page.getByRole('link', { name: '호텔 보고 예약 시작' })).toHaveCount(4);
+    await expect(page.getByRole('link', { name: '호텔 보고 예약 시작' }).first()).toHaveAttribute(
+      'href',
+      /1190340/,
+    );
+
+    const cardLinks = page.getByRole('dialog', { name: '숙소 전체 목록' }).locator(
+      'a[data-partner-booking-handoff="cta"]',
+    );
+    await expect(cardLinks).toHaveCount(4);
+    await expect(page.getByText('호텔 보고 예약 시작', { exact: true })).toHaveCount(0);
+    await expect(cardLinks.first()).toHaveAttribute('aria-label', /칸지 카타라타스 호텔/);
+    await expect(cardLinks.first()).toHaveAttribute('aria-label', /호텔 보고 예약 시작/);
 
     await page.screenshot({
       path: '/opt/cursor/artifacts/stay-list-card-readability-390-iguazu.png',
@@ -174,11 +184,57 @@ test.describe('GlobeStayStrip list partner notice', () => {
     await expect(page.getByText('No image')).toBeVisible();
     await expect(page.getByText('5성급')).toHaveCount(1);
 
-    const href = await page
-      .getByRole('link', { name: '호텔 보고 예약 시작' })
-      .first()
-      .getAttribute('href');
-    expect(href).toMatch(/1190343/);
+    await expect(
+      page.locator('a[data-partner-booking-handoff="cta"][href*="9999001"]'),
+    ).toHaveCount(1);
+
+    await page.screenshot({
+      path: '/opt/cursor/artifacts/stay-card-image-link-mock-regression-390.png',
+      clip: { x: 0, y: 0, width: 390, height: 844 },
+    });
+  });
+
+  test('390 — 카드 링크 focus·sponsored·Enter (mock)', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await goHomeFromPlace(page, '/place/iguazu-falls?lang=ko', '이구아수 폭포');
+    await openStayListMobile(page, { findStays: '숙소 찾기', dialogName: '숙소 전체 목록' });
+    const link = page.locator('a[data-partner-booking-handoff="cta"]').first();
+    await link.focus();
+    await expect(link).toBeFocused();
+    await expect(link).toHaveAttribute('rel', /sponsored/);
+
+    let popupCount = 0;
+    page.on('popup', () => {
+      popupCount += 1;
+    });
+    await link.evaluate((el) => {
+      el.addEventListener(
+        'click',
+        (e) => {
+          e.preventDefault();
+        },
+        { once: true },
+      );
+    });
+    await page.keyboard.press('Enter');
+    await page.waitForTimeout(400);
+    expect(popupCount).toBe(0);
+  });
+
+  test('390 — 일정조정 카드 링크·aria (mock)', async ({ page }) => {
+    const payload = {
+      ...MRT_STAY_IGUAZU_CONTRACT_FIXTURE,
+      items: [MRT_STAY_MISSING_PRICE_ITEM],
+      totalCount: 1,
+    };
+    await mockStays(page, payload);
+    await page.setViewportSize({ width: 390, height: 844 });
+    await goHomeFromPlace(page, '/place/iguazu-falls?lang=ko', '이구아수 폭포');
+    await openStayListMobile(page, { findStays: '숙소 찾기', dialogName: '숙소 전체 목록' });
+    const link = page.locator('a[data-partner-booking-handoff="cta"]').first();
+    await expect(link).toHaveAttribute('href', /9999002/);
+    await expect(link).toHaveAttribute('aria-label', /가격 없음 계약 숙소/);
+    await expect(page.getByText('일정 조정 후 예약')).toBeVisible();
   });
 
   test('이구아수 fixture — distanceLabel 없음(좌표 없음)', async ({ page }) => {
