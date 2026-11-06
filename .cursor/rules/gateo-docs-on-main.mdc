@@ -9,12 +9,14 @@ alwaysApply: true
 
 ## 분리 (오해 금지)
 
-| | 어디 | push |
-|--|------|------|
-| **로직·UI·`src/`·스크립트·SSOT 데이터** | 고정 **feature** `cursor/…` | **feature** (Cloud 매 턴) |
-| **핸드오프 문서** | **`main`에서만 커밋** | **`origin/main` docs-only** — feature 세션 **종료 시 즉시** |
+| | 어디 | `origin`에 올리는 방법 |
+|--|------|------------------------|
+| **로직·UI·`src/`·스크립트·SSOT 데이터** | 고정 **feature** `cursor/…` | **feature push** (Cloud 매 턴) |
+| **핸드오프 문서** | **문서 파일만** (`plans/**` 등) | **`docs/…` 브랜치 → docs 전용 PR → squash auto-merge**(또는 검사 통과 후 squash) |
 
 **문서** = `plans/**` · `feature-handoff-index.md` · 플랜 §9 · `.ai-context` · `AGENTS.md` · `.cursor/rules/**`
+
+**`origin/main`에 문서 직접 push 금지** (브랜치 보호·필수 검사 `Festival hero credit E2E (WebKit)` · GH006). GH006 우회·force·admin bypass 시도 금지.
 
 ## Cloud feature 세션
 
@@ -23,13 +25,15 @@ alwaysApply: true
 **종료** (생략 금지):
 
 1. feature: 검증 PASS → **코드만** 커밋 → **feature push** (`plans/**` 커밋 **금지**)
-2. `checkout main` → 핸드오프·일지·§9 갱신 → docs-only 커밋 → **`push origin main`**
-3. `checkout feature` → **`merge origin/main`** → **`npm run audit:docs-handoff-sync`**
+2. `checkout main && pull` → 핸드오프·일지·§9만 갱신 → **`docs/<짧은-슬러그>` 브랜치**에 docs-only 커밋 → push → **docs 전용 PR** → **squash auto-merge 켜기**(저장소가 허용할 때). 금지 시간(17–19·01:30–04:30 KST)에는 **auto-merge만** 켜 두고 수동 머지 금지. auto-merge 불가·미허용이면 필수 검사 통과 후 허용 시간에 squash 머지.
+3. PR이 `main`에 머지된 뒤: `checkout feature` → **`merge origin/main`** → **`npm run audit:docs-handoff-sync`**
 
 ## 금지
 
 - `main`에서 feature 코드 수정 (§1.5.2 짧은 예외 제외)
-- **feature 브랜치에 `plans/**` 커밋** (충돌 원인 — §충돌 방지)
-- `main` docs push **후** feature `merge origin/main` **생략**
+- **feature 브랜치에 `plans/**` 커밋** (충돌 원인)
+- docs PR에 **코드 파일 섞기** · 같은 내용 **중복 PR**
+- `origin/main` **직접 push** · GH006 우회
+- docs 머지 **후** feature `merge origin/main` **생략**
 - 「main push 허가」를 **docs-only**에 요청
 - `main` 체크아웃인데 `src/` grep·수정으로 feature 작업 대체
