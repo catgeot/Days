@@ -68,7 +68,7 @@ Cloud/Cursor에서 **새 채팅을 만들 때** 사람이 제목·첫 프롬프�
 2. `plans/YYYY-MM-DD-project-log.md` 2~5줄
 3. [`feature-handoff-index.md`](./feature-handoff-index.md) 해당 행 (tip·Preview·**다음 제시어**)
 
-**main 핸드오프 동기화** (§6 · **필수**): 문서 3종은 feature에만 두지 말고 **`main` + `origin/main`** — [`docs-on-main-workflow.md`](./docs-on-main-workflow.md). **docs-only push = 세션 종료 시 즉시**(허가·QA 없음). **코드** `origin/main` = PR·사람 요청.
+**main 핸드오프 동기화** (§6 · **필수**): 문서 3종은 feature에만 두지 말고 **`main`에 반영** — [`docs-on-main-workflow.md`](./docs-on-main-workflow.md). **docs 전용 PR(`docs/…`) + squash auto-merge = 세션 종료 시 즉시**(허가·QA 없음 · **`origin/main` 직푸시 금지**). **코드** `origin/main` = PR·사람 요청.
 
 ### 1.3 다세션 플랜 작성 · Plan 아티팩트 (필수)
 
@@ -77,7 +77,7 @@ Cloud/Cursor에서 **새 채팅을 만들 때** 사람이 제목·첫 프롬프�
 | 시점 | 에이전트 |
 |------|----------|
 | **플랜 확정·방향 전환** | 계획 본문 말미에 **표준 제시어 #N~** + **docs-on-main** 절 포함 (선례: [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) Phase F-0.5) |
-| **같은 턴 또는 직후** | `checkout main` → 플랜·index·일지 갱신 → **`push origin main`** (코드 없어도 필수) |
+| **같은 턴 또는 직후** | `checkout main` → 플랜·index·일지 갱신 → **`docs/…` PR + squash auto-merge**(코드 없어도 필수 · 직푸시 금지) |
 | **구현 착수** | index **다음 제시어**·플랜 §9가 `origin/main`에 있는지 확인 → feature checkout → `merge origin/main` → `audit:docs-handoff-sync` |
 
 **다세션 Cloud feature 플랜 필수 절** (말미 체크리스트):
@@ -100,7 +100,7 @@ Cloud/Cursor에서 **새 채팅을 만들 때** 사람이 제목·첫 프롬프�
 작업: …
 ```
 
-**금지**: Plan 아티팩트만 읽고 repo `plans/` 미동기화 상태로 구현 · 플랜 세션만 끝내고 **main docs push 생략**.
+**금지**: Plan 아티팩트만 읽고 repo `plans/` 미동기화 상태로 구현 · 플랜 세션만 끝내고 **docs 전용 PR 생략**.
 
 **복붙용 예 (해안해양)**
 
@@ -236,7 +236,7 @@ feature 코드는 브랜치에만 있어도 되지만, **맥락 문서가 `origi
 1. **feature**: 검증 PASS → **코드만** 커밋 → **`git push origin <feature>`** — **`plans/**` 커밋 금지**
 2. **`git checkout main && git pull origin main`**
 3. 인덱스·§9·일지 갱신 후 **docs-only 커밋** — **코드 파일을 `main`에 넣지 않음**
-4. **`git push origin main`** — **docs-only** · Preview QA·허가 **불필요**
+4. **`docs/<슬러그>` 브랜치 → docs 전용 PR → squash auto-merge**(또는 검사 통과 후 squash) — **docs-only** · Preview QA·허가 **불필요** · **`git push origin main` 직푸시 금지**
 5. **`git checkout <feature> && git merge origin/main`**
 6. **`npm run audit:docs-handoff-sync`** PASS — FAIL이면 5번부터
 
