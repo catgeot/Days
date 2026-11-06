@@ -27,13 +27,13 @@ city ID를 넣으면 부작용이 있다. 플래너 숙소 카드에 `[@지역@]
 
 ## 배치 1 (R01–R02 기록)
 
-23곳 연결, `raja-ampat` 보류(와이사이는 서파푸아). ID와 관문 도시는 `affiliate.js` 주석과 일지. R03–R04는 PR #665. R05–R08은 PR #672. 다음 세션은 큐 **R09**부터 라운드 2개.
+23곳 연결, `raja-ampat` 보류(와이사이는 서파푸아). ID와 관문 도시는 `affiliate.js` 주석과 일지. R03–R04는 PR #665. R05–R08은 PR #672. R09–R10은 PR #677. 다음 세션은 큐 **R11**부터 라운드 2개.
 
 제도·섬·권역. 하와이처럼 도시 이름이 아니라 세션 잔존이 나기 쉽다.
 
 `guam` `maldives` `seychelles` `palawan` `canary-islands` `galapagos` `mauritius` `zanzibar` `new-caledonia` `saipan` `okinawa` `hokkaido` `phuket` `boracay` `cebu` `crete` `sicily` `madeira` `bahamas` `cape-verde` `la-reunion` `uyuni-salt-flat` `komodo-island` `raja-ampat`
 
-R03–R08은 목록에 잡힌 도시만 연결했다. 남은 곳은 큐 R09부터다. 한 세션에 220곳을 라이브로 보지 않는다.
+R03–R10은 목록에 잡힌 도시만 연결했다. 남은 곳은 큐 R11부터다. 한 세션에 220곳을 라이브로 보지 않는다.
 
 ## 기록
 
@@ -41,6 +41,6 @@ R03–R08은 목록에 잡힌 도시만 연결했다. 남은 곳은 큐 R09부�
 
 ## 9. 핸드오프
 
-- 브랜치 `cursor/tripcom-stay-cities-de61` · R07–R08 코드 `493ded4d` `2912a542` · R05–R08 PR [#672](https://github.com/catgeot/Days/pull/672) · R03–R04는 PR #665로 병합됨
-- 다음 세션은 큐 R09–R10만. 목록에 잡힌 도시만. 중국 국내 도시는 키워드 type이 City여도 목록이 그 도시면 넣는다. 라자 암팟·호놀룰루·sparse 재시도 금지.
+- 브랜치 `cursor/tripcom-stay-cities-de61` · R09–R10 코드 `01c1f692` `00cb058e` · PR [#677](https://github.com/catgeot/Days/pull/677) · R05–R08은 PR #672로 병합됨
+- 다음 세션은 큐 R11–R12만. 목록에 잡힌 도시만. 중국 국내 도시는 키워드 type이 City여도 목록이 그 도시면 넣는다. 호이안처럼 목록이 그 도시로 잡힌 Zone만 예외. 라자 암팟·호놀룰루·sparse 재시도 금지.
 - `cursor/*` Preview는 꺼져 있다. 사람 확인은 PR 병합 후 `www.gateo.kr`.
