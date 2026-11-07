@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '../api/supabase';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -6,6 +6,7 @@ import { Mail, Lock, Loader2, ArrowRight, Check, X } from 'lucide-react';
 import Logo from '../../pages/Home/components/Logo';
 import AuthBenefits from './AuthBenefits';
 import { resetIosZoomAfterInput } from '../lib/mobileViewport';
+import { dismissMobileTextInput } from '../hooks/useMobileInputViewport';
 
 const Login = () => {
   const { t } = useTranslation();
@@ -21,6 +22,22 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [rememberEmail, setRememberEmail] = useState(false);
+  const submitRef = useRef(null);
+  const loginSubmitStartedRef = useRef(false);
+
+  const markHomeViewportReset = useCallback(() => {
+    sessionStorage.setItem('gateo_reset_viewport', '1');
+    dismissMobileTextInput();
+  }, []);
+
+  const leaveLoginPage = useCallback(() => {
+    markHomeViewportReset();
+    navigate(from);
+  }, [from, markHomeViewportReset, navigate]);
+
+  useEffect(() => () => {
+    markHomeViewportReset();
+  }, [markHomeViewportReset]);
 
   useEffect(() => {
     const savedEmail = localStorage.getItem('savedEmail');
@@ -49,6 +66,8 @@ const Login = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    if (loading || loginSubmitStartedRef.current) return;
+    loginSubmitStartedRef.current = true;
     setLoading(true);
 
     try {
@@ -70,12 +89,19 @@ const Login = () => {
     } catch (error) {
       alert(error.message);
     } finally {
+      loginSubmitStartedRef.current = false;
       setLoading(false);
     }
   };
 
+  const scrollSubmitIntoView = useCallback(() => {
+    requestAnimationFrame(() => {
+      submitRef.current?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    });
+  }, []);
+
   return (
-    <div className="min-h-screen bg-slate-800 flex items-center justify-center p-4 font-sans relative overflow-hidden">
+    <div className="min-h-[100dvh] min-h-screen bg-slate-800 flex items-center justify-center p-4 font-sans relative overflow-y-auto overscroll-y-contain">
 
       <div className="absolute top-[-20%] left-[-10%] w-[400px] h-[400px] bg-blue-500/20 rounded-full blur-[100px] pointer-events-none"></div>
       <div className="absolute bottom-[-20%] right-[-10%] w-[400px] h-[400px] bg-purple-500/20 rounded-full blur-[100px] pointer-events-none"></div>
@@ -85,8 +111,9 @@ const Login = () => {
       <div className="w-full max-w-sm bg-white/95 backdrop-blur-xl border border-gray-200 p-6 rounded-3xl shadow-2xl relative">
 
         <button
-          onClick={() => navigate(from)}
-          className="absolute top-3 right-3 p-1.5 text-gray-400 hover:text-gray-800 hover:bg-gray-100/50 rounded-full transition-all z-50"
+          type="button"
+          onClick={leaveLoginPage}
+          className="absolute top-3 right-3 p-1.5 text-gray-400 hover:text-gray-800 hover:bg-gray-100/50 rounded-full transition-all z-50 touch-manipulation"
           title={t('authPage.login.backTitle')}
         >
           <X size={18} />
@@ -143,6 +170,7 @@ const Login = () => {
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                onFocus={scrollSubmitIntoView}
                 autoComplete="current-password"
               />
             </div>
@@ -158,9 +186,10 @@ const Login = () => {
           </div>
 
           <button
+            ref={submitRef}
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 border border-transparent text-white text-sm font-bold py-2.5 rounded-lg shadow-sm hover:bg-blue-500 hover:shadow-[0_0_15px_rgba(59,130,246,0.3)] transition-all duration-300 flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed mt-2 group"
+            className="w-full min-h-[44px] touch-manipulation bg-blue-600 border border-transparent text-white text-sm font-bold py-2.5 rounded-lg shadow-sm hover:bg-blue-500 hover:shadow-[0_0_15px_rgba(59,130,246,0.3)] transition-all duration-300 flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed mt-2 group"
           >
             {loading ? <Loader2 size={16} className="animate-spin" /> : <>{t('authPage.login.submit')} <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" /></>}
           </button>
