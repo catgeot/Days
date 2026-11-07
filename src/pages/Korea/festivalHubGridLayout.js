@@ -1,27 +1,110 @@
-/** Festival hub photo list — masonry columns (390 stays 2-col; wider viewports add columns). List order stays in the data; columns flow top-to-bottom like PlaceGallery. */
+/** Festival hub photo list — masonry columns (390 stays 2-col; wider viewports add columns). */
 export const FESTIVAL_HUB_GRID_CLASS =
-  'w-full columns-2 gap-1.5 md:columns-3 md:gap-2 lg:columns-4 lg:gap-2.5';
+  'grid w-full grid-cols-2 items-start gap-1.5 md:grid-cols-3 md:gap-2 lg:grid-cols-4 lg:gap-2.5';
 
-export const FESTIVAL_HUB_PHOTO_WIDE_MIN_RATIO = 1.5;
+export const FESTIVAL_HUB_PHOTO_WIDE_MIN_RATIO = 1.3;
+export const FESTIVAL_HUB_PHOTO_LANDSCAPE_MIN_RATIO = 1.05;
+
+export const FESTIVAL_HUB_COLUMN_LANDSCAPE_ASPECT_RATIOS = [
+  '0.78 / 1',
+  '0.88 / 1',
+  '0.82 / 1',
+  '0.92 / 1',
+];
 
 const FESTIVAL_HUB_PHOTO_MIN_RATIO = 0.5;
 const FESTIVAL_HUB_PHOTO_MAX_RATIO = 2;
 
-export function festivalHubPhotoLayout(naturalWidth, naturalHeight) {
+export function festivalHubColumnLandscapeAspectRatio(slotIndex = 0) {
+  const len = FESTIVAL_HUB_COLUMN_LANDSCAPE_ASPECT_RATIOS.length;
+  const idx = ((Number(slotIndex) || 0) % len + len) % len;
+  return FESTIVAL_HUB_COLUMN_LANDSCAPE_ASPECT_RATIOS[idx];
+}
+
+export function festivalHubPhotoLayout(naturalWidth, naturalHeight, options = {}) {
   const width = Number(naturalWidth);
   const height = Number(naturalHeight);
   if (!Number.isFinite(width) || !Number.isFinite(height) || width <= 0 || height <= 0) {
-    return { aspectRatio: null, wide: false };
+    return { aspectRatio: null, wide: false, enlargedLandscape: false };
   }
   const ratio = width / height;
   const clamped = Math.min(
     FESTIVAL_HUB_PHOTO_MAX_RATIO,
     Math.max(FESTIVAL_HUB_PHOTO_MIN_RATIO, ratio),
   );
+  const isLandscape = ratio >= FESTIVAL_HUB_PHOTO_LANDSCAPE_MIN_RATIO;
+  if (options?.inColumn && isLandscape) {
+    return {
+      aspectRatio: festivalHubColumnLandscapeAspectRatio(options.slotIndex),
+      wide: false,
+      enlargedLandscape: true,
+    };
+  }
   return {
     aspectRatio: `${clamped} / 1`,
     wide: ratio >= FESTIVAL_HUB_PHOTO_WIDE_MIN_RATIO,
+    enlargedLandscape: false,
   };
+}
+
+/**
+ * Split items into column runs vs standalone wide rows so wide cards span full width
+ * while non-wide runs flow in independent masonry flex columns without WebKit multicol fragmentation.
+ */
+export function partitionFestivalHubSegments(
+  items,
+  isWideItem,
+  minColumnEntries = 2,
+) {
+  const minCols = Math.max(1, Number(minColumnEntries) || 2);
+  const segments = [];
+  let currentEntries = [];
+  const list = items || [];
+  for (let index = 0; index < list.length; index += 1) {
+    const item = list[index];
+    const lastSeg = segments[segments.length - 1];
+    const canBreakAtStart =
+      currentEntries.length === 0 && lastSeg?.type !== 'wide';
+    const canBreakAfterBalancedColumns =
+      currentEntries.length >= minCols &&
+      currentEntries.length % minCols === 0;
+    const canBreakWide = canBreakAtStart || canBreakAfterBalancedColumns;
+    if (canBreakWide && isWideItem?.(item, index)) {
+      if (currentEntries.length > 0) {
+        segments.push({ type: 'columns', entries: currentEntries });
+        currentEntries = [];
+      }
+      segments.push({ type: 'wide', entry: { item, index } });
+    } else {
+      currentEntries.push({ item, index });
+    }
+  }
+  if (currentEntries.length > 0) {
+    if (
+      currentEntries.length < minCols &&
+      segments.length > 0 &&
+      segments[segments.length - 1].type === 'wide'
+    ) {
+      const prevWide = segments.pop();
+      segments.push({
+        type: 'columns',
+        entries: [prevWide.entry, ...currentEntries],
+      });
+    } else {
+      segments.push({ type: 'columns', entries: currentEntries });
+    }
+  }
+  return segments;
+}
+
+export function distributeFestivalHubMasonryColumns(entries, columnCount = 2) {
+  const count = Math.max(1, Number(columnCount) || 2);
+  const cols = Array.from({ length: count }, () => []);
+  const list = entries || [];
+  for (let i = 0; i < list.length; i += 1) {
+    cols[i % count].push(list[i]);
+  }
+  return cols.filter((col) => col.length > 0);
 }
 
 /** Flat nationwide grid: eager-load thumbs for first screen (2× mobile · up to 4× desktop). */
