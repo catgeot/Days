@@ -19,6 +19,8 @@ const GEO_OPTIONS = {
  * @param {number} p.itemsLength
  * @param {(lat: number, lng: number, opts?: { boot?: boolean }) => boolean} p.applyUserLocation
  * @param {() => void} p.dismissLocHint
+ * @param {() => boolean} [p.shouldApplyBootLocation]
+ * @param {boolean} [p.skipBoot]
  * @param {Pick<Storage, 'getItem' | 'setItem'> | null} [p.storage]
  */
 export function useFestivalLocationBoot({
@@ -26,6 +28,8 @@ export function useFestivalLocationBoot({
   itemsLength,
   applyUserLocation,
   dismissLocHint,
+  shouldApplyBootLocation,
+  skipBoot = false,
   storage,
 }) {
   const bootedRef = useRef(false);
@@ -34,7 +38,7 @@ export function useFestivalLocationBoot({
     (typeof localStorage !== 'undefined' ? localStorage : null);
 
   useEffect(() => {
-    if (loading || itemsLength === 0 || bootedRef.current) return undefined;
+    if (skipBoot || loading || itemsLength === 0 || bootedRef.current) return undefined;
     if (typeof navigator === 'undefined' || !navigator.geolocation) {
       return undefined;
     }
@@ -42,12 +46,15 @@ export function useFestivalLocationBoot({
     let cancelled = false;
     bootedRef.current = true;
 
+    const canApply = () =>
+      typeof shouldApplyBootLocation !== 'function' || shouldApplyBootLocation();
+
     const run = async () => {
       const recentSuccess = readLocationSuccess(storageRef);
       const permission = await queryGeolocationPermission();
       if (cancelled) return;
 
-      if (recentSuccess) {
+      if (recentSuccess && canApply()) {
         applyUserLocation(recentSuccess.lat, recentSuccess.lng, { boot: true });
         dismissLocHint();
       }
@@ -58,7 +65,7 @@ export function useFestivalLocationBoot({
 
       navigator.geolocation.getCurrentPosition(
         (pos) => {
-          if (cancelled) return;
+          if (cancelled || !canApply()) return;
           const lat = pos.coords.latitude;
           const lng = pos.coords.longitude;
           writeLocationSuccess(storageRef, lat, lng);
@@ -85,6 +92,8 @@ export function useFestivalLocationBoot({
     itemsLength,
     applyUserLocation,
     dismissLocHint,
+    shouldApplyBootLocation,
+    skipBoot,
     storageRef,
   ]);
 }

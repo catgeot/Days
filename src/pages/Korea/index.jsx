@@ -64,6 +64,11 @@ import {
   writeFestivalHubLegacyListToSession,
 } from './festivalListViewSession.js';
 import {
+  clearFestivalHubRegionChoiceSession,
+  readFestivalHubRegionChoiceSession,
+  writeFestivalHubRegionChoiceSession,
+} from './festivalHubRegionChoiceSession.js';
+import {
   FESTIVAL_HUB_GRID_CLASS,
   FESTIVAL_HUB_GRID_MOBILE_SCROLL_PAD_CLASS,
   FESTIVAL_HUB_GRID_SCROLL_TOP_BOTTOM_CLASS,
@@ -1174,6 +1179,15 @@ export default function KoreaFestivalHub() {
     /** @type {Map<string, Record<string, unknown>>} */ (new Map()),
   );
   const now = useMemo(() => new Date(), []);
+  const initialRegionChoiceRef = useRef(
+    /** @type {ReturnType<typeof readFestivalHubRegionChoiceSession> | undefined} */ (
+      undefined
+    ),
+  );
+  if (initialRegionChoiceRef.current === undefined) {
+    initialRegionChoiceRef.current = readFestivalHubRegionChoiceSession();
+  }
+  const initialRegionChoice = initialRegionChoiceRef.current;
 
   const goHome = useCallback(() => {
     try {
@@ -1202,8 +1216,12 @@ export default function KoreaFestivalHub() {
   );
   const [dateSheetOpen, setDateSheetOpen] = useState(false);
   const [tasteId, setTasteId] = useState('all');
-  const [areaCode, setAreaCode] = useState(DEFAULT_AREA_CODE);
-  const [cityName, setCityName] = useState('all');
+  const [areaCode, setAreaCode] = useState(
+    () => initialRegionChoice?.areaCode ?? DEFAULT_AREA_CODE,
+  );
+  const [cityName, setCityName] = useState(
+    () => initialRegionChoice?.cityName ?? 'all',
+  );
   /** @type {[ChipPanelId, function]} */
   const [chipPanel, setChipPanel] = useState(/** @type {ChipPanelId} */ ('region'));
   /** @type {[string[] | null, function]} */
@@ -1270,7 +1288,16 @@ export default function KoreaFestivalHub() {
     ),
   );
   const [geoPermission, setGeoPermission] = useState('unsupported');
+  const userRegionExplicitRef = useRef(Boolean(initialRegionChoice?.explicit));
   const userRegionOverrideRef = useRef(false);
+  const persistExplicitRegionChoice = useCallback((nextAreaCode, nextCityName) => {
+    userRegionExplicitRef.current = true;
+    writeFestivalHubRegionChoiceSession({
+      areaCode: String(nextAreaCode),
+      cityName: String(nextCityName ?? 'all'),
+      explicit: true,
+    });
+  }, []);
   /** 내 주변 진입 직전 필터 — 재탭 시 복원 */
   const preNearSnapshotRef = useRef(
     /** @type {null | { timeTab: string, tasteId: string, areaCode: string, cityName: string, chipPanel: ChipPanelId }} */ (
@@ -1413,6 +1440,8 @@ export default function KoreaFestivalHub() {
     if (!fromTheme) return;
     if (festivalId) {
       userRegionOverrideRef.current = false;
+      userRegionExplicitRef.current = false;
+      clearFestivalHubRegionChoiceSession();
       setAreaCode(DEFAULT_AREA_CODE);
       setCityName('all');
       setChipPanel('region');
@@ -1421,6 +1450,7 @@ export default function KoreaFestivalHub() {
     if (!themeAreaParam || themeAreaParam === 'all') return;
     if (!/^\d{1,2}$/.test(themeAreaParam)) return;
     userRegionOverrideRef.current = true;
+    persistExplicitRegionChoice(themeAreaParam, 'all');
     setAreaCode(themeAreaParam);
     setCityName('all');
     setChipPanel('region');
@@ -1431,7 +1461,14 @@ export default function KoreaFestivalHub() {
     setNearLabel('');
     setNearMsg('');
     mainScrollRef.current?.scrollTo({ top: 0 });
-  }, [fromTheme, themeAreaParam, festivalId, location.key, clearFestivalFromUrl]);
+  }, [
+    fromTheme,
+    themeAreaParam,
+    festivalId,
+    location.key,
+    clearFestivalFromUrl,
+    persistExplicitRegionChoice,
+  ]);
 
   useEffect(() => {
     if (!festivalToast) return undefined;
@@ -1635,6 +1672,8 @@ export default function KoreaFestivalHub() {
       if (!/^\d+$/.test(id)) return;
       if (event.detail?.nationwide) {
         userRegionOverrideRef.current = false;
+        userRegionExplicitRef.current = false;
+        clearFestivalHubRegionChoiceSession();
         setAreaCode(DEFAULT_AREA_CODE);
         setCityName('all');
         setChipPanel('region');
@@ -1850,6 +1889,7 @@ export default function KoreaFestivalHub() {
   useEffect(() => {
     if (dateChipEnabled) return;
     if (areaCode === 'all') return;
+    if (userRegionExplicitRef.current) return;
     if (sidoChips.length === 0) return;
     if (!sidoChips.some((s) => s.id === areaCode)) {
       if (areaCode === DEFAULT_AREA_CODE) return;
@@ -2372,20 +2412,28 @@ export default function KoreaFestivalHub() {
       }
 
       if (boot) {
-        userRegionOverrideRef.current = true;
+        if (userRegionExplicitRef.current) return false;
         setTasteId('all');
-        setAreaCode(String(hubResolved.areaCode));
+        const bootArea = String(hubResolved.areaCode);
+        setAreaCode(bootArea);
         setCityName('all');
         setChipPanel('region');
         setNearIds(null);
         setNearOrigin(null);
         setNearLabel('');
         setNearMsg('');
+        writeFestivalHubRegionChoiceSession({
+          areaCode: bootArea,
+          cityName: 'all',
+          explicit: false,
+        });
         return true;
       }
 
       setTasteId('all');
-      setAreaCode(String(hubResolved.areaCode));
+      const nearArea = String(hubResolved.areaCode);
+      persistExplicitRegionChoice(nearArea, 'all');
+      setAreaCode(nearArea);
       setCityName('all');
       setChipPanel('region');
       clearFestivalFromUrl();
@@ -2419,7 +2467,12 @@ export default function KoreaFestivalHub() {
       );
       return true;
     },
-    [items, timeTab, dismissLocHint, t, filterItemsByTime],
+    [items, timeTab, dismissLocHint, t, filterItemsByTime, persistExplicitRegionChoice],
+  );
+
+  const shouldApplyBootLocation = useCallback(
+    () => !userRegionExplicitRef.current,
+    [],
   );
 
   useFestivalLocationBoot({
@@ -2427,6 +2480,8 @@ export default function KoreaFestivalHub() {
     itemsLength: items.length,
     applyUserLocation,
     dismissLocHint,
+    shouldApplyBootLocation,
+    skipBoot: initialRegionChoice != null,
   });
 
   useEffect(() => {
@@ -2461,6 +2516,7 @@ export default function KoreaFestivalHub() {
     const next = e.target.value;
     setSearchDraft(next);
     if (next.trim()) {
+      persistExplicitRegionChoice(DEFAULT_AREA_CODE, 'all');
       setAreaCode('all');
       setCityName('all');
       setTasteId('all');
@@ -2480,6 +2536,7 @@ export default function KoreaFestivalHub() {
     setSearchSuggestOpen(false);
     if (q) {
       setRecentSearches(pushRecentSearch(FESTIVAL_RECENT_SEARCH_KEY, q));
+      persistExplicitRegionChoice(DEFAULT_AREA_CODE, 'all');
       setAreaCode('all');
       setCityName('all');
       setTasteId('all');
@@ -2506,6 +2563,7 @@ export default function KoreaFestivalHub() {
     if (q) {
       setSearchApplied(q);
       setRecentSearches(pushRecentSearch(FESTIVAL_RECENT_SEARCH_KEY, q));
+      persistExplicitRegionChoice(DEFAULT_AREA_CODE, 'all');
       setAreaCode('all');
       setCityName('all');
       setTasteId('all');
@@ -2518,7 +2576,7 @@ export default function KoreaFestivalHub() {
           : null;
       el?.blur?.();
     }
-  }, [searchDraft]);
+  }, [searchDraft, persistExplicitRegionChoice]);
 
   useEffect(() => {
     if (!searchOpen && !searchSuggestOpen) return undefined;
@@ -2622,6 +2680,7 @@ export default function KoreaFestivalHub() {
 
   const resetListFilters = () => {
     userRegionOverrideRef.current = true;
+    persistExplicitRegionChoice(DEFAULT_AREA_CODE, 'all');
     setTimeTab(defaultFestivalHubTimeTab());
     setCustomRange(null);
     setTasteId('all');
@@ -2675,6 +2734,7 @@ export default function KoreaFestivalHub() {
 
   const selectSido = (id) => {
     userRegionOverrideRef.current = true;
+    persistExplicitRegionChoice(id, 'all');
     setAreaCode(id);
     setCityName('all');
     setChipPanel('region');
@@ -2685,7 +2745,9 @@ export default function KoreaFestivalHub() {
 
   const selectCity = (id) => {
     userRegionOverrideRef.current = true;
-    setCityName(String(id) === 'all' ? 'all' : id);
+    const nextCity = String(id) === 'all' ? 'all' : id;
+    persistExplicitRegionChoice(areaCode, nextCity);
+    setCityName(nextCity);
     setChipPanel('region');
     clearSearchFilter();
     clearNear();
