@@ -217,11 +217,17 @@ export default function HomePlaceCardSummary({
   const readGlobeFlightReady = () => Boolean(globeRef?.current?.isFlightCinemaReady?.());
   const [flightCinemaGlobeReady, setFlightCinemaGlobeReady] = useState(false);
   const notReadyStreakRef = useRef(0);
+  const e2eFlightCinemaBarBypass = import.meta.env.VITE_E2E_FLIGHT_CINEMA_BAR === '1';
 
   useEffect(() => {
     if (!hasFlightRoute) {
       notReadyStreakRef.current = 0;
       setFlightCinemaGlobeReady(false);
+      return undefined;
+    }
+
+    if (e2eFlightCinemaBarBypass) {
+      setFlightCinemaGlobeReady(true);
       return undefined;
     }
 
@@ -247,7 +253,7 @@ export default function HomePlaceCardSummary({
       window.clearInterval(interval);
       notReadyStreakRef.current = 0;
     };
-  }, [globeRef, hasFlightRoute, location?.id]);
+  }, [globeRef, hasFlightRoute, location?.id, e2eFlightCinemaBarBypass]);
 
   const isFlightRouteReady = hasFlightRoute && flightCinemaGlobeReady && Boolean(flightPreview);
 

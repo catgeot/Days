@@ -488,6 +488,7 @@ export default function FlightOriginSelector({
           onClick={() => onExpandRequest?.()}
           className={chipButtonClass}
           aria-expanded={false}
+          aria-label={t('flightOrigin.expandSearch')}
           title={selectedLabel}
         >
           <span className="min-w-0 truncate tabular-nums">{selectedLabel}</span>

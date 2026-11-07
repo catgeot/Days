@@ -420,6 +420,7 @@ const PlaceCardSummary = ({
                 {canPreviewFlightRoute && (
                   <button
                     type="button"
+                    data-testid="home-summary-flight-route-cinema"
                     disabled={!flightRouteInteractive}
                     aria-busy={flightRouteBusy || isFlightRoutePending}
                     onClick={(e) => {

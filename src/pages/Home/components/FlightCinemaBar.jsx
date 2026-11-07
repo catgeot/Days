@@ -396,6 +396,7 @@ export default function FlightCinemaBar({
     <div
       className={`pointer-events-auto animate-fade-in-down ${className}`}
       role="region"
+      data-testid="flight-cinema-bar"
       aria-label={routeAria
         ? t('home.flightCinema.regionAriaFlight', { route: routeAria })
         : t('home.flightCinema.regionAriaDefault')}
@@ -448,8 +449,6 @@ export default function FlightCinemaBar({
             <FlightOriginSelector variant="bar" {...originSelectorProps} />
           )}
 
-          {!isOriginCompact ? (
-          <>
           <div className="flex min-w-0 items-start gap-2">
             {isRouteUpdatePending ? (
               <Loader2 size={16} className="mt-0.5 shrink-0 animate-spin text-sky-300" aria-hidden="true" />
@@ -496,6 +495,7 @@ export default function FlightCinemaBar({
                 customTrigger={
                   <button
                     type="button"
+                    data-testid="flight-cinema-bar-search-flights"
                     className={`flight-cinema-bar-cta shrink-0 ${BAR_BTN} border-sky-300/50 bg-sky-500/20 text-sky-50 hover:border-sky-200/60 hover:bg-sky-500/30`}
                   >
                     <Search size={12} aria-hidden="true" />
@@ -512,8 +512,6 @@ export default function FlightCinemaBar({
               {t('home.flightCinema.close')}
             </button>
           </div>
-          </>
-          ) : null}
         </div>
       </div>
     </div>
