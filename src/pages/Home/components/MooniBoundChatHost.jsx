@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '../../../shared/api/supabase';
+import { subscribeAuthUser } from '../../../shared/Auth/sessionUser.js';
 import { resolveSessionBoundSpot } from '../../../utils/resolveDestinationFromChat';
 import {
   festivalTripMatchesLocale,
@@ -43,13 +44,7 @@ export default function MooniBoundChatHost({ isOpen, boundSpot, initialQuery = n
   const openedKeyRef = useRef(null);
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => setUser(data.user));
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) =>
-      setUser(session?.user || null),
-    );
-    return () => subscription.unsubscribe();
+    return subscribeAuthUser(setUser);
   }, []);
 
   useEffect(() => {

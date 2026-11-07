@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { fetchUserProfile, supabase } from '../api/supabase';
+import { fetchUserProfile } from '../api/supabase';
+import { readSessionUser, subscribeAuthUser } from './sessionUser.js';
 import {
   PROFILE_UPDATED_EVENT,
   ownerProfilePhotos,
@@ -29,17 +30,14 @@ export function useAccountProfile() {
     const safeApply = (next) => {
       if (!cancelled) void applyUser(next);
     };
-    supabase.auth.getUser().then(({ data }) => safeApply(data.user));
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      safeApply(session?.user ?? null);
-    });
+    const unsubscribe = subscribeAuthUser(safeApply);
     const onProfile = () => {
-      supabase.auth.getUser().then(({ data }) => safeApply(data.user));
+      readSessionUser().then(safeApply);
     };
     window.addEventListener(PROFILE_UPDATED_EVENT, onProfile);
     return () => {
       cancelled = true;
-      subscription.unsubscribe();
+      unsubscribe();
       window.removeEventListener(PROFILE_UPDATED_EVENT, onProfile);
     };
   }, [applyUser]);

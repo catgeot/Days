@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../../shared/api/supabase';
+import { readSessionUser } from '../../shared/Auth/sessionUser.js';
 import { Save, ArrowLeft, MapPin, Loader2, Image as ImageIcon, X, Sparkles, Undo2, Calendar, UserRoundPen } from 'lucide-react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -56,7 +57,7 @@ const Write = () => {
 
   useEffect(() => {
     const loadInitialData = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const user = await readSessionUser();
 
       if (!user) {
         alert(t('logbook.common.loginRequired'));
@@ -137,7 +138,7 @@ const Write = () => {
 
   const handleSave = async () => {
     if (!title) return alert(t('logbook.write.titleRequired'));
-    const { data: { user } } = await supabase.auth.getUser();
+    const user = await readSessionUser();
     if (!user) return alert(t('logbook.common.loginRequired'));
 
     setUploading(true);

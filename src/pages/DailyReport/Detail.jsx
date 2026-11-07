@@ -5,6 +5,7 @@
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { supabase } from '../../shared/api/supabase';
+import { readSessionUser } from '../../shared/Auth/sessionUser.js';
 import { ArrowUp, Trash2, MapPin, Copy, CheckCircle2, Lock, Share2 } from 'lucide-react';
 import LogbookOwnerEditButton from './components/LogbookOwnerEditButton';
 import { useParams, useNavigate } from 'react-router-dom';
@@ -57,7 +58,7 @@ const Detail = () => {
         return;
       }
 
-      const { data: { user } } = await supabase.auth.getUser();
+      const user = await readSessionUser();
       if (!user) {
         navigate('/', { replace: true });
         return;
@@ -119,7 +120,7 @@ const Detail = () => {
 
   const handleDelete = async () => {
     if (window.confirm(t('logbook.detail.deleteConfirm'))) {
-      const { data: { user } } = await supabase.auth.getUser();
+      const user = await readSessionUser();
       if (!user) return;
 
       const { error } = await supabase.from('reports').delete().eq('id', id).eq('user_id', user.id);
@@ -136,7 +137,7 @@ const Detail = () => {
   // 🚨 [New] 비공개(Lock) 강제 전환 핸들러
   const handleMakePrivate = async () => {
     if (window.confirm(t('logbook.detail.privateConfirm'))) {
-      const { data: { user } } = await supabase.auth.getUser();
+      const user = await readSessionUser();
       if (!user) return;
       const { error } = await supabase.from('reports').update({ is_public: false }).eq('id', id).eq('user_id', user.id);
       if (!error) {
@@ -149,7 +150,7 @@ const Detail = () => {
 
   // 🚨 [New] 스마트 공유 핸들러 (Web Share API + Fallback)
   const handleSmartShare = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
+    const user = await readSessionUser();
     if (!user) return;
 
     // 1. [Pessimistic First] 비공개 상태면 DB부터 공개로 업데이트

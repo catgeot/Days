@@ -7,7 +7,7 @@ import { useTranslation, Trans } from 'react-i18next';
 import { PenSquare, Star, MessageSquare, Image as ImageIcon, MoreVertical, Trash2, Edit, X, ChevronLeft, ChevronRight, Heart, Eye, BookOpen } from 'lucide-react';
 import { usePlaceReviews } from '../../../hooks/usePlaceReviews';
 import { useRelatedBlogs } from '../hooks/useRelatedBlogs';
-import { supabase } from '../../../shared/api/supabase';
+import { subscribeAuthUser } from '../../../shared/Auth/sessionUser.js';
 import ReviewEditorModal from '../modals/ReviewEditorModal';
 import { mobilePlaceHeaderSpacerClass, mobilePlaceReviewsFooterScrollPadding, mobileLandscapeChromeHidden } from '../common/mobilePlaceHeaderInset';
 import { placeScrollSurfaceClass, resetPlaceMediaScrollInstant } from '../common/placeScrollSurface';
@@ -560,19 +560,7 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null, isActiv
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    // 초기 사용자 세션 확인
-    supabase.auth.getUser().then(({ data }) => setUser(data?.user || null));
-
-    // PC 환경 등에서 세션 지연 로딩/변경 감지 (핵심 버그 픽스)
-    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
-      setUser(session?.user || null);
-    });
-
-    return () => {
-      if (authListener && authListener.subscription) {
-        authListener.subscription.unsubscribe();
-      }
-    };
+    return subscribeAuthUser(setUser);
   }, []);
 
   // 좌표·검색 기반 장소는 id(search-/loc-)가 리뷰·URL의 단일 키. 지오코딩 slug가 유명 도시와 겹칠 수 있어 id 우선.

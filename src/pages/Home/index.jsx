@@ -16,6 +16,7 @@ import {
   parseExploreCategoryPath,
 } from './lib/exploreCategorySeo';
 import { supabase } from '../../shared/api/supabase';
+import { subscribeAuthUser } from '../../shared/Auth/sessionUser.js';
 import { trackMooniOpenIfRising } from '../../shared/analytics/trackEvent.js';
 import { logSeaExplore } from '../../shared/cloudPreview/seaExploreDebug.js';
 import { logCurationHandoff } from '../../shared/cloudPreview/curationHandoffDebug';
@@ -156,9 +157,7 @@ function Home() {
   const { locale } = useLocale();
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => setUser(data.user));
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => setUser(session?.user || null));
-    return () => subscription.unsubscribe();
+    return subscribeAuthUser(setUser);
   }, []);
 
   useEffect(() => {

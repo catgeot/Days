@@ -79,11 +79,6 @@ const PublicViewer = () => {
 
   useEffect(() => {
     let cancelled = false;
-    const syncUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!cancelled) setSessionUserId(user?.id ?? null);
-    };
-    void syncUser();
     const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
       if (!cancelled) setSessionUserId(session?.user?.id ?? null);
     });
