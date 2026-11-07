@@ -30,6 +30,9 @@ const galleryWriterHarnessOn = import.meta.env.VITE_GALLERY_WRITER_HARNESS === '
 const GallerySingleWriterHarness = galleryWriterHarnessOn
   ? lazy(() => import('./pages/Qa/GallerySingleWriterHarness.jsx'))
   : null;
+const GalleryPlaceIdMismatchHarness = galleryWriterHarnessOn
+  ? lazy(() => import('./pages/Qa/GalleryPlaceIdMismatchHarness.jsx'))
+  : null;
 const festivalRoadFixtureOn =
   isQaFestivalRoadFixtureEnabled && isGateoFestivalRoadEnabled();
 const FestivalRoadFixturePage = festivalRoadFixtureOn
@@ -181,6 +184,16 @@ function App() {
                   element={
                     <Suspense fallback={null}>
                       <GallerySingleWriterHarness />
+                    </Suspense>
+                  }
+                />
+              ) : null}
+              {GalleryPlaceIdMismatchHarness ? (
+                <Route
+                  path="/qa/gallery-place-id-mismatch"
+                  element={
+                    <Suspense fallback={null}>
+                      <GalleryPlaceIdMismatchHarness />
                     </Suspense>
                   }
                 />
