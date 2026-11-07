@@ -68,8 +68,9 @@ test('grid and row cards mark viewed festivals with a badge and dimmed photo wit
   assert.doesNotMatch(card, /column-span:all/);
   const hub = readFileSync(join(root, 'src/pages/Korea/index.jsx'), 'utf8');
   assert.match(hub, /data-festival-card-viewed-badge/);
-  assert.match(hub, /partitionFestivalHubSegments/);
-  assert.match(hub, /distributeFestivalHubMasonryColumns/);
+  assert.match(hub, /FESTIVAL_HUB_CARD_GRID_CLASS/);
+  assert.match(card, /data-festival-grid-card-tier/);
+  assert.doesNotMatch(hub, /partitionFestivalHubSegments/);
 });
 
 test('viewed badge copy exists in ko/en locales', () => {
