@@ -4,160 +4,53 @@ import test from 'node:test';
 import { festivalItemThumbCandidateUrls } from '../../src/pages/Korea/festivalListThumb.js';
 import { festivalGridPlaceLabel } from '../../src/pages/Korea/festivalGridPlaceLabel.js';
 import {
-  FESTIVAL_HUB_CARD_GRID_CLASS,
-  FESTIVAL_HUB_CARD_GRID_TIER_SPAN_CLASS,
-  FESTIVAL_HUB_COLUMN_LANDSCAPE_ASPECT_RATIOS,
   FESTIVAL_HUB_GRID_CLASS,
-  FESTIVAL_HUB_PHOTO_LAND_MIN_RATIO,
-  FESTIVAL_HUB_PHOTO_PORT_MAX_RATIO,
-  FESTIVAL_HUB_PHOTO_ULTRA_MIN_RATIO,
   FESTIVAL_HUB_PHOTO_WIDE_MIN_RATIO,
-  distributeFestivalHubMasonryColumns,
-  festivalHubCardGridSpanClass,
-  festivalHubCardGridSideCaption,
-  festivalHubCardGridTier,
   festivalHubPhotoLayout,
-  partitionFestivalHubSegments,
 } from '../../src/pages/Korea/festivalHubGridLayout.js';
 import {
   readFestivalHubLegacyListFromSession,
   writeFestivalHubLegacyListToSession,
 } from '../../src/pages/Korea/festivalListViewSession.js';
 
-test('festival hub explore masonry class — 2 col mobile, 3 md, 4 lg, items-start masonry wrapper', () => {
-  assert.match(FESTIVAL_HUB_GRID_CLASS, /grid-cols-2/);
-  assert.match(FESTIVAL_HUB_GRID_CLASS, /md:grid-cols-3/);
-  assert.match(FESTIVAL_HUB_GRID_CLASS, /lg:grid-cols-4/);
-  assert.match(FESTIVAL_HUB_GRID_CLASS, /items-start/);
-  assert.doesNotMatch(FESTIVAL_HUB_GRID_CLASS, /columns-/);
+test('festival hub grid class — masonry columns 2 mobile, 3 md, 4 lg', () => {
+  assert.match(FESTIVAL_HUB_GRID_CLASS, /columns-2/);
+  assert.match(FESTIVAL_HUB_GRID_CLASS, /md:columns-3/);
+  assert.match(FESTIVAL_HUB_GRID_CLASS, /lg:columns-4/);
 });
 
-test('festival hub card grid class — 12 col dense, max-w-6xl (~1152px)', () => {
-  assert.match(FESTIVAL_HUB_CARD_GRID_CLASS, /grid-cols-12/);
-  assert.match(FESTIVAL_HUB_CARD_GRID_CLASS, /grid-flow-dense/);
-  assert.match(FESTIVAL_HUB_CARD_GRID_CLASS, /max-w-6xl/);
-  assert.deepEqual(FESTIVAL_HUB_CARD_GRID_TIER_SPAN_CLASS.port, 'col-span-6 md:col-span-3');
-  assert.deepEqual(FESTIVAL_HUB_CARD_GRID_TIER_SPAN_CLASS.mid, 'col-span-6 md:col-span-4');
-  assert.deepEqual(FESTIVAL_HUB_CARD_GRID_TIER_SPAN_CLASS.land, 'col-span-12 md:col-span-6');
-  assert.deepEqual(
-    FESTIVAL_HUB_CARD_GRID_TIER_SPAN_CLASS.ultrawide,
-    'col-span-12 md:col-span-8',
-  );
-});
-
-test('festival hub card grid tier — port/mid/land/ultrawide thresholds', () => {
-  assert.equal(festivalHubCardGridTier(800, 1000), 'port');
-  assert.equal(festivalHubCardGridTier(850, 1000), 'port');
-  assert.equal(festivalHubCardGridTier(860, 1000), 'mid');
-  assert.equal(festivalHubCardGridTier(1250, 1000), 'land');
-  assert.equal(
-    festivalHubCardGridTier(
-      FESTIVAL_HUB_PHOTO_ULTRA_MIN_RATIO * 100,
-      100,
-    ),
-    'ultrawide',
-  );
-  assert.equal(festivalHubCardGridTier(0, 100), 'mid');
-  assert.equal(festivalHubCardGridTier(undefined, undefined), 'mid');
-  assert.equal(festivalHubCardGridSpanClass('land'), FESTIVAL_HUB_CARD_GRID_TIER_SPAN_CLASS.land);
-  assert.equal(festivalHubCardGridSideCaption('land'), true);
-  assert.equal(festivalHubCardGridSideCaption('port'), false);
-  assert.ok(
-    FESTIVAL_HUB_PHOTO_PORT_MAX_RATIO < FESTIVAL_HUB_PHOTO_LAND_MIN_RATIO,
-  );
-});
-
-test('partitionFestivalHubSegments and distributeFestivalHubMasonryColumns avoid lone-card holes and column-span fragmentation', () => {
-  const items = [
-    { id: 'w0', wide: true },
-    { id: 'p1', wide: false },
-    { id: 'w2', wide: true },
-    { id: 'p3', wide: false },
-    { id: 'p4', wide: false },
-    { id: 'w5', wide: true },
-  ];
-  const segs = partitionFestivalHubSegments(items, (item) => item.wide, 2);
-  assert.deepEqual(
-    segs.map((s) =>
-      s.type === 'wide'
-        ? { type: 'wide', id: s.entry.item.id }
-        : { type: 'columns', ids: s.entries.map((e) => e.item.id) },
-    ),
-    [
-      { type: 'wide', id: 'w0' },
-      { type: 'columns', ids: ['p1', 'w2', 'p3', 'p4'] },
-      { type: 'wide', id: 'w5' },
-    ],
-  );
-  const cols = distributeFestivalHubMasonryColumns(segs[1].entries, 2);
-  assert.deepEqual(
-    cols.map((col) => col.map((e) => e.item.id)),
-    [
-      ['p1', 'p3'],
-      ['w2', 'p4'],
-    ],
-  );
-});
-
-test('festival hub masonry — layout follows each photo, enlarges column landscape cards with staggered ratios', () => {
+test('festival hub masonry — layout follows each photo, not list index', () => {
   assert.deepEqual(festivalHubPhotoLayout(800, 1000), {
     aspectRatio: '0.8 / 1',
     wide: false,
-    enlargedLandscape: false,
   });
   assert.deepEqual(festivalHubPhotoLayout(1000, 1000), {
     aspectRatio: '1 / 1',
     wide: false,
-    enlargedLandscape: false,
-  });
-  assert.deepEqual(festivalHubPhotoLayout(1040, 800), {
-    aspectRatio: `${FESTIVAL_HUB_PHOTO_WIDE_MIN_RATIO} / 1`,
-    wide: true,
-    enlargedLandscape: false,
   });
   assert.deepEqual(festivalHubPhotoLayout(1200, 800), {
-    aspectRatio: '1.5 / 1',
+    aspectRatio: `${FESTIVAL_HUB_PHOTO_WIDE_MIN_RATIO} / 1`,
     wide: true,
-    enlargedLandscape: false,
   });
   assert.deepEqual(festivalHubPhotoLayout(1600, 900), {
     aspectRatio: `${1600 / 900} / 1`,
     wide: true,
-    enlargedLandscape: false,
   });
   assert.deepEqual(festivalHubPhotoLayout(3000, 1000), {
     aspectRatio: '2 / 1',
     wide: true,
-    enlargedLandscape: false,
   });
   assert.deepEqual(festivalHubPhotoLayout(400, 2000), {
     aspectRatio: '0.5 / 1',
     wide: false,
-    enlargedLandscape: false,
   });
-  assert.deepEqual(festivalHubPhotoLayout(940, 705, { inColumn: true, slotIndex: 0 }), {
-    aspectRatio: FESTIVAL_HUB_COLUMN_LANDSCAPE_ASPECT_RATIOS[0],
-    wide: false,
-    enlargedLandscape: true,
-  });
-  assert.deepEqual(festivalHubPhotoLayout(940, 627, { inColumn: true, slotIndex: 1 }), {
-    aspectRatio: FESTIVAL_HUB_COLUMN_LANDSCAPE_ASPECT_RATIOS[1],
-    wide: false,
-    enlargedLandscape: true,
-  });
-  assert.notEqual(
-    festivalHubPhotoLayout(940, 705, { inColumn: true, slotIndex: 0 }).aspectRatio,
-    festivalHubPhotoLayout(940, 705, { inColumn: true, slotIndex: 1 }).aspectRatio,
-  );
   assert.deepEqual(festivalHubPhotoLayout(0, 100), {
     aspectRatio: null,
     wide: false,
-    enlargedLandscape: false,
   });
   assert.deepEqual(festivalHubPhotoLayout(undefined, undefined), {
     aspectRatio: null,
     wide: false,
-    enlargedLandscape: false,
   });
 });
 

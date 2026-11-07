@@ -13,12 +13,7 @@ import { formatFestivalDistKm } from '../lib/formatFestivalDistKm.js';
 import { festivalListDisplayTitleLines } from '../festivalDisplayTitle.js';
 import { festivalGridPlaceLabel } from '../festivalGridPlaceLabel.js';
 import { hasFestivalThumbnail } from '../socialPromoFestivalsLogic.js';
-import {
-  festivalHubCardGridSideCaption,
-  festivalHubCardGridSpanClass,
-  festivalHubCardGridThumbAspectStyle,
-  festivalHubCardGridTier,
-} from '../festivalHubGridLayout.js';
+import { festivalHubPhotoLayout } from '../festivalHubGridLayout.js';
 
 function FestivalGridThumbLoadingShimmer() {
   return (
@@ -58,8 +53,6 @@ export default function FestivalGridPhotoCard({
   favorited = false,
   viewed = false,
   onToggleFavorite,
-  onPhotoSize,
-  initialPhotoSize = null,
   distanceKm,
   areaCode = 'all',
   cityName = 'all',
@@ -69,17 +62,8 @@ export default function FestivalGridPhotoCard({
   const { isEnglish, locale } = useLocale();
   const koText = koreanApiTextProps(isEnglish);
   const [urlIndex, setUrlIndex] = useState(0);
-  const [loadedPhoto, setLoadedPhoto] = useState(null);
-  const [viewportMdUp, setViewportMdUp] = useState(false);
-
-  useEffect(() => {
-    if (typeof window === 'undefined' || !window.matchMedia) return undefined;
-    const q = window.matchMedia('(min-width: 768px)');
-    const sync = () => setViewportMdUp(q.matches);
-    sync();
-    q.addEventListener?.('change', sync);
-    return () => q.removeEventListener?.('change', sync);
-  }, []);
+  const [thumbDecoded, setThumbDecoded] = useState(false);
+  const [photoSize, setPhotoSize] = useState(null);
 
   const thumbCandidates = React.useMemo(
     () => festivalItemThumbCandidateUrls(item),
@@ -93,23 +77,12 @@ export default function FestivalGridPhotoCard({
       : '';
   const showStaticFallback = !canTryImage || !activeUrl;
 
-  const currentLoaded =
-    loadedPhoto && loadedPhoto.url === activeUrl ? loadedPhoto : null;
-  const thumbDecoded = Boolean(currentLoaded?.decoded || initialPhotoSize);
-  const photoSize = currentLoaded?.size ?? initialPhotoSize;
+  useEffect(() => {
+    setThumbDecoded(false);
+    setPhotoSize(null);
+  }, [activeUrl]);
 
-  const cardTier = festivalHubCardGridTier(photoSize?.width, photoSize?.height);
-  const gridSpanClass = festivalHubCardGridSpanClass(cardTier);
-  const sideCaption = festivalHubCardGridSideCaption(cardTier);
-  const thumbAspectStyle = festivalHubCardGridThumbAspectStyle(
-    cardTier,
-    photoSize?.width,
-    photoSize?.height,
-    { sideCaption },
-  );
-  const thumbFrameStyle =
-    sideCaption && viewportMdUp ? undefined : thumbAspectStyle;
-  const photoFitClass = 'object-contain';
+  const photoLayout = festivalHubPhotoLayout(photoSize?.width, photoSize?.height);
 
   const range = formatFestivalDetailDateRange(
     item.eventStartDate,
@@ -126,30 +99,24 @@ export default function FestivalGridPhotoCard({
 
   return (
     <article
-      className={`relative flex min-h-0 min-w-0 flex-col overflow-hidden rounded-xl border bg-white text-left shadow-sm transition-colors ${gridSpanClass} ${
+      className={`relative mb-1.5 flex min-w-0 break-inside-avoid flex-col overflow-hidden rounded-xl border bg-white text-left shadow-sm transition-colors md:mb-2 lg:mb-2.5 ${photoLayout.wide ? '[column-span:all]' : ''} ${
         active
           ? 'border-amber-400 ring-1 ring-amber-200'
           : 'border-stone-200 [@media(hover:hover)]:hover:border-amber-300'
-      } ${sideCaption ? 'md:min-h-[10rem]' : ''}`}
+      }`}
       data-festival-grid-card=""
-      data-festival-grid-card-tier={cardTier}
+      data-festival-grid-card-wide={photoLayout.wide ? 'true' : undefined}
       data-festival-grid-card-viewed={viewed ? 'true' : undefined}
     >
       <button
         type="button"
         data-festival-id={String(item?.contentId || '')}
         onClick={() => onSelect(item)}
-        className={`flex min-h-0 min-w-0 flex-1 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-300/90 focus-visible:ring-offset-1 ${
-          sideCaption ? 'flex-col md:flex-row md:items-stretch' : 'flex-col'
-        }`}
+        className="flex min-w-0 flex-1 flex-col text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-300/90 focus-visible:ring-offset-1"
       >
         <div
-          className={`relative w-full min-h-0 overflow-hidden bg-gradient-to-br from-amber-100 to-stone-200 ${
-            sideCaption
-              ? 'aspect-[16/9] md:aspect-auto md:h-auto md:min-h-[10rem] md:flex-[1.35] md:shrink-0'
-              : ''
-          }`}
-          style={thumbFrameStyle}
+          className="relative aspect-[4/5] w-full overflow-hidden bg-gradient-to-br from-amber-100 to-stone-200"
+          style={photoLayout.aspectRatio ? { aspectRatio: photoLayout.aspectRatio } : undefined}
           data-festival-grid-thumb-frame=""
         >
           {showStaticFallback ? (
@@ -166,7 +133,7 @@ export default function FestivalGridPhotoCard({
                 fetchPriority={priorityThumb ? 'high' : undefined}
                 decoding="async"
                 referrerPolicy="no-referrer"
-                className={`absolute inset-0 z-[1] h-full w-full ${photoFitClass} ${viewed ? 'opacity-75 saturate-[.55]' : ''}`}
+                className={`absolute inset-0 z-[1] h-full w-full object-contain ${viewed ? 'opacity-75 saturate-[.55]' : ''}`}
                 pendingShimmer={!thumbDecoded}
                 fallback={
                   <span className="absolute inset-0" data-festival-grid-thumb-fallback="">
@@ -174,17 +141,9 @@ export default function FestivalGridPhotoCard({
                   </span>
                 }
                 onLoaded={(img) => {
-                  const nextSize =
-                    img?.naturalWidth > 0 && img?.naturalHeight > 0
-                      ? { width: img.naturalWidth, height: img.naturalHeight }
-                      : null;
-                  setLoadedPhoto({
-                    url: activeUrl,
-                    decoded: true,
-                    size: nextSize,
-                  });
-                  if (nextSize) {
-                    onPhotoSize?.(item, nextSize);
+                  setThumbDecoded(true);
+                  if (img?.naturalWidth > 0 && img?.naturalHeight > 0) {
+                    setPhotoSize({ width: img.naturalWidth, height: img.naturalHeight });
                   }
                 }}
                 onFailed={() => {
@@ -212,28 +171,16 @@ export default function FestivalGridPhotoCard({
             </span>
           ) : null}
         </div>
-        <div
-          className={`flex min-w-0 flex-col justify-center gap-0.5 ${
-            sideCaption
-              ? 'px-2 pb-2 pt-1.5 md:flex-1 md:px-3.5 md:py-3'
-              : 'px-2 pb-2 pt-1.5'
-          }`}
-        >
+        <div className="flex min-w-0 flex-col gap-0.5 px-1.5 pb-1.5 pt-1">
           {titleLines?.secondary ? (
             <>
               <p
-                className={`${
-                  sideCaption ? 'text-[13px] md:text-[15px]' : 'text-[13px]'
-                } font-bold leading-[1.32] line-clamp-2 break-keep ${
-                  viewed ? 'text-stone-500' : 'text-stone-900'
-                }`}
+                className={`text-[11px] font-bold leading-[1.25] line-clamp-2 break-keep ${viewed ? 'text-stone-500' : 'text-stone-900'}`}
               >
                 {titleLines.primary}
               </p>
               <p
-                className={`${
-                  sideCaption ? 'text-[11px] md:text-[11.5px]' : 'text-[11px]'
-                } font-semibold leading-snug text-stone-600 line-clamp-1 break-keep`}
+                className="text-[10px] font-semibold leading-snug text-stone-600 line-clamp-1 break-keep"
                 {...koText}
               >
                 {titleLines.secondary}
@@ -241,11 +188,7 @@ export default function FestivalGridPhotoCard({
             </>
           ) : (
             <p
-              className={`${
-                sideCaption ? 'text-[13px] md:text-[15px]' : 'text-[13px]'
-              } font-bold leading-[1.32] line-clamp-2 break-keep ${
-                viewed ? 'text-stone-500' : 'text-stone-900'
-              }`}
+              className={`text-[11px] font-bold leading-[1.25] line-clamp-2 break-keep ${viewed ? 'text-stone-500' : 'text-stone-900'}`}
               {...koText}
             >
               {titleLines?.primary}
@@ -253,9 +196,7 @@ export default function FestivalGridPhotoCard({
           )}
           {metaLine ? (
             <p
-              className={`${
-                sideCaption ? 'text-[11px] md:text-[11.5px]' : 'text-[11px]'
-              } leading-snug text-stone-600 line-clamp-1 break-keep tabular-nums`}
+              className="text-[10px] leading-snug text-stone-600 line-clamp-1 break-keep tabular-nums"
             >
               {metaLine}
             </p>
@@ -290,14 +231,13 @@ export default function FestivalGridPhotoCard({
   );
 }
 
-export function FestivalGridSkeleton({ spanClass = 'col-span-6 md:col-span-4' } = {}) {
+export function FestivalGridSkeleton() {
   return (
     <div
-      className={`min-h-0 overflow-hidden rounded-xl border border-stone-200 bg-white ${spanClass}`}
+      className="mb-1.5 break-inside-avoid overflow-hidden rounded-xl border border-stone-200 bg-white md:mb-2 lg:mb-2.5"
       aria-hidden="true"
-      data-festival-grid-card-skeleton=""
     >
-      <div className="aspect-[5/4] animate-pulse bg-stone-200" />
+      <div className="aspect-[4/5] animate-pulse bg-stone-200" />
       <div className="space-y-1 px-1.5 py-1.5">
         <div className="h-3 animate-pulse rounded bg-stone-200" />
         <div className="h-2.5 w-4/5 animate-pulse rounded bg-stone-100" />
