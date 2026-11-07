@@ -2,7 +2,10 @@ import { useEffect, useMemo, useState } from 'react';
 import { splitPlaceOverview } from '../common/placeOverviewText';
 import { isGateoPlaceGalleryOverviewFallbackEnabled } from '../../../shared/gateoFeatureFlags.js';
 import { shouldUsePlaceGalleryReadonlyOverview } from '../../../pages/Home/lib/placeDescText.js';
-import { hydratePlaceGalleryOverview } from '../../../pages/Home/lib/hydratePlaceGalleryOverview.js';
+import {
+  hydratePlaceGalleryOverview,
+  onPlaceChatIntroSaved,
+} from '../../../pages/Home/lib/hydratePlaceGalleryOverview.js';
 import { overviewTextIsKoreanOnly } from '../../../pages/Home/lib/placeSeoText.js';
 
 function locationOverviewKey(location) {
@@ -26,10 +29,28 @@ export function usePlaceGalleryOverviewHydration(location, locale) {
   const flagOn = isGateoPlaceGalleryOverviewFallbackEnabled();
   const base = useMemo(() => splitPlaceOverview(location, locale), [location, locale]);
   const [hydratedFixed, setHydratedFixed] = useState('');
+  const [introSavedTick, setIntroSavedTick] = useState(0);
 
   useEffect(() => {
     setHydratedFixed('');
   }, [locationOverviewKey(location), locale]);
+
+  useEffect(() => {
+    if (!flagOn || !location) return undefined;
+    return onPlaceChatIntroSaved((savedLoc) => {
+      const left = [
+        String(location?.slug || '').trim().toLowerCase(),
+        String(location?.name || '').trim(),
+        String(location?.id || '').trim(),
+      ].join('|');
+      const right = [
+        String(savedLoc?.slug || '').trim().toLowerCase(),
+        String(savedLoc?.name || '').trim(),
+        String(savedLoc?.id || '').trim(),
+      ].join('|');
+      if (left === right) setIntroSavedTick((n) => n + 1);
+    });
+  }, [flagOn, location]);
 
   useEffect(() => {
     if (!flagOn) return undefined;
@@ -46,7 +67,7 @@ export function usePlaceGalleryOverviewHydration(location, locale) {
     return () => {
       cancelled = true;
     };
-  }, [flagOn, location, locale, base.fixed, base.curation]);
+  }, [flagOn, location, locale, base.fixed, base.curation, introSavedTick]);
 
   const fixed = base.fixed || (flagOn ? hydratedFixed : '');
 

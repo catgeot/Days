@@ -16,6 +16,7 @@ import {
 import {
   isSyntheticOrEmptyPlaceDesc,
   needsPlaceChatIntroHydration,
+  shouldEnsurePlaceChatIntroForLocation,
 } from './placeDescText.js';
 import {
   buildMooniBoundSpotFromLocation,
@@ -32,9 +33,14 @@ import {
   introLocaleStorageKeys,
   pickBareFallbackIntroFromRows,
 } from './placeChatIntroBareFallback.js';
+import { notifyPlaceChatIntroSaved } from './hydratePlaceGalleryOverview.js';
 import { settlementIntroUsesParentCityKeyOnly } from './settlementIntroParentOnly.js';
 
-export { isSyntheticOrEmptyPlaceDesc, needsPlaceChatIntroHydration };
+export {
+  isSyntheticOrEmptyPlaceDesc,
+  needsPlaceChatIntroHydration,
+  shouldEnsurePlaceChatIntroForLocation,
+};
 
 const LS_PREFIX = 'days_place_chat_intro:';
 const INTRO_LOCALE_SUFFIX = { en: '@en' };
@@ -399,6 +405,9 @@ export async function ensurePlaceChatIntroForLocation(locOrName, options = {}) {
         return null;
       }
       await persistPlaceChatIntroSummary(generateLabel, raw, lng);
+      if (typeof locOrName === 'object' && locOrName) {
+        notifyPlaceChatIntroSaved(locOrName, lng);
+      }
       const stripped = stripPlaceChatIntroForSummary(raw, placeName);
       return stripped || null;
     } catch (err) {
