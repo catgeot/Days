@@ -23,11 +23,28 @@ export function pickVisiblePlayIndex(ratios, previousIndex = null) {
     if (
       ratio === bestRatio &&
       previousIndex === i &&
-      (bestIndex !== previousIndex)
+      bestIndex !== previousIndex
     ) {
       bestIndex = i;
     }
   }
 
   return bestIndex;
+}
+
+/**
+ * Pause every non-active video first, then play the active one.
+ * activeIndex null → pause-only list (no play).
+ */
+export function planPlaybackActions(activeIndex, count) {
+  const size = Number(count);
+  if (!Number.isInteger(size) || size < 0) return [];
+  const actions = [];
+  for (let i = 0; i < size; i += 1) {
+    if (i !== activeIndex) actions.push({ index: i, type: 'pause' });
+  }
+  if (activeIndex != null && activeIndex >= 0 && activeIndex < size) {
+    actions.push({ index: activeIndex, type: 'play' });
+  }
+  return actions;
 }

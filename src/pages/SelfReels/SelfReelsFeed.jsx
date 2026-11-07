@@ -1,20 +1,50 @@
 import { useEffect, useRef, useState } from 'react';
-import { pickVisiblePlayIndex } from './selfReelsPlayback.js';
+import { pickVisiblePlayIndex, planPlaybackActions } from './selfReelsPlayback.js';
+
+function pauseAllVideos(videoRefs) {
+  videoRefs.forEach((video) => {
+    if (!video) return;
+    video.pause();
+  });
+}
+
+function applyPlayback(videoRefs, activeIndex, muted, documentHidden) {
+  const videos = videoRefs;
+  if (documentHidden || activeIndex == null) {
+    pauseAllVideos(videos);
+    return;
+  }
+
+  const actions = planPlaybackActions(activeIndex, videos.length);
+  for (const action of actions) {
+    const video = videos[action.index];
+    if (!video) continue;
+    if (action.type === 'pause') {
+      video.pause();
+      video.muted = true;
+      continue;
+    }
+    video.muted = muted;
+    const playResult = video.play();
+    if (playResult && typeof playResult.catch === 'function') {
+      playResult.catch(() => {});
+    }
+  }
+}
 
 export default function SelfReelsFeed({ reels }) {
   const scrollerRef = useRef(null);
   const itemRefs = useRef([]);
   const videoRefs = useRef([]);
-  const [activeIndex, setActiveIndex] = useState(0);
+  const [activeIndex, setActiveIndex] = useState(null);
   const [muted, setMuted] = useState(true);
-  const activeIndexRef = useRef(0);
+  const [documentHidden, setDocumentHidden] = useState(
+    typeof document !== 'undefined' ? document.visibilityState === 'hidden' : false,
+  );
+  const activeIndexRef = useRef(null);
 
   useEffect(() => {
     activeIndexRef.current = activeIndex;
-  }, [activeIndex]);
-
-  useEffect(() => {
-    setMuted(true);
   }, [activeIndex]);
 
   useEffect(() => {
@@ -31,8 +61,9 @@ export default function SelfReelsFeed({ reels }) {
           ratios[index] = entry.intersectionRatio;
         }
         const next = pickVisiblePlayIndex(ratios, activeIndexRef.current);
-        if (next === null) return;
-        setActiveIndex((prev) => (prev === next ? prev : next));
+        if (next === activeIndexRef.current) return;
+        setMuted(true);
+        setActiveIndex(next);
       },
       {
         root,
@@ -44,28 +75,35 @@ export default function SelfReelsFeed({ reels }) {
       if (node) observer.observe(node);
     });
 
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      pauseAllVideos(videoRefs.current);
+    };
   }, [reels]);
 
   useEffect(() => {
-    videoRefs.current.forEach((video, index) => {
-      if (!video) return;
-      video.muted = muted;
-      if (index === activeIndex) {
-        const playResult = video.play();
-        if (playResult && typeof playResult.catch === 'function') {
-          playResult.catch(() => {});
-        }
-      } else {
-        video.pause();
-      }
-    });
-  }, [activeIndex, muted, reels]);
+    const onVisibility = () => {
+      const hidden = document.visibilityState === 'hidden';
+      setDocumentHidden(hidden);
+      if (hidden) pauseAllVideos(videoRefs.current);
+    };
+    document.addEventListener('visibilitychange', onVisibility);
+    return () => {
+      document.removeEventListener('visibilitychange', onVisibility);
+      pauseAllVideos(videoRefs.current);
+    };
+  }, []);
+
+  useEffect(() => {
+    applyPlayback(videoRefs.current, activeIndex, muted, documentHidden);
+  }, [activeIndex, muted, documentHidden, reels]);
 
   return (
     <div
       ref={scrollerRef}
       data-self-reels-feed="1"
+      data-active-index={activeIndex == null ? '' : String(activeIndex)}
+      data-feed-muted={muted ? '1' : '0'}
       className="h-full w-full snap-y snap-mandatory overflow-y-auto"
     >
       {reels.map((reel, index) => (
@@ -93,6 +131,9 @@ export default function SelfReelsFeed({ reels }) {
           <div className="relative z-10 flex w-full flex-col gap-3 bg-black/45 px-4 py-5 text-left text-white">
             <p data-reel-credit={reel.id} className="text-xs leading-relaxed">
               {reel.credit}
+            </p>
+            <p data-reel-fixture-label={reel.id} className="text-[11px] text-white/70">
+              fixture
             </p>
             <button
               type="button"

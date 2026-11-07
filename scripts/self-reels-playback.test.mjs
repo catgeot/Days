@@ -5,6 +5,7 @@ import test from 'node:test';
 import {
   SELF_REELS_VISIBLE_MIN,
   pickVisiblePlayIndex,
+  planPlaybackActions,
 } from '../src/pages/SelfReels/selfReelsPlayback.js';
 import { getFixtureSelfReels } from '../src/pages/SelfReels/selfReelsFixture.js';
 import { getPublishedSelfReels } from '../src/pages/SelfReels/selfReelsCatalog.js';
@@ -44,6 +45,21 @@ test('pickVisiblePlayIndex ignores rows below the visible minimum', () => {
   assert.equal(pickVisiblePlayIndex(null, 0), null);
 });
 
+test('planPlaybackActions pauses others before playing the active index', () => {
+  assert.deepEqual(planPlaybackActions(null, 2), [
+    { index: 0, type: 'pause' },
+    { index: 1, type: 'pause' },
+  ]);
+  assert.deepEqual(planPlaybackActions(1, 2), [
+    { index: 0, type: 'pause' },
+    { index: 1, type: 'play' },
+  ]);
+  assert.deepEqual(planPlaybackActions(0, 2), [
+    { index: 1, type: 'pause' },
+    { index: 0, type: 'play' },
+  ]);
+});
+
 test('fixture feed appears only when both self-reels flags are on', () => {
   const page = GATEO_ENV_FLAG_NAMES.SELF_REELS;
   const fixture = GATEO_ENV_FLAG_NAMES.SELF_REELS_FIXTURE;
@@ -62,15 +78,16 @@ test('fixture feed appears only when both self-reels flags are on', () => {
   });
 });
 
-test('feed source uses muted playsInline video and keeps catalog free of fixtures', () => {
+test('feed starts without an active index and remutes on index change', () => {
   const feed = read('src/pages/SelfReels/SelfReelsFeed.jsx');
   const page = read('src/pages/SelfReels/SelfReelsPage.jsx');
   const catalog = read('src/pages/SelfReels/selfReelsCatalog.js');
+  assert.match(feed, /useState\(null\)/);
+  assert.match(feed, /setMuted\(true\)/);
+  assert.match(feed, /planPlaybackActions/);
+  assert.match(feed, /visibilitychange/);
   assert.match(feed, /playsInline/);
-  assert.match(feed, /muted=\{muted\}/);
-  assert.match(feed, /pickVisiblePlayIndex/);
   assert.match(page, /확인할 영상이 없어요\./);
-  assert.match(page, /isGateoSelfReelsFixtureEnabled/);
   assert.doesNotMatch(catalog, /selfReelsFixture|fixture-allow/);
   assert.doesNotMatch(page, /youtube|YouTubePlayerView|KOGL_REELS_RAW/i);
 });
