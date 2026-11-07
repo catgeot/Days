@@ -16,6 +16,7 @@ import {
 import {
   isSyntheticOrEmptyPlaceDesc,
   needsPlaceChatIntroHydration,
+  shouldEnsurePlaceChatIntroForLocation,
 } from './placeDescText.js';
 import {
   buildMooniBoundSpotFromLocation,
@@ -32,9 +33,14 @@ import {
   introLocaleStorageKeys,
   pickBareFallbackIntroFromRows,
 } from './placeChatIntroBareFallback.js';
+import { notifyPlaceChatIntroSaved } from './hydratePlaceGalleryOverview.js';
 import { settlementIntroUsesParentCityKeyOnly } from './settlementIntroParentOnly.js';
 
-export { isSyntheticOrEmptyPlaceDesc, needsPlaceChatIntroHydration };
+export {
+  isSyntheticOrEmptyPlaceDesc,
+  needsPlaceChatIntroHydration,
+  shouldEnsurePlaceChatIntroForLocation,
+};
 
 const LS_PREFIX = 'days_place_chat_intro:';
 const INTRO_LOCALE_SUFFIX = { en: '@en' };
@@ -358,6 +364,12 @@ const introEnsureInflight = new Map();
 /** 생성 실패 키 — 세션 내 재시도 폭주 방지 (캐시 hit는 계속 조회) */
 const introEnsureFailed = new Set();
 
+export function resetPlaceChatIntroEnsureStateForTests() {
+  introEnsureInflight.clear();
+  introEnsureFailed.clear();
+  bareIntroExactMissCache.clear();
+}
+
 /**
  * place_chat_intro 조회 → 없으면 AI 생성·저장 → 써머리용 본문.
  * @param {object|string} locOrName
@@ -399,6 +411,9 @@ export async function ensurePlaceChatIntroForLocation(locOrName, options = {}) {
         return null;
       }
       await persistPlaceChatIntroSummary(generateLabel, raw, lng);
+      if (typeof locOrName === 'object' && locOrName) {
+        notifyPlaceChatIntroSaved(locOrName, lng);
+      }
       const stripped = stripPlaceChatIntroForSummary(raw, placeName);
       return stripped || null;
     } catch (err) {
