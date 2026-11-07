@@ -84,7 +84,7 @@ async function shotViewport(page, width, filename) {
 
 const browser = await chromium.launch();
 try {
-  const page = await browser.newPage();
+  const page = await (await browser.newContext({ ignoreHTTPSErrors: true })).newPage();
   await page.goto(`${baseUrl}/korea`, { waitUntil: 'networkidle', timeout: 120_000 });
   await page
     .locator('[data-festival-list-heading], [data-festival-grid], main')
