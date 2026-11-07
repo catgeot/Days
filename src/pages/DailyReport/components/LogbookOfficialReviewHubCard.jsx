@@ -1,4 +1,4 @@
-import React, { useId, useMemo, useState } from 'react';
+import React, { useCallback, useId, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronDown, Sparkles } from 'lucide-react';
 import { LOGBOOK_OFFICIAL_REVIEW_CARD_TITLE } from '../../../logbookOfficialReviews/constants.js';
@@ -14,6 +14,13 @@ import {
   resolveReviewThumbnailSrc,
 } from '../../../utils/placeReviewContentBlocks.js';
 import { stripReviewInlineMarkdown } from '../../../utils/reviewInlineMarkdown.js';
+import {
+  filterLogbookOfficialReviewRows,
+  groupLogbookOfficialReviews,
+  LOGBOOK_REVIEW_FILTER_MAJOR,
+} from '../../../logbookOfficialReviews/groupLogbookOfficialReviews.js';
+import { isGateoLogbookReviewFilterEnabled } from '../../../utils/logbookReviewFilterFlag.js';
+import LogbookOfficialReviewFilter from './LogbookOfficialReviewFilter.jsx';
 
 export const LOGBOOK_OFFICIAL_REVIEW_HUB_PAGE_SIZE = 10;
 const LIST_PREVIEW_MAX = 120;
@@ -79,6 +86,7 @@ function HubTitleRow({
   panelId,
   expanded,
   totalCount,
+  filteredCount,
   onToggle,
   headerRound,
   asToggle = true,
@@ -96,7 +104,9 @@ function HubTitleRow({
           className="shrink-0 whitespace-nowrap tabular-nums text-xs font-semibold text-gray-600"
           data-testid="logbook-official-review-hub-count"
         >
-          {totalCount}편
+          {typeof filteredCount === 'number' && filteredCount !== totalCount
+            ? `${filteredCount} / ${totalCount}편`
+            : `${totalCount}편`}
         </span>
       ) : null}
       {showChevron ? (
@@ -141,9 +151,45 @@ const LogbookOfficialReviewHubCard = () => {
   const panelId = useId();
   const [expanded, setExpanded] = useState(false);
   const [visibleCount, setVisibleCount] = useState(LOGBOOK_OFFICIAL_REVIEW_HUB_PAGE_SIZE);
+  const [filterMajor, setFilterMajor] = useState(LOGBOOK_REVIEW_FILTER_MAJOR.ALL);
+  const [filterCitySlug, setFilterCitySlug] = useState('');
   const { enabled, rows, isLoading, loadFailed, totalCount, retry } = useLogbookOfficialReviewHub();
+  const filterEnabled = isGateoLogbookReviewFilterEnabled();
 
-  const visibleRows = useMemo(() => rows.slice(0, visibleCount), [rows, visibleCount]);
+  const grouped = useMemo(() => groupLogbookOfficialReviews(rows), [rows]);
+
+  const filteredRows = useMemo(() => {
+    if (!filterEnabled) return rows;
+    return filterLogbookOfficialReviewRows(rows, filterMajor, filterCitySlug || null);
+  }, [rows, filterEnabled, filterMajor, filterCitySlug]);
+
+  const filteredTotal = filteredRows.length;
+
+  const visibleRows = useMemo(
+    () => filteredRows.slice(0, visibleCount),
+    [filteredRows, visibleCount],
+  );
+
+  const resetPagination = useCallback(() => {
+    setVisibleCount(LOGBOOK_OFFICIAL_REVIEW_HUB_PAGE_SIZE);
+  }, []);
+
+  const onMajorChange = useCallback(
+    (major) => {
+      setFilterMajor(major);
+      setFilterCitySlug('');
+      resetPagination();
+    },
+    [resetPagination],
+  );
+
+  const onCityChange = useCallback(
+    (slug) => {
+      setFilterCitySlug(slug);
+      resetPagination();
+    },
+    [resetPagination],
+  );
 
   if (!enabled) {
     return null;
@@ -187,8 +233,10 @@ const LogbookOfficialReviewHubCard = () => {
     return null;
   }
 
-  const hasMore = visibleCount < totalCount;
+  const hasMore = visibleCount < filteredTotal;
   const headerRound = expanded ? 'rounded-t-2xl' : 'rounded-2xl';
+  const displayFilteredCount =
+    filterEnabled && filteredTotal !== totalCount ? filteredTotal : undefined;
 
   return (
     <section
@@ -201,6 +249,7 @@ const LogbookOfficialReviewHubCard = () => {
         panelId={panelId}
         expanded={expanded}
         totalCount={totalCount}
+        filteredCount={displayFilteredCount}
         headerRound={headerRound}
         onToggle={() => setExpanded((open) => !open)}
       />
@@ -211,6 +260,18 @@ const LogbookOfficialReviewHubCard = () => {
           className="border-t border-gray-100 px-3 pb-4 pt-2 sm:px-4"
           data-testid="logbook-official-review-hub-panel"
         >
+          {filterEnabled ? (
+            <LogbookOfficialReviewFilter
+              major={filterMajor}
+              citySlug={filterCitySlug}
+              total={grouped.total}
+              domesticCount={grouped.domesticCount}
+              overseasCount={grouped.overseasCount}
+              cityChips={grouped.cities}
+              onMajorChange={onMajorChange}
+              onCityChange={onCityChange}
+            />
+          ) : null}
           <ul className="divide-y divide-gray-100">
             {visibleRows.map((review) => {
               const slug = String(review.place_slug || '').trim();
@@ -265,7 +326,7 @@ const LogbookOfficialReviewHubCard = () => {
                 data-testid="logbook-official-review-hub-more"
                 onClick={() =>
                   setVisibleCount((n) =>
-                    Math.min(n + LOGBOOK_OFFICIAL_REVIEW_HUB_PAGE_SIZE, totalCount),
+                    Math.min(n + LOGBOOK_OFFICIAL_REVIEW_HUB_PAGE_SIZE, filteredTotal),
                   )
                 }
               >
