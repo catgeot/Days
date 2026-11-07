@@ -127,6 +127,19 @@ test('monthly row renders mosaic B only (no layout query branch)', () => {
   assert.doesNotMatch(lib, /readExploreV2LayoutParam|readExploreV2QueryParam/);
 });
 
+test('monthly layout B uses aligned CSS grid (no masonry column runs)', () => {
+  const dir = join(root, 'src/pages/Home/components/SearchDiscovery');
+  const layoutB = readFileSync(join(dir, 'ExploreMonthlyPicksLayoutB.jsx'), 'utf8');
+  const gridLayout = readFileSync(join(dir, 'exploreMonthlyGridLayout.js'), 'utf8');
+  assert.match(layoutB, /exploreMonthlyGridLayout/);
+  assert.match(layoutB, /EXPLORE_MONTHLY_PICK_GRID_CLASS/);
+  assert.match(gridLayout, /grid-cols-12/);
+  assert.doesNotMatch(gridLayout, /col-span-12/);
+  assert.match(gridLayout, /variant: 'tall'/);
+  assert.doesNotMatch(layoutB, /Masonry|distributeFestivalHubMasonryColumns|partitionFestivalHubSegments/);
+  assert.equal(existsSync(join(dir, 'exploreMonthlyMasonryLayout.js')), false);
+});
+
 test('Home /explore SEO has no explore_v2 query noindex', () => {
   const home = readFileSync(join(root, 'src/pages/Home/index.jsx'), 'utf8');
   assert.doesNotMatch(home, /readExploreV2QueryParam|exploreV2QueryNoIndex|robotsNoIndex=/);

@@ -70,7 +70,6 @@ const ExploreMonthlyPickItem = ({
   sourcesBelow = true,
   className = '',
   mediaClassName = '',
-  layoutColumnSlotIndex = 0,
 }) => {
   const { t, i18n } = useTranslation();
   const displayName = getLocalizedPlaceName(spot, 'ko') || String(spot?.name || '').trim();
@@ -109,33 +108,42 @@ const ExploreMonthlyPickItem = ({
 
   const isHero = variant === 'hero';
   const isWide = variant === 'wide';
-  const isTile = !isHero && !isWide;
+  const isTall = variant === 'tall';
+  const isTile = !isHero && !isWide && !isTall;
   const titleClass = isHero
     ? 'text-lg font-bold leading-tight sm:text-xl'
     : isWide
       ? 'text-base font-bold leading-snug sm:text-lg'
-      : 'text-sm font-bold leading-snug sm:text-base';
+      : isTall
+        ? 'text-sm font-bold leading-snug sm:text-base'
+        : 'text-sm font-bold leading-snug sm:text-base';
   const reasonClass = isHero
     ? 'mt-1 text-xs leading-relaxed text-gray-200 sm:text-sm'
     : isWide
       ? 'mt-1 text-xs leading-relaxed text-gray-200 sm:text-[13px]'
-      : 'mt-1 text-[11px] leading-snug text-gray-200 sm:text-xs';
+      : isTall
+        ? 'mt-1 text-[11px] leading-snug text-gray-200 sm:text-xs'
+        : 'mt-1 text-[11px] leading-snug text-gray-200 sm:text-xs';
   const photoLayout = festivalHubPhotoLayout(sizeForLayout.width, sizeForLayout.height, {
-    inColumn: Boolean(isTile),
-    slotIndex: layoutColumnSlotIndex,
+    inColumn: isTall,
+    slotIndex: 0,
   });
-  const photoAspect = photoLayout.aspectRatio || '3 / 4';
+  const photoAspect = photoLayout.aspectRatio || (isTall ? '4 / 5' : '3 / 4');
   const objectPosition = EXPLORE_MONTHLY_PICK_HERO_OBJECT_POSITION[slug] || '50% 50%';
   const frameMaxHeight = isHero
     ? 'min(32rem, 55vh)'
     : isWide
-      ? 'min(26rem, 45vh)'
-      : 'min(22rem, 40vh)';
+      ? 'min(24rem, 42vh)'
+      : isTall
+        ? 'min(30rem, 48vh)'
+        : 'min(20rem, 38vh)';
   const textPanelClass = isHero
     ? 'bg-black/75 px-3.5 py-3 sm:px-4 sm:py-3.5'
     : isWide
       ? 'bg-black/75 px-3 py-2.5 sm:px-3.5 sm:py-3'
-      : 'bg-black/75 px-2.5 py-2 sm:px-3 sm:py-2.5';
+      : isTall
+        ? 'bg-black/75 px-2.5 py-2 sm:px-3 sm:py-2.5'
+        : 'bg-black/75 px-2.5 py-2 sm:px-3 sm:py-2.5';
 
   if (!imageUrl) return null;
 

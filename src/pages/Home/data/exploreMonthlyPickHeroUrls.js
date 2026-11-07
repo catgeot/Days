@@ -26,7 +26,7 @@ export const EXPLORE_MONTHLY_PICK_HERO_OBJECT_POSITION = {
   melbourne: '50% 40%',
 };
 
-/** 로드 전 메이슨리 wide 분할용(1280px 썸 경로 기준 ffprobe) */
+/** 로드 전 그리드 variant·종횡비 힌트(1280px 썸 경로 기준 ffprobe) */
 export const EXPLORE_MONTHLY_PICK_HERO_INTRINSIC_SIZE = {
   kyoto: { width: 1280, height: 853 },
   'chiang-mai': { width: 1280, height: 854 },

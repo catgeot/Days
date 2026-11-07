@@ -67,10 +67,62 @@ async function expectPhotoAltAndTextPanels(page, altForName) {
 
 async function expectNoMonthlyHorizontalOverflow(page) {
   const overflow = await page.getByTestId('explore-v2-monthly-layout-b').evaluate((root) => {
-    const grids = root.querySelectorAll(':scope > div.grid');
-    return [...grids].map((grid) => grid.scrollWidth - grid.clientWidth);
+    const targets = root.classList.contains('grid')
+      ? [root]
+      : [...root.querySelectorAll(':scope > div.grid')];
+    return targets.map((grid) => grid.scrollWidth - grid.clientWidth);
   });
+  expect(overflow.length).toBeGreaterThan(0);
   expect(overflow.every((d) => d <= 1)).toBe(true);
+}
+
+async function expectNoFullWidthMonthlyBanner(page) {
+  const fullSpan = await page.getByTestId('explore-v2-monthly-layout-b').evaluate((root) => {
+    return [...root.querySelectorAll('[data-testid^="explore-v2-monthly-item-"]')].some((el) => {
+      const grid = root;
+      const itemLeft = el.offsetLeft;
+      const itemWidth = el.offsetWidth;
+      const gridWidth = grid.clientWidth;
+      return itemLeft <= 2 && itemWidth >= gridWidth - 4;
+    });
+  });
+  expect(fullSpan).toBe(false);
+}
+
+async function expectAllMonthlyPickSlugsVisible(page) {
+  for (const slug of ['kyoto', 'chiang-mai', 'phu-quoc', 'jeju', 'dubai', 'melbourne']) {
+    const item = page.getByTestId(`explore-v2-monthly-item-${slug}`);
+    await item.scrollIntoViewIfNeeded();
+    await expect(item).toBeVisible();
+    await expect(page.getByTestId(`explore-v2-monthly-card-${slug}`)).toBeVisible();
+  }
+}
+
+async function expectMonthlyGridRowAlignment(page) {
+  const rows = await page.getByTestId('explore-v2-monthly-layout-b').evaluate((root) => {
+    const items = [...root.querySelectorAll('[data-testid^="explore-v2-monthly-item-"]')];
+    const sorted = items
+      .map((el) => ({
+        top: el.getBoundingClientRect().top,
+        id: el.getAttribute('data-testid'),
+      }))
+      .sort((a, b) => a.top - b.top);
+    const groups = [];
+    for (const item of sorted) {
+      const group = groups.find((g) => Math.abs(g.top - item.top) <= 8);
+      if (group) {
+        group.ids.push(item.id);
+        group.top = Math.min(group.top, item.top);
+      } else {
+        groups.push({ top: item.top, ids: [item.id] });
+      }
+    }
+    return groups.filter((g) => g.ids.length > 1);
+  });
+  expect(rows.length).toBeGreaterThan(0);
+  for (const { ids } of rows) {
+    expect(ids.length).toBeLessThanOrEqual(4);
+  }
 }
 
 test.describe('Explore monthly picks @flagOff', () => {
@@ -87,6 +139,9 @@ test.describe('Explore monthly picks @flagOff', () => {
     await openExplore(page, { width: 390, height: 844 });
     await expectMonthlyMosaic(page);
     await expectNoMonthlyHorizontalOverflow(page);
+    await expectNoFullWidthMonthlyBanner(page);
+    await expectMonthlyGridRowAlignment(page);
+    await expectAllMonthlyPickSlugsVisible(page);
 
     const items = page.locator('[data-testid^="explore-v2-monthly-item-"]');
     for (let i = 0; i < MONTHLY_VISIBLE_COUNT; i += 1) {
@@ -132,6 +187,9 @@ test.describe('Explore monthly picks @flagOff', () => {
     await openExplore(page, { width: 1280, height: 720 });
     await expectMonthlyMosaic(page);
     await expectNoMonthlyHorizontalOverflow(page);
+    await expectNoFullWidthMonthlyBanner(page);
+    await expectMonthlyGridRowAlignment(page);
+    await expectAllMonthlyPickSlugsVisible(page);
     await expectPhotoAltAndTextPanels(page, (name) => `${name} 대표 사진`);
     await expect(page.getByText('에디터스 픽').first()).toBeVisible({ timeout: 45_000 });
   });
