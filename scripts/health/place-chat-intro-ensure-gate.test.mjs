@@ -11,6 +11,7 @@ import {
   onPlaceChatIntroSaved,
   resetPlaceGalleryOverviewCacheForTests,
 } from '../../src/pages/Home/lib/hydratePlaceGalleryOverview.js';
+import { resetPlaceChatIntroEnsureStateForTests } from '../../src/pages/Home/lib/placeChatIntro.js';
 
 test('SSOT desc — ensure yes, display hydrate no', () => {
   const yap = {
@@ -75,4 +76,9 @@ test('notifyPlaceChatIntroSaved clears negative cache and notifies subscribers',
   assert.equal(introCalls, 2);
   off();
   resetPlaceGalleryOverviewCacheForTests();
+});
+
+test('resetPlaceChatIntroEnsureStateForTests clears session inflight/failed', () => {
+  resetPlaceChatIntroEnsureStateForTests();
+  assert.doesNotThrow(() => resetPlaceChatIntroEnsureStateForTests());
 });
