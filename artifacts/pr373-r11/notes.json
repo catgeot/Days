@@ -1,0 +1,50 @@
+{
+  "branchBase": "https://127.0.0.1:4173",
+  "viewport": {
+    "width": 1280,
+    "height": 800
+  },
+  "capturedAt": "2026-10-23T06:57:47.349Z",
+  "runs": [
+    {
+      "flow": "paris",
+      "size": "1280",
+      "file": "branch-paris-1280-after-home-settled.jpg",
+      "atCapture": {
+        "centerLat": 48.856600000000014,
+        "centerLng": 0.5522000000000397,
+        "zoom": 2.35,
+        "idleAt": 1792738576784,
+        "canvasBackingMismatch": false,
+        "summaryOpen": false
+      }
+    },
+    {
+      "flow": "tokyo",
+      "size": "1280",
+      "file": "branch-tokyo-1280-after-home-settled.jpg",
+      "atCapture": {
+        "centerLat": 35.66999999999999,
+        "centerLng": 139.15999999999997,
+        "zoom": 2.35,
+        "idleAt": 1792738584415,
+        "canvasBackingMismatch": false,
+        "summaryOpen": false
+      }
+    },
+    {
+      "flow": "jeju",
+      "size": "1280",
+      "file": "branch-jeju-1280-after-home-settled.jpg",
+      "atCapture": {
+        "centerLat": 33.49959999999997,
+        "centerLng": 126.53120000000001,
+        "zoom": 2.35,
+        "idleAt": 1792738665789,
+        "canvasBackingMismatch": false,
+        "summaryOpen": false
+      }
+    }
+  ],
+  "pass": true
+}
