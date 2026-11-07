@@ -2,10 +2,11 @@ import assert from 'node:assert/strict';
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import test from 'node:test';
+import { fileURLToPath } from 'node:url';
 import { createClient } from '@supabase/supabase-js';
 import { createAuthSessionStorage, gateoAuthOptions } from '../../src/shared/api/authSession.js';
 
-const SRC = new URL('../../src/', import.meta.url);
+const SRC = fileURLToPath(new URL('../../src/', import.meta.url));
 
 function walk(dir, out = []) {
   for (const name of readdirSync(dir)) {
@@ -90,7 +91,7 @@ test('login session is still in storage for a new client', async () => {
   }
 });
 
-test('quota on the auth key evicts caches and keeps search and visit history', () => {
+test('quota on the auth key evicts other caches and keeps stay listings and history', () => {
   const backing = memoryBacking();
   backing.setItem('gateo:mrt-stays:v23:seoul', 'x'.repeat(20));
   backing.setItem('days_place_chat_intro:osaka', 'intro');
@@ -113,7 +114,7 @@ test('quota on the auth key evicts caches and keeps search and visit history', (
   };
   const storage = createAuthSessionStorage(backing);
   storage.setItem('sb-example-auth-token', '{"access_token":"a"}');
-  assert.equal(backing.getItem('gateo:mrt-stays:v23:seoul'), null);
+  assert.equal(backing.getItem('gateo:mrt-stays:v23:seoul'), 'x'.repeat(20));
   assert.equal(backing.getItem('days_place_chat_intro:osaka'), null);
   assert.equal(backing.getItem('gateo_recent_search_keywords'), '["오사카"]');
   assert.equal(backing.getItem('gateo_recent_visited_destinations'), '[{"name":"오사카"}]');
@@ -122,6 +123,37 @@ test('quota on the auth key evicts caches and keeps search and visit history', (
   assert.equal(backing.getItem('days_guest_trips'), '[{"id":"t"}]');
   assert.equal(backing.getItem('savedEmail'), 'keep@gateo.kr');
   assert.equal(backing.getItem('sb-example-auth-token'), '{"access_token":"a"}');
+});
+
+test('quota still full after other caches drops only the oldest stay listing', () => {
+  const backing = memoryBacking();
+  const older = JSON.stringify({ fetchedAt: 10, payload: { city: 'seoul' } });
+  const newer = JSON.stringify({ fetchedAt: 20, payload: { city: 'osaka' } });
+  backing.setItem('gateo:mrt-stays:v23:seoul', older);
+  backing.setItem('gateo:mrt-stays:v23:osaka', newer);
+  backing.setItem('days_place_chat_intro:osaka', 'intro');
+  backing.setItem('gateo_recent_search_keywords', '["오사카"]');
+  backing.setItem('gateo:travel-agencies:v1:visits', '[{"agencyId":"gyg"}]');
+  let failsLeft = 2;
+  const original = backing.setItem.bind(backing);
+  backing.setItem = (key, value) => {
+    if (failsLeft > 0 && String(key).includes('-auth-token')) {
+      failsLeft -= 1;
+      const error = new Error('quota');
+      error.name = 'QuotaExceededError';
+      throw error;
+    }
+    original(key, value);
+  };
+  const storage = createAuthSessionStorage(backing);
+  storage.setItem('sb-example-auth-token', '{"access_token":"a"}');
+  assert.equal(backing.getItem('days_place_chat_intro:osaka'), null);
+  assert.equal(backing.getItem('gateo:mrt-stays:v23:seoul'), null);
+  assert.equal(backing.getItem('gateo:mrt-stays:v23:osaka'), newer);
+  assert.equal(backing.getItem('gateo_recent_search_keywords'), '["오사카"]');
+  assert.equal(backing.getItem('gateo:travel-agencies:v1:visits'), '[{"agencyId":"gyg"}]');
+  assert.equal(backing.getItem('sb-example-auth-token'), '{"access_token":"a"}');
+  assert.equal(failsLeft, 0);
 });
 
 test('quota with only user records leaves search history in place', () => {
@@ -150,7 +182,7 @@ test('quota with only user records leaves search history in place', () => {
 });
 
 test('app code does not call auth.getUser on load', () => {
-  const hits = walk(SRC.pathname).filter((path) => {
+  const hits = walk(SRC).filter((path) => {
     if (path.endsWith(`${join('shared', 'Auth', 'sessionUser.js')}`)) return false;
     const text = readFileSync(path, 'utf8');
     return /auth\.getUser\(/.test(text);
