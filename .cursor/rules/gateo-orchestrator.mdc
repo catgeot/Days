@@ -102,8 +102,8 @@ alwaysApply: false
 
 - SSOT: `PLANNER_TRIPCOM_HOTEL_CITY_IDS` · 큐 [`tripcom-stay-city-queue.md`](plans/tripcom-stay-city-queue.md) 순서만
 - 한 세션 **2라운드** · IntlCity · 목록에 잡힌 도시만 · 워커 커밋 금지
-- 금지: province · `10279` · 키워드 첫 행 · `honolulu`를 757로 · `raja-ampat` 재시도 · sparse에 city 단정
-- 제시어: `오케스트레이터` + `트립닷컴숙소` · 브랜치 `cursor/tripcom-stay-cities-de61`
+- 금지: province · `10279` · 키워드 첫 행 · `honolulu`를 757로 · `raja-ampat`·`ubud` 재시도 · sparse에 city 단정 · R01–R18 다음의 새 라운드
+- 제시어: `오케스트레이터` + `트립닷컴숙소` · 브랜치 `cursor/tripcom-stay-cities-de61` · 큐 ⬜ 없음
 
 ## 세션 종료(체인 끝)
 
