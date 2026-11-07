@@ -61,3 +61,14 @@
 - 새로고침·새 창에서 로그인이 풀렸다. 화면이 `auth.getUser()`를 부를 때 `session_not_found`가 localStorage 세션을 지웠고, 저장 공간이 가득 차면 세션이 메모리에만 남았다.
 - 세션은 localStorage에 두고, 화면은 저장된 세션으로 복원한다. supabase-js 2.119. 코드 `d99cdeb6` · 브랜치 `cursor/auth-session-persist-3163` · PR [#697](https://github.com/catgeot/Days/pull/697).
 - 사람 확인: 로그인 후 새로고침, 창을 닫고 다시 열기. 로그인 버튼이 로그아웃으로 남아 있어야 한다. Preview는 이 브랜치만 켜 두었다. `www.gateo.kr`은 PR 병합 후.
+
+## 로그인 용량 정리와 검색·방문 기록
+
+- 세션 저장이 용량 오류를 만나면 그 주소의 localStorage를 거의 모두 지웠다. 검색어, 방문지, 여행사 방문이 그 경로에서 사라졌다. 이 기록은 계정에 없고 브라우저에만 있다.
+- 이제 그 경로에서는 다시 받을 수 있는 캐시만 지운다. 검색·방문·즐겨찾기·게스트 여행은 남긴다. 캐시를 비워도 세션이 들어가지 않으면 기록은 그대로 두고 세션 저장만 실패한다.
+- 이미 지워진 기록은 복구되지 않는다. 코드 `e0b39b16` · 브랜치 `cursor/auth-keep-history-3163` · PR [#699](https://github.com/catgeot/Days/pull/699). `www.gateo.kr`은 PR 병합 후.
+
+## 사용자 기록 #2 준비
+
+- 다음 세션은 사용자 기록과 용량 관리를 심층으로 본다. 검색·방문 기록은 유지가 전제다. 계정 동기화와 큰 캐시 이전은 사람 확인 전 구현하지 않는다.
+- 핸드오프 [`user-record-storage-plan.md`](./user-record-storage-plan.md) · 인덱스 사용자 기록 행. #699가 열려 있으면 그 브랜치를 쓴다.
