@@ -26,6 +26,7 @@ alwaysApply: true
 4. 명소: `npm run audit:city-attraction-hubs` · **해외 우선** · 일지 핸드오프(다음 배치표).
 5. 정착지: `npm run audit:mapbox-settlement-places` + smoke · 큐 [`mapbox-settlement-queue.md`](plans/mapbox-settlement-queue.md) · POI 금지 · 목표3/최대5/최소2.
 6. 지자체 팔경 **수집**: 종료 · F 재개 금지. **contentId**: 플랜 [`korea-local-scenic-use-plan.md`](plans/korea-local-scenic-use-plan.md) · 큐 [`korea-local-scenic-contentid-queue.md`](plans/korea-local-scenic-contentid-queue.md) · method **§5.7** · DB 우선 · 429 정지.
+7. 트립닷컴 숙소 도시: **큐 종료·재개 금지**. `트립닷컴숙소`가 와도 워커를 띄우지 않음.
 
 상세 Rule: [`.cursor/rules/gateo-orchestrator.mdc`](gateo-orchestrator.mdc).
 

@@ -7,7 +7,7 @@
 - **Cloud 이어하기 · Preview 연속성**: [`cloud-preview-continuity.md`](./cloud-preview-continuity.md) · [`AGENTS.md`](../AGENTS.md) Cloud (세션 표기·**§1.2 제시어 핀 3개**·**§1.3 다세션 플랜=표준 제시어 필수**·고정 Preview·작업 로그)
 - **열린 feature main 핸드오프**: [`feature-handoff-index.md`](./feature-handoff-index.md) — 브랜치·PR·다음 제시어 복붙표
 - **팔경 활용**: A UI `cursor/palgyeong-use-e744` · B contentId `cursor/palgyeong-cid` · [`korea-local-scenic-use-plan.md`](./korea-local-scenic-use-plan.md) · 큐 [`korea-local-scenic-contentid-queue.md`](./korea-local-scenic-contentid-queue.md)
-- **오케스트레이터 (다배치 SSOT)**: [`orchestrator-method.md`](./orchestrator-method.md) · 제시어 `오케스트레이터`
+- **오케스트레이터 (다배치 SSOT)**: [`orchestrator-method.md`](./orchestrator-method.md) · 제시어 `오케스트레이터` · 트립닷컴 숙소 도시 큐 **#11 종료·재개 금지** ([`tripcom-stay-city-queue.md`](./tripcom-stay-city-queue.md))
 - **명소 hub 사전 큐**: [`city-attraction-hub-queue.md`](./city-attraction-hub-queue.md) (R48–R61 **소진** · tip 550 hub)
 - **GATEO 선정 명소 권역 보강 큐 ✅ 소진 (main #108)**: [`korea-scenic-hub-fill-queue.md`](./korea-scenic-hub-fill-queue.md) · 잔여 TODO = Tour contentId(~75) · `fill:korea-scenic-spot-content-ids`
 - **여행지·도착 공항 운영**: [`travel-spots-management.md`](./travel-spots-management.md) (추가·헬스체크·공항 매핑)

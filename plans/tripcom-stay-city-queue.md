@@ -1,12 +1,12 @@
 # 트립닷컴 숙소 도시 — 오케스트레이터 큐
 
-**상태**: 2026-11-07 · R01–R18 ✅ (207 연결 · 라자 암팟·로키·시퀘이아·시미란·세인트헬레나·우붓 보류) · **다음 ⬜ 없음**
+**상태**: 2026-11-07 · **#11 큐 종료** · R01–R18 ✅ · 미연결 16 = 보류·sparse · **다음 ⬜ 없음 · 재개 금지**
 **방법**: [`orchestrator-method.md`](./orchestrator-method.md) §5.8 · 점검 [`tripcom-stay-city-audit.md`](./tripcom-stay-city-audit.md)
-**브랜치**: `cursor/tripcom-stay-cities-de61` · R17–R18 PR [#692](https://github.com/catgeot/Days/pull/692) · R15–R16 PR [#690](https://github.com/catgeot/Days/pull/690) 병합 · R13–R14 PR [#688](https://github.com/catgeot/Days/pull/688) 병합 · R11–R12 PR [#686](https://github.com/catgeot/Days/pull/686) 병합 · R09–R10 PR [#677](https://github.com/catgeot/Days/pull/677) 병합 · R05–R08 PR [#672](https://github.com/catgeot/Days/pull/672) 병합 · R03–R04 PR [#665](https://github.com/catgeot/Days/pull/665) 병합 · 배치 1 PR [#664](https://github.com/catgeot/Days/pull/664) 병합됨
+**브랜치**: `cursor/tripcom-stay-cities-de61` · R17–R18 PR [#692](https://github.com/catgeot/Days/pull/692) 병합 `36f9733e` · R15–R16 PR [#690](https://github.com/catgeot/Days/pull/690) 병합 · R13–R14 PR [#688](https://github.com/catgeot/Days/pull/688) 병합 · R11–R12 PR [#686](https://github.com/catgeot/Days/pull/686) 병합 · R09–R10 PR [#677](https://github.com/catgeot/Days/pull/677) 병합 · R05–R08 PR [#672](https://github.com/catgeot/Days/pull/672) 병합 · R03–R04 PR [#665](https://github.com/catgeot/Days/pull/665) 병합 · 배치 1 PR [#664](https://github.com/catgeot/Days/pull/664) 병합됨
 
 ### 가드
 
-- 한 세션은 **다음 ⬜ 부터 라운드 2개**만. 220곳을 한 세션에서 라이브로 보지 않는다.
+- 큐는 #11에서 종료했다. ⬜가 없다. 새 라운드·워커 배정 금지. 220곳을 한 세션에서 라이브로 보지 않는다.
 - 워커 2 · 슬롯 6 · tip(`affiliate.js` city ID)은 지휘자가 직렬로만 넣는다. 워커 커밋 금지.
 - PASS: `https://kr.trip.com/hotels/w/list?city=` 의 `destinationInputValue`가 비어 있지 않고, 잡힌 도시·주·나라가 그 여행지다. `/hotels/list`는 404. 키워드는 `POST /restapi/soa2/16709/json/gaHotelSearchEngine`. 관문 도시(나하·삿포로·호놀룰루형)는 그 섬·권역 안일 때만.
 - 거절: 키워드 첫 행, type Province·Hotel·Markland, cityId `-1`·`0`·`10279`, 다른 나라 동명.
