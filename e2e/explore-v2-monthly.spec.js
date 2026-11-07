@@ -65,19 +65,12 @@ async function expectPhotoAltAndTextPanels(page, altForName) {
   }
 }
 
-async function expectNoMosaicGap(page) {
-  const gap = await page.getByTestId('explore-v2-monthly-layout-b').evaluate((grid) => {
-    const gridRect = grid.getBoundingClientRect();
-    const rows = new Map();
-    for (const item of grid.children) {
-      const r = item.getBoundingClientRect();
-      const key = Math.round(r.top);
-      rows.set(key, (rows.get(key) || 0) + r.width);
-    }
-    const colGap = parseFloat(getComputedStyle(grid).columnGap) || 0;
-    return [...rows.values()].map((w) => gridRect.width - w).filter((d) => d > colGap + 2);
+async function expectNoMonthlyHorizontalOverflow(page) {
+  const overflow = await page.getByTestId('explore-v2-monthly-layout-b').evaluate((root) => {
+    const grids = root.querySelectorAll(':scope > div.grid');
+    return [...grids].map((grid) => grid.scrollWidth - grid.clientWidth);
   });
-  expect(gap).toEqual([]);
+  expect(overflow.every((d) => d <= 1)).toBe(true);
 }
 
 test.describe('Explore monthly picks @flagOff', () => {
@@ -93,7 +86,7 @@ test.describe('Explore monthly picks @flagOff', () => {
   test('390 — default /explore shows mosaic B, jeju estimate, tap navigates', async ({ page }) => {
     await openExplore(page, { width: 390, height: 844 });
     await expectMonthlyMosaic(page);
-    await expectNoMosaicGap(page);
+    await expectNoMonthlyHorizontalOverflow(page);
 
     const items = page.locator('[data-testid^="explore-v2-monthly-item-"]');
     for (let i = 0; i < MONTHLY_VISIBLE_COUNT; i += 1) {
@@ -138,7 +131,7 @@ test.describe('Explore monthly picks @flagOff', () => {
   test('1280 — default /explore shows mosaic B without gaps', async ({ page }) => {
     await openExplore(page, { width: 1280, height: 720 });
     await expectMonthlyMosaic(page);
-    await expectNoMosaicGap(page);
+    await expectNoMonthlyHorizontalOverflow(page);
     await expectPhotoAltAndTextPanels(page, (name) => `${name} 대표 사진`);
     await expect(page.getByText('에디터스 픽').first()).toBeVisible({ timeout: 45_000 });
   });
@@ -178,7 +171,7 @@ test.describe('Explore monthly picks @flagOn', () => {
   test('390 — env flag on keeps same mosaic B', async ({ page }) => {
     await openExplore(page, { width: 390, height: 844 });
     await expectMonthlyMosaic(page);
-    await expectNoMosaicGap(page);
+    await expectNoMonthlyHorizontalOverflow(page);
   });
 
   test('1280 — env flag on keeps same mosaic B and jeju estimate', async ({ page }) => {

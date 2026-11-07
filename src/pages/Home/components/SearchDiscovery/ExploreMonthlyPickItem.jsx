@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import useClickWithDragPrevention from '../../../../hooks/useClickWithDragPrevention';
 import {
@@ -6,6 +6,12 @@ import {
   getLocalizedPlaceName,
 } from '../../../../components/PlaceCard/common/locationDisplay';
 import { isPlaceholderCountry } from '../../../../utils/travelSpotResolve';
+import { festivalHubPhotoLayout } from '../../../Korea/festivalHubGridLayout.js';
+import {
+  EXPLORE_MONTHLY_PICK_HERO_INTRINSIC_SIZE,
+  EXPLORE_MONTHLY_PICK_HERO_OBJECT_POSITION,
+  EXPLORE_MONTHLY_PICK_PHOTO_CREDIT,
+} from '../../data/exploreMonthlyPickHeroUrls.js';
 import ExploreMonthlyPickMedia from './ExploreMonthlyPickMedia';
 
 const SourceLinks = ({ sources, compact = false }) => (
@@ -29,16 +35,42 @@ const SourceLinks = ({ sources, compact = false }) => (
   </div>
 );
 
+const PhotoCreditLine = ({ slug, compact, isEn }) => {
+  const c = EXPLORE_MONTHLY_PICK_PHOTO_CREDIT[String(slug || '').toLowerCase()];
+  if (!c?.filePageUrl) return null;
+  const text = isEn ? c.en : c.ko;
+  const linkLabel = isEn ? 'File / policy' : '파일·정책 페이지';
+  return (
+    <p
+      className={`px-0.5 text-gray-500 ${compact ? 'mt-1 text-[9px] leading-snug' : 'mt-1.5 text-[10px] leading-snug'}`}
+    >
+      {text}{' '}
+      <a
+        href={c.filePageUrl}
+        target="_blank"
+        rel="noopener noreferrer license"
+        className="font-medium text-blue-400/90 underline decoration-blue-500/30 underline-offset-2 hover:text-blue-300"
+        onClick={(e) => e.stopPropagation()}
+        onPointerDown={(e) => e.stopPropagation()}
+      >
+        {linkLabel}
+      </a>
+    </p>
+  );
+};
+
 const ExploreMonthlyPickItem = ({
   spot,
   entry,
   imageUrl,
   onSelect,
   onImageError,
+  onPhotoNaturalSize,
   variant = 'tile',
   sourcesBelow = true,
   className = '',
   mediaClassName = '',
+  layoutColumnSlotIndex = 0,
 }) => {
   const { t, i18n } = useTranslation();
   const displayName = getLocalizedPlaceName(spot, 'ko') || String(spot?.name || '').trim();
@@ -48,6 +80,26 @@ const ExploreMonthlyPickItem = ({
   const rawCountry = getLocalizedCountryName(spot, 'ko') || String(spot?.country || '').trim();
   const countryLabel = isPlaceholderCountry(rawCountry) ? '' : rawCountry;
   const slug = String(spot?.slug || entry?.slug || '').toLowerCase();
+  const isEnUi = String(i18n.language || '')
+    .toLowerCase()
+    .startsWith('en');
+  const [naturalSize, setNaturalSize] = useState(null);
+  const fallbackSize = EXPLORE_MONTHLY_PICK_HERO_INTRINSIC_SIZE[slug] || {
+    width: 3,
+    height: 4,
+  };
+  const sizeForLayout = naturalSize || fallbackSize;
+
+  const handlePhotoNaturalSize = useCallback(
+    (w, h) => {
+      setNaturalSize((prev) => {
+        if (prev && prev.width === w && prev.height === h) return prev;
+        return { width: w, height: h };
+      });
+      onPhotoNaturalSize?.(slug, w, h);
+    },
+    [onPhotoNaturalSize, slug],
+  );
 
   const { handleStart, handleMove, handleEnd, handleCancel } = useClickWithDragPrevention(onSelect, {
     threshold: 5,
@@ -68,11 +120,17 @@ const ExploreMonthlyPickItem = ({
     : isWide
       ? 'mt-1 text-xs leading-relaxed text-gray-200 sm:text-[13px]'
       : 'mt-1 text-[11px] leading-snug text-gray-200 sm:text-xs';
-  const photoFrameClass = isHero
-    ? 'h-[208px] sm:h-[280px]'
+  const photoLayout = festivalHubPhotoLayout(sizeForLayout.width, sizeForLayout.height, {
+    inColumn: Boolean(isTile),
+    slotIndex: layoutColumnSlotIndex,
+  });
+  const photoAspect = photoLayout.aspectRatio || '3 / 4';
+  const objectPosition = EXPLORE_MONTHLY_PICK_HERO_OBJECT_POSITION[slug] || '50% 50%';
+  const frameMaxHeight = isHero
+    ? 'min(32rem, 55vh)'
     : isWide
-      ? 'h-[164px] sm:h-[224px]'
-      : 'h-[132px] sm:h-[192px]';
+      ? 'min(26rem, 45vh)'
+      : 'min(22rem, 40vh)';
   const textPanelClass = isHero
     ? 'bg-black/75 px-3.5 py-3 sm:px-4 sm:py-3.5'
     : isWide
@@ -83,7 +141,7 @@ const ExploreMonthlyPickItem = ({
 
   return (
     <div
-      className={`flex min-w-0 flex-col ${className}`}
+      className={`flex w-full min-w-0 flex-col ${className}`}
       data-testid={`explore-v2-monthly-item-${slug}`}
     >
       <article
@@ -93,17 +151,23 @@ const ExploreMonthlyPickItem = ({
         onPointerUp={(e) => handleEnd(e, spot)}
         onPointerLeave={handleCancel}
         onPointerCancel={handleCancel}
-        className={`group flex flex-1 cursor-pointer flex-col overflow-hidden rounded-2xl border border-white/[0.1] bg-black/40 text-left transition hover:border-white/25 ${mediaClassName}`}
+        className={`group flex cursor-pointer flex-col overflow-hidden rounded-2xl border border-white/[0.1] bg-black/40 text-left transition hover:border-white/25 ${mediaClassName}`}
       >
         <div
           data-testid={`explore-v2-monthly-photo-${slug}`}
-          className={`relative w-full shrink-0 overflow-hidden bg-black/30 ${photoFrameClass}`}
+          className="relative w-full shrink-0 overflow-hidden bg-black/30"
+          style={{
+            aspectRatio: photoAspect,
+            maxHeight: frameMaxHeight,
+          }}
         >
           <ExploreMonthlyPickMedia
             imageUrl={imageUrl}
             alt={photoAlt}
+            objectPosition={objectPosition}
             onError={() => onImageError?.(slug)}
-            className="transition-transform duration-700 ease-out group-hover:scale-105"
+            onNaturalSize={handlePhotoNaturalSize}
+            className=""
           />
           {entry.estimate ? (
             <span
@@ -116,7 +180,7 @@ const ExploreMonthlyPickItem = ({
         </div>
         <div
           data-testid="explore-v2-monthly-text-panel"
-          className={`flex min-w-0 flex-1 flex-col justify-between border-t border-white/[0.08] ${textPanelClass}`}
+          className={`flex min-w-0 flex-col border-t border-white/[0.08] ${textPanelClass}`}
         >
           <div>
             <div className="flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5">
@@ -140,7 +204,12 @@ const ExploreMonthlyPickItem = ({
           {!sourcesBelow ? <SourceLinks sources={entry.sources} compact={isTile} /> : null}
         </div>
       </article>
-      {sourcesBelow ? <SourceLinks sources={entry.sources} compact={isTile} /> : null}
+      {sourcesBelow ? (
+        <>
+          <SourceLinks sources={entry.sources} compact={isTile} />
+          <PhotoCreditLine slug={slug} compact={isTile} isEn={isEnUi} />
+        </>
+      ) : null}
     </div>
   );
 };
