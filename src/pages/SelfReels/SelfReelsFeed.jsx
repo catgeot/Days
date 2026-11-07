@@ -128,7 +128,10 @@ export default function SelfReelsFeed({ reels }) {
             loop
             preload="metadata"
           />
-          <div className="relative z-10 flex w-full flex-col gap-3 bg-black/45 px-4 py-5 text-left text-white">
+          <div
+            data-reel-controls={reel.id}
+            className="relative z-20 flex w-full flex-col gap-3 bg-black/45 px-4 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-5 text-left text-white"
+          >
             <p data-reel-credit={reel.id} className="text-xs leading-relaxed">
               {reel.credit}
             </p>

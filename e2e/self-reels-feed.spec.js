@@ -50,6 +50,38 @@ async function scrollToReel(page, index) {
   }, index);
 }
 
+async function assertControlsFullyVisible(page, reelId) {
+  const sound = page.locator(`[data-reel-sound="${reelId}"]`);
+  const credit = page.locator(`[data-reel-credit="${reelId}"]`);
+  await expect(sound).toBeVisible();
+  await expect(credit).toBeVisible();
+
+  const box = await sound.boundingBox();
+  expect(box).toBeTruthy();
+  const viewport = page.viewportSize();
+  expect(box.x).toBeGreaterThanOrEqual(0);
+  expect(box.y).toBeGreaterThanOrEqual(0);
+  expect(box.x + box.width).toBeLessThanOrEqual(viewport.width + 0.5);
+  expect(box.y + box.height).toBeLessThanOrEqual(viewport.height + 0.5);
+
+  const creditBox = await credit.boundingBox();
+  expect(creditBox).toBeTruthy();
+  expect(creditBox.y + creditBox.height).toBeLessThanOrEqual(viewport.height + 0.5);
+
+  await expect(sound).toBeEnabled();
+  await sound.click();
+}
+
+async function assertNoOverlappingChrome(page) {
+  // Real shared footer (TrustLinkBar) — must stay hidden on /reels only.
+  await expect(page.getByLabel('GATEO 약관 및 출처')).toHaveCount(0);
+  // DEV/PreviewDebugChrome only — production-like vite preview must omit these.
+  await expect(page.getByText('모바일 위젯 로그')).toHaveCount(0);
+  await expect(page.getByText('작업 로그')).toHaveCount(0);
+  await expect(page.locator('[data-cloud-preview-work-log]')).toHaveCount(0);
+  await expect(page.locator('[data-flight-debug-panel]')).toHaveCount(0);
+}
+
 test.describe('self reels fixture feed', () => {
   test.use({ viewport: { width: 390, height: 844 } });
 
@@ -61,6 +93,7 @@ test.describe('self reels fixture feed', () => {
     await expect(feed).toBeVisible({ timeout: 30_000 });
     await expect(page.getByText('확인할 영상이 없어요.')).toHaveCount(0);
     await expect(page.getByText('fixture').first()).toBeVisible();
+    await assertNoOverlappingChrome(page);
 
     await expect.poll(async () => (await readPlayback(page)).playingCount, { timeout: 20_000 }).toBe(1);
     let state = await readPlayback(page);
@@ -70,7 +103,7 @@ test.describe('self reels fixture feed', () => {
     expect(state.playsInline).toEqual([true, true]);
     expect(state.activeAttr).toBe('0');
 
-    await page.locator('[data-reel-sound="fixture-allow"]').click();
+    await assertControlsFullyVisible(page, 'fixture-allow');
     await expect.poll(async () => (await readPlayback(page)).muted[0]).toBe(false);
 
     await scrollToReel(page, 1);
@@ -80,6 +113,7 @@ test.describe('self reels fixture feed', () => {
     expect(state.muted[1]).toBe(true);
     expect(state.mutedAttr).toBe('1');
     expect(state.activeAttr).toBe('1');
+    await assertControlsFullyVisible(page, 'fixture-second');
 
     await scrollToReel(page, 0);
     await expect.poll(async () => (await readPlayback(page)).playingIndexes, { timeout: 20_000 }).toEqual([0]);
@@ -131,6 +165,8 @@ test.describe('self reels fixture feed', () => {
 
     await page.goto('/about', { waitUntil: 'domcontentloaded' });
     await expect(page.locator('[data-self-reels-feed="1"]')).toHaveCount(0);
+    // Other pages keep the shared TrustLinkBar (reels-only hide).
+    await expect(page.getByLabel('GATEO 약관 및 출처')).toBeVisible({ timeout: 15_000 });
   });
 
   test('fixture layout captures 390 and 1280', async ({ page }) => {
@@ -141,6 +177,11 @@ test.describe('self reels fixture feed', () => {
     await page.goto('/reels', { waitUntil: 'domcontentloaded' });
     await expect(page.locator('[data-self-reels-feed="1"]')).toBeVisible({ timeout: 30_000 });
     await expect.poll(async () => (await readPlayback(page)).playingCount, { timeout: 20_000 }).toBe(1);
+    await assertNoOverlappingChrome(page);
+    await assertControlsFullyVisible(page, 'fixture-allow');
+    // Remute for a clean capture (controls assert toggled sound on).
+    await page.locator('[data-reel-sound="fixture-allow"]').click();
+    await expect.poll(async () => (await readPlayback(page)).muted[0]).toBe(true);
     const path390 = path.join(ARTIFACT_DIR, 'fixture-feed-390.png');
     await page.screenshot({
       path: path390,
@@ -151,6 +192,10 @@ test.describe('self reels fixture feed', () => {
     await page.goto('/reels', { waitUntil: 'domcontentloaded' });
     await expect(page.locator('[data-self-reels-feed="1"]')).toBeVisible({ timeout: 30_000 });
     await expect.poll(async () => (await readPlayback(page)).playingCount, { timeout: 20_000 }).toBe(1);
+    await assertNoOverlappingChrome(page);
+    await assertControlsFullyVisible(page, 'fixture-allow');
+    await page.locator('[data-reel-sound="fixture-allow"]').click();
+    await expect.poll(async () => (await readPlayback(page)).muted[0]).toBe(true);
     const path1280 = path.join(ARTIFACT_DIR, 'fixture-feed-1280.png');
     await page.screenshot({
       path: path1280,
