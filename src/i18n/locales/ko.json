@@ -12,6 +12,7 @@
     "ctaLodgingMixed": "숙소 보고 예약 시작",
     "ctaLodgingMixedNamed": "{{name}} — 숙소 보고 예약 시작",
     "ctaTourProduct": "상품 보고 예약 시작",
+    "ctaTourProductNamed": "{{name}} — 상품 보고 예약 시작",
     "affiliatePartner": "제휴 · {{partner}}",
     "partnerMyRealTrip": "마이리얼트립"
   },
