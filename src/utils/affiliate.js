@@ -1025,6 +1025,32 @@ export const PLANNER_TRIPCOM_HOTEL_CITY_IDS = {
   porto: '826',
   /** 프라하 — 체코. 미국 동명 아님 */
   prague: '1288',
+  /**
+   * R15 (2026-11-07). 목록 destinationInputValue가 그 여행지인 도시만.
+   * 칭다오는 type City. 레이캬비크는 iceland와 831. 사바는 코타키나발루. 사하라는 메르주가. 로키 산맥은 보류.
+   */
+  /** 칭다오 — 산둥. type City. 황다오·자오저우 아님 */
+  qingdao: '7',
+  /** 퀸스타운 — 오타고(뉴질랜드). 호주·남아공·싱가포르 아님 */
+  queenstown: '3860',
+  /** 레이캬비크 — 수도권. iceland와 같은 831 */
+  reykjavik: '831',
+  /** 리우데자네이루 시 — 리우데자네이루주. 주 id 아님 */
+  'rio-de-janeiro': '769',
+  /** 로마 — 라치오. 미국 로마·city 725 아님 */
+  rome: '343',
+  /** 사바 — 코타키나발루. 주 id 아님. kota-kinabalu·borneo와 1393 */
+  sabah: '1393',
+  /** 사하라 사막 — 메르주가(드라타필랄레트). 마라케시 1360 아님 */
+  'sahara-desert': '36267',
+  /** 샌디에이고 — 캘리포니아. 콜롬비아 산디에고 아님 */
+  'san-diego': '698',
+  /** 샌프란시스코 — 캘리포니아. 멕시코·필리핀·코스타리카 동명 아님 */
+  'san-francisco': '313',
+  /** Sant Joan de Labritja — 발레아레스. 이비사 1768 아님 */
+  'sant-joan': '93134',
+  /** 산티아고 데 콤포스텔라 — 갈리시아. 칠레 산티아고 아님 */
+  'santiago-de-compostela': '41720',
 };
 
 /**
