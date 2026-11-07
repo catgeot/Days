@@ -2,6 +2,7 @@
   "git": {
     "deploymentEnabled": {
       "cursor/*": false,
+      "cursor/logbook-review-filter-94a4": true,
       "cursor/auth-session-persist-3163": true,
       "cursor/festival-access-promo-5b7f": true,
       "cursor/explore-search-fix-bfa1": true,

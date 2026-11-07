@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useState } from 'react';
 import { supabase } from '../shared/api/supabase';
-import { isGateoLogbookReviewHubEnabled } from '../shared/gateoFeatureFlags';
+import { isLogbookOfficialReviewHubActive } from '../utils/logbookReviewFilterFlag.js';
 import { fetchEditorialReviewIndex } from './editorialReviewIndex.js';
 
 /**
  * Loads official editorial reviews for the logbook hub card. No-op when flag is off (no network).
  */
 export function useLogbookOfficialReviewHub() {
-  const enabled = isGateoLogbookReviewHubEnabled();
+  const enabled = isLogbookOfficialReviewHubActive();
   const [rows, setRows] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [loadFailed, setLoadFailed] = useState(false);
