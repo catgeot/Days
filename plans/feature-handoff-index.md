@@ -14,6 +14,32 @@
 
 ## 활성 목록
 
+### 사용자 기록 · 용량 관리
+
+| | |
+|--|--|
+| **상태** | **#1 용량 정리** · tip `e0b39b16` · PR [#699](https://github.com/catgeot/Days/pull/699) · 병합 전. #697 로그인 세션 유지는 `main` |
+| **브랜치** | `cursor/auth-keep-history-3163` |
+| **플랜** | [`user-record-storage-plan.md`](./user-record-storage-plan.md) |
+| **일지** | [`2026-11-07-project-log.md`](./2026-11-07-project-log.md) |
+| **PROD** | `https://www.gateo.kr` · #699 병합 전에는 세션 저장 용량 오류가 검색·방문 기록까지 지운다 |
+| **금지** | 검색·방문 기록 삭제 · 계정 동기화 선구현 · 세션마다 새 브랜치 · feature에 `plans/**` 커밋 |
+| **VERIFY** | `node --test scripts/health/auth-session-persist.test.mjs` |
+| **남은 일** | #2에서 기록의 집, 키 분류, 공통 용량 처리, 큰 캐시 자리를 사람과 정한 뒤 한 단계만 |
+
+**다음 제시어**
+
+```
+사용자 기록 #2, 용량 관리
+@plans/feature-handoff-index.md
+@plans/2026-11-07-project-log.md
+@plans/user-record-storage-plan.md
+브랜치 cursor/auth-keep-history-3163 · PR #699
+금지: 검색·방문 기록 삭제 · 계정 동기화 선구현 · 새 브랜치
+작업: 플랜의 판단 1부터 사람과 정하고 합의된 한 단계만 구현
+검증: node --test scripts/health/auth-session-persist.test.mjs
+```
+
 ### 항공경로 검색 버튼
 
 | | |
