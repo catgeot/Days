@@ -30,24 +30,49 @@ test('nextReelIndex never wraps and stays null at end', () => {
   assert.equal(nextReelIndex(0, 0), null);
 });
 
-test('fixture rows expose all placePaths and isFixture; published stays empty without label', () => {
+test('fixture rows expose named places 1:1 and isFixture; path-only rows stay unpublished', () => {
   const page = GATEO_ENV_FLAG_NAMES.SELF_REELS;
   const fixture = GATEO_ENV_FLAG_NAMES.SELF_REELS_FIXTURE;
   withViteEnv({ [page]: '1', [fixture]: '1' }, () => {
     assert.equal(isGateoSelfReelsFixtureEnabled(), true);
     const reels = getFixtureSelfReels();
     assert.equal(reels.length, 2);
+    assert.equal(reels[0].places.length, 5);
     assert.equal(reels[0].placePaths.length, 5);
     assert.ok(reels.every((reel) => reel.isFixture === true));
-    assert.ok(reels.every((reel) => reel.placePaths.every((path) => path.startsWith('/place/'))));
+    assert.ok(
+      reels.every((reel) =>
+        reel.places.every(
+          (place, index) =>
+            place.path === reel.placePaths[index] &&
+            typeof place.name === 'string' &&
+            place.name.length > 0 &&
+            !place.name.startsWith('/place/'),
+        ),
+      ),
+    );
   });
   assert.deepEqual(getPublishedSelfReels(), []);
-  const publishedShape = toPublicSelfReel({
+  assert.equal(
+    toPublicSelfReel({
+      id: 'ops-sample',
+      rightsConfirmed: true,
+      credit: '출처 공공누리 표기',
+      videoUrl: 'https://cdn.example/stable.mp4',
+      placePaths: ['/place/a', '/place/b'],
+    }),
+    null,
+  );
+  const named = toPublicSelfReel({
     id: 'ops-sample',
     rightsConfirmed: true,
     credit: '출처 공공누리 표기',
     videoUrl: 'https://cdn.example/stable.mp4',
-    placePaths: ['/place/a', '/place/b'],
+    places: [
+      { path: '/place/a', name: '확인된 이름 A' },
+      { path: '/place/b', name: '확인된 이름 B' },
+    ],
   });
-  assert.equal(publishedShape.isFixture, undefined);
+  assert.equal(named.isFixture, undefined);
+  assert.deepEqual(named.places.map((place) => place.name), ['확인된 이름 A', '확인된 이름 B']);
 });

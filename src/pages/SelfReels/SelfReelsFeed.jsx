@@ -243,14 +243,15 @@ export default function SelfReelsFeed({ reels }) {
                 data-reel-places={reel.id}
                 className="max-h-28 overflow-y-auto text-xs leading-relaxed"
               >
-                {reel.placePaths.map((path) => (
-                  <li key={path}>
+                {(reel.places || []).map((place) => (
+                  <li key={place.path}>
                     <Link
-                      to={path}
-                      data-reel-place-href={path}
+                      to={place.path}
+                      data-reel-place-href={place.path}
+                      data-reel-place-name={place.name}
                       className="underline underline-offset-2 hover:text-white/90"
                     >
-                      {reel.isFixture ? `테스트 장소 ${path}` : path}
+                      {place.name}
                     </Link>
                   </li>
                 ))}

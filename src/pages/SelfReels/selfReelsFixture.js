@@ -7,12 +7,12 @@ export const FIXTURE_SELF_REEL_ALLOW = {
   rightsConfirmed: true,
   credit: FIXTURE_CREDIT,
   videoUrl: 'https://fixture.invalid/fixture-allow.mp4',
-  placePaths: [
-    '/place/fixture-path-1',
-    '/place/fixture-path-2',
-    '/place/fixture-path-3',
-    '/place/fixture-path-4',
-    '/place/fixture-path-5',
+  places: [
+    { path: '/place/fixture-path-1', name: '테스트 장소 하나' },
+    { path: '/place/fixture-path-2', name: '테스트 장소 둘' },
+    { path: '/place/fixture-path-3', name: '테스트 장소 셋' },
+    { path: '/place/fixture-path-4', name: '테스트 장소 넷' },
+    { path: '/place/fixture-path-5', name: '테스트 장소 다섯' },
   ],
 };
 
@@ -21,7 +21,7 @@ export const FIXTURE_SELF_REEL_SECOND = {
   rightsConfirmed: true,
   credit: FIXTURE_CREDIT,
   videoUrl: 'https://fixture.invalid/fixture-second.mp4',
-  placePaths: ['/place/fixture-path-b'],
+  places: [{ path: '/place/fixture-path-b', name: '테스트 장소 둘째 편' }],
 };
 
 export const FIXTURE_SELF_REEL_FIVE_PLACES = {
@@ -29,12 +29,12 @@ export const FIXTURE_SELF_REEL_FIVE_PLACES = {
   rightsConfirmed: true,
   credit: FIXTURE_CREDIT,
   videoUrl: 'https://fixture.invalid/fixture-five-places.mp4',
-  placePaths: [
-    '/place/fixture-path-1',
-    '/place/fixture-path-2',
-    '/place/fixture-path-3',
-    '/place/fixture-path-4',
-    '/place/fixture-path-5',
+  places: [
+    { path: '/place/fixture-path-1', name: '테스트 장소 하나' },
+    { path: '/place/fixture-path-2', name: '테스트 장소 둘' },
+    { path: '/place/fixture-path-3', name: '테스트 장소 셋' },
+    { path: '/place/fixture-path-4', name: '테스트 장소 넷' },
+    { path: '/place/fixture-path-5', name: '테스트 장소 다섯' },
   ],
 };
 

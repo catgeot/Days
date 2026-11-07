@@ -8,6 +8,7 @@ import {
   isInternalPlacePath,
   isStableSelfReelVideoUrl,
   selectPublicSelfReels,
+  toPublicPlaces,
 } from '../src/pages/SelfReels/selfReelsCatalog.js';
 import {
   FIXTURE_SELF_REEL_ALLOW,
@@ -22,7 +23,7 @@ function fixtureEntry(patch) {
   return {
     ...FIXTURE_SELF_REEL_ALLOW,
     id: 'fixture-case',
-    placePaths: [...FIXTURE_SELF_REEL_ALLOW.placePaths],
+    places: FIXTURE_SELF_REEL_ALLOW.places.map((place) => ({ ...place })),
     ...patch,
   };
 }
@@ -35,19 +36,57 @@ test('published self reels stay empty and do not import fixtures', () => {
   assert.match(read('src/pages/SelfReels/selfReelsFixture.js'), /테스트 출처/);
 });
 
-test('a fixture row with rights, credit, https url, and one place is public', () => {
+test('a fixture row with rights, credit, https url, and named places is public', () => {
   const [reel] = selectPublicSelfReels([FIXTURE_SELF_REEL_ALLOW]);
   assert.equal(reel.id, 'fixture-allow');
   assert.match(reel.id, /^fixture-/);
-  assert.deepEqual(reel.placePaths, FIXTURE_SELF_REEL_ALLOW.placePaths);
+  assert.deepEqual(reel.places, FIXTURE_SELF_REEL_ALLOW.places);
+  assert.deepEqual(
+    reel.placePaths,
+    FIXTURE_SELF_REEL_ALLOW.places.map((place) => place.path),
+  );
   assert.equal(reel.placePaths.length, 5);
   assert.equal(isStableSelfReelVideoUrl(reel.videoUrl), true);
 });
 
-test('five confirmed fixture places are all kept', () => {
+test('five confirmed fixture places keep name and href 1:1', () => {
   const [reel] = selectPublicSelfReels([FIXTURE_SELF_REEL_FIVE_PLACES]);
-  assert.equal(reel.placePaths.length, 5);
-  assert.deepEqual(reel.placePaths, FIXTURE_SELF_REEL_FIVE_PLACES.placePaths);
+  assert.equal(reel.places.length, 5);
+  assert.deepEqual(reel.places, FIXTURE_SELF_REEL_FIVE_PLACES.places);
+  assert.deepEqual(
+    reel.placePaths,
+    FIXTURE_SELF_REEL_FIVE_PLACES.places.map((place) => place.path),
+  );
+});
+
+test('placePaths without confirmed display names stay unpublished (공개 보류)', () => {
+  assert.equal(toPublicPlaces({ placePaths: ['/place/fixture-path-1'] }), null);
+  assert.deepEqual(
+    selectPublicSelfReels([
+      fixtureEntry({
+        places: undefined,
+        placePaths: ['/place/fixture-path-1'],
+      }),
+    ]),
+    [],
+  );
+  assert.deepEqual(
+    selectPublicSelfReels([
+      fixtureEntry({
+        places: [{ path: '/place/fixture-path-1', name: '' }],
+      }),
+    ]),
+    [],
+  );
+  assert.deepEqual(
+    selectPublicSelfReels([
+      fixtureEntry({
+        places: [{ path: '/place/fixture-path-1', name: ' 공백이름 ' }],
+      }),
+    ]),
+    [],
+  );
+  assert.deepEqual(selectPublicSelfReels([fixtureEntry({ places: [] })]), []);
 });
 
 test('missing rights, credit, or video url drops the row', () => {
@@ -55,7 +94,6 @@ test('missing rights, credit, or video url drops the row', () => {
   assert.deepEqual(selectPublicSelfReels([fixtureEntry({ rightsConfirmed: 'true' })]), []);
   assert.deepEqual(selectPublicSelfReels([fixtureEntry({ credit: '테스트 출처' })]), []);
   assert.deepEqual(selectPublicSelfReels([fixtureEntry({ videoUrl: '' })]), []);
-  assert.deepEqual(selectPublicSelfReels([fixtureEntry({ placePaths: [] })]), []);
 });
 
 test('malformed, non-https, and signed video urls are rejected', () => {
@@ -81,7 +119,10 @@ test('external and protocol-relative place paths do not pass', () => {
   assert.equal(isInternalPlacePath('/place/%2e%2e/fixture-path'), false);
   assert.equal(isInternalPlacePath('/place/fixture-path?next=https://fixture.invalid'), false);
   const mixed = fixtureEntry({
-    placePaths: ['/place/fixture-path', 'https://fixture.invalid/place/fixture-path'],
+    places: [
+      { path: '/place/fixture-path', name: '테스트 장소' },
+      { path: 'https://fixture.invalid/place/fixture-path', name: '외부' },
+    ],
   });
   assert.deepEqual(selectPublicSelfReels([mixed]), []);
 });

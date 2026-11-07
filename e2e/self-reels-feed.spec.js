@@ -9,13 +9,14 @@ const FIXTURE_MP4 = fs.readFileSync(
 
 const ARTIFACT_DIR = '/opt/cursor/artifacts/self-reels-session4';
 
-const ALLOW_PLACE_HREFS = [
-  '/place/fixture-path-1',
-  '/place/fixture-path-2',
-  '/place/fixture-path-3',
-  '/place/fixture-path-4',
-  '/place/fixture-path-5',
+const ALLOW_PLACES = [
+  { path: '/place/fixture-path-1', name: '테스트 장소 하나' },
+  { path: '/place/fixture-path-2', name: '테스트 장소 둘' },
+  { path: '/place/fixture-path-3', name: '테스트 장소 셋' },
+  { path: '/place/fixture-path-4', name: '테스트 장소 넷' },
+  { path: '/place/fixture-path-5', name: '테스트 장소 다섯' },
 ];
+const ALLOW_PLACE_HREFS = ALLOW_PLACES.map((place) => place.path);
 
 async function stubFixtureVideos(page, options = {}) {
   const failAllow = Boolean(options.failAllow);
@@ -94,13 +95,19 @@ async function assertNoOverlappingChrome(page) {
   await expect(page.locator('[data-flight-debug-panel]')).toHaveCount(0);
 }
 
-async function assertPlaceHrefs(page, reelId, expected) {
+async function assertPlaceHrefs(page, reelId, expectedPlaces) {
   const links = page.locator(`[data-reel-places="${reelId}"] a`);
-  await expect(links).toHaveCount(expected.length);
-  const hrefs = await links.evaluateAll((nodes) => nodes.map((node) => node.getAttribute('href')));
-  expect(hrefs).toEqual(expected);
-  for (const href of expected) {
-    await expect(page.locator(`[data-reel-place-href="${href}"]`)).toBeVisible();
+  await expect(links).toHaveCount(expectedPlaces.length);
+  const pairs = await links.evaluateAll((nodes) =>
+    nodes.map((node) => ({
+      path: node.getAttribute('href'),
+      name: node.getAttribute('data-reel-place-name') || node.textContent?.trim() || '',
+    })),
+  );
+  expect(pairs).toEqual(expectedPlaces);
+  for (const place of expectedPlaces) {
+    await expect(page.locator(`[data-reel-place-href="${place.path}"]`)).toHaveText(place.name);
+    await expect(page.getByText(place.path, { exact: true })).toHaveCount(0);
   }
 }
 
@@ -162,7 +169,7 @@ test.describe('self reels fixture feed', () => {
     await expect(feed).toBeVisible({ timeout: 30_000 });
     await expect(page.getByText('확인할 영상이 없어요.')).toHaveCount(0);
     await expect(page.getByText('fixture').first()).toBeVisible();
-    await assertPlaceHrefs(page, 'fixture-allow', ALLOW_PLACE_HREFS);
+    await assertPlaceHrefs(page, 'fixture-allow', ALLOW_PLACES);
     await assertNoOverlappingChrome(page);
 
     await expect.poll(async () => (await readPlayback(page)).playingCount, { timeout: 20_000 }).toBe(1);
@@ -246,7 +253,7 @@ test.describe('self reels fixture feed', () => {
     await expect(page.locator('[data-reel-retry="fixture-allow"]')).toBeVisible();
     await expect(page.locator('[data-reel-next="fixture-allow"]')).toHaveCount(0);
     await expect(page.locator('[data-self-reels-feed="1"]')).toHaveAttribute('data-active-index', '0');
-    await assertPlaceHrefs(page, 'fixture-allow', ALLOW_PLACE_HREFS);
+    await assertPlaceHrefs(page, 'fixture-allow', ALLOW_PLACES);
 
     await page.locator('[data-reel-retry="fixture-allow"]').click();
     await expect(page.locator('[data-reel-next="fixture-allow"]')).toBeVisible({ timeout: 20_000 });
@@ -269,9 +276,10 @@ test.describe('self reels fixture feed', () => {
     await page.locator('[data-reel-retry="fixture-allow"]').click();
     await expect(page.locator('[data-reel-next="fixture-allow"]')).toBeVisible({ timeout: 20_000 });
     await assertNoOverlappingChrome(page);
-    await assertPlaceHrefs(page, 'fixture-allow', ALLOW_PLACE_HREFS);
+    await assertPlaceHrefs(page, 'fixture-allow', ALLOW_PLACES);
     await expect(page.locator('[data-reel-credit="fixture-allow"]')).toBeVisible();
     await expect(page.locator('[data-reel-sound="fixture-allow"]')).toBeVisible();
+    await expect(page.getByText('테스트 장소 하나')).toBeVisible();
     const path390 = path.join(ARTIFACT_DIR, 'fixture-fail-390.png');
     await page.screenshot({
       path: path390,
@@ -284,7 +292,8 @@ test.describe('self reels fixture feed', () => {
     await page.locator('[data-reel-retry="fixture-allow"]').click();
     await expect(page.locator('[data-reel-next="fixture-allow"]')).toBeVisible({ timeout: 20_000 });
     await assertNoOverlappingChrome(page);
-    await assertPlaceHrefs(page, 'fixture-allow', ALLOW_PLACE_HREFS);
+    await assertPlaceHrefs(page, 'fixture-allow', ALLOW_PLACES);
+    await expect(page.getByText('테스트 장소 하나')).toBeVisible();
     const path1280 = path.join(ARTIFACT_DIR, 'fixture-fail-1280.png');
     await page.screenshot({
       path: path1280,
