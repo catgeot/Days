@@ -51,6 +51,7 @@ import ForgotPassword from './shared/Auth/ForgotPassWord';
 import UpdatePassword from './shared/Auth/UpdatePassword';
 import AccountProfile from './shared/Auth/AccountProfile';
 import GalleryAdminPage from './pages/Admin/GalleryAdminPage';
+import ReelsBenchPage from './pages/Admin/ReelsBenchPage';
 import { isPreviewDebugChromeBundled } from './shared/cloudPreview/isPreviewDebugChromeBundled.js';
 import TravelAgencyVisitCapture from './components/travelAgencies/TravelAgencyVisitCapture.jsx';
 const PreviewDebugChrome = isPreviewDebugChromeBundled
@@ -219,6 +220,7 @@ function App() {
             <Route path="/auth/update-password" element={<UpdatePassword />} />
             <Route path="/account" element={<AccountProfile />} />
             <Route path="/admin/gallery" element={<GalleryAdminPage />} />
+            <Route path="/admin/reels-bench" element={<ReelsBenchPage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </ReportProvider>
