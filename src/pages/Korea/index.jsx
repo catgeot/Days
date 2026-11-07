@@ -64,7 +64,7 @@ import {
   writeFestivalHubLegacyListToSession,
 } from './festivalListViewSession.js';
 import {
-  FESTIVAL_HUB_CARD_GRID_CLASS,
+  FESTIVAL_HUB_GRID_CLASS,
   FESTIVAL_HUB_GRID_MOBILE_SCROLL_PAD_CLASS,
   FESTIVAL_HUB_GRID_SCROLL_TOP_BOTTOM_CLASS,
 } from './festivalHubGridLayout.js';
@@ -760,30 +760,18 @@ function FestivalThumbFallback({ large = false }) {
   );
 }
 
-const FESTIVAL_GRID_SKELETON_SPANS = [
-  'col-span-6 md:col-span-3',
-  'col-span-6 md:col-span-3',
-  'col-span-12 md:col-span-6',
-  'col-span-6 md:col-span-4',
-  'col-span-6 md:col-span-3',
-  'col-span-12 md:col-span-8',
-];
-
 function FestivalListLoadingSkeletons({ useGrid }) {
   const { t } = useTranslation();
   return (
     <div
-      className={useGrid ? FESTIVAL_HUB_CARD_GRID_CLASS : 'space-y-2'}
+      className={useGrid ? FESTIVAL_HUB_GRID_CLASS : 'space-y-2'}
       data-festival-list-loading=""
       aria-busy="true"
       aria-label={t('korea.festival.loadingSchedule')}
     >
       {Array.from({ length: useGrid ? 6 : 5 }, (_, i) =>
         useGrid ? (
-          <FestivalGridSkeleton
-            key={`sk-${i}`}
-            spanClass={FESTIVAL_GRID_SKELETON_SPANS[i % FESTIVAL_GRID_SKELETON_SPANS.length]}
-          />
+          <FestivalGridSkeleton key={`sk-${i}`} />
         ) : (
           <FestivalRowSkeleton key={`sk-${i}`} />
         ),
@@ -1005,23 +993,9 @@ function FestivalEntries({
   thumbListEpoch = '',
 }) {
   const uniqueItems = dedupeFestivalItems(items).filter(hasFestivalCardContent);
-  const [photoSizesByKey, setPhotoSizesByKey] = useState(() => new Map());
-  const handlePhotoSize = useCallback((item, size) => {
-    const key = festivalCardDedupeKey(item) || festivalKey(item);
-    if (!key || !size?.width || !size?.height) return;
-    setPhotoSizesByKey((prev) => {
-      const cur = prev.get(key);
-      if (cur && cur.width === size.width && cur.height === size.height) {
-        return prev;
-      }
-      const next = new Map(prev);
-      next.set(key, size);
-      return next;
-    });
-  }, []);
   if (useGrid) {
     return (
-      <div className={FESTIVAL_HUB_CARD_GRID_CLASS} data-festival-grid="">
+      <div className={FESTIVAL_HUB_GRID_CLASS} data-festival-grid="">
         {uniqueItems.map((item, index) => {
           const priorityThumb = isFestivalHubGridEagerThumb(index);
           const cardKey = priorityThumb
@@ -1031,7 +1005,6 @@ function FestivalEntries({
                 contentId: item?.contentId,
               })
             : festivalKey(item);
-          const dedupeKey = festivalCardDedupeKey(item) || festivalKey(item);
           return (
             <FestivalGridPhotoCard
               key={cardKey}
@@ -1046,8 +1019,6 @@ function FestivalEntries({
               favorited={favoriteIds.has(String(item.contentId))}
               viewed={Boolean(viewedIds?.has(String(item.contentId)))}
               onToggleFavorite={onToggleFavorite}
-              initialPhotoSize={photoSizesByKey.get(dedupeKey) ?? null}
-              onPhotoSize={handlePhotoSize}
               onSelect={onSelect}
               distanceKm={
                 nearKmByContentId.get(String(item.contentId)) ?? undefined
