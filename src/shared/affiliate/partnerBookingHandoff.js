@@ -40,6 +40,21 @@ export function stayCardBookingAccessibleName(item, t) {
   return t(namedKey, { name, defaultValue: `${name} — ${base}` });
 }
 
+/**
+ * 투어·티켓 카드 전체 링크 — 스크린리더에서 상품명·예약 CTA를 함께 읽도록.
+ * @param {{ itemName?: string } | null | undefined} item
+ * @param {(key: string, opts?: object) => string} t
+ */
+export function tourCardBookingAccessibleName(item, t) {
+  const base = t(partnerBookingHandoffCtaKey('tour-product'));
+  const name = String(item?.itemName || '').trim();
+  if (!name) return base;
+  return t('partnerBookingHandoff.ctaTourProductNamed', {
+    name,
+    defaultValue: `${name} — ${base}`,
+  });
+}
+
 export const PARTNER_BOOKING_HANDOFF_FORBIDDEN_CTA = [
   '지금 결제',
   '바로 결제',
