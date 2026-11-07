@@ -1,6 +1,22 @@
 const AUTH_TOKEN_MARK = '-auth-token';
 const KEEP_KEYS = new Set(['savedEmail']);
 
+/** Refetchable caches. Search, visits, favorites, and drafts are not in this list. */
+const CACHE_KEY_PREFIXES = [
+  'gateo:tourapi-proxy:',
+  'gateo:mrt-tnas:',
+  'gateo:mrt-stays:',
+  'gateo:mrt-stay-coords:',
+  'gateo:nearby-attractions:',
+  'gateo:korea-festivals:v2:',
+  'gateo:festival-open-detail:',
+  'gateo-world-event-list-photo',
+  'gateo.yt.unplayable',
+  'days_place_chat_intro:',
+  'days_gallery_swr_',
+  'Days_Score_',
+];
+
 function isQuotaError(error) {
   if (!error) return false;
   const name = error.name || '';
@@ -10,12 +26,17 @@ function isQuotaError(error) {
     || error.code === 1014;
 }
 
+function isDisposableCacheKey(key) {
+  return CACHE_KEY_PREFIXES.some((prefix) => key.startsWith(prefix));
+}
+
 function collectEvictableKeys(backing, keep) {
   if (typeof backing.length !== 'number' || typeof backing.key !== 'function') return [];
   const keys = [];
   for (let i = 0; i < backing.length; i += 1) {
     const key = backing.key(i);
     if (!key || keep.has(key) || key.includes(AUTH_TOKEN_MARK)) continue;
+    if (!isDisposableCacheKey(key)) continue;
     keys.push(key);
   }
   return keys;
@@ -24,8 +45,8 @@ function collectEvictableKeys(backing, keep) {
 /**
  * localStorage adapter for the Supabase auth session.
  * A failed write-probe makes auth-js keep the session in memory, so a refresh
- * or a new window looks logged out. Quota is cleared once, then the session
- * write is retried. Non-auth keys only.
+ * or a new window looks logged out. On quota, disposable caches are removed
+ * once and the session write is retried. Search and visit records stay.
  */
 export function createAuthSessionStorage(backing) {
   return {

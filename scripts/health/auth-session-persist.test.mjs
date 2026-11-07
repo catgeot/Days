@@ -90,9 +90,15 @@ test('login session is still in storage for a new client', async () => {
   }
 });
 
-test('quota on the auth key evicts other local data and keeps the session', () => {
+test('quota on the auth key evicts caches and keeps search and visit history', () => {
   const backing = memoryBacking();
-  backing.setItem('days_guest_trips', 'x'.repeat(20));
+  backing.setItem('gateo:mrt-stays:v23:seoul', 'x'.repeat(20));
+  backing.setItem('days_place_chat_intro:osaka', 'intro');
+  backing.setItem('gateo_recent_search_keywords', '["오사카"]');
+  backing.setItem('gateo_recent_visited_destinations', '[{"name":"오사카"}]');
+  backing.setItem('gateo:travel-agencies:v1:visits', '[{"agencyId":"gyg"}]');
+  backing.setItem('gateo:korea-festivals:v1:favorites', '["festival"]');
+  backing.setItem('days_guest_trips', '[{"id":"t"}]');
   backing.setItem('savedEmail', 'keep@gateo.kr');
   let failsLeft = 1;
   const original = backing.setItem.bind(backing);
@@ -107,9 +113,40 @@ test('quota on the auth key evicts other local data and keeps the session', () =
   };
   const storage = createAuthSessionStorage(backing);
   storage.setItem('sb-example-auth-token', '{"access_token":"a"}');
-  assert.equal(backing.getItem('days_guest_trips'), null);
+  assert.equal(backing.getItem('gateo:mrt-stays:v23:seoul'), null);
+  assert.equal(backing.getItem('days_place_chat_intro:osaka'), null);
+  assert.equal(backing.getItem('gateo_recent_search_keywords'), '["오사카"]');
+  assert.equal(backing.getItem('gateo_recent_visited_destinations'), '[{"name":"오사카"}]');
+  assert.equal(backing.getItem('gateo:travel-agencies:v1:visits'), '[{"agencyId":"gyg"}]');
+  assert.equal(backing.getItem('gateo:korea-festivals:v1:favorites'), '["festival"]');
+  assert.equal(backing.getItem('days_guest_trips'), '[{"id":"t"}]');
   assert.equal(backing.getItem('savedEmail'), 'keep@gateo.kr');
   assert.equal(backing.getItem('sb-example-auth-token'), '{"access_token":"a"}');
+});
+
+test('quota with only user records leaves search history in place', () => {
+  const backing = memoryBacking();
+  backing.setItem('gateo_recent_search_keywords', '["교토"]');
+  backing.setItem('gateo:travel-agencies:v1:visits', '[{"agencyId":"gyg"}]');
+  let failsLeft = 2;
+  const original = backing.setItem.bind(backing);
+  backing.setItem = (key, value) => {
+    if (failsLeft > 0 && String(key).includes('-auth-token')) {
+      failsLeft -= 1;
+      const error = new Error('quota');
+      error.name = 'QuotaExceededError';
+      throw error;
+    }
+    original(key, value);
+  };
+  const storage = createAuthSessionStorage(backing);
+  assert.throws(
+    () => storage.setItem('sb-example-auth-token', '{"access_token":"a"}'),
+    (error) => error?.name === 'QuotaExceededError',
+  );
+  assert.equal(backing.getItem('gateo_recent_search_keywords'), '["교토"]');
+  assert.equal(backing.getItem('gateo:travel-agencies:v1:visits'), '[{"agencyId":"gyg"}]');
+  assert.equal(backing.getItem('sb-example-auth-token'), null);
 });
 
 test('app code does not call auth.getUser on load', () => {
