@@ -1,4 +1,3 @@
-// DRAFT, NOT DEPLOYED. Target path: supabase/functions/gallery-moderate/index.ts
 // Admin-only gallery moderation. The pattern follows update-place-toolkit
 // (resolveCaller: Bearer -> auth.getUser -> admin allowlist), except that the allowlist here is
 // the app_admins table (via is_app_admin, service_role only) instead of an env list.
@@ -79,6 +78,14 @@ function authServiceDown(error: unknown): boolean {
   return rec.name === "AuthRetryableFetchError";
 }
 
+function optionalImageUrl(value: unknown): string | null {
+  if (typeof value !== "string") return null;
+  const url = value.trim();
+  if (url.length < 12 || url.length > 2048) return null;
+  if (!/^https:\/\/[^\s<>"'\\]+$/.test(url)) return null;
+  return url;
+}
+
 const ACTIONS = new Set(["remove", "restore", "dismiss"]);
 const REASONS = new Set(["irrelevant", "inappropriate", "low_quality", "copyright", "other", "admin"]);
 const ID_RE = /^[^\s<>"'\\\u0000-\u001f]{1,200}$/;
@@ -154,6 +161,7 @@ serve(async (req) => {
   const imageId = String(body.imageId ?? "").trim();
   const reason = String(body.reason ?? "admin");
   const note = body.note == null ? null : String(body.note).slice(0, 300);
+  const imageUrl = optionalImageUrl(body.imageUrl);
   if (!ACTIONS.has(action) || !REASONS.has(reason) || !ID_RE.test(placeId) || !ID_RE.test(imageId)) {
     logLine({ action, placeId, imageId, actor: userId, status: 400, error: "bad input" });
     return json(req, { ok: false, error: "bad input" }, 400);
@@ -167,6 +175,7 @@ serve(async (req) => {
     p_actor: userId,
     p_reason: reason,
     p_note: note,
+    p_image_url: imageUrl,
   });
   if (error) {
     const code = (error as { code?: string }).code ?? "";

@@ -229,3 +229,50 @@ export function galleryModerateFailureReason(error, data) {
   if (status === 403 || code === '42501' || code === '403') return 'forbidden';
   return 'error';
 }
+
+/** gallery_url_key 와 동일 — host + path, query/fragment 제외. */
+export function galleryUrlKey(url) {
+  const raw = String(url || '').trim();
+  if (!/^https:\/\/[a-z0-9.-]+/i.test(raw)) return '';
+  const host = raw.match(/^https:\/\/([A-Za-z0-9.-]+)/i)?.[1]?.toLowerCase() || '';
+  const path = raw.match(/^https:\/\/[A-Za-z0-9.-]+(?::443)?(\/[^?#]*)/i)?.[1] || '/';
+  return host ? host + path : '';
+}
+
+export function emptyGalleryExclusionSets() {
+  return { ids: new Set(), urlKeys: new Set() };
+}
+
+export function galleryExclusionKeySets(rows) {
+  const ids = new Set();
+  const urlKeys = new Set();
+  for (const row of rows || []) {
+    const id = String(row?.image_id || '').trim();
+    const key = String(row?.image_url_key || '').trim();
+    if (id) ids.add(id);
+    if (key) urlKeys.add(key);
+  }
+  return { ids, urlKeys };
+}
+
+export function unionGalleryExclusionSets(a, b) {
+  return {
+    ids: new Set([...(a?.ids || []), ...(b?.ids || [])]),
+    urlKeys: new Set([...(a?.urlKeys || []), ...(b?.urlKeys || [])]),
+  };
+}
+
+export function galleryImageUrl(image) {
+  return String(image?.urls?.regular || image?.urls?.small || '').trim();
+}
+
+export function withoutExcludedGalleryImages(images, sets) {
+  const list = Array.isArray(images) ? images : [];
+  if (!sets || (sets.ids?.size || 0) + (sets.urlKeys?.size || 0) === 0) return list;
+  return list.filter((img) => {
+    const id = String(img?.id || '');
+    if (id && sets.ids.has(id)) return false;
+    const key = galleryUrlKey(galleryImageUrl(img));
+    return !(key && sets.urlKeys.has(key));
+  });
+}

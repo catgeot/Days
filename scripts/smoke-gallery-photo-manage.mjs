@@ -8,6 +8,10 @@ import {
   GALLERY_LONG_PRESS_MOVE_PX,
   shouldCancelGalleryLongPress,
 } from '../src/components/PlaceCard/common/galleryLongPress.js';
+import {
+  galleryUrlKey,
+  withoutExcludedGalleryImages,
+} from '../src/shared/api/placeGalleryPersist.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -72,7 +76,32 @@ const adminFn = hook.match(
 assert.ok(adminFn, 'handleAdminRemoveGalleryImage block');
 assert.match(adminFn, /gallery-moderate/, 'admin remove calls gallery-moderate');
 assert.match(adminFn, /action:\s*'remove'/, 'admin remove action');
+assert.match(adminFn, /imageUrl/, 'admin remove sends the visible photo URL');
+assert.match(hook, /gallery_active_exclusion_keys/, 'gallery load drops active exclusions');
 assert.doesNotMatch(adminFn, /place_stats/, 'admin remove does not write place_stats');
+
+assert.equal(
+  galleryUrlKey('https://images.pexels.com/photos/1/a.jpeg?auto=compress'),
+  'images.pexels.com/photos/1/a.jpeg',
+);
+assert.equal(galleryUrlKey('http://images.pexels.com/photos/1/a.jpeg'), '');
+assert.deepEqual(
+  withoutExcludedGalleryImages(
+    [
+      { id: 'pexels-1', urls: { regular: 'https://images.pexels.com/photos/1/a.jpeg' } },
+      { id: 'tourapi-detailImage-1-0', urls: { regular: 'https://tong.visitkorea.or.kr/a.jpg' } },
+    ],
+    { ids: new Set(['pexels-1']), urlKeys: new Set() },
+  ).map((img) => img.id),
+  ['tourapi-detailImage-1-0'],
+);
+assert.deepEqual(
+  withoutExcludedGalleryImages(
+    [{ id: 'other', urls: { regular: 'https://images.pexels.com/photos/1/a.jpeg' } }],
+    { ids: new Set(), urlKeys: new Set(['images.pexels.com/photos/1/a.jpeg']) },
+  ),
+  [],
+);
 assert.match(hook, /persist_place_gallery/, 'gallery writes go through persist_place_gallery');
 assert.match(hook, /merge_keep_hero/, 'SWR uses merge_keep_hero');
 assert.match(hook, /am_i_app_admin/, 'admin UI follows am_i_app_admin');
