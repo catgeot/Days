@@ -19,6 +19,7 @@ import {
   SlidersHorizontal,
 } from 'lucide-react';
 import { supabase } from '../../../shared/api/supabase';
+import { subscribeAuthUser } from '../../../shared/Auth/sessionUser.js';
 import { useCurationAI } from '../hooks/useLogbookAI';
 import { useTravelData } from '../../Home/hooks/useTravelData';
 import { getPlaceUrlParam } from '../../Home/lib/formatUrlName';
@@ -626,7 +627,7 @@ const CurationHub = ({ compact = false } = {}) => {
 
   const [user, setUser] = useState(null);
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => setUser(data?.user || null));
+    return subscribeAuthUser(setUser);
   }, []);
 
   const { saveCurationData, savedTrips } = useTravelData(user);

@@ -2,6 +2,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 import { supabase } from '../../../shared/api/supabase';
+import { readSessionUser } from '../../../shared/Auth/sessionUser.js';
 import { attachAuthorLabels } from '../utils/reportAuthor';
 import { sortLogbookFeedRows } from '../../../utils/logbookEditorial';
 import { filterPublicLogbookFeedRows } from '../../../utils/logbookPublicFeed';
@@ -22,7 +23,7 @@ export const useDashboardData = () => {
   // 데이터 로드
   const loadData = useCallback(async () => {
     setLoading(true);
-    const { data: { user } } = await supabase.auth.getUser();
+    const user = await readSessionUser();
     setUser(user);
 
     // 로그인 상태라도 url 파라미터나 상태로 제어할 수 있게 됨

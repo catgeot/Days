@@ -267,7 +267,7 @@
     "@mapbox/mapbox-gl-language": "^1.0.1",
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.5.0",
-    "@supabase/supabase-js": "^2.89.0",
+    "@supabase/supabase-js": "^2.119.0",
     "@vercel/analytics": "^1.6.1",
     "browser-image-compression": "^2.0.2",
     "i18next": "^26.3.6",

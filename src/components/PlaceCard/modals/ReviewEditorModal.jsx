@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { X, Star, Upload, Sparkles, Loader2, ChevronLeft, ChevronRight, Trash2 } from 'lucide-react';
 import imageCompression from 'browser-image-compression';
 import { supabase } from '../../../shared/api/supabase';
+import { subscribeAuthUser } from '../../../shared/Auth/sessionUser.js';
 import { usePlaceReviews } from '../../../hooks/usePlaceReviews';
 import { apiClient } from '../../../pages/Home/lib/apiClient';
 import {
@@ -32,7 +33,7 @@ import {
 const ReviewEditorModal = ({ isOpen, onClose, location, existingReview, onSuccess }) => {
   const [user, setUser] = useState(null);
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => setUser(data?.user || null));
+    return subscribeAuthUser(setUser);
   }, []);
 
   const placeSlug = location?.slug || location?.id;
