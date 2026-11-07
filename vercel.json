@@ -4,7 +4,8 @@
       "cursor/*": false,
       "cursor/auth-session-persist-3163": true,
       "cursor/festival-access-promo-5b7f": true,
-      "cursor/explore-search-fix-bfa1": true
+      "cursor/explore-search-fix-bfa1": true,
+      "cursor/flight-search-tap-b675": true
     }
   },
   "redirects": [
