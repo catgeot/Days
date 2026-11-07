@@ -17,7 +17,7 @@ city ID를 넣으면 부작용이 있다. 플래너 숙소 카드에 `[@지역@]
 ## 확인 방법
 
 1. `node scripts/audit-tripcom-stay-cities.mjs` — Trip.com을 호출하지 않는다. 배치 1과 남은 수만 찍는다.
-2. 시크릿 창에서 `https://kr.trip.com/hotels/list?city=<id>&cityName=<영문명>&checkIn=&checkOut=&adult=2&crn=1` 를 연다.
+2. 시크릿 창에서 `https://kr.trip.com/hotels/w/list?city=<id>&cityName=<영문명>&checkIn=&checkOut=&adult=2&crn=1` 를 연다. `/hotels/list`는 404다.
 3. 통과: 잡힌 도시·주·나라가 그 여행지다. 실패: 직전 도시가 남거나, 다른 나라의 동명 도시다.
 4. 금지: 주 province ID만 넣기(검색창이 빔). `city=10279`는 이탈리아 아풀리아. 키워드 API 첫 결과는 호텔 이름일 수 있다(「하와이」가 스페인 호텔로 나왔음).
 
@@ -27,13 +27,13 @@ city ID를 넣으면 부작용이 있다. 플래너 숙소 카드에 `[@지역@]
 
 ## 배치 1 (R01–R02 기록)
 
-23곳 연결, `raja-ampat` 보류(와이사이는 서파푸아). ID와 관문 도시는 `affiliate.js` 주석과 일지. R03–R04는 PR #665. R05–R08은 PR #672. R09–R10은 PR #677. R11–R12는 PR #686. R13–R14는 PR #688. 다음 세션은 큐 **R15**부터 라운드 2개.
+23곳 연결, `raja-ampat` 보류(와이사이는 서파푸아). ID와 관문 도시는 `affiliate.js` 주석과 일지. R03–R04는 PR #665. R05–R08은 PR #672. R09–R10은 PR #677. R11–R12는 PR #686. R13–R14는 PR #688. R15–R16은 PR #690. 다음 세션은 큐 **R17**부터 라운드 2개.
 
 제도·섬·권역. 하와이처럼 도시 이름이 아니라 세션 잔존이 나기 쉽다.
 
 `guam` `maldives` `seychelles` `palawan` `canary-islands` `galapagos` `mauritius` `zanzibar` `new-caledonia` `saipan` `okinawa` `hokkaido` `phuket` `boracay` `cebu` `crete` `sicily` `madeira` `bahamas` `cape-verde` `la-reunion` `uyuni-salt-flat` `komodo-island` `raja-ampat`
 
-R03–R14는 목록에 잡힌 도시만 연결했다. 남은 곳은 큐 R15부터다. 한 세션에 220곳을 라이브로 보지 않는다.
+R03–R16은 목록에 잡힌 도시만 연결했다. 남은 곳은 큐 R17부터다. 한 세션에 220곳을 라이브로 보지 않는다.
 
 ## 기록
 
@@ -41,6 +41,6 @@ R03–R14는 목록에 잡힌 도시만 연결했다. 남은 곳은 큐 R15부�
 
 ## 9. 핸드오프
 
-- 브랜치 `cursor/tripcom-stay-cities-de61` · R13–R14 코드 `8a13d8fb` `ede01846` · PR [#688](https://github.com/catgeot/Days/pull/688) · R11–R12는 PR #686으로 병합됨
-- 다음 세션은 큐 R15–R16만. 목록에 잡힌 도시만. 중국 국내 도시는 키워드 type이 City여도 목록이 그 도시면 넣는다. 호이안처럼 목록이 그 도시로 잡힌 Zone만 예외. 라자 암팟·호놀룰루·sparse 재시도 금지.
+- 브랜치 `cursor/tripcom-stay-cities-de61` · R15–R16 코드 `c5b092ff` `57856d60` · PR [#690](https://github.com/catgeot/Days/pull/690) · R13–R14는 PR #688으로 병합됨
+- 다음 세션은 큐 R17–R18만. 목록에 잡힌 도시만. 중국 국내 도시는 키워드 type이 City여도 목록이 그 도시면 넣는다. 호이안처럼 목록이 그 도시로 잡힌 Zone만 예외. 라자 암팟·호놀룰루·로키·시퀘이아·시미란·세인트헬레나·sparse 재시도 금지. 목록은 `hotels/w/list`.
 - `cursor/*` Preview는 꺼져 있다. 사람 확인은 PR 병합 후 `www.gateo.kr`.
