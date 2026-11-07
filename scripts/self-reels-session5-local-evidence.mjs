@@ -96,12 +96,20 @@ fs.mkdirSync(OUT, { recursive: true });
 const results = [];
 
 // Parallel builds: default OFF, shell empty (page ON, fixture OFF), fixture ON
+const viteClientEnv = {
+  VITE_MAPBOX_TOKEN: process.env.VITE_MAPBOX_TOKEN || '',
+  VITE_SUPABASE_URL: process.env.VITE_SUPABASE_URL || '',
+  VITE_SUPABASE_ANON_KEY: process.env.VITE_SUPABASE_ANON_KEY || '',
+};
+
 await Promise.all([
-  run('npx vite build --outDir dist-s5-off --emptyOutDir'),
+  run('npx vite build --outDir dist-s5-off --emptyOutDir', { ...viteClientEnv }),
   run('npx vite build --outDir dist-s5-empty --emptyOutDir', {
+    ...viteClientEnv,
     VITE_GATEO_SELF_REELS: '1',
   }),
   run('npx vite build --outDir dist-s5-fixture --emptyOutDir', {
+    ...viteClientEnv,
     VITE_GATEO_SELF_REELS: '1',
     VITE_GATEO_SELF_REELS_FIXTURE: '1',
   }),
@@ -118,12 +126,33 @@ try {
   const fixProc = await startPreview('dist-s5-fixture', 5203);
   previews.push(fixProc);
 
-  // ① OFF → /reels lands home
+  // ① OFF → /reels lands home (URL / alone is NOT home PASS — wait for real home cues)
   {
     const page = await browser.newPage();
     await page.goto('http://127.0.0.1:5201/reels', { waitUntil: 'domcontentloaded' });
     await page.waitForURL((url) => url.pathname === '/' || url.pathname === '');
+    await page.waitForFunction(() => document.readyState === 'complete');
+    await page.waitForFunction(
+      () =>
+        /GATEO/i.test(document.title || '') &&
+        (Boolean(document.querySelector('.mapboxgl-canvas, .mapboxgl-map, [data-search-bar-anchor]')) ||
+          /검색|search/i.test(document.body?.innerText || '')),
+      null,
+      { timeout: 45_000 },
+    );
     results.push(await shot(page, 'off-reels-home-390.png', 390, 844));
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto('http://127.0.0.1:5201/reels', { waitUntil: 'domcontentloaded' });
+    await page.waitForURL((url) => url.pathname === '/' || url.pathname === '');
+    await page.waitForFunction(() => document.readyState === 'complete');
+    await page.waitForFunction(
+      () =>
+        /GATEO/i.test(document.title || '') &&
+        (Boolean(document.querySelector('.mapboxgl-canvas, .mapboxgl-map, [data-search-bar-anchor]')) ||
+          /검색|search/i.test(document.body?.innerText || '')),
+      null,
+      { timeout: 45_000 },
+    );
     results.push(await shot(page, 'off-reels-home-1280.png', 1280, 800));
     await page.close();
   }
