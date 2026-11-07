@@ -4,10 +4,18 @@ import test from 'node:test';
 import { festivalItemThumbCandidateUrls } from '../../src/pages/Korea/festivalListThumb.js';
 import { festivalGridPlaceLabel } from '../../src/pages/Korea/festivalGridPlaceLabel.js';
 import {
+  FESTIVAL_HUB_CARD_GRID_CLASS,
+  FESTIVAL_HUB_CARD_GRID_TIER_SPAN_CLASS,
   FESTIVAL_HUB_COLUMN_LANDSCAPE_ASPECT_RATIOS,
   FESTIVAL_HUB_GRID_CLASS,
+  FESTIVAL_HUB_PHOTO_LAND_MIN_RATIO,
+  FESTIVAL_HUB_PHOTO_PORT_MAX_RATIO,
+  FESTIVAL_HUB_PHOTO_ULTRA_MIN_RATIO,
   FESTIVAL_HUB_PHOTO_WIDE_MIN_RATIO,
   distributeFestivalHubMasonryColumns,
+  festivalHubCardGridSpanClass,
+  festivalHubCardGridSideCaption,
+  festivalHubCardGridTier,
   festivalHubPhotoLayout,
   partitionFestivalHubSegments,
 } from '../../src/pages/Korea/festivalHubGridLayout.js';
@@ -16,12 +24,47 @@ import {
   writeFestivalHubLegacyListToSession,
 } from '../../src/pages/Korea/festivalListViewSession.js';
 
-test('festival hub grid class — 2 col mobile, 3 md, 4 lg, items-start masonry wrapper', () => {
+test('festival hub explore masonry class — 2 col mobile, 3 md, 4 lg, items-start masonry wrapper', () => {
   assert.match(FESTIVAL_HUB_GRID_CLASS, /grid-cols-2/);
   assert.match(FESTIVAL_HUB_GRID_CLASS, /md:grid-cols-3/);
   assert.match(FESTIVAL_HUB_GRID_CLASS, /lg:grid-cols-4/);
   assert.match(FESTIVAL_HUB_GRID_CLASS, /items-start/);
   assert.doesNotMatch(FESTIVAL_HUB_GRID_CLASS, /columns-/);
+});
+
+test('festival hub card grid class — 12 col dense, max-w-6xl (~1152px)', () => {
+  assert.match(FESTIVAL_HUB_CARD_GRID_CLASS, /grid-cols-12/);
+  assert.match(FESTIVAL_HUB_CARD_GRID_CLASS, /grid-flow-dense/);
+  assert.match(FESTIVAL_HUB_CARD_GRID_CLASS, /max-w-6xl/);
+  assert.deepEqual(FESTIVAL_HUB_CARD_GRID_TIER_SPAN_CLASS.port, 'col-span-6 md:col-span-3');
+  assert.deepEqual(FESTIVAL_HUB_CARD_GRID_TIER_SPAN_CLASS.mid, 'col-span-6 md:col-span-4');
+  assert.deepEqual(FESTIVAL_HUB_CARD_GRID_TIER_SPAN_CLASS.land, 'col-span-12 md:col-span-6');
+  assert.deepEqual(
+    FESTIVAL_HUB_CARD_GRID_TIER_SPAN_CLASS.ultrawide,
+    'col-span-12 md:col-span-8',
+  );
+});
+
+test('festival hub card grid tier — port/mid/land/ultrawide thresholds', () => {
+  assert.equal(festivalHubCardGridTier(800, 1000), 'port');
+  assert.equal(festivalHubCardGridTier(850, 1000), 'port');
+  assert.equal(festivalHubCardGridTier(860, 1000), 'mid');
+  assert.equal(festivalHubCardGridTier(1250, 1000), 'land');
+  assert.equal(
+    festivalHubCardGridTier(
+      FESTIVAL_HUB_PHOTO_ULTRA_MIN_RATIO * 100,
+      100,
+    ),
+    'ultrawide',
+  );
+  assert.equal(festivalHubCardGridTier(0, 100), 'mid');
+  assert.equal(festivalHubCardGridTier(undefined, undefined), 'mid');
+  assert.equal(festivalHubCardGridSpanClass('land'), FESTIVAL_HUB_CARD_GRID_TIER_SPAN_CLASS.land);
+  assert.equal(festivalHubCardGridSideCaption('land'), true);
+  assert.equal(festivalHubCardGridSideCaption('port'), false);
+  assert.ok(
+    FESTIVAL_HUB_PHOTO_PORT_MAX_RATIO < FESTIVAL_HUB_PHOTO_LAND_MIN_RATIO,
+  );
 });
 
 test('partitionFestivalHubSegments and distributeFestivalHubMasonryColumns avoid lone-card holes and column-span fragmentation', () => {

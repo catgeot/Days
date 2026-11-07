@@ -64,12 +64,9 @@ import {
   writeFestivalHubLegacyListToSession,
 } from './festivalListViewSession.js';
 import {
-  FESTIVAL_HUB_GRID_CLASS,
+  FESTIVAL_HUB_CARD_GRID_CLASS,
   FESTIVAL_HUB_GRID_MOBILE_SCROLL_PAD_CLASS,
   FESTIVAL_HUB_GRID_SCROLL_TOP_BOTTOM_CLASS,
-  distributeFestivalHubMasonryColumns,
-  festivalHubPhotoLayout,
-  partitionFestivalHubSegments,
 } from './festivalHubGridLayout.js';
 import {
   festivalHubGridThumbLoadKey,
@@ -763,18 +760,30 @@ function FestivalThumbFallback({ large = false }) {
   );
 }
 
+const FESTIVAL_GRID_SKELETON_SPANS = [
+  'col-span-6 md:col-span-3',
+  'col-span-6 md:col-span-3',
+  'col-span-12 md:col-span-6',
+  'col-span-6 md:col-span-4',
+  'col-span-6 md:col-span-3',
+  'col-span-12 md:col-span-8',
+];
+
 function FestivalListLoadingSkeletons({ useGrid }) {
   const { t } = useTranslation();
   return (
     <div
-      className={useGrid ? FESTIVAL_HUB_GRID_CLASS : 'space-y-2'}
+      className={useGrid ? FESTIVAL_HUB_CARD_GRID_CLASS : 'space-y-2'}
       data-festival-list-loading=""
       aria-busy="true"
       aria-label={t('korea.festival.loadingSchedule')}
     >
       {Array.from({ length: useGrid ? 6 : 5 }, (_, i) =>
         useGrid ? (
-          <FestivalGridSkeleton key={`sk-${i}`} />
+          <FestivalGridSkeleton
+            key={`sk-${i}`}
+            spanClass={FESTIVAL_GRID_SKELETON_SPANS[i % FESTIVAL_GRID_SKELETON_SPANS.length]}
+          />
         ) : (
           <FestivalRowSkeleton key={`sk-${i}`} />
         ),
@@ -982,35 +991,6 @@ function FestivalRow({
   );
 }
 
-function useFestivalHubMasonryColumnCount() {
-  const [columnCount, setColumnCount] = useState(() => {
-    if (typeof window === 'undefined' || !window.matchMedia) return 2;
-    if (window.matchMedia('(min-width: 1024px)').matches) return 4;
-    if (window.matchMedia('(min-width: 768px)').matches) return 3;
-    return 2;
-  });
-
-  useEffect(() => {
-    if (typeof window === 'undefined' || !window.matchMedia) return undefined;
-    const lgQuery = window.matchMedia('(min-width: 1024px)');
-    const mdQuery = window.matchMedia('(min-width: 768px)');
-    const sync = () => {
-      if (lgQuery.matches) setColumnCount(4);
-      else if (mdQuery.matches) setColumnCount(3);
-      else setColumnCount(2);
-    };
-    sync();
-    lgQuery.addEventListener?.('change', sync);
-    mdQuery.addEventListener?.('change', sync);
-    return () => {
-      lgQuery.removeEventListener?.('change', sync);
-      mdQuery.removeEventListener?.('change', sync);
-    };
-  }, []);
-
-  return columnCount;
-}
-
 function FestivalEntries({
   useGrid,
   items,
@@ -1025,7 +1005,6 @@ function FestivalEntries({
   thumbListEpoch = '',
 }) {
   const uniqueItems = dedupeFestivalItems(items).filter(hasFestivalCardContent);
-  const columnCount = useFestivalHubMasonryColumnCount();
   const [photoSizesByKey, setPhotoSizesByKey] = useState(() => new Map());
   const handlePhotoSize = useCallback((item, size) => {
     const key = festivalCardDedupeKey(item) || festivalKey(item);
@@ -1041,84 +1020,39 @@ function FestivalEntries({
     });
   }, []);
   if (useGrid) {
-    const segments = partitionFestivalHubSegments(
-      uniqueItems,
-      (item) => {
-        const size = photoSizesByKey.get(
-          festivalCardDedupeKey(item) || festivalKey(item),
-        );
-        return festivalHubPhotoLayout(size?.width, size?.height).wide;
-      },
-      columnCount,
-    );
-    const renderGridCard = (item, index, layoutOpts = {}) => {
-      const priorityThumb = isFestivalHubGridEagerThumb(index);
-      const cardKey = priorityThumb
-        ? festivalHubGridThumbLoadKey({
-            listEpoch: thumbListEpoch,
-            index,
-            contentId: item?.contentId,
-          })
-        : festivalKey(item);
-      const dedupeKey = festivalCardDedupeKey(item) || festivalKey(item);
-      return (
-        <FestivalGridPhotoCard
-          key={cardKey}
-          item={item}
-          priorityThumb={priorityThumb}
-          areaCode={areaCode}
-          cityName={cityName}
-          active={
-            selected?.contentId != null &&
-            String(selected.contentId) === String(item.contentId)
-          }
-          favorited={favoriteIds.has(String(item.contentId))}
-          viewed={Boolean(viewedIds?.has(String(item.contentId)))}
-          onToggleFavorite={onToggleFavorite}
-          initialPhotoSize={photoSizesByKey.get(dedupeKey) ?? null}
-          onPhotoSize={handlePhotoSize}
-          inColumn={Boolean(layoutOpts.inColumn)}
-          slotIndex={layoutOpts.slotIndex ?? index}
-          onSelect={onSelect}
-          distanceKm={
-            nearKmByContentId.get(String(item.contentId)) ?? undefined
-          }
-        />
-      );
-    };
     return (
-      <div className="w-full" data-festival-grid="">
-        {segments.map((seg, segIdx) => {
-          if (seg.type === 'wide') {
-            return (
-              <div key={`wide-${seg.entry.index}`} className="w-full">
-                {renderGridCard(seg.entry.item, seg.entry.index, {
-                  inColumn: false,
-                  slotIndex: seg.entry.index,
-                })}
-              </div>
-            );
-          }
-          const cols = distributeFestivalHubMasonryColumns(
-            seg.entries,
-            columnCount,
-          );
+      <div className={FESTIVAL_HUB_CARD_GRID_CLASS} data-festival-grid="">
+        {uniqueItems.map((item, index) => {
+          const priorityThumb = isFestivalHubGridEagerThumb(index);
+          const cardKey = priorityThumb
+            ? festivalHubGridThumbLoadKey({
+                listEpoch: thumbListEpoch,
+                index,
+                contentId: item?.contentId,
+              })
+            : festivalKey(item);
+          const dedupeKey = festivalCardDedupeKey(item) || festivalKey(item);
           return (
-            <div
-              key={`cols-${segIdx}-${seg.entries[0]?.index ?? 0}`}
-              className={FESTIVAL_HUB_GRID_CLASS}
-            >
-              {cols.map((colEntries, colIdx) => (
-                <div key={`col-${colIdx}`} className="flex min-w-0 flex-col">
-                  {colEntries.map(({ item, index }, rowIdx) =>
-                    renderGridCard(item, index, {
-                      inColumn: true,
-                      slotIndex: colIdx + rowIdx * columnCount + segIdx,
-                    }),
-                  )}
-                </div>
-              ))}
-            </div>
+            <FestivalGridPhotoCard
+              key={cardKey}
+              item={item}
+              priorityThumb={priorityThumb}
+              areaCode={areaCode}
+              cityName={cityName}
+              active={
+                selected?.contentId != null &&
+                String(selected.contentId) === String(item.contentId)
+              }
+              favorited={favoriteIds.has(String(item.contentId))}
+              viewed={Boolean(viewedIds?.has(String(item.contentId)))}
+              onToggleFavorite={onToggleFavorite}
+              initialPhotoSize={photoSizesByKey.get(dedupeKey) ?? null}
+              onPhotoSize={handlePhotoSize}
+              onSelect={onSelect}
+              distanceKm={
+                nearKmByContentId.get(String(item.contentId)) ?? undefined
+              }
+            />
           );
         })}
       </div>
