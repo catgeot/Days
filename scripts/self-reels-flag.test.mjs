@@ -89,12 +89,13 @@ test('/reels is a lazy route only while the page flag is on', () => {
   assert.doesNotMatch(app, /<Route path="\/"[\s\S]*path="\/reels"/);
 });
 
-test('shell is noindex and an empty-list notice, with no player', () => {
+test('shell keeps noindex and empty notice when the fixture feed is off', () => {
   const page = read('src/pages/SelfReels/SelfReelsPage.jsx');
   assert.match(page, /name="robots" content="noindex"/);
   assert.match(page, /확인할 영상이 없어요\./);
   assert.equal(EMPTY_MESSAGE, '확인할 영상이 없어요.');
-  assert.doesNotMatch(page, /<video|playsInline|youtube|KOGL_REELS|place\//i);
+  assert.match(page, /isGateoSelfReelsFixtureEnabled/);
+  assert.doesNotMatch(page, /youtube|YouTubePlayerView|KOGL_REELS_RAW/i);
 });
 
 test('home, search, kogl contract, and sitemap do not reference the new route', () => {

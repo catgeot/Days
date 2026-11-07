@@ -29,11 +29,9 @@ function fixtureEntry(patch) {
 
 test('published self reels stay empty and do not import fixtures', () => {
   const catalog = read('src/pages/SelfReels/selfReelsCatalog.js');
-  const page = read('src/pages/SelfReels/SelfReelsPage.jsx');
   assert.deepEqual(SELF_REELS_PUBLISHED, []);
   assert.deepEqual(getPublishedSelfReels(), []);
   assert.doesNotMatch(catalog, /selfReelsFixture|fixture-allow|fixture\.invalid/);
-  assert.doesNotMatch(page, /selfReelsCatalog|selfReelsFixture/);
   assert.match(read('src/pages/SelfReels/selfReelsFixture.js'), /테스트 출처/);
 });
 
