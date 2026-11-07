@@ -55,3 +55,9 @@
 - 배열에 없는 사진도 제외로 남긴다. 다음 갤러리는 그 id·URL을 표시하지 않는다. 버튼 문구는 그대로다.
 - 운영 SQL과 `gallery-moderate` version 13은 이 세션에 반영했다. 코드 `211fa5c3` · 브랜치 `cursor/gallery-admin-remove-9063` · PR [#695](https://github.com/catgeot/Days/pull/695).
 - 사람 확인: 관리자로 우금치 사진을 길게 눌러 제거. 토스트 없이 빠지고, 새로고침 후에도 그 사진이 없어야 한다. `www.gateo.kr`은 PR 병합 후.
+
+## 로그인 세션 유지
+
+- 새로고침·새 창에서 로그인이 풀렸다. 화면이 `auth.getUser()`를 부를 때 `session_not_found`가 localStorage 세션을 지웠고, 저장 공간이 가득 차면 세션이 메모리에만 남았다.
+- 세션은 localStorage에 두고, 화면은 저장된 세션으로 복원한다. supabase-js 2.119. 코드 `d99cdeb6` · 브랜치 `cursor/auth-session-persist-3163` · PR [#697](https://github.com/catgeot/Days/pull/697).
+- 사람 확인: 로그인 후 새로고침, 창을 닫고 다시 열기. 로그인 버튼이 로그아웃으로 남아 있어야 한다. Preview는 이 브랜치만 켜 두었다. `www.gateo.kr`은 PR 병합 후.
