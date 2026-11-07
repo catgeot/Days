@@ -30,11 +30,8 @@ test('persist primary key differs per fixture (제품 라우팅, mock 아님)', 
   assert.notEqual(resolvePlaceChatIntroPersistKey(yap), resolvePlaceChatIntroPersistKey(miyako));
 });
 
-test('ensure session guards — inflight·failed sets (소스 계약)', () => {
-  const src = readFileSync(join(root, 'src/pages/Home/lib/placeChatIntro.js'), 'utf8');
-  assert.match(src, /introEnsureInflight\.get/);
-  assert.match(src, /introEnsureInflight\.set/);
-  assert.match(src, /introEnsureFailed\.has/);
-  assert.match(src, /introEnsureFailed\.add/);
+test('동시·실패 행동 — place-chat-intro-ensure-behavior.test.mjs 참조', () => {
+  const p = join(root, 'scripts/health/place-chat-intro-ensure-behavior.test.mjs');
+  assert.ok(readFileSync(p, 'utf8').includes('ensurePlaceChatIntroForLocation'));
   resetPlaceChatIntroEnsureStateForTests();
 });
