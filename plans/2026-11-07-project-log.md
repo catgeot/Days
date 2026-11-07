@@ -72,3 +72,10 @@
 
 - 다음 세션은 사용자 기록과 용량 관리를 심층으로 본다. 검색·방문 기록은 유지가 전제다. 계정 동기화와 큰 캐시 이전은 사람 확인 전 구현하지 않는다.
 - 핸드오프 [`user-record-storage-plan.md`](./user-record-storage-plan.md) · 인덱스 사용자 기록 행. #699가 열려 있으면 그 브랜치를 쓴다.
+
+## 사용자 기록 #2 숙소 저장본 순서
+
+- 기록은 이 브라우저에만 둔다. 계정 동기화는 하지 않는다.
+- 로그인 세션을 쓸 자리가 없으면 다른 캐시를 먼저 지운다. 숙소 목록은 그래도 들어가지 않을 때만 오래된 것부터 하나씩 지운다. 검색·방문 기록은 남긴다.
+- 코드 `4b2ebfd8` · 브랜치 `cursor/auth-keep-history-3163` · PR [#699](https://github.com/catgeot/Days/pull/699). `node --test scripts/health/auth-session-persist.test.mjs` PASS. `www.gateo.kr`은 PR 병합 후.
+- 다음: 검색 30·방문 30·여행사 12 상한을 유지할지 정한다. 합의 전에 상한을 바꾸지 않는다.
