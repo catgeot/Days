@@ -6,30 +6,41 @@ import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { spawn } from 'node:child_process';
+import { execSync, spawn } from 'node:child_process';
 
 const OUT = '/opt/cursor/artifacts';
 const PORT = Number(process.env.PLACE_INTRO_QA_PORT || 5201);
 const BASE = `http://127.0.0.1:${PORT}`;
 mkdirSync(OUT, { recursive: true });
 
-const ACCEPTED_INTRO =
-  '야프는 미크로네시아 연방에 속한 섬으로, 전통 석전 화폐와 라이 선가이가 유명합니다. 맑은 바다에서 스노클링과 다이빙을 즐기기 좋으며, 현지 마을에서는 독특한 문화와 음식을 체험할 수 있습니다.';
-
 const SCENES = {
   yap: {
     slug: 'yap',
     lookupKeys: ['미크로네시아 연방 야프', '야프'],
+    expectedSaveKey: '미크로네시아 연방 야프',
+    mockSummary:
+      '야프는 미크로네시아 연방에 속한 섬으로, 전통 석전 화폐와 라이 선가이가 유명합니다. 맑은 바다에서 스노클링과 다이빙을 즐기기 좋으며, 현지 마을에서는 독특한 문화와 음식을 체험할 수 있습니다.',
+    ssotSnippets: ['돌화폐', '라이'],
+    mockOnlySnippets: ['맑은 바다에서 스노클링'],
     readonlyGallery: false,
   },
   miyakojima: {
     slug: 'miyakojima',
     lookupKeys: ['일본 미야코지마', '미야코지마'],
+    expectedSaveKey: '일본 미야코지마',
+    mockSummary:
+      '미야코지마는 오키나와 부속 섬으로 미야코 블루로 불리는 에메랄드빛 바다가 유명합니다. 요나하 마에하마 해변과 산호초 다이빙이 매력적인 리조트 섬입니다.',
+    ssotSnippets: ['미야코 블루', '요나하'],
+    mockOnlySnippets: ['에메랄드빛'],
     readonlyGallery: false,
   },
   'gyeongbokgung-palace': {
     slug: 'gyeongbokgung-palace',
     lookupKeys: ['서울 경복궁', '대한민국 경복궁', '경복궁', '경복궁@en'],
+    expectedSaveKey: '서울 경복궁',
+    mockSummary:
+      '경복궁은 조선 태조 이성계가 1395년에 창건한 조선 왕조의 법궁입니다. 광화문과 근정전, 경회루가 대표적인 볼거리이며 서울의 역사·문화를 대표합니다.',
+    galleryNeedle: /조선 태조|근정전/,
     readonlyGallery: true,
   },
 };
@@ -186,12 +197,20 @@ async function installMocks(page, sceneMeta, bag) {
       });
     }
     bag.gemini.push({ url: req.url(), at: Date.now(), task, params: body?.params });
+    const mockSummary = sceneMeta?.mockSummary || '';
     return route.fulfill({
       status: 200,
       headers: cors(),
-      body: JSON.stringify({ success: true, text: ACCEPTED_INTRO }),
+      body: JSON.stringify({ success: true, text: mockSummary }),
     });
   });
+}
+
+function assertSavePair(scene, bodies) {
+  assert.equal(bodies.length, 1, `${scene.slug} save count`);
+  const { p_destination_key: key, p_summary: summary } = bodies[0];
+  assert.equal(key, scene.expectedSaveKey, `${scene.slug} destination_key`);
+  assert.equal(summary, scene.mockSummary, `${scene.slug} summary (mock 장면별 — 제품 교차아님)`);
 }
 
 async function shot(page, label, width) {
@@ -241,17 +260,26 @@ async function runVisit(browser, sceneKey, { cachedDb, round, openGallery }) {
   await shot(page, label, 1280);
 
   let galleryHasIntro = false;
-  if (openGallery) {
-    const needle = scene.slug === 'gyeongbokgung-palace' ? /석전 화폐|라이 선가이/ : /석전 화폐|라이 선가이/;
+  if (openGallery && scene.galleryNeedle) {
     for (let i = 0; i < 25; i += 1) {
       galleryHasIntro = await page
-        .getByText(needle)
+        .getByText(scene.galleryNeedle)
         .first()
         .isVisible()
         .catch(() => false);
       if (galleryHasIntro) break;
       await page.waitForTimeout(1000);
     }
+  }
+
+  let ssotPreserved = null;
+  if (scene.ssotSnippets?.length) {
+    const text = await page.locator('body').innerText();
+    const hasSsot = scene.ssotSnippets.every((s) => text.includes(s));
+    const mockLeaked = scene.mockOnlySnippets?.some((s) => text.includes(s)) ?? false;
+    ssotPreserved = { hasSsot, mockLeaked };
+    assert.ok(hasSsot, `${scene.slug} SSOT desc fragment visible`);
+    assert.ok(!mockLeaked, `${scene.slug} mock summary must not replace displayed desc`);
   }
 
   await context.close();
@@ -264,13 +292,23 @@ async function runVisit(browser, sceneKey, { cachedDb, round, openGallery }) {
     introSaveBodies: bag.introSave.map((x) => x.body),
     localStorageIntro: lsKey,
     galleryHasIntro,
+    ssotPreserved,
     dbKeysAfter: Object.keys(dbIntroRows),
   };
 }
 
 const preview = await startPreview();
 const browser = await chromium.launch();
-const results = { note: '격리 mock — 운영 DB·실 RPC·실 AI 금지', scenes: {} };
+const results = {
+  note: '격리 mock — 운영 DB·실 RPC·실 AI 금지. p_summary 교차는 mock 재사용 버그였음(장면별 mockSummary로 분리).',
+  gitHead: null,
+  scenes: {},
+};
+try {
+  results.gitHead = execSync('git rev-parse HEAD', { encoding: 'utf8' }).trim();
+} catch {
+  // optional
+}
 
 for (const key of ['yap', 'miyakojima']) {
   const r1 = await runVisit(browser, key, { cachedDb: {}, round: 1, openGallery: false });
@@ -278,11 +316,13 @@ for (const key of ['yap', 'miyakojima']) {
   assert.equal(r1.introSave, 1, `${key} r1 save RPC`);
   assert.ok(r1.localStorageIntro.has, `${key} r1 localStorage intro`);
   assert.ok(r1.dbKeysAfter.length >= 1, `${key} r1 mock db row`);
+  assertSavePair(SCENES[key], r1.introSaveBodies);
 
+  const scene = SCENES[key];
   const saveKey = r1.introSaveBodies[0]?.p_destination_key;
   const cached = { ...dbIntroRows };
   if (saveKey) {
-    seedMockIntroRows(ACCEPTED_INTRO, [saveKey, ...(SCENES[key]?.lookupKeys || [])]);
+    seedMockIntroRows(scene.mockSummary, [saveKey, ...(scene.lookupKeys || [])]);
     Object.assign(cached, dbIntroRows);
   }
   const r2 = await runVisit(browser, key, { cachedDb: cached, round: 2, openGallery: false });
@@ -299,12 +339,14 @@ const synR1 = await runVisit(browser, 'gyeongbokgung-palace', {
 });
 assert.equal(synR1.gemini, 1, 'synthetic r1 gemini');
 assert.equal(synR1.introSave, 1, 'synthetic r1 save');
-assert.ok(synR1.galleryHasIntro, 'synthetic same-visit gallery intro visible');
+assertSavePair(SCENES['gyeongbokgung-palace'], synR1.introSaveBodies);
+assert.ok(synR1.galleryHasIntro, 'gyeongbok same-visit gallery intro (yap/miyako 미검증)');
 
+const synScene = SCENES['gyeongbokgung-palace'];
 const synCached = { ...dbIntroRows };
 const synSaveKey = synR1.introSaveBodies[0]?.p_destination_key;
 if (synSaveKey) {
-  seedMockIntroRows(ACCEPTED_INTRO, [synSaveKey, ...(SCENES['gyeongbokgung-palace'].lookupKeys || [])]);
+  seedMockIntroRows(synScene.mockSummary, [synSaveKey, ...(synScene.lookupKeys || [])]);
   Object.assign(synCached, dbIntroRows);
 }
 const synR2 = await runVisit(browser, 'gyeongbokgung-palace', {
