@@ -309,6 +309,9 @@ function Home() {
     if (wasExplore && !isExplore && isMobileViewport) {
       syncHomeViewportAfterInput();
     }
+    if (prevPath.startsWith('/auth') && routeLocation.pathname === '/' && isMobileViewport) {
+      syncHomeViewportAfterInput();
+    }
     prevPathnameRef.current = routeLocation.pathname;
   }, [routeLocation.pathname, isMobileViewport]);
 
