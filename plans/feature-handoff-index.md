@@ -39,29 +39,20 @@
 검증: npm run smoke:tripcom-flight-planner
 ```
 
-### 트립닷컴 숙소 도시 연결
+### 트립닷컴 숙소 도시 연결 — 큐 종료
 
 | | |
 |--|--|
-| **상태** | **#10 큐 R17–R18** · 22곳 · tip `cca8f897` `7429f19c` · PR [#692](https://github.com/catgeot/Days/pull/692) · #9는 PR [#690](https://github.com/catgeot/Days/pull/690) 병합 · 라자 암팟·로키·시퀘이아·시미란·세인트헬레나·우붓 보류 |
-| **브랜치** | `cursor/tripcom-stay-cities-de61` (이 주제 고정. 세션마다 새 브랜치 금지) |
+| **상태** | **#11 큐 종료** · R01–R18 ✅ · PR [#692](https://github.com/catgeot/Days/pull/692) 병합 `36f9733e` · 2026-11-07 16:08 KST |
+| **브랜치** | `cursor/tripcom-stay-cities-de61` (고정. 새 브랜치·새 라운드 금지) |
 | **플랜** | [`tripcom-stay-city-audit.md`](./tripcom-stay-city-audit.md) · 큐 [`tripcom-stay-city-queue.md`](./tripcom-stay-city-queue.md) |
 | **일지** | [`2026-11-07-project-log.md`](./2026-11-07-project-log.md) |
-| **Preview** | `cursor/*` 배포는 꺼져 있다. 사람 확인은 PR 병합 후 `www.gateo.kr` |
-| **금지** | city ID 일괄 추가 · `city=10279` · province만으로 검색창 채우기 · 호놀룰루를 `757`로 묶기 · 라자 암팟·로키·시퀘이아·시미란·세인트헬레나·우붓 재시도 · sparse에 city 단정 · 키워드 첫 결과만으로 ID 확정 · 끝난 큐에 새 라운드 만들기 · 중국 국내 City를 목록 확인 없이 거절 · `/hotels/list` (404, `w/list`를 씀) |
-| **VERIFY** | `node scripts/audit-tripcom-stay-cities.mjs` · PASS는 `hotels/w/list`의 `destinationInputValue`가 그 여행지 |
-| **남은 일** | 라이브 라운드 끝. 미연결 16은 보류·sparse. 사람 확인은 PR #692 병합 후 `www.gateo.kr` |
+| **PROD** | `https://www.gateo.kr` · `cursor/*` Preview는 꺼져 있다. 사람 확인은 병합 후 본 사이트 |
+| **금지** | 새 라운드 · 우붓·라자 암팟·로키·시퀘이아·시미란·세인트헬레나·호놀룰루 재시도 · sparse에 city 단정 · `city=10279` · province · 키워드 첫 행 · `/hotels/list` (404, `w/list`를 씀) |
+| **VERIFY** | `node scripts/audit-tripcom-stay-cities.mjs` · mapped 258 · 미연결 16 · 한국 0 |
+| **남은 일** | 에이전트 작업 없음. 미연결 16은 보류·sparse. 사람 확인은 `www.gateo.kr` |
 
-**다음 제시어**
-
-```
-트립닷컴 숙소 #11, 큐 종료
-@plans/feature-handoff-index.md
-@plans/2026-11-07-project-log.md
-@plans/tripcom-stay-city-queue.md
-라운드 R01–R18 끝. 미연결 16은 보류·sparse. 우붓·라자 암팟·로키·시퀘이아·시미란·세인트헬레나·호놀룰루 재시도 금지
-브랜치 cursor/tripcom-stay-cities-de61 · PR #692 · 사람 확인은 병합 후 www.gateo.kr
-```
+**다음 제시어 없음** (큐 종료). `오케스트레이터` + `트립닷컴숙소`로 새 라운드를 열지 않음.
 
 ### 축제 카드 배열
 
