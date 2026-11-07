@@ -1,6 +1,8 @@
 # 트립닷컴 숙소 도시 연결 점검
 
-하와이(`hawaii` → city `757` 호놀룰루)는 사람 확인 후 PR #662로 메인에 반영한다. 배치 1(제도·섬)은 오케스트레이터 R01–R02에서 23곳을 연결하고 라자 암팟만 보류했다. 코드는 PR [#664](https://github.com/catgeot/Days/pull/664). 남은 순서는 [`tripcom-stay-city-queue.md`](./tripcom-stay-city-queue.md). 한 세션은 라운드 2개만.
+**상태**: 2026-11-07 **#11 큐 종료**. R01–R18 ✅. PR [#692](https://github.com/catgeot/Days/pull/692) 병합 `36f9733e`. 미연결 16은 보류·sparse. 새 라운드 금지.
+
+하와이(`hawaii` → city `757` 호놀룰루)는 사람 확인 후 PR #662로 메인에 반영한다. 배치 1(제도·섬)은 오케스트레이터 R01–R02에서 23곳을 연결하고 라자 암팟만 보류했다. 코드는 PR [#664](https://github.com/catgeot/Days/pull/664). 큐 [`tripcom-stay-city-queue.md`](./tripcom-stay-city-queue.md)는 끝났다.
 
 ## 왜 막히나
 
@@ -27,13 +29,13 @@ city ID를 넣으면 부작용이 있다. 플래너 숙소 카드에 `[@지역@]
 
 ## 배치 1 (R01–R02 기록)
 
-23곳 연결, `raja-ampat` 보류(와이사이는 서파푸아). ID와 관문 도시는 `affiliate.js` 주석과 일지. R03–R04는 PR #665. R05–R08은 PR #672. R09–R10은 PR #677. R11–R12는 PR #686. R13–R14는 PR #688. R15–R16은 PR #690. 다음 세션은 큐 **R17**부터 라운드 2개.
+23곳 연결, `raja-ampat` 보류(와이사이는 서파푸아). ID와 관문 도시는 `affiliate.js` 주석과 일지. R03–R04는 PR #665. R05–R08은 PR #672. R09–R10은 PR #677. R11–R12는 PR #686. R13–R14는 PR #688. R15–R16은 PR #690. R17–R18은 PR #692로 메인에 있다. 큐는 #11에서 종료. 새 라운드 금지.
 
 제도·섬·권역. 하와이처럼 도시 이름이 아니라 세션 잔존이 나기 쉽다.
 
 `guam` `maldives` `seychelles` `palawan` `canary-islands` `galapagos` `mauritius` `zanzibar` `new-caledonia` `saipan` `okinawa` `hokkaido` `phuket` `boracay` `cebu` `crete` `sicily` `madeira` `bahamas` `cape-verde` `la-reunion` `uyuni-salt-flat` `komodo-island` `raja-ampat`
 
-R03–R16은 목록에 잡힌 도시만 연결했다. 남은 곳은 큐 R17부터다. 한 세션에 220곳을 라이브로 보지 않는다.
+R03–R18은 목록에 잡힌 도시만 연결했다. 큐는 R18에서 끝났다. 한 세션에 220곳을 라이브로 보지 않는다.
 
 ## 기록
 
@@ -41,6 +43,6 @@ R03–R16은 목록에 잡힌 도시만 연결했다. 남은 곳은 큐 R17부�
 
 ## 9. 핸드오프
 
-- 브랜치 `cursor/tripcom-stay-cities-de61` · R15–R16 코드 `c5b092ff` `57856d60` · PR [#690](https://github.com/catgeot/Days/pull/690) · R13–R14는 PR #688으로 병합됨
-- 다음 세션은 큐 R17–R18만. 목록에 잡힌 도시만. 중국 국내 도시는 키워드 type이 City여도 목록이 그 도시면 넣는다. 호이안처럼 목록이 그 도시로 잡힌 Zone만 예외. 라자 암팟·호놀룰루·로키·시퀘이아·시미란·세인트헬레나·sparse 재시도 금지. 목록은 `hotels/w/list`.
-- `cursor/*` Preview는 꺼져 있다. 사람 확인은 PR 병합 후 `www.gateo.kr`.
+- **#11 큐 종료**. 브랜치 `cursor/tripcom-stay-cities-de61` · R17–R18 PR [#692](https://github.com/catgeot/Days/pull/692) 병합 `36f9733e` · audit mapped 258 · 미연결 16 · 한국 0
+- 다음 제시어 없음. 새 라운드 금지. 우붓·라자 암팟·로키·시퀘이아·시미란·세인트헬레나·호놀룰루·sparse 재시도 금지. 목록은 `hotels/w/list`.
+- `cursor/*` Preview는 꺼져 있다. 사람 확인은 `www.gateo.kr`.
