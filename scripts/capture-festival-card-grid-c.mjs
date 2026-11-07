@@ -1,5 +1,5 @@
 /**
- * 축제 카드보기(비정형 columns) — 390/1280 실제 UI 캡처 (로컬 preview).
+ * 축제 카드보기(1e39c91b #660 패턴) — 390/1280 UI 캡처 (로컬 preview).
  * SMOKE_SITE_URL 기본 http://127.0.0.1:5173
  */
 import { mkdirSync, readFileSync } from 'node:fs';
@@ -10,6 +10,7 @@ import { chromium } from '@playwright/test';
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const outDir = join('/opt/cursor/artifacts');
 const baseUrl = (process.env.SMOKE_SITE_URL || 'http://127.0.0.1:5173').replace(/\/$/, '');
+const captureTag = (process.env.CAPTURE_TAG || 'candidate').replace(/[^\w.-]/g, '');
 
 mkdirSync(outDir, { recursive: true });
 
@@ -98,8 +99,8 @@ try {
     await cardLink.click();
   }
   await waitGridSettled(page);
-  await shotViewport(page, 1280, 'festival-card-grid-irregular-restore-1280.png');
-  await shotViewport(page, 390, 'festival-card-grid-irregular-restore-390.png');
+  await shotViewport(page, 1280, `festival-card-grid-${captureTag}-1280.png`);
+  await shotViewport(page, 390, `festival-card-grid-${captureTag}-390.png`);
 } finally {
   await browser.close();
 }
