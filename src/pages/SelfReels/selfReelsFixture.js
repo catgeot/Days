@@ -7,7 +7,13 @@ export const FIXTURE_SELF_REEL_ALLOW = {
   rightsConfirmed: true,
   credit: FIXTURE_CREDIT,
   videoUrl: 'https://fixture.invalid/fixture-allow.mp4',
-  placePaths: ['/place/fixture-path'],
+  placePaths: [
+    '/place/fixture-path-1',
+    '/place/fixture-path-2',
+    '/place/fixture-path-3',
+    '/place/fixture-path-4',
+    '/place/fixture-path-5',
+  ],
 };
 
 export const FIXTURE_SELF_REEL_SECOND = {
@@ -34,5 +40,8 @@ export const FIXTURE_SELF_REEL_FIVE_PLACES = {
 
 /** Fixture-only feed rows. Not used when the fixture flag is off. */
 export function getFixtureSelfReels() {
-  return selectPublicSelfReels([FIXTURE_SELF_REEL_ALLOW, FIXTURE_SELF_REEL_SECOND]);
+  return selectPublicSelfReels([FIXTURE_SELF_REEL_ALLOW, FIXTURE_SELF_REEL_SECOND]).map((reel) => ({
+    ...reel,
+    isFixture: true,
+  }));
 }

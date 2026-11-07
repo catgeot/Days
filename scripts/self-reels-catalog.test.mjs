@@ -39,7 +39,8 @@ test('a fixture row with rights, credit, https url, and one place is public', ()
   const [reel] = selectPublicSelfReels([FIXTURE_SELF_REEL_ALLOW]);
   assert.equal(reel.id, 'fixture-allow');
   assert.match(reel.id, /^fixture-/);
-  assert.deepEqual(reel.placePaths, ['/place/fixture-path']);
+  assert.deepEqual(reel.placePaths, FIXTURE_SELF_REEL_ALLOW.placePaths);
+  assert.equal(reel.placePaths.length, 5);
   assert.equal(isStableSelfReelVideoUrl(reel.videoUrl), true);
 });
 

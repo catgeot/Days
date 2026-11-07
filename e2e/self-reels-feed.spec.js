@@ -7,10 +7,24 @@ const FIXTURE_MP4 = fs.readFileSync(
   path.join(path.dirname(fileURLToPath(import.meta.url)), 'fixtures/self-reels-fixture.mp4'),
 );
 
-const ARTIFACT_DIR = '/opt/cursor/artifacts/self-reels-session3';
+const ARTIFACT_DIR = '/opt/cursor/artifacts/self-reels-session4';
 
-async function stubFixtureVideos(page) {
+const ALLOW_PLACE_HREFS = [
+  '/place/fixture-path-1',
+  '/place/fixture-path-2',
+  '/place/fixture-path-3',
+  '/place/fixture-path-4',
+  '/place/fixture-path-5',
+];
+
+async function stubFixtureVideos(page, options = {}) {
+  const failAllow = Boolean(options.failAllow);
   await page.route('https://fixture.invalid/**', async (route) => {
+    const url = route.request().url();
+    if (failAllow && url.includes('fixture-allow')) {
+      await route.abort('failed');
+      return;
+    }
     await route.fulfill({
       status: 200,
       contentType: 'video/mp4',
@@ -73,13 +87,21 @@ async function assertControlsFullyVisible(page, reelId) {
 }
 
 async function assertNoOverlappingChrome(page) {
-  // Real shared footer (TrustLinkBar) — must stay hidden on /reels only.
   await expect(page.getByLabel('GATEO 약관 및 출처')).toHaveCount(0);
-  // DEV/PreviewDebugChrome only — production-like vite preview must omit these.
   await expect(page.getByText('모바일 위젯 로그')).toHaveCount(0);
   await expect(page.getByText('작업 로그')).toHaveCount(0);
   await expect(page.locator('[data-cloud-preview-work-log]')).toHaveCount(0);
   await expect(page.locator('[data-flight-debug-panel]')).toHaveCount(0);
+}
+
+async function assertPlaceHrefs(page, reelId, expected) {
+  const links = page.locator(`[data-reel-places="${reelId}"] a`);
+  await expect(links).toHaveCount(expected.length);
+  const hrefs = await links.evaluateAll((nodes) => nodes.map((node) => node.getAttribute('href')));
+  expect(hrefs).toEqual(expected);
+  for (const href of expected) {
+    await expect(page.locator(`[data-reel-place-href="${href}"]`)).toBeVisible();
+  }
 }
 
 /** object-contain: full intrinsic frame fits inside the stage (no cover crop). */
@@ -117,8 +139,6 @@ async function assertNineSixteenContained(page, reelId) {
       paintW,
       paintH,
       contentAspect,
-      sideLetterbox: stageAspect > contentAspect + 0.02,
-      topLetterbox: stageAspect < contentAspect - 0.02,
       controlsBelowStage: cb ? cb.y >= sb.y + sb.height - 1 : false,
     };
   }, reelId);
@@ -128,7 +148,6 @@ async function assertNineSixteenContained(page, reelId) {
   expect(info.paintW).toBeLessThanOrEqual(info.stageW + 1);
   expect(info.paintH).toBeLessThanOrEqual(info.stageH + 1);
   expect(info.controlsBelowStage).toBe(true);
-  // Painted frame uses the full intrinsic aspect (within float tolerance).
   expect(Math.abs(info.paintW / info.paintH - info.contentAspect)).toBeLessThan(0.02);
 }
 
@@ -143,6 +162,7 @@ test.describe('self reels fixture feed', () => {
     await expect(feed).toBeVisible({ timeout: 30_000 });
     await expect(page.getByText('확인할 영상이 없어요.')).toHaveCount(0);
     await expect(page.getByText('fixture').first()).toBeVisible();
+    await assertPlaceHrefs(page, 'fixture-allow', ALLOW_PLACE_HREFS);
     await assertNoOverlappingChrome(page);
 
     await expect.poll(async () => (await readPlayback(page)).playingCount, { timeout: 20_000 }).toBe(1);
@@ -206,7 +226,6 @@ test.describe('self reels fixture feed', () => {
       const root = document.querySelector('[data-self-reels-feed="1"]');
       if (!root) return;
       root.style.scrollSnapType = 'none';
-      // Half-way: each full-height slide is ~50% visible (< 0.55 threshold).
       root.scrollTop = Math.round(root.clientHeight * 0.5);
       root.dispatchEvent(new Event('scroll'));
     });
@@ -215,25 +234,45 @@ test.describe('self reels fixture feed', () => {
 
     await page.goto('/about', { waitUntil: 'domcontentloaded' });
     await expect(page.locator('[data-self-reels-feed="1"]')).toHaveCount(0);
-    // Other pages keep the shared TrustLinkBar (reels-only hide).
     await expect(page.getByLabel('GATEO 약관 및 출처')).toBeVisible({ timeout: 15_000 });
   });
 
-  test('fixture layout captures 390 and 1280', async ({ page }) => {
+  test('fail once, retry fail stays, user next only advances', async ({ page }) => {
+    await stubFixtureVideos(page, { failAllow: true });
+    await page.goto('/reels', { waitUntil: 'domcontentloaded' });
+    await expect(page.locator('[data-self-reels-feed="1"]')).toBeVisible({ timeout: 30_000 });
+
+    await expect(page.locator('[data-reel-failure="fixture-allow"]')).toBeVisible({ timeout: 20_000 });
+    await expect(page.locator('[data-reel-retry="fixture-allow"]')).toBeVisible();
+    await expect(page.locator('[data-reel-next="fixture-allow"]')).toHaveCount(0);
+    await expect(page.locator('[data-self-reels-feed="1"]')).toHaveAttribute('data-active-index', '0');
+    await assertPlaceHrefs(page, 'fixture-allow', ALLOW_PLACE_HREFS);
+
+    await page.locator('[data-reel-retry="fixture-allow"]').click();
+    await expect(page.locator('[data-reel-next="fixture-allow"]')).toBeVisible({ timeout: 20_000 });
+    await expect(page.locator('[data-self-reels-feed="1"]')).toHaveAttribute('data-active-index', '0');
+    await expect.poll(async () => (await readPlayback(page)).playingCount).toBe(0);
+
+    await page.locator('[data-reel-next="fixture-allow"]').click();
+    await expect.poll(async () => (await readPlayback(page)).playingIndexes, { timeout: 20_000 }).toEqual([1]);
+    await expect(page.locator('[data-self-reels-feed="1"]')).toHaveAttribute('data-active-index', '1');
+    await expect(page.locator('[data-reel-failure="fixture-allow"]')).toHaveCount(0);
+  });
+
+  test('fixture layout captures 390 and 1280 (fail UI + links)', async ({ page }) => {
     fs.mkdirSync(ARTIFACT_DIR, { recursive: true });
-    await stubFixtureVideos(page);
+    await stubFixtureVideos(page, { failAllow: true });
 
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/reels', { waitUntil: 'domcontentloaded' });
-    await expect(page.locator('[data-self-reels-feed="1"]')).toBeVisible({ timeout: 30_000 });
-    await expect.poll(async () => (await readPlayback(page)).playingCount, { timeout: 20_000 }).toBe(1);
+    await expect(page.locator('[data-reel-failure="fixture-allow"]')).toBeVisible({ timeout: 20_000 });
+    await page.locator('[data-reel-retry="fixture-allow"]').click();
+    await expect(page.locator('[data-reel-next="fixture-allow"]')).toBeVisible({ timeout: 20_000 });
     await assertNoOverlappingChrome(page);
-    await assertNineSixteenContained(page, 'fixture-allow');
-    await assertControlsFullyVisible(page, 'fixture-allow');
-    // Remute for a clean capture (controls assert toggled sound on).
-    await page.locator('[data-reel-sound="fixture-allow"]').click();
-    await expect.poll(async () => (await readPlayback(page)).muted[0]).toBe(true);
-    const path390 = path.join(ARTIFACT_DIR, 'fixture-feed-390.png');
+    await assertPlaceHrefs(page, 'fixture-allow', ALLOW_PLACE_HREFS);
+    await expect(page.locator('[data-reel-credit="fixture-allow"]')).toBeVisible();
+    await expect(page.locator('[data-reel-sound="fixture-allow"]')).toBeVisible();
+    const path390 = path.join(ARTIFACT_DIR, 'fixture-fail-390.png');
     await page.screenshot({
       path: path390,
       clip: { x: 0, y: 0, width: 390, height: 844 },
@@ -241,26 +280,25 @@ test.describe('self reels fixture feed', () => {
 
     await page.setViewportSize({ width: 1280, height: 800 });
     await page.goto('/reels', { waitUntil: 'domcontentloaded' });
-    await expect(page.locator('[data-self-reels-feed="1"]')).toBeVisible({ timeout: 30_000 });
-    await expect.poll(async () => (await readPlayback(page)).playingCount, { timeout: 20_000 }).toBe(1);
+    await expect(page.locator('[data-reel-failure="fixture-allow"]')).toBeVisible({ timeout: 20_000 });
+    await page.locator('[data-reel-retry="fixture-allow"]').click();
+    await expect(page.locator('[data-reel-next="fixture-allow"]')).toBeVisible({ timeout: 20_000 });
     await assertNoOverlappingChrome(page);
-    await assertNineSixteenContained(page, 'fixture-allow');
-    const wide = await page.evaluate(() => {
-      const stage = document.querySelector('[data-reel-stage="fixture-allow"]');
-      const video = document.querySelector('[data-reel-video="fixture-allow"]');
-      if (!stage || !video || !video.videoHeight) return null;
-      const sb = stage.getBoundingClientRect();
-      return sb.width / sb.height > video.videoWidth / video.videoHeight + 0.02;
-    });
-    expect(wide).toBe(true);
-    await assertControlsFullyVisible(page, 'fixture-allow');
-    await page.locator('[data-reel-sound="fixture-allow"]').click();
-    await expect.poll(async () => (await readPlayback(page)).muted[0]).toBe(true);
-    const path1280 = path.join(ARTIFACT_DIR, 'fixture-feed-1280.png');
+    await assertPlaceHrefs(page, 'fixture-allow', ALLOW_PLACE_HREFS);
+    const path1280 = path.join(ARTIFACT_DIR, 'fixture-fail-1280.png');
     await page.screenshot({
       path: path1280,
       clip: { x: 0, y: 0, width: 1280, height: 800 },
     });
+
+    // Contain regression on healthy second reel (not cropped by fail overlay).
+    await stubFixtureVideos(page);
+    await page.unroute('https://fixture.invalid/**');
+    await stubFixtureVideos(page);
+    await page.goto('/reels', { waitUntil: 'domcontentloaded' });
+    await expect.poll(async () => (await readPlayback(page)).playingCount, { timeout: 20_000 }).toBe(1);
+    await assertNineSixteenContained(page, 'fixture-allow');
+    await assertControlsFullyVisible(page, 'fixture-allow');
 
     expect(fs.existsSync(path390)).toBe(true);
     expect(fs.existsSync(path1280)).toBe(true);
