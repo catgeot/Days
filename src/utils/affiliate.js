@@ -1051,6 +1051,28 @@ export const PLANNER_TRIPCOM_HOTEL_CITY_IDS = {
   'sant-joan': '93134',
   /** 산티아고 데 콤포스텔라 — 갈리시아. 칠레 산티아고 아님 */
   'santiago-de-compostela': '41720',
+  /**
+   * R16 (2026-11-07). 목록 destinationInputValue가 그 여행지인 도시만.
+   * 삿포로는 hokkaido와 641. 상하이는 type City. 세렝게티는 마라. 시퀘이아·시미란·세인트헬레나는 보류.
+   */
+  /** 산토리니 — 남부 에게해. 아테네 아님 */
+  santorini: '3576',
+  /** 사파 — 라오까이. 하노이·주 id 아님 */
+  sapa: '36146',
+  /** 삿포로 — 홋카이도. hokkaido와 같은 641. 현 id 아님 */
+  sapporo: '641',
+  /** 시애틀 — 워싱턴 */
+  seattle: '511',
+  /** 세렝게티 — 마라(탄자니아). 나이로비 825 아님 */
+  serengeti: '7704',
+  /** 세비야 — 안달루시아. 미국 세비야·주 id 아님 */
+  seville: '1350',
+  /** 상하이 — type City. 푸둥·공항 아님 */
+  shanghai: '2',
+  /** 스리자야와르데네푸라코테 — 서부 주. 콜롬보·주 id 아님 */
+  'sri-jayawardenapura': '59888',
+  /** 스톡홀름 — 스웨덴. 주 id·알란다 아님 */
+  stockholm: '420',
 };
 
 /**
