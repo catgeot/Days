@@ -82,6 +82,56 @@ async function assertNoOverlappingChrome(page) {
   await expect(page.locator('[data-flight-debug-panel]')).toHaveCount(0);
 }
 
+/** object-contain: full intrinsic frame fits inside the stage (no cover crop). */
+async function assertNineSixteenContained(page, reelId) {
+  await expect.poll(async () => {
+    return page.evaluate((id) => {
+      const video = document.querySelector(`[data-reel-video="${id}"]`);
+      return video && video.videoWidth > 0 ? video.videoWidth : 0;
+    }, reelId);
+  }, { timeout: 20_000 }).toBeGreaterThan(0);
+
+  const info = await page.evaluate((id) => {
+    const video = document.querySelector(`[data-reel-video="${id}"]`);
+    const stage = document.querySelector(`[data-reel-stage="${id}"]`);
+    const controls = document.querySelector(`[data-reel-controls="${id}"]`);
+    if (!video || !stage) return null;
+    const style = getComputedStyle(video);
+    const sb = stage.getBoundingClientRect();
+    const cb = controls?.getBoundingClientRect() ?? null;
+    const contentAspect = video.videoWidth / video.videoHeight;
+    const stageAspect = sb.width / sb.height;
+    let paintW;
+    let paintH;
+    if (stageAspect > contentAspect) {
+      paintH = sb.height;
+      paintW = paintH * contentAspect;
+    } else {
+      paintW = sb.width;
+      paintH = paintW / contentAspect;
+    }
+    return {
+      objectFit: style.objectFit,
+      stageW: sb.width,
+      stageH: sb.height,
+      paintW,
+      paintH,
+      contentAspect,
+      sideLetterbox: stageAspect > contentAspect + 0.02,
+      topLetterbox: stageAspect < contentAspect - 0.02,
+      controlsBelowStage: cb ? cb.y >= sb.y + sb.height - 1 : false,
+    };
+  }, reelId);
+
+  expect(info).toBeTruthy();
+  expect(info.objectFit).toBe('contain');
+  expect(info.paintW).toBeLessThanOrEqual(info.stageW + 1);
+  expect(info.paintH).toBeLessThanOrEqual(info.stageH + 1);
+  expect(info.controlsBelowStage).toBe(true);
+  // Painted frame uses the full intrinsic aspect (within float tolerance).
+  expect(Math.abs(info.paintW / info.paintH - info.contentAspect)).toBeLessThan(0.02);
+}
+
 test.describe('self reels fixture feed', () => {
   test.use({ viewport: { width: 390, height: 844 } });
 
@@ -178,6 +228,7 @@ test.describe('self reels fixture feed', () => {
     await expect(page.locator('[data-self-reels-feed="1"]')).toBeVisible({ timeout: 30_000 });
     await expect.poll(async () => (await readPlayback(page)).playingCount, { timeout: 20_000 }).toBe(1);
     await assertNoOverlappingChrome(page);
+    await assertNineSixteenContained(page, 'fixture-allow');
     await assertControlsFullyVisible(page, 'fixture-allow');
     // Remute for a clean capture (controls assert toggled sound on).
     await page.locator('[data-reel-sound="fixture-allow"]').click();
@@ -193,6 +244,15 @@ test.describe('self reels fixture feed', () => {
     await expect(page.locator('[data-self-reels-feed="1"]')).toBeVisible({ timeout: 30_000 });
     await expect.poll(async () => (await readPlayback(page)).playingCount, { timeout: 20_000 }).toBe(1);
     await assertNoOverlappingChrome(page);
+    await assertNineSixteenContained(page, 'fixture-allow');
+    const wide = await page.evaluate(() => {
+      const stage = document.querySelector('[data-reel-stage="fixture-allow"]');
+      const video = document.querySelector('[data-reel-video="fixture-allow"]');
+      if (!stage || !video || !video.videoHeight) return null;
+      const sb = stage.getBoundingClientRect();
+      return sb.width / sb.height > video.videoWidth / video.videoHeight + 0.02;
+    });
+    expect(wide).toBe(true);
     await assertControlsFullyVisible(page, 'fixture-allow');
     await page.locator('[data-reel-sound="fixture-allow"]').click();
     await expect.poll(async () => (await readPlayback(page)).muted[0]).toBe(true);

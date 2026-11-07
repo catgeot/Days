@@ -114,23 +114,28 @@ export default function SelfReelsFeed({ reels }) {
           }}
           data-reel-index={index}
           data-reel-id={reel.id}
-          className="relative flex h-full w-full snap-start snap-always items-end justify-center"
+          className="relative flex h-full w-full snap-start snap-always flex-col bg-black"
         >
-          <video
-            ref={(node) => {
-              videoRefs.current[index] = node;
-            }}
-            data-reel-video={reel.id}
-            className="absolute inset-0 h-full w-full object-cover"
-            src={reel.videoUrl}
-            muted={muted}
-            playsInline
-            loop
-            preload="metadata"
-          />
+          <div
+            data-reel-stage={reel.id}
+            className="relative flex min-h-0 flex-1 items-center justify-center overflow-hidden"
+          >
+            <video
+              ref={(node) => {
+                videoRefs.current[index] = node;
+              }}
+              data-reel-video={reel.id}
+              className="h-full w-full object-contain"
+              src={reel.videoUrl}
+              muted={muted}
+              playsInline
+              loop
+              preload="metadata"
+            />
+          </div>
           <div
             data-reel-controls={reel.id}
-            className="relative z-20 flex w-full flex-col gap-3 bg-black/45 px-4 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-5 text-left text-white"
+            className="relative z-20 flex w-full shrink-0 flex-col gap-3 bg-black/45 px-4 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-5 text-left text-white"
           >
             <p data-reel-credit={reel.id} className="text-xs leading-relaxed">
               {reel.credit}
