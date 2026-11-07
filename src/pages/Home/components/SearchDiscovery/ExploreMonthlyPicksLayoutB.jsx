@@ -12,7 +12,7 @@ const ExploreMonthlyPicksLayoutB = ({ cards, onSelectSpot }) => (
   >
     {cards.map(({ spot, entry, imageUrl }, index) => {
       const slug = String(spot?.slug || entry?.slug || '').toLowerCase();
-      const { className: gridClass, variant } = resolveExploreMonthlyPickGridSlot(index);
+      const { className: gridClass, variant } = resolveExploreMonthlyPickGridSlot(slug);
       return (
         <ExploreMonthlyPickItem
           key={spot.id ?? entry.slug ?? slug}

@@ -134,6 +134,8 @@ test('monthly layout B uses aligned CSS grid (no masonry column runs)', () => {
   assert.match(layoutB, /exploreMonthlyGridLayout/);
   assert.match(layoutB, /EXPLORE_MONTHLY_PICK_GRID_CLASS/);
   assert.match(gridLayout, /grid-cols-12/);
+  assert.doesNotMatch(gridLayout, /col-span-12/);
+  assert.match(gridLayout, /variant: 'tall'/);
   assert.doesNotMatch(layoutB, /Masonry|distributeFestivalHubMasonryColumns|partitionFestivalHubSegments/);
   assert.equal(existsSync(join(dir, 'exploreMonthlyMasonryLayout.js')), false);
 });
