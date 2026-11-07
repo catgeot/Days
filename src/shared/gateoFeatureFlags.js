@@ -12,6 +12,7 @@ export const GATEO_ENV_FLAG_NAMES = {
   SITE_SEARCH_ALL_ASSETS: 'VITE_GATEO_SITE_SEARCH_ALL_ASSETS',
   FESTIVAL_DATE_CHIP: 'VITE_GATEO_FESTIVAL_DATE_CHIP',
   LOGBOOK_REVIEW_HUB: 'VITE_GATEO_LOGBOOK_REVIEW_HUB',
+  LOGBOOK_REVIEW_FILTER: 'VITE_GATEO_LOGBOOK_REVIEW_FILTER',
   REVIEW_DEEPLINK: 'VITE_GATEO_REVIEW_DEEPLINK',
   PHOTO_CREDIT: 'VITE_GATEO_PHOTO_CREDIT',
   LIGHTBOX_HISTORY: 'VITE_GATEO_LIGHTBOX_HISTORY',
@@ -62,6 +63,10 @@ export function isGateoFestivalDateChipEnabled() {
 
 export function isGateoLogbookReviewHubEnabled() {
   return readGateoEnvFlag(GATEO_ENV_FLAG_NAMES.LOGBOOK_REVIEW_HUB);
+}
+
+export function isGateoLogbookReviewFilterEnabled() {
+  return readGateoEnvFlag(GATEO_ENV_FLAG_NAMES.LOGBOOK_REVIEW_FILTER);
 }
 
 export function isGateoReviewDeeplinkEnabled() {

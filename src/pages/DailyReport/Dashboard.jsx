@@ -10,7 +10,7 @@ import RecentList from './components/RecentList';
 import LogbookOfficialReviewHubCard from './components/LogbookOfficialReviewHubCard';
 import { useDashboardData } from './hooks/useDashboardData';
 import { reportMatchesLogbookPlace } from '../../utils/logbookReadingMeta';
-import { isGateoLogbookReviewHubEnabled } from '../../shared/gateoFeatureFlags';
+import { isLogbookOfficialReviewHubActive } from '../../utils/logbookReviewFilterFlag.js';
 
 const Dashboard = () => {
   const { t } = useTranslation();
@@ -182,7 +182,7 @@ const Dashboard = () => {
           </div>
         )}
 
-        {isPublicMode && isGateoLogbookReviewHubEnabled() ? <LogbookOfficialReviewHubCard /> : null}
+        {isPublicMode && isLogbookOfficialReviewHubActive() ? <LogbookOfficialReviewHubCard /> : null}
 
         <RecentList reports={reports || []} loading={loading} isPublicMode={isPublicMode} />
 
