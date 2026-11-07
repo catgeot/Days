@@ -70,7 +70,6 @@ const ExploreMonthlyPickItem = ({
   sourcesBelow = true,
   className = '',
   mediaClassName = '',
-  layoutColumnSlotIndex = 0,
 }) => {
   const { t, i18n } = useTranslation();
   const displayName = getLocalizedPlaceName(spot, 'ko') || String(spot?.name || '').trim();
@@ -121,8 +120,7 @@ const ExploreMonthlyPickItem = ({
       ? 'mt-1 text-xs leading-relaxed text-gray-200 sm:text-[13px]'
       : 'mt-1 text-[11px] leading-snug text-gray-200 sm:text-xs';
   const photoLayout = festivalHubPhotoLayout(sizeForLayout.width, sizeForLayout.height, {
-    inColumn: Boolean(isTile),
-    slotIndex: layoutColumnSlotIndex,
+    inColumn: false,
   });
   const photoAspect = photoLayout.aspectRatio || '3 / 4';
   const objectPosition = EXPLORE_MONTHLY_PICK_HERO_OBJECT_POSITION[slug] || '50% 50%';

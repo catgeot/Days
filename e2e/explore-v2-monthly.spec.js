@@ -67,10 +67,31 @@ async function expectPhotoAltAndTextPanels(page, altForName) {
 
 async function expectNoMonthlyHorizontalOverflow(page) {
   const overflow = await page.getByTestId('explore-v2-monthly-layout-b').evaluate((root) => {
-    const grids = root.querySelectorAll(':scope > div.grid');
-    return [...grids].map((grid) => grid.scrollWidth - grid.clientWidth);
+    const targets = root.classList.contains('grid')
+      ? [root]
+      : [...root.querySelectorAll(':scope > div.grid')];
+    return targets.map((grid) => grid.scrollWidth - grid.clientWidth);
   });
+  expect(overflow.length).toBeGreaterThan(0);
   expect(overflow.every((d) => d <= 1)).toBe(true);
+}
+
+async function expectMonthlyGridRowAlignment(page) {
+  const rows = await page.getByTestId('explore-v2-monthly-layout-b').evaluate((root) => {
+    const items = [...root.querySelectorAll('[data-testid^="explore-v2-monthly-item-"]')];
+    const rowMap = new Map();
+    for (const el of items) {
+      const top = Math.round(el.getBoundingClientRect().top);
+      const row = rowMap.get(top) || [];
+      row.push(el.getAttribute('data-testid'));
+      rowMap.set(top, row);
+    }
+    return [...rowMap.values()].filter((group) => group.length > 1);
+  });
+  expect(rows.length).toBeGreaterThan(0);
+  for (const group of rows) {
+    expect(group.length).toBeLessThanOrEqual(3);
+  }
 }
 
 test.describe('Explore monthly picks @flagOff', () => {
@@ -87,6 +108,7 @@ test.describe('Explore monthly picks @flagOff', () => {
     await openExplore(page, { width: 390, height: 844 });
     await expectMonthlyMosaic(page);
     await expectNoMonthlyHorizontalOverflow(page);
+    await expectMonthlyGridRowAlignment(page);
 
     const items = page.locator('[data-testid^="explore-v2-monthly-item-"]');
     for (let i = 0; i < MONTHLY_VISIBLE_COUNT; i += 1) {
@@ -132,6 +154,7 @@ test.describe('Explore monthly picks @flagOff', () => {
     await openExplore(page, { width: 1280, height: 720 });
     await expectMonthlyMosaic(page);
     await expectNoMonthlyHorizontalOverflow(page);
+    await expectMonthlyGridRowAlignment(page);
     await expectPhotoAltAndTextPanels(page, (name) => `${name} 대표 사진`);
     await expect(page.getByText('에디터스 픽').first()).toBeVisible({ timeout: 45_000 });
   });
