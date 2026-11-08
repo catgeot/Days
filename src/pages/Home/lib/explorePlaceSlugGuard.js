@@ -5,6 +5,10 @@ import {
   resolveCityAttractionHub,
   resolveHubPlaceFromSlug,
 } from './cityAttractionHubs.js';
+import {
+  isKoreaProvinceLevelName,
+  resolveKoreaProvinceCatalogHub,
+} from './koreaExploreProvincePlace.js';
 const MAPBOX_SOURCES = new Set(['mapbox', 'mapbox-geocode']);
 
 function isMapboxOrGeocodeSource(source) {
@@ -113,6 +117,19 @@ export function uiPlacePoiCollidesWithCatalogParam(pin, urlParam) {
   if (!param) return false;
   const known = knownPlaceForParam(param);
   if (!known) return false;
+  const hubSlug = String(pin?.hubId ?? '').trim().toLowerCase();
+  if (hubSlug && hubSlug === String(param).toLowerCase()) {
+    if (pinNameOwnsPlace(pin, known)) return false;
+    const adminName = String(pin?.name_ko || pin?.name || '').trim();
+    const provinceHub = adminName ? resolveKoreaProvinceCatalogHub(adminName) : null;
+    if (
+      adminName &&
+      isKoreaProvinceLevelName(adminName) &&
+      String(provinceHub?.hubId || '').toLowerCase() === hubSlug
+    ) {
+      return false;
+    }
+  }
   return !pinNameOwnsPlace(pin, known);
 }
 
