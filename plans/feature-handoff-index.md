@@ -14,31 +14,6 @@
 
 ## 활성 목록
 
-### 탐색 페이지 · 11월 여행지 카드
-
-| | |
-|--|--|
-| **상태** | **#4 카드 피드백** · tip `c07c4007` · PR [#712](https://github.com/catgeot/Days/pull/712) · 병합 전 |
-| **브랜치** | `cursor/explore-cards-d0e2` |
-| **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
-| **일지** | [`2026-11-08-project-log.md`](./2026-11-08-project-log.md) |
-| **Preview** | git `https://days-git-cursor-explore-cards-d0e2-catgeots-projects.vercel.app/explore` · `/qa/explore-monthly`는 이 리다이렉트가 `main`에 반영된 뒤 |
-| **금지** | 새 브랜치 · 행 걸침 · 카드에 출처·저작 링크 복귀 · feature에 `plans/**` 커밋 · 사람 Preview 전 PR 병합 |
-| **VERIFY** | `node --import ./scripts/register-src-esm.mjs --test scripts/health/explore-v2-monthly-picks.test.mjs` |
-| **남은 일** | 사람이 `/explore`에서 두 열 배치와 한 줄을 본다. 괜찮으면 PR #712 병합. 사진이 잘리거나 문장이 끊기면 같은 브랜치에서 그 카드만 고친다 |
-
-**다음 제시어**
-
-```
-탐색 페이지 #5, 배치 확인 후 병합
-@plans/feature-handoff-index.md
-@plans/2026-11-08-project-log.md
-브랜치 cursor/explore-cards-d0e2 · PR #712
-금지: 새 브랜치 · 행 걸침 · 카드에 출처·저작 링크 복귀
-작업: Preview 두 열이 괜찮으면 PR #712 병합. 사진이 잘리거나 한 줄이 어색하면 그 카드만 같은 브랜치에서 고친다
-검증: node --import ./scripts/register-src-esm.mjs --test scripts/health/explore-v2-monthly-picks.test.mjs
-```
-
 ### 사용자 기록 · 용량 관리
 
 | | |
