@@ -27,3 +27,10 @@ test('normalizeMooniMarkdownBoldSpacing — adjacent bold islands keep glue word
   assert.ok(html.includes('<strong>Okinawa</strong>'), html);
   assert.ok(html.includes(' and '), html);
 });
+
+test('normalizeMooniMarkdownBoldSpacing — **N일차** 뒤 오전·지명 bold 유지', () => {
+  const md = getMooniModelMarkdownForRender('**1일차** 오전 **Bohol** 투어', {
+    stripPhantomTicketMention: true,
+  });
+  assert.match(md, /\*\*1일차\*\* 오전 \*\*Bohol\*\*/);
+});
