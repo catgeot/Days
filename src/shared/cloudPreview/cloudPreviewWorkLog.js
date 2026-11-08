@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '탐색 페이지',
-  sessionNo: 3,
-  sessionPhase: '카드 높이 조율',
+  sessionNo: 4,
+  sessionPhase: '카드 피드백',
   branch: 'cursor/explore-cards-d0e2',
   previewPath: '/explore',
   qaShareSlug: 'explore-monthly',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-11-08-explore-monthly-cards-4',
+    session: '탐색 페이지 #4, 카드 피드백',
+    title: '두 열 배치·사진 비율과 한 줄',
+    detail:
+      '11월의 여행지는 좁은 화면에서 왼쪽이 조금 넓은 두 열입니다. 교토·치앙마이·두바이가 왼쪽, 제주·푸꾸옥·멜버른이 오른쪽입니다. 넓은 화면은 여섯 장을 세 칸으로 나눕니다. 한 카드가 여러 행을 차지하지 않아 글이 옆 사진 위로 넘치지 않습니다. 가로로 긴 억새·해변·경마장 사진은 가로로 두고, 단풍과 마리나만 세로로 둡니다. 글은 언제 가면 좋은지 한 줄입니다. 관광청 링크와 저작 표기는 카드에 없습니다. 제주 추정 뱃지는 사진 안에 있습니다. Preview /qa/explore-monthly — /explore.',
+    at: '2026-11-08T09:00:00.000Z',
+  },
   {
     id: '2026-11-08-explore-monthly-cards-3',
     session: '탐색 페이지 #3, 카드 높이 조율',

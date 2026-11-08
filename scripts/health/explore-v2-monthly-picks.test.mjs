@@ -24,7 +24,10 @@ import {
   GATEO_ENV_FLAG_NAMES,
   isGateoExploreV2Enabled,
 } from '../../src/shared/gateoFeatureFlags.js';
-import { resolveExploreMonthlyPickGridSlot } from '../../src/pages/Home/components/SearchDiscovery/exploreMonthlyGridLayout.js';
+import {
+  groupExploreMonthlyPickColumns,
+  resolveExploreMonthlyPickGridSlot,
+} from '../../src/pages/Home/components/SearchDiscovery/exploreMonthlyGridLayout.js';
 
 const MONTH_KEY = EXPLORE_V2_MONTHLY_PICK_KEY;
 const EXPECTED_SLUGS = [
@@ -130,30 +133,36 @@ test('monthly row renders mosaic B only (no layout query branch)', () => {
   assert.doesNotMatch(lib, /readExploreV2LayoutParam|readExploreV2QueryParam/);
 });
 
-test('monthly layout B mixes wide and tall cards without row span', () => {
+test('monthly layout B uses two columns without row span or full-width banners', () => {
   const dir = join(root, 'src/pages/Home/components/SearchDiscovery');
   const layoutB = readFileSync(join(dir, 'ExploreMonthlyPicksLayoutB.jsx'), 'utf8');
   const gridLayout = readFileSync(join(dir, 'exploreMonthlyGridLayout.js'), 'utf8');
   assert.match(layoutB, /exploreMonthlyGridLayout/);
-  assert.match(layoutB, /resolveExploreMonthlyPickGridSlot/);
-  assert.match(layoutB, /EXPLORE_MONTHLY_PICK_GRID_CLASS/);
+  assert.match(layoutB, /groupExploreMonthlyPickColumns/);
+  assert.match(layoutB, /EXPLORE_MONTHLY_PICK_BOARD_CLASS/);
   assert.doesNotMatch(layoutB, /distributeExploreMonthlyPickColumns|matchMedia/);
-  assert.match(gridLayout, /grid-cols-2/);
-  assert.match(gridLayout, /lg:grid-cols-6/);
   assert.match(gridLayout, /items-start/);
-  assert.doesNotMatch(gridLayout, /col-span-12|row-span|row-start|col-start/);
-  assert.equal(resolveExploreMonthlyPickGridSlot('kyoto').className, 'col-span-2 lg:col-span-4');
-  assert.equal(resolveExploreMonthlyPickGridSlot('kyoto').variant, 'wide');
-  assert.equal(resolveExploreMonthlyPickGridSlot('kyoto').photoClass, 'aspect-[16/9]');
-  assert.equal(resolveExploreMonthlyPickGridSlot('chiang-mai').className, 'col-span-1 lg:col-span-2');
-  assert.equal(resolveExploreMonthlyPickGridSlot('phu-quoc').className, 'col-span-1 lg:col-span-2');
-  assert.equal(resolveExploreMonthlyPickGridSlot('chiang-mai').photoClass, 'aspect-[3/4]');
-  assert.equal(resolveExploreMonthlyPickGridSlot('jeju').className, 'col-span-2 lg:col-span-4');
-  assert.equal(resolveExploreMonthlyPickGridSlot('jeju').variant, 'wide');
-  assert.match(resolveExploreMonthlyPickGridSlot('jeju').photoClass, /aspect-\[2\/1\]/);
-  assert.equal(resolveExploreMonthlyPickGridSlot('dubai').className, 'col-span-1 lg:col-span-3');
-  assert.equal(resolveExploreMonthlyPickGridSlot('melbourne').className, 'col-span-1 lg:col-span-3');
-  assert.equal(resolveExploreMonthlyPickGridSlot('melbourne').photoClass, 'aspect-[4/5]');
+  assert.match(gridLayout, /lg:grid-cols-3/);
+  assert.match(gridLayout, /lg:contents/);
+  assert.doesNotMatch(gridLayout, /col-span-12|row-span|row-start|col-start|grid-cols-6/);
+  assert.equal(resolveExploreMonthlyPickGridSlot('kyoto').variant, 'portrait');
+  assert.equal(resolveExploreMonthlyPickGridSlot('kyoto').photoClass, 'aspect-[4/5]');
+  assert.equal(resolveExploreMonthlyPickGridSlot('chiang-mai').photoClass, 'aspect-[3/2]');
+  assert.equal(resolveExploreMonthlyPickGridSlot('phu-quoc').photoClass, 'aspect-[3/2]');
+  assert.equal(resolveExploreMonthlyPickGridSlot('jeju').variant, 'landscape');
+  assert.equal(resolveExploreMonthlyPickGridSlot('jeju').photoClass, 'aspect-[3/2]');
+  assert.equal(resolveExploreMonthlyPickGridSlot('dubai').photoClass, 'aspect-[4/5]');
+  assert.equal(resolveExploreMonthlyPickGridSlot('melbourne').photoClass, 'aspect-[4/3]');
+  const grouped = groupExploreMonthlyPickColumns(
+    EXPECTED_SLUGS.map((slug) => ({ spot: { slug }, entry: { slug } })),
+  );
+  assert.deepEqual(
+    grouped.map((column) => column.map((card) => card.spot.slug)),
+    [
+      ['kyoto', 'chiang-mai', 'dubai'],
+      ['jeju', 'phu-quoc', 'melbourne'],
+    ],
+  );
   assert.doesNotMatch(layoutB, /distributeFestivalHubMasonryColumns|partitionFestivalHubSegments/);
   assert.doesNotMatch(layoutB, /sourcesBelow/);
   assert.equal(existsSync(join(dir, 'exploreMonthlyMasonryLayout.js')), false);

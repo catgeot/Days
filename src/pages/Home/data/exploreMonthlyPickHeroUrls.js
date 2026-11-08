@@ -18,12 +18,12 @@ export const EXPLORE_MONTHLY_PICK_VERIFIED_HERO_URLS = {
 
 /** object-position for object-fit:cover — 사진별 주제(단풍·랜턴 등)에 맞춤 */
 export const EXPLORE_MONTHLY_PICK_HERO_OBJECT_POSITION = {
-  kyoto: '50% 38%',
-  'chiang-mai': '50% 45%',
-  'phu-quoc': '50% 55%',
-  jeju: '50% 45%',
-  dubai: '50% 35%',
-  melbourne: '50% 40%',
+  kyoto: '50% 42%',
+  'chiang-mai': '50% 62%',
+  'phu-quoc': '42% 50%',
+  jeju: '50% 82%',
+  dubai: '58% 48%',
+  melbourne: '72% 48%',
 };
 
 /** 로드 전 그리드 variant·종횡비 힌트(1280px 썸 경로 기준 ffprobe) */

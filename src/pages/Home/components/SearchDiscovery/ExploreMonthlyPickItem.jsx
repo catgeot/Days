@@ -60,7 +60,7 @@ const ExploreMonthlyPickItem = ({
         onPointerUp={(e) => handleEnd(e, spot)}
         onPointerLeave={handleCancel}
         onPointerCancel={handleCancel}
-        className="flex w-full min-w-0 cursor-pointer flex-col overflow-hidden rounded-2xl border border-white/15 bg-black text-left transition hover:border-white/35"
+        className="flex w-full min-w-0 cursor-pointer flex-col overflow-hidden rounded-2xl bg-black text-left ring-1 ring-inset ring-white/10 transition hover:ring-white/30"
       >
         <div
           data-testid={`explore-v2-monthly-photo-${slug}`}
@@ -84,7 +84,7 @@ const ExploreMonthlyPickItem = ({
         </div>
         <div
           data-testid="explore-v2-monthly-text-panel"
-          className="flex min-w-0 flex-col border-t border-white/10 bg-black px-2.5 py-2"
+          className="flex min-w-0 flex-col bg-black px-2.5 pb-2.5 pt-2"
         >
           <div className="flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5">
             <h3 className="break-keep text-sm font-bold leading-tight text-white sm:text-[15px]">
@@ -99,7 +99,12 @@ const ExploreMonthlyPickItem = ({
               data-testid="explore-v2-monthly-summary"
               className="mt-1 break-keep text-[12px] leading-snug text-gray-100 sm:text-[13px]"
             >
-              {summary}
+              {summary.split(/(?<=\.)\s+/).map((part, index) => (
+                <span key={`${index}-${part}`}>
+                  {index > 0 ? ' ' : null}
+                  <span className={index > 0 ? 'whitespace-nowrap' : undefined}>{part}</span>
+                </span>
+              ))}
             </p>
           ) : null}
         </div>

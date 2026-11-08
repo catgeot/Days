@@ -66,14 +66,10 @@ async function expectPhotoAltAndTextPanels(page, altForName) {
 }
 
 async function expectNoMonthlyHorizontalOverflow(page) {
-  const overflow = await page.getByTestId('explore-v2-monthly-layout-b').evaluate((root) => {
-    const targets = root.classList.contains('grid')
-      ? [root]
-      : [...root.querySelectorAll(':scope > div.grid')];
-    return targets.map((grid) => grid.scrollWidth - grid.clientWidth);
-  });
-  expect(overflow.length).toBeGreaterThan(0);
-  expect(overflow.every((d) => d <= 1)).toBe(true);
+  const overflow = await page.getByTestId('explore-v2-monthly-layout-b').evaluate(
+    (root) => root.scrollWidth - root.clientWidth,
+  );
+  expect(overflow).toBeLessThanOrEqual(1);
 }
 
 async function expectNoFullWidthMonthlyBanner(page) {
@@ -89,33 +85,35 @@ async function expectNoFullWidthMonthlyBanner(page) {
   expect(fullSpan).toBe(false);
 }
 
-async function expectMobileWideTallRhythm(page) {
+async function expectMobileColumnMosaic(page) {
   const report = await page.getByTestId('explore-v2-monthly-layout-b').evaluate((root) => {
     const width = root.clientWidth;
     const item = (slug) => root.querySelector(`[data-testid="explore-v2-monthly-item-${slug}"]`);
-    const ratio = (slug) => item(slug).offsetWidth / width;
-    const top = (slug) => item(slug).offsetTop;
+    const box = (slug) => {
+      const el = item(slug);
+      return { w: el.offsetWidth / width, top: el.offsetTop, h: el.offsetHeight };
+    };
     return {
-      kyoto: ratio('kyoto'),
-      jeju: ratio('jeju'),
-      chiang: ratio('chiang-mai'),
-      phu: ratio('phu-quoc'),
-      dubai: ratio('dubai'),
-      melbourne: ratio('melbourne'),
-      pairLanterns: top('chiang-mai') === top('phu-quoc'),
-      pairLast: top('dubai') === top('melbourne'),
-      jejuOwnRow: top('jeju') !== top('dubai') && top('jeju') !== top('phu-quoc'),
+      kyoto: box('kyoto'),
+      jeju: box('jeju'),
+      chiang: box('chiang-mai'),
+      phu: box('phu-quoc'),
+      dubai: box('dubai'),
+      melbourne: box('melbourne'),
     };
   });
-  expect(report.kyoto).toBeGreaterThan(0.9);
-  expect(report.jeju).toBeGreaterThan(0.9);
-  expect(report.chiang).toBeLessThan(0.6);
-  expect(report.phu).toBeLessThan(0.6);
-  expect(report.dubai).toBeLessThan(0.6);
-  expect(report.melbourne).toBeLessThan(0.6);
-  expect(report.pairLanterns).toBe(true);
-  expect(report.pairLast).toBe(true);
-  expect(report.jejuOwnRow).toBe(true);
+  expect(report.kyoto.w).toBeGreaterThan(0.5);
+  expect(report.kyoto.w).toBeLessThan(0.7);
+  expect(report.jeju.w).toBeGreaterThan(0.32);
+  expect(report.jeju.w).toBeLessThan(report.kyoto.w);
+  expect(Math.abs(report.kyoto.top - report.jeju.top)).toBeLessThan(2);
+  expect(report.chiang.top).toBeGreaterThan(report.kyoto.top + report.kyoto.h - 2);
+  expect(report.phu.top).toBeGreaterThan(report.jeju.top + report.jeju.h - 2);
+  expect(report.dubai.top).toBeGreaterThan(report.chiang.top);
+  expect(report.melbourne.top).toBeGreaterThan(report.phu.top);
+  for (const box of Object.values(report)) {
+    expect(box.w).toBeLessThan(0.75);
+  }
 }
 
 async function expectPhotoTallerThanSummary(page) {
@@ -226,7 +224,7 @@ async function expectIrregularMonthlyCardHeights(page) {
   });
   expect(report.uniqueCards).toBeGreaterThan(2);
   expect(report.uniquePhotos).toBeGreaterThan(2);
-  expect(report.uniqueTops).toBeGreaterThan(2);
+    expect(report.uniqueTops).toBeGreaterThan(1);
 }
 
 test.describe('Explore monthly picks @flagOff', () => {
@@ -243,7 +241,7 @@ test.describe('Explore monthly picks @flagOff', () => {
     await openExplore(page, { width: 390, height: 844 });
     await expectMonthlyMosaic(page);
     await expectNoMonthlyHorizontalOverflow(page);
-    await expectMobileWideTallRhythm(page);
+    await expectMobileColumnMosaic(page);
     await expectPhotoTallerThanSummary(page);
     await expectIrregularMonthlyCardHeights(page);
     await expectMonthlyCardsDoNotOverlap(page);
