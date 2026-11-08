@@ -26,3 +26,12 @@
 - Preview `https://days-git-cursor-explore-cards-d0e2-catgeots-projects.vercel.app/explore`. `/qa/explore-monthly`는 리다이렉트가 `main`에 반영된 뒤 그 주소로 열린다.
 - 사람 확인: 교토·치앙마이·푸꾸옥·제주·두바이·멜버른이 가로·세로로 섞이는지, 글이 한 줄 요약인지. 사진이 잘리거나 문장이 어색하면 같은 브랜치에서 그 카드만 고친다.
 - 다음: 탐색 페이지 #4, 카드 피드백. 새 브랜치·행 걸침·카드 출처 링크 복귀 금지.
+
+## 탐색 페이지 #4, 카드 피드백
+
+- 사진에서 본 배치를 유지한다. 좁은 화면은 왼쪽이 조금 넓은 두 열이고, 넓은 화면은 세 칸이다. 한 카드가 여러 행을 차지하지 않는다. 출처·저작 링크는 카드에 없다.
+- 억새·해변·경마장은 가로, 단풍·마리나는 세로로 두어 주제가 잘리지 않게 했다. 한 줄은 언제 가면 좋은지다.
+- 코드 `c07c4007` · 브랜치 `cursor/explore-cards-d0e2` · PR [#712](https://github.com/catgeot/Days/pull/712). 단위 테스트 10 passed · 검색 테스트 7 passed · Playwright `playwright.config.explore-v2.js` 6 passed, 2 skipped.
+- Preview `https://days-git-cursor-explore-cards-d0e2-catgeots-projects.vercel.app/explore`. `/qa/explore-monthly`는 리다이렉트가 `main`에 반영된 뒤 그 주소로 열린다.
+- 사람 확인: 교토·제주·치앙마이·푸꾸옥·두바이·멜버른이 두 열로 섞이는지, 사진 주제와 한 줄이 맞는지. 괜찮으면 PR #712 병합.
+- 다음: 탐색 페이지 #5, 배치 확인 후 병합. 새 브랜치·행 걸침·카드 출처 링크 복귀 금지.
