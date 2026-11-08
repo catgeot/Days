@@ -201,9 +201,18 @@ test.describe('GlobeTourStrip — 강릉 실응답 재생 (Edge 스냅샷)', () 
     expect(await countBrokenImages(dialog)).toBe(0);
     expect(await countLoadedImages(dialog)).toBeGreaterThanOrEqual(4);
 
+    await dialog.evaluate((el) => {
+      el.scrollTop = el.scrollHeight;
+    });
+    await waitForTourCardImagesSettled(page);
+
     await page.screenshot({
       path: '/opt/cursor/artifacts/tour-live-gangneung-390.png',
       clip: { x: 0, y: 0, width: 390, height: 844 },
+    });
+    await page.screenshot({
+      path: '/opt/cursor/artifacts/tour-live-gangneung-390-footer-chips.png',
+      clip: { x: 0, y: 520, width: 390, height: 324 },
     });
   });
 
@@ -221,6 +230,42 @@ test.describe('GlobeTourStrip — 강릉 실응답 재생 (Edge 스냅샷)', () 
     await page.screenshot({
       path: '/opt/cursor/artifacts/tour-live-gangneung-1280.png',
       clip: { x: 0, y: 0, width: 1280, height: 900 },
+    });
+  });
+});
+
+test.describe('GlobeTourStrip — 강릉 실 Edge (mock 없음)', () => {
+  test.skip(
+    process.env.TOUR_TNA_LIVE_E2E !== '1',
+    'TOUR_TNA_LIVE_E2E=1 일 때만 공개 Edge 호출',
+  );
+
+  test('390 · /place/gyeongpodae — 실 fetch-mrt-tnas', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto('/place/gyeongpodae?lang=ko', { waitUntil: 'domcontentloaded' });
+    await expect(page.getByRole('button', { name: /경포|강릉/ }).first()).toBeVisible({
+      timeout: 60_000,
+    });
+    await page.getByRole('button', { name: '홈으로 이동' }).first().click();
+    await expect(page).toHaveURL(/\/(\?|$)/, { timeout: 60_000 });
+    await openTourListMobile(page);
+
+    const dialog = page.getByRole('dialog', { name: '투어 전체 목록' });
+    await expect(dialog.locator('a[data-partner-booking-handoff="cta"]').first()).toBeVisible({
+      timeout: 60_000,
+    });
+    await waitForTourCardImagesSettled(page);
+    expect(await countBrokenImages(dialog)).toBe(0);
+    expect(await countLoadedImages(dialog)).toBeGreaterThanOrEqual(1);
+
+    await dialog.evaluate((el) => {
+      el.scrollTop = el.scrollHeight;
+    });
+    await page.waitForTimeout(600);
+
+    await page.screenshot({
+      path: '/opt/cursor/artifacts/tour-live-edge-gangneung-390.png',
+      clip: { x: 0, y: 0, width: 390, height: 844 },
     });
   });
 });

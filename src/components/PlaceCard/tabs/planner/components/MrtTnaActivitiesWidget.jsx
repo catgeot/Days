@@ -463,7 +463,9 @@ export default function MrtTnaActivitiesWidget({
         <div
           role="group"
           aria-label={t('place.planner.banners.mrtTna.nearbyMoreAria')}
-          className="mt-2 flex flex-col items-center gap-3 pt-3"
+          className={`mt-2 flex flex-col items-center gap-3 pt-3 ${
+            planner ? '' : 'bg-black pb-2'
+          }`}
         >
           <p
             className={`text-[17px] font-bold break-keep ${
@@ -494,7 +496,7 @@ export default function MrtTnaActivitiesWidget({
                   className={
                     planner
                       ? 'rounded-full border border-orange-400 bg-orange-400 px-7 py-1.5 text-[13px] font-bold text-white hover:bg-orange-500 hover:border-orange-500 active:scale-[0.98] transition-all'
-                      : 'rounded-full border border-orange-300/55 bg-orange-500/45 px-7 py-1.5 text-[13px] font-bold text-orange-50 hover:bg-orange-500/60 hover:border-orange-200/70 active:scale-[0.98] transition-all'
+                      : 'rounded-full border border-orange-400/80 bg-orange-600 px-7 py-1.5 text-[13px] font-bold text-white hover:bg-orange-500 hover:border-orange-300 active:scale-[0.98] transition-all'
                   }
                 >
                   {kw}
@@ -603,7 +605,7 @@ export default function MrtTnaActivitiesWidget({
       className={
         planner
           ? 'space-y-4'
-          : 'space-y-4 max-lg:flex max-lg:min-h-[calc(100dvh-8rem)] max-lg:flex-col'
+          : 'space-y-4 max-lg:flex max-lg:min-h-[calc(100dvh-8rem)] max-lg:flex-col max-lg:bg-black'
       }
     >
       {openToolbar}
@@ -681,7 +683,7 @@ export default function MrtTnaActivitiesWidget({
           className={
             planner
               ? 'mt-3 flex flex-col items-start gap-1.5 px-0.5 pt-8 pb-4'
-              : 'mt-3 flex flex-col items-start gap-1.5 px-0.5 pt-8 pb-4 max-lg:mt-auto max-lg:pb-0 max-lg:pt-6 lg:mt-3 lg:pb-4'
+              : 'mt-3 flex flex-col items-start gap-1.5 bg-black px-0.5 pt-8 pb-4 max-lg:mt-auto max-lg:pb-0 max-lg:pt-6 lg:mt-3 lg:pb-4'
           }
         >
           <a
