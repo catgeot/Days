@@ -14,6 +14,46 @@ test('koreaTourContentPlaceParam — contentId별 고유 URL', () => {
   assert.equal(getPlaceUrlParam({ contentId: '127982', source: 'tourapi', country_en: 'South Korea', name: '고산사' }), 'tour-127982');
 });
 
+test('resolveSearchResultSelect — 조선왕릉 관리소 Mapbox POI는 seoul 카드로 스냅 금지', () => {
+  const seoulOffice = {
+    id: 'mapbox-joseon-tombs-office',
+    name: '문화재청 궁능유적본부 조선왕릉중부지구관리소',
+    lat: 37.4768,
+    lng: 127.0045,
+    source: 'mapbox',
+    country: '대한민국',
+    country_en: 'South Korea',
+    uiPlace: true,
+    poiAttraction: true,
+    parentCity: '서울',
+    hubId: 'seoul',
+    slug: 'seoul',
+    name_en: 'Seoul',
+  };
+  const decision = resolveSearchResultSelect(seoulOffice);
+  assert.equal(decision?.type, 'place');
+  assert.notEqual(decision?.param, 'seoul');
+  assert.ok(decision?.param?.startsWith('search-'), decision?.param);
+  assert.notEqual(getPlaceUrlParam(seoulOffice), 'seoul');
+
+  const goyangOffice = {
+    ...seoulOffice,
+    id: 'mapbox-joseon-tombs-west',
+    name: '국가유산청 궁능유적본부 조선왕릉서부지구관리소, 서오릉관리소',
+    lat: 37.6589,
+    lng: 126.8321,
+    parentCity: '고양',
+    hubId: 'goyang',
+    slug: 'seoul',
+    name_en: 'Seoul',
+  };
+  const goyangDecision = resolveSearchResultSelect(goyangOffice);
+  assert.equal(goyangDecision?.type, 'place');
+  assert.notEqual(goyangDecision?.param, 'seoul');
+  assert.notEqual(goyangDecision?.param, 'goyang');
+  assert.ok(goyangDecision?.param?.startsWith('search-'));
+});
+
 test('resolveSearchResultSelect — 국내 Mapbox 한글 POI는 /place (홈 금지)', () => {
   const decision = resolveSearchResultSelect({
     id: 'mapbox-gosansa-jangheung',
