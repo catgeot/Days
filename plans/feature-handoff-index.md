@@ -14,6 +14,31 @@
 
 ## 활성 목록
 
+### 탐색 페이지 · 11월 여행지 카드
+
+| | |
+|--|--|
+| **상태** | **#1 11월 여행지 카드 정돈** · tip `70839199` · PR [#712](https://github.com/catgeot/Days/pull/712) · 병합 전 |
+| **브랜치** | `cursor/explore-cards-d0e2` |
+| **플랜** | 신규 기획서 없음 · 일지 핸드오프 |
+| **일지** | [`2026-11-08-project-log.md`](./2026-11-08-project-log.md) |
+| **Preview** | git `https://days-git-cursor-explore-cards-d0e2-catgeots-projects.vercel.app/explore` · `/qa/explore-monthly`는 이 리다이렉트가 `main`에 반영된 뒤 |
+| **금지** | 새 브랜치 · 행 걸침(`row-span`) 복귀 · 카드 밖 출처 · feature에 `plans/**` 커밋 · 사람 Preview 전 PR 병합 |
+| **VERIFY** | `node --import ./scripts/register-src-esm.mjs --test scripts/health/explore-v2-monthly-picks.test.mjs` |
+| **남은 일** | 사람이 `/explore`에서 여섯 카드가 서로 겹치지 않는지 본다. 겹치거나 글이 잘리면 같은 브랜치에서 그 경우만 고친다 |
+
+**다음 제시어**
+
+```
+탐색 페이지 #2, 카드 피드백
+@plans/feature-handoff-index.md
+@plans/2026-11-08-project-log.md
+브랜치 cursor/explore-cards-d0e2 · PR #712
+금지: 새 브랜치 · 행 걸침 복귀 · 카드 밖 출처
+작업: Preview에서 글이 옆 카드와 겹치거나 잘리면 그 경우만 같은 브랜치에서 고친다
+검증: node --import ./scripts/register-src-esm.mjs --test scripts/health/explore-v2-monthly-picks.test.mjs
+```
+
 ### 사용자 기록 · 용량 관리
 
 | | |
