@@ -4,7 +4,7 @@
  * 상세 규칙: AGENTS.md Cloud「세션 표기 · 고정 Preview · 작업 로그」
  */
 export const cloudPreviewProject = {
-  active: true,
+  active: false,
   title: '탐색 페이지',
   sessionNo: 4,
   sessionPhase: '카드 피드백',

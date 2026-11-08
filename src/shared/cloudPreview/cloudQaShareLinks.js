@@ -90,9 +90,8 @@ export const CLOUD_QA_SHARE_LINKS = [
     slug: 'explore-monthly',
     label: '탐색 11월 여행지 카드',
     branch: 'cursor/explore-cards-d0e2',
-    destination:
-      'https://days-git-cursor-explore-cards-d0e2-catgeots-projects.vercel.app/explore',
-    active: true,
+    destination: 'https://www.gateo.kr/explore',
+    active: false,
   },
   {
     slug: 'gallery-fresh',
