@@ -69,6 +69,7 @@ test('PROD build — QA mooni-markdown fixture route gated off', () => {
     'utf8',
   );
   assert.match(appSrc, /isQaMooniMarkdownFixtureEnabled/);
+  assert.match(appSrc, /\/qa\/mooni-markdown-composer/);
   assert.match(gateSrc, /import\.meta\.env\.DEV/);
   assert.match(gateSrc, /VITE_GATEO_QA_MOONI_MD_FIXTURE/);
   assert.match(
