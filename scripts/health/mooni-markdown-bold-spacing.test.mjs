@@ -15,3 +15,15 @@ test('getMooniModelMarkdownForRender — AI time bold renders', () => {
   assert.ok(html.includes('<strong>13:30</strong>'), html);
   assert.ok(!html.includes('**'), html);
 });
+
+test('normalizeMooniMarkdownBoldSpacing — adjacent bold islands keep glue words', () => {
+  const md = getMooniModelMarkdownForRender(
+    'Here **Bohol** and **Okinawa** for travel **experience**.',
+    { stripPhantomTicketMention: true },
+  );
+  assert.match(md, /\*\*Bohol\*\* and \*\*Okinawa\*\*/);
+  const html = micromark(md, { extensions: [gfm()], htmlExtensions: [gfmHtml()] });
+  assert.ok(html.includes('<strong>Bohol</strong>'), html);
+  assert.ok(html.includes('<strong>Okinawa</strong>'), html);
+  assert.ok(html.includes(' and '), html);
+});

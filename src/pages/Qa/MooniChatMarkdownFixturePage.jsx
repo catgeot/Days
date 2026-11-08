@@ -1,5 +1,6 @@
 import React from 'react';
 import MooniChatMarkdown from '../../components/chat/MooniChatMarkdown.jsx';
+import { getMooniModelMarkdownForRender } from '../Home/lib/mooniModelMessageText.js';
 
 const SAMPLE = `**2박 3일 힐링 코스**
 
@@ -20,6 +21,13 @@ const SAMPLE = `**2박 3일 힐링 코스**
 const TRUNCATED = `### 미완성 스트리밍
 
 **굵게 진행 중`;
+
+const COMPARE_TABLE = `| 항목 | 괌 | 오키나와 | 팔라우 | 보홀 |
+| --- | --- | --- | --- | --- |
+| 비자 | 미국령 | 일본 | 무비자 | 필리핀 |
+| **13:30 ** 출발 | 직항 | 직항 | 경유 | 경유 |
+
+**1일차** 오전 **Bohol** 투어 · **Okinawa** 비치 — travel **experience** 요약.`;
 
 function Bubble({ variant, children }) {
   const shell =
@@ -53,6 +61,15 @@ export default function MooniChatMarkdownFixturePage() {
         <p className="text-gray-400 text-[10px] font-bold uppercase">Truncated stream</p>
         <Bubble variant="dark">
           <MooniChatMarkdown text={TRUNCATED} variant="dark" />
+        </Bubble>
+      </section>
+      <section data-testid="mooni-md-table" className="space-y-2">
+        <p className="text-gray-400 text-[10px] font-bold uppercase">4-place compare table</p>
+        <Bubble variant="dark">
+          <MooniChatMarkdown
+            text={getMooniModelMarkdownForRender(COMPARE_TABLE, { stripPhantomTicketMention: true })}
+            variant="dark"
+          />
         </Bubble>
       </section>
     </div>
