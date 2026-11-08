@@ -302,8 +302,6 @@ export async function persistPlaceChatIntroSummary(destinationDisplayName, summa
   if (!isValidIntroDestination(destinationKey) || !text) return;
   if (!isPlaceChatIntroKeyAccepted(storageKey) || !isPlaceChatIntroSummaryAccepted(text)) return;
 
-  savePlaceChatIntroLocal(destinationKey, text, lng);
-
   const { data, error } = await supabase.rpc('save_place_chat_intro', {
     p_destination_key: storageKey,
     p_summary: text,
@@ -313,6 +311,8 @@ export async function persistPlaceChatIntroSummary(destinationDisplayName, summa
     return;
   }
   if (data === false) return;
+
+  savePlaceChatIntroLocal(destinationKey, text, lng);
 }
 
 export async function generatePlaceChatIntroWithAi(destinationDisplayName, lng = i18n.language) {

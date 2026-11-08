@@ -91,9 +91,11 @@ test('생성 실패 후 새 JS 컨텍스트(정상 방문) — 회복 가능', (
   assert.ok(recovered.text);
 });
 
-test('저장 실패 — 생성 1회·RPC 실패·local에는 저장(제품), 동일 세션 재호출 시 generate 0', async () => {
+test('저장 실패 — local 미기록, 동일 탭 재호출 시 재생성·재저장', async () => {
   installPlaceIntroMockStorage();
-  const counters = installPlaceIntroEnsureFetchMock({ saveFail: true });
+  let saveFail = true;
+  const counters = installPlaceIntroEnsureFetchMock({ shouldFailSave: () => saveFail });
+
   const {
     ensurePlaceChatIntroForLocation,
     loadPlaceChatIntroLocal,
@@ -108,13 +110,31 @@ test('저장 실패 — 생성 1회·RPC 실패·local에는 저장(제품), 동
   assert.ok(first?.includes('격리테스트섬'));
   assert.equal(counters.geminiCalls, 1);
   assert.equal(counters.saveCalls, 1);
-  const local = loadPlaceChatIntroLocal(persistKey, 'ko');
-  assert.equal(local, ACCEPTED_FIXTURE_INTRO, 'persist: RPC 실패해도 localStorage 먼저 기록(제품)');
+  assert.equal(loadPlaceChatIntroLocal(persistKey, 'ko'), null, 'RPC 실패 시 local 미기록');
 
-  counters.geminiCalls = 0;
-  counters.saveCalls = 0;
+  saveFail = false;
   const second = await ensurePlaceChatIntroForLocation(loc, { lng: 'ko' });
   assert.ok(second);
-  assert.equal(counters.geminiCalls, 0, 'local hit — 재생성 없음');
-  assert.equal(counters.saveCalls, 0, '캐시 hit — 재저장 없음');
+  assert.equal(counters.geminiCalls, 2, '동일 탭 재시도 — 재생성');
+  assert.equal(counters.saveCalls, 2, '동일 탭 재시도 — 재저장');
+  assert.equal(loadPlaceChatIntroLocal(persistKey, 'ko'), ACCEPTED_FIXTURE_INTRO, '성공 후 local 반영');
+});
+
+test('기존 DB 저장글 조회 — generate 0', async () => {
+  installPlaceIntroMockStorage();
+  const existing = '기존저장된소개문장입니다. 조회 전용 fixture로 생성 호출 없이 읽기만 검증합니다. 방문객은 해변을 즐깁니다.';
+  const storageKey = '격리테스트국 읽기전용섬';
+  const counters = installPlaceIntroEnsureFetchMock({
+    dbRows: { [storageKey]: existing },
+  });
+  const { ensurePlaceChatIntroForLocation, resetPlaceChatIntroEnsureStateForTests } = await import(
+    '../../src/pages/Home/lib/placeChatIntro.js'
+  );
+  resetPlaceChatIntroEnsureStateForTests();
+
+  const loc = { slug: 'read-db', name: '읽기전용섬', country: '격리테스트국' };
+  const text = await ensurePlaceChatIntroForLocation(loc, { lng: 'ko' });
+  assert.ok(text?.includes('기존저장'));
+  assert.equal(counters.geminiCalls, 0);
+  assert.equal(counters.saveCalls, 0);
 });

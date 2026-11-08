@@ -21,12 +21,15 @@ export function installPlaceIntroMockStorage() {
 }
 
 /**
- * @param {{ geminiMode?: 'ok'|'empty'|'throw', saveFail?: boolean, geminiDelayMs?: number, dbRows?: Record<string,string> }} opts
+ * @param {{ geminiMode?: 'ok'|'empty'|'throw', saveFail?: boolean, shouldFailSave?: () => boolean, geminiDelayMs?: number, dbRows?: Record<string,string> }} opts
  */
 export function installPlaceIntroEnsureFetchMock(opts = {}) {
   const counters = { geminiCalls: 0, saveCalls: 0, concurrentGemini: 0, maxConcurrentGemini: 0 };
   const geminiMode = opts.geminiMode ?? 'ok';
-  const saveFail = Boolean(opts.saveFail);
+  const shouldFailSave =
+    typeof opts.shouldFailSave === 'function'
+      ? opts.shouldFailSave
+      : () => Boolean(opts.saveFail);
   const geminiDelayMs = opts.geminiDelayMs ?? 0;
   const dbRows = { ...(opts.dbRows || {}) };
 
@@ -37,7 +40,8 @@ export function installPlaceIntroEnsureFetchMock(opts = {}) {
 
     if (url.includes(`${SUPA}/rest/v1/place_chat_intro`)) {
       const eq = url.match(/destination_key=eq\.([^&]+)/);
-      const key = eq ? decodeURIComponent(eq[1]) : '';
+      let key = eq ? decodeURIComponent(String(eq[1]).replace(/\+/g, ' ')) : '';
+      key = key.replace(/^"+|"+$/g, '');
       const row = key && dbRows[key] ? { destination_key: key, summary: dbRows[key] } : null;
       const accept = init?.headers?.accept || init?.headers?.Accept || '';
       if (accept.includes('application/vnd.pgrst.object+json')) {
@@ -54,7 +58,7 @@ export function installPlaceIntroEnsureFetchMock(opts = {}) {
 
     if (url.includes(`${SUPA}/rest/v1/rpc/save_place_chat_intro`)) {
       counters.saveCalls += 1;
-      if (saveFail) {
+      if (shouldFailSave()) {
         return new Response(JSON.stringify({ message: 'mock save fail' }), { status: 500 });
       }
       try {
