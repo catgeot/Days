@@ -330,6 +330,14 @@ assert.ok(
   getbolRows.every((r) => r.groupTitle && r.groupTitle.includes('일부')),
   '집합 groupTitle — 일부 장소',
 );
+assert.ok(
+  getbolRows.every((r) => r.badge === '자연유산'),
+  '집합 카드 유형 — hub park(공원) 대신 자연유산',
+);
+assert.ok(
+  getbolRows.every((r) => r.attractionKind === 'park'),
+  'hub SSOT attractionKind 미변경',
+);
 assert.equal(
   buildKoreaGetbolCollectiveSearchSuggestions('갯벌').length,
   0,

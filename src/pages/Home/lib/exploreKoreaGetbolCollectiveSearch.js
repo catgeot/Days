@@ -15,6 +15,9 @@ const normalizeKey = (s) =>
 /** 전체 4구성 나열이 아님 — 신안·서천(탐색 /place 미지원) 등은 별도 SSOT */
 const COLLECTIVE_GROUP_TITLE = '유네스코 「한국의 갯벌」·사이트에서 확인 가능한 일부 장소';
 
+/** hub SSOT kind=park(공원)와 달리, 집합유산 검색 카드만 세계자연유산 구성 자산에 맞는 표기 */
+const COLLECTIVE_ATTRACTION_BADGE = '자연유산';
+
 const COLLECTIVE_QUERY_KEYS = new Set([
   '한국의갯벌',
   '한국갯벌',
@@ -53,6 +56,7 @@ function hubAttractionSuggestion({ attractionName, scenicId, searchOverlayDesc }
   let item = attractionToSuggestion(hit.hub, hit.attraction);
   item = attachScenicRouteFields(item, scenicId);
   item.groupTitle = COLLECTIVE_GROUP_TITLE;
+  item.badge = COLLECTIVE_ATTRACTION_BADGE;
   if (searchOverlayDesc) item.searchOverlayDesc = searchOverlayDesc;
   return item;
 }
