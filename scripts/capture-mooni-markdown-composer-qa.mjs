@@ -67,9 +67,9 @@ for (const spec of [
   await page.screenshot({
     path: path.join(outDir, file),
     clip: {
-      x: Math.max(0, box.x),
+      x: 0,
       y: Math.max(0, box.y - 4),
-      width: spec.width === 390 ? 390 : Math.min(spec.width, Math.ceil(box.width) + 8),
+      width: spec.width,
       height,
     },
   });
