@@ -58,7 +58,10 @@ for (const spec of [
 
   const box = await thread.boundingBox();
   if (!box) throw new Error('composer thread not found');
-  const height = Math.min(spec.height, Math.ceil(box.height) + 16);
+  const height = Math.min(
+    spec.height,
+    Math.ceil(box.height) + 48,
+  );
   const file =
     spec.width === 390
       ? `composer-mock-full-thread-${spec.width}x${spec.height}.png`
