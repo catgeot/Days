@@ -14,6 +14,30 @@
 
 ## 활성 목록
 
+### 투어 카드 가독성
+
+| | |
+|--|--|
+| **상태** | **#2 PR704 후속** · tip `72a754bd` · Draft PR [#720](https://github.com/catgeot/Days/pull/720) · 선행 [#704](https://github.com/catgeot/Days/pull/704) 유지 |
+| **브랜치** | `cursor/tour-card-readability-dce1` |
+| **일지** | [`2026-11-08-project-log.md`](./2026-11-08-project-log.md) |
+| **Preview** | `https://days-git-cursor-tour-card-readability-dce1-catgeots-projects.vercel.app/` |
+| **금지** | #704 닫기·덮어쓰기 · 머지·PROD · 11월 카드·축제·숙소 다른 PR · feature에 `plans/**` |
+| **VERIFY** | `npm run build` · `npm run smoke:partner-booking-handoff` · `e2e/tour-list-card-readability.spec.js` (fixture) |
+| **남은 일** | 강릉 등 **실 API** 390/1280 · 사람 Preview · Composer 독립 QA. mock만으로 실응답 대체 금지 |
+
+**다음 제시어**
+
+```
+투어 카드 UI #3, 실 API Preview QA
+@plans/feature-handoff-index.md
+@plans/2026-11-08-project-log.md
+브랜치 cursor/tour-card-readability-dce1 · Draft PR #720 (선행 #704)
+금지: Ready/머지/PROD · #704 수정 · 11월 카드·축제
+작업: Preview에서 강릉·해운대 투어 — 고지 1회·카드 CTA 없음·전체 링크 sponsored 확인
+검증: 실 응답 캡처 후 부모 승인
+```
+
 ### 사용자 기록 · 용량 관리
 
 | | |
