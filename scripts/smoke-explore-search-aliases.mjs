@@ -313,22 +313,22 @@ for (const q of ['한라산 백록담', '백록담', '화구벽']) {
 }
 
 const getbolRows = buildKoreaGetbolCollectiveSearchSuggestions('한국의 갯벌');
-assert.ok(getbolRows.length >= 3, '한국의 갯벌 → 유네스코 구성 자산 3건 이상');
+assert.equal(getbolRows.length, 2, '한국의 갯벌 → /place 가능 2건(고창·순천만)');
 assert.ok(
   getbolRows.some((r) => String(r.name || '').includes('고창 갯벌')),
-  '고창 갯벌 구성 자산',
-);
-assert.ok(
-  getbolRows.some((r) => String(r.name || '').includes('유부도와 서천갯벌')),
-  '서천 갯벌(유부도) 구성 자산',
+  '고창 갯벌',
 );
 assert.ok(
   getbolRows.some((r) => String(r.name || '').includes('순천만습지')),
-  '보성·순천(순천만습지) 구성 자산',
+  '순천만습지',
 );
 assert.ok(
-  getbolRows.every((r) => r.groupTitle && r.groupTitle.includes('한국의 갯벌')),
-  '집합유산 groupTitle',
+  !getbolRows.some((r) => String(r.name || '').includes('유부도')),
+  '서천(탐색 /place 미지원) 카드 제외',
+);
+assert.ok(
+  getbolRows.every((r) => r.groupTitle && r.groupTitle.includes('일부')),
+  '집합 groupTitle — 일부 장소',
 );
 assert.equal(
   buildKoreaGetbolCollectiveSearchSuggestions('갯벌').length,
