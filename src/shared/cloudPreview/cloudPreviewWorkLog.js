@@ -5,12 +5,12 @@
  */
 export const cloudPreviewProject = {
   active: true,
-  title: '리뷰 연관 여행지',
+  title: '탐색 페이지',
   sessionNo: 1,
-  sessionPhase: '탭 유지',
-  branch: 'cursor/reviews-related-b9fa',
-  previewPath: '/place/paris/reviews',
-  qaShareSlug: 'reviews-related',
+  sessionPhase: '11월 여행지 카드 정돈',
+  branch: 'cursor/explore-cards-d0e2',
+  previewPath: '/explore',
+  qaShareSlug: 'explore-monthly',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-11-08-explore-monthly-cards-1',
+    session: '탐색 페이지 #1, 11월 여행지 카드 정돈',
+    title: '11월 여행지 카드 분리',
+    detail:
+      '11월의 여행지는 두 칸(넓은 화면은 세 칸)의 같은 크기 카드입니다. 사진·이름·이유·출처·저작 표기는 카드 안에만 있고, 옆 카드 사진과 겹치지 않습니다. 제주 추정 뱃지는 사진 안에 있습니다. Preview /qa/explore-monthly — /explore.',
+    at: '2026-11-08T03:20:00.000Z',
+  },
   {
     id: '2026-10-14-festival-card-1-train-promo',
     session: '축제 카드 #1, 열차 문장·소개 축제',

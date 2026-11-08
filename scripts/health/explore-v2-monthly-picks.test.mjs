@@ -24,6 +24,7 @@ import {
   GATEO_ENV_FLAG_NAMES,
   isGateoExploreV2Enabled,
 } from '../../src/shared/gateoFeatureFlags.js';
+import { resolveExploreMonthlyPickGridSlot } from '../../src/pages/Home/components/SearchDiscovery/exploreMonthlyGridLayout.js';
 
 const MONTH_KEY = EXPLORE_V2_MONTHLY_PICK_KEY;
 const EXPECTED_SLUGS = [
@@ -134,9 +135,18 @@ test('monthly layout B uses aligned CSS grid (no masonry column runs)', () => {
   assert.match(layoutB, /exploreMonthlyGridLayout/);
   assert.match(layoutB, /EXPLORE_MONTHLY_PICK_GRID_CLASS/);
   assert.match(gridLayout, /grid-cols-12/);
-  assert.doesNotMatch(gridLayout, /col-span-12/);
+  assert.match(gridLayout, /items-stretch/);
+  assert.doesNotMatch(gridLayout, /col-span-12|row-span|auto-rows-min/);
   assert.match(gridLayout, /variant: 'tall'/);
+  for (const slug of EXPECTED_SLUGS) {
+    const slot = resolveExploreMonthlyPickGridSlot(slug);
+    assert.match(slot.className, /col-span-6/);
+    assert.match(slot.className, /lg:col-span-4/);
+    assert.doesNotMatch(slot.className, /row-span|row-start|col-start/);
+  }
+  assert.equal(resolveExploreMonthlyPickGridSlot('jeju').variant, 'tall');
   assert.doesNotMatch(layoutB, /Masonry|distributeFestivalHubMasonryColumns|partitionFestivalHubSegments/);
+  assert.doesNotMatch(layoutB, /sourcesBelow/);
   assert.equal(existsSync(join(dir, 'exploreMonthlyMasonryLayout.js')), false);
 });
 

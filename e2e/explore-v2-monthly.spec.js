@@ -98,6 +98,56 @@ async function expectAllMonthlyPickSlugsVisible(page) {
   }
 }
 
+async function expectMonthlyCardsDoNotOverlap(page) {
+  const report = await page.getByTestId('explore-v2-monthly-layout-b').evaluate((root) => {
+    const items = [...root.querySelectorAll('[data-testid^="explore-v2-monthly-item-"]')];
+    const boxes = items.map((el) => {
+      const r = el.getBoundingClientRect();
+      return {
+        id: el.getAttribute('data-testid'),
+        top: r.top,
+        left: r.left,
+        right: r.right,
+        bottom: r.bottom,
+      };
+    });
+    const hits = [];
+    for (let i = 0; i < boxes.length; i += 1) {
+      for (let j = i + 1; j < boxes.length; j += 1) {
+        const a = boxes[i];
+        const b = boxes[j];
+        const overlapX = Math.min(a.right, b.right) - Math.max(a.left, b.left);
+        const overlapY = Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top);
+        if (overlapX > 1 && overlapY > 1) {
+          hits.push({ a: a.id, b: b.id, overlapX, overlapY });
+        }
+      }
+    }
+    const leaks = [];
+    for (const el of items) {
+      const item = el.getBoundingClientRect();
+      for (const bit of el.querySelectorAll('a, p, h3')) {
+        const r = bit.getBoundingClientRect();
+        if (r.width < 1 || r.height < 1) continue;
+        const outside =
+          r.left < item.left - 1 ||
+          r.right > item.right + 1 ||
+          r.top < item.top - 1 ||
+          r.bottom > item.bottom + 1;
+        if (outside) {
+          leaks.push({
+            id: el.getAttribute('data-testid'),
+            text: (bit.textContent || '').trim().slice(0, 48),
+          });
+        }
+      }
+    }
+    return { hits, leaks };
+  });
+  expect(report.hits).toEqual([]);
+  expect(report.leaks).toEqual([]);
+}
+
 async function expectMonthlyGridRowAlignment(page) {
   const rows = await page.getByTestId('explore-v2-monthly-layout-b').evaluate((root) => {
     const items = [...root.querySelectorAll('[data-testid^="explore-v2-monthly-item-"]')];
@@ -141,6 +191,7 @@ test.describe('Explore monthly picks @flagOff', () => {
     await expectNoMonthlyHorizontalOverflow(page);
     await expectNoFullWidthMonthlyBanner(page);
     await expectMonthlyGridRowAlignment(page);
+    await expectMonthlyCardsDoNotOverlap(page);
     await expectAllMonthlyPickSlugsVisible(page);
 
     const items = page.locator('[data-testid^="explore-v2-monthly-item-"]');
@@ -189,6 +240,7 @@ test.describe('Explore monthly picks @flagOff', () => {
     await expectNoMonthlyHorizontalOverflow(page);
     await expectNoFullWidthMonthlyBanner(page);
     await expectMonthlyGridRowAlignment(page);
+    await expectMonthlyCardsDoNotOverlap(page);
     await expectAllMonthlyPickSlugsVisible(page);
     await expectPhotoAltAndTextPanels(page, (name) => `${name} 대표 사진`);
     await expect(page.getByText('에디터스 픽').first()).toBeVisible({ timeout: 45_000 });

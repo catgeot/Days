@@ -10,7 +10,7 @@ const ExploreMonthlyPicksLayoutB = ({ cards, onSelectSpot }) => (
     data-testid="explore-v2-monthly-layout-b"
     className={EXPLORE_MONTHLY_PICK_GRID_CLASS}
   >
-    {cards.map(({ spot, entry, imageUrl }, index) => {
+    {cards.map(({ spot, entry, imageUrl }) => {
       const slug = String(spot?.slug || entry?.slug || '').toLowerCase();
       const { className: gridClass, variant } = resolveExploreMonthlyPickGridSlot(slug);
       return (
@@ -21,7 +21,6 @@ const ExploreMonthlyPicksLayoutB = ({ cards, onSelectSpot }) => (
           imageUrl={imageUrl}
           onSelect={onSelectSpot}
           variant={variant}
-          sourcesBelow
           className={gridClass}
         />
       );
