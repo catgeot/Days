@@ -61,6 +61,7 @@ import {
   buildMooniBoundSpotFromLocation,
   ensurePlaceChatIntroForLocation,
   needsPlaceChatIntroHydration,
+  shouldEnsurePlaceChatIntroForLocation,
 } from './lib/placeChatIntro';
 import { isDomesticKoreaLocation } from '../../utils/tourApiMatch.js';
 import { fetchDomesticTourOverview } from '../../utils/tourKeywordPick.js';
@@ -1113,8 +1114,8 @@ function Home() {
             setSelectedLocation(focusTarget);
           }
 
-          // place_chat_intro (홈 써머리·갤러리 overview — SSOT 하드코딩도 통일)
-          if (needsPlaceChatIntroHydration(focusTarget)) {
+          // place_chat_intro: ensure(조회·생성·저장) vs needsPlaceChatIntroHydration(표시 desc 교체)
+          if (shouldEnsurePlaceChatIntroForLocation(focusTarget)) {
             const pinId = focusTarget?.id;
             const pinName = focusTarget?.name;
             const overviewPromise = isDomesticKoreaLocation(focusTarget)

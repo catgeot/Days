@@ -23,6 +23,32 @@ export function resetPlaceGalleryOverviewCacheForTests() {
   overviewInflight.clear();
 }
 
+/** @type {Set<(location: object, lng?: string) => void>} */
+const introSavedListeners = new Set();
+
+export function onPlaceChatIntroSaved(listener) {
+  introSavedListeners.add(listener);
+  return () => introSavedListeners.delete(listener);
+}
+
+export function invalidatePlaceGalleryOverviewCache(location, lng = 'ko') {
+  if (!location) return;
+  overviewMemory.delete(overviewCacheKey(location, lng));
+}
+
+export function notifyPlaceChatIntroSaved(location, lng = 'ko') {
+  if (!location) return;
+  invalidatePlaceGalleryOverviewCache(location, lng);
+  invalidatePlaceGalleryOverviewCache(location, lng === 'en' ? 'ko' : 'en');
+  for (const listener of introSavedListeners) {
+    try {
+      listener(location, lng);
+    } catch {
+      // subscriber
+    }
+  }
+}
+
 /**
  * 갤러리 overview — **읽기 전용**: place_chat_intro 조회 → Tour detailCommon.
  * AI·DB intro persist 없음.
