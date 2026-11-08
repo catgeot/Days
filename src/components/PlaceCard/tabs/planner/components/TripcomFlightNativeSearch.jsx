@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowLeftRight, ArrowRight, Plane, Search } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -125,6 +125,7 @@ const TripcomFlightNativeSearch = ({
     const linkTarget = getPartnerLinkTarget();
     const isRoundTrip = tripType === 'RT';
     const datesReady = hasCompleteFlightDates({ tripType, ddate, rdate });
+    const searchLockRef = useRef(false);
 
     useEffect(() => {
         if (defaultArrival) {
@@ -138,8 +139,12 @@ const TripcomFlightNativeSearch = ({
         setArrive(depart);
     };
 
-    const handleSubmit = (event) => {
-        event.preventDefault();
+    const startSearch = () => {
+        if (searchLockRef.current) return;
+        searchLockRef.current = true;
+        window.setTimeout(() => {
+            searchLockRef.current = false;
+        }, 400);
         if (!hasCompleteFlightDates({ tripType, ddate, rdate })) {
             setCalendarOpenSignal((current) => current + 1);
             return;
@@ -160,7 +165,12 @@ const TripcomFlightNativeSearch = ({
             target: linkTarget,
             placeLabel: location?.name || location?.name_ko || location?.name_en,
         });
-        onAfterSearch?.();
+        if (linkTarget !== '_self') onAfterSearch?.();
+    };
+
+    const handleSubmit = (event) => {
+        event.preventDefault();
+        startSearch();
     };
 
     return (
@@ -259,7 +269,12 @@ const TripcomFlightNativeSearch = ({
 
                 <button
                     type="submit"
-                    className="group relative mt-0.5 inline-flex min-h-[44px] w-full items-center justify-center gap-2 overflow-hidden rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 px-4 py-2.5 font-bold text-white shadow-sm transition-all duration-200 hover:from-sky-600 hover:to-blue-700 active:scale-[0.99] focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2"
+                    onPointerDown={(event) => {
+                        if (event.pointerType === 'mouse') return;
+                        event.preventDefault();
+                        startSearch();
+                    }}
+                    className="group relative mt-0.5 inline-flex min-h-[44px] w-full touch-manipulation items-center justify-center gap-2 overflow-hidden rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 px-4 py-2.5 font-bold text-white shadow-sm transition-all duration-200 hover:from-sky-600 hover:to-blue-700 active:scale-[0.99] focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2"
                 >
                     <Search size={15} className="transition-transform group-hover:scale-110" />
                     <span className="text-sm tracking-wide">

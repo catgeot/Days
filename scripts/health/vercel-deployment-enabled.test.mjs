@@ -12,11 +12,13 @@ test('cursor branches do not auto-deploy and main stays at the Vercel default', 
   assert.equal(vercel.git.deploymentEnabled['cursor/auth-session-persist-3163'], true);
   assert.equal(vercel.git.deploymentEnabled['cursor/festival-access-promo-5b7f'], true);
   assert.equal(vercel.git.deploymentEnabled['cursor/explore-search-fix-bfa1'], true);
+  assert.equal(vercel.git.deploymentEnabled['cursor/flight-search-tap-b675'], true);
   const allowed = Object.entries(vercel.git.deploymentEnabled).filter(([, on]) => on === true);
   assert.deepEqual(allowed, [
     ['cursor/auth-session-persist-3163', true],
     ['cursor/festival-access-promo-5b7f', true],
     ['cursor/explore-search-fix-bfa1', true],
+    ['cursor/flight-search-tap-b675', true],
   ]);
   assert.equal(Object.hasOwn(vercel.git.deploymentEnabled, 'main'), false);
   assert.equal(vercel.git.deploymentEnabled !== false, true);

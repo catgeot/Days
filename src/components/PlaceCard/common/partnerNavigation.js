@@ -1,4 +1,5 @@
 import { buildTripcomPlannerFlightUrl, TRIPCOM_FLIGHT_AD } from '../../../utils/affiliate';
+import { openRecordedTripcomUrl } from './tripcomExternalNav.js';
 import { areMetroCoterminalAirports } from '../../../pages/Home/lib/flightOriginMetroGateways.js';
 import { recordTravelAgencyVisit } from '../../../utils/travelAgencyVisits.js';
 import { isMobileDevice } from './device';
@@ -149,19 +150,11 @@ export function openPartnerExternalUrl(url, { target = getPartnerLinkTarget(), p
 
 /** 프로그래밍 방식 — Trip.com (모바일 _self 시 noreferrer로 이동) */
 export function openTripcomExternalUrl(url, { target = getPartnerLinkTarget(), placeLabel } = {}) {
-    if (!url) return;
-    recordTravelAgencyVisit({ href: url, placeLabel });
-    if (target === '_self') {
-        const anchor = document.createElement('a');
-        anchor.href = url;
-        anchor.rel = 'noreferrer';
-        anchor.target = '_self';
-        document.body.appendChild(anchor);
-        anchor.click();
-        anchor.remove();
-        return;
-    }
-    window.open(url, '_blank', 'noopener');
+    openRecordedTripcomUrl(url, {
+        target,
+        placeLabel,
+        recordVisit: recordTravelAgencyVisit,
+    });
 }
 
 /**
