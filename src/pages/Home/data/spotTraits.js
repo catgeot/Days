@@ -11,7 +11,7 @@ export const MONTHLY_PICKS = {
   '2026-11': [
     {
       slug: 'kyoto',
-      reason: '11월 중순 단풍 절정·11월 야간 라이트업',
+      reason: '11월 중순 단풍 절정. 밤 라이트업까지 맞습니다.',
       sources: [
         {
           url: 'https://www.kyoto.travel/en/seasonal-info/autumnleaves/',
@@ -27,7 +27,7 @@ export const MONTHLY_PICKS = {
     },
     {
       slug: 'chiang-mai',
-      reason: '11/23~25 이펭 축제 · 11~2월 건기',
+      reason: '11/23–25 이펭. 건기라 하늘이 맑습니다.',
       sources: [
         {
           url: 'https://www.thailandtravel.or.jp/about/calendar/',
@@ -43,7 +43,7 @@ export const MONTHLY_PICKS = {
     },
     {
       slug: 'phu-quoc',
-      reason: '11월 건기 시작(전환기)',
+      reason: '11월 건기 시작. 바다가 잔잔해집니다.',
       sources: [
         {
           url: 'https://vietnam.travel/places-to-go/mekong-delta/phu-quoc/',
@@ -55,7 +55,7 @@ export const MONTHLY_PICKS = {
     },
     {
       slug: 'jeju',
-      reason: '가을 오름 억새(10월)·11월 중순 이후 억새는 추정',
+      reason: '억새 절정은 10월. 11월 중순 이후는 추정.',
       sources: [
         {
           url: 'https://www.visitjeju.net/kr/detail/view?contentsid=CONT_000000000500309',
@@ -71,7 +71,7 @@ export const MONTHLY_PICKS = {
     },
     {
       slug: 'dubai',
-      reason: '11월 두바이 피트니스 챌린지·더위가 풀려 걷기 좋아요',
+      reason: '더위가 풀린 11월. 걷고 챌린지하기 좋습니다.',
       sources: [
         {
           url: 'https://www.visitdubai.com/en/-/media/Images/pdf/2026/dubai-city-guide-en-2026.pdf',
@@ -91,7 +91,7 @@ export const MONTHLY_PICKS = {
     },
     {
       slug: 'melbourne',
-      reason: '멜버른컵 2026년 11월 3일·카니발 10/31~11/7',
+      reason: '11/3 멜버른컵. 도시가 가장 붐비는 주간.',
       sources: [
         {
           url: 'https://www.vrc.com.au/race-days-and-events/2026-2027/lexus-melbourne-cup-day/',

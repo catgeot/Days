@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '탐색 페이지',
-  sessionNo: 2,
-  sessionPhase: '카드 피드백',
+  sessionNo: 3,
+  sessionPhase: '카드 높이 조율',
   branch: 'cursor/explore-cards-d0e2',
   previewPath: '/explore',
   qaShareSlug: 'explore-monthly',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-11-08-explore-monthly-cards-3',
+    session: '탐색 페이지 #3, 카드 높이 조율',
+    title: '사진과 한 줄 요약·가로 세로 섞기',
+    detail:
+      '11월의 여행지 카드 글은 여행지 설명이 아니라, 언제가 최적기이고 그때 가는 이유인 한 줄입니다. 좁은 화면은 가로 한 장, 세로 두 장, 가로 한 장, 세로 두 장입니다. 넓은 화면은 그 칸을 한 줄에 나란히 둡니다. 한 카드가 여러 행을 차지하지 않아 글이 옆 사진 위로 넘치지 않습니다. 관광청 링크와 저작 표기는 카드에 없습니다. 제주 추정 뱃지는 사진 안에 있습니다. Preview /qa/explore-monthly — /explore.',
+    at: '2026-11-08T05:00:00.000Z',
+  },
   {
     id: '2026-11-08-explore-monthly-cards-2',
     session: '탐색 페이지 #2, 카드 피드백',

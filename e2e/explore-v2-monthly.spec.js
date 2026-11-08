@@ -89,6 +89,52 @@ async function expectNoFullWidthMonthlyBanner(page) {
   expect(fullSpan).toBe(false);
 }
 
+async function expectMobileWideTallRhythm(page) {
+  const report = await page.getByTestId('explore-v2-monthly-layout-b').evaluate((root) => {
+    const width = root.clientWidth;
+    const item = (slug) => root.querySelector(`[data-testid="explore-v2-monthly-item-${slug}"]`);
+    const ratio = (slug) => item(slug).offsetWidth / width;
+    const top = (slug) => item(slug).offsetTop;
+    return {
+      kyoto: ratio('kyoto'),
+      jeju: ratio('jeju'),
+      chiang: ratio('chiang-mai'),
+      phu: ratio('phu-quoc'),
+      dubai: ratio('dubai'),
+      melbourne: ratio('melbourne'),
+      pairLanterns: top('chiang-mai') === top('phu-quoc'),
+      pairLast: top('dubai') === top('melbourne'),
+      jejuOwnRow: top('jeju') !== top('dubai') && top('jeju') !== top('phu-quoc'),
+    };
+  });
+  expect(report.kyoto).toBeGreaterThan(0.9);
+  expect(report.jeju).toBeGreaterThan(0.9);
+  expect(report.chiang).toBeLessThan(0.6);
+  expect(report.phu).toBeLessThan(0.6);
+  expect(report.dubai).toBeLessThan(0.6);
+  expect(report.melbourne).toBeLessThan(0.6);
+  expect(report.pairLanterns).toBe(true);
+  expect(report.pairLast).toBe(true);
+  expect(report.jejuOwnRow).toBe(true);
+}
+
+async function expectPhotoTallerThanSummary(page) {
+  const rows = await page.getByTestId('explore-v2-monthly-layout-b').evaluate((root) =>
+    [...root.querySelectorAll('[data-testid^="explore-v2-monthly-card-"]')].map((card) => {
+      const photo = card.querySelector('[data-testid^="explore-v2-monthly-photo-"]');
+      const text = card.querySelector('[data-testid="explore-v2-monthly-text-panel"]');
+      return {
+        photo: photo.getBoundingClientRect().height,
+        text: text.getBoundingClientRect().height,
+      };
+    }),
+  );
+  expect(rows.length).toBe(MONTHLY_VISIBLE_COUNT);
+  for (const row of rows) {
+    expect(row.photo).toBeGreaterThan(row.text);
+  }
+}
+
 async function expectAllMonthlyPickSlugsVisible(page) {
   for (const slug of ['kyoto', 'chiang-mai', 'phu-quoc', 'jeju', 'dubai', 'melbourne']) {
     const item = page.getByTestId(`explore-v2-monthly-item-${slug}`);
@@ -154,10 +200,14 @@ async function expectMonthlySummaryNotSources(page) {
   await expect(page.getByText('File / policy')).toHaveCount(0);
   await expect(page.getByTestId('explore-v2-monthly-summary')).toHaveCount(MONTHLY_VISIBLE_COUNT);
   const kyoto = page.getByTestId('explore-v2-monthly-card-kyoto');
-  await expect(kyoto).toContainText('일본 전통 문화의 심장');
   await expect(kyoto).toContainText('단풍 절정');
-  await expect(page.getByTestId('explore-v2-monthly-card-jeju')).toContainText('세계자연유산');
-  await expect(page.getByTestId('explore-v2-monthly-card-chiang-mai')).toContainText('태국 북부의 문화 수도');
+  await expect(kyoto).not.toContainText('일본 전통 문화의 심장');
+  const jeju = page.getByTestId('explore-v2-monthly-card-jeju');
+  await expect(jeju).toContainText('추정');
+  await expect(jeju).not.toContainText('세계자연유산');
+  const chiang = page.getByTestId('explore-v2-monthly-card-chiang-mai');
+  await expect(chiang).toContainText('이펭');
+  await expect(chiang).not.toContainText('태국 북부의 문화 수도');
 }
 
 async function expectIrregularMonthlyCardHeights(page) {
@@ -193,7 +243,8 @@ test.describe('Explore monthly picks @flagOff', () => {
     await openExplore(page, { width: 390, height: 844 });
     await expectMonthlyMosaic(page);
     await expectNoMonthlyHorizontalOverflow(page);
-    await expectNoFullWidthMonthlyBanner(page);
+    await expectMobileWideTallRhythm(page);
+    await expectPhotoTallerThanSummary(page);
     await expectIrregularMonthlyCardHeights(page);
     await expectMonthlyCardsDoNotOverlap(page);
     await expectMonthlySummaryNotSources(page);
@@ -239,6 +290,7 @@ test.describe('Explore monthly picks @flagOff', () => {
     await expectMonthlyMosaic(page);
     await expectNoMonthlyHorizontalOverflow(page);
     await expectNoFullWidthMonthlyBanner(page);
+    await expectPhotoTallerThanSummary(page);
     await expectIrregularMonthlyCardHeights(page);
     await expectMonthlyCardsDoNotOverlap(page);
     await expectMonthlySummaryNotSources(page);

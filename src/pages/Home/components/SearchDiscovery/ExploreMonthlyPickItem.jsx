@@ -33,7 +33,7 @@ const ExploreMonthlyPickItem = ({
     .toLowerCase()
     .startsWith('en');
   const { variant, photoClass } = resolveExploreMonthlyPickGridSlot(slug);
-  const summary = String(spot?.desc || '').trim();
+  const summary = String(entry?.reason || '').trim();
   const credit = EXPLORE_MONTHLY_PICK_PHOTO_CREDIT[slug];
   const creditTitle = isEnUi ? credit?.en : credit?.ko;
 
@@ -84,30 +84,24 @@ const ExploreMonthlyPickItem = ({
         </div>
         <div
           data-testid="explore-v2-monthly-text-panel"
-          className="flex min-w-0 flex-col border-t border-white/10 bg-black px-3 py-2.5"
+          className="flex min-w-0 flex-col border-t border-white/10 bg-black px-2.5 py-2"
         >
           <div className="flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5">
-            <h3 className="break-keep text-[15px] font-bold leading-tight text-white sm:text-base">
+            <h3 className="break-keep text-sm font-bold leading-tight text-white sm:text-[15px]">
               {displayName}
             </h3>
             {countryLabel ? (
-              <span className="text-xs font-medium text-gray-300">{countryLabel}</span>
+              <span className="text-[11px] font-medium text-gray-300">{countryLabel}</span>
             ) : null}
           </div>
           {summary ? (
             <p
               data-testid="explore-v2-monthly-summary"
-              className="mt-1.5 break-keep text-[13px] leading-relaxed text-gray-100"
+              className="mt-1 break-keep text-[12px] leading-snug text-gray-100 sm:text-[13px]"
             >
               {summary}
             </p>
           ) : null}
-          <p
-            data-testid="explore-v2-monthly-reason"
-            className="mt-1.5 break-keep text-[12px] leading-snug text-gray-400"
-          >
-            {entry.reason}
-          </p>
         </div>
       </article>
     </div>
