@@ -14,7 +14,8 @@ import { getKlookSearchUrl, getMrtDomesticRentalUrl, getTripcomTrainUrl } from '
 import StripListLargeToggle from './StripListLargeToggle';
 import { EVENT_STRIP_SCROLL_ROW_CLASS, eventStripCardShellClass } from './eventStripCardLayout';
 import { resolveListImageUrl } from '../../utils/listImageUrl';
-import PartnerBookingHandoff from '../../shared/affiliate/PartnerBookingHandoff.jsx';
+import StayListPartnerNotice from '../../shared/affiliate/StayListPartnerNotice.jsx';
+import TourCardBookingLink from '../../shared/affiliate/TourCardBookingLink.jsx';
 
 const outboundChipClass =
   'inline-flex max-w-full items-center gap-1.5 rounded-full border border-stone-200 bg-stone-50 px-3 py-1.5 text-xs font-bold text-stone-800 transition-colors hover:border-amber-300 hover:bg-amber-50';
@@ -80,68 +81,61 @@ function TnaStripCard({ item, locale, t, large = false }) {
   const price = formatTnaPrice(item, locale, t);
   if (!href) return null;
 
-  const shellClass = eventStripCardShellClass({ large });
+  const shellClass = `${eventStripCardShellClass({ large })} hover:border-amber-300/60`;
 
   return (
-    <div className={shellClass}>
-      <div className="flex min-h-0 flex-1 flex-col">
-        <div className={`relative w-full shrink-0 bg-stone-100 ${large ? 'h-[132px]' : 'h-[88px]'}`}>
-          {item.imageUrl ? (
-            <img
-              src={resolveListImageUrl(item.imageUrl, { role: 'list' })}
-              alt=""
-              loading="lazy"
-              decoding="async"
-              className="h-full w-full object-cover"
-            />
-          ) : (
-            <div className="flex h-full items-center justify-center text-[10px] text-stone-400">
-              —
-            </div>
-          )}
-          {item.category ? (
-            <span className="absolute bottom-1.5 left-1.5 max-w-[calc(100%-12px)] truncate rounded bg-stone-900/70 px-1 py-0.5 text-[9px] font-medium text-white backdrop-blur-xs">
-              {item.category}
+    <TourCardBookingLink href={href} item={item} className={shellClass}>
+      <div
+        className={`relative w-full shrink-0 bg-stone-100 ${large ? 'h-[172px]' : 'h-[128px]'}`}
+      >
+        {item.imageUrl ? (
+          <img
+            src={resolveListImageUrl(item.imageUrl, { role: 'list' })}
+            alt=""
+            loading="lazy"
+            decoding="async"
+            className="h-full w-full object-cover"
+          />
+        ) : (
+          <div className="flex h-full items-center justify-center text-[10px] text-stone-400">
+            —
+          </div>
+        )}
+        {item.category ? (
+          <span className="absolute bottom-1.5 left-1.5 max-w-[calc(100%-12px)] truncate rounded bg-stone-900/70 px-1 py-0.5 text-[9px] font-medium text-white backdrop-blur-xs">
+            {item.category}
+          </span>
+        ) : null}
+      </div>
+      <div className="flex min-h-0 flex-1 flex-col space-y-1 p-2 pb-2.5">
+        <p
+          className={`line-clamp-2 font-semibold leading-snug text-stone-900 ${
+            large ? 'text-sm' : 'text-[11px]'
+          }`}
+        >
+          {item.itemName}
+        </p>
+        <div
+          className={`mt-auto flex items-center justify-between gap-1 ${
+            large ? 'text-xs' : 'text-[10px]'
+          }`}
+        >
+          {item.reviewScore != null && Number(item.reviewScore) > 0 ? (
+            <span className="font-bold tabular-nums text-amber-700">
+              ★ {Number(item.reviewScore).toFixed(1)}
+              {item.reviewCount ? (
+                <span className="ml-0.5 font-normal text-stone-400">({item.reviewCount})</span>
+              ) : null}
             </span>
+          ) : (
+            <span />
+          )}
+          {price ? (
+            <span className="truncate font-bold tabular-nums text-amber-900">{price}</span>
           ) : null}
         </div>
-        <div className="flex flex-1 flex-col justify-between space-y-1 p-2">
-          <p
-            className={`line-clamp-2 font-semibold leading-snug text-stone-900 ${
-              large ? 'text-sm' : 'text-[11px]'
-            }`}
-          >
-            {item.itemName}
-          </p>
-          <div
-            className={`flex items-center justify-between gap-1 pt-0.5 ${
-              large ? 'text-xs' : 'text-[10px]'
-            }`}
-          >
-            {item.reviewScore != null && Number(item.reviewScore) > 0 ? (
-              <span className="font-bold tabular-nums text-amber-700">
-                ★ {Number(item.reviewScore).toFixed(1)}
-                {item.reviewCount ? (
-                  <span className="ml-0.5 font-normal text-stone-400">
-                    ({item.reviewCount})
-                  </span>
-                ) : null}
-              </span>
-            ) : (
-              <span />
-            )}
-            {price ? (
-              <span className="truncate font-bold tabular-nums text-amber-900">
-                {price}
-              </span>
-            ) : null}
-          </div>
-        </div>
       </div>
-      <div className="mt-auto border-t border-stone-100 p-2 pt-1.5">
-        <PartnerBookingHandoff href={href} kind="tour" theme="light" />
-      </div>
-    </div>
+    </TourCardBookingLink>
   );
 }
 
@@ -327,17 +321,20 @@ export default function EventTnaStrip({
       ) : null}
 
       {status === 'ready' && items?.length ? (
-        <div className={`mt-3 ${EVENT_STRIP_SCROLL_ROW_CLASS}`}>
-          {items.map((item) => (
-            <TnaStripCard
-              key={item.gid || item.productUrl || item.itemName}
-              item={item}
-              locale={locale}
-              t={t}
-              large={listLarge}
-            />
-          ))}
-        </div>
+        <>
+          <StayListPartnerNotice theme="light" className="mt-3 mb-2.5" />
+          <div className={EVENT_STRIP_SCROLL_ROW_CLASS}>
+            {items.map((item) => (
+              <TnaStripCard
+                key={item.gid || item.productUrl || item.itemName}
+                item={item}
+                locale={locale}
+                t={t}
+                large={listLarge}
+              />
+            ))}
+          </div>
+        </>
       ) : null}
 
       <TnaOutboundChips
