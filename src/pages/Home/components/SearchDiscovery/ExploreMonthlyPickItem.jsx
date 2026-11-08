@@ -10,48 +10,8 @@ import {
   EXPLORE_MONTHLY_PICK_HERO_OBJECT_POSITION,
   EXPLORE_MONTHLY_PICK_PHOTO_CREDIT,
 } from '../../data/exploreMonthlyPickHeroUrls.js';
+import { resolveExploreMonthlyPickGridSlot } from './exploreMonthlyGridLayout.js';
 import ExploreMonthlyPickMedia from './ExploreMonthlyPickMedia';
-
-const SourceLinks = ({ sources }) => (
-  <div className="flex min-w-0 flex-col items-start gap-1">
-    {sources.map((source) => (
-      <a
-        key={source.url}
-        href={source.url}
-        target="_blank"
-        rel="noopener noreferrer"
-        data-testid="explore-v2-monthly-source-link"
-        onClick={(e) => e.stopPropagation()}
-        onPointerDown={(e) => e.stopPropagation()}
-        className="max-w-full break-words text-[12px] font-medium leading-snug text-blue-300 underline decoration-blue-400/40 underline-offset-2 hover:text-blue-200"
-      >
-        {source.label}
-      </a>
-    ))}
-  </div>
-);
-
-const PhotoCreditLine = ({ slug, isEn }) => {
-  const c = EXPLORE_MONTHLY_PICK_PHOTO_CREDIT[String(slug || '').toLowerCase()];
-  if (!c?.filePageUrl) return null;
-  const text = isEn ? c.en : c.ko;
-  const linkLabel = isEn ? 'File / policy' : '파일·정책 페이지';
-  return (
-    <p className="mt-1.5 max-w-full break-words text-[11px] leading-snug text-gray-400">
-      {text}
-      <a
-        href={c.filePageUrl}
-        target="_blank"
-        rel="noopener noreferrer license"
-        className="mt-0.5 block max-w-full break-words font-medium text-blue-400/90 underline decoration-blue-500/30 underline-offset-2 hover:text-blue-300"
-        onClick={(e) => e.stopPropagation()}
-        onPointerDown={(e) => e.stopPropagation()}
-      >
-        {linkLabel}
-      </a>
-    </p>
-  );
-};
 
 const ExploreMonthlyPickItem = ({
   spot,
@@ -59,7 +19,6 @@ const ExploreMonthlyPickItem = ({
   imageUrl,
   onSelect,
   onImageError,
-  variant = 'tile',
   className = '',
 }) => {
   const { t, i18n } = useTranslation();
@@ -73,6 +32,10 @@ const ExploreMonthlyPickItem = ({
   const isEnUi = String(i18n.language || '')
     .toLowerCase()
     .startsWith('en');
+  const { variant, photoClass } = resolveExploreMonthlyPickGridSlot(slug);
+  const summary = String(spot?.desc || '').trim();
+  const credit = EXPLORE_MONTHLY_PICK_PHOTO_CREDIT[slug];
+  const creditTitle = isEnUi ? credit?.en : credit?.ko;
 
   const { handleStart, handleMove, handleEnd, handleCancel } = useClickWithDragPrevention(onSelect, {
     threshold: 5,
@@ -86,7 +49,7 @@ const ExploreMonthlyPickItem = ({
 
   return (
     <div
-      className={`flex h-full min-w-0 ${className}`}
+      className={`flex w-full min-w-0 self-start ${className}`}
       data-testid={`explore-v2-monthly-item-${slug}`}
       data-variant={variant}
     >
@@ -97,15 +60,16 @@ const ExploreMonthlyPickItem = ({
         onPointerUp={(e) => handleEnd(e, spot)}
         onPointerLeave={handleCancel}
         onPointerCancel={handleCancel}
-        className="flex h-full w-full min-w-0 cursor-pointer flex-col overflow-hidden rounded-2xl border border-white/15 bg-black text-left transition hover:border-white/35"
+        className="flex w-full min-w-0 cursor-pointer flex-col overflow-hidden rounded-2xl border border-white/15 bg-black text-left transition hover:border-white/35"
       >
         <div
           data-testid={`explore-v2-monthly-photo-${slug}`}
-          className="relative aspect-[3/2] w-full shrink-0 overflow-hidden bg-black"
+          className={`relative w-full shrink-0 overflow-hidden bg-black ${photoClass}`}
         >
           <ExploreMonthlyPickMedia
             imageUrl={imageUrl}
             alt={photoAlt}
+            title={creditTitle || undefined}
             objectPosition={objectPosition}
             onError={() => onImageError?.(slug)}
           />
@@ -120,23 +84,30 @@ const ExploreMonthlyPickItem = ({
         </div>
         <div
           data-testid="explore-v2-monthly-text-panel"
-          className="flex min-w-0 flex-1 flex-col border-t border-white/10 bg-black px-3 py-2.5"
+          className="flex min-w-0 flex-col border-t border-white/10 bg-black px-3 py-2.5"
         >
-          <div className="min-w-0">
-            <div className="flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5">
-              <h3 className="break-keep text-[15px] font-bold leading-tight text-white sm:text-base">
-                {displayName}
-              </h3>
-              {countryLabel ? (
-                <span className="text-xs font-medium text-gray-300">{countryLabel}</span>
-              ) : null}
-            </div>
-            <p className="mt-1 break-keep text-[13px] leading-relaxed text-gray-200">{entry.reason}</p>
+          <div className="flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5">
+            <h3 className="break-keep text-[15px] font-bold leading-tight text-white sm:text-base">
+              {displayName}
+            </h3>
+            {countryLabel ? (
+              <span className="text-xs font-medium text-gray-300">{countryLabel}</span>
+            ) : null}
           </div>
-          <div className="mt-auto min-w-0 border-t border-white/10 pt-2">
-            <SourceLinks sources={entry.sources} />
-            <PhotoCreditLine slug={slug} isEn={isEnUi} />
-          </div>
+          {summary ? (
+            <p
+              data-testid="explore-v2-monthly-summary"
+              className="mt-1.5 break-keep text-[13px] leading-relaxed text-gray-100"
+            >
+              {summary}
+            </p>
+          ) : null}
+          <p
+            data-testid="explore-v2-monthly-reason"
+            className="mt-1.5 break-keep text-[12px] leading-snug text-gray-400"
+          >
+            {entry.reason}
+          </p>
         </div>
       </article>
     </div>

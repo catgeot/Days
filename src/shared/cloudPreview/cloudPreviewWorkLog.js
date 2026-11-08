@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '탐색 페이지',
-  sessionNo: 1,
-  sessionPhase: '11월 여행지 카드 정돈',
+  sessionNo: 2,
+  sessionPhase: '카드 피드백',
   branch: 'cursor/explore-cards-d0e2',
   previewPath: '/explore',
   qaShareSlug: 'explore-monthly',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-11-08-explore-monthly-cards-2',
+    session: '탐색 페이지 #2, 카드 피드백',
+    title: '높이 다른 카드·여행지 요약',
+    detail:
+      '11월의 여행지는 같은 크기 두 칸이 아닙니다. 좁은 화면은 두 열, 넓은 화면은 세 열이고 사진 비율과 글 길이에 따라 카드 높이가 다릅니다. 오른쪽 열은 조금 아래에서 시작합니다. 카드 본문은 여행지 요약과 이달 이유입니다. 관광청 링크, 저작 표기, 파일·정책 페이지는 카드에 없습니다. 제주 추정 뱃지는 사진 안에 있습니다. Preview /qa/explore-monthly — /explore.',
+    at: '2026-11-08T04:00:00.000Z',
+  },
   {
     id: '2026-11-08-explore-monthly-cards-1',
     session: '탐색 페이지 #1, 11월 여행지 카드 정돈',

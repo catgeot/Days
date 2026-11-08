@@ -37,7 +37,7 @@ export const EXPLORE_MONTHLY_PICK_HERO_INTRINSIC_SIZE = {
 };
 
 /**
- * 카드 출처 링크 아래 표시 — Wikimedia는 파일 페이지·라이선스명, VisitKorea는 매체 고지 링크.
+ * 카드 본문에 넣지 않는다. 이미지 title과 이 파일·감사 문서에만 둔다.
  * @type {Record<string, { ko: string, en: string, filePageUrl: string }>}
  */
 export const EXPLORE_MONTHLY_PICK_PHOTO_CREDIT = {

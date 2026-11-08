@@ -148,31 +148,35 @@ async function expectMonthlyCardsDoNotOverlap(page) {
   expect(report.leaks).toEqual([]);
 }
 
-async function expectMonthlyGridRowAlignment(page) {
-  const rows = await page.getByTestId('explore-v2-monthly-layout-b').evaluate((root) => {
-    const items = [...root.querySelectorAll('[data-testid^="explore-v2-monthly-item-"]')];
-    const sorted = items
-      .map((el) => ({
-        top: el.getBoundingClientRect().top,
-        id: el.getAttribute('data-testid'),
-      }))
-      .sort((a, b) => a.top - b.top);
-    const groups = [];
-    for (const item of sorted) {
-      const group = groups.find((g) => Math.abs(g.top - item.top) <= 8);
-      if (group) {
-        group.ids.push(item.id);
-        group.top = Math.min(group.top, item.top);
-      } else {
-        groups.push({ top: item.top, ids: [item.id] });
-      }
-    }
-    return groups.filter((g) => g.ids.length > 1);
+async function expectMonthlySummaryNotSources(page) {
+  await expect(page.getByTestId('explore-v2-monthly-source-link')).toHaveCount(0);
+  await expect(page.getByText('파일·정책 페이지')).toHaveCount(0);
+  await expect(page.getByText('File / policy')).toHaveCount(0);
+  await expect(page.getByTestId('explore-v2-monthly-summary')).toHaveCount(MONTHLY_VISIBLE_COUNT);
+  const kyoto = page.getByTestId('explore-v2-monthly-card-kyoto');
+  await expect(kyoto).toContainText('일본 전통 문화의 심장');
+  await expect(kyoto).toContainText('단풍 절정');
+  await expect(page.getByTestId('explore-v2-monthly-card-jeju')).toContainText('세계자연유산');
+  await expect(page.getByTestId('explore-v2-monthly-card-chiang-mai')).toContainText('태국 북부의 문화 수도');
+}
+
+async function expectIrregularMonthlyCardHeights(page) {
+  const report = await page.getByTestId('explore-v2-monthly-layout-b').evaluate((root) => {
+    const cards = [...root.querySelectorAll('[data-testid^="explore-v2-monthly-card-"]')];
+    const heights = cards.map((el) => Math.round(el.getBoundingClientRect().height));
+    const photos = [...root.querySelectorAll('[data-testid^="explore-v2-monthly-photo-"]')].map((el) =>
+      Math.round(el.getBoundingClientRect().height),
+    );
+    const tops = cards.map((el) => Math.round(el.getBoundingClientRect().top));
+    return {
+      uniqueCards: new Set(heights).size,
+      uniquePhotos: new Set(photos).size,
+      uniqueTops: new Set(tops).size,
+    };
   });
-  expect(rows.length).toBeGreaterThan(0);
-  for (const { ids } of rows) {
-    expect(ids.length).toBeLessThanOrEqual(4);
-  }
+  expect(report.uniqueCards).toBeGreaterThan(2);
+  expect(report.uniquePhotos).toBeGreaterThan(2);
+  expect(report.uniqueTops).toBeGreaterThan(2);
 }
 
 test.describe('Explore monthly picks @flagOff', () => {
@@ -190,14 +194,10 @@ test.describe('Explore monthly picks @flagOff', () => {
     await expectMonthlyMosaic(page);
     await expectNoMonthlyHorizontalOverflow(page);
     await expectNoFullWidthMonthlyBanner(page);
-    await expectMonthlyGridRowAlignment(page);
+    await expectIrregularMonthlyCardHeights(page);
     await expectMonthlyCardsDoNotOverlap(page);
+    await expectMonthlySummaryNotSources(page);
     await expectAllMonthlyPickSlugsVisible(page);
-
-    const items = page.locator('[data-testid^="explore-v2-monthly-item-"]');
-    for (let i = 0; i < MONTHLY_VISIBLE_COUNT; i += 1) {
-      await expect(items.nth(i).getByTestId('explore-v2-monthly-source-link').first()).toBeVisible();
-    }
 
     const jejuItem = page.getByTestId('explore-v2-monthly-item-jeju');
     const jejuCard = page.getByTestId('explore-v2-monthly-card-jeju');
@@ -239,8 +239,9 @@ test.describe('Explore monthly picks @flagOff', () => {
     await expectMonthlyMosaic(page);
     await expectNoMonthlyHorizontalOverflow(page);
     await expectNoFullWidthMonthlyBanner(page);
-    await expectMonthlyGridRowAlignment(page);
+    await expectIrregularMonthlyCardHeights(page);
     await expectMonthlyCardsDoNotOverlap(page);
+    await expectMonthlySummaryNotSources(page);
     await expectAllMonthlyPickSlugsVisible(page);
     await expectPhotoAltAndTextPanels(page, (name) => `${name} 대표 사진`);
     await expect(page.getByText('에디터스 픽').first()).toBeVisible({ timeout: 45_000 });
