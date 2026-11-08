@@ -18,3 +18,11 @@
 - Preview `https://days-git-cursor-explore-cards-d0e2-catgeots-projects.vercel.app/explore`. `/qa/explore-monthly`는 리다이렉트가 `main`에 반영된 뒤 그 주소로 열린다.
 - 사람 확인: 교토·치앙마이·푸꾸옥·제주·두바이·멜버른 높이가 서로 다른지, 본문이 요약인지. 요약이 너무 길거나 높이 차가 어색하면 같은 브랜치에서 그 카드만 줄인다.
 - 다음: 탐색 페이지 #3, 카드 높이 조율. 새 브랜치·행 걸침·카드 출처 링크 복귀 금지.
+
+## 탐색 페이지 #3, 카드 높이 조율
+
+- 카드 글은 여행지 설명이 아니라, 언제가 최적기이고 그때 가는 이유인 한 줄이다. 좁은 화면은 가로 한 장, 세로 두 장, 가로 한 장, 세로 두 장이다. 제주는 억새 사진이 가로로 넓어 가로 칸에 둔다. 넓은 화면은 그 칸을 한 줄에 나란히 둔다. 한 카드가 여러 행을 차지하지 않는다.
+- 코드 `d7c659f2` · 브랜치 `cursor/explore-cards-d0e2` · PR [#712](https://github.com/catgeot/Days/pull/712). 단위·검색 테스트 17 passed · Playwright `playwright.config.explore-v2.js` 6 passed, 2 skipped.
+- Preview `https://days-git-cursor-explore-cards-d0e2-catgeots-projects.vercel.app/explore`. `/qa/explore-monthly`는 리다이렉트가 `main`에 반영된 뒤 그 주소로 열린다.
+- 사람 확인: 교토·치앙마이·푸꾸옥·제주·두바이·멜버른이 가로·세로로 섞이는지, 글이 한 줄 요약인지. 사진이 잘리거나 문장이 어색하면 같은 브랜치에서 그 카드만 고친다.
+- 다음: 탐색 페이지 #4, 카드 피드백. 새 브랜치·행 걸침·카드 출처 링크 복귀 금지.
