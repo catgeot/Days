@@ -35,3 +35,9 @@
 - Preview `https://days-git-cursor-explore-cards-d0e2-catgeots-projects.vercel.app/explore`. `/qa/explore-monthly`는 리다이렉트가 `main`에 반영된 뒤 그 주소로 열린다.
 - 사람 확인: 교토·제주·치앙마이·푸꾸옥·두바이·멜버른이 두 열로 섞이는지, 사진 주제와 한 줄이 맞는지. 괜찮으면 PR #712 병합.
 - 다음: 탐색 페이지 #5, 배치 확인 후 병합. 새 브랜치·행 걸침·카드 출처 링크 복귀 금지.
+
+## 탐색 페이지 #5, 메인 반영
+
+- 사람 요청으로 PR [#712](https://github.com/catgeot/Days/pull/712)를 squash 병합했다. `main` `b8501e59`. 좁은 화면은 왼쪽이 조금 넓은 두 열, 넓은 화면은 세 칸이다. 출처 링크는 카드에 없다.
+- `/qa/explore-monthly`는 `https://www.gateo.kr/explore`로 간다. 확인은 `https://www.gateo.kr/explore`.
+- 주제 종료. 다음 제시어 없음.
