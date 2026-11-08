@@ -35,7 +35,7 @@ Commons 작가·라이선스·원문 설명은 2026-11-07 `commons.wikimedia.org
 
 ## UI 표시
 
-카드 하단에 **저작·라이선스 한 줄**과 **파일/정책 페이지 링크**를 렌더한다 (`ExploreMonthlyPickItem.jsx`, `EXPLORE_MONTHLY_PICK_PHOTO_CREDIT`). **CC BY(-SA)는 저작자 표시·라이선스 링크·SA/변경 표시** 요건을 안내 문구에 포함(제주: 크롭 사용으로 「2차 저작(크롭)」 명시). 카피·링크는 한/영 UI에 맞게 전환한다.
+카드 본문은 여행지 이름, `travelSpots`의 `desc` 요약, 이달 이유만 보여 준다. 관광청 링크와 저작·파일 페이지는 카드에 넣지 않는다. 저작·라이선스 원문(제주 크롭 표시 포함)은 `EXPLORE_MONTHLY_PICK_PHOTO_CREDIT`와 이 문서에 두고, 카드 이미지 `title`로만 남긴다.
 
 ## 래스터 확대
 

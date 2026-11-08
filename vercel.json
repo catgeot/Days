@@ -4,7 +4,8 @@
       "cursor/*": false,
       "cursor/auth-session-persist-3163": true,
       "cursor/festival-access-promo-5b7f": true,
-      "cursor/explore-search-fix-bfa1": true
+      "cursor/explore-search-fix-bfa1": true,
+      "cursor/explore-cards-d0e2": true
     }
   },
   "redirects": [
@@ -65,6 +66,11 @@
     },
     {
       "source": "/qa/explore-search",
+      "destination": "https://www.gateo.kr/explore",
+      "permanent": false
+    },
+    {
+      "source": "/qa/explore-monthly",
       "destination": "https://www.gateo.kr/explore",
       "permanent": false
     },
