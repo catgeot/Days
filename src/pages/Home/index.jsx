@@ -868,6 +868,12 @@ function Home() {
       prepared.slug = param;
       prepared.canonical_slug = param;
     }
+    if (param.startsWith('search-') || param.startsWith('loc-')) {
+      prepared.id = param;
+      prepared.slug = param;
+      prepared.canonical_slug = param;
+      if (prepared.uiPlace == null) prepared.uiPlace = true;
+    }
     cachePlaceLocation(prepared);
     navigate(`/place/${param}${tabSuffix}`);
   }, [category, navigate, addScoutPin, moveToLocation, rememberGlobeFocus, setSelectedLocation]);
@@ -998,7 +1004,7 @@ function Home() {
             target = fromSession;
           } else {
             const matchedSpot = resolveTravelSpotFromCoords(parsedLat, parsedLng);
-            if (matchedSpot) {
+            if (matchedSpot && !targetSlug.startsWith('search-')) {
               target = matchedSpot;
             } else {
             const matchedCity = (citiesData || []).find(c =>
@@ -1014,7 +1020,8 @@ function Home() {
               country: matchedCity?.country || undefined,
               country_en: matchedCity?.country_en || undefined,
               tags: matchedCity ? matchedCity.tags : [],
-              desc: matchedCity ? matchedCity.desc : ""
+              desc: matchedCity ? matchedCity.desc : "",
+              ...(targetSlug.startsWith('search-') ? { uiPlace: true, source: 'mapbox' } : {}),
             };
             }
           }
@@ -1086,10 +1093,16 @@ function Home() {
           );
 
           const canonicalParam = getPlaceUrlParam(focusTarget);
+          const preserveSearchCoordUrl =
+            normalizedTargetSlug.startsWith('search-') &&
+            focusTarget?.uiPlace &&
+            canonicalParam &&
+            !String(canonicalParam).startsWith('search-');
           if (
             canonicalParam &&
             canonicalParam.toLowerCase() !== normalizedTargetSlug &&
-            !isHangulPlaceStatsSlug(targetSlug)
+            !isHangulPlaceStatsSlug(targetSlug) &&
+            !preserveSearchCoordUrl
           ) {
             const tabSuffix = match.params.tab ? `/${match.params.tab}` : '';
             navigate(`/place/${canonicalParam}${tabSuffix}`, { replace: true });
