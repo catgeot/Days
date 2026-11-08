@@ -43,6 +43,7 @@ import {
   KOREA_HOMONYM_GROUPS,
 } from '../src/pages/Home/lib/koreaPlaceMatchDictionary.js';
 import { normalizeExploreSelectionPin } from '../src/pages/Home/lib/explorePlaceNav.js';
+import { buildKoreaGetbolCollectiveSearchSuggestions } from '../src/pages/Home/lib/exploreKoreaGetbolCollectiveSearch.js';
 
 const langCo = resolveHubAttraction('람코');
 assert.ok(langCo, '람코 → 랑코 해변 attraction');
@@ -311,4 +312,28 @@ for (const q of ['한라산 백록담', '백록담', '화구벽']) {
   assert.equal(pin?.slug, 'tour-127635', q);
 }
 
-console.log('PASS explore-search-aliases (lang co + takamatsu + saba island types + 광천선굴 + korea first-pass + koreaPlaceMatchDictionary SSOT + 춘천 향교 hub + 한라산 별칭)');
+const getbolRows = buildKoreaGetbolCollectiveSearchSuggestions('한국의 갯벌');
+assert.ok(getbolRows.length >= 3, '한국의 갯벌 → 유네스코 구성 자산 3건 이상');
+assert.ok(
+  getbolRows.some((r) => String(r.name || '').includes('고창 갯벌')),
+  '고창 갯벌 구성 자산',
+);
+assert.ok(
+  getbolRows.some((r) => String(r.name || '').includes('유부도와 서천갯벌')),
+  '서천 갯벌(유부도) 구성 자산',
+);
+assert.ok(
+  getbolRows.some((r) => String(r.name || '').includes('순천만습지')),
+  '보성·순천(순천만습지) 구성 자산',
+);
+assert.ok(
+  getbolRows.every((r) => r.groupTitle && r.groupTitle.includes('한국의 갯벌')),
+  '집합유산 groupTitle',
+);
+assert.equal(
+  buildKoreaGetbolCollectiveSearchSuggestions('갯벌').length,
+  0,
+  '일반 갯벌 질의는 기존 검색 유지',
+);
+
+console.log('PASS explore-search-aliases (lang co + takamatsu + saba island types + 광천선굴 + korea first-pass + koreaPlaceMatchDictionary SSOT + 춘천 향교 hub + 한라산 별칭 + 한국의 갯벌 집합)');

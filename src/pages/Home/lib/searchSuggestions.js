@@ -76,6 +76,7 @@ import {
   shouldExpandKoreaPoiTypeSearch,
 } from './koreaPoiTypeSearch.js';
 import { buildExploreMonthlyPickSearchSuggestions } from './exploreMonthlyPickSearchSuggestions.js';
+import { buildKoreaGetbolCollectiveSearchSuggestions } from './exploreKoreaGetbolCollectiveSearch.js';
 
 const normalizeKey = (s) =>
   String(s ?? '')
@@ -330,6 +331,12 @@ export function buildLocalSearchSuggestions(query, opts = {}) {
 
   for (const item of buildExploreMonthlyPickSearchSuggestions(innerQuery)) {
     pushUnique(out, seen, item);
+  }
+
+  const getbolCollective = buildKoreaGetbolCollectiveSearchSuggestions(innerQuery);
+  if (getbolCollective.length) {
+    for (const item of getbolCollective) pushUnique(out, seen, item);
+    return out.slice(0, 24).map(enrichSearchCandidateScenicMedia);
   }
 
   const exactListHit = resolveLocalScenicListFromSearchQuery(innerQuery);
