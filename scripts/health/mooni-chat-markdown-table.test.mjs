@@ -37,3 +37,27 @@ test('getMooniModelMarkdownForRender — comparison table survives chip strip', 
   assert.ok(html.includes('<strong>13:30</strong>'), html);
   assert.ok(!html.match(/\|[^<]*\|/), 'no raw pipe row left in HTML');
 });
+
+const COLLAPSED_TABLE =
+  '| 구분 | 괌 | 오키나와 | 팔라우 | | --- | --- | --- | --- | | 비자 | 미국령 | 일본 | 무비자 |';
+const TABLE_WITH_DAY_HEADING = `${COMPARE_TABLE}
+
+**1일차** 오전 스노클링`;
+
+test('getMooniModelMarkdownForRender — collapsed single-line table recover', () => {
+  const md = getMooniModelMarkdownForRender(COLLAPSED_TABLE, { stripPhantomTicketMention: true });
+  assert.match(md, /^\| 구분 \| 괌 \|/m);
+  assert.match(md, /^\| --- \| --- \|/m);
+  const html = renderMooniGfm(md);
+  assert.ok(html.includes('<table'), html);
+});
+
+test('getMooniModelMarkdownForRender — table + **N일차** keeps table rows', () => {
+  const md = getMooniModelMarkdownForRender(TABLE_WITH_DAY_HEADING, {
+    stripPhantomTicketMention: true,
+  });
+  assert.match(md, /^\| 항목 \| 괌 \|/m);
+  assert.doesNotMatch(md, /\|\s{2}\n/, 'table row must not gain hard-break padding');
+  const html = renderMooniGfm(md);
+  assert.ok(html.includes('<table'), html);
+});

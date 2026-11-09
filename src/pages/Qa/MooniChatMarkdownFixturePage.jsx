@@ -22,6 +22,9 @@ const TRUNCATED = `### 미완성 스트리밍
 
 **굵게 진행 중`;
 
+const COLLAPSED_COMPARE_TABLE =
+  '| 구분 | 괌 | 오키나와 | 팔라우 | | --- | --- | --- | --- | | 비자 | 미국령 | 일본 | 무비자 |';
+
 const COMPARE_TABLE = `| 항목 | 괌 | 오키나와 | 팔라우 | 보홀 |
 | --- | --- | --- | --- | --- |
 | 비자 | 미국령 | 일본 | 무비자 | 필리핀 |
@@ -83,6 +86,17 @@ export default function MooniChatMarkdownFixturePage() {
         <Bubble variant="dark">
           <MooniChatMarkdown
             text={getMooniModelMarkdownForRender(COMPARE_TABLE, { stripPhantomTicketMention: true })}
+            variant="dark"
+          />
+        </Bubble>
+      </section>
+      <section data-testid="mooni-md-collapsed-table" className="space-y-2">
+        <p className="text-gray-400 text-[10px] font-bold uppercase">Collapsed compare table</p>
+        <Bubble variant="dark">
+          <MooniChatMarkdown
+            text={getMooniModelMarkdownForRender(COLLAPSED_COMPARE_TABLE, {
+              stripPhantomTicketMention: true,
+            })}
             variant="dark"
           />
         </Bubble>

@@ -68,11 +68,18 @@ function scenicSearchOverlayDesc(item) {
 }
 
 /** 선택 장소에는 검색 행 전용 개요를 넘기지 않는다. desc로 옮기면 intro hydrate가 skip된다. */
-function placeFromSearchItem(item) {
-  if (!item?.searchOverlayDesc) return item;
-  const rest = { ...item };
-  delete rest.searchOverlayDesc;
-  return rest;
+function placeFromSearchItem(item, searchQuery = '') {
+  let next = item;
+  if (item?.searchOverlayDesc) {
+    const rest = { ...item };
+    delete rest.searchOverlayDesc;
+    next = rest;
+  }
+  const q = String(searchQuery || '').trim();
+  if (q && !next?.originalQuery) {
+    return { ...next, originalQuery: q };
+  }
+  return next;
 }
 
 function resolveCardDesc(item, locationLine, locale = 'ko', t, isPopover = false) {
@@ -425,7 +432,7 @@ export function SearchSuggestionList({
                 <li>
                 <button
                   type="button"
-                  onClick={() => onSelect?.(placeFromSearchItem(item))}
+                  onClick={() => onSelect?.(placeFromSearchItem(item, query))}
                   className={`w-full flex items-center gap-3 text-left hover:bg-white/[0.1] transition-colors ${
                     isPopover ? 'px-3 py-2.5' : 'px-4 py-3'
                   }`}
@@ -659,7 +666,7 @@ export function SearchDisambiguationCards({
               ) : null}
             <button
               type="button"
-              onClick={() => onSelect?.(placeFromSearchItem(hydrated))}
+              onClick={() => onSelect?.(placeFromSearchItem(hydrated, query))}
               className="group flex w-full items-stretch gap-3 rounded-2xl border border-white/25 bg-[#32281f]/95 p-3 text-left shadow-[0_4px_20px_rgba(0,0,0,0.35)] hover:border-sky-300/50 hover:bg-[#3a2f25] transition-all"
             >
               <SearchResultThumb

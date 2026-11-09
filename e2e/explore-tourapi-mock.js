@@ -33,6 +33,23 @@ export const EXPLORE_GOSANSA_JANGHEUNG_ROW = {
   modified_time: '20260101000000',
 };
 
+export const EXPLORE_BAEKROKDAM_ROW = {
+  content_id: '127635',
+  title: '한라산 백록담',
+  addr1: '제주특별자치도 제주시',
+  addr2: '해안동',
+  area_code: '39',
+  sigungu_code: '4',
+  mapx: '126.533203',
+  mapy: '33.361667',
+  first_image: 'https://www.khs.go.kr/unisearch/images/scenic_site/2021032511104500.jpg',
+  active: true,
+  cat1: 'A02',
+  cat2: 'A0201',
+  cat3: 'A02010800',
+  modified_time: '20260101000000',
+};
+
 export const EXPLORE_HALLASAN_ROW = {
   content_id: '127635',
   title: '한라산 국립공원(대한민국)',
@@ -74,6 +91,7 @@ const GOSANSA_ROWS = [
   EXPLORE_GOSANSA_HONGSEONG_ROW,
   EXPLORE_GOSANSA_JANGHEUNG_ROW,
   EXPLORE_GOSANSA_JECHEON_ROW,
+  EXPLORE_BAEKROKDAM_ROW,
   EXPLORE_HALLASAN_ROW,
 ];
 
@@ -83,7 +101,8 @@ const TOUR_OVERVIEW_BY_ID = {
   '127982':
     '고산사는 충남 홍성 청룡산에 있으며, 창건연대는 미상이나 신라말에 도선국사가 창건하였다고 전해진다.',
   '127937': '장흥 고산사는 전라남도 장흥군 회진면에 있는 사찰입니다.',
-  '127635': '한라산은 제주도 중앙에 솟은 대한민국 최고봉(해발 1,947m)으로, 백록담 화구호와 사계절 풍경이 유명합니다.',
+  '127635':
+    '한라산 백록담(漢拏山 白鹿潭)은 남한에서 가장 높은 산정화구호로 침식에 거의 영향을 받지 않아 순상화산의 원지형이 잘 보존되어 있다.',
 };
 
 const CORS = {
