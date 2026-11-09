@@ -134,6 +134,24 @@ function generateSitemap() {
     priority: '0.85',
   });
 
+  const editorialListPath = path.join(__dirname, '../src/data/logbookEditorialPublished.json');
+  if (fs.existsSync(editorialListPath)) {
+    const editorialList = JSON.parse(fs.readFileSync(editorialListPath, 'utf8'));
+    if (Array.isArray(editorialList)) {
+      editorialList.forEach((row) => {
+        const slug = String(row?.slug || '').trim();
+        if (!slug) return;
+        const lastmod = row.published_at ? String(row.published_at).split('T')[0] : today;
+        urls.push({
+          loc: `${baseUrl}/blog/e/${slug}`,
+          lastmod,
+          changefreq: 'monthly',
+          priority: '0.75',
+        });
+      });
+    }
+  }
+
   // 각 여행지 — 기본·갤러리·플래너·위키 (외부 검색 「지명+여행/갤러리/플래너/스케치」)
   const placeTabSeoRoutes = ['', '/gallery', '/planner', '/wiki'];
 

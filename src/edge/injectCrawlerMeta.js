@@ -98,6 +98,31 @@ export function buildCrawlerPlaceBodyHtml(meta) {
       </article>`;
 }
 
+export function buildCrawlerEditorialBodyHtml(meta) {
+  const slug = String(meta?.editorialSlug || '').trim();
+  const headline = String(meta?.articleTitle || meta?.title || '').trim();
+  if (!slug || !headline) return '';
+  const locale = meta.locale === 'en' ? 'en' : 'ko';
+  const placeName = String(meta?.placeName || '').trim();
+  const placeSlug = String(meta?.placeSlug || '').trim();
+  const placeHref = placeSlug ? (locale === 'en' ? `/place/${placeSlug}?lang=en` : `/place/${placeSlug}`) : '';
+  const placeLink = placeHref
+    ? locale === 'en'
+      ? `<p><a href="${escapeAttr(placeHref)}">${escapeHtml(placeName)} travel guide</a></p>`
+      : `<p><a href="${escapeAttr(placeHref)}">${escapeHtml(placeName)} 여행 가이드</a></p>`
+    : '';
+  const h1 =
+    locale === 'en'
+      ? `${escapeHtml(headline)} — GATEO editorial travelogue`
+      : `${escapeHtml(headline)} — GATEO 에디터 기행문`;
+  return `      <!-- crawler-body-injected -->
+      <article id="crawler-editorial-body">
+        <h1>${h1}</h1>
+        <p>${escapeHtml(meta.description)}</p>
+        ${placeLink}
+      </article>`;
+}
+
 export function buildCrawlerHeadTags(meta) {
   const {
     locale,
@@ -108,6 +133,7 @@ export function buildCrawlerHeadTags(meta) {
     hreflangAlternates = [],
     ogImage,
     galleryImages,
+    robotsNoIndex,
   } = meta;
   const seoTitle = `${title} | ${SITE_NAME}`;
   const ogLocale = locale === 'en' ? 'en_US' : 'ko_KR';
@@ -115,12 +141,14 @@ export function buildCrawlerHeadTags(meta) {
   const desc = escapeAttr(description);
   const kw = escapeAttr(keywords);
   const imageUrl = escapeAttr(ogImage || DEFAULT_OG_IMAGE);
-  const hreflang = hreflangAlternates
-    .map(
-      (alt) =>
-        `    <link rel="alternate" hreflang="${escapeAttr(alt.hreflang)}" href="${escapeAttr(alt.href)}" />`,
-    )
-    .join('\n');
+  const hreflang = robotsNoIndex
+    ? ''
+    : hreflangAlternates
+        .map(
+          (alt) =>
+            `    <link rel="alternate" hreflang="${escapeAttr(alt.hreflang)}" href="${escapeAttr(alt.href)}" />`,
+        )
+        .join('\n');
 
   const gallerySchema = buildCrawlerGalleryJsonLd({
     ...meta,
@@ -130,14 +158,18 @@ export function buildCrawlerHeadTags(meta) {
     ? `\n    <script type="application/ld+json" data-schema-type="ImageGallery">${escapeJsonForScript(gallerySchema)}</script>`
     : '';
 
+  const robotsTag = robotsNoIndex ? `    <meta name="robots" content="noindex, nofollow" />\n` : '';
+  const canonicalTag = canonicalUrl
+    ? `    <link rel="canonical" href="${escapeAttr(canonicalUrl)}" />\n`
+    : '';
+
   return `<!-- crawler-meta-injected -->
     <title>${escapeAttr(seoTitle)}</title>
     <meta name="description" content="${desc}" />
     <meta name="keywords" content="${kw}" />
-    <link rel="canonical" href="${escapeAttr(canonicalUrl)}" />
-${hreflang}
+${robotsTag}${canonicalTag}${hreflang ? `${hreflang}\n` : ''}
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="${escapeAttr(canonicalUrl)}" />
+    <meta property="og:url" content="${escapeAttr(canonicalUrl || '')}" />
     <meta property="og:title" content="${escapeAttr(seoTitle)}" />
     <meta property="og:description" content="${desc}" />
     <meta property="og:image" content="${imageUrl}" />
@@ -145,7 +177,7 @@ ${hreflang}
     <meta property="og:locale" content="${ogLocale}" />
     <meta property="og:locale:alternate" content="${ogLocaleAlt}" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:url" content="${escapeAttr(canonicalUrl)}" />
+    <meta name="twitter:url" content="${escapeAttr(canonicalUrl || '')}" />
     <meta name="twitter:title" content="${escapeAttr(seoTitle)}" />
     <meta name="twitter:description" content="${desc}" />
     <meta name="twitter:image" content="${imageUrl}" />${jsonLdBlock}`;
@@ -170,7 +202,9 @@ export function injectCrawlerMetaIntoHtml(html, meta) {
 
   out = out.replace(/<head>/i, `<head>\n${headTags}\n`);
 
-  const bodyHtml = buildCrawlerPlaceBodyHtml(meta);
+  const bodyHtml = meta?.editorialSlug
+    ? buildCrawlerEditorialBodyHtml(meta)
+    : buildCrawlerPlaceBodyHtml(meta);
   if (bodyHtml) {
     out = replaceRootInnerHtml(out, bodyHtml);
   }
