@@ -11,6 +11,15 @@ import {
 } from './searchEnterMatch.js';
 import { buildHybridSearchSuggestions, buildLocalSearchSuggestions } from './searchSuggestions.js';
 import { resolveLegacyMishealPlace } from './legacyMishealPlaceSlugs.js';
+import {
+  resolveExploreAliasTourPlaceParam,
+  resolveKoExploreSearchAlias,
+} from './koreaPlaceMatchDictionary.js';
+import {
+  firstPassHitToUiPlace,
+  resolveKoreaDestinationFirstPassSync,
+} from './resolveKoreaDestinationFirstPass.js';
+import { normalizeExploreSelectionPin } from './explorePlaceNav.js';
 
 const SITE_SEARCH_HOMONYM_QUERY_RANK = [
   {
@@ -84,6 +93,14 @@ function rankEnterExactPoiCandidate(item, query = '') {
   const placeId = visitedPlaceIdFromSpot(item);
   if (placeId && resolveLegacyMishealPlace(placeId)) score += 16;
   if (item?.source === 'legacy-misheal') score += 16;
+  const aliasCid = String(resolveKoExploreSearchAlias(query)?.contentId || '').trim();
+  if (
+    aliasCid &&
+    item?.source === 'tourapi' &&
+    String(item.contentId || '').trim() === aliasCid
+  ) {
+    score += 48;
+  }
   score += scoreSiteSearchHomonymCandidate(item, siteSearchHomonymRankRule(query));
   return score;
 }
@@ -142,6 +159,13 @@ export function resolveSiteSearchEnterSinglePoi(query, suggestions) {
   const q = String(query || '').trim();
   if (!q) return null;
   if (resolveExploreCityHubExact(q) || shouldOfferKoreaHomonymDisambiguation(q)) return null;
+
+  if (resolveExploreAliasTourPlaceParam(q)) {
+    const sync = resolveKoreaDestinationFirstPassSync(q);
+    if (sync?.contentId) {
+      return normalizeExploreSelectionPin(firstPassHitToUiPlace(sync, q));
+    }
+  }
 
   const matches = pickEnterSuggestionMatches(q, suggestions);
   if (!matches.length) return null;

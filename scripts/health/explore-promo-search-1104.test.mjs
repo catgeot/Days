@@ -3,6 +3,9 @@ import test from 'node:test';
 
 import { GATEO_ENV_FLAG_NAMES } from '../../src/shared/gateoFeatureFlags.js';
 import { resolveExploreSearchAlias } from '../../src/pages/Home/lib/exploreSearchAliases.js';
+import { resolveExploreAliasTourPlaceParam } from '../../src/pages/Home/lib/koreaPlaceMatchDictionary.js';
+import { resolveSiteSearchEnterSinglePoi } from '../../src/pages/Home/lib/siteSearchOpen.js';
+import { resolveHubAttraction, attractionToPlacePin } from '../../src/pages/Home/lib/cityAttractionHubs.js';
 import {
   firstPassHitToUiPlace,
   resolveKoreaDestinationFirstPassSync,
@@ -34,6 +37,7 @@ for (const query of ['한라산 백록담', '백록담', '화구벽']) {
   test(`${query} alias → tour-127635`, () => {
     assert.equal(resolveExploreSearchAlias(query)?.canonical, '한라산국립공원');
     assert.equal(resolveExploreSearchAlias(query)?.contentId, '127635');
+    assert.equal(resolveExploreAliasTourPlaceParam(query), 'tour-127635');
     const hit = resolveKoreaDestinationFirstPassSync(query);
     assert.equal(hit?.contentId, '127635');
     assert.equal(hit?.source, 'tourapi');
@@ -43,6 +47,36 @@ for (const query of ['한라산 백록담', '백록담', '화구벽']) {
     assert.equal(decision?.param, 'tour-127635');
   });
 }
+
+test('백록담 — 허브 scenic 핀(originalQuery)도 tour-127635', () => {
+  const match = resolveHubAttraction('한라산국립공원');
+  const hubPin = {
+    ...attractionToPlacePin(match.hub, match.attraction),
+    originalQuery: '백록담',
+  };
+  const decision = resolveSearchResultSelect(hubPin);
+  assert.equal(decision?.param, 'tour-127635');
+});
+
+test('한라산 단독 — 허브 hallasan-national-park 유지', () => {
+  const match = resolveHubAttraction('한라산국립공원');
+  const hubPin = { ...attractionToPlacePin(match.hub, match.attraction), originalQuery: '한라산' };
+  assert.equal(resolveExploreAliasTourPlaceParam('한라산'), '');
+  assert.equal(
+    resolveSearchResultSelect(normalizeExploreSelectionPin(hubPin))?.param,
+    'hallasan-national-park',
+  );
+});
+
+test('백록담 — site search Enter는 허브 후보 무시하고 tour 우선', () => {
+  withSiteSearchFlag(true, () => {
+    const match = resolveHubAttraction('한라산국립공원');
+    const hubOnly = [attractionToPlacePin(match.hub, match.attraction)];
+    const picked = resolveSiteSearchEnterSinglePoi('백록담', hubOnly);
+    assert.equal(picked?.source, 'tourapi');
+    assert.equal(normalizeExploreSelectionPin(picked).slug, 'tour-127635');
+  });
+});
 
 test('개심사 — 서산 gaesimsa가 괴산 Tour보다 먼저', () => {
   withSiteSearchFlag(true, () => {
