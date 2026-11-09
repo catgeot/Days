@@ -31,6 +31,8 @@ import {
   splitFactTimeRanges,
   TIME_RANGE_CLASS,
 } from '../../src/data/placeVerifiedFacts/cairoEn.js';
+import { PARIS_CITY_FACTS } from '../../src/data/placeVerifiedFacts/paris.js';
+import { sourceLinkLabelForLocale } from '../../src/data/placeVerifiedFacts/sourceLinkLabels.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 
@@ -85,6 +87,29 @@ test('empty cells stay empty and render as unverified', () => {
       assert.equal(presentFactText(slot.value), UNVERIFIED_LABEL);
     }
   }
+});
+
+test('duplicate source links get distinct display labels from url ids', () => {
+  const parisSafety = PARIS_CITY_FACTS.slots.find((slot) => slot.id === 'safety');
+  const parisKo = parisSafety.sources.map((source) => sourceLinkLabelForLocale(source, parisSafety.sources, 'ko'));
+  const parisEn = parisSafety.sources.map((source) => sourceLinkLabelForLocale(source, parisSafety.sources, 'en'));
+  assert.equal(new Set(parisKo).size, parisKo.length);
+  assert.equal(new Set(parisEn).size, parisEn.length);
+  assert.deepEqual(
+    parisKo.map((label) => label.split(' · ').pop()),
+    ['1335047', '1335046', '1335045'],
+  );
+  assert.deepEqual(
+    parisEn.map((label) => label.split(' · ').pop()),
+    ['1335047', '1335046', '1335045'],
+  );
+
+  const cairoSafety = CAIRO_CITY_FACTS.slots.find((slot) => slot.id === 'safety');
+  const cairoKo = cairoSafety.sources.map((source) => sourceLinkLabelForLocale(source, cairoSafety.sources, 'ko'));
+  assert.equal(new Set(cairoKo).size, cairoKo.length);
+  assert.equal(cairoKo.filter((label) => label === '대사관 공지').length, 0);
+  assert.equal(cairoKo.includes('외교부 여행경보'), true);
+  assert.equal(cairoKo.includes('GATEO 로그북 (2026-10-03)'), true);
 });
 
 test('public source labels and one unverified line', () => {

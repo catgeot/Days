@@ -8,7 +8,6 @@ import {
   factValueForLocale,
   linkLabelForLocale,
   resolveVerifiedFacts,
-  sourceNameForLocale,
   splitFactTimeRanges,
   TIME_RANGE_CLASS,
 } from '../../../data/placeVerifiedFacts/index.js';
@@ -30,9 +29,9 @@ import {
 import {
   AI_GENERATED_LABEL,
   presentFactText,
-  publicSourceName,
   slotLooksEmpty,
 } from '../../../data/placeVerifiedFacts/schema.js';
+import { sourceLinkLabelForLocale } from '../../../data/placeVerifiedFacts/sourceLinkLabels.js';
 import { buildPlacePath } from '../../../utils/placePlannerPath';
 import {
   PLACE_GALLERY_SECTION,
@@ -119,7 +118,7 @@ function SourceLine({ sources, locale, light }) {
   return (
     <span data-fact-source="">
       {sources.map((source, index) => {
-        const name = sourceNameForLocale(publicSourceName(source.name || source.url), locale);
+        const name = sourceLinkLabelForLocale(source, sources, locale);
         const href = sourceHref(source);
         const wrap = sourceLabelClass(name);
         const linkClass = light

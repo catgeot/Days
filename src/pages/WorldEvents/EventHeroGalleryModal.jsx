@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useRef } from 'react';
+import { useGateoPhotoLightboxA11y } from '../../shared/useGateoPhotoLightboxA11y';
 import { createPortal } from 'react-dom';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -28,6 +29,7 @@ export default function EventHeroGalleryModal({
 }) {
   const { t } = useTranslation();
   const swipeStartRef = useRef(null);
+  const lightboxRootRef = useRef(null);
 
   const step = useCallback(
     (delta) => {
@@ -71,19 +73,20 @@ export default function EventHeroGalleryModal({
     swipeStartRef.current = null;
   }, []);
 
+  useGateoPhotoLightboxA11y({
+    open: images.length > 0,
+    onClose,
+    rootRef: lightboxRootRef,
+    onArrowLeft: () => step(-1),
+    onArrowRight: () => step(1),
+  });
+
   useEffect(() => {
     document.body.style.overflow = 'hidden';
-    const onKeyDown = (event) => {
-      if (event.key === 'Escape') onClose();
-      if (event.key === 'ArrowLeft') step(-1);
-      if (event.key === 'ArrowRight') step(1);
-    };
-    window.addEventListener('keydown', onKeyDown);
     return () => {
       document.body.style.overflow = '';
-      window.removeEventListener('keydown', onKeyDown);
     };
-  }, [onClose, step]);
+  }, []);
 
   if (!images.length) return null;
 
@@ -94,7 +97,15 @@ export default function EventHeroGalleryModal({
       : activeImage.captionKo || '';
 
   const modal = (
-    <div className="fixed inset-0 z-[9999] flex flex-col bg-stone-950/95">
+    <div
+      ref={lightboxRootRef}
+      data-gateo-photo-lightbox=""
+      data-gateo-photo-lightbox-focus=""
+      className="fixed inset-0 z-[9999] flex flex-col bg-stone-950/95"
+      role="dialog"
+      aria-modal="true"
+      aria-label={t('worldEventDetail.heroGallery.modalAria')}
+    >
       <button
         type="button"
         className="absolute inset-0"
@@ -122,9 +133,6 @@ export default function EventHeroGalleryModal({
 
       <div
         className="relative z-10 flex min-h-0 flex-1 items-center justify-center px-3"
-        role="dialog"
-        aria-modal="true"
-        aria-label={t('worldEventDetail.heroGallery.modalAria')}
         onTouchStart={onTouchStart}
         onTouchEnd={onTouchEnd}
         onTouchCancel={onTouchCancel}
