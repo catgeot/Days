@@ -2,6 +2,7 @@ import {
   isDomesticKoreaLocation,
   isDomesticKoreaLocationForTourApi,
 } from '../../utils/tourApiMatch.js';
+import { isCatalogOrHubExplorePlace, itemHasPoiRestaurantCategory } from './poiRestaurantCategory.js';
 
 /** TourAPI contentTypeId 음식점 — `fetchTourApiAttractionDetail`와 동일 값(39). Node 빌드 스크립트 import 체인 분리. */
 const RESTAURANT_CONTENT_TYPE_ID = '39';
@@ -37,6 +38,10 @@ export function isExploreRestaurantItem(item) {
 
   const cat3 = String(item.cat3 ?? '').trim().toUpperCase();
   if (cat3.startsWith('A0502')) return true;
+
+  if (isCatalogOrHubExplorePlace(item)) return false;
+
+  if (itemHasPoiRestaurantCategory(item)) return true;
 
   return false;
 }

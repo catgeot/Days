@@ -7,6 +7,7 @@ import { tourRowTitleMatchesCompactQuery } from './koreaTourAttractionTitleMatch
 import { enrichSearchCandidateScenicMedia } from './koreaLocalScenicLists.js';
 import { isExploreRestaurantItem } from '../../../shared/search/tourRestaurantDetect.js';
 import { tourRestaurantToExploreSuggestion } from './tourRestaurantExploreSuggestion.js';
+import { parseExploreSearchScope } from './exploreRegionalPlaceQuery.js';
 
 const HAS_HANGUL_RE = /[\uAC00-\uD7A3]/;
 
@@ -57,6 +58,18 @@ function titlePartiallyMatchesQuery(query, title) {
   return t.includes(q);
 }
 
+function addrMatchesRegionHints(item, hints) {
+  const addr = [item?.addr1, item?.addr2, item?.title, item?.name]
+    .map((s) => String(s || '').trim())
+    .filter(Boolean)
+    .join(' ');
+  if (!addr || !Array.isArray(hints) || !hints.length) return true;
+  return hints.some((hint) => {
+    const h = String(hint || '').trim();
+    return h.length >= 2 && addr.includes(h);
+  });
+}
+
 /**
  * @param {string} query
  * @param {{ lookupItems?: (keyword: string) => Promise<object[]>, max?: number }} [opts]
@@ -66,14 +79,18 @@ export async function collectExploreRestaurantKeywordMatches(query, opts = {}) {
   const q = String(query || '').trim();
   if (!q || !HAS_HANGUL_RE.test(q)) return [];
 
+  const regional = parseExploreSearchScope(q);
+  const keyword = regional?.placeQuery && regional.placeQuery.length >= 2 ? regional.placeQuery : q;
+  const regionHints = regional?.hubHints || [];
+
   let items = [];
   if (typeof opts.lookupItems === 'function') {
-    items = await opts.lookupItems(q);
+    items = await opts.lookupItems(keyword);
   } else {
     try {
       const res = await invokeTourApiProxy(
         'searchKeyword',
-        { keyword: q, numOfRows: 24, pageNo: 1 },
+        { keyword, numOfRows: 24, pageNo: 1 },
         { locale: TOUR_API_BODY_LOCALE },
       );
       items = Array.isArray(res?.items) ? res.items : [];
@@ -88,7 +105,13 @@ export async function collectExploreRestaurantKeywordMatches(query, opts = {}) {
 
   for (const raw of items) {
     if (!isRestaurantKeywordItem(raw)) continue;
-    if (!titlePartiallyMatchesQuery(q, raw?.title)) continue;
+    if (regional && !addrMatchesRegionHints(raw, regionHints)) continue;
+    if (
+      !titlePartiallyMatchesQuery(keyword, raw?.title) &&
+      !titlePartiallyMatchesQuery(q, raw?.title)
+    ) {
+      continue;
+    }
     const row = mapSearchKeywordRestaurantRow(raw);
     if (!row) continue;
     let spot = mapTourAttractionRow({ ...row, content_type_id: row.content_type_id });
@@ -96,7 +119,9 @@ export async function collectExploreRestaurantKeywordMatches(query, opts = {}) {
     spot = { ...spot, contentTypeId: row.content_type_id, content_type_id: row.content_type_id };
     if (!isExploreRestaurantItem(spot) && !isExploreRestaurantItem(raw)) continue;
     if (
+      !tourRowTitleMatchesCompactQuery(spot, keyword) &&
       !tourRowTitleMatchesCompactQuery(spot, q) &&
+      !titlePartiallyMatchesQuery(keyword, spot.name) &&
       !titlePartiallyMatchesQuery(q, spot.name)
     ) {
       continue;

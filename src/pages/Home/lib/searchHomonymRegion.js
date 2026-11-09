@@ -73,6 +73,7 @@ function nameHasQueryWord(item, query) {
 /** Mapbox POI 중 관광 카테고리가 없는 것(식당·상호·무분류 marker) */
 export function isBusinessLikeSearchHit(item) {
   if (!item || item.source !== 'mapbox') return false;
+  if (item.exploreRestaurant || item.kind === 'restaurant') return true;
   if (!item.poiAttraction && item.kind !== 'attraction') return false;
   const kind = normalizeKey(item.attractionKind);
   return !kind || !TOURISM_KIND_RE.test(kind);
@@ -135,7 +136,13 @@ function minDistanceKm(item, anchors) {
 export const DERIVED_NAME_BUSINESS_MAX_KM = 15;
 
 function isMapboxPoiHit(item) {
-  return item?.source === 'mapbox' && (item.poiAttraction || item.kind === 'attraction');
+  return (
+    item?.source === 'mapbox' &&
+    (item.poiAttraction ||
+      item.kind === 'attraction' ||
+      item.exploreRestaurant ||
+      item.kind === 'restaurant')
+  );
 }
 
 /**
