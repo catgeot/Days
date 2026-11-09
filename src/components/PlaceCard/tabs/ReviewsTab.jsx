@@ -253,7 +253,7 @@ const ReviewStatsBlock = ({ stats, layout = 'desktop' }) => {
 };
 
 // --- 추가: 긴 글 접기 및 이미지 썸네일 렌더링을 담당하는 단일 리뷰 카드 컴포넌트 ---
-const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onToggleLike, onVisible, onRequireLogin }) => {
+export const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onToggleLike, onVisible, onRequireLogin }) => {
   const { t, i18n } = useTranslation();
   const [isExpanded, setIsExpanded] = useState(false);
   const [hasViewed, setHasViewed] = useState(false);

@@ -66,6 +66,7 @@ import {
 import { fetchTourApiCourseDetail } from '../../utils/fetchTourApiCourses';
 import { listKoreaScenicSpots } from '../Home/lib/koreaScenicSpots';
 import FestivalDetailProse from './FestivalDetailProse';
+import FestivalDetailReviewsSection from './FestivalDetailReviewsSection.jsx';
 import {
   groupNearbySpotsWithLocalScenic,
   isNearbyAttractionRowClickable,
@@ -2962,6 +2963,8 @@ export default function FestivalDetailSheet({
                 </div>
               ) : null}
               </div>
+
+              <FestivalDetailReviewsSection contentId={item?.contentId} />
 
               {(scenicRegion ||
                 nearbySights.items.length > 0 ||
