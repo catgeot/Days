@@ -272,6 +272,7 @@ test('Home gallery PR drift guard; MOONi session wiring line allowlist', () => {
     /^[+-]\s*canonical_slug: normalizedTargetSlug/,
     /^[+-]\s*\.\.\.pin/,
     /^[+-].*async \(\) => \{/,
+    /^[+-].*isPlaceCardVisible=\{isPlaceCardSummaryVisible( \|\| isPlaceRoute)?\}/,
   ];
 
   const exploreHandlersLine =
