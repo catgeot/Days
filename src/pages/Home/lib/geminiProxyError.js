@@ -1,5 +1,8 @@
 /** @typedef {'config' | 'quota' | 'busy' | 'generic' | 'rate_limited' | 'too_large' | 'budget'} GeminiProxyErrorKind */
 
+import { ensureI18n } from '../../../i18n/config.js';
+import { normalizeAppLocale } from '../../../i18n/constants.js';
+
 export const GEMINI_PROXY_ERROR_KIND = {
   CONFIG: 'config',
   QUOTA: 'quota',
@@ -9,6 +12,12 @@ export const GEMINI_PROXY_ERROR_KIND = {
   TOO_LARGE: 'too_large',
   BUDGET: 'budget',
 };
+
+/** @type {import('../../../i18n/constants.js').AppLocale} */
+const DEFAULT_MSG_LOCALE = 'ko';
+
+export const MOONI_RATE_LIMIT_SHORT_SEC = 120;
+export const MOONI_RATE_LIMIT_LONG_SEC = 1800;
 
 const USER_MESSAGES = {
   [GEMINI_PROXY_ERROR_KIND.CONFIG]: '설정 오류 — 관리자에게 문의',
@@ -31,21 +40,68 @@ const FEATURE_LIMIT_KINDS = new Set([
   GEMINI_PROXY_ERROR_KIND.QUOTA,
 ]);
 
-function rateLimitedMessage(retryAfter) {
-  const n = Number(retryAfter);
-  if (Number.isFinite(n) && n > 0 && n <= 60) {
-    return `질문이 잠시 몰렸어요. ${Math.ceil(n)}초 뒤에 다시 물어봐 주세요.`;
+/**
+ * @param {{ retryAfter?: unknown, headerRetryAfter?: string | null }} sources
+ * @returns {number | undefined}
+ */
+export function resolveGeminiProxyRetryAfterSeconds({ retryAfter, headerRetryAfter } = {}) {
+  const body = Number(retryAfter);
+  if (Number.isFinite(body) && body > 0) return Math.ceil(body);
+  if (headerRetryAfter != null && headerRetryAfter !== '') {
+    const header = Number(headerRetryAfter);
+    if (Number.isFinite(header) && header > 0) return Math.ceil(header);
   }
-  return '질문이 잠시 몰렸어요. 잠시 후에 다시 물어봐 주세요.';
+  return undefined;
+}
+
+/**
+ * @param {number} retryAfterSec
+ * @param {string | undefined} locale
+ * @param {number} [nowMs]
+ */
+export function formatRateLimitResumeLocalTime(retryAfterSec, locale, nowMs = Date.now()) {
+  const at = new Date(nowMs + retryAfterSec * 1000);
+  const lng = normalizeAppLocale(locale);
+  const minute = at.getMinutes();
+  return new Intl.DateTimeFormat(lng === 'ko' ? 'ko-KR' : 'en-US', {
+    hour: 'numeric',
+    ...(minute !== 0 ? { minute: 'numeric' } : {}),
+    hour12: true,
+  }).format(at);
+}
+
+/**
+ * @param {number | undefined} retryAfter
+ * @param {string | undefined} locale
+ * @param {number} [nowMs]
+ */
+export function formatMooniRateLimitedMessage(retryAfter, locale, nowMs = Date.now()) {
+  const t = ensureI18n(locale).t;
+  const n = Number(retryAfter);
+  if (!Number.isFinite(n) || n <= 0) {
+    return t('mooni.proxyError.rateLimitedSoon');
+  }
+  if (n >= MOONI_RATE_LIMIT_LONG_SEC) {
+    const time = formatRateLimitResumeLocalTime(n, locale, nowMs);
+    return t('mooni.proxyError.rateLimitedDaily', { time });
+  }
+  if (n <= MOONI_RATE_LIMIT_SHORT_SEC && n <= 60) {
+    return t('mooni.proxyError.rateLimitedSeconds', { seconds: Math.ceil(n) });
+  }
+  return t('mooni.proxyError.rateLimitedSoon');
 }
 
 /**
  * @param {GeminiProxyErrorKind} kind
  * @param {string | undefined} devDetail
  * @param {number | undefined} retryAfter
+ * @param {string | undefined} [locale]
+ * @param {number} [nowMs]
  */
-export function formatGeminiProxyUserMessage(kind, devDetail, retryAfter) {
-  if (kind === GEMINI_PROXY_ERROR_KIND.RATE_LIMITED) return rateLimitedMessage(retryAfter);
+export function formatGeminiProxyUserMessage(kind, devDetail, retryAfter, locale, nowMs) {
+  if (kind === GEMINI_PROXY_ERROR_KIND.RATE_LIMITED) {
+    return formatMooniRateLimitedMessage(retryAfter, locale, nowMs);
+  }
   const base = USER_MESSAGES[kind] ?? USER_MESSAGES[GEMINI_PROXY_ERROR_KIND.GENERIC];
   if (import.meta.env?.DEV && devDetail && kind === GEMINI_PROXY_ERROR_KIND.CONFIG) {
     return `${base} (${devDetail})`;
@@ -66,10 +122,15 @@ function resolveInvokeHttpStatus(error) {
 }
 
 /**
- * @param {{ error?: unknown; data?: { success?: boolean; error?: string } | null; httpStatus?: number | null }} input
+ * @param {{ error?: unknown; data?: { success?: boolean; error?: string; retryAfter?: number } | null; httpStatus?: number | null; headerRetryAfter?: string | null }} input
  * @returns {{ kind: GeminiProxyErrorKind; userMessage: string; devDetail?: string }}
  */
-export function classifyGeminiProxyFailure({ error = null, data = null, httpStatus = null } = {}) {
+export function classifyGeminiProxyFailure({
+  error = null,
+  data = null,
+  httpStatus = null,
+  headerRetryAfter = null,
+} = {}) {
   const snippets = [];
   const invokeStatus = resolveInvokeHttpStatus(error);
   const status = httpStatus ?? invokeStatus;
@@ -84,7 +145,10 @@ export function classifyGeminiProxyFailure({ error = null, data = null, httpStat
   if (code) snippets.push(code);
 
   const combined = snippets.join(' ');
-  const retryAfter = Number(data?.retryAfter);
+  const retryAfter = resolveGeminiProxyRetryAfterSeconds({
+    retryAfter: data?.retryAfter,
+    headerRetryAfter,
+  });
 
   /** @type {GeminiProxyErrorKind} */
   let kind = GEMINI_PROXY_ERROR_KIND.GENERIC;
@@ -120,9 +184,9 @@ export function classifyGeminiProxyFailure({ error = null, data = null, httpStat
 
   return {
     kind,
-    userMessage: formatGeminiProxyUserMessage(kind, devDetail, retryAfter),
+    userMessage: formatGeminiProxyUserMessage(kind, devDetail, retryAfter, DEFAULT_MSG_LOCALE),
     devDetail,
-    retryAfter: Number.isFinite(retryAfter) ? retryAfter : undefined,
+    retryAfter,
     httpStatus: status ?? undefined,
     errorCode: code || undefined,
   };
@@ -150,8 +214,18 @@ export function isGeminiFeatureLimitError(err) {
   return err instanceof GeminiProxyError && FEATURE_LIMIT_KINDS.has(err.kind);
 }
 
-export function getGeminiProxyErrorMessage(err) {
-  if (err instanceof GeminiProxyError) return err.userMessage;
+/**
+ * @param {unknown} err
+ * @param {string | undefined} [locale]
+ * @returns {string}
+ */
+export function getGeminiProxyErrorMessage(err, locale) {
+  if (err instanceof GeminiProxyError) {
+    if (err.kind === GEMINI_PROXY_ERROR_KIND.RATE_LIMITED) {
+      return formatGeminiProxyUserMessage(err.kind, err.devDetail, err.retryAfter, locale);
+    }
+    return err.userMessage;
+  }
   if (err instanceof Error && err.message) return err.message;
   return USER_MESSAGES[GEMINI_PROXY_ERROR_KIND.GENERIC];
 }

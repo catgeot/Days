@@ -1471,7 +1471,7 @@ const ChatModal = ({
 
       onUpdateChat(effectiveChatId, finalMessages, sessionExtras);
     } catch (error) {
-      const text = getGeminiProxyErrorMessage(error);
+      const text = getGeminiProxyErrorMessage(error, i18n.language);
       const role = error instanceof GeminiProxyError && error.kind === 'budget' ? 'model' : 'error';
       setMessages((prev) => [...prev, { role, text, ...destinationPickExtras }]);
     } finally {
@@ -1550,7 +1550,7 @@ const ChatModal = ({
           );
         }
       } catch (error) {
-        const text = getGeminiProxyErrorMessage(error);
+        const text = getGeminiProxyErrorMessage(error, i18n.language);
         setMessages((prev) => [...prev, { role: 'error', text }]);
       } finally {
         setMooniContinuingIdx(null);

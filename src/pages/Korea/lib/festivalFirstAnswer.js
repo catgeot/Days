@@ -18,9 +18,9 @@ const FIRST_ANSWER_TIMEOUT_MS = 8000;
  * Visible guidance when the opening call fails. rate_limited uses the limit copy.
  * @param {unknown} error
  */
-export function festivalFirstAnswerFailureGuidance(error) {
-  if (error instanceof GeminiProxyError) return getGeminiProxyErrorMessage(error);
-  return formatGeminiProxyUserMessage(GEMINI_PROXY_ERROR_KIND.GENERIC);
+export function festivalFirstAnswerFailureGuidance(error, locale) {
+  if (error instanceof GeminiProxyError) return getGeminiProxyErrorMessage(error, locale);
+  return formatGeminiProxyUserMessage(GEMINI_PROXY_ERROR_KIND.GENERIC, undefined, undefined, locale);
 }
 
 /**
@@ -76,7 +76,7 @@ export async function requestFestivalFirstAnswer(festivalContext, options = {}) 
   } catch (error) {
     return {
       text: '',
-      guidance: festivalFirstAnswerFailureGuidance(error),
+      guidance: festivalFirstAnswerFailureGuidance(error, facts.locale),
       kind: error instanceof GeminiProxyError ? error.kind : GEMINI_PROXY_ERROR_KIND.GENERIC,
     };
   } finally {

@@ -8,6 +8,7 @@ import { filterOutSinglePersonPortraits } from '../../../utils/galleryPortraitFi
 import {
   classifyGeminiProxyFailure,
   GeminiProxyError,
+  resolveGeminiProxyRetryAfterSeconds,
 } from './geminiProxyError';
 import {
   invokeGeminiProxyWithSession,
@@ -23,12 +24,20 @@ async function readInvokeFailure(error) {
     } catch {
       data = null;
     }
-    return { httpStatus: ctx.status, data };
+    const headerRetryAfter = ctx.headers.get('Retry-After');
+    const resolved = resolveGeminiProxyRetryAfterSeconds({
+      retryAfter: data?.retryAfter,
+      headerRetryAfter,
+    });
+    if (resolved != null) {
+      data = { ...(data && typeof data === 'object' ? data : {}), retryAfter: resolved };
+    }
+    return { httpStatus: ctx.status, data, headerRetryAfter };
   }
   if (ctx && typeof ctx.status === 'number') {
-    return { httpStatus: ctx.status, data: null };
+    return { httpStatus: ctx.status, data: null, headerRetryAfter: null };
   }
-  return { httpStatus: null, data: null };
+  return { httpStatus: null, data: null, headerRetryAfter: null };
 }
 
 export const apiClient = {
@@ -49,12 +58,24 @@ export const apiClient = {
             headers: { Authorization: authorization },
           });
           if (error || !data?.success) {
-            const extra = error ? await readInvokeFailure(error) : { httpStatus: null, data: null };
+            const extra = error
+              ? await readInvokeFailure(error)
+              : { httpStatus: null, data: null, headerRetryAfter: null };
+            const mergedData = data ?? extra.data;
+            const retryAfter = resolveGeminiProxyRetryAfterSeconds({
+              retryAfter: mergedData?.retryAfter,
+              headerRetryAfter: extra.headerRetryAfter,
+            });
+            const failureData =
+              retryAfter != null && mergedData
+                ? { ...mergedData, retryAfter }
+                : mergedData;
             return {
               ok: false,
               status: extra.httpStatus,
-              data: data ?? extra.data,
+              data: failureData,
               error,
+              headerRetryAfter: extra.headerRetryAfter,
             };
           }
           return { ok: true, status: 200, data };
@@ -68,6 +89,7 @@ export const apiClient = {
         error,
         data: extra.data,
         httpStatus: extra.httpStatus,
+        headerRetryAfter: extra.headerRetryAfter ?? null,
       }));
     }
   },
