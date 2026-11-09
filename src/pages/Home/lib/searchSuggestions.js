@@ -647,6 +647,14 @@ export function travelSpotToChoiceCandidate(spot) {
  */
 export function locationToChoiceCandidate(loc) {
   if (!loc?.name) return null;
+  if (loc.source === 'tourapi' && loc.contentId) {
+    return enrichSearchCandidateScenicMedia({
+      ...loc,
+      kind: 'poi',
+      badge: '명소',
+      uiPlace: true,
+    });
+  }
   if (loc.kind && loc.badge && Number.isFinite(Number(loc.lat))) {
     return loc;
   }
@@ -704,6 +712,7 @@ export function ensureDisambiguation(query, candidates, title) {
 export async function buildCuratedEnterDisambiguation(query) {
   const q = String(query || '').trim();
   if (!q) return null;
+  if (resolveExploreAliasTourPlaceParam(q)) return null;
 
   const searchQ = effectiveExploreSearchQuery(q);
 

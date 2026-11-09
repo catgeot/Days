@@ -260,11 +260,11 @@ export function siteSearchFallbackLinkHref(item, query = '') {
  */
 export function siteSearchExploreEnterCommit(spot) {
   if (!spot || typeof spot !== 'object') return { mode: 'skip', pin: spot };
-  if (!isSiteSearchOpenEnabled()) return { mode: 'legacy', pin: spot };
   const decision = resolveSearchResultSelect(spot);
-  if (!decision) return { mode: 'skip', pin: spot };
-  if (decision.type === 'place') {
+  if (decision?.type === 'place') {
     return { mode: 'place', pin: decision.spot, param: decision.param };
   }
+  if (!isSiteSearchOpenEnabled()) return { mode: 'legacy', pin: spot };
+  if (!decision) return { mode: 'skip', pin: spot };
   return { mode: 'home', pin: decision.spot };
 }

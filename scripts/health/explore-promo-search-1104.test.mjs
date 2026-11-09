@@ -4,7 +4,10 @@ import test from 'node:test';
 import { GATEO_ENV_FLAG_NAMES } from '../../src/shared/gateoFeatureFlags.js';
 import { resolveExploreSearchAlias } from '../../src/pages/Home/lib/exploreSearchAliases.js';
 import { resolveExploreAliasTourPlaceParam } from '../../src/pages/Home/lib/koreaPlaceMatchDictionary.js';
-import { resolveSiteSearchEnterSinglePoi } from '../../src/pages/Home/lib/siteSearchOpen.js';
+import {
+  resolveSiteSearchEnterSinglePoi,
+  siteSearchExploreEnterCommit,
+} from '../../src/pages/Home/lib/siteSearchOpen.js';
 import { resolveHubAttraction, attractionToPlacePin } from '../../src/pages/Home/lib/cityAttractionHubs.js';
 import {
   firstPassHitToUiPlace,
@@ -45,6 +48,9 @@ for (const query of ['한라산 백록담', '백록담', '화구벽']) {
     const decision = resolveSearchResultSelect(pin);
     assert.equal(decision?.type, 'place');
     assert.equal(decision?.param, 'tour-127635');
+    const enter = siteSearchExploreEnterCommit(pin);
+    assert.equal(enter.mode, 'place');
+    assert.equal(enter.param, 'tour-127635');
   });
 }
 
