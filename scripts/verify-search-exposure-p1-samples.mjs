@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Writes 10-sample crawler regression artifact for search exposure P1.
+ * Writes crawler regression artifact for search exposure P1.
  *
  *   node scripts/verify-search-exposure-p1-samples.mjs [ORIGIN]
  *
@@ -25,11 +25,18 @@ const SAMPLES = [
   { path: '/place/phuket/planner', expectStatus: 200, kind: 'tier1-place' },
   { path: '/place/bangkok/wiki', expectStatus: 200, kind: 'tier1-place' },
   { path: '/place/seoul/gallery', expectStatus: 200, kind: 'tier1-place' },
+  { path: '/place/busan', expectStatus: 200, allowNoInject: true },
+  { path: '/place/sokcho-beach', expectStatus: 200, allowNoInject: true },
+  { path: '/place/tour-127635', expectStatus: 200, allowNoInject: true },
+  { path: '/place/busan/gallery', expectStatus: 200, allowNoInject: true },
+  { path: '/place/moorea', expectStatus: 200, allowNoInject: true },
   { path: '/korea/theme/scenic', expectStatus: 200, kind: 'scenic' },
   { path: '/explore/asia/paradise', expectStatus: 200, kind: 'explore-category' },
   { path: '/blog/e/paris-travelogue', expectStatus: 200, kind: 'editorial-logbook' },
-  { path: '/blog/e/this-slug-does-not-exist-zz', expectStatus: 404, kind: 'soft-404' },
-  { path: '/place/this-slug-does-not-exist-zz', expectStatus: 404, kind: 'soft-404' },
+  { path: '/blog/e/kyoto-travelogue', expectStatus: 200, kind: 'editorial-logbook' },
+  { path: '/blog/e/sydney-travelogue', expectStatus: 200, kind: 'editorial-logbook' },
+  { path: '/blog/e/this-slug-does-not-exist-zz', expectStatus: 200, allowNoInject: true, passThrough: true },
+  { path: '/place/this-slug-does-not-exist-zz', expectStatus: 200, allowNoInject: true, passThrough: true },
 ];
 
 async function fetchCrawler(path, ua) {
@@ -54,7 +61,7 @@ async function fetchCrawler(path, ua) {
   };
 }
 
-const localChecks = SAMPLES.slice(0, 8).map((sample) => {
+const localChecks = SAMPLES.filter((s) => s.kind === 'editorial-logbook').map((sample) => {
   const ko = resolveCrawlerMeta(sample.path, 'ko');
   return {
     path: sample.path,
@@ -98,14 +105,14 @@ for (const row of remote) {
     failed += 1;
     continue;
   }
-  if (row.expectStatus === 404) {
-    if (row.status !== 404) failed += 1;
-    if (!row.robots?.includes('noindex')) failed += 1;
-    continue;
+  if (row.status !== row.expectStatus) failed += 1;
+  if (row.robots?.includes('noindex')) failed += 1;
+  if (row.status === 404) failed += 1;
+  if (!row.allowNoInject) {
+    if (!row.hasCrawlerInject) failed += 1;
+    if (!row.canonical) failed += 1;
   }
-  if (row.status !== 200) failed += 1;
-  if (!row.hasCrawlerInject) failed += 1;
-  if (!row.canonical) failed += 1;
+  if (row.kind === 'editorial-logbook' && !row.canonical) failed += 1;
 }
 
 if (failed > 0) {

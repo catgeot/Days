@@ -144,15 +144,8 @@ export function resolveCrawlerMeta(pathname, locale = 'ko') {
   return null;
 }
 
-export function isCrawlerSoft404Path(pathname) {
-  const parsed = parseCrawlerPath(pathname);
-  if (!parsed) return false;
-  if (parsed.kind === 'editorial-logbook') {
-    return !crawlerEditorialMeta?.[parsed.slug];
-  }
-  if (parsed.kind === 'place-base' || parsed.kind === 'place-tab') {
-    return !crawlerPlaceMeta?.[parsed.slug];
-  }
+/** Always false: /place passes through when meta missing; unknown /blog/e passes through (SPA) so new posts are not 404 before SSOT sync. */
+export function isCrawlerSoft404Path() {
   return false;
 }
 

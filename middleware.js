@@ -1,12 +1,6 @@
 import { isCrawlerRequest } from './src/edge/botDetect.js';
 import { injectCrawlerMetaIntoHtml } from './src/edge/injectCrawlerMeta.js';
-import {
-  buildCrawlerSoft404Meta,
-  getCrawlerMetaKind,
-  isCrawlerSoft404Path,
-  parseCrawlerPath,
-  resolveCrawlerMeta,
-} from './src/edge/resolveCrawlerMeta.js';
+import { getCrawlerMetaKind, parseCrawlerPath, resolveCrawlerMeta } from './src/edge/resolveCrawlerMeta.js';
 
 export const config = {
   matcher: [
@@ -38,11 +32,7 @@ export default async function middleware(request) {
   }
 
   const locale = url.searchParams.get('lang') === 'en' ? 'en' : 'ko';
-  let meta = resolveCrawlerMeta(url.pathname, locale);
-  const soft404 = !meta && isCrawlerSoft404Path(url.pathname);
-  if (soft404) {
-    meta = buildCrawlerSoft404Meta(url.pathname, locale);
-  }
+  const meta = resolveCrawlerMeta(url.pathname, locale);
   if (!meta) {
     return;
   }
@@ -57,10 +47,10 @@ export default async function middleware(request) {
   }
 
   const html = injectCrawlerMetaIntoHtml(await indexRes.text(), meta);
-  const kind = soft404 ? 'soft-404' : getCrawlerMetaKind(url.pathname) || 'tier1-place';
+  const kind = getCrawlerMetaKind(url.pathname) || 'tier1-place';
 
   return new Response(html, {
-    status: soft404 ? 404 : 200,
+    status: 200,
     headers: {
       'content-type': 'text/html; charset=utf-8',
       'cache-control': 'public, max-age=0, must-revalidate',
