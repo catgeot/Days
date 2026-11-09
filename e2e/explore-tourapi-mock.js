@@ -33,6 +33,23 @@ export const EXPLORE_GOSANSA_JANGHEUNG_ROW = {
   modified_time: '20260101000000',
 };
 
+export const EXPLORE_HALLASAN_ROW = {
+  content_id: '127635',
+  title: '한라산 국립공원(대한민국)',
+  addr1: '제주특별자치도 제주시',
+  addr2: '일도1동',
+  area_code: '39',
+  sigungu_code: '1',
+  mapx: '126.5311883333',
+  mapy: '33.3616661111',
+  first_image: 'https://tong.visitkorea.or.kr/cms/resource/e2e-hallasan.jpg',
+  active: true,
+  cat1: 'A02',
+  cat2: 'A0201',
+  cat3: 'A02010800',
+  modified_time: '20260101000000',
+};
+
 export const EXPLORE_GOSANSA_JECHEON_ROW = {
   content_id: '128421',
   title: '대한불교조계종 고산사',
@@ -57,6 +74,7 @@ const GOSANSA_ROWS = [
   EXPLORE_GOSANSA_HONGSEONG_ROW,
   EXPLORE_GOSANSA_JANGHEUNG_ROW,
   EXPLORE_GOSANSA_JECHEON_ROW,
+  EXPLORE_HALLASAN_ROW,
 ];
 
 const TOUR_OVERVIEW_BY_ID = {
@@ -65,6 +83,7 @@ const TOUR_OVERVIEW_BY_ID = {
   '127982':
     '고산사는 충남 홍성 청룡산에 있으며, 창건연대는 미상이나 신라말에 도선국사가 창건하였다고 전해진다.',
   '127937': '장흥 고산사는 전라남도 장흥군 회진면에 있는 사찰입니다.',
+  '127635': '한라산은 제주도 중앙에 솟은 대한민국 최고봉(해발 1,947m)으로, 백록담 화구호와 사계절 풍경이 유명합니다.',
 };
 
 const CORS = {

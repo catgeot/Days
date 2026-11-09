@@ -1,8 +1,13 @@
 import { test, expect } from '@playwright/test';
+import { installExploreTourapiMock } from './explore-tourapi-mock.js';
+
+test.beforeEach(async ({ context }) => {
+  await installExploreTourapiMock(context);
+});
 
 const PLACES = [
   { path: '/place/paris', koTitle: /파리/, enTitle: /Paris/i },
-  { path: '/place/tour-127635', koTitle: /한라산|백록담|화구벽|127635/, enTitle: /Hallasan|Baekrokdam|127635/i },
+  { path: '/place/tour-127635', koTitle: /한라산|백록담|화구벽|국립공원|127635/, enTitle: /Hallasan|Baekrokdam|127635/i },
 ];
 
 const VIEWPORTS = [
