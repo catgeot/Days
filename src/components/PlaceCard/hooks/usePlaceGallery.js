@@ -28,6 +28,7 @@ import {
   resolveGalleryPersistPlaceId,
   resolveLoadedStatsPersistSnapshot,
   skipPersistPlaceGalleryReplaceReason,
+  sessionCacheAfterDroppedIds,
   unionGalleryExclusionSets,
   withoutDroppedGalleryImages,
   withoutExcludedGalleryImages,
@@ -56,13 +57,6 @@ import {
   resolveGallerySaveTarget,
   unsplashGallerySearchPage,
 } from '../../../utils/gallerySaveGuard.js';
-import {
-  emptyGalleryExclusion,
-  filterExcludedGalleryImages,
-  galleryExclusionIsActive,
-  loadGalleryExcludedKeys,
-  sessionCacheAfterDroppedIds,
-} from '../../../utils/galleryExclusion.js';
 import { isLegacyMishealPlaceStatsId } from '../../../pages/Home/lib/legacyMishealPlaceSlugs.js';
 import { KO_GALLERY_QUERY_OVERRIDES } from '../../../pages/Home/lib/koreaPlaceMatchDictionary.js';
 import {
@@ -81,7 +75,7 @@ import {
   readGalleryAttributionReturnState,
 } from '../common/galleryAttributionNavigation';
 
-/** v1.25 — active exclusion keys are applied before render and session cache */
+/** v1.25 — client save guard · stable hidden-id localStorage keys */
 const CACHE_VERSION = 'v1.25';
 const CACHE_TTL = 1000 * 60 * 60 * 24;
 
@@ -407,7 +401,6 @@ export const usePlaceGallery = (locationSource, options = {}) => {
   /** 같은 영문 쿼리를 쓰는 서로 다른 장소 구분 + in-flight 요청 무효화 */
   const lastFetchKeyRef = useRef(null);
   const galleryLoadSeqRef = useRef(0);
-  const excludedKeysRef = useRef(emptyGalleryExclusion());
   /** 공유 upsert·관리자 PATCH용 — 숨김 필터 미적용(storage) */
   const allImagesRef = useRef([]);
   const unsplashPageRef = useRef(1);
@@ -504,10 +497,7 @@ export const usePlaceGallery = (locationSource, options = {}) => {
       // Pexels 보강은 화면에만 있고 place_stats에는 없다. 관리자 제거는 exclusion으로 다시 붙지 않게 한다.
       const storage = capGalleryImages(
         filterOutSinglePersonPortraits(
-          withoutExcludedGalleryImages(
-            filterExcludedGalleryImages(rawImages, excludedKeysRef.current),
-            galleryExclusionRef.current,
-          ),
+          withoutExcludedGalleryImages(rawImages, galleryExclusionRef.current),
         ),
       );
       if (!storage.length) {
@@ -666,29 +656,9 @@ export const usePlaceGallery = (locationSource, options = {}) => {
       resolveGalleryPersistPlaceId(loadedStatsPlaceIdRef.current, nextCanonicalId),
     );
 
-    const requestedPlaceKey = stablePlaceKey;
     const CACHE_KEY = thumbnailOnly
       ? `days_gallery_thumb_${encodeURIComponent(stablePlaceKey)}`
       : `days_gallery_${encodeURIComponent(stablePlaceKey)}_${primaryQuery}`;
-
-    // Exclusion keys must not block cache/DB paint. Filter when the RPC returns.
-    void loadGalleryExcludedKeys(
-      (name, args) => supabase.rpc(name, args),
-      nextCanonicalId || spotSlugForDb,
-    ).then((exclusion) => {
-      if (currentPlaceKeyRef.current !== requestedPlaceKey) return;
-      excludedKeysRef.current = exclusion || emptyGalleryExclusion();
-      if (!galleryExclusionIsActive(excludedKeysRef.current)) return;
-      if (!allImagesRef.current.length) return;
-      const before = allImagesRef.current.length;
-      processAndSetImages(allImagesRef.current);
-      if (allImagesRef.current.length !== before) {
-        saveToSmartCache(CACHE_KEY, allImagesRef.current);
-      }
-    }).catch(() => {
-      if (currentPlaceKeyRef.current !== requestedPlaceKey) return;
-      excludedKeysRef.current = emptyGalleryExclusion();
-    });
 
     // 이미 성공한 동일 키 + 이미지가 있을 때만 스킵 (시작 전 마킹하면 hang 후 재시도 불가)
     if (

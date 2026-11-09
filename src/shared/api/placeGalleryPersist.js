@@ -197,6 +197,12 @@ export function withoutDroppedGalleryImages(storage, droppedIds) {
   return (storage || []).filter((img) => !drop.has(String(img?.id)));
 }
 
+export function sessionCacheAfterDroppedIds(cachedImages, droppedIds) {
+  const images = withoutDroppedGalleryImages(cachedImages, droppedIds);
+  const before = Array.isArray(cachedImages) ? cachedImages.length : 0;
+  return { images, changed: images.length !== before };
+}
+
 export function galleryReportErrorReason(error) {
   const code = String(error?.code || '');
   const message = String(error?.message || '');

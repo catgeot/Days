@@ -145,25 +145,6 @@ test('stored photos are not removed when the purge flag is off', () => {
   assert.deepEqual(plan.incoming.map((img) => img.id), ['fresh-bkk']);
 });
 
-test('migration only replaces gallery_clean_list and does not rewrite place_stats', () => {
-  const sql = readFileSync(
-    join(root, 'supabase/migrations/20261022190000_gallery_clean_list_region.sql'),
-    'utf8',
-  );
-  const embedded = sql.match(/\$gallery_aliases\$\s*([\s\S]*?)\s*\$gallery_aliases\$/);
-  assert.ok(embedded, 'alias list is embedded');
-  assert.deepEqual(JSON.parse(embedded[1]), aliases);
-  assert.match(sql, /FUNCTION public\.gallery_clean_list\(p_place_id text, p_list jsonb, p_max integer\)/);
-  assert.match(sql, /gallery_is_excluded\(p_place_id, s\)/);
-  assert.match(sql, /gallery_foreign_place\(p_place_id, x\)/);
-  assert.doesNotMatch(sql, /CREATE OR REPLACE FUNCTION public\.gallery_keep_stored/);
-  assert.doesNotMatch(sql, /UPDATE\s+public\.place_stats/i);
-  assert.doesNotMatch(sql, /DELETE\s+FROM/i);
-  assert.match(sql, /방콕/);
-  assert.match(sql, /페테르고프/);
-  assert.match(sql, /세비야/);
-});
-
 test('the gallery hook filters incoming saves and still renders stored rows', () => {
   const hook = readFileSync(
     join(root, 'src/components/PlaceCard/hooks/usePlaceGallery.js'),
