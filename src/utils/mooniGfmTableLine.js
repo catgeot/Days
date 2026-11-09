@@ -4,5 +4,6 @@ export function isMooniGfmTableLine(line) {
   if (!trimmed.includes('|')) return false;
   if (/^\|(?:[^|\n]+\|)+\s*$/.test(trimmed)) return true;
   if (/^\|[\s\-:|\u2014]+\|\s*$/.test(trimmed)) return true;
+  if (/^\|[\s\-:|\u2014]+(?:\s*\|)+/.test(trimmed)) return true;
   return false;
 }

@@ -12,6 +12,7 @@ const healthScripts = [
   'health/mooni-chat-markdown-composer-regression.test.mjs',
   'health/mooni-chat-markdown-table.test.mjs',
   'health/mooni-markdown-bold-spacing.test.mjs',
+  'health/mooni-markdown-preprocess.test.mjs',
   'health/mooni-chat-markdown-render.test.mjs',
   'health/mooni-chat-markdown-boundary.test.mjs',
   'health/mooni-placeholder-urls.test.mjs',

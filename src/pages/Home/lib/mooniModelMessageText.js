@@ -1,7 +1,10 @@
 import { ensureItineraryMarkdownLineBreaks } from '../../../utils/mooniTruncatedContinue.js';
+import { recoverMooniCollapsedGfmTables } from '../../../utils/mooniGfmTableRecover.js';
 import { sanitizeMooniMarkdownLinks } from '../../../utils/mooniPlaceholderUrls.js';
 import { sanitizeMooniModelReply } from '../../../utils/mooniReplySanitizer.js';
 import { normalizeMooniMarkdownBoldSpacing } from '../../../utils/mooniMarkdownBoldSpacing.js';
+import { stripMooniScheduleTrailingPipes } from '../../../utils/mooniMarkdownScheduleLine.js';
+import { continueMooniOrderedListNumbers } from '../../../utils/mooniMarkdownOrderedList.js';
 
 /** @param {{ mooniRawReply?: string, text?: string | { text?: string } }} msg */
 export function getMooniModelRawText(msg) {
@@ -17,7 +20,9 @@ export function getMooniModelRawText(msg) {
  */
 export function getMooniModelMarkdownForRender(raw, options = {}) {
   const { text } = sanitizeMooniModelReply(raw, options);
-  return normalizeMooniMarkdownBoldSpacing(
-    ensureItineraryMarkdownLineBreaks(sanitizeMooniMarkdownLinks(text)),
-  );
+  let md = recoverMooniCollapsedGfmTables(text);
+  md = stripMooniScheduleTrailingPipes(md);
+  md = continueMooniOrderedListNumbers(md);
+  md = ensureItineraryMarkdownLineBreaks(sanitizeMooniMarkdownLinks(md));
+  return normalizeMooniMarkdownBoldSpacing(md);
 }
