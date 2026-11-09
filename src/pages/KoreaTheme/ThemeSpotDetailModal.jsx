@@ -42,6 +42,8 @@ import { formatFestivalDetailDateRange } from '../Korea/festivalDateFilter.js';
 import mooniChar from '../../assets/MOONI_transparent.webp';
 import { resolveListImageUrl } from '../../utils/listImageUrl';
 import { useLightboxPinchTransform } from '../../components/PlaceCard/common/useLightboxPinchTransform';
+import { useGateoPhotoLightboxA11y } from '../../shared/useGateoPhotoLightboxA11y';
+import { consumeGateoPhotoLightboxEscapeHandled } from '../../shared/gateoPhotoLightboxLayer';
 import { resetIosZoomAfterInput } from '../../shared/lib/mobileViewport';
 import { fetchTourApiAttractionDetail } from '../../utils/fetchTourApiAttractionDetail';
 import { showThemeSpotPlaceCardLink } from '../Home/lib/placeScenicPlaceLinksRollout';
@@ -939,6 +941,7 @@ export default function ThemeSpotDetailModal({
   const heroSwipeStartRef = useRef(null);
   const suppressHeroTapRef = useRef(false);
   const lightboxSwipeStartRef = useRef(null);
+  const lightboxRootRef = useRef(null);
 
   const spotType = String(spot?.contentTypeId || '');
   const isRestaurant = spotType === RESTAURANT_CONTENT_TYPE_ID;
@@ -1099,6 +1102,14 @@ export default function ThemeSpotDetailModal({
     [galleryUrls.length],
   );
 
+  useGateoPhotoLightboxA11y({
+    open: lightboxOpen,
+    onClose: closeLightbox,
+    rootRef: lightboxRootRef,
+    onArrowLeft: () => stepLightbox(-1),
+    onArrowRight: () => stepLightbox(1),
+  });
+
   const consumeHorizontalSwipe = useCallback(
     (start, endX, endY) => {
       if (!start || galleryUrls.length < 2) return false;
@@ -1170,6 +1181,7 @@ export default function ThemeSpotDetailModal({
   useEffect(() => {
     const onKey = (event) => {
       if (event.key === 'Escape') {
+        if (consumeGateoPhotoLightboxEscapeHandled()) return;
         if (mooniOpen) {
           setMooniOpen(false);
           setMooniBound(null);
@@ -1194,9 +1206,6 @@ export default function ThemeSpotDetailModal({
         onClose();
         return;
       }
-      if (!lightboxOpen || galleryUrls.length < 2) return;
-      if (event.key === 'ArrowLeft') stepLightbox(-1);
-      else if (event.key === 'ArrowRight') stepLightbox(1);
     };
     window.addEventListener('keydown', onKey);
     const prev = document.body.style.overflow;
@@ -1211,8 +1220,6 @@ export default function ThemeSpotDetailModal({
     lightboxOpen,
     closeLightbox,
     videosOpen,
-    galleryUrls.length,
-    stepLightbox,
     selectedFood,
     selectedLeports,
     selectedCulture,
@@ -2733,6 +2740,7 @@ export default function ThemeSpotDetailModal({
 
       {lightboxOpen && hero ? (
         <div
+          ref={lightboxRootRef}
           className={`fixed inset-0 ${lightboxZ} flex items-center justify-center bg-stone-950/90 p-3 md:p-8`}
           onClick={(e) => {
             e.stopPropagation();
@@ -2741,6 +2749,8 @@ export default function ThemeSpotDetailModal({
           role="presentation"
         >
           <div
+            data-gateo-photo-lightbox=""
+            data-gateo-photo-lightbox-focus=""
             className="relative flex h-full w-full max-w-6xl flex-col"
             onClick={(e) => e.stopPropagation()}
             role="dialog"

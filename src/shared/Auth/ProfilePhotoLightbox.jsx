@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { useGateoPhotoLightboxA11y } from '../useGateoPhotoLightboxA11y';
 import { createPortal } from 'react-dom';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -9,30 +10,35 @@ const ProfilePhotoLightbox = ({ src, photos, name, onClose }) => {
   const list = (photos?.length ? photos : src ? [src] : []).filter(Boolean);
   const [index, setIndex] = useState(0);
   const current = list[index] || list[0] || '';
+  const lightboxRef = useRef(null);
+
+  useGateoPhotoLightboxA11y({
+    open: Boolean(current),
+    onClose,
+    rootRef: lightboxRef,
+    onArrowLeft: list.length > 1
+      ? () => setIndex((prev) => (prev - 1 + list.length) % list.length)
+      : undefined,
+    onArrowRight: list.length > 1
+      ? () => setIndex((prev) => (prev + 1) % list.length)
+      : undefined,
+  });
 
   useEffect(() => {
-    const onKey = (event) => {
-      if (event.key === 'Escape') onClose();
-      if (event.key === 'ArrowRight' && list.length > 1) {
-        setIndex((prev) => (prev + 1) % list.length);
-      }
-      if (event.key === 'ArrowLeft' && list.length > 1) {
-        setIndex((prev) => (prev - 1 + list.length) % list.length);
-      }
-    };
     const prev = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
-    window.addEventListener('keydown', onKey);
     return () => {
       document.body.style.overflow = prev;
-      window.removeEventListener('keydown', onKey);
     };
-  }, [onClose, list.length]);
+  }, []);
 
   if (!current) return null;
 
   return createPortal(
     <div
+      ref={lightboxRef}
+      data-gateo-photo-lightbox=""
+      data-gateo-photo-lightbox-focus=""
       className="fixed inset-0 z-[260] flex items-center justify-center overflow-hidden bg-black/85 p-4"
       role="dialog"
       aria-modal="true"
