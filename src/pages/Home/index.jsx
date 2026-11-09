@@ -30,6 +30,7 @@ import { useHomeHandlers } from './hooks/useHomeHandlers';
 import { formatUrlName, getPlaceUrlParam } from './lib/formatUrlName';
 import { cachePlaceLocation, mergeCachedPlaceIfCoordsMatch } from './lib/placeLocationCache';
 import { enrichJoseonRoyalTombsPromoPin } from './lib/joseonRoyalTombsPromoCopy.js';
+import { resolveJoseonRoyalTombsSearchSlugHydratePin } from './lib/joseonRoyalTombsSearch.js';
 import {
   pushRecentVisited,
   pushKeywordVisit,
@@ -1013,26 +1014,37 @@ function Home() {
           if (fromSession) {
             target = fromSession;
           } else {
-            const matchedSpot = resolveTravelSpotFromCoords(parsedLat, parsedLng);
-            if (matchedSpot && !targetSlug.startsWith('search-')) {
-              target = matchedSpot;
-            } else {
-            const matchedCity = (citiesData || []).find(c =>
-              Math.abs(c.lat - parsedLat) < 0.001 && Math.abs(c.lng - parsedLng) < 0.001
+            const fromJoseonRegistry = resolveJoseonRoyalTombsSearchSlugHydratePin(
+              targetSlug,
+              parsedLat,
+              parsedLng,
             );
+            if (fromJoseonRegistry) {
+              target = enrichJoseonRoyalTombsPromoPin(
+                enrichLocationWithRentalAirport(mergeCanonicalTravelSpot(fromJoseonRegistry)),
+              );
+            } else {
+              const matchedSpot = resolveTravelSpotFromCoords(parsedLat, parsedLng);
+              if (matchedSpot && !targetSlug.startsWith('search-')) {
+                target = matchedSpot;
+              } else {
+                const matchedCity = (citiesData || []).find(c =>
+                  Math.abs(c.lat - parsedLat) < 0.001 && Math.abs(c.lng - parsedLng) < 0.001
+                );
 
-            target = {
-              id: targetSlug,
-              name: matchedCity ? matchedCity.name : (targetSlug.split('-')[0] === 'city' ? "알 수 없는 도시" : "알 수 없는 지역"),
-              name_en: matchedCity ? matchedCity.name_en : "",
-              lat: parsedLat,
-              lng: parsedLng,
-              country: matchedCity?.country || undefined,
-              country_en: matchedCity?.country_en || undefined,
-              tags: matchedCity ? matchedCity.tags : [],
-              desc: matchedCity ? matchedCity.desc : "",
-              ...(targetSlug.startsWith('search-') ? { uiPlace: true, source: 'mapbox' } : {}),
-            };
+                target = {
+                  id: targetSlug,
+                  name: matchedCity ? matchedCity.name : (targetSlug.split('-')[0] === 'city' ? "알 수 없는 도시" : "알 수 없는 지역"),
+                  name_en: matchedCity ? matchedCity.name_en : "",
+                  lat: parsedLat,
+                  lng: parsedLng,
+                  country: matchedCity?.country || undefined,
+                  country_en: matchedCity?.country_en || undefined,
+                  tags: matchedCity ? matchedCity.tags : [],
+                  desc: matchedCity ? matchedCity.desc : "",
+                  ...(targetSlug.startsWith('search-') ? { uiPlace: true, source: 'mapbox' } : {}),
+                };
+              }
             }
           }
         }

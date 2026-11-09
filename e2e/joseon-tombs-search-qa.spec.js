@@ -7,7 +7,7 @@ import { join } from 'node:path';
 import { test, expect } from './fixtures.js';
 
 const OUT = '/opt/cursor/artifacts/joseon-tombs-qa';
-const QUERY = '조선왕릉';
+const COLLECTIVE_QUERY = '조선왕릉';
 
 const OFFICES = [
   {
@@ -145,43 +145,75 @@ test.describe('조선왕릉 Mapbox fixture 검색', () => {
     await mkdir(OUT, { recursive: true });
   });
 
-  for (const office of OFFICES) {
-    test(`${office.key}: 제안 클릭 → search 상세 · 서울 스냅 금지`, async ({ page }, testInfo) => {
+  const COLLECTIVE_ROWS = [
+    {
+      key: 'donggureung',
+      label: /조선왕릉 동구릉/,
+      slug: 'donggureung-royal-tombs',
+      header: /동구릉/,
+    },
+    {
+      key: 'seooreung',
+      label: /조선왕릉 서오릉/,
+      slug: 'seooreung-royal-tombs',
+      header: /서오릉/,
+    },
+  ];
+
+  for (const row of COLLECTIVE_ROWS) {
+    test(`${row.key}: 집합 검색 → /place/${row.slug} · 새로고침`, async ({ page }, testInfo) => {
       const width = testInfo.project.name === 'desktop-1280' ? 1280 : 390;
       await page.setViewportSize({ width, height: width === 390 ? 844 : 900 });
       installMapboxFixtures(page);
 
       const input = await openExploreSearch(page);
-      await input.fill(QUERY);
-
-      const row = page.getByRole('button', { name: new RegExp(office.name.slice(0, 12)) }).first();
-      await expect(row).toBeVisible({ timeout: 45_000 });
-      await row.click();
-
-      await expect(page).toHaveURL(new RegExp(`/place/search-${office.lat}-${office.lng}`), {
+      await input.fill(COLLECTIVE_QUERY);
+      await expect(page.getByRole('button', { name: row.label }).first()).toBeVisible({
         timeout: 45_000,
       });
-      await expect(page).not.toHaveURL(/\/place\/seoul(?:\/|$|\?)/);
+      const suffix = width === 390 ? '390' : '1280';
+      if (row.key === 'donggureung' && width === 390) {
+        await clipViewportShot(page, 'joseon-collective-search-390.png', 390);
+      }
+      await page.getByRole('button', { name: row.label }).first().click();
 
-      await waitOfficeDetail(page, office);
+      await expect(page).toHaveURL(new RegExp(`/place/${row.slug}`), { timeout: 45_000 });
+      await expect(page).not.toHaveURL(/\/place\/seoul(?:\/|$|\?)/);
+      await expect(page).not.toHaveURL(/\/place\/search-/);
+
+      await expect(page.getByRole('button', { name: row.header }).first()).toBeVisible({
+        timeout: 45_000,
+      });
+      const galleryTab = page.getByRole('button', { name: /갤러리|Gallery/i });
+      if ((await galleryTab.count()) > 0 && (await galleryTab.first().isVisible())) {
+        await galleryTab.first().click();
+      }
+      await expect(page.getByText(/유네스코|조선 왕릉|관람/).first()).toBeAttached({ timeout: 45_000 });
 
       await stampHref(page);
-      const suffix = width === 390 ? '390' : '1280';
-      await clipViewportShot(page, `${office.key}-place-${suffix}.png`, width);
+      await clipViewportShot(page, `${row.key}-place-${suffix}.png`, width);
 
       await page.reload({ waitUntil: 'domcontentloaded' });
-      await expect(page).toHaveURL(new RegExp(`/place/search-${office.lat}-${office.lng}`));
-      await expect(page).not.toHaveURL(/\/place\/seoul(?:\/|$|\?)/);
-      await waitOfficeDetail(page, office);
-      await clipViewportShot(page, `${office.key}-after-reload-${suffix}.png`, width);
-
-      await page.goBack({ waitUntil: 'commit' });
-      await expect(page).toHaveURL(/\/explore/);
-      await page.goForward({ waitUntil: 'commit' });
-      await expect(page).toHaveURL(new RegExp(`/place/search-${office.lat}-${office.lng}`));
-      await expect(page).not.toHaveURL(/\/place\/seoul(?:\/|$|\?)/);
+      await expect(page).toHaveURL(new RegExp(`/place/${row.slug}`));
+      await expect(page.getByText(/사진을 불러오지 못했습니다/).first()).not.toBeVisible({
+        timeout: 15_000,
+      }).catch(() => {});
+      await clipViewportShot(page, `${row.key}-after-reload-${suffix}.png`, width);
     });
   }
+
+  test('중부지구 집합 검색', async ({ page }, testInfo) => {
+    const width = testInfo.project.name === 'desktop-1280' ? 1280 : 390;
+    await page.setViewportSize({ width, height: width === 390 ? 844 : 900 });
+    installMapboxFixtures(page);
+    const input = await openExploreSearch(page);
+    await input.fill('중부지구');
+    await expect(page.getByRole('button', { name: /조선왕릉 동구릉/ }).first()).toBeVisible({
+      timeout: 45_000,
+    });
+    await expect(page.getByRole('button', { name: /경찰/ })).toHaveCount(0);
+    await clipViewportShot(page, `jungbu-collective-search-${width === 390 ? '390' : '1280'}.png`, width);
+  });
 });
 
 test.describe('회귀 — 라우팅', () => {

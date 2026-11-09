@@ -16,6 +16,7 @@ import { isSyntheticOrEmptyPlaceDesc } from './placeDescText.js';
 import { readCachedPlaceBySlug, readCachedPlaceLocation } from './placeLocationCache.js';
 import { resolveLegacyMishealPlace } from './legacyMishealPlaceSlugs.js';
 import { resolveExploreAliasPlaceFromSlug } from './koreaPlaceMatchDictionary.js';
+import { resolveJoseonRoyalTombsCatalogSlugPin } from './joseonRoyalTombsSearch.js';
 import { isFreeSearchPlaceId } from './freeSearchYouTubeLink.js';
 
 function hasReusableSessionDesc(loc) {
@@ -223,6 +224,9 @@ export function resolvePlaceTargetFromSlug(slug, options = {}) {
   if (exactSpot) return overlaySessionCuration(exactSpot, options);
 
   // 2) hub 명소·도시 / 정착지 — TRAVEL_SPOTS fuzzy 부모 붕괴보다 우선
+  const joseonScenicPin = resolveJoseonRoyalTombsCatalogSlugPin(normalized);
+  if (joseonScenicPin) return overlaySessionCuration(joseonScenicPin, options);
+
   const hubPlace = resolveHubPlaceFromSlug(normalized);
   if (hubPlace) return overlaySessionCuration(hubPlace, options);
 
