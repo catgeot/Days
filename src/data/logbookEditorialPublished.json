@@ -1,0 +1,98 @@
+[
+  {
+    "slug": "sydney-travelogue",
+    "title": "흰 돛이 지켜보는 바다",
+    "disclosure_badge": "GATEO 에디터 · AI 보조 · 실제 방문기 아님",
+    "published_at": "2026-11-05T01:44:13.748063+00:00",
+    "place_slug": "sydney",
+    "locale": "ko"
+  },
+  {
+    "slug": "kyoto-travelogue",
+    "title": "단풍 시간표",
+    "disclosure_badge": "GATEO 에디터 · AI 보조 · 실제 방문기 아님",
+    "published_at": "2026-11-02T01:41:59.279639+00:00",
+    "place_slug": "kyoto",
+    "locale": "ko"
+  },
+  {
+    "slug": "angkor-wat-travelogue",
+    "title": "돌의 얼굴, 숲의 회랑",
+    "disclosure_badge": "GATEO 에디터 · AI 보조 · 실제 방문기 아님",
+    "published_at": "2026-10-29T01:51:07.701122+00:00",
+    "place_slug": "angkor-wat",
+    "locale": "ko"
+  },
+  {
+    "slug": "paris-travelogue",
+    "title": "오르세 시계 너머의 센강",
+    "disclosure_badge": "GATEO 에디터 · AI 보조 · 실제 방문기 아님",
+    "published_at": "2026-10-26T01:41:50.20765+00:00",
+    "place_slug": "paris",
+    "locale": "ko"
+  },
+  {
+    "slug": "dubai-travelogue",
+    "title": "나무배는 1디르함",
+    "disclosure_badge": "GATEO 에디터 · AI 보조 · 실제 방문기 아님",
+    "published_at": "2026-10-20T01:44:06.319142+00:00",
+    "place_slug": "dubai",
+    "locale": "ko"
+  },
+  {
+    "slug": "rio-de-janeiro-travelogue",
+    "title": "브라질 첫 케이블카를 타고",
+    "disclosure_badge": "GATEO 에디터 · AI 보조 · 실제 방문기 아님",
+    "published_at": "2026-10-19T01:51:02.409582+00:00",
+    "place_slug": "rio-de-janeiro",
+    "locale": "ko"
+  },
+  {
+    "slug": "hong-kong-travelogue",
+    "title": "하버가 불을 켤 때",
+    "disclosure_badge": "GATEO 에디터 · AI 보조 · 실제 방문기 아님",
+    "published_at": "2026-10-15T01:43:31.552439+00:00",
+    "place_slug": "hong-kong",
+    "locale": "ko"
+  },
+  {
+    "slug": "jeju-travelogue",
+    "title": "장날 아침, 사라봉 저녁",
+    "disclosure_badge": "GATEO 에디터 · AI 보조 · 실제 방문기 아님",
+    "published_at": "2026-10-12T01:48:18.617632+00:00",
+    "place_slug": "jeju",
+    "locale": "ko"
+  },
+  {
+    "slug": "cairo-travelogue",
+    "title": "사막이 강을 만나는 곳",
+    "disclosure_badge": "GATEO 에디터 · AI 보조 · 실제 방문기 아님",
+    "published_at": "2026-10-09T02:50:56.811519+00:00",
+    "place_slug": "cairo",
+    "locale": "ko"
+  },
+  {
+    "slug": "prague-travelogue",
+    "title": "새벽 카를교에서 맥주홀까지",
+    "disclosure_badge": "GATEO 에디터 · AI 보조 · 실제 방문기 아님",
+    "published_at": "2026-10-05T02:20:34.625399+00:00",
+    "place_slug": "prague",
+    "locale": "ko"
+  },
+  {
+    "slug": "barcelona-travelogue",
+    "title": "미로 끝의 푸른 바람",
+    "disclosure_badge": "GATEO 에디터 · AI 보조 · 실제 방문기 아님",
+    "published_at": "2026-09-25T07:33:58.155668+00:00",
+    "place_slug": "barcelona",
+    "locale": "ko"
+  },
+  {
+    "slug": "bangkok-travelogue",
+    "title": "붉게 물든 짜오프라야",
+    "disclosure_badge": "GATEO 에디터 · AI 보조 · 실제 방문기 아님",
+    "published_at": "2026-09-25T07:29:49.136664+00:00",
+    "place_slug": "bangkok",
+    "locale": "ko"
+  }
+]

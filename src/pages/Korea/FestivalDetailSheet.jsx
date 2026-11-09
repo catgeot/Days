@@ -30,6 +30,8 @@ import {
 } from '../../utils/fetchTourApiFestivals';
 import AppOutlineBackButton from '../../shared/navigation/AppOutlineBackButton';
 import { useLightboxHistory } from '../../shared/useLightboxHistory';
+import { useGateoPhotoLightboxA11y } from '../../shared/useGateoPhotoLightboxA11y';
+import { consumeGateoPhotoLightboxEscapeHandled } from '../../shared/gateoPhotoLightboxLayer';
 import { useTrustBarOverlayLockEffect } from '../../shared/hooks/useTrustBarOverlayLockEffect.js';
 import { OutboundSearchButtons } from '../../shared/outbound/OutboundSearchButtons.jsx';
 import { useLocale } from '../../i18n/LocaleProvider';
@@ -1712,6 +1714,14 @@ export default function FestivalDetailSheet({
     });
   }, [heroStrip.failedUrls, heroStrip.loadedUrls, imageUrls]);
 
+  useGateoPhotoLightboxA11y({
+    open: lightboxOpen,
+    onClose: closeLightbox,
+    rootRef: lightboxRootRef,
+    onArrowLeft: () => stepLightbox(-1),
+    onArrowRight: () => stepLightbox(1),
+  });
+
   // A URL that left the filmstrip must not stay selected, including while the lightbox is open.
   useEffect(() => {
     const slides = festivalLightboxSlides(
@@ -1808,6 +1818,7 @@ export default function FestivalDetailSheet({
   useEffect(() => {
     const onKey = (event) => {
       if (event.key === 'Escape') {
+        if (consumeGateoPhotoLightboxEscapeHandled()) return;
         if (lightboxOpen) {
           closeLightbox();
           return;
@@ -1817,34 +1828,17 @@ export default function FestivalDetailSheet({
         onClose();
         return;
       }
-      const slides = festivalLightboxSlides(
-        imageUrls,
-        heroStrip.loadedUrls,
-        activeImage,
-        heroStrip.failedUrls,
-      );
-      if (!lightboxOpen || slides.urls.length < 2) return;
-      if (event.key === 'ArrowLeft') {
-        stepLightbox(-1);
-      } else if (event.key === 'ArrowRight') {
-        stepLightbox(1);
-      }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, [
     lightboxOpen,
     mooniOpen,
-    activeImage,
-    imageUrls,
-    heroStrip.loadedUrls,
-    heroStrip.failedUrls,
     onClose,
     selectedNearby,
     selectedScenic,
     selectedCourse,
     closeLightbox,
-    stepLightbox,
   ]);
 
   useEffect(() => {
@@ -3803,6 +3797,8 @@ export default function FestivalDetailSheet({
               style={{ backgroundColor: '#000' }}
             />
             <div
+              data-gateo-photo-lightbox=""
+              data-gateo-photo-lightbox-focus=""
               className="relative z-10 flex h-full w-full max-w-6xl flex-col"
               onClick={(e) => e.stopPropagation()}
               role="dialog"
