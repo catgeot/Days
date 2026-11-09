@@ -1753,7 +1753,7 @@ function Home() {
           isZenMode={isZenMode} onToggleZenMode={toggleZenMode}
           isTourCinema={isTourCinema}
           isFlightCinema={flightCinemaActive}
-          isPlaceCardVisible={isPlaceCardSummaryVisible}
+          isPlaceCardVisible={isPlaceCardSummaryVisible || isPlaceRoute}
           tourLocation={selectedLocation}
           tourPivoted={tourPivoted}
           globeMode={globeMode}

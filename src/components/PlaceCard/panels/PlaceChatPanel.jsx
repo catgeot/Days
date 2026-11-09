@@ -29,6 +29,7 @@ import {
 import PlaceWorldEventsSection from '../common/PlaceWorldEventsSection';
 import PlaceWorldEventsChatPreview from '../common/PlaceWorldEventsChatPreview';
 import PlaceCrossLinksSection from '../common/PlaceCrossLinksSection';
+import LocaleToggle from '../../../i18n/LocaleToggle';
 import { isGateoPlaceWorldEventsTabEnabled } from '../../../shared/gateoFeatureFlags';
 import { isPlaceCrosslinkWorldEventsRailEnabled } from '../../../pages/Home/lib/placeCrosslinkRollout.js';
 import { getWorldEventsForSlug } from '../../../utils/worldEvents';
@@ -250,7 +251,7 @@ const PlaceChatPanel = React.memo(({
                 <Globe className="w-4 h-4 md:w-4 md:h-4 pointer-events-none" />
              </button>
              <div
-                className={`flex flex-col flex-1 min-w-[8rem] basis-[45%] justify-center overflow-hidden ${supportsHeaderScrollTop ? 'max-lg:cursor-pointer' : ''}`}
+                className={`relative z-0 flex flex-col flex-1 min-w-[8rem] basis-[45%] max-w-full justify-center overflow-hidden ${supportsHeaderScrollTop ? 'max-lg:cursor-pointer' : ''}`}
                 onClick={handleHeaderScrollTap}
                 onKeyDown={(event) => {
                     if (supportsHeaderScrollTop && (event.key === 'Enter' || event.key === ' ')) {
@@ -267,7 +268,7 @@ const PlaceChatPanel = React.memo(({
                      <button
                         type="button"
                         onClick={(event) => handleCopyName(event, primaryName || location.name, 'primary')}
-                        className="text-left text-[clamp(0.8125rem,3.8vw,1rem)] font-black tracking-tighter text-white leading-tight line-clamp-2 whitespace-normal [word-break:keep-all] [overflow-wrap:break-word] drop-shadow-md hover:text-blue-200 active:scale-[0.99] min-w-0 flex-1"
+                        className="relative z-0 text-left text-[clamp(0.8125rem,3.8vw,1rem)] font-black tracking-tighter text-white leading-tight line-clamp-2 whitespace-normal [word-break:keep-all] [overflow-wrap:break-word] drop-shadow-md hover:text-blue-200 active:scale-[0.99] min-w-0 max-w-full flex-1"
                         title={t('place.nav.copyPrimary')}
                      >
                         {primaryName || location.name}
@@ -293,7 +294,10 @@ const PlaceChatPanel = React.memo(({
                  )}
              </div>
              </div>
-             <div className="flex shrink-0 items-center gap-1.5 md:gap-2 justify-end w-auto lg:w-full min-[1400px]:w-auto min-[1400px]:flex-none min-[1400px]:ml-auto max-lg:pointer-events-auto">
+             <div className="relative z-30 flex shrink-0 flex-wrap items-center gap-1.5 md:gap-2 justify-end w-auto lg:w-full min-[1400px]:w-auto min-[1400px]:flex-none min-[1400px]:ml-auto max-lg:pointer-events-auto">
+                 <div data-testid="place-header-locale-toggle" className="shrink-0">
+                   <LocaleToggle compact />
+                 </div>
                  <button
                     type="button"
                     onClick={openMooni}

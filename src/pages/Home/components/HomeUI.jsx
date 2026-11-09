@@ -346,7 +346,7 @@ const HomeUI = React.memo(({
                     <Logo />
                   </h1>
                 </div>
-                <LocaleToggle compact />
+                {!isPlaceCardVisible ? <LocaleToggle compact /> : null}
               </div>
             </div>
             <div className="group relative flex-1 min-w-0">
@@ -392,7 +392,7 @@ const HomeUI = React.memo(({
                   <Logo />
                 </h1>
               </div>
-              {!isTourCinema ? <LocaleToggle compact /> : null}
+              {!isTourCinema && !isPlaceCardVisible ? <LocaleToggle compact /> : null}
             </div>
             {!isTourCinema ? (
               <div className="flex flex-col items-start gap-2 pb-1">
