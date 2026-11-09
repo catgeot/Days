@@ -23,6 +23,7 @@ import {
   resolveDomesticProvinceNameHub,
 } from './explorePlaceNav.js';
 import { isKoreaProvinceLevelTourResult, isKoreaProvinceLevelName } from './koreaExploreProvincePlace.js';
+import { resolveJoseonRoyalTombsOfficePlaceRoute } from './joseonRoyalTombsSearch.js';
 
 export const RECENT_SEARCH_KEY = 'gateo_recent_search_keywords';
 export const RECENT_VISITED_KEY = 'gateo_recent_visited_destinations';
@@ -272,6 +273,13 @@ export function resolveSearchResultSelect(spot) {
   const lat = Number(spot.lat);
   const lng = Number(spot.lng);
   if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+
+  const officeRoute = resolveJoseonRoyalTombsOfficePlaceRoute(spot);
+  if (officeRoute) {
+    const routedPin = normalizeExploreSelectionPin({ ...officeRoute.spot, lat, lng });
+    return { type: 'place', spot: routedPin, param: officeRoute.param };
+  }
+
   const pin = normalizeExploreSelectionPin({ ...spot, lat, lng });
   const source = String(pin.source ?? '').trim().toLowerCase();
   if (isKoreaProvinceLevelTourResult(pin)) {

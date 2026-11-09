@@ -16623,6 +16623,13 @@
     ],
     "attractions": [
       {
+        "name": "서오릉",
+        "name_en": "Seooreung Royal Tombs",
+        "kind": "landmark",
+        "lat": 37.6592,
+        "lng": 126.8934
+      },
+      {
         "name": "일산호수공원",
         "name_en": "Ilsan Lake Park",
         "kind": "park",

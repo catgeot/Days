@@ -81,6 +81,11 @@ import {
   buildKoreaGetbolCollectiveSearchSuggestions,
   isKoreaGetbolCollectiveSearchQuery,
 } from './exploreKoreaGetbolCollectiveSearch.js';
+import { buildJoseonRoyalTombsCollectiveSearchSuggestions } from './exploreJoseonRoyalTombsCollectiveSearch.js';
+import {
+  isJoseonRoyalTombsCollectiveQuery,
+  shouldDemoteJoseonManagementOfficeSearchHit,
+} from './joseonRoyalTombsSearch.js';
 
 const normalizeKey = (s) =>
   String(s ?? '')
@@ -359,6 +364,12 @@ export function buildLocalSearchSuggestions(query, opts = {}) {
     return out.slice(0, 24).map(enrichSearchCandidateScenicMedia);
   }
 
+  const joseonCollective = buildJoseonRoyalTombsCollectiveSearchSuggestions(innerQuery);
+  if (joseonCollective.length) {
+    for (const item of joseonCollective) pushUnique(out, seen, item);
+    return out.slice(0, 24).map(enrichSearchCandidateScenicMedia);
+  }
+
   for (const item of buildExploreMonthlyPickSearchSuggestions(innerQuery)) {
     pushUnique(out, seen, item);
   }
@@ -560,6 +571,7 @@ export async function buildHybridSearchSuggestions(query, opts = {}) {
     exactSettlement ||
     isKoreaGetbolCollectiveSearchQuery(q) ||
     local.some((item) => item?.source === 'monthly-pick') ||
+    isJoseonRoyalTombsCollectiveQuery(q) ||
     shouldSkipGeocodeForMood(q) ||
     shouldOfferKoreaHomonymDisambiguation(q)
   ) {
@@ -591,6 +603,7 @@ export async function buildHybridSearchSuggestions(query, opts = {}) {
     // degrade: local only
   }
   let regionChecked = dropFarHomonymBusinessHits(mapboxQuery, out, { anchors: mergedLocal });
+  regionChecked = regionChecked.filter((item) => !shouldDemoteJoseonManagementOfficeSearchHit(q, item));
   regionChecked = applyScope(regionChecked);
 
   try {
