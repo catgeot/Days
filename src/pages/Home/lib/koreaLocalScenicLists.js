@@ -255,6 +255,9 @@ const OFFICIAL_SEARCH_CONTENT_BY_NAME = {
   기백산: '126033',
   동구릉: '125545',
   홍유릉: '125548',
+  백록담: '127635',
+  화구벽: '127635',
+  한라산백록담: '127635',
 };
 
 const OFFICIAL_SEARCH_LATIN_BY_NAME = {

@@ -47,6 +47,7 @@ import { lookupVisitedPlacesForSearch } from './visitedPlaceSearchLookup.js';
 import { dropFarHomonymBusinessHits } from './searchHomonymRegion.js';
 import { overlayGeoFieldsOnVisitedSpots } from './visitedPlaceSearch.js';
 import { buildMapboxSearchQueries, canonicalizeExploreSearchQuery } from './exploreSearchAliases';
+import { resolveExploreAliasTourPlaceParam } from './koreaPlaceMatchDictionary.js';
 import {
   effectiveExploreSearchQuery,
   applyRegionalHubLabels,
@@ -76,7 +77,10 @@ import {
   shouldExpandKoreaPoiTypeSearch,
 } from './koreaPoiTypeSearch.js';
 import { buildExploreMonthlyPickSearchSuggestions } from './exploreMonthlyPickSearchSuggestions.js';
-import { buildKoreaGetbolCollectiveSearchSuggestions } from './exploreKoreaGetbolCollectiveSearch.js';
+import {
+  buildKoreaGetbolCollectiveSearchSuggestions,
+  isKoreaGetbolCollectiveSearchQuery,
+} from './exploreKoreaGetbolCollectiveSearch.js';
 
 const normalizeKey = (s) =>
   String(s ?? '')
@@ -117,6 +121,9 @@ async function prependKoreaTourTitleCandidates(query, regional, list) {
   const titleQ = regional
     ? String(regional.placeQuery || '').trim()
     : canonicalizeExploreSearchQuery(effectiveExploreSearchQuery(query));
+  if (isKoreaGetbolCollectiveSearchQuery(titleQ) || isKoreaGetbolCollectiveSearchQuery(query)) {
+    return list;
+  }
   if (!titleQ || !/[\uAC00-\uD7A3]/.test(titleQ)) return list;
   if (/\s/.test(String(query || '').trim()) && !regional?.placeQuery) return list;
   try {
@@ -135,9 +142,26 @@ async function prependKoreaTourTitleCandidates(query, regional, list) {
   }
 }
 
+function applyExploreAliasTourSuggestionPolicy(query, list) {
+  const q = String(query || '').trim();
+  const tourParam = resolveExploreAliasTourPlaceParam(q);
+  if (!tourParam) return list;
+  const contentId = tourParam.slice('tour-'.length);
+  const stamped = (list || []).map((item) => ({
+    ...item,
+    originalQuery: item?.originalQuery || q,
+  }));
+  return stamped.filter((item) => {
+    if (item?.source === 'tourapi' && String(item.contentId || '') === contentId) return true;
+    if (String(item.contentId || '') === contentId && item?.slug !== tourParam) return false;
+    return true;
+  });
+}
+
 async function finalizeHybridSuggestions(query, regional, list, max = 24) {
   const withTour = await prependKoreaTourTitleCandidates(query, regional, list);
-  const enriched = withTour.slice(0, max).map(enrichSearchCandidateScenicMedia);
+  const policy = applyExploreAliasTourSuggestionPolicy(query, withTour);
+  const enriched = policy.slice(0, max).map(enrichSearchCandidateScenicMedia);
   return rankSiteSearchExploreCandidates(query, enriched);
 }
 
@@ -329,14 +353,14 @@ export function buildLocalSearchSuggestions(query, opts = {}) {
     return out.slice(0, 24).map(enrichSearchCandidateScenicMedia);
   }
 
-  for (const item of buildExploreMonthlyPickSearchSuggestions(innerQuery)) {
-    pushUnique(out, seen, item);
-  }
-
-  const getbolCollective = buildKoreaGetbolCollectiveSearchSuggestions(innerQuery);
-  if (getbolCollective.length) {
+  if (isKoreaGetbolCollectiveSearchQuery(innerQuery)) {
+    const getbolCollective = buildKoreaGetbolCollectiveSearchSuggestions(innerQuery);
     for (const item of getbolCollective) pushUnique(out, seen, item);
     return out.slice(0, 24).map(enrichSearchCandidateScenicMedia);
+  }
+
+  for (const item of buildExploreMonthlyPickSearchSuggestions(innerQuery)) {
+    pushUnique(out, seen, item);
   }
 
   const exactListHit = resolveLocalScenicListFromSearchQuery(innerQuery);
@@ -534,6 +558,7 @@ export async function buildHybridSearchSuggestions(query, opts = {}) {
     exactListHit ||
     exactAttraction ||
     exactSettlement ||
+    isKoreaGetbolCollectiveSearchQuery(q) ||
     local.some((item) => item?.source === 'monthly-pick') ||
     shouldSkipGeocodeForMood(q) ||
     shouldOfferKoreaHomonymDisambiguation(q)
@@ -629,6 +654,14 @@ export function travelSpotToChoiceCandidate(spot) {
  */
 export function locationToChoiceCandidate(loc) {
   if (!loc?.name) return null;
+  if (loc.source === 'tourapi' && loc.contentId) {
+    return enrichSearchCandidateScenicMedia({
+      ...loc,
+      kind: 'poi',
+      badge: '명소',
+      uiPlace: true,
+    });
+  }
   if (loc.kind && loc.badge && Number.isFinite(Number(loc.lat))) {
     return loc;
   }
@@ -686,6 +719,7 @@ export function ensureDisambiguation(query, candidates, title) {
 export async function buildCuratedEnterDisambiguation(query) {
   const q = String(query || '').trim();
   if (!q) return null;
+  if (resolveExploreAliasTourPlaceParam(q)) return null;
 
   const searchQ = effectiveExploreSearchQuery(q);
 

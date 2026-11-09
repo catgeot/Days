@@ -12,7 +12,8 @@ import path from 'node:path';
 test.use({ ignoreHTTPSErrors: true });
 
 const ARTIFACTS = '/opt/cursor/artifacts';
-const QUERIES = ['한라산 백록담', '개심사', '평양시'];
+const HALLASAN_ALIAS_QUERIES = ['한라산 백록담', '백록담', '화구벽'];
+const QUERIES = [...HALLASAN_ALIAS_QUERIES, '개심사', '평양시'];
 
 function slugQuery(q) {
   return q.replace(/\s+/g, '-');
@@ -37,8 +38,8 @@ async function waitSearchSettled(page) {
 
 function searchResultButton(page, pattern) {
   return page
-    .locator('[data-search-popover] button')
-    .filter({ hasNotText: /MOONi|전송|일반 탐색/i })
+    .getByRole('button')
+    .filter({ hasNotText: /MOONi|전송|일반 탐색|닫기|홈으로|메뉴|로그인|English|플래너/i })
     .filter({ hasText: pattern })
     .first();
 }
@@ -48,6 +49,16 @@ async function shot(page, filename, width) {
   await page.screenshot({
     path: path.join(ARTIFACTS, filename),
     clip: { x: 0, y: 0, width, height: 844 },
+  });
+}
+
+async function expectHallasanTourDetail(page) {
+  await expect(page).toHaveURL(/\/place\/tour-127635(?:\/|$|\?)/, { timeout: 90_000 });
+  await expect(
+    page.getByRole('button', { name: /플래너|갤러리|Planner|Gallery/i }).first(),
+  ).toBeVisible({ timeout: 90_000 });
+  await expect(page.getByText(/백록담|한라산|Baeknokdam|Hallasan/i).first()).toBeVisible({
+    timeout: 90_000,
   });
 }
 
@@ -69,31 +80,53 @@ for (const query of QUERIES) {
       await input.press('Enter');
       await waitSearchSettled(page);
 
-      if (query === '한라산 백록담') {
-        const navigated = await page
-          .waitForURL(/\/place\/tour-127635/, { timeout: 8_000 })
+      if (HALLASAN_ALIAS_QUERIES.includes(query)) {
+        const onDetail = await page
+          .waitForURL(/\/place\/tour-127635/, { timeout: 12_000 })
           .then(() => true)
           .catch(() => false);
-        if (!navigated) {
-          const card = searchResultButton(page, /한라산|백록담|127635|국립공원/i);
-          await expect(card).toBeVisible({ timeout: 120_000 });
-          await card.click();
-          await expect(page).toHaveURL(/\/place\/tour-127635/, { timeout: 60_000 });
+        if (!onDetail) {
+          const tourCard = page
+            .locator('[data-search-popover] button, button')
+            .filter({ hasText: /백록담|화구벽|Baeknokdam/i })
+            .first();
+          await expect(tourCard).toBeVisible({ timeout: 60_000 });
+          await tourCard.click();
         }
+        await expectHallasanTourDetail(page);
       }
 
       if (query === '개심사') {
-        const first = searchResultButton(page, new RegExp(escapeRegExp('개심사')));
-        await expect(first).toBeVisible({ timeout: 120_000 });
-        await expect(first).toContainText(/서산/);
-        await first.click();
+        const onGaesimsa = await page
+          .waitForURL(/\/place\/gaesimsa/, { timeout: 15_000 })
+          .then(() => true)
+          .catch(() => false);
+        if (!onGaesimsa) {
+          const first = page
+            .getByRole('button')
+            .filter({ hasText: /개심사/ })
+            .filter({ hasText: /서산/ })
+            .first();
+          await expect(first).toBeVisible({ timeout: 60_000 });
+          await first.click();
+        }
         await expect(page).toHaveURL(/\/place\/gaesimsa/, { timeout: 60_000 });
       }
 
       if (query === '평양시') {
-        const card = searchResultButton(page, /Pyongyang|평양/i);
-        await expect(card).toBeVisible({ timeout: 120_000 });
-        await card.click();
+        const onPyongyang = await page
+          .waitForURL(/\/place\/pyongyang/, { timeout: 15_000 })
+          .then(() => true)
+          .catch(() => false);
+        if (!onPyongyang) {
+          const card = page
+            .getByRole('button')
+            .filter({ hasText: /평양/ })
+            .filter({ hasText: /Pyongyang|북한/ })
+            .first();
+          await expect(card).toBeVisible({ timeout: 60_000 });
+          await card.click();
+        }
         await expect(page).toHaveURL(/\/place\/pyongyang/, { timeout: 60_000 });
       }
 
