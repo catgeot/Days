@@ -313,3 +313,37 @@ test.describe('self reels fixture feed', () => {
     expect(fs.existsSync(path1280)).toBe(true);
   });
 });
+
+test.describe('self reels english first visit', () => {
+  test('clears storage and keeps feed visible at /reels?lang=en', async ({ browser, baseURL }) => {
+    const context = await browser.newContext({
+      locale: 'en-US',
+      viewport: { width: 390, height: 844 },
+      deviceScaleFactor: 1,
+      baseURL,
+    });
+    await context.addInitScript(() => {
+      try {
+        localStorage.clear();
+        sessionStorage.clear();
+      } catch {
+        /* ignore */
+      }
+    });
+    const page = await context.newPage();
+    await stubFixtureVideos(page);
+
+    await page.goto('/reels', { waitUntil: 'domcontentloaded' });
+
+    await expect.poll(() => page.url(), { timeout: 15_000 }).toMatch(/\/reels\?lang=en$/);
+
+    await expect
+      .poll(async () => page.locator('[data-self-reels-feed="1"]').count(), { timeout: 30_000 })
+      .toBeGreaterThan(0);
+
+    const stored = await page.evaluate(() => localStorage.getItem('gateo.locale'));
+    expect(stored).toBe('en');
+
+    await context.close();
+  });
+});
