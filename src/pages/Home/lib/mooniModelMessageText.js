@@ -19,7 +19,8 @@ export function getMooniModelRawText(msg) {
  * @param {{ stripPhantomTicketMention?: boolean }} [options]
  */
 export function getMooniModelMarkdownForRender(raw, options = {}) {
-  const { text } = sanitizeMooniModelReply(raw, options);
+  const preTable = recoverMooniCollapsedGfmTables(raw);
+  const { text } = sanitizeMooniModelReply(preTable, options);
   let md = recoverMooniCollapsedGfmTables(text);
   md = stripMooniScheduleTrailingPipes(md);
   md = continueMooniOrderedListNumbers(md);

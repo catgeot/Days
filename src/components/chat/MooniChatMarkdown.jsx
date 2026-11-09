@@ -56,8 +56,13 @@ function createMooniMarkdownComponents(variant) {
     ul: ({ children }) => (
       <ul className={`list-disc pl-5 mb-2 space-y-1.5 last:mb-0 ${listClass}`}>{children}</ul>
     ),
-    ol: ({ children }) => (
-      <ol className={`list-decimal pl-5 mb-2 space-y-1.5 last:mb-0 ${listClass}`}>{children}</ol>
+    ol: ({ children, start }) => (
+      <ol
+        start={typeof start === 'number' && start > 1 ? start : undefined}
+        className={`list-decimal pl-5 mb-2 space-y-1.5 last:mb-0 ${listClass}`}
+      >
+        {children}
+      </ol>
     ),
     li: ({ children }) => <li className="leading-relaxed break-keep">{children}</li>,
     table: ({ children }) => (

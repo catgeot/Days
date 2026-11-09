@@ -5,5 +5,7 @@ export function isMooniGfmTableLine(line) {
   if (/^\|(?:[^|\n]+\|)+\s*$/.test(trimmed)) return true;
   if (/^\|[\s\-:|\u2014]+\|\s*$/.test(trimmed)) return true;
   if (/^\|[\s\-:|\u2014]+(?:\s*\|)+/.test(trimmed)) return true;
+  const pipeCount = (trimmed.match(/\|/g) || []).length;
+  if (pipeCount >= 4 && /\|\s*:+\s*(?:\||$)/.test(trimmed)) return true;
   return false;
 }

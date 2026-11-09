@@ -27,6 +27,19 @@ test('isMooniGfmTableLine — header, separator, body', () => {
   assert.ok(!isMooniGfmTableLine('교통 · 티켓 |'));
 });
 
+const LIVE_ONE_LINE_COMPARE =
+  '| 구분 | 괌 | 사이판 | 세부 | 보홀 | : | : | : | : | : | **주요 매력** | 괌 | 사이판 | 세부 | 보홀 |';
+
+test('getMooniModelMarkdownForRender — live one-line : separator table renders', () => {
+  const md = getMooniModelMarkdownForRender(LIVE_ONE_LINE_COMPARE, {
+    stripPhantomTicketMention: true,
+  });
+  const html = renderMooniGfm(md);
+  assert.ok(html.includes('<table'), html);
+  assert.ok(html.includes('<th>구분</th>'), html);
+  assert.ok(html.includes('<strong>주요 매력</strong>'), html);
+});
+
 test('getMooniModelMarkdownForRender — comparison table survives chip strip', () => {
   const md = getMooniModelMarkdownForRender(COMPARE_TABLE, { stripPhantomTicketMention: true });
   assert.match(md, /^\| 항목 \| 괌 \|/m);

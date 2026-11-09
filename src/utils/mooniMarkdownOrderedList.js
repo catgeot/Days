@@ -19,18 +19,26 @@ export function continueMooniOrderedListNumbers(markdown) {
           counter += 1;
         } else if (n > counter) {
           counter = n;
-        } else {
+        } else if (n < counter) {
+          counter += 1;
+        } else if (n === counter && counter > 1) {
           counter += 1;
         }
         inRun = true;
         return `${ordered[1]}${counter}. ${ordered[3]}`;
       }
-      if (HEADING_LINE.test(line) || BLANK_LINE.test(line)) {
+      if (BLANK_LINE.test(line) || HEADING_LINE.test(line)) {
         return line;
       }
-      if (inRun && !LIST_BREAK_LINE.test(line) && line.trim()) {
+      if (/^\s*---\s*$/.test(line)) {
         inRun = false;
         counter = 0;
+        return line;
+      }
+      if (/^\s*#{1,2}\s+\S/.test(line)) {
+        inRun = false;
+        counter = 0;
+        return line;
       }
       return line;
     })
