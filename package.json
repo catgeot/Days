@@ -252,6 +252,7 @@
     "test:place-cross-links": "node --import ./scripts/register-src-esm.mjs --test scripts/place-cross-links.test.mjs",
     "test:place-chat-intro-keys": "node --import ./scripts/register-src-esm.mjs --test scripts/place-chat-intro-keys.test.mjs scripts/place-chat-intro-bare-fallback.test.mjs scripts/place-chat-intro-qa-pass.test.mjs",
     "test:site-search-open": "node --import ./scripts/register-src-esm.mjs --test scripts/site-search-open.test.mjs",
+    "capture:explore-restaurant-mock": "node --import ./scripts/register-src-esm.mjs scripts/capture-explore-restaurant-mock.mjs",
     "test:site-search-enter-immediate": "node scripts/site-search-enter-immediate-477.mjs",
     "test:gallery-display-sources": "node --import ./scripts/register-src-esm.mjs --test scripts/gallery-display-sources-attribution.test.mjs",
     "test:gallery-photo-credit": "node --import ./scripts/register-src-esm.mjs --test scripts/health/gallery-photo-credit.test.mjs",

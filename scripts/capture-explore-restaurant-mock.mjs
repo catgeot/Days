@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 /**
  * Mock explore search rows (Ichiran · 강릉 순두부) — 390px PNG for QA artifacts.
+ * 실행: npm run capture:explore-restaurant-mock
+ * (또는 node --import ./scripts/register-src-esm.mjs scripts/capture-explore-restaurant-mock.mjs)
  */
 import fs from 'node:fs';
 import path from 'node:path';

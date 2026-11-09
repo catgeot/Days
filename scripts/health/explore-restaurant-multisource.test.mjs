@@ -97,6 +97,56 @@ test('Mapbox tourist_attraction only — 명소 유지', () => {
   assert.equal(isExploreRestaurantItem(sight), false);
 });
 
+test('Tokyo Tower — restaurant+food+tourist 혼합 카테고리면 식당 아님', () => {
+  const tower = featureToSuggestion(
+    mapboxPoiFeature({
+      name: 'Tokyo Tower',
+      placeFormatted: 'Minato, Tokyo, Japan',
+      categoryIds: ['tourist_attraction', 'restaurant', 'food'],
+      categories: ['tourist attraction', 'restaurant', 'food'],
+      lng: 139.7454,
+      lat: 35.6586,
+      id: 'tower-mix',
+    }),
+    { source: 'mapbox' },
+  );
+  assert.equal(tower.badge, '명소');
+  assert.equal(tower.kind, 'attraction');
+  assert.equal(isExploreRestaurantItem(tower), false);
+});
+
+test('Tokyo Tower — food만 있어도 식당 아님', () => {
+  const tower = featureToSuggestion(
+    mapboxPoiFeature({
+      name: 'Tokyo Tower',
+      placeFormatted: 'Minato, Tokyo, Japan',
+      categoryIds: ['food'],
+      categories: ['food'],
+      lng: 139.7454,
+      lat: 35.6586,
+      id: 'tower-food-only',
+    }),
+    { source: 'mapbox' },
+  );
+  assert.equal(tower.badge, '명소');
+  assert.equal(isExploreRestaurantItem(tower), false);
+});
+
+test('허브·Tour 명소(12) — Mapbox 식당 카테고리로 덮어쓰지 않음', () => {
+  const hubPin = stampExploreRestaurantSuggestion({
+    name: '경복궁',
+    slug: 'gyeongbokgung-palace',
+    source: 'hub',
+    badge: '명소',
+    kind: 'attraction',
+    lat: 37.5796,
+    lng: 126.977,
+    poi_category_ids: ['restaurant', 'food'],
+  });
+  assert.equal(hubPin.badge, '명소');
+  assert.equal(isExploreRestaurantItem(hubPin), false);
+});
+
 test('Google place_types — restaurant 판별', () => {
   assert.equal(
     isExploreRestaurantItem({
@@ -165,3 +215,60 @@ test('collectExploreRestaurantKeywordMatches — 강릉 순두부 regional mock 
   assert.equal(decision?.type, 'external');
   assert.match(decision?.href || '', /^https:\/\/map\.naver\.com\//);
 });
+
+const MAPBOX_TOKEN =
+  typeof process !== 'undefined'
+    ? String(process.env.VITE_MAPBOX_TOKEN || process.env.MAPBOX_TOKEN || '').trim()
+    : '';
+
+test(
+  'LIVE Mapbox forward — Tokyo Tower 식당 아님 · Ichiran·강릉 순두부 식당(토큰 있을 때만)',
+  { skip: !MAPBOX_TOKEN },
+  async () => {
+    const { searchBoxForward } = await import('../../src/pages/Home/lib/mapboxSearchBox.js');
+    const towerHits = await searchBoxForward('Tokyo Tower', { limit: 6, language: 'en' });
+    const tower = (towerHits || []).find((h) => /tokyo tower/i.test(String(h?.name || '')));
+    if (!tower) {
+      console.log(
+        '# LIVE Mapbox — Tokyo Tower 히트 없음(토큰·지역 제한으로 스킵):',
+        (towerHits || []).map((h) => h.name).join(', '),
+      );
+      return;
+    }
+    assert.equal(isExploreRestaurantItem(tower), false, `Tokyo Tower가 식당으로 분류됨: ${tower.badge}`);
+    assert.equal(tower.badge, '명소');
+
+    const ichiranEn = await searchBoxForward('Ichiran Ramen', {
+      limit: 8,
+      language: 'en',
+      proximity: [139.7, 35.66],
+    });
+    const ichiranHit = (ichiranEn || []).find(
+      (h) => isExploreRestaurantItem(h) && /ichiran/i.test(String(h?.name || '')),
+    );
+    if (ichiranHit) {
+      assert.equal(ichiranHit.badge, '식당');
+    } else {
+      console.log(
+        '# LIVE Ichiran Ramen — 일치 히트 없음(스킵):',
+        (ichiranEn || []).map((h) => `${h.name}/${h.badge}`).join(', '),
+      );
+    }
+
+    const sundubuHits = await searchBoxForward('순두부', {
+      limit: 8,
+      language: 'ko',
+      country: 'kr',
+      proximity: [128.896, 37.751],
+    });
+    const sundubuRestaurant = (sundubuHits || []).filter((h) => isExploreRestaurantItem(h));
+    if (sundubuRestaurant.length) {
+      for (const row of sundubuRestaurant) assert.equal(row.badge, '식당');
+    } else {
+      console.log(
+        '# LIVE 강릉 근처 순두부 — 식당 카테고리 히트 없음(스킵):',
+        (sundubuHits || []).map((h) => `${h.name}/${h.badge}`).join(', '),
+      );
+    }
+  },
+);

@@ -1,3 +1,4 @@
+import { isCatalogOrHubExplorePlace } from './poiRestaurantCategory.js';
 import {
   EXPLORE_BADGE_RESTAURANT,
   EXPLORE_KIND_RESTAURANT,
@@ -12,6 +13,7 @@ import { buildRestaurantMapSearchUrl } from './restaurantMapSearchUrl.js';
  */
 export function stampExploreRestaurantSuggestion(item) {
   if (!item || typeof item !== 'object') return item;
+  if (isCatalogOrHubExplorePlace(item)) return item;
   if (item.exploreRestaurant === true && item.kind === EXPLORE_KIND_RESTAURANT) return item;
   if (!isExploreRestaurantItem(item)) return item;
 
