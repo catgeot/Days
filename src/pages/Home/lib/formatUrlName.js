@@ -1,6 +1,7 @@
 import { TRAVEL_SPOTS } from '../data/travelSpots.js';
 import { mergeCanonicalTravelSpot } from '../../../utils/travelSpotResolve.js';
 import { isDomesticKoreaLocation } from '../../../utils/tourApiMatch.js';
+import { uiPlacePoiCollidesWithCatalogParam } from './explorePlaceSlugGuard.js';
 
 /** slug·name_en용 — 한글/CJK만 있으면 false (레소토·에스와티니 라벨 등) */
 export function isUrlSafeEnglishLabel(value) {
@@ -86,7 +87,7 @@ export function getPlaceUrlParam(loc) {
   }
 
   const catalogSlug = resolveCatalogPlaceSlug(merged.slug || merged.canonical_slug);
-  if (catalogSlug && source !== 'tourapi') {
+  if (catalogSlug && source !== 'tourapi' && !uiPlacePoiCollidesWithCatalogParam(merged, catalogSlug)) {
     return catalogSlug;
   }
 
@@ -107,7 +108,7 @@ export function getPlaceUrlParam(loc) {
       if (merged.uiPlace && Number.isFinite(lat) && Number.isFinite(lng)) {
         return `search-${lat}-${lng}`;
       }
-    } else {
+    } else if (!uiPlacePoiCollidesWithCatalogParam(merged, slug)) {
       return slug;
     }
   }
@@ -128,7 +129,9 @@ export function getPlaceUrlParam(loc) {
   if (isDomesticKoreaLocation(merged) && (nameSlug === 'south-korea' || nameSlug === 'korea')) {
     nameSlug = '';
   }
-  if (nameSlug) return nameSlug;
+  if (nameSlug && !uiPlacePoiCollidesWithCatalogParam(merged, nameSlug)) {
+    return nameSlug;
+  }
 
   if (merged.uiPlace && Number.isFinite(lat) && Number.isFinite(lng)) {
     return `search-${lat}-${lng}`;

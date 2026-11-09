@@ -253,10 +253,14 @@ export function resolveLocalScenicRowFirstImage(
 /** 탐색 검색 — Tour first_image가 비어 오버레이로 채운 산. 방문 행 슬러그와 무관. */
 const OFFICIAL_SEARCH_CONTENT_BY_NAME = {
   기백산: '126033',
+  동구릉: '125545',
+  홍유릉: '125548',
 };
 
 const OFFICIAL_SEARCH_LATIN_BY_NAME = {
   기백산: 'Gibaeksan',
+  동구릉: 'Donggureung Royal Tombs',
+  홍유릉: 'Hongyureung Royal Tombs',
 };
 
 function isStockSearchImage(url) {
@@ -4515,6 +4519,20 @@ const LOCAL_SCENIC_TOUR_THUMB_BY_CONTENT_ID = {
     ...localScenicThumbOverlay(HY_GIBAEK, [HY_GIBAEK_2, HY_GIBAEK_3]),
     homepage: HY_GIBAEK_HOME,
   },
+  125545: localScenicPhotoOverlay(
+    '동구릉(강릉·명릉 등)은 경기 구리·남양주에 있는 조선 왕릉군으로 유네스코 세계문화유산입니다. 봉분·제상·신도가 산세와 어우러진 대표 왕릉입니다. 입장·해설·주차는 궁능유적본부 안내를 따르세요.',
+    '경기도 구리시 갈매동 일원',
+    'https://tong.visitkorea.or.kr/cms/resource/04/4066104_image2_1.jpg',
+    ['https://tong.visitkorea.or.kr/cms/resource/04/4066104_image2_2.jpg'],
+    'https://www.royaltombs.cha.go.kr/',
+  ),
+  125548: localScenicPhotoOverlay(
+    '홍유릉은 고종·명성황후·순종·순의황후의 합장릉으로 남양주에 있으며 조선 왕릉 유산입니다. 입장 동선은 안내소 표지를 따르고 사진·음식물 반입 규정을 지켜 주세요.',
+    '경기도 남양주시 수동면 일원',
+    'https://tong.visitkorea.or.kr/cms/resource/06/3500306_image2_1.jpg',
+    [],
+    'https://www.royaltombs.cha.go.kr/',
+  ),
 };
 
 const LOCAL_SCENIC_OVERLAY_BY_CONTENT_ID = (() => {

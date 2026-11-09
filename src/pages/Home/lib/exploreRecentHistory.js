@@ -1,8 +1,14 @@
 import { TRAVEL_SPOTS } from '../data/travelSpots.js';
 import { citiesData } from '../data/citiesData.js';
 import { resolveTravelSpotFromSearchQuery } from '../../../utils/travelSpotResolve';
+import {
+  detachCountySlugFromCatalog,
+  isDomesticExploreUiPoiPinForRouting,
+  pinNameOwnsPlace,
+  uiPlacePoiCollidesWithCatalogParam,
+} from './explorePlaceSlugGuard.js';
 import { resolveExploreAliasDirectPlaceSlug } from './koreaPlaceMatchDictionary.js';
-import { placeUrlSlug, resolveCityAttractionHub, resolveHubPlaceFromSlug } from './cityAttractionHubs';
+import { resolveHubPlaceFromSlug } from './cityAttractionHubs';
 import { getPlaceUrlParam, isEphemeralSlug, resolveCatalogPlaceSlug } from './formatUrlName';
 import { resolveSettlementPlaceFromSlug } from './mapboxSettlementPlaces';
 import {
@@ -231,46 +237,6 @@ function knownPlaceForParam(param) {
   );
 }
 
-function pinNameOwnsPlace(pin, place) {
-  if (!place) return true;
-  const names = [pin?.name, pin?.name_ko].map(normalizePlaceToken).filter(Boolean);
-  if (!names.length) return true;
-  // hubToPlacePin은 aliases를 빼므로, 표시명(제주시)과 다른 공식 별칭(제주)도 그 도시다.
-  const hub = resolveCityAttractionHub(place?.hubId || place?.slug);
-  const catalogSlug = resolveCatalogPlaceSlug(place?.slug || place?.hubId);
-  const catalog = catalogSlug
-    ? TRAVEL_SPOTS.find((spot) => String(spot.slug).toLowerCase() === catalogSlug)
-    : null;
-  const known = [
-    place.name,
-    place.name_en,
-    place.slug,
-    place.hubId,
-    ...(place.aliases || []),
-    ...(hub?.aliases || []),
-    hub?.name,
-    hub?.name_en,
-    catalog?.name,
-    catalog?.name_en,
-  ]
-    .map(normalizePlaceToken)
-    .filter(Boolean);
-  return names.some((token) => known.includes(token));
-}
-
-function detachCountySlug(pin, known) {
-  const name = String(pin?.name_ko || pin?.name || '').trim();
-  const knownTokens = [known?.name, known?.name_en, known?.slug].map(normalizePlaceToken);
-  const nameEn = String(pin?.name_en || '').trim();
-  const enIsCounty = Boolean(nameEn) && knownTokens.includes(normalizePlaceToken(nameEn));
-  return {
-    ...pin,
-    slug: placeUrlSlug(enIsCounty ? '' : nameEn, name),
-    name_en: enIsCounty ? '' : pin?.name_en,
-    parentCity: pin?.parentCity || known?.name || undefined,
-  };
-}
-
 function isMapboxOrGeocodePin(spot) {
   const id = String(spot?.id ?? '').trim().toLowerCase();
   if (id.startsWith('mapbox-') || id.startsWith('geocode-')) return true;
@@ -332,7 +298,10 @@ export function resolveSearchResultSelect(spot) {
     return { type: 'place', spot: pin, param: tourParam };
   }
 
-  if (shouldRouteDomesticExplorePinToPlace(pin)) {
+  const routeDomesticPoi = shouldRouteDomesticExplorePinToPlace(pin);
+  const catalogSlugCollision = uiPlacePoiCollidesWithCatalogParam(pin, tourParam);
+
+  if (routeDomesticPoi && !catalogSlugCollision) {
     const domesticParam = getPlaceUrlParam(pin);
     if (domesticParam && !isBlockedCountryOnlyPlaceParam(domesticParam)) {
       return { type: 'place', spot: pin, param: domesticParam };
@@ -343,16 +312,19 @@ export function resolveSearchResultSelect(spot) {
   const param = knownPlaceSlug(rawParam);
   const known = param ? knownPlaceForParam(param) : null;
   const countyMismatch = Boolean(known) && !pinNameOwnsPlace(pin, known);
-  const spotForOpen = countyMismatch ? detachCountySlug(pin, known) : pin;
-  if ((isMapboxOrGeocodePin(pin) || countyMismatch) && !shouldRouteDomesticExplorePinToPlace(pin)) {
+  const spotForOpen = countyMismatch ? detachCountySlugFromCatalog(pin, known) : pin;
+  if ((isMapboxOrGeocodePin(pin) || countyMismatch) && (!routeDomesticPoi || catalogSlugCollision)) {
     const foreignParam = rawParam;
     const explicitCatalogSlug = resolveCatalogPlaceSlug(
       String(pin.slug || pin.canonical_slug || '').trim(),
     );
-    if (explicitCatalogSlug) {
+    if (explicitCatalogSlug && !catalogSlugCollision) {
       return { type: 'home', spot: spotForOpen };
     }
     if (foreignParam?.startsWith('search-')) {
+      if (routeDomesticPoi || catalogSlugCollision) {
+        return { type: 'place', spot: spotForOpen, param: foreignParam };
+      }
       return { type: 'home', spot: spotForOpen };
     }
     if (foreignParam?.startsWith('tour-') && !isBlockedCountryOnlyPlaceParam(foreignParam)) {
@@ -371,7 +343,9 @@ export function resolveSearchResultSelect(spot) {
     }
     return { type: 'home', spot: spotForOpen };
   }
-  if (param) return { type: 'place', spot: pin, param };
+  if (param && !(countyMismatch && isDomesticExploreUiPoiPinForRouting(pin))) {
+    return { type: 'place', spot: pin, param };
+  }
   if (rawParam && (pin.contentId || pin.source === 'tourapi')) {
     return { type: 'place', spot: pin, param: rawParam };
   }

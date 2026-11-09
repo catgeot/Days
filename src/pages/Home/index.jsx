@@ -29,6 +29,7 @@ import { useSearchEngine } from './hooks/useSearchEngine';
 import { useHomeHandlers } from './hooks/useHomeHandlers';
 import { formatUrlName, getPlaceUrlParam } from './lib/formatUrlName';
 import { cachePlaceLocation, mergeCachedPlaceIfCoordsMatch } from './lib/placeLocationCache';
+import { enrichJoseonRoyalTombsPromoPin } from './lib/joseonRoyalTombsPromoCopy.js';
 import {
   pushRecentVisited,
   pushKeywordVisit,
@@ -121,14 +122,16 @@ function resolveFocusLocationFromPlacePath(pathname, category, savedTrips = []) 
 
   const target = resolvePlaceTargetFromSlug(slug, { savedTrips, category });
   if (target && hasValidCoords(target)) {
-    return enrichLocationWithRentalAirport(
-      healPlaceholderCountry(
-        mergeCanonicalTravelSpot({
-          ...target,
-          id: target.id || `loc-${target.lat}-${target.lng}`,
-          type: target.type || 'temp-base',
-          category: target.category || category,
-        }),
+    return enrichJoseonRoyalTombsPromoPin(
+      enrichLocationWithRentalAirport(
+        healPlaceholderCountry(
+          mergeCanonicalTravelSpot({
+            ...target,
+            id: target.id || `loc-${target.lat}-${target.lng}`,
+            type: target.type || 'temp-base',
+            category: target.category || category,
+          }),
+        ),
       ),
     );
   }
@@ -141,7 +144,9 @@ function resolveFocusLocationFromPlacePath(pathname, category, savedTrips = []) 
       const parsedLng = parseFloat(coordsMatch[2]);
       const rawSession = mergeCachedPlaceIfCoordsMatch(slug, parsedLat, parsedLng);
       if (rawSession && hasValidCoords(rawSession)) {
-        return enrichLocationWithRentalAirport(mergeCanonicalTravelSpot(rawSession));
+        return enrichJoseonRoyalTombsPromoPin(
+          enrichLocationWithRentalAirport(mergeCanonicalTravelSpot(rawSession)),
+        );
       }
     }
   }
@@ -831,19 +836,21 @@ function Home() {
   const navigateToPlace = useCallback((targetPlace, { tab } = {}) => {
     if (!targetPlace) return;
 
-    const prepared = enrichLocationWithRentalAirport(
-      healPlaceholderCountry(
-        mergeCanonicalTravelSpot({
-          ...targetPlace,
-          id:
-            targetPlace.id ||
-            (targetPlace.lat != null && targetPlace.lng != null
-              ? `city-${targetPlace.lat}-${targetPlace.lng}`
-              : undefined),
-          type: targetPlace.type || 'temp-base',
-          category: targetPlace.category || category,
-        })
-      )
+    const prepared = enrichJoseonRoyalTombsPromoPin(
+      enrichLocationWithRentalAirport(
+        healPlaceholderCountry(
+          mergeCanonicalTravelSpot({
+            ...targetPlace,
+            id:
+              targetPlace.id ||
+              (targetPlace.lat != null && targetPlace.lng != null
+                ? `city-${targetPlace.lat}-${targetPlace.lng}`
+                : undefined),
+            type: targetPlace.type || 'temp-base',
+            category: targetPlace.category || category,
+          }),
+        ),
+      ),
     );
 
     const tabSuffix =
@@ -868,6 +875,12 @@ function Home() {
     if (param.startsWith('tour-')) {
       prepared.slug = param;
       prepared.canonical_slug = param;
+    }
+    if (param.startsWith('search-') || param.startsWith('loc-')) {
+      prepared.id = param;
+      prepared.slug = param;
+      prepared.canonical_slug = param;
+      if (prepared.uiPlace == null) prepared.uiPlace = true;
     }
     cachePlaceLocation(prepared);
     navigate(`/place/${param}${tabSuffix}`);
@@ -993,13 +1006,15 @@ function Home() {
 
           const rawSession = mergeCachedPlaceIfCoordsMatch(targetSlug, parsedLat, parsedLng);
           const fromSession = rawSession
-            ? enrichLocationWithRentalAirport(mergeCanonicalTravelSpot(rawSession))
+            ? enrichJoseonRoyalTombsPromoPin(
+                enrichLocationWithRentalAirport(mergeCanonicalTravelSpot(rawSession)),
+              )
             : null;
           if (fromSession) {
             target = fromSession;
           } else {
             const matchedSpot = resolveTravelSpotFromCoords(parsedLat, parsedLng);
-            if (matchedSpot) {
+            if (matchedSpot && !targetSlug.startsWith('search-')) {
               target = matchedSpot;
             } else {
             const matchedCity = (citiesData || []).find(c =>
@@ -1015,7 +1030,8 @@ function Home() {
               country: matchedCity?.country || undefined,
               country_en: matchedCity?.country_en || undefined,
               tags: matchedCity ? matchedCity.tags : [],
-              desc: matchedCity ? matchedCity.desc : ""
+              desc: matchedCity ? matchedCity.desc : "",
+              ...(targetSlug.startsWith('search-') ? { uiPlace: true, source: 'mapbox' } : {}),
             };
             }
           }
@@ -1033,12 +1049,12 @@ function Home() {
             if (cancelled || !row) return;
             const pin = tourAttractionToPoiSuggestion(row);
             if (!pin || !Number.isFinite(Number(pin.lat))) return;
-            const prepared = {
+            const prepared = enrichJoseonRoyalTombsPromoPin({
               ...pin,
               uiPlace: true,
               slug: normalizedTargetSlug,
               canonical_slug: normalizedTargetSlug,
-            };
+            });
             cachePlaceLocation(prepared);
             navigateToPlace(prepared);
           } catch {
@@ -1073,24 +1089,32 @@ function Home() {
           if (syncId !== placeRouteSyncRef.current) return;
 
           const focusTarget = overlaySessionCuration(
-            enrichLocationWithRentalAirport(
-              healPlaceholderCountry(
-                mergeCanonicalTravelSpot({
-                  ...hydratedTarget,
-                  id: hydratedTarget.id || `loc-${hydratedTarget.lat}-${hydratedTarget.lng}`,
-                  type: hydratedTarget.type || 'temp-base',
-                  category: hydratedTarget.category || category,
-                })
-              )
+            enrichJoseonRoyalTombsPromoPin(
+              enrichLocationWithRentalAirport(
+                healPlaceholderCountry(
+                  mergeCanonicalTravelSpot({
+                    ...hydratedTarget,
+                    id: hydratedTarget.id || `loc-${hydratedTarget.lat}-${hydratedTarget.lng}`,
+                    type: hydratedTarget.type || 'temp-base',
+                    category: hydratedTarget.category || category,
+                  }),
+                ),
+              ),
             ),
             { selectedLocation: selectedLocationRef.current },
           );
 
           const canonicalParam = getPlaceUrlParam(focusTarget);
+          const preserveSearchCoordUrl =
+            normalizedTargetSlug.startsWith('search-') &&
+            focusTarget?.uiPlace &&
+            canonicalParam &&
+            !String(canonicalParam).startsWith('search-');
           if (
             canonicalParam &&
             canonicalParam.toLowerCase() !== normalizedTargetSlug &&
-            !isHangulPlaceStatsSlug(targetSlug)
+            !isHangulPlaceStatsSlug(targetSlug) &&
+            !preserveSearchCoordUrl
           ) {
             const tabSuffix = match.params.tab ? `/${match.params.tab}` : '';
             navigate(`/place/${canonicalParam}${tabSuffix}`, { replace: true });
@@ -1216,14 +1240,16 @@ function Home() {
         fetchUiPlacePinFromPlaceStatsSlug(targetSlug).then((pin) => {
           if (!pin || hangulSync !== placeRouteSyncRef.current) return;
           const focusTarget = overlaySessionCuration(
-            enrichLocationWithRentalAirport(
-              healPlaceholderCountry(
-                mergeCanonicalTravelSpot({
-                  ...pin,
-                  id: pin.id || pin.place_id || `loc-${pin.lat}-${pin.lng}`,
-                  type: pin.type || 'temp-base',
-                  category: pin.category || category,
-                }),
+            enrichJoseonRoyalTombsPromoPin(
+              enrichLocationWithRentalAirport(
+                healPlaceholderCountry(
+                  mergeCanonicalTravelSpot({
+                    ...pin,
+                    id: pin.id || pin.place_id || `loc-${pin.lat}-${pin.lng}`,
+                    type: pin.type || 'temp-base',
+                    category: pin.category || category,
+                  }),
+                ),
               ),
             ),
             { selectedLocation: selectedLocationRef.current },
