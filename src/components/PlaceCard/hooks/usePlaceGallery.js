@@ -59,6 +59,7 @@ import {
 } from '../../../utils/gallerySaveGuard.js';
 import { isLegacyMishealPlaceStatsId } from '../../../pages/Home/lib/legacyMishealPlaceSlugs.js';
 import { KO_GALLERY_QUERY_OVERRIDES } from '../../../pages/Home/lib/koreaPlaceMatchDictionary.js';
+import { isJoseonRoyalTombGallerySlug } from '../../../pages/Home/lib/joseonRoyalTombsSearch.js';
 import {
   GALLERY_SWR_TTL_MS,
   addGalleryHiddenId,
@@ -182,6 +183,18 @@ async function filterLoadableScenicGalleryUrls(urls) {
   if (!list.length) return [];
   const probed = await Promise.all(list.map((url) => probeLoadableImageUrl(url)));
   return probed.filter(Boolean);
+}
+
+function tourOfficialGalleryFromPin(...locs) {
+  for (const loc of locs) {
+    if (!loc || typeof loc !== 'object') continue;
+    if (Array.isArray(loc.galleryUrls) && loc.galleryUrls.length >= 1) {
+      return loc.galleryUrls.map((url) => String(url || '').trim()).filter(Boolean);
+    }
+    const img = String(loc.imageUrl || loc.thumbUrl || '').trim();
+    if (img) return [img];
+  }
+  return [];
 }
 
 function withTimeout(promise, ms, label) {
@@ -604,6 +617,7 @@ export const usePlaceGallery = (locationSource, options = {}) => {
       typeof targetSpot === 'object' && targetSpot?.slug
         ? String(targetSpot.slug).trim().toLowerCase()
         : '';
+    const joseonTombGallery = isJoseonRoyalTombGallerySlug(spotSlugForDb);
     if (slugOverride) {
       primaryQuery = slugOverride.primary;
       backupQuery = slugOverride.backup || backupQuery;
@@ -781,6 +795,10 @@ export const usePlaceGallery = (locationSource, options = {}) => {
         (typeof locationSource === 'object' ? locationSource?.contentId : null),
     );
     const koreaScenicSpotGallery = resolveScenicGalleryUrlsIfEnabled(locationSource);
+    const pinOfficialGallery = tourOfficialGalleryFromPin(
+      typeof locationSource === 'object' ? locationSource : null,
+      typeof targetSpot === 'object' ? targetSpot : null,
+    );
     const localScenicOfficialGallery =
       Array.isArray(localScenicOverlay?.galleryUrls) &&
       localScenicOverlay.galleryUrls.length >= 1
@@ -789,7 +807,9 @@ export const usePlaceGallery = (locationSource, options = {}) => {
           ? contentThumb.galleryUrls
           : koreaScenicSpotGallery.length >= 1
             ? koreaScenicSpotGallery
-            : null;
+            : pinOfficialGallery.length >= 1
+              ? pinOfficialGallery
+              : null;
 
     const clearSafety = () => {
       if (safetyTimer != null) {
@@ -935,6 +955,7 @@ export const usePlaceGallery = (locationSource, options = {}) => {
     };
 
     const afterInstantGallery = () => {
+      if (joseonTombGallery) return;
       const backfillRunId = runId;
       const startSwr = () => {
         if (backfillRunId !== galleryLoadSeqRef.current) return;
@@ -1032,7 +1053,9 @@ export const usePlaceGallery = (locationSource, options = {}) => {
 
       // 2) DB 선조회 — 히트면 즉시 표시(LIVE 대기 없음). 갤러리 탭은 7일 스톡 SWR(hero·image_url 유지).
       // 더보기(append)는 DB 미반영. thumbnailOnly는 SWR/Pexels 없음.
-      if (!GALLERY_DB_SKIP_SLUGS.has(spotSlugForDb) && dbCandidates.length) {
+      const skipPlaceStatsGallery =
+        GALLERY_DB_SKIP_SLUGS.has(spotSlugForDb) || joseonTombGallery;
+      if (!skipPlaceStatsGallery && dbCandidates.length) {
         try {
           const dbSelect = thumbnailOnly
             ? 'place_id, image_url, gallery_urls'
@@ -1229,6 +1252,19 @@ export const usePlaceGallery = (locationSource, options = {}) => {
       console.log(
         `🔄 더 많은 사진: 기존 ${allImagesRef.current.length}장 유지 · Unsplash/Pexels append (${unsplashQuery}, unsplash p${unsplashPageRef.current})`,
       );
+    }
+
+    if (joseonTombGallery) {
+      if (allImagesRef.current.length > 0) {
+        markFetchDone();
+        finishLoading();
+        writeGallerySwrAt(stablePlaceKey);
+        return;
+      }
+      markFetchDone();
+      finishLoading();
+      setLoadFailed(true);
+      return;
     }
 
     try {

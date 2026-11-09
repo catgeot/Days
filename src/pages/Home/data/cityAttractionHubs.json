@@ -16627,7 +16627,8 @@
         "name_en": "Seooreung Royal Tombs",
         "kind": "landmark",
         "lat": 37.6592,
-        "lng": 126.8934
+        "lng": 126.8934,
+        "contentId": "125549"
       },
       {
         "name": "일산호수공원",
