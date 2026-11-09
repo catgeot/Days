@@ -35,6 +35,7 @@ import {
 } from './placeChatIntroBareFallback.js';
 import { notifyPlaceChatIntroSaved } from './hydratePlaceGalleryOverview.js';
 import { settlementIntroUsesParentCityKeyOnly } from './settlementIntroParentOnly.js';
+import { shouldAutoGeneratePlaceChatIntro } from '../../../shared/place/placeChatIntroEligibility.js';
 
 export {
   isSyntheticOrEmptyPlaceDesc,
@@ -384,6 +385,9 @@ export async function ensurePlaceChatIntroForLocation(locOrName, options = {}) {
   const cached = await fetchPlaceChatIntroSummaryForLocation(locOrName, lng);
   if (cached) return cached;
   if (!generateIfMissing) return null;
+
+  const locObj = typeof locOrName === 'object' && locOrName ? locOrName : { name: String(locOrName || '') };
+  if (!shouldAutoGeneratePlaceChatIntro(locObj)) return null;
 
   const primaryKey = keys[0];
   const inflightKey = `${introLocaleKey(lng)}:${primaryKey}`;

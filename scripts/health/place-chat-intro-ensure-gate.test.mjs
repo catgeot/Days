@@ -3,8 +3,8 @@ import { test } from 'node:test';
 import {
   isSyntheticOrEmptyPlaceDesc,
   needsPlaceChatIntroHydration,
-  shouldEnsurePlaceChatIntroForLocation,
 } from '../../src/pages/Home/lib/placeDescText.js';
+import { shouldEnsurePlaceChatIntroForLocation } from '../../src/shared/place/placeChatIntroEligibility.js';
 import {
   hydratePlaceGalleryOverview,
   notifyPlaceChatIntroSaved,
@@ -12,6 +12,22 @@ import {
   resetPlaceGalleryOverviewCacheForTests,
 } from '../../src/pages/Home/lib/hydratePlaceGalleryOverview.js';
 import { resetPlaceChatIntroEnsureStateForTests } from '../../src/pages/Home/lib/placeChatIntro.js';
+
+test('음식점 search-좌표 id — ensure·자동 생성 차단', () => {
+  const pin = {
+    id: 'search-37.54496525-127.05632469',
+    name: '갯벌의조개 성수역점',
+    kind: 'restaurant',
+    badge: '식당',
+    contentTypeId: '39',
+    cat1: 'A05',
+    exploreRestaurant: true,
+    uiPlace: true,
+    lat: 37.54496525,
+    lng: 127.05632469,
+  };
+  assert.equal(shouldEnsurePlaceChatIntroForLocation(pin), false);
+});
 
 test('SSOT desc — ensure yes, display hydrate no', () => {
   const yap = {

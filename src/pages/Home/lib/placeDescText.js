@@ -50,10 +50,7 @@ export function needsPlaceChatIntroHydration(location) {
   return true;
 }
 
-/** place_chat_intro 조회·AI 생성·DB 저장(캐시 miss 시) — SSOT desc 여부와 무관. */
-export function shouldEnsurePlaceChatIntroForLocation(location) {
-  return Boolean(location?.name);
-}
+export { shouldEnsurePlaceChatIntroForLocation } from '../../../shared/place/placeChatIntroEligibility.js';
 
 /**
  * flag ON 갤러리 overview — Home ensure·AI desc 무시, 읽기 전용 hydrate만.

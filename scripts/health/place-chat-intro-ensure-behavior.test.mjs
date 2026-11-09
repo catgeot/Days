@@ -120,6 +120,32 @@ test('저장 실패 — local 미기록, 동일 탭 재호출 시 재생성·재
   assert.equal(loadPlaceChatIntroLocal(persistKey, 'ko'), ACCEPTED_FIXTURE_INTRO, '성공 후 local 반영');
 });
 
+test('음식점 search-좌표 진입 — place_intro gemini 0', async () => {
+  installPlaceIntroMockStorage();
+  const counters = installPlaceIntroEnsureFetchMock({});
+  const { ensurePlaceChatIntroForLocation, resetPlaceChatIntroEnsureStateForTests } = await import(
+    '../../src/pages/Home/lib/placeChatIntro.js'
+  );
+  resetPlaceChatIntroEnsureStateForTests();
+
+  const loc = {
+    id: 'search-37.54496525-127.05632469',
+    name: '갯벌의조개 성수역점',
+    kind: 'restaurant',
+    badge: '식당',
+    contentTypeId: '39',
+    cat1: 'A05',
+    exploreRestaurant: true,
+    uiPlace: true,
+    lat: 37.54496525,
+    lng: 127.05632469,
+  };
+  const text = await ensurePlaceChatIntroForLocation(loc, { lng: 'ko', generateIfMissing: true });
+  assert.equal(text, null);
+  assert.equal(counters.geminiCalls, 0, 'place_intro');
+  assert.equal(counters.saveCalls, 0);
+});
+
 test('기존 DB 저장글 조회 — generate 0', async () => {
   installPlaceIntroMockStorage();
   const existing = '기존저장된소개문장입니다. 조회 전용 fixture로 생성 호출 없이 읽기만 검증합니다. 방문객은 해변을 즐깁니다.';

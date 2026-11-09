@@ -22,6 +22,7 @@ import { useLocale } from '../../../i18n/LocaleProvider';
 import { decodeHtmlEntities } from '../../../utils/decodeHtmlEntities';
 import { placePathSuffixForMediaMode, expandedMediaModesIncludingWorldEvents } from '../common/placeMediaTabRoutes';
 import { isGateoPlaceWorldEventsTabEnabled } from '../../../shared/gateoFeatureFlags';
+import { isPlacePlannerEligible } from '../../../shared/place/placePlannerEligibility.js';
 
 const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, onOpenMooni, onNavigateToPlace, onGoHome, isMooniChatOpen = false, galleryData, onToggleBookmark, initialTab = 'GALLERY' }) => {
   const navigate = useNavigate();
@@ -51,10 +52,18 @@ const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, onOpenM
   const worldEventsTabFlagOn = isGateoPlaceWorldEventsTabEnabled();
 
   useLayoutEffect(() => {
-      if (expandedMediaModesIncludingWorldEvents(worldEventsTabFlagOn).includes(initialTab)) {
-          setMediaModeState(initialTab);
+      let tab = initialTab;
+      if (tab === 'PLANNER' && !isPlacePlannerEligible(location)) {
+        tab = 'GALLERY';
       }
-  }, [initialTab, worldEventsTabFlagOn]);
+      if (expandedMediaModesIncludingWorldEvents(worldEventsTabFlagOn).includes(tab)) {
+          setMediaModeState(tab);
+      }
+      if (tab !== initialTab && initialTab === 'PLANNER') {
+        const slug = getPlaceUrlParam(location);
+        navigate(`/place/${slug}`, { replace: true });
+      }
+  }, [initialTab, worldEventsTabFlagOn, location, navigate]);
 
   useLayoutEffect(() => {
     if (!worldEventsTabFlagOn) return;

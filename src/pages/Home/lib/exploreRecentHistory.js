@@ -24,6 +24,8 @@ import {
 } from './explorePlaceNav.js';
 import { isKoreaProvinceLevelTourResult, isKoreaProvinceLevelName } from './koreaExploreProvincePlace.js';
 import { resolveJoseonRoyalTombsOfficePlaceRoute } from './joseonRoyalTombsSearch.js';
+import { isExploreRestaurantItem } from '../../../shared/search/tourRestaurantDetect.js';
+import { buildRestaurantMapSearchUrl } from '../../../shared/search/restaurantMapSearchUrl.js';
 
 export const RECENT_SEARCH_KEY = 'gateo_recent_search_keywords';
 export const RECENT_VISITED_KEY = 'gateo_recent_visited_destinations';
@@ -270,6 +272,16 @@ function knownPlaceSlug(param) {
  */
 export function resolveSearchResultSelect(spot) {
   if (!spot || typeof spot !== 'object') return null;
+
+  if (isExploreRestaurantItem(spot)) {
+    const href =
+      String(spot.restaurantMapSearchUrl || '').trim() ||
+      buildRestaurantMapSearchUrl({ item: spot, name: spot.name });
+    if (href) {
+      return { type: 'external', spot, href };
+    }
+  }
+
   const lat = Number(spot.lat);
   const lng = Number(spot.lng);
   if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;

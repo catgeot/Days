@@ -4,6 +4,8 @@ import { Sparkles } from 'lucide-react';
 import GalleryAttributionLink from '../common/GalleryAttributionLink';
 import PlaceOverviewProse from '../common/PlaceOverviewProse';
 import PlaceScenicGateway from '../common/PlaceScenicGateway';
+import PlaceRestaurantMapOutbound from '../common/PlaceRestaurantMapOutbound';
+import { isExploreRestaurantItem } from '../../../shared/search/tourRestaurantDetect.js';
 import PlaceCrossLinksSection from '../common/PlaceCrossLinksSection';
 import PlaceGalleryFactsAndStories from '../common/PlaceGalleryFactsAndStories';
 
@@ -60,8 +62,11 @@ export default function GalleryInfoOverviewScrollContent({
     );
   }
 
+  const restaurantPin = isExploreRestaurantItem(selectedPlace);
+
   return (
     <div className="animate-fade-in space-y-5">
+      {restaurantPin ? <PlaceRestaurantMapOutbound location={selectedPlace} /> : null}
       <div className="space-y-4">
         {showDescriptionInKoreanLabel ? (
           <span className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-white/5 px-2.5 py-1 text-[11px] text-gray-300">
@@ -96,7 +101,7 @@ export default function GalleryInfoOverviewScrollContent({
         )}
       </div>
 
-      <PlaceScenicGateway location={selectedPlace} variant="dark" />
+      {restaurantPin ? null : <PlaceScenicGateway location={selectedPlace} variant="dark" />}
 
       <PlaceCrossLinksSection
         location={selectedPlace}

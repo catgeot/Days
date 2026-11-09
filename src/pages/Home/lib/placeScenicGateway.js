@@ -1,4 +1,5 @@
 import scenicJson from '../data/koreaScenicSpots.json' with { type: 'json' };
+import { isExploreRestaurantItem } from '../../../shared/search/tourRestaurantDetect.js';
 import heritageJson from '../data/koreaHeritageScenic.json' with { type: 'json' };
 import hubsJson from '../data/cityAttractionHubs.json' with { type: 'json' };
 import { scenicHomePathForHubId } from './koreaThemeCrossLinks.js';
@@ -201,6 +202,8 @@ function attachReturnTo(deepPath, returnTo) {
  */
 export function resolveScenicSpotForPlace(loc, options = {}) {
   if (!loc || typeof loc !== 'object') return null;
+  if (loc.skipScenicGateway || loc.exploreRestaurant) return null;
+  if (isExploreRestaurantItem(loc)) return null;
   if (!isDomesticKoreaLocation(loc)) return null;
 
   const returnTo =

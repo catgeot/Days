@@ -61,6 +61,10 @@ import {
   parseFlightCinemaPlannerEntry,
   parseEventPlannerEntry,
 } from '../../../utils/placePlannerPath';
+import {
+  isPlacePlannerEligible,
+  shouldInvokePlaceToolkitUpdate,
+} from '../../../shared/place/placePlannerEligibility.js';
 
 // Force Update Toolkit: 관리자 역할 검사가 없으므로 운영 빌드에서는 숨김 (로컬 `vite` 개발 서버에서만 표시)
 const SHOW_TOOLKIT_FORCE_UPDATE = import.meta.env.DEV === true;
@@ -113,6 +117,7 @@ const PlannerTab = ({
     const scrollPlannerToTop = usePlaceMediaScrollToTop('PLANNER', scrollContainerRef, isActive);
 
     const canonicalLocation = useMemo(() => mergeCanonicalTravelSpot(location), [location]);
+    const plannerEligible = isPlacePlannerEligible(canonicalLocation);
 
     const guideData = resolvePlannerGuideForDisplay(plannerData, canonicalLocation, locale);
     const storedToolkit = hasStoredToolkitRow(plannerData, canonicalLocation, locale);
@@ -211,6 +216,15 @@ const PlannerTab = ({
     // 툴킷 전용 갱신 로직 (update-place-toolkit Edge Function 호출)
     const handleRequestToolkitInfo = useCallback(async (placeName, forceUpdate = false) => {
         const canonicalLoc = mergeCanonicalTravelSpot(location);
+        if (
+            !shouldInvokePlaceToolkitUpdate({
+                location: canonicalLoc,
+                userInitiated: true,
+            })
+        ) {
+            setIsRemoteUpdating(false);
+            return null;
+        }
         const slug = getPlaceStableKey(canonicalLoc) || canonicalLoc?.slug || location?.slug;
         const canonicalPlaceId =
           slug || plannerData?.place_id || canonicalLoc?.name || location?.name;
@@ -353,6 +367,15 @@ const PlannerTab = ({
     );
 
     const isEssentialStage = plannerStage === PLANNER_STAGE.ESSENTIAL;
+
+    if (!plannerEligible) {
+        return (
+            <div className="w-full h-full flex flex-col items-center justify-center bg-[#f8f9fa] p-6 text-center">
+                <Briefcase size={40} className="text-gray-300 mb-3" aria-hidden />
+                <p className="text-sm text-gray-600 max-w-sm">{t('place.planner.emptyBody')}</p>
+            </div>
+        );
+    }
 
     if (isLoading) {
         return (

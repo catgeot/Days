@@ -1,6 +1,19 @@
 import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { MapPin, Landmark, Building2, Compass, Loader2, ChevronLeft, ChevronRight, Sparkles, CalendarDays, BookOpen } from 'lucide-react';
+import {
+  MapPin,
+  Landmark,
+  Building2,
+  Compass,
+  Loader2,
+  ChevronLeft,
+  ChevronRight,
+  Sparkles,
+  CalendarDays,
+  BookOpen,
+  UtensilsCrossed,
+  ExternalLink,
+} from 'lucide-react';
 import {
   fetchPlaceChatIntroSummaryForLocation,
   needsPlaceChatIntroHydration,
@@ -10,6 +23,7 @@ import {
   EXPLORE_BADGE_REGION,
   EXPLORE_BADGE_FESTIVAL,
   EXPLORE_BADGE_REVIEW,
+  EXPLORE_BADGE_RESTAURANT,
   localizedExploreBadgeLabel,
   localizeExploreGroupTitle,
   localizeExploreSearchDesc,
@@ -50,6 +64,7 @@ const BADGE_STYLES = {
   장소: 'bg-white/15 text-white/90 border-white/30',
   [EXPLORE_BADGE_FESTIVAL]: 'bg-pink-500/25 text-pink-200 border-pink-400/40',
   [EXPLORE_BADGE_REVIEW]: 'bg-violet-500/25 text-violet-200 border-violet-400/40',
+  [EXPLORE_BADGE_RESTAURANT]: 'bg-orange-500/25 text-orange-200 border-orange-400/40',
 };
 
 const normalizeCompare = (s) =>
@@ -151,6 +166,7 @@ function MooniAskRow({ query, isPopover, onAsk }) {
 function SuggestionIcon({ kind, size = 16 }) {
   if (kind === 'festival') return <CalendarDays size={size} className="text-pink-200 shrink-0" />;
   if (kind === 'review') return <BookOpen size={size} className="text-violet-200 shrink-0" />;
+  if (kind === 'restaurant') return <UtensilsCrossed size={size} className="text-orange-200 shrink-0" />;
   if (kind === 'spot') return <Compass size={size} className="text-emerald-300 shrink-0" />;
   if (kind === 'city') return <Building2 size={size} className="text-blue-300 shrink-0" />;
   if (kind === 'attraction') return <Landmark size={size} className="text-amber-300 shrink-0" />;
@@ -433,6 +449,11 @@ export function SearchSuggestionList({
                 <button
                   type="button"
                   onClick={() => onSelect?.(placeFromSearchItem(item, query))}
+                  aria-label={
+                    badgeKey === EXPLORE_BADGE_RESTAURANT || item.kind === 'restaurant'
+                      ? t('home.explore.restaurantMapReviewsAria', { name: displayName })
+                      : undefined
+                  }
                   className={`w-full flex items-center gap-3 text-left hover:bg-white/[0.1] transition-colors ${
                     isPopover ? 'px-3 py-2.5' : 'px-4 py-3'
                   }`}
@@ -460,6 +481,12 @@ export function SearchSuggestionList({
                     </div>
                     {subtitle ? (
                       <p className="mt-0.5 text-xs text-white/70 truncate break-keep">{subtitle}</p>
+                    ) : null}
+                    {badgeKey === EXPLORE_BADGE_RESTAURANT || item.kind === 'restaurant' ? (
+                      <p className="mt-1 inline-flex items-center gap-1 text-[11px] font-medium text-orange-100/90">
+                        <ExternalLink size={12} aria-hidden="true" />
+                        <span>{t('home.explore.restaurantMapReviewsCta')}</span>
+                      </p>
                     ) : null}
                   </div>
                 </button>

@@ -11,6 +11,7 @@ import { RENTAL_AIRPORT_HUBS } from './rentalAirportHubs.js';
 import { getAirportsIndexCoords } from './airportsIndexLookup.js';
 import { distanceKm, extractArrivalIataCodesFromEssentialGuide } from './rentalAirportMatch.js';
 import { normalizeAppLocale } from '../i18n/constants.js';
+import { isExploreRestaurantItem } from '../shared/search/tourRestaurantDetect.js';
 
 /** 목적지 좌표와 도착 공항 허브가 이 거리(km)보다 멀면 툴킷·배너에서 제외 */
 export const MAX_DESTINATION_AIRPORT_KM = 900;
@@ -346,6 +347,17 @@ export async function fetchToolkitRow(supabase, location, locale = 'ko') {
 
   const picked = pickBestToolkitRow(data, location, locale);
   if (picked) return picked;
+
+  const loc = mergeCanonicalTravelSpot(location);
+  const stable = String(getPlaceStableKey(loc) || loc?.slug || '').toLowerCase();
+  const allowLegacyGeoMismatchFallback =
+    !isExploreRestaurantItem(loc) &&
+    !String(loc?.kind || '').toLowerCase().includes('restaurant') &&
+    !/^tour-\d+$/u.test(stable);
+
+  if (!allowLegacyGeoMismatchFallback) {
+    return null;
+  }
 
   if (import.meta.env?.DEV && data.length > 0) {
     console.warn('[toolkitPlaceIdResolve] place_id는 일치하나 지리 검증 실패 — 레거시 행 폴백', {
