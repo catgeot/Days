@@ -217,6 +217,7 @@ test('Home gallery PR drift guard; MOONi session wiring line allowlist', () => {
     /^[+-].*routeLocation\.search/,
     /^[+-].*cachePlaceLocation/,
     /^[+-].*joseonRoyalTombsPromoCopy/,
+    /^[+-].*joseonRoyalTombsSearch/,
     /^[+-].*enrichJoseonRoyalTombsPromoPin/,
     /^-\s*return enrichLocationWithRentalAirport/,
     /^-\s*enrichLocationWithRentalAirport\(/,

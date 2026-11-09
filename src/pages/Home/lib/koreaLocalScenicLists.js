@@ -255,6 +255,10 @@ const OFFICIAL_SEARCH_CONTENT_BY_NAME = {
   기백산: '126033',
   동구릉: '125545',
   홍유릉: '125548',
+  사릉: '250408',
+  '조선왕릉동구릉': '125545',
+  '조선왕릉홍유릉': '125548',
+  '조선왕릉사릉': '250408',
 };
 
 const OFFICIAL_SEARCH_LATIN_BY_NAME = {
