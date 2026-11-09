@@ -76,7 +76,10 @@ for (const query of QUERIES) {
           .then(() => true)
           .catch(() => false);
         if (!navigated) {
-          const card = searchResultButton(page, /한라산|백록담|127635|국립공원|화구벽/i);
+          const card = page
+            .getByRole('button')
+            .filter({ hasText: /한라산국립공원|Hallasan National Park/i })
+            .first();
           await expect(card).toBeVisible({ timeout: 120_000 });
           await card.click();
           await expect(page).toHaveURL(/\/place\/tour-127635/, { timeout: 60_000 });
