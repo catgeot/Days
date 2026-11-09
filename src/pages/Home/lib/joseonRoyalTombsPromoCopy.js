@@ -1,3 +1,8 @@
+import {
+  correctJoseonRoyalTombsHub,
+  mergeJoseonRoyalTombsGalleryFields,
+} from './joseonRoyalTombsSearch.js';
+
 /**
  * 11/11 홍보 — 조선왕릉 검색·상세 관람 안내(공공 사실). DB·무니 생성 없음.
  */
@@ -78,19 +83,21 @@ function nameCopyForPin(pin) {
  */
 export function enrichJoseonRoyalTombsPromoPin(pin) {
   if (!pin || typeof pin !== 'object') return pin;
-  const office = officeCopyForName(pin.name || pin.name_ko);
+  let next = correctJoseonRoyalTombsHub(pin);
+  next = mergeJoseonRoyalTombsGalleryFields(next);
+  const office = officeCopyForName(next.name || next.name_ko);
   const named = office || nameCopyForPin(pin);
-  if (!named?.desc) return pin;
+  if (!named?.desc) return next;
 
-  const next = { ...pin };
-  if (!String(next.desc || '').trim() || next.desc === next.curationSummary) {
-    next.desc = named.desc;
+  const merged = { ...next };
+  if (!String(merged.desc || '').trim() || merged.desc === merged.curationSummary) {
+    merged.desc = named.desc;
   }
-  if (!String(next.curationSummary || '').trim()) {
-    next.curationSummary = named.desc;
+  if (!String(merged.curationSummary || '').trim()) {
+    merged.curationSummary = named.desc;
   }
-  if (named.addr1 && !next.addr1) next.addr1 = named.addr1;
-  if (named.homepage && !next.homepage) next.homepage = named.homepage;
-  if (office) next.placeChatIntroApplied = true;
-  return next;
+  if (named.addr1 && !merged.addr1) merged.addr1 = named.addr1;
+  if (named.homepage && !merged.homepage) merged.homepage = named.homepage;
+  if (office) merged.placeChatIntroApplied = true;
+  return merged;
 }

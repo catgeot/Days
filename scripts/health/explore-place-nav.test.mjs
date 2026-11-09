@@ -8,7 +8,7 @@ import {
   normalizeExploreSelectionPin,
 } from '../../src/pages/Home/lib/explorePlaceNav.js';
 import { buildExploreSearchLocationLine, getLocalizedParentCityLabel } from '../../src/components/PlaceCard/common/locationDisplay.js';
-import { cachePlaceLocation, mergeCachedPlaceIfCoordsMatch } from '../../src/pages/Home/lib/placeLocationCache.js';
+import { resolveJoseonRoyalTombsOfficePlaceRoute } from '../../src/pages/Home/lib/joseonRoyalTombsSearch.js';
 
 test('koreaTourContentPlaceParam — contentId별 고유 URL', () => {
   assert.equal(koreaTourContentPlaceParam('127982'), 'tour-127982');
@@ -42,12 +42,10 @@ test('placeLocationCache — search- URL 새로고침 키 복원', () => {
     slug: 'seoul',
     name_en: 'Seoul',
   };
-  const param = getPlaceUrlParam(seoulOffice);
-  assert.ok(param?.startsWith('search-'), param);
-  cachePlaceLocation({ ...seoulOffice, id: param, slug: param, canonical_slug: param });
-  const cached = mergeCachedPlaceIfCoordsMatch(param, 37.4768, 127.0045);
-  assert.ok(cached?.name?.includes('조선왕릉'));
-  assert.notEqual(getPlaceUrlParam(cached), 'seoul');
+  const route = resolveJoseonRoyalTombsOfficePlaceRoute(seoulOffice);
+  assert.ok(route?.param);
+  assert.ok(!route.param.startsWith('search-'));
+  assert.notEqual(route.param, 'seoul');
 });
 
 test('resolveSearchResultSelect — 조선왕릉 관리소 Mapbox POI는 seoul 카드로 스냅 금지', () => {
@@ -69,8 +67,8 @@ test('resolveSearchResultSelect — 조선왕릉 관리소 Mapbox POI는 seoul �
   const decision = resolveSearchResultSelect(seoulOffice);
   assert.equal(decision?.type, 'place');
   assert.notEqual(decision?.param, 'seoul');
-  assert.ok(decision?.param?.startsWith('search-'), decision?.param);
-  assert.notEqual(getPlaceUrlParam(seoulOffice), 'seoul');
+  assert.ok(!decision?.param?.startsWith('search-'), decision?.param);
+  assert.equal(decision?.param, 'donggureung-royal-tombs');
 
   const goyangOffice = {
     ...seoulOffice,
@@ -87,7 +85,7 @@ test('resolveSearchResultSelect — 조선왕릉 관리소 Mapbox POI는 seoul �
   assert.equal(goyangDecision?.type, 'place');
   assert.notEqual(goyangDecision?.param, 'seoul');
   assert.notEqual(goyangDecision?.param, 'goyang');
-  assert.ok(goyangDecision?.param?.startsWith('search-'));
+  assert.equal(goyangDecision?.param, 'seooreung-royal-tombs');
 });
 
 test('resolveSearchResultSelect — 국내 Mapbox 한글 POI는 /place (홈 금지)', () => {
