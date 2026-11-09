@@ -1,4 +1,4 @@
-import { invokeSupabaseFunctionDeduped } from '../shared/api/invokeSupabaseFunctionDeduped';
+import { invokeSupabaseFunctionDeduped } from '../shared/api/invokeSupabaseFunctionDeduped.js';
 import { i18n } from '../i18n/config';
 import { normalizeAppLocale } from '../i18n/constants';
 import {

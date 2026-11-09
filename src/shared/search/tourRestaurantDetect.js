@@ -1,8 +1,10 @@
-import { RESTAURANT_CONTENT_TYPE_ID } from '../../utils/fetchTourApiAttractionDetail.js';
 import {
   isDomesticKoreaLocation,
   isDomesticKoreaLocationForTourApi,
 } from '../../utils/tourApiMatch.js';
+
+/** TourAPI contentTypeId 음식점 — `fetchTourApiAttractionDetail`와 동일 값(39). Node 빌드 스크립트 import 체인 분리. */
+const RESTAURANT_CONTENT_TYPE_ID = '39';
 
 export const EXPLORE_BADGE_RESTAURANT = '식당';
 export const EXPLORE_KIND_RESTAURANT = 'restaurant';
