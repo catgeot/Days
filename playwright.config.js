@@ -210,6 +210,16 @@ export default defineConfig({
       },
     },
     {
+      name: 'webkit-festival-detail-reviews',
+      testMatch: /korea-festival-detail-reviews\.spec\.js/,
+      use: {
+        ...devices['iPhone 13'],
+        viewport: { width: 390, height: 844 },
+        deviceScaleFactor: 1,
+        ignoreHTTPSErrors: true,
+      },
+    },
+    {
       name: 'webkit-festival-back-overview',
       testMatch: /korea-festival-back-overview\.spec\.js/,
       timeout: process.env.CI ? 120_000 : 240_000,

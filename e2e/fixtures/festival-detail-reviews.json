@@ -1,0 +1,20 @@
+[
+  {
+    "id": "e2e-festival-editorial-638576",
+    "place_slug": "tour-638576",
+    "place_name": "함평 나비축제",
+    "content": "함평 나비축제 E2E — 넓은 엑스포공원에서 가족과 함께 즐기기 좋은 국내 대표 나비·꽃 축제입니다.",
+    "content_blocks": null,
+    "persona_label": "여행 큐레이터",
+    "disclosure": "GATEO 편집 리뷰 · AI 보조 작성 · 실제 방문 후기가 아닙니다.",
+    "is_public": true,
+    "is_editorial": true,
+    "created_at": "2026-11-01T09:00:00.000Z",
+    "rating": null,
+    "user_id": "e2e-editorial",
+    "user": { "id": "e2e-editorial", "display_name": "GATEO", "avatar_url": null },
+    "likes": [],
+    "images": [],
+    "views_count": 0
+  }
+]
