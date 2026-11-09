@@ -537,6 +537,34 @@ jobs:
           DEV_SSL: '0'
         run: npm run test:e2e:mooni-destination-pick -- --reporter=line
 
+  place-header-locale-e2e:
+    name: Place header locale toggle E2E (Chromium)
+    runs-on: ubuntu-latest
+    needs: lint-and-build
+    timeout-minutes: 30
+    container:
+      image: mcr.microsoft.com/playwright:v1.60.0-jammy
+      options: --ipc=host
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Playwright Chromium — place-header-locale
+        env:
+          VITE_SUPABASE_URL: https://example.supabase.co
+          VITE_SUPABASE_ANON_KEY: e2e-anon-placeholder
+          DEV_SSL: '0'
+        run: npm run test:e2e:place-header-locale -- --reporter=line
+
   # YouTube 탭 세션(더 보기). 프로덕션 일일 헬스(e2e-health)에서는 제외.
   e2e-youtube-session:
     runs-on: ubuntu-latest
