@@ -10,6 +10,7 @@ import {
 import { getPlaceStableKey, mergeCanonicalTravelSpot } from '../../../utils/travelSpotResolve';
 import { i18n } from '../../../i18n/config';
 import { normalizeAppLocale } from '../../../i18n/constants';
+import { isPlacePlannerEligible } from '../../../shared/place/placePlannerEligibility.js';
 
 const isDev = import.meta.env.DEV;
 
@@ -23,6 +24,7 @@ export const usePlannerData = (location, mediaMode) => {
     [location]
   );
   const placeKey = getPlaceStableKey(canonicalLocation);
+  const plannerEligible = isPlacePlannerEligible(canonicalLocation);
   const appLocale = normalizeAppLocale(i18n.language);
 
   const [plannerData, setToolkitData] = useState(null);
@@ -70,7 +72,11 @@ export const usePlannerData = (location, mediaMode) => {
   }, [location, canonicalLocation, placeKey]);
 
   useEffect(() => {
-    if (!placeKey) return;
+    if (!placeKey || !plannerEligible) {
+      setToolkitData(null);
+      setIsToolkitLoading(false);
+      return;
+    }
 
     // ✅ PLANNER 모드가 아니면 loading 상태만 false로 설정하고 데이터는 유지
     if (mediaMode !== 'PLANNER') {
@@ -143,7 +149,7 @@ export const usePlannerData = (location, mediaMode) => {
     return () => {
       isSubscribed = false;
     };
-  }, [placeKey, mediaMode, location, canonicalLocation, appLocale]);
+  }, [placeKey, plannerEligible, mediaMode, location, canonicalLocation, appLocale]);
 
   useEffect(() => {
     const handleToolkitUpdated = (event) => {

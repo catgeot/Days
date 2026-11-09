@@ -31,6 +31,7 @@ import PlaceWorldEventsChatPreview from '../common/PlaceWorldEventsChatPreview';
 import PlaceCrossLinksSection from '../common/PlaceCrossLinksSection';
 import LocaleToggle from '../../../i18n/LocaleToggle';
 import { isGateoPlaceWorldEventsTabEnabled } from '../../../shared/gateoFeatureFlags';
+import { isPlacePlannerEligible } from '../../../shared/place/placePlannerEligibility.js';
 import { isPlaceCrosslinkWorldEventsRailEnabled } from '../../../pages/Home/lib/placeCrosslinkRollout.js';
 import { getWorldEventsForSlug } from '../../../utils/worldEvents';
 
@@ -80,6 +81,7 @@ const PlaceChatPanel = React.memo(({
   const skipRelatedRefreshRef = useRef(false);
   const [relatedPlaces, setRelatedPlaces] = useState([]);
   const { primaryName, secondaryName } = getPlaceTitleLinesForLocale(location, locale);
+  const plannerNavEligible = isPlacePlannerEligible(location);
   const rawCountry = getLocalizedCountryName(location, locale);
   const countryLabel = isPlaceholderCountry(rawCountry) ? '' : rawCountry;
 
@@ -322,7 +324,8 @@ const PlaceChatPanel = React.memo(({
                     />
                     <span className="hidden xl:inline text-xs font-bold whitespace-nowrap text-cyan-50 drop-shadow-[0_1px_2px_rgba(0,0,0,0.45)]">MOONi</span>
                  </button>
-                 {mediaMode === 'PLANNER' ? (
+                 {plannerNavEligible ? (
+                   mediaMode === 'PLANNER' ? (
                     <button
                         onClick={() => setMediaMode('GALLERY')}
                         className="px-2.5 py-1.5 md:px-4 md:py-2 rounded-full bg-blue-600/90 hover:bg-blue-500 text-white shadow-lg shadow-blue-900/20 transition-all flex items-center gap-1.5 group shrink-0"
@@ -338,7 +341,8 @@ const PlaceChatPanel = React.memo(({
                         <Briefcase className="w-3.5 h-3.5 md:w-4 md:h-4 group-hover:scale-110 transition-transform"/>
                         <span className="text-xs font-bold whitespace-nowrap">{t('place.nav.planner')}</span>
                     </button>
-                 )}
+                 )
+                 ) : null}
              </div>
          </div>
 

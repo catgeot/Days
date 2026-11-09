@@ -13,6 +13,7 @@ import {
 } from '../../pages/Home/lib/placeSeoText.js';
 import { isGateoPlaceWorldEventsTabEnabled } from '../../shared/gateoFeatureFlags';
 import { mediaModeFromUrlTab } from './common/placeMediaTabRoutes';
+import { isPlacePlannerEligible } from '../../shared/place/placePlannerEligibility.js';
 
 const PlaceCard = () => {
   const { slug, tab } = useParams();
@@ -52,6 +53,12 @@ const PlaceCard = () => {
   const reviewSeoStats = usePlaceReviewSeoStats(
     tabKey === 'reviews' && reviewPlaceSlug ? reviewPlaceSlug : null,
   );
+
+  useEffect(() => {
+    if (contextLocation && tabKey === 'planner' && !isPlacePlannerEligible(contextLocation)) {
+      navigate(`/place/${slug}`, { replace: true });
+    }
+  }, [contextLocation, slug, tabKey, navigate]);
 
   useEffect(() => {
     let timeoutId;
