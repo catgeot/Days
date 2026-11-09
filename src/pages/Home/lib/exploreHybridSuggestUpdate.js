@@ -1,4 +1,5 @@
-import { buildHybridSearchSuggestions } from './searchSuggestions.js';
+import { buildHybridSearchSuggestions, buildLocalSearchSuggestions } from './searchSuggestions.js';
+import { isKoreaGetbolCollectiveSearchQuery } from './exploreKoreaGetbolCollectiveSearch.js';
 import {
   applyExploreFestivalMergeStrategy,
   buildExploreFestivalSearchSuggestions,
@@ -28,6 +29,14 @@ export async function runExploreHybridSuggestUpdate(
   const locale = opts.locale || 'ko';
   const mergeStartedAt = opts.mergeStartedAt ?? Date.now();
   const onPaint = opts.onPaint;
+
+  if (isKoreaGetbolCollectiveSearchQuery(query)) {
+    const localOnly = buildLocalSearchSuggestions(query);
+    if (getCurrentRequestId() === requestId) {
+      onPaint?.(localOnly);
+    }
+    return { stale: getCurrentRequestId() !== requestId };
+  }
   const isEnabled = deps.isSiteSearchEnabled ?? isGateoSiteSearchEnabled;
   const isParityEnabled = deps.isSubmitParityEnabled ?? isGateoExploreSearchSubmitParityEnabled;
   const buildHybrid = deps.buildHybrid ?? ((q) => buildHybridSearchSuggestions(q));

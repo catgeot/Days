@@ -23,6 +23,7 @@ import {
   formatTourAttractionLocality,
 } from './koreaTourAttractionLocality.js';
 import { resolveKoStationAlias } from './koreaPlaceMatchDictionary.js';
+import { enrichSearchCandidateScenicMedia } from './koreaLocalScenicLists.js';
 
 function applyExploreAliasTourContentId(hit, query) {
   if (!hit) return hit;
@@ -31,6 +32,11 @@ function applyExploreAliasTourContentId(hit, query) {
   if (!/^\d{1,32}$/.test(contentId)) return hit;
   hit.contentId = contentId;
   hit.source = 'tourapi';
+  const label = String(query || '').trim();
+  if (label) {
+    hit.name = label;
+    hit.name_ko = label;
+  }
   return hit;
 }
 import { inferPlaceMatchCategory } from './placeMatchCategory.js';
@@ -334,7 +340,7 @@ export function firstPassHitToUiPlace(hit, query = '') {
   const lng = Number(hit.lng);
   const coordKey = Number.isFinite(lat) && Number.isFinite(lng) ? `search-${lat}-${lng}` : '';
   const tourPin = hit.source === 'tourapi' && coordKey;
-  return {
+  const base = {
     id: hit.contentId ? `tour-${hit.contentId}` : coordKey || `${hit.source || 'first-pass'}-${hit.lat}-${hit.lng}`,
     slug: tourPin ? coordKey : placeUrlSlug(nameEn, hit.name),
     name: hit.name,
@@ -357,4 +363,8 @@ export function firstPassHitToUiPlace(hit, query = '') {
     ...(hit.hubId ? { hubId: hit.hubId } : {}),
     ...(hit.parentCity ? { parentCity: hit.parentCity } : {}),
   };
+  if (hit.source === 'tourapi' && hit.contentId) {
+    return enrichSearchCandidateScenicMedia(base);
+  }
+  return base;
 }

@@ -716,6 +716,13 @@ export function resolveKoExploreSearchAlias(query) {
   return KO_EXPLORE_SEARCH_ALIAS_MAP.get(k) || null;
 }
 
+/** 탐색 별칭 contentId — /place/tour-{id} 직행(허브 scenic slug 금지) */
+export function resolveExploreAliasTourPlaceParam(query) {
+  const contentId = String(resolveKoExploreSearchAlias(query)?.contentId || '').trim();
+  if (!/^\d{1,32}$/.test(contentId)) return '';
+  return `tour-${contentId}`;
+}
+
 /** Mapbox·geocode 핀 표시명이 SSOT 별칭 canonical과 같을 때 직행할 /place slug */
 export function resolveExploreAliasDirectPlaceSlug(label) {
   const cfg = resolveKoExploreSearchAlias(label);

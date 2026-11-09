@@ -13,5 +13,5 @@ export function normalizeMooniMarkdownBoldSpacing(markdown) {
     if (next === out) break;
     out = next;
   }
-  return out;
+  return out.replace(/\*\*([^*\n]+?)\*\*(?=[\p{Script=Hangul}])/gu, '**$1** ');
 }

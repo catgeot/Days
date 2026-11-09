@@ -221,4 +221,37 @@ test.describe('Explore bare KO — Mapbox-only parity', () => {
     await page.waitForURL(/\/place\/pyongyang/, { timeout: 60_000 });
     expect(new URL(page.url()).pathname).toBe('/place/pyongyang');
   });
+
+  test('갯벌 suggestion tap — UNESCO 카드만 /place (홈 튕김 없음)', async ({ page }) => {
+    await page.goto('/explore');
+    const input = page.getByRole('textbox', { name: /예: 속초|e\.g\. Sokcho/i }).first();
+    await expect(input).toBeVisible({ timeout: 60_000 });
+    await input.fill('갯벌');
+    await expect(
+      page.locator('[data-search-popover] button').filter({ hasNotText: 'MOONi' }),
+    ).toHaveCount(3, { timeout: 30_000 });
+    await expect(page.getByRole('button', { name: /유부도와 서천갯벌/ })).toHaveCount(0);
+
+    const cases = [
+      { label: /고창\s*갯벌/, path: '/place/tour-2615234' },
+      { label: /신안갯벌.*증도|증도/, path: /\/place\/tour-575607/ },
+      { label: /순천만습지.*보성/, path: '/place/tour-126730' },
+    ];
+
+    for (const { label, path } of cases) {
+      await input.fill('');
+      await input.fill('갯벌');
+      const card = page
+        .locator('[data-search-popover] button')
+        .filter({ hasNotText: 'MOONi' })
+        .filter({ hasText: label })
+        .first();
+      await expect(card).toBeVisible({ timeout: 30_000 });
+      await card.click();
+      await page.waitForURL(path, { timeout: 60_000 });
+      expect(new URL(page.url()).pathname).not.toBe('/');
+      expect(new URL(page.url()).pathname).not.toBe('/explore');
+      await page.goto('/explore', { waitUntil: 'domcontentloaded' });
+    }
+  });
 });

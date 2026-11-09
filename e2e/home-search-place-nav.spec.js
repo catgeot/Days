@@ -44,6 +44,30 @@ test.describe('home search result opens /place', () => {
     await expect(page).toHaveURL(/\/place\/cairo(?:\/|$|\?)/, { timeout: 30_000 });
   });
 
+  test('갯벌 — UNESCO 3장·음식점 부분일치 없음·/place 이동 (홈→탐색)', async ({ page }) => {
+    const input = await openHomeSearch(page);
+    await input.fill('갯벌');
+    const buttons = page.locator('[data-search-popover] button').filter({ hasNotText: 'MOONi' });
+    await expect(buttons).toHaveCount(3, { timeout: 30_000 });
+    await expect(buttons.filter({ hasText: /횟집|회집|팰리스|스타일/ })).toHaveCount(0);
+
+    const cases = [
+      { label: /고창\s*갯벌/, path: '/place/tour-2615234' },
+      { label: /신안갯벌|증도/, path: /\/place\/tour-575607/ },
+      { label: /순천만습지/, path: '/place/tour-126730' },
+    ];
+    for (const { label, path } of cases) {
+      await input.fill('');
+      await input.fill('갯벌');
+      const card = buttons.filter({ hasText: label }).first();
+      await expect(card).toBeVisible({ timeout: 20_000 });
+      await card.click();
+      await page.waitForURL(path, { timeout: 60_000 });
+      await page.goto('/');
+      await openHomeSearch(page);
+    }
+  });
+
   test('domestic 속초 and 제주 still open their place pages', async ({ page }) => {
     await tapSearchResult(page, '속초', '속초');
     await expect(page).toHaveURL(/\/place\/sokcho(?:\/|$|\?)/, { timeout: 30_000 });

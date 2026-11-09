@@ -34,3 +34,13 @@ test('normalizeMooniMarkdownBoldSpacing — **N일차** 뒤 오전·지명 bold 
   });
   assert.match(md, /\*\*1일차\*\* 오전 \*\*Bohol\*\*/);
 });
+
+test('normalizeMooniMarkdownBoldSpacing — bold 뒤 한글 glue 분리', () => {
+  const md = getMooniModelMarkdownForRender('**미야코지마**시기라미라지', {
+    stripPhantomTicketMention: true,
+  });
+  assert.match(md, /\*\*미야코지마\*\* 시기라미라지/);
+  const html = micromark(md, { extensions: [gfm()], htmlExtensions: [gfmHtml()] });
+  assert.ok(html.includes('<strong>미야코지마</strong>'), html);
+  assert.ok(html.includes('시기라미라지'), html);
+});
