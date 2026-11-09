@@ -1,5 +1,6 @@
 import { isGateoSiteSearchEnabled } from '../../../shared/gateoFeatureFlags.js';
-import { buildHybridSearchSuggestions } from './searchSuggestions.js';
+import { buildHybridSearchSuggestions, buildLocalSearchSuggestions } from './searchSuggestions.js';
+import { isKoreaGetbolCollectiveSearchQuery } from './exploreKoreaGetbolCollectiveSearch.js';
 import {
   appendExploreFestivalBelowPlaceBlock,
   buildExploreFestivalSuggestionsFromPool,
@@ -22,6 +23,9 @@ export const EXPLORE_SITE_SEARCH_HYBRID_MAX_ITEMS = 48;
 export async function buildExploreSiteSearchHybridSuggestions(query, opts = {}) {
   const locale = opts.locale || 'ko';
   const maxItems = opts.maxItems ?? EXPLORE_SITE_SEARCH_HYBRID_MAX_ITEMS;
+  if (isKoreaGetbolCollectiveSearchQuery(query)) {
+    return buildLocalSearchSuggestions(query).slice(0, maxItems);
+  }
   let items = await buildHybridSearchSuggestions(query, opts.hybridOpts);
   if (!isGateoSiteSearchEnabled()) return items;
 

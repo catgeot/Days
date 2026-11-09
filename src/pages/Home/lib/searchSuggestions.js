@@ -121,6 +121,9 @@ async function prependKoreaTourTitleCandidates(query, regional, list) {
   const titleQ = regional
     ? String(regional.placeQuery || '').trim()
     : canonicalizeExploreSearchQuery(effectiveExploreSearchQuery(query));
+  if (isKoreaGetbolCollectiveSearchQuery(titleQ) || isKoreaGetbolCollectiveSearchQuery(query)) {
+    return list;
+  }
   if (!titleQ || !/[\uAC00-\uD7A3]/.test(titleQ)) return list;
   if (/\s/.test(String(query || '').trim()) && !regional?.placeQuery) return list;
   try {
