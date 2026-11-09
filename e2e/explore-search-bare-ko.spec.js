@@ -222,13 +222,16 @@ test.describe('Explore bare KO — Mapbox-only parity', () => {
     expect(new URL(page.url()).pathname).toBe('/place/pyongyang');
   });
 
-  test('갯벌 suggestion tap — UNESCO 카드만 /place (홈 튕김 없음)', async ({ page }) => {
+  test('갯벌 suggestion tap — UNESCO /place · 식당 external (홈 튕김 없음)', async ({ page }) => {
     await page.goto('/explore');
     const input = page.getByRole('textbox', { name: /예: 속초|e\.g\. Sokcho/i }).first();
     await expect(input).toBeVisible({ timeout: 60_000 });
     await input.fill('갯벌');
     await expect(
-      page.locator('[data-search-popover] button').filter({ hasNotText: 'MOONi' }),
+      page
+        .locator('[data-search-popover] button')
+        .filter({ hasNotText: 'MOONi' })
+        .filter({ hasText: /고창\s*갯벌|신안갯벌|순천만습지/ }),
     ).toHaveCount(3, { timeout: 30_000 });
     await expect(page.getByRole('button', { name: /유부도와 서천갯벌/ })).toHaveCount(0);
 

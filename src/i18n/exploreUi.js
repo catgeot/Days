@@ -6,6 +6,7 @@ export const EXPLORE_BADGE_PLACE = '장소';
 export const EXPLORE_BADGE_REGION = '지역';
 export const EXPLORE_BADGE_FESTIVAL = '축제';
 export const EXPLORE_BADGE_REVIEW = '리뷰';
+export const EXPLORE_BADGE_RESTAURANT = '식당';
 
 /** Raw KO group header suffix in SSOT (`cityAttractionHubs`, `koreaPoiTypeSearch`). */
 export const EXPLORE_GROUP_TITLE_ATTRACTIONS_SUFFIX = ' 명소';
@@ -96,6 +97,9 @@ export function localizedExploreBadgeLabel(t, badgeKo) {
   }
   if (key === EXPLORE_BADGE_REVIEW) {
     return t('home.explore.reviewBadge', { defaultValue: '리뷰' });
+  }
+  if (key === EXPLORE_BADGE_RESTAURANT) {
+    return t('home.explore.restaurantBadge', { defaultValue: '식당' });
   }
   return t(`home.explore.badge.${key}`, { defaultValue: key });
 }

@@ -31,9 +31,10 @@ export async function runExploreHybridSuggestUpdate(
   const onPaint = opts.onPaint;
 
   if (isKoreaGetbolCollectiveSearchQuery(query)) {
-    const localOnly = buildLocalSearchSuggestions(query);
+    const buildHybridForGetbol = deps.buildHybrid ?? ((q) => buildHybridSearchSuggestions(q, deps.hybridOpts));
+    const painted = await buildHybridForGetbol(query);
     if (getCurrentRequestId() === requestId) {
-      onPaint?.(localOnly);
+      onPaint?.(painted);
     }
     return { stale: getCurrentRequestId() !== requestId };
   }

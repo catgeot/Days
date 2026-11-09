@@ -568,8 +568,12 @@ function mapDetailCommonItemToDbRow(contentId, item) {
   if (!item) return null;
   const title = String(item?.title || '').trim();
   if (!title) return null;
+  const contentTypeId = String(
+    item?.contenttypeid || item?.contentTypeId || item?.content_type_id || '',
+  ).trim();
   return {
     content_id: String(contentId),
+    ...(contentTypeId ? { content_type_id: contentTypeId } : {}),
     title,
     addr1: item?.addr1 != null ? String(item.addr1) : '',
     addr2: item?.addr2 != null ? String(item.addr2) : '',

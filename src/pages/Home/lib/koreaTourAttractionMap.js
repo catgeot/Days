@@ -134,6 +134,13 @@ export function mapTourAttractionRow(row) {
   const cat1 = row?.cat1 != null ? String(row.cat1).trim() || null : null;
   const cat2 = row?.cat2 != null ? String(row.cat2).trim() || null : null;
   const cat3 = row?.cat3 != null ? String(row.cat3).trim() || null : null;
+  const contentTypeId =
+    row?.content_type_id != null
+      ? String(row.content_type_id).trim() || null
+      : row?.contentTypeId != null
+        ? String(row.contentTypeId).trim() || null
+        : null;
+
   return {
     id: contentId,
     name: title,
@@ -149,6 +156,7 @@ export function mapTourAttractionRow(row) {
     lat: Number.isFinite(lat) ? lat : null,
     lng: Number.isFinite(lng) ? lng : null,
     contentId,
+    contentTypeId,
     firstImage: row?.first_image ? String(row.first_image) : null,
     areaCode,
     areaLabel,

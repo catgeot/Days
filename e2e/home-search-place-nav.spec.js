@@ -44,11 +44,13 @@ test.describe('home search result opens /place', () => {
     await expect(page).toHaveURL(/\/place\/cairo(?:\/|$|\?)/, { timeout: 30_000 });
   });
 
-  test('갯벌 — UNESCO 3장·음식점 부분일치 없음·/place 이동 (홈→탐색)', async ({ page }) => {
+  test('갯벌 — UNESCO 3장 /place · 식당은 external (홈→탐색)', async ({ page }) => {
     const input = await openHomeSearch(page);
     await input.fill('갯벌');
     const buttons = page.locator('[data-search-popover] button').filter({ hasNotText: 'MOONi' });
-    await expect(buttons).toHaveCount(3, { timeout: 30_000 });
+    await expect(buttons.filter({ hasText: /고창\s*갯벌|신안갯벌|순천만습지/ })).toHaveCount(3, {
+      timeout: 30_000,
+    });
     await expect(buttons.filter({ hasText: /횟집|회집|팰리스|스타일/ })).toHaveCount(0);
 
     const cases = [

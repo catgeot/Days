@@ -350,6 +350,9 @@
         "resortSubtitle": "비행·숙소·픽업 포함 {{cta}}"
       },
       "festivalBadge": "축제",
+      "restaurantBadge": "식당",
+      "restaurantMapReviewsCta": "지도·리뷰 보기",
+      "restaurantMapReviewsAria": "{{name}} — 지도·리뷰 보기",
       "groupTitleSightsSuffix": " 명소",
       "hubBrowseBlurb": "{{name}}의 명소·명물을 둘러보세요.",
       "badge": {
@@ -363,7 +366,8 @@
         "전망": "전망",
         "박물관": "박물관",
         "동네": "동네",
-        "장소": "장소"
+        "장소": "장소",
+        "식당": "식당"
       }
     },
     "stayStrip": {

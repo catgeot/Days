@@ -574,6 +574,16 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, onAskMooni,
       return;
     }
 
+    const externalHref = String(item?.restaurantMapSearchUrl || '').trim();
+    if (item.kind === 'restaurant' || item.exploreRestaurant || externalHref) {
+      const { resolveSearchResultSelect } = await import('../lib/exploreRecentHistory.js');
+      const decision = resolveSearchResultSelect(item);
+      if (decision?.type === 'external' && decision.href) {
+        window.open(decision.href, '_blank', 'noopener,noreferrer');
+        return;
+      }
+    }
+
     let place = item;
     const needsLatinHydrate = Boolean(
       item.mapboxId && (item.needsRetrieve || needsLatinPlaceName(item)),

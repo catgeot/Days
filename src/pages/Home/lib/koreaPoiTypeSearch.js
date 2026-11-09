@@ -16,6 +16,8 @@ import {
   titleMatchesPoiType,
 } from './koreaPoiTypeQuery.js';
 import { extractTourAttractionSigungu } from './koreaTourAttractionLocality.js';
+import { isExploreRestaurantItem } from '../../../shared/search/tourRestaurantDetect.js';
+import { tourRestaurantToExploreSuggestion } from './tourRestaurantExploreSuggestion.js';
 
 function compactKey(s) {
   return String(s ?? '')
@@ -63,7 +65,10 @@ function resolveHubFromTourSpot(spot) {
   );
 }
 
-export function tourAttractionToPoiSuggestion(spot) {
+export function tourAttractionToPoiSuggestion(spot, opts = {}) {
+  if (isExploreRestaurantItem(spot)) {
+    return tourRestaurantToExploreSuggestion(spot, opts);
+  }
   const lat = Number(spot?.lat);
   const lng = Number(spot?.lng);
   const name = String(spot?.name || spot?.title || '').trim();

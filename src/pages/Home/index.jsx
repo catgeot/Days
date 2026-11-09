@@ -1060,7 +1060,20 @@ function Home() {
             const row = await fetchKoreaTourAttractionById(tourContentMatch[1]);
             if (cancelled || !row) return;
             const pin = tourAttractionToPoiSuggestion(row);
-            if (!pin || !Number.isFinite(Number(pin.lat))) return;
+            if (!pin) return;
+            if (pin.kind === 'restaurant' || pin.exploreRestaurant) {
+              const prepared = {
+                ...pin,
+                slug: normalizedTargetSlug,
+                canonical_slug: normalizedTargetSlug,
+                contentId: tourContentMatch[1],
+                skipScenicGateway: true,
+              };
+              cachePlaceLocation(prepared);
+              navigateToPlace(prepared);
+              return;
+            }
+            if (!Number.isFinite(Number(pin.lat))) return;
             const prepared = enrichJoseonRoyalTombsPromoPin({
               ...pin,
               uiPlace: true,
@@ -1940,6 +1953,11 @@ function Home() {
           onSelect={(spot) => {
             const decision = resolveSearchResultSelect(spot);
             if (!decision) return;
+            if (decision.type === 'external') {
+              const href = String(decision.href || '').trim();
+              if (href) window.open(href, '_blank', 'noopener,noreferrer');
+              return;
+            }
             if (decision.type === 'place') {
               navigateToPlace(decision.spot);
               return;

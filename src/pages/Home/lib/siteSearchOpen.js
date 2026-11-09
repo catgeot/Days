@@ -20,6 +20,8 @@ import {
   resolveKoreaDestinationFirstPassSync,
 } from './resolveKoreaDestinationFirstPass.js';
 import { normalizeExploreSelectionPin } from './explorePlaceNav.js';
+import { isExploreRestaurantItem } from '../../../shared/search/tourRestaurantDetect.js';
+import { buildRestaurantMapSearchUrl } from '../../../shared/search/restaurantMapSearchUrl.js';
 
 const SITE_SEARCH_HOMONYM_QUERY_RANK = [
   {
@@ -240,6 +242,12 @@ export function siteSearchFallbackLinkHref(item, query = '') {
   const q = String(query || item?.name || '').trim();
   if (!item || typeof item !== 'object') {
     return q ? `/explore?q=${encodeURIComponent(q)}` : '/explore';
+  }
+  if (isExploreRestaurantItem(item)) {
+    const href =
+      String(item.restaurantMapSearchUrl || '').trim() ||
+      buildRestaurantMapSearchUrl({ item, name: item.name, query: q });
+    if (href) return href;
   }
   if (!isSiteSearchOpenEnabled()) {
     const param = siteSearchCatalogPlaceParam(item) || getPlaceUrlParam(item);

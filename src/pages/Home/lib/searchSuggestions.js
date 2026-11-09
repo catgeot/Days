@@ -163,8 +163,29 @@ function applyExploreAliasTourSuggestionPolicy(query, list) {
   });
 }
 
-async function finalizeHybridSuggestions(query, regional, list, max = 24) {
-  const withTour = await prependKoreaTourTitleCandidates(query, regional, list);
+async function appendExploreRestaurantMatches(query, list, matchOpts) {
+  const q = String(query || '').trim();
+  if (q.length < 2) return list;
+  try {
+    const { collectExploreRestaurantKeywordMatches } = await import('./exploreRestaurantSearchCandidates.js');
+    const restaurants = await collectExploreRestaurantKeywordMatches(q, {
+      lookupItems: matchOpts?.restaurantLookupItems,
+      max: matchOpts?.restaurantMax,
+    });
+    if (!restaurants.length) return list;
+    const merged = [];
+    const seen = new Set();
+    for (const item of list || []) pushUnique(merged, seen, item);
+    for (const item of restaurants) pushUnique(merged, seen, item);
+    return merged;
+  } catch {
+    return list;
+  }
+}
+
+async function finalizeHybridSuggestions(query, regional, list, max = 24, matchOpts) {
+  const withRestaurants = await appendExploreRestaurantMatches(query, list, matchOpts);
+  const withTour = await prependKoreaTourTitleCandidates(query, regional, withRestaurants);
   const policy = applyExploreAliasTourSuggestionPolicy(query, withTour);
   const enriched = policy.slice(0, max).map(enrichSearchCandidateScenicMedia);
   return rankSiteSearchExploreCandidates(query, enriched);
@@ -557,7 +578,7 @@ export async function buildHybridSearchSuggestions(query, opts = {}) {
       pushUnique(merged, seenPoi, enrichSearchCandidateScenicMedia(item));
     }
     if (merged.length >= 1) {
-      return finalizeHybridSuggestions(q, regional, applyScope(merged), 180);
+      return finalizeHybridSuggestions(q, regional, applyScope(merged), 180, opts);
     }
   }
 
@@ -575,7 +596,7 @@ export async function buildHybridSearchSuggestions(query, opts = {}) {
     shouldSkipGeocodeForMood(q) ||
     shouldOfferKoreaHomonymDisambiguation(q)
   ) {
-    return finalizeHybridSuggestions(q, regional, applyScope(prependScopeSync(local)));
+    return finalizeHybridSuggestions(q, regional, applyScope(prependScopeSync(local)), 24, opts);
   }
 
   const mergedLocal = prependScopeSync(local);
@@ -617,9 +638,9 @@ export async function buildHybridSearchSuggestions(query, opts = {}) {
       pushUnique(withVisited, visitedSeen, item);
     }
     for (const item of regionChecked) pushUnique(withVisited, visitedSeen, item);
-    return finalizeHybridSuggestions(q, regional, withVisited);
+    return finalizeHybridSuggestions(q, regional, withVisited, 24, opts);
   } catch {
-    return finalizeHybridSuggestions(q, regional, regionChecked);
+    return finalizeHybridSuggestions(q, regional, regionChecked, 24, opts);
   }
 }
 
