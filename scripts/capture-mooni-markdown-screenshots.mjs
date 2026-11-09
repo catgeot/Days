@@ -13,7 +13,7 @@ const page = await context.newPage();
 
 await page.goto(`${baseURL}/qa/mooni-markdown-fixture`, { waitUntil: 'networkidle' });
 
-for (const testId of ['mooni-md-table', 'mooni-md-collapsed-table']) {
+for (const testId of ['mooni-md-table', 'mooni-md-collapsed-table', 'mooni-md-live-merged-table']) {
   const tableCount = await page.locator(`[data-testid="${testId}"] table`).count();
   if (tableCount < 1) {
     throw new Error(`${testId}: expected <table>, got ${tableCount}`);
@@ -67,6 +67,28 @@ if (collapsedBox) {
     path: path.join(outDir, 'after-desktop-1280-collapsed-table-section.png'),
   });
 }
+
+await page.setViewportSize({ width: 390, height: 844 });
+const liveMerged = await page.locator('[data-testid="mooni-md-live-merged-table"]').boundingBox();
+if (liveMerged) {
+  await page.screenshot({
+    path: path.join(outDir, 'live-merged-table-mobile-390.png'),
+    clip: { x: 0, y: Math.max(0, liveMerged.y - 8), width: 390, height: Math.min(640, liveMerged.height + 24) },
+  });
+}
+await page.setViewportSize({ width: 1280, height: 800 });
+await page.locator('[data-testid="mooni-md-live-merged-table"]').screenshot({
+  path: path.join(outDir, 'live-merged-table-desktop-1280.png'),
+});
+
+await page.setViewportSize({ width: 390, height: 844 });
+await page.locator('[data-testid="mooni-md-ordered-gap"]').screenshot({
+  path: path.join(outDir, 'ordered-gap-mobile-390.png'),
+});
+await page.setViewportSize({ width: 1280, height: 800 });
+await page.locator('[data-testid="mooni-md-ordered-gap"]').screenshot({
+  path: path.join(outDir, 'ordered-gap-desktop-1280.png'),
+});
 
 await browser.close();
 console.log(`mooni markdown screenshots → ${outDir}`);

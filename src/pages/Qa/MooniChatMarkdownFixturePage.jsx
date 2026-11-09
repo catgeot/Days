@@ -25,6 +25,19 @@ const TRUNCATED = `### 미완성 스트리밍
 const COLLAPSED_COMPARE_TABLE =
   '| 구분 | 괌 | 오키나와 | 팔라우 | | --- | --- | --- | --- | | 비자 | 미국령 | 일본 | 무비자 |';
 
+const LIVE_MERGED_COMPARE_TABLE =
+  '| 구분 | 괌 | 사이판 | 세부 | 보홀 | : | : | : | : | : | **주요 매력** | 괌 비치 | 사이판 다이빙 | 세부 망고 | 보홀 고래';
+
+const ORDERED_WITH_GAP = `1. 우도 터미널 집결
+
+짧은 이동 안내
+
+1. 성산 일출봉
+
+2. 카약 체험
+
+3. 섭지코지 산책`;
+
 const COMPARE_TABLE = `| 항목 | 괌 | 오키나와 | 팔라우 | 보홀 |
 | --- | --- | --- | --- | --- |
 | 비자 | 미국령 | 일본 | 무비자 | 필리핀 |
@@ -95,6 +108,28 @@ export default function MooniChatMarkdownFixturePage() {
         <Bubble variant="dark">
           <MooniChatMarkdown
             text={getMooniModelMarkdownForRender(COLLAPSED_COMPARE_TABLE, {
+              stripPhantomTicketMention: true,
+            })}
+            variant="dark"
+          />
+        </Bubble>
+      </section>
+      <section data-testid="mooni-md-live-merged-table" className="space-y-2">
+        <p className="text-gray-400 text-[10px] font-bold uppercase">Live merged compare table</p>
+        <Bubble variant="dark">
+          <MooniChatMarkdown
+            text={getMooniModelMarkdownForRender(LIVE_MERGED_COMPARE_TABLE, {
+              stripPhantomTicketMention: true,
+            })}
+            variant="dark"
+          />
+        </Bubble>
+      </section>
+      <section data-testid="mooni-md-ordered-gap" className="space-y-2">
+        <p className="text-gray-400 text-[10px] font-bold uppercase">Ordered list across paragraphs</p>
+        <Bubble variant="dark">
+          <MooniChatMarkdown
+            text={getMooniModelMarkdownForRender(ORDERED_WITH_GAP, {
               stripPhantomTicketMention: true,
             })}
             variant="dark"

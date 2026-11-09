@@ -22,3 +22,21 @@ test('continueMooniOrderedListNumbers — preserves explicit start 3', () => {
   const md = getMooniModelMarkdownForRender(raw, { stripPhantomTicketMention: true });
   assert.match(md, /^3\. 셋째/m);
 });
+
+test('continueMooniOrderedListNumbers — paragraph between items does not restart', () => {
+  const raw = ['1. 우도 출발', '', '중간 안내 문단', '', '1. 성산 일출봉'].join('\n');
+  const md = getMooniModelMarkdownForRender(raw, { stripPhantomTicketMention: true });
+  assert.match(md, /^2\. 성산 일출봉/m);
+});
+
+const LIVE_MERGED_COMPARE =
+  '| 구분 | 괌 | 사이판 | 세부 | 보홀 | : | : | : | : | : | **주요 매력** | 괌 비치 | 사이판 다이빙 | 세부 망고 | 보홀 고래';
+
+test('recoverMooniCollapsedGfmTables — live merged compare row', () => {
+  const md = getMooniModelMarkdownForRender(LIVE_MERGED_COMPARE, {
+    stripPhantomTicketMention: true,
+  });
+  assert.match(md, /^\| 구분 \| 괌 \|/m);
+  assert.match(md, /^\| --- \| --- \|/m);
+  assert.match(md, /^\| \*\*주요 매력\*\* \|/m);
+});

@@ -9,6 +9,11 @@ test('normalizeMooniMarkdownBoldSpacing — trims space before closing **', () =
   assert.equal(normalizeMooniMarkdownBoldSpacing('**13:30 ** 출발'), '**13:30** 출발');
 });
 
+test('normalizeMooniMarkdownBoldSpacing — trims space after opening **', () => {
+  assert.equal(normalizeMooniMarkdownBoldSpacing('** 리조트 체크인**'), '**리조트 체크인**');
+  assert.equal(normalizeMooniMarkdownBoldSpacing('** 천진항과 **'), '**천진항과**');
+});
+
 test('getMooniModelMarkdownForRender — AI time bold renders', () => {
   const md = getMooniModelMarkdownForRender('**13:30 ** 출발편', { stripPhantomTicketMention: true });
   const html = micromark(md, { extensions: [gfm()], htmlExtensions: [gfmHtml()] });
