@@ -122,6 +122,19 @@ test('guam → jeju 우도 topic — jeju replaces guam', () => {
   assert.equal(r.source, 'lookup');
 });
 
+test('cebu bound — manila departure phrase keeps cebu not dual pick', () => {
+  const history = [
+    {
+      role: 'user',
+      text: '세부 3박',
+      confirmedDestination: { slug: 'cebu', name: '세부' },
+    },
+  ];
+  const r = resolveDestinationFromChat('마닐라에서 출발해서 세부 갈게', history, '세부');
+  assert.equal(r.confidence, 'high');
+  assert.equal(r.slug, 'cebu');
+});
+
 test('same destination follow-up — guam flight detail keeps guam', () => {
   const history = [
     {

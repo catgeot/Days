@@ -304,14 +304,18 @@ export function resolveDestinationFromChat(userText, chatHistory = [], currentDe
   const currentText = String(userText ?? '').trim();
   const accessRoute = isAccessRouteQuery(currentText);
   const ferryRoute = isFerryRouteQuery(currentText);
+  const departureFromCtx = /(?:에서\s*출발|출발해서|from\s+)/i.test(currentText);
+  const allowHubFilterBypass =
+    !departureFromCtx &&
+    (DESTINATION_SWITCH_INTENT.test(currentText) ||
+      DESTINATION_TOPIC_INTENT.test(currentText));
   const excludeDepartureHub =
     accessRoute ||
     (sessionBound && ferryRoute) ||
     (sessionBound &&
       DEPARTURE_ONLY_FRAGMENT.test(currentText) &&
       !looksLikeThemeQuery(currentText) &&
-      !DESTINATION_SWITCH_INTENT.test(currentText) &&
-      !DESTINATION_TOPIC_INTENT.test(currentText));
+      !allowHubFilterBypass);
 
   if (!currentText) {
     return sessionBound ? buildHighResult(sessionBound, 10, 'bound') : emptyResult();
