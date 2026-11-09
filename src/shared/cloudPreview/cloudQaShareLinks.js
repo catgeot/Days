@@ -87,6 +87,13 @@ export const CLOUD_QA_SHARE_LINKS = [
     active: true,
   },
   {
+    slug: 'explore-monthly',
+    label: '탐색 11월 여행지 카드',
+    branch: 'cursor/explore-cards-d0e2',
+    destination: 'https://www.gateo.kr/explore',
+    active: false,
+  },
+  {
     slug: 'gallery-fresh',
     label: '갤러리 DB 캐시 + 최신 사진',
     branch: 'cursor/gallery-swr-6b36',

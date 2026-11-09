@@ -6,6 +6,7 @@ import {
   formatEnglishThenKorean,
 } from './englishPlaceLabel.js';
 import { festivalListDisplayTitle } from '../../pages/Korea/festivalDisplayTitle.js';
+import { isMooniGfmTableLine } from '../../utils/mooniGfmTableLine.js';
 import { ensureItineraryMarkdownLineBreaks } from '../../utils/mooniTruncatedContinue.js';
 import { haversineKm as stayHaversineKm, parseStayCoordPair } from '../../utils/mrtStayDistance.js';
 import { filterBySearchQuery, normalizeFestivalQuery } from '../../pages/Korea/festivalSearch.js';
@@ -839,14 +840,18 @@ export function cleanOrphanLinkConjunctions(text) {
 }
 
 function chipLabelDecoratedLine(line) {
-  return String(line || '')
+  const raw = String(line || '');
+  if (isMooniGfmTableLine(raw)) return raw.trim();
+  return raw
     .replace(/^\s*[*#\-–—•🚆🚌🎫|｜\s]+/g, '')
     .replace(/^\*\*|\*\*$/g, '')
     .trim();
 }
 
 function stripCtaLine(line) {
-  let s = String(line || '').replace(/\[([^\]\n]+)\](?!\()/g, '');
+  const raw = String(line || '');
+  if (isMooniGfmTableLine(raw)) return raw.trim();
+  let s = raw.replace(/\[([^\]\n]+)\](?!\()/g, '');
   if (isCtaSequence(normalizeCta(chipLabelDecoratedLine(s)))) return '';
   s = s.replace(/(^|\s)#{1,6}[ \t]*([^#\n]*)/g, (_full, lead, body) => (
     isCtaSequence(body) ? lead : `${lead}${String(body || '').trim()}`
@@ -1041,6 +1046,7 @@ export function stripMooniUiChipLabels(text) {
     .replace(/\[([^\]\n]+)\](?!\()/g, '')
     .split('\n')
     .map((line) => {
+      if (isMooniGfmTableLine(line)) return line;
       if (!line.trim()) return '';
       if (cornerBracketChipHeaderOnly(line)) return '';
       let stripped = stripPlannerResidueLine(stripCtaLine(line));

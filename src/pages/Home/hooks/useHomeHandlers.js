@@ -100,6 +100,7 @@ import {
 import {
   ensurePlaceChatIntroForLocation,
   needsPlaceChatIntroHydration,
+  shouldEnsurePlaceChatIntroForLocation,
 } from '../lib/placeChatIntro.js';
 import { isDomesticKoreaLocation } from '../../../utils/tourApiMatch.js';
 import { fetchDomesticTourOverview } from '../../../utils/tourKeywordPick.js';
@@ -565,7 +566,7 @@ export function useHomeHandlers({
     };
 
     const scheduleIntroHydrate = (pin) => {
-      if (!needsPlaceChatIntroHydration(pin)) return;
+      if (!shouldEnsurePlaceChatIntroForLocation(pin)) return;
       const pinId = pin?.id;
       const pinName = pin?.name;
       const overviewPromise = isDomesticKoreaLocation(pin)

@@ -66,14 +66,10 @@ async function expectPhotoAltAndTextPanels(page, altForName) {
 }
 
 async function expectNoMonthlyHorizontalOverflow(page) {
-  const overflow = await page.getByTestId('explore-v2-monthly-layout-b').evaluate((root) => {
-    const targets = root.classList.contains('grid')
-      ? [root]
-      : [...root.querySelectorAll(':scope > div.grid')];
-    return targets.map((grid) => grid.scrollWidth - grid.clientWidth);
-  });
-  expect(overflow.length).toBeGreaterThan(0);
-  expect(overflow.every((d) => d <= 1)).toBe(true);
+  const overflow = await page.getByTestId('explore-v2-monthly-layout-b').evaluate(
+    (root) => root.scrollWidth - root.clientWidth,
+  );
+  expect(overflow).toBeLessThanOrEqual(1);
 }
 
 async function expectNoFullWidthMonthlyBanner(page) {
@@ -89,6 +85,54 @@ async function expectNoFullWidthMonthlyBanner(page) {
   expect(fullSpan).toBe(false);
 }
 
+async function expectMobileColumnMosaic(page) {
+  const report = await page.getByTestId('explore-v2-monthly-layout-b').evaluate((root) => {
+    const width = root.clientWidth;
+    const item = (slug) => root.querySelector(`[data-testid="explore-v2-monthly-item-${slug}"]`);
+    const box = (slug) => {
+      const el = item(slug);
+      return { w: el.offsetWidth / width, top: el.offsetTop, h: el.offsetHeight };
+    };
+    return {
+      kyoto: box('kyoto'),
+      jeju: box('jeju'),
+      chiang: box('chiang-mai'),
+      phu: box('phu-quoc'),
+      dubai: box('dubai'),
+      melbourne: box('melbourne'),
+    };
+  });
+  expect(report.kyoto.w).toBeGreaterThan(0.5);
+  expect(report.kyoto.w).toBeLessThan(0.7);
+  expect(report.jeju.w).toBeGreaterThan(0.32);
+  expect(report.jeju.w).toBeLessThan(report.kyoto.w);
+  expect(Math.abs(report.kyoto.top - report.jeju.top)).toBeLessThan(2);
+  expect(report.chiang.top).toBeGreaterThan(report.kyoto.top + report.kyoto.h - 2);
+  expect(report.phu.top).toBeGreaterThan(report.jeju.top + report.jeju.h - 2);
+  expect(report.dubai.top).toBeGreaterThan(report.chiang.top);
+  expect(report.melbourne.top).toBeGreaterThan(report.phu.top);
+  for (const box of Object.values(report)) {
+    expect(box.w).toBeLessThan(0.75);
+  }
+}
+
+async function expectPhotoTallerThanSummary(page) {
+  const rows = await page.getByTestId('explore-v2-monthly-layout-b').evaluate((root) =>
+    [...root.querySelectorAll('[data-testid^="explore-v2-monthly-card-"]')].map((card) => {
+      const photo = card.querySelector('[data-testid^="explore-v2-monthly-photo-"]');
+      const text = card.querySelector('[data-testid="explore-v2-monthly-text-panel"]');
+      return {
+        photo: photo.getBoundingClientRect().height,
+        text: text.getBoundingClientRect().height,
+      };
+    }),
+  );
+  expect(rows.length).toBe(MONTHLY_VISIBLE_COUNT);
+  for (const row of rows) {
+    expect(row.photo).toBeGreaterThan(row.text);
+  }
+}
+
 async function expectAllMonthlyPickSlugsVisible(page) {
   for (const slug of ['kyoto', 'chiang-mai', 'phu-quoc', 'jeju', 'dubai', 'melbourne']) {
     const item = page.getByTestId(`explore-v2-monthly-item-${slug}`);
@@ -98,31 +142,89 @@ async function expectAllMonthlyPickSlugsVisible(page) {
   }
 }
 
-async function expectMonthlyGridRowAlignment(page) {
-  const rows = await page.getByTestId('explore-v2-monthly-layout-b').evaluate((root) => {
+async function expectMonthlyCardsDoNotOverlap(page) {
+  const report = await page.getByTestId('explore-v2-monthly-layout-b').evaluate((root) => {
     const items = [...root.querySelectorAll('[data-testid^="explore-v2-monthly-item-"]')];
-    const sorted = items
-      .map((el) => ({
-        top: el.getBoundingClientRect().top,
+    const boxes = items.map((el) => {
+      const r = el.getBoundingClientRect();
+      return {
         id: el.getAttribute('data-testid'),
-      }))
-      .sort((a, b) => a.top - b.top);
-    const groups = [];
-    for (const item of sorted) {
-      const group = groups.find((g) => Math.abs(g.top - item.top) <= 8);
-      if (group) {
-        group.ids.push(item.id);
-        group.top = Math.min(group.top, item.top);
-      } else {
-        groups.push({ top: item.top, ids: [item.id] });
+        top: r.top,
+        left: r.left,
+        right: r.right,
+        bottom: r.bottom,
+      };
+    });
+    const hits = [];
+    for (let i = 0; i < boxes.length; i += 1) {
+      for (let j = i + 1; j < boxes.length; j += 1) {
+        const a = boxes[i];
+        const b = boxes[j];
+        const overlapX = Math.min(a.right, b.right) - Math.max(a.left, b.left);
+        const overlapY = Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top);
+        if (overlapX > 1 && overlapY > 1) {
+          hits.push({ a: a.id, b: b.id, overlapX, overlapY });
+        }
       }
     }
-    return groups.filter((g) => g.ids.length > 1);
+    const leaks = [];
+    for (const el of items) {
+      const item = el.getBoundingClientRect();
+      for (const bit of el.querySelectorAll('a, p, h3')) {
+        const r = bit.getBoundingClientRect();
+        if (r.width < 1 || r.height < 1) continue;
+        const outside =
+          r.left < item.left - 1 ||
+          r.right > item.right + 1 ||
+          r.top < item.top - 1 ||
+          r.bottom > item.bottom + 1;
+        if (outside) {
+          leaks.push({
+            id: el.getAttribute('data-testid'),
+            text: (bit.textContent || '').trim().slice(0, 48),
+          });
+        }
+      }
+    }
+    return { hits, leaks };
   });
-  expect(rows.length).toBeGreaterThan(0);
-  for (const { ids } of rows) {
-    expect(ids.length).toBeLessThanOrEqual(4);
-  }
+  expect(report.hits).toEqual([]);
+  expect(report.leaks).toEqual([]);
+}
+
+async function expectMonthlySummaryNotSources(page) {
+  await expect(page.getByTestId('explore-v2-monthly-source-link')).toHaveCount(0);
+  await expect(page.getByText('파일·정책 페이지')).toHaveCount(0);
+  await expect(page.getByText('File / policy')).toHaveCount(0);
+  await expect(page.getByTestId('explore-v2-monthly-summary')).toHaveCount(MONTHLY_VISIBLE_COUNT);
+  const kyoto = page.getByTestId('explore-v2-monthly-card-kyoto');
+  await expect(kyoto).toContainText('단풍 절정');
+  await expect(kyoto).not.toContainText('일본 전통 문화의 심장');
+  const jeju = page.getByTestId('explore-v2-monthly-card-jeju');
+  await expect(jeju).toContainText('추정');
+  await expect(jeju).not.toContainText('세계자연유산');
+  const chiang = page.getByTestId('explore-v2-monthly-card-chiang-mai');
+  await expect(chiang).toContainText('이펭');
+  await expect(chiang).not.toContainText('태국 북부의 문화 수도');
+}
+
+async function expectIrregularMonthlyCardHeights(page) {
+  const report = await page.getByTestId('explore-v2-monthly-layout-b').evaluate((root) => {
+    const cards = [...root.querySelectorAll('[data-testid^="explore-v2-monthly-card-"]')];
+    const heights = cards.map((el) => Math.round(el.getBoundingClientRect().height));
+    const photos = [...root.querySelectorAll('[data-testid^="explore-v2-monthly-photo-"]')].map((el) =>
+      Math.round(el.getBoundingClientRect().height),
+    );
+    const tops = cards.map((el) => Math.round(el.getBoundingClientRect().top));
+    return {
+      uniqueCards: new Set(heights).size,
+      uniquePhotos: new Set(photos).size,
+      uniqueTops: new Set(tops).size,
+    };
+  });
+  expect(report.uniqueCards).toBeGreaterThan(2);
+  expect(report.uniquePhotos).toBeGreaterThan(2);
+    expect(report.uniqueTops).toBeGreaterThan(1);
 }
 
 test.describe('Explore monthly picks @flagOff', () => {
@@ -139,14 +241,12 @@ test.describe('Explore monthly picks @flagOff', () => {
     await openExplore(page, { width: 390, height: 844 });
     await expectMonthlyMosaic(page);
     await expectNoMonthlyHorizontalOverflow(page);
-    await expectNoFullWidthMonthlyBanner(page);
-    await expectMonthlyGridRowAlignment(page);
+    await expectMobileColumnMosaic(page);
+    await expectPhotoTallerThanSummary(page);
+    await expectIrregularMonthlyCardHeights(page);
+    await expectMonthlyCardsDoNotOverlap(page);
+    await expectMonthlySummaryNotSources(page);
     await expectAllMonthlyPickSlugsVisible(page);
-
-    const items = page.locator('[data-testid^="explore-v2-monthly-item-"]');
-    for (let i = 0; i < MONTHLY_VISIBLE_COUNT; i += 1) {
-      await expect(items.nth(i).getByTestId('explore-v2-monthly-source-link').first()).toBeVisible();
-    }
 
     const jejuItem = page.getByTestId('explore-v2-monthly-item-jeju');
     const jejuCard = page.getByTestId('explore-v2-monthly-card-jeju');
@@ -188,7 +288,10 @@ test.describe('Explore monthly picks @flagOff', () => {
     await expectMonthlyMosaic(page);
     await expectNoMonthlyHorizontalOverflow(page);
     await expectNoFullWidthMonthlyBanner(page);
-    await expectMonthlyGridRowAlignment(page);
+    await expectPhotoTallerThanSummary(page);
+    await expectIrregularMonthlyCardHeights(page);
+    await expectMonthlyCardsDoNotOverlap(page);
+    await expectMonthlySummaryNotSources(page);
     await expectAllMonthlyPickSlugsVisible(page);
     await expectPhotoAltAndTextPanels(page, (name) => `${name} 대표 사진`);
     await expect(page.getByText('에디터스 픽').first()).toBeVisible({ timeout: 45_000 });

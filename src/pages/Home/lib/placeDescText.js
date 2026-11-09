@@ -40,14 +40,19 @@ function escapeRegExp(str) {
 }
 
 /**
- * 써머리·갤러리 overview를 place_chat_intro(무니 인트로)로 통일할지.
- * SSOT 하드코딩 desc도 대상 — 이미 intro로 채운 경우만 skip.
+ * location.desc를 place_chat_intro 본문으로 교체할지(써머리 카드·합성 hub).
+ * SSOT·팔경 오버레이 실문장 desc는 유지 — 생성·저장과 분리.
  */
 export function needsPlaceChatIntroHydration(location) {
   if (!location?.name) return false;
   if (location.placeChatIntroApplied) return false;
   if (!isSyntheticOrEmptyPlaceDesc(location)) return false;
   return true;
+}
+
+/** place_chat_intro 조회·AI 생성·DB 저장(캐시 miss 시) — SSOT desc 여부와 무관. */
+export function shouldEnsurePlaceChatIntroForLocation(location) {
+  return Boolean(location?.name);
 }
 
 /**

@@ -10,6 +10,10 @@ import {
   MRT_TNA_MISSING_PRICE_ITEM,
   MRT_TNA_NO_IMAGE_ITEM,
 } from './fixtures/mrtTnaHaeundaeContract.fixture.mjs';
+import {
+  MRT_TNA_GANGNEUNG_LIVE_FIXTURE,
+  MRT_TNA_GANGNEUNG_LIVE_META,
+} from './fixtures/mrtTnaGangneungLive.snapshot.mjs';
 
 async function assertProdLikeChrome(page) {
   await expect(page.getByText('모바일 위젯 로그')).toHaveCount(0);
@@ -62,6 +66,27 @@ async function assertListNoticeOnce(page, narrowPattern) {
   await expect(page.getByText('제휴 · 마이리얼트립')).toHaveCount(1);
 }
 
+/** 이미지 onError·디코드 대기 (실네트워크·깨진 URL 모두) */
+async function waitForTourCardImagesSettled(page) {
+  await page.waitForTimeout(2_500);
+}
+
+async function countBrokenImages(root) {
+  return root.locator('img[alt=""]').evaluateAll((imgs) =>
+    imgs.filter((img) => {
+      const src = String(img.currentSrc || img.src || '').trim();
+      if (!src) return false;
+      return img.complete && img.naturalWidth === 0;
+    }).length,
+  );
+}
+
+async function countLoadedImages(root) {
+  return root.locator('img[alt=""]').evaluateAll((imgs) =>
+    imgs.filter((img) => img.complete && img.naturalWidth > 0).length,
+  );
+}
+
 test.describe('GlobeTourStrip list partner notice', () => {
   test.beforeEach(async ({ page }) => {
     await mockTnas(page, MRT_TNA_HAEUNDAE_CONTRACT_FIXTURE);
@@ -83,8 +108,12 @@ test.describe('GlobeTourStrip list partner notice', () => {
     await expect(cardLinks.first()).toHaveAttribute('aria-label', /상품 보고 예약 시작/);
     await expect(cardLinks.first()).toHaveAttribute('rel', /sponsored/);
 
+    await waitForTourCardImagesSettled(page);
+    expect(await countBrokenImages(dialog)).toBe(0);
+    await expect(dialog.getByText('No image')).toHaveCount(4);
+
     await page.screenshot({
-      path: '/opt/cursor/artifacts/tour-list-card-readability-390-haeundae.png',
+      path: '/opt/cursor/artifacts/tour-mock-contract-390-haeundae-fallback.png',
       clip: { x: 0, y: 0, width: 390, height: 844 },
     });
   });
@@ -96,8 +125,13 @@ test.describe('GlobeTourStrip list partner notice', () => {
     await assertProdLikeChrome(page);
     await assertListNoticeOnce(page, '파트너에서 예약합니다 · 가격·자리는 그쪽 기준');
 
+    const region = page.getByRole('region', { name: '투어 목록' });
+    await waitForTourCardImagesSettled(page);
+    expect(await countBrokenImages(region)).toBe(0);
+    await expect(region.getByText('No image')).toHaveCount(4);
+
     await page.screenshot({
-      path: '/opt/cursor/artifacts/tour-list-card-readability-1280-haeundae.png',
+      path: '/opt/cursor/artifacts/tour-mock-contract-1280-haeundae-fallback.png',
       clip: { x: 0, y: 0, width: 1280, height: 900 },
     });
   });
@@ -141,5 +175,97 @@ test.describe('GlobeTourStrip list partner notice', () => {
     await page.keyboard.press('Enter');
     await page.waitForTimeout(400);
     expect(popupCount).toBe(0);
+  });
+});
+
+test.describe('GlobeTourStrip — 강릉 실응답 재생 (Edge 스냅샷)', () => {
+  test.beforeEach(async ({ page }) => {
+    await mockTnas(page, MRT_TNA_GANGNEUNG_LIVE_FIXTURE);
+  });
+
+  test('390 — 실응답 이미지 로드·고지·캡처', async ({ page }) => {
+    test.info().annotations.push({
+      type: 'data-source',
+      description: `live-edge snapshot ${MRT_TNA_GANGNEUNG_LIVE_META.capturedAt} kw=${MRT_TNA_GANGNEUNG_LIVE_META.keywordUsed}`,
+    });
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    await goHomeFromPlace(page, '/place/haeundae-beach?lang=ko', '해운대해수욕장');
+    await openTourListMobile(page);
+    await assertProdLikeChrome(page);
+    await assertListNoticeOnce(page, '파트너에서 예약합니다 · 가격·자리는 그쪽 기준');
+    await expect(page.getByText('상품 보고 예약 시작', { exact: true })).toHaveCount(0);
+
+    const dialog = page.getByRole('dialog', { name: '투어 전체 목록' });
+    await waitForTourCardImagesSettled(page);
+    expect(await countBrokenImages(dialog)).toBe(0);
+    expect(await countLoadedImages(dialog)).toBeGreaterThanOrEqual(4);
+
+    await dialog.evaluate((el) => {
+      el.scrollTop = el.scrollHeight;
+    });
+    await waitForTourCardImagesSettled(page);
+
+    await page.screenshot({
+      path: '/opt/cursor/artifacts/tour-live-gangneung-390.png',
+      clip: { x: 0, y: 0, width: 390, height: 844 },
+    });
+    await page.screenshot({
+      path: '/opt/cursor/artifacts/tour-live-gangneung-390-footer-chips.png',
+      clip: { x: 0, y: 520, width: 390, height: 324 },
+    });
+  });
+
+  test('1280 — 실응답 이미지 로드·캡처', async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await goHomeFromPlace(page, '/place/haeundae-beach?lang=ko', '해운대해수욕장');
+    await openTourListDesktop(page);
+    await assertProdLikeChrome(page);
+
+    const region = page.getByRole('region', { name: '투어 목록' });
+    await waitForTourCardImagesSettled(page);
+    expect(await countBrokenImages(region)).toBe(0);
+    expect(await countLoadedImages(region)).toBeGreaterThanOrEqual(4);
+
+    await page.screenshot({
+      path: '/opt/cursor/artifacts/tour-live-gangneung-1280.png',
+      clip: { x: 0, y: 0, width: 1280, height: 900 },
+    });
+  });
+});
+
+test.describe('GlobeTourStrip — 강릉 실 Edge (mock 없음)', () => {
+  test.skip(
+    process.env.TOUR_TNA_LIVE_E2E !== '1',
+    'TOUR_TNA_LIVE_E2E=1 일 때만 공개 Edge 호출',
+  );
+
+  test('390 · /place/gyeongpodae — 실 fetch-mrt-tnas', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto('/place/gyeongpodae?lang=ko', { waitUntil: 'domcontentloaded' });
+    await expect(page.getByRole('button', { name: /경포|강릉/ }).first()).toBeVisible({
+      timeout: 60_000,
+    });
+    await page.getByRole('button', { name: '홈으로 이동' }).first().click();
+    await expect(page).toHaveURL(/\/(\?|$)/, { timeout: 60_000 });
+    await openTourListMobile(page);
+
+    const dialog = page.getByRole('dialog', { name: '투어 전체 목록' });
+    await expect(dialog.locator('a[data-partner-booking-handoff="cta"]').first()).toBeVisible({
+      timeout: 60_000,
+    });
+    await waitForTourCardImagesSettled(page);
+    expect(await countBrokenImages(dialog)).toBe(0);
+    expect(await countLoadedImages(dialog)).toBeGreaterThanOrEqual(1);
+
+    await dialog.evaluate((el) => {
+      el.scrollTop = el.scrollHeight;
+    });
+    await page.waitForTimeout(600);
+
+    await page.screenshot({
+      path: '/opt/cursor/artifacts/tour-live-edge-gangneung-390.png',
+      clip: { x: 0, y: 0, width: 390, height: 844 },
+    });
   });
 });

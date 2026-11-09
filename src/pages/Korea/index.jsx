@@ -64,9 +64,17 @@ import {
   writeFestivalHubLegacyListToSession,
 } from './festivalListViewSession.js';
 import {
-  FESTIVAL_HUB_CARD_GRID_CLASS,
+  clearFestivalHubRegionChoiceSession,
+  readFestivalHubRegionChoiceSession,
+  writeFestivalHubRegionChoiceSession,
+} from './festivalHubRegionChoiceSession.js';
+import {
+  FESTIVAL_HUB_GRID_CLASS,
   FESTIVAL_HUB_GRID_MOBILE_SCROLL_PAD_CLASS,
   FESTIVAL_HUB_GRID_SCROLL_TOP_BOTTOM_CLASS,
+  distributeFestivalHubMasonryColumns,
+  festivalHubPhotoLayout,
+  partitionFestivalHubSegments,
 } from './festivalHubGridLayout.js';
 import {
   festivalHubGridThumbLoadKey,
@@ -760,30 +768,18 @@ function FestivalThumbFallback({ large = false }) {
   );
 }
 
-const FESTIVAL_GRID_SKELETON_SPANS = [
-  'col-span-6 md:col-span-3',
-  'col-span-6 md:col-span-3',
-  'col-span-12 md:col-span-6',
-  'col-span-6 md:col-span-4',
-  'col-span-6 md:col-span-3',
-  'col-span-12 md:col-span-8',
-];
-
 function FestivalListLoadingSkeletons({ useGrid }) {
   const { t } = useTranslation();
   return (
     <div
-      className={useGrid ? FESTIVAL_HUB_CARD_GRID_CLASS : 'space-y-2'}
+      className={useGrid ? FESTIVAL_HUB_GRID_CLASS : 'space-y-2'}
       data-festival-list-loading=""
       aria-busy="true"
       aria-label={t('korea.festival.loadingSchedule')}
     >
       {Array.from({ length: useGrid ? 6 : 5 }, (_, i) =>
         useGrid ? (
-          <FestivalGridSkeleton
-            key={`sk-${i}`}
-            spanClass={FESTIVAL_GRID_SKELETON_SPANS[i % FESTIVAL_GRID_SKELETON_SPANS.length]}
-          />
+          <FestivalGridSkeleton key={`sk-${i}`} />
         ) : (
           <FestivalRowSkeleton key={`sk-${i}`} />
         ),
@@ -991,6 +987,35 @@ function FestivalRow({
   );
 }
 
+function useFestivalHubMasonryColumnCount() {
+  const [columnCount, setColumnCount] = useState(() => {
+    if (typeof window === 'undefined' || !window.matchMedia) return 2;
+    if (window.matchMedia('(min-width: 1024px)').matches) return 4;
+    if (window.matchMedia('(min-width: 768px)').matches) return 3;
+    return 2;
+  });
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || !window.matchMedia) return undefined;
+    const lgQuery = window.matchMedia('(min-width: 1024px)');
+    const mdQuery = window.matchMedia('(min-width: 768px)');
+    const sync = () => {
+      if (lgQuery.matches) setColumnCount(4);
+      else if (mdQuery.matches) setColumnCount(3);
+      else setColumnCount(2);
+    };
+    sync();
+    lgQuery.addEventListener?.('change', sync);
+    mdQuery.addEventListener?.('change', sync);
+    return () => {
+      lgQuery.removeEventListener?.('change', sync);
+      mdQuery.removeEventListener?.('change', sync);
+    };
+  }, []);
+
+  return columnCount;
+}
+
 function FestivalEntries({
   useGrid,
   items,
@@ -1005,6 +1030,7 @@ function FestivalEntries({
   thumbListEpoch = '',
 }) {
   const uniqueItems = dedupeFestivalItems(items).filter(hasFestivalCardContent);
+  const columnCount = useFestivalHubMasonryColumnCount();
   const [photoSizesByKey, setPhotoSizesByKey] = useState(() => new Map());
   const handlePhotoSize = useCallback((item, size) => {
     const key = festivalCardDedupeKey(item) || festivalKey(item);
@@ -1020,39 +1046,84 @@ function FestivalEntries({
     });
   }, []);
   if (useGrid) {
+    const segments = partitionFestivalHubSegments(
+      uniqueItems,
+      (item) => {
+        const size = photoSizesByKey.get(
+          festivalCardDedupeKey(item) || festivalKey(item),
+        );
+        return festivalHubPhotoLayout(size?.width, size?.height).wide;
+      },
+      columnCount,
+    );
+    const renderGridCard = (item, index, layoutOpts = {}) => {
+      const priorityThumb = isFestivalHubGridEagerThumb(index);
+      const cardKey = priorityThumb
+        ? festivalHubGridThumbLoadKey({
+            listEpoch: thumbListEpoch,
+            index,
+            contentId: item?.contentId,
+          })
+        : festivalKey(item);
+      const dedupeKey = festivalCardDedupeKey(item) || festivalKey(item);
+      return (
+        <FestivalGridPhotoCard
+          key={cardKey}
+          item={item}
+          priorityThumb={priorityThumb}
+          areaCode={areaCode}
+          cityName={cityName}
+          active={
+            selected?.contentId != null &&
+            String(selected.contentId) === String(item.contentId)
+          }
+          favorited={favoriteIds.has(String(item.contentId))}
+          viewed={Boolean(viewedIds?.has(String(item.contentId)))}
+          onToggleFavorite={onToggleFavorite}
+          initialPhotoSize={photoSizesByKey.get(dedupeKey) ?? null}
+          onPhotoSize={handlePhotoSize}
+          inColumn={Boolean(layoutOpts.inColumn)}
+          slotIndex={layoutOpts.slotIndex ?? index}
+          onSelect={onSelect}
+          distanceKm={
+            nearKmByContentId.get(String(item.contentId)) ?? undefined
+          }
+        />
+      );
+    };
     return (
-      <div className={FESTIVAL_HUB_CARD_GRID_CLASS} data-festival-grid="">
-        {uniqueItems.map((item, index) => {
-          const priorityThumb = isFestivalHubGridEagerThumb(index);
-          const cardKey = priorityThumb
-            ? festivalHubGridThumbLoadKey({
-                listEpoch: thumbListEpoch,
-                index,
-                contentId: item?.contentId,
-              })
-            : festivalKey(item);
-          const dedupeKey = festivalCardDedupeKey(item) || festivalKey(item);
+      <div className="w-full" data-festival-grid="">
+        {segments.map((seg, segIdx) => {
+          if (seg.type === 'wide') {
+            return (
+              <div key={`wide-${seg.entry.index}`} className="w-full">
+                {renderGridCard(seg.entry.item, seg.entry.index, {
+                  inColumn: false,
+                  slotIndex: seg.entry.index,
+                })}
+              </div>
+            );
+          }
+          const cols = distributeFestivalHubMasonryColumns(
+            seg.entries,
+            columnCount,
+          );
           return (
-            <FestivalGridPhotoCard
-              key={cardKey}
-              item={item}
-              priorityThumb={priorityThumb}
-              areaCode={areaCode}
-              cityName={cityName}
-              active={
-                selected?.contentId != null &&
-                String(selected.contentId) === String(item.contentId)
-              }
-              favorited={favoriteIds.has(String(item.contentId))}
-              viewed={Boolean(viewedIds?.has(String(item.contentId)))}
-              onToggleFavorite={onToggleFavorite}
-              initialPhotoSize={photoSizesByKey.get(dedupeKey) ?? null}
-              onPhotoSize={handlePhotoSize}
-              onSelect={onSelect}
-              distanceKm={
-                nearKmByContentId.get(String(item.contentId)) ?? undefined
-              }
-            />
+            <div
+              key={`cols-${segIdx}-${seg.entries[0]?.index ?? 0}`}
+              className={FESTIVAL_HUB_GRID_CLASS}
+            >
+              {cols.map((colEntries, colIdx) => (
+                <div key={`col-${colIdx}`} className="flex min-w-0 flex-col">
+                  {colEntries.map(({ item, index }, rowIdx) =>
+                    renderGridCard(item, index, {
+                      inColumn: true,
+                      slotIndex: colIdx + rowIdx * columnCount + segIdx,
+                    }),
+                  )}
+                </div>
+              ))}
+            </div>
           );
         })}
       </div>
@@ -1108,6 +1179,15 @@ export default function KoreaFestivalHub() {
     /** @type {Map<string, Record<string, unknown>>} */ (new Map()),
   );
   const now = useMemo(() => new Date(), []);
+  const initialRegionChoiceRef = useRef(
+    /** @type {ReturnType<typeof readFestivalHubRegionChoiceSession> | undefined} */ (
+      undefined
+    ),
+  );
+  if (initialRegionChoiceRef.current === undefined) {
+    initialRegionChoiceRef.current = readFestivalHubRegionChoiceSession();
+  }
+  const initialRegionChoice = initialRegionChoiceRef.current;
 
   const goHome = useCallback(() => {
     try {
@@ -1136,8 +1216,12 @@ export default function KoreaFestivalHub() {
   );
   const [dateSheetOpen, setDateSheetOpen] = useState(false);
   const [tasteId, setTasteId] = useState('all');
-  const [areaCode, setAreaCode] = useState(DEFAULT_AREA_CODE);
-  const [cityName, setCityName] = useState('all');
+  const [areaCode, setAreaCode] = useState(
+    () => initialRegionChoice?.areaCode ?? DEFAULT_AREA_CODE,
+  );
+  const [cityName, setCityName] = useState(
+    () => initialRegionChoice?.cityName ?? 'all',
+  );
   /** @type {[ChipPanelId, function]} */
   const [chipPanel, setChipPanel] = useState(/** @type {ChipPanelId} */ ('region'));
   /** @type {[string[] | null, function]} */
@@ -1204,7 +1288,16 @@ export default function KoreaFestivalHub() {
     ),
   );
   const [geoPermission, setGeoPermission] = useState('unsupported');
+  const userRegionExplicitRef = useRef(Boolean(initialRegionChoice?.explicit));
   const userRegionOverrideRef = useRef(false);
+  const persistExplicitRegionChoice = useCallback((nextAreaCode, nextCityName) => {
+    userRegionExplicitRef.current = true;
+    writeFestivalHubRegionChoiceSession({
+      areaCode: String(nextAreaCode),
+      cityName: String(nextCityName ?? 'all'),
+      explicit: true,
+    });
+  }, []);
   /** 내 주변 진입 직전 필터 — 재탭 시 복원 */
   const preNearSnapshotRef = useRef(
     /** @type {null | { timeTab: string, tasteId: string, areaCode: string, cityName: string, chipPanel: ChipPanelId }} */ (
@@ -1347,6 +1440,8 @@ export default function KoreaFestivalHub() {
     if (!fromTheme) return;
     if (festivalId) {
       userRegionOverrideRef.current = false;
+      userRegionExplicitRef.current = false;
+      clearFestivalHubRegionChoiceSession();
       setAreaCode(DEFAULT_AREA_CODE);
       setCityName('all');
       setChipPanel('region');
@@ -1355,6 +1450,7 @@ export default function KoreaFestivalHub() {
     if (!themeAreaParam || themeAreaParam === 'all') return;
     if (!/^\d{1,2}$/.test(themeAreaParam)) return;
     userRegionOverrideRef.current = true;
+    persistExplicitRegionChoice(themeAreaParam, 'all');
     setAreaCode(themeAreaParam);
     setCityName('all');
     setChipPanel('region');
@@ -1365,7 +1461,14 @@ export default function KoreaFestivalHub() {
     setNearLabel('');
     setNearMsg('');
     mainScrollRef.current?.scrollTo({ top: 0 });
-  }, [fromTheme, themeAreaParam, festivalId, location.key, clearFestivalFromUrl]);
+  }, [
+    fromTheme,
+    themeAreaParam,
+    festivalId,
+    location.key,
+    clearFestivalFromUrl,
+    persistExplicitRegionChoice,
+  ]);
 
   useEffect(() => {
     if (!festivalToast) return undefined;
@@ -1569,6 +1672,8 @@ export default function KoreaFestivalHub() {
       if (!/^\d+$/.test(id)) return;
       if (event.detail?.nationwide) {
         userRegionOverrideRef.current = false;
+        userRegionExplicitRef.current = false;
+        clearFestivalHubRegionChoiceSession();
         setAreaCode(DEFAULT_AREA_CODE);
         setCityName('all');
         setChipPanel('region');
@@ -1784,6 +1889,7 @@ export default function KoreaFestivalHub() {
   useEffect(() => {
     if (dateChipEnabled) return;
     if (areaCode === 'all') return;
+    if (userRegionExplicitRef.current) return;
     if (sidoChips.length === 0) return;
     if (!sidoChips.some((s) => s.id === areaCode)) {
       if (areaCode === DEFAULT_AREA_CODE) return;
@@ -2306,20 +2412,28 @@ export default function KoreaFestivalHub() {
       }
 
       if (boot) {
-        userRegionOverrideRef.current = true;
+        if (userRegionExplicitRef.current) return false;
         setTasteId('all');
-        setAreaCode(String(hubResolved.areaCode));
+        const bootArea = String(hubResolved.areaCode);
+        setAreaCode(bootArea);
         setCityName('all');
         setChipPanel('region');
         setNearIds(null);
         setNearOrigin(null);
         setNearLabel('');
         setNearMsg('');
+        writeFestivalHubRegionChoiceSession({
+          areaCode: bootArea,
+          cityName: 'all',
+          explicit: false,
+        });
         return true;
       }
 
       setTasteId('all');
-      setAreaCode(String(hubResolved.areaCode));
+      const nearArea = String(hubResolved.areaCode);
+      persistExplicitRegionChoice(nearArea, 'all');
+      setAreaCode(nearArea);
       setCityName('all');
       setChipPanel('region');
       clearFestivalFromUrl();
@@ -2353,7 +2467,12 @@ export default function KoreaFestivalHub() {
       );
       return true;
     },
-    [items, timeTab, dismissLocHint, t, filterItemsByTime],
+    [items, timeTab, dismissLocHint, t, filterItemsByTime, persistExplicitRegionChoice],
+  );
+
+  const shouldApplyBootLocation = useCallback(
+    () => !userRegionExplicitRef.current,
+    [],
   );
 
   useFestivalLocationBoot({
@@ -2361,6 +2480,8 @@ export default function KoreaFestivalHub() {
     itemsLength: items.length,
     applyUserLocation,
     dismissLocHint,
+    shouldApplyBootLocation,
+    skipBoot: initialRegionChoice != null,
   });
 
   useEffect(() => {
@@ -2395,6 +2516,7 @@ export default function KoreaFestivalHub() {
     const next = e.target.value;
     setSearchDraft(next);
     if (next.trim()) {
+      persistExplicitRegionChoice(DEFAULT_AREA_CODE, 'all');
       setAreaCode('all');
       setCityName('all');
       setTasteId('all');
@@ -2414,6 +2536,7 @@ export default function KoreaFestivalHub() {
     setSearchSuggestOpen(false);
     if (q) {
       setRecentSearches(pushRecentSearch(FESTIVAL_RECENT_SEARCH_KEY, q));
+      persistExplicitRegionChoice(DEFAULT_AREA_CODE, 'all');
       setAreaCode('all');
       setCityName('all');
       setTasteId('all');
@@ -2440,6 +2563,7 @@ export default function KoreaFestivalHub() {
     if (q) {
       setSearchApplied(q);
       setRecentSearches(pushRecentSearch(FESTIVAL_RECENT_SEARCH_KEY, q));
+      persistExplicitRegionChoice(DEFAULT_AREA_CODE, 'all');
       setAreaCode('all');
       setCityName('all');
       setTasteId('all');
@@ -2452,7 +2576,7 @@ export default function KoreaFestivalHub() {
           : null;
       el?.blur?.();
     }
-  }, [searchDraft]);
+  }, [searchDraft, persistExplicitRegionChoice]);
 
   useEffect(() => {
     if (!searchOpen && !searchSuggestOpen) return undefined;
@@ -2556,6 +2680,7 @@ export default function KoreaFestivalHub() {
 
   const resetListFilters = () => {
     userRegionOverrideRef.current = true;
+    persistExplicitRegionChoice(DEFAULT_AREA_CODE, 'all');
     setTimeTab(defaultFestivalHubTimeTab());
     setCustomRange(null);
     setTasteId('all');
@@ -2609,6 +2734,7 @@ export default function KoreaFestivalHub() {
 
   const selectSido = (id) => {
     userRegionOverrideRef.current = true;
+    persistExplicitRegionChoice(id, 'all');
     setAreaCode(id);
     setCityName('all');
     setChipPanel('region');
@@ -2619,7 +2745,9 @@ export default function KoreaFestivalHub() {
 
   const selectCity = (id) => {
     userRegionOverrideRef.current = true;
-    setCityName(String(id) === 'all' ? 'all' : id);
+    const nextCity = String(id) === 'all' ? 'all' : id;
+    persistExplicitRegionChoice(areaCode, nextCity);
+    setCityName(nextCity);
     setChipPanel('region');
     clearSearchFilter();
     clearNear();

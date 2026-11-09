@@ -1,4 +1,8 @@
-/** 해운대 MRT TNA 카드 UI 계약 — fetch-mrt-tnas mock */
+/**
+ * 해운대 MRT TNA 카드 UI 계약 — fetch-mrt-tnas mock.
+ * imageUrl 호스트(d2urynajlo0k6r…)는 실존하지 않음 → 로드 실패(사실상 404/DNS).
+ * UI는 onError 후 "No image" 폴백을 보여야 함(깨진 아이콘 금지).
+ */
 export const MRT_TNA_HAEUNDAE_CONTRACT_FIXTURE = {
   ok: true,
   keywordUsed: '해운대',
