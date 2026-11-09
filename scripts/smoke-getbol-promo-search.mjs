@@ -3,14 +3,11 @@ import assert from 'node:assert/strict';
 import { buildKoreaGetbolCollectiveSearchSuggestions } from '../src/pages/Home/lib/exploreKoreaGetbolCollectiveSearch.js';
 
 const collective = buildKoreaGetbolCollectiveSearchSuggestions('한국의 갯벌');
-assert.equal(collective.length, 4, '한국의 갯벌 UNESCO 4구성');
+assert.equal(collective.length, 3, '한국의 갯벌 UNESCO /place 3구성');
 
 const plain = buildKoreaGetbolCollectiveSearchSuggestions('갯벌');
-assert.equal(plain.length, 4, '갯벌 UNESCO 4구성');
-assert.ok(
-  plain.some((r) => String(r.name || '').includes('서천갯벌') || String(r.name || '').includes('유부도')),
-  '서천 구성',
-);
+assert.equal(plain.length, 3, '갯벌 UNESCO /place 가능 3구성(서천 제외)');
+assert.ok(!plain.some((r) => String(r.name || '').includes('유부도')), '서천(미연동) 집합 제외');
 assert.ok(plain.some((r) => String(r.name || '').includes('고창')), '고창 구성');
 assert.ok(plain.some((r) => String(r.name || '').includes('신안')), '신안 구성');
 assert.ok(

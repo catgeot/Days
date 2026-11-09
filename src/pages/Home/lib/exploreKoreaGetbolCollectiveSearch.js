@@ -54,6 +54,7 @@ const GETBOL_HUB_ATTRACTION_ALIASES = new Map([
     '신안갯벌',
     {
       attractionName: '증도',
+      scenicId: 'jeungdo',
       searchOverlayDesc:
         '유네스코 세계자연유산 「한국의 갯벌」 신안 구성(천연염전·섭조도). WHC 1591.',
     },
@@ -62,21 +63,25 @@ const GETBOL_HUB_ATTRACTION_ALIASES = new Map([
     '신안 갯벌',
     {
       attractionName: '증도',
+      scenicId: 'jeungdo',
       searchOverlayDesc:
         '유네스코 세계자연유산 「한국의 갯벌」 신안 구성(천연염전·섭조도). WHC 1591.',
     },
   ],
 ]);
 
+/** 서천(유부도)는 TourAPI contentId 없음 — 집합 검색에서 제외, 개별 `서천갯벌`만 팔경 카드 */
 const COLLECTIVE_UNESCO_MEMBERS = [
-  GETBOL_LOCAL_MEMBER_ALIASES.get('서천갯벌'),
   {
     attractionName: '고창 갯벌',
     scenicId: 'gochang-tidal-flat',
     searchOverlayDesc: '유네스코 세계자연유산 「한국의 갯벌」 고창 구성. WHC 1591.',
   },
   {
-    ...GETBOL_HUB_ATTRACTION_ALIASES.get('신안갯벌'),
+    attractionName: '증도',
+    scenicId: 'jeungdo',
+    searchOverlayDesc:
+      '유네스코 세계자연유산 「한국의 갯벌」 신안 구성(천연염전·섭조도). WHC 1591.',
     searchName: '신안갯벌(증도)',
   },
   {
@@ -159,6 +164,9 @@ function hubGetbolAttractionSuggestion(spec) {
   const hit = resolveHubAttraction(spec.attractionName);
   if (!hit) return null;
   let item = attractionToSuggestion(hit.hub, hit.attraction);
+  if (spec.scenicId) {
+    item = attachScenicRouteFields(item, spec.scenicId);
+  }
   item = {
     ...item,
     groupTitle: COLLECTIVE_GROUP_TITLE,
@@ -193,7 +201,7 @@ export function buildKoreaGetbolCollectiveSearchSuggestions(query) {
   const hubAlias = GETBOL_HUB_ATTRACTION_ALIASES.get(key);
   if (hubAlias) {
     const item = hubGetbolAttractionSuggestion(hubAlias);
-    return item && opensOnPlaceRoute(item) ? [item] : item ? [item] : [];
+    return item && opensOnPlaceRoute(item) ? [item] : [];
   }
 
   if (!COLLECTIVE_QUERY_KEYS.has(key)) return [];
@@ -201,8 +209,7 @@ export function buildKoreaGetbolCollectiveSearchSuggestions(query) {
   const out = [];
   for (const spec of COLLECTIVE_UNESCO_MEMBERS) {
     const item = buildCollectiveMemberSuggestion(spec);
-    if (!item) continue;
-    if (spec.scenicId && !opensOnPlaceRoute(item)) continue;
+    if (!item || !opensOnPlaceRoute(item)) continue;
     out.push(item);
   }
   return out;

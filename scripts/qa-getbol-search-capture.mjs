@@ -54,13 +54,23 @@ async function main() {
       cardNames.push((await buttons.nth(i).innerText()).replace(/\s+/g, ' ').trim().slice(0, 80));
     }
 
-    for (let i = 0; i < Math.min(count, 4); i++) {
+    if (count !== 3) {
+      throw new Error(`expected 3 UNESCO cards, got ${count}`);
+    }
+
+    for (let i = 0; i < count; i++) {
       const label = cardNames[i] || `card-${i}`;
       await buttons.nth(i).click();
       await page.waitForTimeout(2500);
-      clicks.push({ card: label, url: page.url() });
+      const url = page.url();
+      const path = new URL(url).pathname;
+      if (!path.startsWith('/place/')) {
+        throw new Error(`card ${i} navigated to ${path}, expected /place/...`);
+      }
+      clicks.push({ card: label, url, path });
       await openExploreSearch(page);
-      await input.fill('갯벌');
+      const searchInput = page.locator('input:visible').first();
+      await searchInput.fill('갯벌');
       await page.waitForTimeout(1200);
     }
 

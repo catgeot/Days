@@ -313,7 +313,7 @@ for (const q of ['한라산 백록담', '백록담', '화구벽']) {
 }
 
 const getbolRows = buildKoreaGetbolCollectiveSearchSuggestions('한국의 갯벌');
-assert.equal(getbolRows.length, 4, '한국의 갯벌 → UNESCO 4구성');
+assert.equal(getbolRows.length, 3, '한국의 갯벌 → UNESCO /place 3구성');
 assert.ok(
   getbolRows.some((r) => String(r.name || '').includes('고창')),
   '고창 갯벌',
@@ -323,8 +323,8 @@ assert.ok(
   '순천만습지',
 );
 assert.ok(
-  getbolRows.some((r) => String(r.name || '').includes('유부도') || String(r.name || '').includes('서천')),
-  '서천 구성',
+  !getbolRows.some((r) => String(r.name || '').includes('유부도')),
+  '서천(TourAPI 없음) 집합 제외',
 );
 assert.ok(
   getbolRows.every((r) => r.groupTitle && r.groupTitle.includes('유네스코')),
@@ -340,8 +340,8 @@ assert.ok(
 );
 assert.equal(
   buildKoreaGetbolCollectiveSearchSuggestions('갯벌').length,
-  4,
-  '갯벌 → UNESCO 4구성',
+  3,
+  '갯벌 → UNESCO /place 3구성',
 );
 const seocheonGetbol = buildKoreaGetbolCollectiveSearchSuggestions('서천갯벌');
 assert.equal(seocheonGetbol.length, 1, '서천갯벌 → 팔경 유부도');
