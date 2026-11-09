@@ -10,6 +10,8 @@ const TAB_WAIT_MS = IS_CI ? 12_000 : 90_000;
 const TEST_TIMEOUT_MS = IS_CI ? 120_000 : 240_000;
 const OVERVIEW_BASELINE_POLL_MS = IS_CI ? 35_000 : 60_000;
 const SKELETON_WAIT_MS = IS_CI ? 30_000 : 45_000;
+const SCROLL_TO_BOTTOM_POLL_MS = IS_CI ? 35_000 : 60_000;
+const SCROLL_HEIGHT_SETTLE_POLLS = 3;
 const MIN_PRE_TAP_SCROLL_TOP_PX = 2000;
 const OVERVIEW_SCROLL_HEIGHT_FACTOR = 1.5;
 /** scrollTop must stay within reachable range (short 사진/영상 tabs). */
@@ -65,18 +67,72 @@ async function measurePrimaryScroller(dialog) {
   });
 }
 
+function isPrimaryScrollerAtBottom(metrics) {
+  return (
+    metrics.scrollTop >= metrics.maxScrollTop - PRE_TAP_MAX_SCROLL_BOTTOM_SLACK_PX
+  );
+}
+
+async function nudgePrimaryScrollerToBottom(dialog) {
+  await dialog.evaluate((el) => {
+    const md = window.matchMedia('(min-width: 768px)').matches;
+    const contentCol = el.querySelector('[data-festival-sheet-content]');
+    const primary = md && contentCol instanceof HTMLElement ? contentCol : el;
+    const target = Math.max(primary.scrollHeight, el.scrollHeight);
+    primary.scrollTop = target;
+    el.scrollTop = target;
+    if (typeof primary.scrollTo === 'function') {
+      primary.scrollTo(0, target);
+    }
+    if (typeof el.scrollTo === 'function') {
+      el.scrollTo(0, target);
+    }
+  });
+}
+
+async function waitForPrimaryScrollHeightSettled(dialog) {
+  let lastHeight = -1;
+  let stablePolls = 0;
+  await expect
+    .poll(
+      async () => {
+        const { scrollHeight } = await measurePrimaryScroller(dialog);
+        if (scrollHeight === lastHeight) {
+          stablePolls += 1;
+        } else {
+          lastHeight = scrollHeight;
+          stablePolls = 0;
+        }
+        return stablePolls >= SCROLL_HEIGHT_SETTLE_POLLS;
+      },
+      { timeout: SKELETON_WAIT_MS },
+    )
+    .toBe(true);
+}
+
 async function scrollPrimarySheetToBottom(dialog) {
-  for (let pass = 0; pass < 6; pass += 1) {
-    await dialog.evaluate((el) => {
-      const md = window.matchMedia('(min-width: 768px)').matches;
-      const contentCol = el.querySelector('[data-festival-sheet-content]');
-      const primary = md && contentCol instanceof HTMLElement ? contentCol : el;
-      const target = Math.max(primary.scrollHeight, el.scrollHeight);
-      primary.scrollTop = target;
-      el.scrollTop = target;
-    });
-    await dialog.evaluate(() => new Promise((resolve) => setTimeout(resolve, 80)));
-  }
+  await waitForPrimaryScrollHeightSettled(dialog);
+  await expect
+    .poll(
+      async () => {
+        await nudgePrimaryScrollerToBottom(dialog);
+        await dialog.evaluate(
+          () =>
+            new Promise((resolve) => {
+              requestAnimationFrame(() => requestAnimationFrame(resolve));
+            }),
+        );
+        const metrics = await measurePrimaryScroller(dialog);
+        if (!isPrimaryScrollerAtBottom(metrics)) {
+          return false;
+        }
+        await nudgePrimaryScrollerToBottom(dialog);
+        const settled = await measurePrimaryScroller(dialog);
+        return isPrimaryScrollerAtBottom(settled);
+      },
+      { timeout: SCROLL_TO_BOTTOM_POLL_MS },
+    )
+    .toBe(true);
 }
 
 /** Pixel height of 안내-only blocks below the tab strip (overview tab panel extent). */
