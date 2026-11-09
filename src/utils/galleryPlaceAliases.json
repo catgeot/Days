@@ -1,0 +1,889 @@
+[
+  {
+    "id": "bangkok",
+    "city": [
+      "Bangkok",
+      "방콕"
+    ],
+    "country": [
+      "Thailand",
+      "태국"
+    ]
+  },
+  {
+    "id": "barcelona",
+    "city": [
+      "Barcelona",
+      "바르셀로나"
+    ],
+    "country": [
+      "Spain",
+      "España",
+      "스페인"
+    ]
+  },
+  {
+    "id": "madrid",
+    "city": [
+      "Madrid",
+      "마드리드"
+    ],
+    "country": [
+      "Spain",
+      "España",
+      "스페인"
+    ]
+  },
+  {
+    "id": "seville",
+    "city": [
+      "Seville",
+      "세비야",
+      "Sevilla"
+    ],
+    "country": [
+      "Spain",
+      "España",
+      "스페인"
+    ]
+  },
+  {
+    "id": "paris",
+    "city": [
+      "Paris",
+      "파리"
+    ],
+    "country": [
+      "France",
+      "프랑스"
+    ]
+  },
+  {
+    "id": "london",
+    "city": [
+      "London",
+      "런던"
+    ],
+    "country": [
+      "United Kingdom",
+      "England",
+      "영국",
+      "잉글랜드"
+    ]
+  },
+  {
+    "id": "tokyo",
+    "city": [
+      "Tokyo",
+      "도쿄"
+    ],
+    "country": [
+      "Japan",
+      "일본"
+    ]
+  },
+  {
+    "id": "kyoto",
+    "city": [
+      "Kyoto",
+      "교토"
+    ],
+    "country": [
+      "Japan",
+      "일본"
+    ]
+  },
+  {
+    "id": "osaka",
+    "city": [
+      "Osaka",
+      "오사카"
+    ],
+    "country": [
+      "Japan",
+      "일본"
+    ]
+  },
+  {
+    "id": "singapore",
+    "city": [
+      "Singapore",
+      "싱가포르"
+    ],
+    "country": [
+      "Singapore",
+      "싱가포르"
+    ]
+  },
+  {
+    "id": "sydney",
+    "city": [
+      "Sydney",
+      "시드니"
+    ],
+    "country": [
+      "Australia",
+      "호주"
+    ]
+  },
+  {
+    "id": "hanoi",
+    "city": [
+      "Hanoi",
+      "하노이"
+    ],
+    "country": [
+      "Vietnam",
+      "베트남"
+    ]
+  },
+  {
+    "id": "edinburgh",
+    "city": [
+      "Edinburgh",
+      "에딘버러"
+    ],
+    "country": [
+      "Scotland",
+      "스코틀랜드"
+    ]
+  },
+  {
+    "id": "san-francisco",
+    "city": [
+      "San Francisco",
+      "샌프란시스코"
+    ],
+    "country": [
+      "United States",
+      "USA",
+      "미국"
+    ]
+  },
+  {
+    "id": "shanghai",
+    "city": [
+      "Shanghai",
+      "상하이"
+    ],
+    "country": [
+      "China",
+      "중국"
+    ]
+  },
+  {
+    "id": "toronto",
+    "city": [
+      "Toronto",
+      "토론토"
+    ],
+    "country": [
+      "Canada",
+      "캐나다"
+    ]
+  },
+  {
+    "id": "florence",
+    "city": [
+      "Florence",
+      "피렌체",
+      "Firenze"
+    ],
+    "country": [
+      "Italy",
+      "이탈리아"
+    ]
+  },
+  {
+    "id": "istanbul",
+    "city": [
+      "Istanbul",
+      "이스탄불"
+    ],
+    "country": [
+      "Turkey",
+      "Türkiye",
+      "튀르키예",
+      "터키"
+    ]
+  },
+  {
+    "id": "lisbon",
+    "city": [
+      "Lisbon",
+      "리스본"
+    ],
+    "country": [
+      "Portugal",
+      "포르투갈"
+    ]
+  },
+  {
+    "id": "seoul",
+    "city": [
+      "Seoul",
+      "서울"
+    ],
+    "country": [
+      "South Korea",
+      "Korea",
+      "한국",
+      "대한민국"
+    ]
+  },
+  {
+    "id": "hong-kong",
+    "city": [
+      "Hong Kong",
+      "홍콩"
+    ],
+    "country": [
+      "China",
+      "중국"
+    ]
+  },
+  {
+    "id": "prague",
+    "city": [
+      "Prague",
+      "프라하"
+    ],
+    "country": [
+      "Czech Republic",
+      "Czechia",
+      "체코"
+    ]
+  },
+  {
+    "id": "cairo",
+    "city": [
+      "Cairo",
+      "카이로"
+    ],
+    "country": [
+      "Egypt",
+      "이집트"
+    ]
+  },
+  {
+    "id": "jeju",
+    "city": [
+      "Jeju",
+      "제주"
+    ],
+    "country": [
+      "South Korea",
+      "Korea",
+      "한국",
+      "대한민국"
+    ]
+  },
+  {
+    "id": "rio-de-janeiro",
+    "city": [
+      "Rio de Janeiro",
+      "리우데자네이루"
+    ],
+    "country": [
+      "Brazil",
+      "브라질"
+    ]
+  },
+  {
+    "id": "dubai",
+    "city": [
+      "Dubai",
+      "두바이"
+    ],
+    "country": [
+      "United Arab Emirates",
+      "아랍에미리트"
+    ]
+  },
+  {
+    "id": "macau",
+    "city": [
+      "Macau",
+      "마카오",
+      "Macao"
+    ],
+    "country": [
+      "China",
+      "중국"
+    ]
+  },
+  {
+    "id": "rome",
+    "city": [
+      "Rome",
+      "로마"
+    ],
+    "country": [
+      "Italy",
+      "이탈리아"
+    ]
+  },
+  {
+    "id": "venice",
+    "city": [
+      "Venice",
+      "베니스",
+      "Venezia"
+    ],
+    "country": [
+      "Italy",
+      "이탈리아"
+    ]
+  },
+  {
+    "id": "berlin",
+    "city": [
+      "Berlin",
+      "베를린"
+    ],
+    "country": [
+      "Germany",
+      "독일"
+    ]
+  },
+  {
+    "id": "munich",
+    "city": [
+      "Munich",
+      "뮌헨"
+    ],
+    "country": [
+      "Germany",
+      "독일"
+    ]
+  },
+  {
+    "id": "amsterdam",
+    "city": [
+      "Amsterdam",
+      "암스테르담"
+    ],
+    "country": [
+      "Netherlands",
+      "네덜란드"
+    ]
+  },
+  {
+    "id": "vienna",
+    "city": [
+      "Vienna",
+      "빈"
+    ],
+    "country": [
+      "Austria",
+      "오스트리아"
+    ]
+  },
+  {
+    "id": "budapest",
+    "city": [
+      "Budapest",
+      "부다페스트"
+    ],
+    "country": [
+      "Hungary",
+      "헝가리"
+    ]
+  },
+  {
+    "id": "athens",
+    "city": [
+      "Athens",
+      "아테네"
+    ],
+    "country": [
+      "Greece",
+      "그리스"
+    ]
+  },
+  {
+    "id": "new-york",
+    "city": [
+      "New York",
+      "뉴욕",
+      "New York City",
+      "NYC"
+    ],
+    "country": [
+      "United States",
+      "USA",
+      "미국"
+    ]
+  },
+  {
+    "id": "los-angeles",
+    "city": [
+      "Los Angeles",
+      "로스앤젤레스"
+    ],
+    "country": [
+      "United States",
+      "USA",
+      "미국"
+    ]
+  },
+  {
+    "id": "chicago",
+    "city": [
+      "Chicago",
+      "시카고"
+    ],
+    "country": [
+      "United States",
+      "USA",
+      "미국"
+    ]
+  },
+  {
+    "id": "vancouver",
+    "city": [
+      "Vancouver",
+      "밴쿠버"
+    ],
+    "country": [
+      "Canada",
+      "캐나다"
+    ]
+  },
+  {
+    "id": "taipei",
+    "city": [
+      "Taipei",
+      "타이베이"
+    ],
+    "country": [
+      "Taiwan",
+      "대만"
+    ]
+  },
+  {
+    "id": "kuala-lumpur",
+    "city": [
+      "Kuala Lumpur",
+      "쿠알라룸푸르"
+    ],
+    "country": [
+      "Malaysia",
+      "말레이시아"
+    ]
+  },
+  {
+    "id": "jakarta",
+    "city": [
+      "Jakarta",
+      "자카르타"
+    ],
+    "country": [
+      "Indonesia",
+      "인도네시아"
+    ]
+  },
+  {
+    "id": "phuket",
+    "city": [
+      "Phuket",
+      "푸켓"
+    ],
+    "country": [
+      "Thailand",
+      "태국"
+    ]
+  },
+  {
+    "id": "chiang-mai",
+    "city": [
+      "Chiang Mai",
+      "치앙마이"
+    ],
+    "country": [
+      "Thailand",
+      "태국"
+    ]
+  },
+  {
+    "id": "melbourne",
+    "city": [
+      "Melbourne",
+      "멜버른"
+    ],
+    "country": [
+      "Australia",
+      "호주"
+    ]
+  },
+  {
+    "id": "auckland",
+    "city": [
+      "Auckland",
+      "오클랜드"
+    ],
+    "country": [
+      "New Zealand",
+      "뉴질랜드"
+    ]
+  },
+  {
+    "id": "moscow",
+    "city": [
+      "Moscow",
+      "모스크바"
+    ],
+    "country": [
+      "Russia",
+      "러시아"
+    ]
+  },
+  {
+    "id": "warsaw",
+    "city": [
+      "Warsaw",
+      "바르샤바"
+    ],
+    "country": [
+      "Poland",
+      "폴란드"
+    ]
+  },
+  {
+    "id": "stockholm",
+    "city": [
+      "Stockholm",
+      "스톡홀름"
+    ],
+    "country": [
+      "Sweden",
+      "스웨덴"
+    ]
+  },
+  {
+    "id": "oslo",
+    "city": [
+      "Oslo",
+      "오슬로"
+    ],
+    "country": [
+      "Norway",
+      "노르웨이"
+    ]
+  },
+  {
+    "id": "copenhagen",
+    "city": [
+      "Copenhagen",
+      "코펜하겐"
+    ],
+    "country": [
+      "Denmark",
+      "덴마크"
+    ]
+  },
+  {
+    "id": "dublin",
+    "city": [
+      "Dublin",
+      "더블린"
+    ],
+    "country": [
+      "Ireland",
+      "아일랜드"
+    ]
+  },
+  {
+    "id": "zurich",
+    "city": [
+      "Zurich",
+      "취리히",
+      "Zürich"
+    ],
+    "country": [
+      "Switzerland",
+      "스위스"
+    ]
+  },
+  {
+    "id": "geneva",
+    "city": [
+      "Geneva",
+      "제네바"
+    ],
+    "country": [
+      "Switzerland",
+      "스위스"
+    ]
+  },
+  {
+    "id": "brussels",
+    "city": [
+      "Brussels",
+      "브뤼셀"
+    ],
+    "country": [
+      "Belgium",
+      "벨기에"
+    ]
+  },
+  {
+    "id": "porto",
+    "city": [
+      "Porto",
+      "포르투"
+    ],
+    "country": [
+      "Portugal",
+      "포르투갈"
+    ]
+  },
+  {
+    "id": "milan",
+    "city": [
+      "Milan",
+      "밀라노"
+    ],
+    "country": [
+      "Italy",
+      "이탈리아"
+    ]
+  },
+  {
+    "id": "fukuoka",
+    "city": [
+      "Fukuoka",
+      "후쿠오카"
+    ],
+    "country": [
+      "Japan",
+      "일본"
+    ]
+  },
+  {
+    "id": "sapporo",
+    "city": [
+      "Sapporo",
+      "삿포로"
+    ],
+    "country": [
+      "Japan",
+      "일본"
+    ]
+  },
+  {
+    "id": "hawaii",
+    "city": [
+      "Hawaii",
+      "하와이"
+    ],
+    "country": [
+      "Hawaii",
+      "United States",
+      "USA",
+      "미국",
+      "하와이"
+    ]
+  },
+  {
+    "id": "honolulu",
+    "city": [
+      "Honolulu",
+      "호놀룰루"
+    ],
+    "country": [
+      "Hawaii",
+      "United States",
+      "USA",
+      "미국",
+      "하와이"
+    ]
+  },
+  {
+    "id": "cape-town",
+    "city": [
+      "Cape Town",
+      "케이프타운"
+    ],
+    "country": [
+      "South Africa",
+      "남아프리카공화국"
+    ]
+  },
+  {
+    "id": "marrakech",
+    "city": [
+      "Marrakech",
+      "마라케시"
+    ],
+    "country": [
+      "Morocco",
+      "모로코"
+    ]
+  },
+  {
+    "id": "delhi",
+    "city": [
+      "Delhi",
+      "델리"
+    ],
+    "country": [
+      "India",
+      "인도"
+    ]
+  },
+  {
+    "id": "cancun",
+    "city": [
+      "Cancun",
+      "칸쿤"
+    ],
+    "country": [
+      "Mexico",
+      "멕시코"
+    ]
+  },
+  {
+    "id": "buenos-aires",
+    "city": [
+      "Buenos Aires",
+      "부에노스아이레스"
+    ],
+    "country": [
+      "Argentina",
+      "아르헨티나"
+    ]
+  },
+  {
+    "id": "manila",
+    "city": [
+      "Manila",
+      "마닐라"
+    ],
+    "country": [
+      "Philippines",
+      "필리핀"
+    ]
+  },
+  {
+    "id": "queenstown",
+    "city": [
+      "Queenstown",
+      "퀸스타운"
+    ],
+    "country": [
+      "New Zealand",
+      "뉴질랜드"
+    ]
+  },
+  {
+    "id": "reykjavik",
+    "city": [
+      "Reykjavik",
+      "레이캬비크"
+    ],
+    "country": [
+      "Iceland",
+      "아이슬란드"
+    ]
+  },
+  {
+    "id": "helsinki",
+    "city": [
+      "Helsinki",
+      "헬싱키"
+    ],
+    "country": [
+      "Finland",
+      "핀란드"
+    ]
+  },
+  {
+    "id": "hamburg",
+    "city": [
+      "Hamburg",
+      "함부르크"
+    ],
+    "country": [
+      "Germany",
+      "독일"
+    ]
+  },
+  {
+    "id": "ho-chi-minh-city",
+    "city": [
+      "Ho Chi Minh City",
+      "Ho Chi Minh",
+      "Saigon",
+      "호치민",
+      "사이공"
+    ],
+    "country": [
+      "Vietnam",
+      "베트남"
+    ]
+  },
+  {
+    "id": "busan",
+    "city": [
+      "Busan",
+      "Pusan",
+      "부산"
+    ],
+    "country": [
+      "South Korea",
+      "Korea",
+      "한국",
+      "대한민국"
+    ]
+  },
+  {
+    "id": "beijing",
+    "city": [
+      "Beijing",
+      "Peking",
+      "베이징"
+    ],
+    "country": [
+      "China",
+      "중국"
+    ]
+  },
+  {
+    "id": "dresden",
+    "city": [
+      "Dresden",
+      "드레스덴"
+    ],
+    "country": [
+      "Germany",
+      "독일"
+    ]
+  },
+  {
+    "id": "peterhof",
+    "city": [
+      "Peterhof",
+      "Petergof",
+      "Петергоф",
+      "페테르고프"
+    ],
+    "country": [
+      "Russia",
+      "러시아"
+    ]
+  },
+  {
+    "id": "saint-petersburg",
+    "city": [
+      "Saint Petersburg",
+      "St Petersburg",
+      "St. Petersburg",
+      "상트페테르부르크"
+    ],
+    "country": [
+      "Russia",
+      "러시아"
+    ]
+  }
+]
