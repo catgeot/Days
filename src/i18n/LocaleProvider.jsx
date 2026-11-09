@@ -7,7 +7,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { I18nextProvider } from 'react-i18next';
 
 import { resolveInitialLocale } from './browserLocaleHint';
@@ -17,6 +17,7 @@ import {
   normalizeAppLocale,
 } from './constants';
 import { ensureI18n, i18n } from './config';
+import { resolveLocaleBootPathname } from './localeBootPath.js';
 
 const LocaleContext = createContext(null);
 
@@ -58,6 +59,8 @@ function resolveBootLocaleFromSearchParams(searchParams) {
 
 export function LocaleProvider({ children }) {
   const [searchParams, setSearchParams] = useSearchParams();
+  const location = useLocation();
+  const navigate = useNavigate();
   const [locale, setLocaleState] = useState(() => {
     const initial = resolveBootLocaleFromSearchParams(searchParams);
     ensureI18n(initial);
@@ -85,6 +88,13 @@ export function LocaleProvider({ children }) {
     persistLocale('en');
     void i18n.changeLanguage('en');
     syncDocumentLang('en');
+
+    const stablePath = resolveLocaleBootPathname(location.pathname);
+    if (stablePath !== location.pathname) {
+      navigate({ pathname: stablePath, search: '?lang=en' }, { replace: true });
+      return;
+    }
+
     setSearchParams(
       (prev) => {
         const next = new URLSearchParams(prev);
@@ -93,7 +103,7 @@ export function LocaleProvider({ children }) {
       },
       { replace: true },
     );
-  }, [searchParams, setSearchParams]);
+  }, [searchParams, setSearchParams, location.pathname, navigate]);
 
   useEffect(() => {
     const urlLocale = resolveLocaleFromUrl(searchParams);
