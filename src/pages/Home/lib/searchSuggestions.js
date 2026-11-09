@@ -77,7 +77,10 @@ import {
   shouldExpandKoreaPoiTypeSearch,
 } from './koreaPoiTypeSearch.js';
 import { buildExploreMonthlyPickSearchSuggestions } from './exploreMonthlyPickSearchSuggestions.js';
-import { buildKoreaGetbolCollectiveSearchSuggestions } from './exploreKoreaGetbolCollectiveSearch.js';
+import {
+  buildKoreaGetbolCollectiveSearchSuggestions,
+  isKoreaGetbolCollectiveSearchQuery,
+} from './exploreKoreaGetbolCollectiveSearch.js';
 
 const normalizeKey = (s) =>
   String(s ?? '')
@@ -347,14 +350,14 @@ export function buildLocalSearchSuggestions(query, opts = {}) {
     return out.slice(0, 24).map(enrichSearchCandidateScenicMedia);
   }
 
-  for (const item of buildExploreMonthlyPickSearchSuggestions(innerQuery)) {
-    pushUnique(out, seen, item);
-  }
-
-  const getbolCollective = buildKoreaGetbolCollectiveSearchSuggestions(innerQuery);
-  if (getbolCollective.length) {
+  if (isKoreaGetbolCollectiveSearchQuery(innerQuery)) {
+    const getbolCollective = buildKoreaGetbolCollectiveSearchSuggestions(innerQuery);
     for (const item of getbolCollective) pushUnique(out, seen, item);
     return out.slice(0, 24).map(enrichSearchCandidateScenicMedia);
+  }
+
+  for (const item of buildExploreMonthlyPickSearchSuggestions(innerQuery)) {
+    pushUnique(out, seen, item);
   }
 
   const exactListHit = resolveLocalScenicListFromSearchQuery(innerQuery);
@@ -552,6 +555,7 @@ export async function buildHybridSearchSuggestions(query, opts = {}) {
     exactListHit ||
     exactAttraction ||
     exactSettlement ||
+    isKoreaGetbolCollectiveSearchQuery(q) ||
     local.some((item) => item?.source === 'monthly-pick') ||
     shouldSkipGeocodeForMood(q) ||
     shouldOfferKoreaHomonymDisambiguation(q)
