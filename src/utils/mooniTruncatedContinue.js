@@ -1,3 +1,5 @@
+import { isMooniGfmTableLine } from './mooniGfmTableLine.js';
+
 const THINKING_BLOCK_RE = /<thinking>[\s\S]*?<\/thinking>/gi;
 const DAY_HEADING_LINE_RE =
   /^\s*(?:#{1,4}\s*)?(?:\*\*)?(\d{1,2})\s*일차(?:\*\*)?\s*(.*)$/i;
@@ -25,7 +27,34 @@ export function ensureItineraryMarkdownLineBreaks(text) {
   );
   s = s.replace(/\n{3,}/g, '\n\n');
   if (/\*\*\d{1,2}일차\*\*/.test(s)) {
-    s = s.replace(/([^\n])\n(?!\n)/g, '$1  \n');
+    const lines = s.split('\n');
+    const withBreaks = [];
+    for (let i = 0; i < lines.length; i += 1) {
+      const line = lines[i];
+      const next = lines[i + 1];
+      if (!next || !next.trim()) {
+        withBreaks.push(line);
+        continue;
+      }
+      if (isMooniGfmTableLine(line) || isMooniGfmTableLine(next)) {
+        withBreaks.push(line);
+        continue;
+      }
+      if (next.trim().startsWith('|')) {
+        withBreaks.push(line);
+        continue;
+      }
+      if (/^\s*(?:[-*+]|\d+\.)\s/.test(next)) {
+        withBreaks.push(line);
+        continue;
+      }
+      if (line.trim() && !line.endsWith('  ')) {
+        withBreaks.push(`${line}  `);
+      } else {
+        withBreaks.push(line);
+      }
+    }
+    s = withBreaks.join('\n');
   }
   return s;
 }
