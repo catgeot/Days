@@ -1,9 +1,29 @@
 import { isCrawlerRequest } from './src/edge/botDetect.js';
 import { injectCrawlerMetaIntoHtml } from './src/edge/injectCrawlerMeta.js';
-import { getCrawlerMetaKind, parseCrawlerPath, resolveCrawlerMeta } from './src/edge/resolveCrawlerMeta.js';
+import {
+  buildCrawlerSoft404Meta,
+  getCrawlerMetaKind,
+  isCrawlerSoft404Path,
+  parseCrawlerPath,
+  resolveCrawlerMeta,
+} from './src/edge/resolveCrawlerMeta.js';
 
 export const config = {
-  matcher: ['/', '/korea', '/korea/theme/scenic', '/explore', '/explore/:continent/:category', '/blog', '/blog/curation', '/world-events', '/place/:slug', '/place/:slug/gallery', '/place/:slug/planner', '/place/:slug/wiki'],
+  matcher: [
+    '/',
+    '/korea',
+    '/korea/theme/scenic',
+    '/explore',
+    '/explore/:continent/:category',
+    '/blog',
+    '/blog/curation',
+    '/blog/e/:editorialSlug',
+    '/world-events',
+    '/place/:slug',
+    '/place/:slug/gallery',
+    '/place/:slug/planner',
+    '/place/:slug/wiki',
+  ],
 };
 
 export default async function middleware(request) {
@@ -18,7 +38,11 @@ export default async function middleware(request) {
   }
 
   const locale = url.searchParams.get('lang') === 'en' ? 'en' : 'ko';
-  const meta = resolveCrawlerMeta(url.pathname, locale);
+  let meta = resolveCrawlerMeta(url.pathname, locale);
+  const soft404 = !meta && isCrawlerSoft404Path(url.pathname);
+  if (soft404) {
+    meta = buildCrawlerSoft404Meta(url.pathname, locale);
+  }
   if (!meta) {
     return;
   }
@@ -33,10 +57,10 @@ export default async function middleware(request) {
   }
 
   const html = injectCrawlerMetaIntoHtml(await indexRes.text(), meta);
-  const kind = getCrawlerMetaKind(url.pathname) || 'tier1-place';
+  const kind = soft404 ? 'soft-404' : getCrawlerMetaKind(url.pathname) || 'tier1-place';
 
   return new Response(html, {
-    status: 200,
+    status: soft404 ? 404 : 200,
     headers: {
       'content-type': 'text/html; charset=utf-8',
       'cache-control': 'public, max-age=0, must-revalidate',

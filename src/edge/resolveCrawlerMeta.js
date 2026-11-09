@@ -1,3 +1,4 @@
+import crawlerEditorialMeta from './crawlerEditorialMeta.generated.js';
 import crawlerHubMeta from './crawlerHubMeta.generated.js';
 import crawlerPlaceMeta from './crawlerPlaceMeta.generated.js';
 import {
@@ -54,6 +55,10 @@ function toMetaRow(row, locale) {
     tab: row.tab,
     destIata: row.destIata,
     galleryImages: row.galleryImages,
+    editorialSlug: row.editorialSlug,
+    articleTitle: row.articleTitle,
+    placeSlug: row.placeSlug,
+    robotsNoIndex: row.robotsNoIndex,
   };
 }
 
@@ -81,6 +86,11 @@ export function parseCrawlerPath(pathname) {
     const [, slug, tab] = tabMatch;
     if (!PLACE_TABS.has(tab)) return null;
     return { kind: 'place-tab', slug, tab };
+  }
+
+  const editorialMatch = path.match(/^\/blog\/e\/([^/]+)$/);
+  if (editorialMatch) {
+    return { kind: 'editorial-logbook', slug: editorialMatch[1] };
   }
 
   return null;
@@ -126,7 +136,44 @@ export function resolveCrawlerMeta(pathname, locale = 'ko') {
     return toMetaRow(row, locale);
   }
 
+  if (parsed.kind === 'editorial-logbook') {
+    const row = crawlerEditorialMeta?.[parsed.slug]?.[locale];
+    return toMetaRow(row, locale);
+  }
+
   return null;
+}
+
+export function isCrawlerSoft404Path(pathname) {
+  const parsed = parseCrawlerPath(pathname);
+  if (!parsed) return false;
+  if (parsed.kind === 'editorial-logbook') {
+    return !crawlerEditorialMeta?.[parsed.slug];
+  }
+  if (parsed.kind === 'place-base' || parsed.kind === 'place-tab') {
+    return !crawlerPlaceMeta?.[parsed.slug];
+  }
+  return false;
+}
+
+export function buildCrawlerSoft404Meta(pathname, locale = 'ko') {
+  const path = normalizePath(pathname);
+  const loc = locale === 'en' ? 'en' : 'ko';
+  const title = loc === 'en' ? 'Page not found' : '페이지를 찾을 수 없습니다';
+  const description =
+    loc === 'en'
+      ? 'This URL is not on GATEO. Return to the home page or use site search.'
+      : '요청한 GATEO 페이지가 없습니다. 홈 또는 검색으로 이동하세요.';
+  return {
+    locale: loc,
+    title,
+    description,
+    keywords: '',
+    canonicalUrl: '',
+    hreflangAlternates: [],
+    robotsNoIndex: true,
+    soft404Path: path,
+  };
 }
 
 /** @deprecated use resolveCrawlerMeta */
@@ -149,6 +196,7 @@ export function getCrawlerMetaKind(pathname) {
     return 'hub';
   }
   if (parsed.kind === 'place-base') return 'tier1-place-base';
+  if (parsed.kind === 'editorial-logbook') return 'editorial-logbook';
   return 'tier1-place';
 }
 
