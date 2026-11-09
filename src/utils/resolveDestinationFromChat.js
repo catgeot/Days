@@ -62,6 +62,12 @@ const ALREADY_ACCESS_SHAPED_EN =
 
 const SCORE_GAP_FOR_SINGLE_WINNER = 8;
 
+const DESTINATION_SWITCH_INTENT =
+  /(?:바꿔|바꿈|바꿀|갈게|가려고|가고\s*싶|이번(?:엔|에는)|대신|말고)|(?:으로|로)\s*(?:바꿔|갈게|갈\b)|(?:여행|일정).*(?:짜|추천|정리)/iu;
+
+const DESTINATION_TOPIC_INTENT =
+  /가볼|맛집|일정|여행|관광|숙소|코스|추천|페리|휴양|스노클|체험|카페|해변|박\s*\d|nights?|itinerary|things\s+to\s+do|where\s+to\s+eat/i;
+
 const KOREAN_PLACE_TRAILING_PARTICLE =
   /(?:으로|로|에|은|는|이|가|와|과|랑|하고|에서|까지|부터|을|를|의|도|만)$/u;
 
@@ -254,6 +260,41 @@ function filterDepartureHubs(resolved, excludeDeparture) {
   };
 }
 
+/** bound 목적지와 다른 이름·쿼리 적중이 있으면 출발 허브 필터를 우회해 재바인딩 */
+function tryRebindSessionDestination(text, sessionBound) {
+  if (!sessionBound) return null;
+  const { hits, overflow } = resolveDirectHits(text);
+  if (overflow) return null;
+  const distinct = hits.filter((h) => h.spot.slug !== sessionBound.slug);
+  if (!distinct.length) return null;
+
+  const trimmed = String(text ?? '').trim();
+  const switchIntent = DESTINATION_SWITCH_INTENT.test(trimmed);
+  const topicIntent = DESTINATION_TOPIC_INTENT.test(trimmed);
+  const strong = distinct.filter((h) => h.reason === 'name' || h.reason === 'query');
+
+  if (strong.length === 1) {
+    const hit = strong[0];
+    if (switchIntent || topicIntent) {
+      return { kind: 'high', spot: hit.spot, score: hit.score };
+    }
+    if (!isDepartureHubSpot(hit.spot) && !DEPARTURE_ONLY_FRAGMENT.test(trimmed)) {
+      return { kind: 'high', spot: hit.spot, score: hit.score };
+    }
+    return null;
+  }
+
+  if (strong.length > 1 && (switchIntent || topicIntent)) {
+    return {
+      kind: 'low',
+      candidates: strong.map(({ spot, score, reason }) =>
+        spotToCandidate(spot, score, reason || 'lookup'),
+      ),
+    };
+  }
+  return null;
+}
+
 /**
  * 발화·히스토리에서 여행지 slug 후보를 해석한다 (홈 검색 SSOT 재사용).
  */
@@ -263,10 +304,18 @@ export function resolveDestinationFromChat(userText, chatHistory = [], currentDe
   const currentText = String(userText ?? '').trim();
   const accessRoute = isAccessRouteQuery(currentText);
   const ferryRoute = isFerryRouteQuery(currentText);
+  const departureFromCtx = /(?:에서\s*출발|출발해서|from\s+)/i.test(currentText);
+  const allowHubFilterBypass =
+    !departureFromCtx &&
+    (DESTINATION_SWITCH_INTENT.test(currentText) ||
+      DESTINATION_TOPIC_INTENT.test(currentText));
   const excludeDepartureHub =
     accessRoute ||
     (sessionBound && ferryRoute) ||
-    (sessionBound && DEPARTURE_ONLY_FRAGMENT.test(currentText) && !looksLikeThemeQuery(currentText));
+    (sessionBound &&
+      DEPARTURE_ONLY_FRAGMENT.test(currentText) &&
+      !looksLikeThemeQuery(currentText) &&
+      !allowHubFilterBypass);
 
   if (!currentText) {
     return sessionBound ? buildHighResult(sessionBound, 10, 'bound') : emptyResult();
@@ -308,6 +357,14 @@ export function resolveDestinationFromChat(userText, chatHistory = [], currentDe
 
   if (looksLikeThemeQuery(currentText)) {
     return emptyResult();
+  }
+
+  const rebind = tryRebindSessionDestination(currentText, sessionBound);
+  if (rebind?.kind === 'high') {
+    return buildHighResult(rebind.spot, rebind.score, 'lookup');
+  }
+  if (rebind?.kind === 'low') {
+    return buildLowResult(rebind.candidates, 'lookup');
   }
 
   // bound 세션 — 이번 턴 질문에 새 목적지가 없을 때만 유지 (출발지·가는법은 위에서 처리)

@@ -340,6 +340,19 @@ export function extractMooniTripFacts(userText, options = {}) {
   return session;
 }
 
+/** 목적지 slug가 바뀌면 공항·체류 등 이전 세션 사실을 비운다 */
+export function rebaseMooniTripSessionOnDestinationChange(baseSession, { slug = '', destinationName = '' } = {}) {
+  const prevSlug = normText(baseSession?.slug).toLowerCase();
+  const nextSlug = normText(slug).toLowerCase();
+  if (!prevSlug || !nextSlug || prevSlug === nextSlug) {
+    return baseSession || emptyMooniTripSession();
+  }
+  const fresh = emptyMooniTripSession();
+  fresh.slug = nextSlug;
+  fresh.destinationName = normText(destinationName) || normText(baseSession?.destinationName);
+  return fresh;
+}
+
 export function mergeMooniTripSession(base, patch) {
   const next = { ...emptyMooniTripSession(), ...(base || {}) };
   const incoming = patch || {};

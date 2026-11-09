@@ -101,6 +101,8 @@ export function sourceNameForLocale(name, locale) {
   return cairoSourceNameForLocale(name, locale);
 }
 
+export { sourceLinkLabelForLocale, sourceUrlDisambiguator } from './sourceLinkLabels.js';
+
 export function linkLabelForLocale(label, locale) {
   return cairoLinkLabelForLocale(label, locale);
 }
