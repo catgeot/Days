@@ -19,6 +19,7 @@ import QaShareIndex from './pages/QaShare';
 import QaShareRedirect from './pages/QaShare/QaShareRedirect';
 import { isQaMooniMarkdownFixtureEnabled } from './shared/cloudPreview/isQaMooniMarkdownFixtureEnabled.js';
 import { isGateoFestivalRoadEnabled } from './shared/gateoFeatureFlags.js';
+import { isSelfReelsRouteEnabled } from './pages/SelfReels/isSelfReelsRouteEnabled.js';
 import { isQaFestivalRoadFixtureEnabled } from './shared/cloudPreview/isQaFestivalRoadFixtureEnabled.js';
 const MooniChatMarkdownFixturePage = isQaMooniMarkdownFixtureEnabled
   ? lazy(() => import('./pages/Qa/MooniChatMarkdownFixturePage.jsx'))
@@ -32,6 +33,10 @@ const MooniMarkdownComposerFixturePage = isQaMooniMarkdownFixtureEnabled
 const galleryWriterHarnessOn = import.meta.env.VITE_GALLERY_WRITER_HARNESS === '1';
 const GallerySingleWriterHarness = galleryWriterHarnessOn
   ? lazy(() => import('./pages/Qa/GallerySingleWriterHarness.jsx'))
+  : null;
+const selfReelsOn = isSelfReelsRouteEnabled();
+const SelfReelsPage = selfReelsOn
+  ? lazy(() => import('./pages/SelfReels/SelfReelsPage.jsx'))
   : null;
 const festivalRoadFixtureOn =
   isQaFestivalRoadFixtureEnabled && isGateoFestivalRoadEnabled();
@@ -210,6 +215,16 @@ function App() {
               ) : null}
               <Route path="/qa/:slug" element={<QaShareRedirect />} />
               <Route path="/qa" element={<QaShareIndex />} />
+              {selfReelsOn && SelfReelsPage ? (
+                <Route
+                  path="/reels"
+                  element={
+                    <Suspense fallback={null}>
+                      <SelfReelsPage />
+                    </Suspense>
+                  }
+                />
+              ) : null}
               <Route path="/about" element={<AboutPage />} />
               <Route path="/pricing" element={<Navigate to="/about" replace />} />
               <Route path="/product" element={<Navigate to="/explore" replace />} />

@@ -12,7 +12,10 @@ const MainLayout = () => {
   const [footerTab, setFooterTab] = useState('about');
   const isHomeGlobe =
     location.pathname === '/' || location.pathname.startsWith('/explore');
-  const hideTrustBar = location.pathname.startsWith('/place/');
+  const hideTrustBar =
+    location.pathname.startsWith('/place/') ||
+    location.pathname === '/reels' ||
+    location.pathname.startsWith('/reels/');
 
   useEffect(() => {
     const onOpen = (event) => {
