@@ -12,7 +12,8 @@ import path from 'node:path';
 test.use({ ignoreHTTPSErrors: true });
 
 const ARTIFACTS = '/opt/cursor/artifacts';
-const QUERIES = ['한라산 백록담', '개심사', '평양시'];
+const HALLASAN_ALIAS_QUERIES = ['한라산 백록담', '백록담', '화구벽'];
+const QUERIES = [...HALLASAN_ALIAS_QUERIES, '개심사', '평양시'];
 
 function slugQuery(q) {
   return q.replace(/\s+/g, '-');
@@ -69,13 +70,13 @@ for (const query of QUERIES) {
       await input.press('Enter');
       await waitSearchSettled(page);
 
-      if (query === '한라산 백록담') {
+      if (HALLASAN_ALIAS_QUERIES.includes(query)) {
         const navigated = await page
           .waitForURL(/\/place\/tour-127635/, { timeout: 8_000 })
           .then(() => true)
           .catch(() => false);
         if (!navigated) {
-          const card = searchResultButton(page, /한라산|백록담|127635|국립공원/i);
+          const card = searchResultButton(page, /한라산|백록담|127635|국립공원|화구벽/i);
           await expect(card).toBeVisible({ timeout: 120_000 });
           await card.click();
           await expect(page).toHaveURL(/\/place\/tour-127635/, { timeout: 60_000 });
