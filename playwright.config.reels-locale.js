@@ -25,6 +25,9 @@ export default defineConfig({
   use: {
     baseURL,
     ignoreHTTPSErrors: true,
+    launchOptions: {
+      args: ['--use-gl=angle', '--use-angle=swiftshader', '--ignore-gpu-blocklist'],
+    },
   },
   projects: [
     { name: 'chromium-mobile-en', use: { ...devices['Pixel 5'], locale: 'en-US' } },

@@ -1,5 +1,6 @@
 import { test, expect } from './fixtures.js';
 import path from 'node:path';
+import { expectHomeShellVisible } from './reels-locale-home-shell.js';
 
 const artifactDir = process.env.REELS_LOCALE_ARTIFACT_DIR || '/opt/cursor/artifacts';
 
@@ -22,16 +23,21 @@ async function newFirstVisitContext(browser, baseURL, locale, viewport) {
   return context;
 }
 
-async function waitForRootContent(page) {
-  await expect
-    .poll(
-      async () => page.evaluate(() => document.getElementById('root')?.childElementCount ?? 0),
-      { timeout: 30_000 },
-    )
-    .toBeGreaterThan(0);
+async function screenshotAfterHomeReady(page, fileName, viewport) {
+  await expectHomeShellVisible(page);
+  await page.waitForTimeout(1500);
+  const file = path.join(artifactDir, fileName);
+  if (viewport.width <= 400) {
+    await page.screenshot({
+      path: file,
+      clip: { x: 0, y: 0, width: 390, height: 844 },
+    });
+  } else {
+    await page.screenshot({ path: file });
+  }
 }
 
-test('en 390: /reels lands on home with ?lang=en and visible UI', async ({ browser, baseURL }, testInfo) => {
+test('en 390: /reels lands on home with ?lang=en and visible search shell', async ({ browser, baseURL }, testInfo) => {
   test.skip(testInfo.project.name !== 'chromium-mobile-en', 'english mobile only');
 
   const context = await newFirstVisitContext(browser, baseURL, 'en-US', { width: 390, height: 844 });
@@ -39,20 +45,29 @@ test('en 390: /reels lands on home with ?lang=en and visible UI', async ({ brows
 
   await page.goto(`${baseURL}/reels`, { waitUntil: 'domcontentloaded' });
   await expect.poll(() => page.url(), { timeout: 15_000 }).toMatch(/\/\?lang=en$/);
-  await waitForRootContent(page);
 
   const stored = await page.evaluate(() => localStorage.getItem('gateo.locale'));
   expect(stored).toBe('en');
 
-  await page.screenshot({
-    path: path.join(artifactDir, 'reels-locale-s3-en-390.png'),
-    clip: { x: 0, y: 0, width: 390, height: 844 },
-  });
+  await screenshotAfterHomeReady(page, 'reels-locale-s3-en-reels-390.png', { width: 390, height: 844 });
 
   await context.close();
 });
 
-test('en 1280: /reels shows home body after boot redirect', async ({ browser, baseURL }, testInfo) => {
+test('en 390 control: direct /?lang=en matches home shell', async ({ browser, baseURL }, testInfo) => {
+  test.skip(testInfo.project.name !== 'chromium-mobile-en', 'english mobile only');
+
+  const context = await newFirstVisitContext(browser, baseURL, 'en-US', { width: 390, height: 844 });
+  const page = await context.newPage();
+
+  await page.goto(`${baseURL}/?lang=en`, { waitUntil: 'domcontentloaded' });
+  await expectHomeShellVisible(page);
+  await screenshotAfterHomeReady(page, 'reels-locale-s3-en-home-control-390.png', { width: 390, height: 844 });
+
+  await context.close();
+});
+
+test('en 1280: /reels shows home search after boot redirect', async ({ browser, baseURL }, testInfo) => {
   test.skip(testInfo.project.name !== 'chromium-desktop-en', 'english desktop only');
 
   const context = await newFirstVisitContext(browser, baseURL, 'en-US', { width: 1280, height: 720 });
@@ -60,28 +75,27 @@ test('en 1280: /reels shows home body after boot redirect', async ({ browser, ba
 
   await page.goto(`${baseURL}/reels`, { waitUntil: 'domcontentloaded' });
   await expect.poll(() => page.url(), { timeout: 15_000 }).toMatch(/\/\?lang=en$/);
-  await waitForRootContent(page);
+  await screenshotAfterHomeReady(page, 'reels-locale-s3-en-reels-1280.png', { width: 1280, height: 720 });
 
-  await page.screenshot({
-    path: path.join(artifactDir, 'reels-locale-s3-en-1280.png'),
-    fullPage: false,
-  });
+  const globeSurface = page.locator('.mapboxgl-canvas, .mapboxgl-map, canvas').first();
+  await expect(globeSurface).toBeVisible({ timeout: 60_000 });
 
   await context.close();
 });
 
-test('ko 390: /reels and home keep non-empty root', async ({ browser, baseURL }, testInfo) => {
+test('ko 390: /reels and home keep visible search shell', async ({ browser, baseURL }, testInfo) => {
   test.skip(testInfo.project.name !== 'chromium-mobile-ko', 'korean mobile only');
 
   const context = await newFirstVisitContext(browser, baseURL, 'ko-KR', { width: 390, height: 844 });
   const page = await context.newPage();
 
   await page.goto(`${baseURL}/reels`, { waitUntil: 'domcontentloaded' });
-  await waitForRootContent(page);
+  await expectHomeShellVisible(page);
   expect(page.url()).not.toContain('lang=en');
 
   await page.goto(`${baseURL}/`, { waitUntil: 'domcontentloaded' });
-  await waitForRootContent(page);
+  await expectHomeShellVisible(page);
+  await screenshotAfterHomeReady(page, 'reels-locale-s3-ko-home-control-390.png', { width: 390, height: 844 });
 
   await context.close();
 });
