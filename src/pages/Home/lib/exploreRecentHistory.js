@@ -7,7 +7,10 @@ import {
   pinNameOwnsPlace,
   uiPlacePoiCollidesWithCatalogParam,
 } from './explorePlaceSlugGuard.js';
-import { resolveExploreAliasDirectPlaceSlug } from './koreaPlaceMatchDictionary.js';
+import {
+  resolveExploreAliasDirectPlaceSlug,
+  resolveExploreAliasTourPlaceParam,
+} from './koreaPlaceMatchDictionary.js';
 import { resolveHubPlaceFromSlug } from './cityAttractionHubs.js';
 import { getPlaceUrlParam, isEphemeralSlug, resolveCatalogPlaceSlug } from './formatUrlName.js';
 import { resolveSettlementPlaceFromSlug } from './mapboxSettlementPlaces.js';
@@ -273,6 +276,19 @@ export function resolveSearchResultSelect(spot) {
   const source = String(pin.source ?? '').trim().toLowerCase();
   if (isKoreaProvinceLevelTourResult(pin)) {
     return { type: 'home', spot: pin };
+  }
+
+  const aliasTourParam = resolveExploreAliasTourPlaceParam(
+    pin.originalQuery || pin.searchQuery || pin.query || '',
+  );
+  if (aliasTourParam) {
+    const tourPin = normalizeExploreSelectionPin({
+      ...pin,
+      source: 'tourapi',
+      contentId: aliasTourParam.slice('tour-'.length),
+      slug: aliasTourParam,
+    });
+    return { type: 'place', spot: tourPin, param: aliasTourParam };
   }
 
   const adminHub = resolveDomesticMapboxAdminHub(pin);

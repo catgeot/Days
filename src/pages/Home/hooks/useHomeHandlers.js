@@ -77,6 +77,8 @@ import {
   locationToChoiceCandidate,
   prependLocalScenicToHubCandidates,
 } from '../lib/searchSuggestions.js';
+import { resolveExploreAliasTourPlaceParam } from '../lib/koreaPlaceMatchDictionary.js';
+import { normalizeExploreSelectionPin } from '../lib/explorePlaceNav.js';
 import {
   collectKoreaPoiTypeSearchCandidates,
 } from '../lib/koreaPoiTypeSearch.js';
@@ -863,6 +865,13 @@ export function useHomeHandlers({
       sessionStorage.getItem('gateo-qa-site-search-ai-limit') === '1';
 
     if (requireChoice && !skipEnterDirectForQa) {
+      if (resolveExploreAliasTourPlaceParam(query)) {
+        const sync = resolveKoreaDestinationFirstPassSync(query);
+        if (sync) {
+          return normalizeExploreSelectionPin(firstPassHitToUiPlace(sync, query));
+        }
+      }
+
       const dictChoice = dictHomonymResult();
       if (dictChoice) return dictChoice;
 
