@@ -340,8 +340,17 @@ assert.ok(
 );
 assert.equal(
   buildKoreaGetbolCollectiveSearchSuggestions('갯벌').length,
-  0,
-  '일반 갯벌 질의는 기존 검색 유지',
+  2,
+  '갯벌 → 유네스코 /place 가능 2건(고창·순천만)',
 );
+const seocheonGetbol = buildKoreaGetbolCollectiveSearchSuggestions('서천갯벌');
+assert.equal(seocheonGetbol.length, 1, '서천갯벌 → 팔경 유부도');
+assert.ok(
+  seocheonGetbol[0].name?.includes('서천갯벌'),
+  '서천갯벌 멤버명',
+);
+const sinanGetbol = buildKoreaGetbolCollectiveSearchSuggestions('신안갯벌');
+assert.equal(sinanGetbol.length, 1, '신안갯벌 → 증도');
+assert.ok(sinanGetbol[0].name?.includes('증도'), '신안갯벌 대표 명소');
 
 console.log('PASS explore-search-aliases (lang co + takamatsu + saba island types + 광천선굴 + korea first-pass + koreaPlaceMatchDictionary SSOT + 춘천 향교 hub + 한라산 별칭 + 한국의 갯벌 집합)');

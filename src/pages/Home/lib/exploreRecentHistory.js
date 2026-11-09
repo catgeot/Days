@@ -1,5 +1,5 @@
-import { TRAVEL_SPOTS } from '../data/travelSpots';
-import { citiesData } from '../data/citiesData';
+import { TRAVEL_SPOTS } from '../data/travelSpots.js';
+import { citiesData } from '../data/citiesData.js';
 import { resolveTravelSpotFromSearchQuery } from '../../../utils/travelSpotResolve';
 import { resolveExploreAliasDirectPlaceSlug } from './koreaPlaceMatchDictionary.js';
 import { placeUrlSlug, resolveCityAttractionHub, resolveHubPlaceFromSlug } from './cityAttractionHubs';

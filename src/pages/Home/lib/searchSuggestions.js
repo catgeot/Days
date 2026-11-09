@@ -6,7 +6,7 @@
  * 큐레이션·SSOT는 동기 즉시, Mapbox는 허브/명소/정착지 exact가 아닐 때만 보강.
  * 방문 place_stats 히트는 Mapbox 앞에 붙인다 (요약 카드·썸네일).
  */
-import { TRAVEL_SPOTS } from '../data/travelSpots';
+import { TRAVEL_SPOTS } from '../data/travelSpots.js';
 import { resolveTravelSpotFromSearchQuery } from '../../../utils/travelSpotResolve.js';
 import { resolveSeaBasinFromQuery } from './seaBasinResolve.js';
 import {
