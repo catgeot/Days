@@ -8,6 +8,7 @@ import { extractMooniChipPromptFacts } from './mooniChipPrompts.js';
 import {
   extractMooniTripFacts,
   mergeMooniTripSession,
+  rebaseMooniTripSessionOnDestinationChange,
 } from './mooniTripSession.js';
 
 /** City-origin chips whose rules and facts are airport legs. Domestic festivals remap these. */
@@ -69,8 +70,12 @@ export function prepareFestivalMooniChatPayload({
   locale = 'ko',
 }) {
   const cleanText = String(userText || '').trim();
+  const rebased = rebaseMooniTripSessionOnDestinationChange(baseSession, {
+    slug,
+    destinationName,
+  });
   const nextSession = mergeMooniTripSession(
-    baseSession,
+    rebased,
     extractMooniTripFacts(cleanText, { destinationName, slug }),
   );
   nextSession.destinationName = destinationName || nextSession.destinationName;
