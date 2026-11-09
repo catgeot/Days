@@ -565,6 +565,7 @@ export const KO_EXPLORE_SEARCH_ALIASES = [
     '서부지구',
     {
       canonical: '고양 서오릉',
+      contentId: '125549',
       also: ['조선왕릉 서오릉', '서오릉'],
     },
   ],
@@ -572,6 +573,7 @@ export const KO_EXPLORE_SEARCH_ALIASES = [
     '서오릉',
     {
       canonical: '고양 서오릉',
+      contentId: '125549',
       also: ['조선왕릉 서오릉'],
     },
   ],
@@ -641,6 +643,22 @@ export const KO_GALLERY_QUERY_OVERRIDES = {
   gongjicheon: {
     primary: 'Gongjicheon Chuncheon',
     backup: 'Chuncheon cherry blossom riverside park Korea',
+  },
+  'seooreung-royal-tombs': {
+    primary: 'Seooreung Royal Tombs Goyang',
+    backup: 'Joseon royal tomb Seooreung',
+  },
+  'donggureung-royal-tombs': {
+    primary: 'Donggureung Royal Tombs',
+    backup: 'Joseon royal tomb Donggureung',
+  },
+  'hongyureung-royal-tombs': {
+    primary: 'Hongyureung Royal Tombs',
+    backup: 'Joseon royal tomb Hongyureung',
+  },
+  'sareung-royal-tomb': {
+    primary: 'Sareung Royal Tomb',
+    backup: 'Joseon royal tomb Sareung',
   },
 };
 

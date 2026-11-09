@@ -68,11 +68,29 @@ const ROUTABLE_TOMBS = [
     hubId: 'goyang',
     name_en: 'Seooreung Royal Tombs',
     placeSlug: 'seooreung-royal-tombs',
+    contentId: '125549',
     lat: 37.6592,
     lng: 126.8934,
-    imageUrl: 'https://tong.visitkorea.or.kr/cms/resource/04/4066104_image2_2.jpg',
+    imageUrl: 'https://tong.visitkorea.or.kr/cms/resource/20/3527720_image2_1.jpg',
+    galleryUrls: [
+      'https://tong.visitkorea.or.kr/cms/resource/20/3527720_image2_1.jpg',
+      'https://tong.visitkorea.or.kr/cms/resource/20/3527720_image2_2.jpg',
+    ],
   },
 ];
+
+export const JOSEON_ROYAL_TOMB_GALLERY_SLUGS = new Set(
+  ROUTABLE_TOMBS.flatMap((row) => {
+    const spot = row.scenicId ? getKoreaScenicSpotRecordById(row.scenicId) : null;
+    const slug = String(row.placeSlug || spot?.placeSlug || '').trim().toLowerCase();
+    return slug ? [slug] : [];
+  }),
+);
+
+export function isJoseonRoyalTombGallerySlug(slug) {
+  const key = String(slug || '').trim().toLowerCase();
+  return key.length > 0 && JOSEON_ROYAL_TOMB_GALLERY_SLUGS.has(key);
+}
 
 const MANAGEMENT_OFFICE_NEEDLE_RE =
   /(?:궁능유적본부|국가유산청).{0,24}조선왕릉.{0,12}관리소|조선왕릉(?:중부|서부)지구관리소/;
@@ -118,7 +136,13 @@ function scenicTombPin(spec, spot) {
     contentId: contentId || undefined,
     imageUrl: spot?.imageUrl || overlay?.imageUrl || spec.imageUrl || base.imageUrl,
     thumbUrl: spot?.imageUrl || overlay?.imageUrl || spec.imageUrl,
-    galleryUrls: overlay?.galleryUrls || (spec.imageUrl ? [spec.imageUrl] : undefined),
+    galleryUrls:
+      overlay?.galleryUrls ||
+      (Array.isArray(spec.galleryUrls) && spec.galleryUrls.length
+        ? spec.galleryUrls
+        : spec.imageUrl
+          ? [spec.imageUrl]
+          : undefined),
     addr1: spot?.attractionName ? undefined : '경기도 고양시 덕양구 서오릉로 334-32',
     source: placeSlug ? 'hub' : contentId ? 'tourapi' : base.source,
   };

@@ -256,6 +256,8 @@ const OFFICIAL_SEARCH_CONTENT_BY_NAME = {
   동구릉: '125545',
   홍유릉: '125548',
   사릉: '250408',
+  서오릉: '125549',
+  '조선왕릉서오릉': '125549',
   '조선왕릉동구릉': '125545',
   '조선왕릉홍유릉': '125548',
   '조선왕릉사릉': '250408',
@@ -268,6 +270,7 @@ const OFFICIAL_SEARCH_LATIN_BY_NAME = {
   기백산: 'Gibaeksan',
   동구릉: 'Donggureung Royal Tombs',
   홍유릉: 'Hongyureung Royal Tombs',
+  서오릉: 'Seooreung Royal Tombs',
 };
 
 function isStockSearchImage(url) {
@@ -4538,6 +4541,13 @@ const LOCAL_SCENIC_TOUR_THUMB_BY_CONTENT_ID = {
     '경기도 남양주시 수동면 일원',
     'https://tong.visitkorea.or.kr/cms/resource/06/3500306_image2_1.jpg',
     [],
+    'https://www.royaltombs.cha.go.kr/',
+  ),
+  125549: localScenicPhotoOverlay(
+    '고양 서오릉(西五陵)은 조선 왕릉 유네스코 세계문화유산으로 계릉·창릉·순창원·인경릉·명릉·홍릉 등 서부 왕릉군이 모여 있습니다. 입장·해설은 궁능유적본부 안내를 따르세요.',
+    '경기도 고양시 덕양구 서오릉로 334-32',
+    'https://tong.visitkorea.or.kr/cms/resource/20/3527720_image2_1.jpg',
+    ['https://tong.visitkorea.or.kr/cms/resource/20/3527720_image2_2.jpg'],
     'https://www.royaltombs.cha.go.kr/',
   ),
 };
