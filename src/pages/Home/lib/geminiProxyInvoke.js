@@ -65,6 +65,7 @@ export async function invokeGeminiProxyWithSession({
       error: attempt.error,
       data: attempt.data,
       httpStatus: attempt.status,
+      headerRetryAfter: attempt.headerRetryAfter ?? null,
     }));
   }
   return parseGeminiProxySuccess(attempt.data);

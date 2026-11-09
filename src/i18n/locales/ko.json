@@ -2539,6 +2539,11 @@
       "truncatedNotice": "답변이 길어 일부만 표시됐어요.",
       "continueReading": "이어서 보기"
     },
+    "proxyError": {
+      "rateLimitedSoon": "질문이 잠시 몰렸어요. 잠시 후에 다시 물어봐 주세요.",
+      "rateLimitedSeconds": "질문이 잠시 몰렸어요. {{seconds}}초 뒤에 다시 물어봐 주세요.",
+      "rateLimitedDaily": "오늘 사용량이 다 찼어요. {{time}}에 다시 쓸 수 있어요."
+    },
     "resolution": {
       "departure": "출발",
       "destination": "목적지",

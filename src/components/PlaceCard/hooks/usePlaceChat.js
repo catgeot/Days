@@ -202,7 +202,7 @@ export const usePlaceChat = (options = {}) => {
         },
       ]);
     } catch (err) {
-      const message = getGeminiProxyErrorMessage(err);
+      const message = getGeminiProxyErrorMessage(err, locale);
       const role = err instanceof GeminiProxyError && err.kind === 'budget' ? 'model' : 'error';
       setError(message);
       setChatHistory((prev) => [...prev, { role, text: message }]);
@@ -250,7 +250,7 @@ export const usePlaceChat = (options = {}) => {
           ),
         );
       } catch (err) {
-        const message = getGeminiProxyErrorMessage(err);
+        const message = getGeminiProxyErrorMessage(err, locale);
         setError(message);
       } finally {
         setContinuingIdx(null);

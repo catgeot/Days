@@ -2776,6 +2776,11 @@
       "truncatedNotice": "The answer was cut short.",
       "continueReading": "Continue reading"
     },
+    "proxyError": {
+      "rateLimitedSoon": "Lots of questions came in at once. Please try again in a bit.",
+      "rateLimitedSeconds": "Lots of questions came in at once. Please try again in {{seconds}} seconds.",
+      "rateLimitedDaily": "You've used up today's quota. You can ask again at {{time}}."
+    },
     "resolution": {
       "departure": "From",
       "destination": "Destination",

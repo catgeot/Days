@@ -43,10 +43,17 @@ check(
   'rate message includes seconds',
 );
 check(
-  formatGeminiProxyUserMessage(GEMINI_PROXY_ERROR_KIND.RATE_LIMITED, '', 90)
+  formatGeminiProxyUserMessage(GEMINI_PROXY_ERROR_KIND.RATE_LIMITED, '', 90, 'ko')
     === '질문이 잠시 몰렸어요. 잠시 후에 다시 물어봐 주세요.',
   'rate message drops seconds over 60',
 );
+
+const rateLong = classifyGeminiProxyFailure({
+  data: { success: false, error: 'rate_limited', retryAfter: 9000 },
+  httpStatus: 429,
+});
+check(rateLong.kind === GEMINI_PROXY_ERROR_KIND.RATE_LIMITED, 'long rate_limited kind');
+check(/오늘 사용량이 다 찼어요/.test(rateLong.userMessage), 'long rate shows daily ko copy');
 
 const tooLarge = classifyGeminiProxyFailure({
   data: { success: false, error: 'too_large' },
