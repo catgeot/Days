@@ -16,9 +16,12 @@ export function isPlacePlannerEligible(location) {
   return true;
 }
 
-/** 크롤러 프리뷰·자동화 브라우저 — 툴킷 Edge 생성 호출 금지 */
-export function isClientAutomatedToolkitSession() {
-  if (typeof window === 'undefined') return true;
+const BOT_UA =
+  /googlebot|google-inspectiontool|bingbot|slurp|duckduckbot|baiduspider|yandexbot|facebookexternalhit|twitterbot|linkedinbot|embedly|whatsapp|telegrambot|applebot|semrushbot|ahrefsbot|mj12bot|dotbot|petalbot|yeti|naverbot|kakaotalk-scrap|kakaostory|daumoa|slackbot/i;
+
+/** 크롤러 프리뷰·자동화 브라우저 — 툴킷·intro Edge 생성 호출 금지 */
+export function isClientAutomatedSession() {
+  if (typeof window === 'undefined') return false;
   try {
     const params = new URLSearchParams(window.location.search);
     if (params.get('crawler') === '1') return true;
@@ -30,7 +33,18 @@ export function isClientAutomatedToolkitSession() {
   } catch {
     /* ignore */
   }
+  try {
+    const ua = String(navigator.userAgent || '');
+    if (BOT_UA.test(ua)) return true;
+  } catch {
+    /* ignore */
+  }
   return false;
+}
+
+/** @deprecated use isClientAutomatedSession */
+export function isClientAutomatedToolkitSession() {
+  return isClientAutomatedSession();
 }
 
 /**
