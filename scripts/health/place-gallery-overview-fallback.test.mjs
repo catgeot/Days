@@ -166,6 +166,8 @@ test('Home gallery PR drift guard; MOONi session wiring line allowlist', () => {
     /^[+-].*boundSpot/,
     /^[+-].*boundPlaceLabel/,
     /^[+-].*placeTrip/,
+    /^[+-].*shouldEnsurePlaceChatIntroForLocation/,
+    /^[+-].*needsPlaceChatIntroHydration/,
     /^[+-].*is_hidden/,
     /^[+-].*destination ===/,
     /^[+-].*persona/,
@@ -186,6 +188,10 @@ test('Home gallery PR drift guard; MOONi session wiring line allowlist', () => {
 
   const indexAllow = [
     /^[+-]\s*import .*tripChatUtils/,
+    /^[+-].*subscribeAuthUser/,
+    /^[+-].*supabase\.auth\.getUser/,
+    /^[+-].*onAuthStateChange/,
+    /^[+-].*subscription\.unsubscribe/,
     /^[+-].*mooniLastChatScopeInput/,
     /^[+-].*persistMooniFreshDraftSession/,
     /^[+-].*handleStartNewMooniChat/,
@@ -210,12 +216,40 @@ test('Home gallery PR drift guard; MOONi session wiring line allowlist', () => {
     /^[+-].*routeLocation\.pathname\.startsWith\('\/explore'\)/,
     /^[+-].*routeLocation\.search/,
     /^[+-].*cachePlaceLocation/,
+    /^[+-].*joseonRoyalTombsPromoCopy/,
+    /^[+-].*enrichJoseonRoyalTombsPromoPin/,
+    /^-\s*return enrichLocationWithRentalAirport/,
+    /^-\s*enrichLocationWithRentalAirport\(/,
+    /^-\s*healPlaceholderCountry\(/,
+    /^-\s*mergeCanonicalTravelSpot\(/,
+    /^\+\s*enrichJoseonRoyalTombsPromoPin\(/,
+    /^\+\s*return enrichJoseonRoyalTombsPromoPin/,
+    /^[+-]\s*\.\.\.target,/,
+    /^[+-]\s*\.\.\.hydratedTarget,/,
+    /^[+-]\s*\.\.\.pin,/,
+    /^[+-]\s*\),$/,
+    /^[+-]\s*\),\s*$/,
+    /^[+-]\s+id: /,
+    /^[+-]\s+type: /,
+    /^[+-]\s+category: /,
+    /^[+-]\s+id:$/,
+    /^[+-]\s+targetPlace/,
+    /^[+-]\s+\}\)\s*$/,
+    /^-\s+\}\),\s*$/,
+    /^-\s+\)\s*$/,
+    /^[+-].*preserveSearchCoordUrl/,
+    /^[+-].*focusTarget\?\.uiPlace/,
+    /^[+-].*!preserveSearchCoordUrl/,
+    /^[+-].*hydratedTarget/,
     /^[+-].*tourContentMatch/,
     /^[+-].*fetchKoreaTourAttractionById/,
     /^[+-].*tourAttractionToPoiSuggestion/,
     /^[+-].*koreaTourAttractions/,
     /^[+-].*koreaPoiTypeSearch/,
     /^[+-].*navigateToPlace/,
+    /^[+-].*shouldEnsurePlaceChatIntroForLocation/,
+    /^[+-].*needsPlaceChatIntroHydration/,
+    /^[+-].*place_chat_intro/,
     /^[+-].*normalizedTargetSlug/,
     /^[+-].*TourAPI offline/,
     /^[+-]\s*\(\) =>/,
@@ -275,8 +309,9 @@ test('Home gallery PR drift guard; MOONi session wiring line allowlist', () => {
     }
     if (
       rel === 'src/pages/Home/index.jsx' &&
-      /tourContentMatch/.test(diff) &&
-      /fetchKoreaTourAttractionById/.test(diff)
+      ((/tourContentMatch/.test(diff) && /fetchKoreaTourAttractionById/.test(diff)) ||
+        /enrichJoseonRoyalTombsPromoPin/.test(diff) ||
+        /preserveSearchCoordUrl/.test(diff))
     ) {
       return;
     }

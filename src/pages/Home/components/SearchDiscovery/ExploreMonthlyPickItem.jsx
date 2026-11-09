@@ -6,28 +6,12 @@ import {
   getLocalizedPlaceName,
 } from '../../../../components/PlaceCard/common/locationDisplay';
 import { isPlaceholderCountry } from '../../../../utils/travelSpotResolve';
+import {
+  EXPLORE_MONTHLY_PICK_HERO_OBJECT_POSITION,
+  EXPLORE_MONTHLY_PICK_PHOTO_CREDIT,
+} from '../../data/exploreMonthlyPickHeroUrls.js';
+import { resolveExploreMonthlyPickGridSlot } from './exploreMonthlyGridLayout.js';
 import ExploreMonthlyPickMedia from './ExploreMonthlyPickMedia';
-
-const SourceLinks = ({ sources, compact = false }) => (
-  <div className={`flex flex-wrap gap-x-2 gap-y-1 px-0.5 ${compact ? 'mt-1.5' : 'mt-2'}`}>
-    {sources.map((source) => (
-      <a
-        key={source.url}
-        href={source.url}
-        target="_blank"
-        rel="noopener noreferrer"
-        data-testid="explore-v2-monthly-source-link"
-        onClick={(e) => e.stopPropagation()}
-        onPointerDown={(e) => e.stopPropagation()}
-        className={`font-medium text-blue-300 underline decoration-blue-400/40 underline-offset-2 hover:text-blue-200 ${
-          compact ? 'text-[10px] leading-snug' : 'text-[11px]'
-        }`}
-      >
-        {source.label}
-      </a>
-    ))}
-  </div>
-);
 
 const ExploreMonthlyPickItem = ({
   spot,
@@ -35,10 +19,7 @@ const ExploreMonthlyPickItem = ({
   imageUrl,
   onSelect,
   onImageError,
-  variant = 'tile',
-  sourcesBelow = true,
   className = '',
-  mediaClassName = '',
 }) => {
   const { t, i18n } = useTranslation();
   const displayName = getLocalizedPlaceName(spot, 'ko') || String(spot?.name || '').trim();
@@ -48,6 +29,13 @@ const ExploreMonthlyPickItem = ({
   const rawCountry = getLocalizedCountryName(spot, 'ko') || String(spot?.country || '').trim();
   const countryLabel = isPlaceholderCountry(rawCountry) ? '' : rawCountry;
   const slug = String(spot?.slug || entry?.slug || '').toLowerCase();
+  const isEnUi = String(i18n.language || '')
+    .toLowerCase()
+    .startsWith('en');
+  const { variant, photoClass } = resolveExploreMonthlyPickGridSlot(slug);
+  const summary = String(entry?.reason || '').trim();
+  const credit = EXPLORE_MONTHLY_PICK_PHOTO_CREDIT[slug];
+  const creditTitle = isEnUi ? credit?.en : credit?.ko;
 
   const { handleStart, handleMove, handleEnd, handleCancel } = useClickWithDragPrevention(onSelect, {
     threshold: 5,
@@ -55,36 +43,15 @@ const ExploreMonthlyPickItem = ({
     minTime: 0,
   });
 
-  const isHero = variant === 'hero';
-  const isWide = variant === 'wide';
-  const isTile = !isHero && !isWide;
-  const titleClass = isHero
-    ? 'text-lg font-bold leading-tight sm:text-xl'
-    : isWide
-      ? 'text-base font-bold leading-snug sm:text-lg'
-      : 'text-sm font-bold leading-snug sm:text-base';
-  const reasonClass = isHero
-    ? 'mt-1 text-xs leading-relaxed text-gray-200 sm:text-sm'
-    : isWide
-      ? 'mt-1 text-xs leading-relaxed text-gray-200 sm:text-[13px]'
-      : 'mt-1 text-[11px] leading-snug text-gray-200 sm:text-xs';
-  const photoFrameClass = isHero
-    ? 'h-[208px] sm:h-[280px]'
-    : isWide
-      ? 'h-[164px] sm:h-[224px]'
-      : 'h-[132px] sm:h-[192px]';
-  const textPanelClass = isHero
-    ? 'bg-black/75 px-3.5 py-3 sm:px-4 sm:py-3.5'
-    : isWide
-      ? 'bg-black/75 px-3 py-2.5 sm:px-3.5 sm:py-3'
-      : 'bg-black/75 px-2.5 py-2 sm:px-3 sm:py-2.5';
+  const objectPosition = EXPLORE_MONTHLY_PICK_HERO_OBJECT_POSITION[slug] || '50% 50%';
 
   if (!imageUrl) return null;
 
   return (
     <div
-      className={`flex min-w-0 flex-col ${className}`}
+      className={`flex w-full min-w-0 self-start ${className}`}
       data-testid={`explore-v2-monthly-item-${slug}`}
+      data-variant={variant}
     >
       <article
         data-testid={`explore-v2-monthly-card-${slug}`}
@@ -93,22 +60,23 @@ const ExploreMonthlyPickItem = ({
         onPointerUp={(e) => handleEnd(e, spot)}
         onPointerLeave={handleCancel}
         onPointerCancel={handleCancel}
-        className={`group flex flex-1 cursor-pointer flex-col overflow-hidden rounded-2xl border border-white/[0.1] bg-black/40 text-left transition hover:border-white/25 ${mediaClassName}`}
+        className="flex w-full min-w-0 cursor-pointer flex-col overflow-hidden rounded-2xl bg-black text-left ring-1 ring-inset ring-white/10 transition hover:ring-white/30"
       >
         <div
           data-testid={`explore-v2-monthly-photo-${slug}`}
-          className={`relative w-full shrink-0 overflow-hidden bg-black/30 ${photoFrameClass}`}
+          className={`relative w-full shrink-0 overflow-hidden bg-black ${photoClass}`}
         >
           <ExploreMonthlyPickMedia
             imageUrl={imageUrl}
             alt={photoAlt}
+            title={creditTitle || undefined}
+            objectPosition={objectPosition}
             onError={() => onImageError?.(slug)}
-            className="transition-transform duration-700 ease-out group-hover:scale-105"
           />
           {entry.estimate ? (
             <span
               data-testid="explore-v2-monthly-estimate"
-              className="absolute right-2.5 top-2.5 z-10 shrink-0 rounded-md border border-amber-500/40 bg-black/75 px-1.5 py-0.5 text-[10px] font-semibold text-amber-100 backdrop-blur-[2px]"
+              className="absolute right-2 top-2 z-10 rounded-md border border-amber-500/40 bg-black/80 px-1.5 py-0.5 text-[10px] font-semibold text-amber-100"
             >
               추정
             </span>
@@ -116,31 +84,31 @@ const ExploreMonthlyPickItem = ({
         </div>
         <div
           data-testid="explore-v2-monthly-text-panel"
-          className={`flex min-w-0 flex-1 flex-col justify-between border-t border-white/[0.08] ${textPanelClass}`}
+          className="flex min-w-0 flex-col bg-black px-2.5 pb-2.5 pt-2"
         >
-          <div>
-            <div className="flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5">
-              <h3 className={`break-keep text-white ${titleClass}`}>
-                {displayName}
-              </h3>
-              {countryLabel ? (
-                <span
-                  className={`font-medium text-gray-300 ${
-                    isTile ? 'text-[10px] sm:text-[11px]' : 'text-xs'
-                  }`}
-                >
-                  {countryLabel}
-                </span>
-              ) : null}
-            </div>
-            <p className={`break-keep ${reasonClass}`}>
-              {entry.reason}
-            </p>
+          <div className="flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5">
+            <h3 className="break-keep text-sm font-bold leading-tight text-white sm:text-[15px]">
+              {displayName}
+            </h3>
+            {countryLabel ? (
+              <span className="text-[11px] font-medium text-gray-300">{countryLabel}</span>
+            ) : null}
           </div>
-          {!sourcesBelow ? <SourceLinks sources={entry.sources} compact={isTile} /> : null}
+          {summary ? (
+            <p
+              data-testid="explore-v2-monthly-summary"
+              className="mt-1 break-keep text-[12px] leading-snug text-gray-100 sm:text-[13px]"
+            >
+              {summary.split(/(?<=\.)\s+/).map((part, index) => (
+                <span key={`${index}-${part}`}>
+                  {index > 0 ? ' ' : null}
+                  <span className={index > 0 ? 'whitespace-nowrap' : undefined}>{part}</span>
+                </span>
+              ))}
+            </p>
+          ) : null}
         </div>
       </article>
-      {sourcesBelow ? <SourceLinks sources={entry.sources} compact={isTile} /> : null}
     </div>
   );
 };

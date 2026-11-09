@@ -19,6 +19,9 @@ assert.match(hint, /LOC_HINT_DISMISS_KEY/);
 assert.match(home, /localStorage/);
 assert.match(hint, /queryGeolocationPermission/);
 assert.match(bootHook, /getCurrentPosition/);
+assert.match(bootHook, /shouldApplyBootLocation/);
+assert.match(home, /userRegionExplicitRef/);
+assert.match(home, /festivalHubRegionChoiceSession/);
 assert.match(home, /data-near-me-hint/);
 assert.match(home, /locOffPickRegion/);
 

@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '../../../shared/api/supabase';
+import { readSessionUser } from '../../../shared/Auth/sessionUser.js';
 import { MOBILE_INPUT_TEXT_CLASS } from '../../../shared/hooks/useMobileInputViewport';
 import { formatLogbookDisplayDate } from '../../../utils/logbookDisplayDate';
 import { LOGBOOK_COMMENTS_HASH, readLogbookCommentCount } from '../../../utils/logbookReactions';
@@ -51,8 +52,8 @@ export default function LogbookComments({ report, onCountChange }) {
     if (!available || !reportId) return undefined;
     let cancelled = false;
     void (async () => {
-      const [{ data: { user } }, fetched] = await Promise.all([
-        supabase.auth.getUser(),
+      const [user, fetched] = await Promise.all([
+        readSessionUser(),
         fetchReportComments(supabase, reportId),
       ]);
       if (cancelled) return;

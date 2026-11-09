@@ -14,6 +14,32 @@
 
 ## 활성 목록
 
+### 사용자 기록 · 용량 관리
+
+| | |
+|--|--|
+| **상태** | **#2 숙소 저장본 순서** · tip `4b2ebfd8` · PR [#699](https://github.com/catgeot/Days/pull/699) · 병합 전. #697 로그인 세션 유지는 `main` |
+| **브랜치** | `cursor/auth-keep-history-3163` |
+| **플랜** | [`user-record-storage-plan.md`](./user-record-storage-plan.md) |
+| **일지** | [`2026-11-07-project-log.md`](./2026-11-07-project-log.md) |
+| **PROD** | `https://www.gateo.kr` · #699 병합 전에는 세션 저장 용량 오류가 검색·방문 기록까지 지운다 |
+| **금지** | 검색·방문 기록 삭제 · 계정 동기화 선구현 · 세션마다 새 브랜치 · 숙소 저장본 일괄 삭제 · feature에 `plans/**` 커밋 |
+| **VERIFY** | `node --test scripts/health/auth-session-persist.test.mjs` |
+| **남은 일** | 검색 30·방문 30·여행사 12 상한을 유지할지 사람과 정한다. 합의 전에 상한을 바꾸지 않는다 |
+
+**다음 제시어**
+
+```
+사용자 기록 #3, 기록 개수 상한
+@plans/feature-handoff-index.md
+@plans/2026-11-07-project-log.md
+@plans/user-record-storage-plan.md
+브랜치 cursor/auth-keep-history-3163 · PR #699
+금지: 검색·방문 기록 삭제 · 계정 동기화 선구현 · 새 브랜치 · 숙소 저장본 일괄 삭제
+작업: 검색 30·방문 30·여행사 12 상한을 유지할지 사람과 정하고, 합의된 경우에만 그 한 단계 구현
+검증: node --test scripts/health/auth-session-persist.test.mjs
+```
+
 ### 항공경로 검색 버튼
 
 | | |
@@ -39,29 +65,20 @@
 검증: npm run smoke:tripcom-flight-planner
 ```
 
-### 트립닷컴 숙소 도시 연결
+### 트립닷컴 숙소 도시 연결 — 큐 종료
 
 | | |
 |--|--|
-| **상태** | **#6 큐 R09–R10** · 24곳 · tip `01c1f692` `00cb058e` · PR [#677](https://github.com/catgeot/Days/pull/677) · #5는 PR [#672](https://github.com/catgeot/Days/pull/672) 병합 · 라자 암팟 보류 |
-| **브랜치** | `cursor/tripcom-stay-cities-de61` (이 주제 고정. 세션마다 새 브랜치 금지) |
+| **상태** | **#11 큐 종료** · R01–R18 ✅ · PR [#692](https://github.com/catgeot/Days/pull/692) 병합 `36f9733e` · 2026-11-07 16:08 KST |
+| **브랜치** | `cursor/tripcom-stay-cities-de61` (고정. 새 브랜치·새 라운드 금지) |
 | **플랜** | [`tripcom-stay-city-audit.md`](./tripcom-stay-city-audit.md) · 큐 [`tripcom-stay-city-queue.md`](./tripcom-stay-city-queue.md) |
-| **일지** | [`2026-11-06-project-log.md`](./2026-11-06-project-log.md) |
-| **Preview** | `cursor/*` 배포는 꺼져 있다. 사람 확인은 PR 병합 후 `www.gateo.kr` |
-| **금지** | city ID 일괄 추가 · `city=10279` · province만으로 검색창 채우기 · 호놀룰루를 `757`로 묶기 · 라자 암팟 재시도 · sparse에 city 단정 · 키워드 첫 결과만으로 ID 확정 · 한 세션에 라운드 3개 이상 · 중국 국내 City를 목록 확인 없이 거절 |
-| **VERIFY** | `node scripts/audit-tripcom-stay-cities.mjs` · PASS는 목록 `destinationInputValue`가 그 여행지 |
-| **남은 일** | 큐 R11부터. 미연결 106(해외). 한국 서울·제주·서귀포는 연결됨. 다음 세션은 R11–R12만 |
+| **일지** | [`2026-11-07-project-log.md`](./2026-11-07-project-log.md) |
+| **PROD** | `https://www.gateo.kr` · `cursor/*` Preview는 꺼져 있다. 사람 확인은 병합 후 본 사이트 |
+| **금지** | 새 라운드 · 우붓·라자 암팟·로키·시퀘이아·시미란·세인트헬레나·호놀룰루 재시도 · sparse에 city 단정 · `city=10279` · province · 키워드 첫 행 · `/hotels/list` (404, `w/list`를 씀) |
+| **VERIFY** | `node scripts/audit-tripcom-stay-cities.mjs` · mapped 258 · 미연결 16 · 한국 0 |
+| **남은 일** | 에이전트 작업 없음. 미연결 16은 보류·sparse. 사람 확인은 `www.gateo.kr` |
 
-**다음 제시어**
-
-```
-트립닷컴 숙소 #7, 큐 R11
-@plans/feature-handoff-index.md
-@plans/2026-11-06-project-log.md
-@plans/tripcom-stay-city-queue.md
-오케스트레이터 · 트립닷컴숙소 · 큐 R11부터 2라운드 · 워커 2 · 목록에 잡힌 도시만
-브랜치 cursor/tripcom-stay-cities-de61 · PR #677
-```
+**다음 제시어 없음** (큐 종료). `오케스트레이터` + `트립닷컴숙소`로 새 라운드를 열지 않음.
 
 ### 축제 카드 배열
 

@@ -1304,7 +1304,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, onAskMooni,
           {/* 모바일 전용 Header (스크롤 시 네이티브하게 자연스럽게 올라감) */}
           {headerContent(true)}
 
-          <div className="p-4 md:p-8 xl:p-10 pb-32">
+          <div className="mx-auto w-full min-w-0 max-w-6xl p-4 md:p-8 xl:p-10 pb-32">
             {/* 2단 분류 탭 영역 */}
             {!isSearching && (
               <div className="-mx-4 px-4 md:mx-0 md:px-0 pb-4 mb-6 md:mb-8 border-b border-white/[0.05] md:border-white/[0.08]">
@@ -1390,7 +1390,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, onAskMooni,
           {/* Top 스크롤 버튼 */}
           <button
             onClick={() => scrollContainerRef.current?.scrollTo({ top: 0, behavior: 'smooth' })}
-            className={`fixed bottom-6 right-6 md:bottom-10 md:right-10 w-12 h-12 md:w-14 md:h-14 bg-blue-600 hover:bg-blue-500 rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(59,130,246,0.3)] text-white transition-all duration-300 hover:-translate-y-1 z-50 ${showTopBtn ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'}`}
+            className={`fixed bottom-6 left-6 right-auto md:bottom-10 md:left-auto md:right-10 w-12 h-12 md:w-14 md:h-14 bg-blue-600 hover:bg-blue-500 rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(59,130,246,0.3)] text-white transition-all duration-300 hover:-translate-y-1 z-50 ${showTopBtn ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'}`}
             aria-label={t('home.explore.scrollTop')}
           >
             <ArrowUp size={24} />

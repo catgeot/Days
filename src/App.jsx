@@ -27,6 +27,9 @@ const MooniChatMarkdownFixturePage = isQaMooniMarkdownFixtureEnabled
 const MooniFestivalAccessPolishFixturePage = isQaMooniMarkdownFixtureEnabled
   ? lazy(() => import('./pages/Qa/MooniFestivalAccessPolishFixturePage.jsx'))
   : null;
+const MooniMarkdownComposerFixturePage = isQaMooniMarkdownFixtureEnabled
+  ? lazy(() => import('./pages/Qa/MooniMarkdownComposerFixturePage.jsx'))
+  : null;
 const galleryWriterHarnessOn = import.meta.env.VITE_GALLERY_WRITER_HARNESS === '1';
 const GallerySingleWriterHarness = galleryWriterHarnessOn
   ? lazy(() => import('./pages/Qa/GallerySingleWriterHarness.jsx'))
@@ -131,6 +134,16 @@ function App() {
           ) : null}
           <TravelAgencyVisitCapture />
           <Routes>
+            {isQaMooniMarkdownFixtureEnabled && MooniMarkdownComposerFixturePage ? (
+              <Route
+                path="/qa/mooni-markdown-composer"
+                element={
+                  <Suspense fallback={null}>
+                    <MooniMarkdownComposerFixturePage />
+                  </Suspense>
+                }
+              />
+            ) : null}
             <Route element={<MainLayout />}>
               <Route
                 path="/"

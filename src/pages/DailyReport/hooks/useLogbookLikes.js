@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '../../../shared/api/supabase';
+import { readSessionUser } from '../../../shared/Auth/sessionUser.js';
 import { nextLogbookLikeState, readLogbookLikeCount } from '../../../utils/logbookReactions';
 import { fetchMyReportLikeIds, toggleReportLike } from '../lib/logbookReactionClient';
 
@@ -30,7 +31,7 @@ export function useLogbookLikes(reports, enabled) {
     let cancelled = false;
     const ids = idsKey.split('\n');
     void (async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const user = await readSessionUser();
       if (cancelled || !user) {
         if (!cancelled) setLikedIds(new Set());
         return;
@@ -64,7 +65,7 @@ export function useLogbookLikes(reports, enabled) {
     pendingRef.current.add(id);
     setPendingIds(new Set(pendingRef.current));
 
-    const { data: { user } } = await supabase.auth.getUser();
+    const user = await readSessionUser();
     if (!user) {
       pendingRef.current.delete(id);
       setPendingIds(new Set(pendingRef.current));

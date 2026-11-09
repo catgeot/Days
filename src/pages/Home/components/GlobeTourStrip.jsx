@@ -401,12 +401,12 @@ export default function GlobeTourStrip({
             aria-label={t('home.tourStrip.listRegionAria')}
             onClick={(e) => e.stopPropagation()}
             onMouseDown={(e) => e.stopPropagation()}
-            className="fixed z-[61] left-0 top-0 bottom-0 right-[calc(2rem+400px+0.75rem)] xl:right-[calc(2rem+440px+0.75rem)] flex flex-col overflow-hidden border-2 border-orange-200/35 bg-black/85 shadow-[0_0_28px_rgba(249,115,22,0.16)] backdrop-blur-xl"
+            className="fixed z-[61] left-0 top-0 bottom-0 right-[calc(2rem+400px+0.75rem)] xl:right-[calc(2rem+440px+0.75rem)] flex flex-col overflow-hidden border-2 border-orange-200/35 bg-black shadow-[0_0_28px_rgba(249,115,22,0.16)]"
           >
             <TourPanelHeader placeName={name} onClose={close} density="desktop" />
             <div
               ref={desktopListScrollRef}
-              className="globe-tour-strip-scroll min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 py-3 pb-16"
+              className="globe-tour-strip-scroll min-h-0 flex-1 overflow-y-auto overscroll-contain bg-black px-3 py-3 pb-16"
             >
               <style>{tourScrollCss}</style>
               {useMrtTna ? null : <TourPanelIntro />}
@@ -448,14 +448,14 @@ export default function GlobeTourStrip({
             role="dialog"
             aria-modal="true"
             aria-label={t('home.tourStrip.listFullscreenAria')}
-            className="fixed inset-0 z-[80] flex flex-col bg-black/95"
+            className="fixed inset-0 z-[80] flex flex-col bg-black"
             onClick={(e) => e.stopPropagation()}
             onMouseDown={(e) => e.stopPropagation()}
           >
             <TourPanelHeader placeName={name} onClose={close} density="mobile" />
             <div
               ref={mobileListScrollRef}
-              className="globe-tour-strip-scroll min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 py-3 pb-[max(5.5rem,calc(env(safe-area-inset-bottom)+3.75rem))]"
+              className="globe-tour-strip-scroll min-h-0 flex-1 overflow-y-auto overscroll-contain bg-black px-3 py-3 pb-[max(5.5rem,calc(env(safe-area-inset-bottom)+3.75rem))]"
             >
               <style>{tourScrollCss}</style>
               {useMrtTna ? null : <TourPanelIntro />}

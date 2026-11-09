@@ -24,6 +24,10 @@ import {
   GATEO_ENV_FLAG_NAMES,
   isGateoExploreV2Enabled,
 } from '../../src/shared/gateoFeatureFlags.js';
+import {
+  groupExploreMonthlyPickColumns,
+  resolveExploreMonthlyPickGridSlot,
+} from '../../src/pages/Home/components/SearchDiscovery/exploreMonthlyGridLayout.js';
 
 const MONTH_KEY = EXPLORE_V2_MONTHLY_PICK_KEY;
 const EXPECTED_SLUGS = [
@@ -47,6 +51,8 @@ test('MONTHLY_PICKS 2026-11 has six slugs in TRAVEL_SPOTS with sources and check
   for (const entry of entries) {
     assert.ok(spotSlugs.has(entry.slug), `missing TRAVEL_SPOTS slug ${entry.slug}`);
     assert.ok(typeof entry.reason === 'string' && entry.reason.trim().length > 0);
+    assert.ok(entry.reason.length <= 40, `${entry.slug} summary too long`);
+    assert.match(entry.reason, /월|\//, `${entry.slug} summary should say when`);
     assert.ok(Array.isArray(entry.sources) && entry.sources.length >= 1);
     for (const raw of entry.sources) {
       const source = normalizeMonthlyPickSource(raw);
@@ -127,6 +133,41 @@ test('monthly row renders mosaic B only (no layout query branch)', () => {
   assert.doesNotMatch(lib, /readExploreV2LayoutParam|readExploreV2QueryParam/);
 });
 
+test('monthly layout B uses two columns without row span or full-width banners', () => {
+  const dir = join(root, 'src/pages/Home/components/SearchDiscovery');
+  const layoutB = readFileSync(join(dir, 'ExploreMonthlyPicksLayoutB.jsx'), 'utf8');
+  const gridLayout = readFileSync(join(dir, 'exploreMonthlyGridLayout.js'), 'utf8');
+  assert.match(layoutB, /exploreMonthlyGridLayout/);
+  assert.match(layoutB, /groupExploreMonthlyPickColumns/);
+  assert.match(layoutB, /EXPLORE_MONTHLY_PICK_BOARD_CLASS/);
+  assert.doesNotMatch(layoutB, /distributeExploreMonthlyPickColumns|matchMedia/);
+  assert.match(gridLayout, /items-start/);
+  assert.match(gridLayout, /lg:grid-cols-3/);
+  assert.match(gridLayout, /lg:contents/);
+  assert.doesNotMatch(gridLayout, /col-span-12|row-span|row-start|col-start|grid-cols-6/);
+  assert.equal(resolveExploreMonthlyPickGridSlot('kyoto').variant, 'portrait');
+  assert.equal(resolveExploreMonthlyPickGridSlot('kyoto').photoClass, 'aspect-[4/5]');
+  assert.equal(resolveExploreMonthlyPickGridSlot('chiang-mai').photoClass, 'aspect-[3/2]');
+  assert.equal(resolveExploreMonthlyPickGridSlot('phu-quoc').photoClass, 'aspect-[3/2]');
+  assert.equal(resolveExploreMonthlyPickGridSlot('jeju').variant, 'landscape');
+  assert.equal(resolveExploreMonthlyPickGridSlot('jeju').photoClass, 'aspect-[3/2]');
+  assert.equal(resolveExploreMonthlyPickGridSlot('dubai').photoClass, 'aspect-[4/5]');
+  assert.equal(resolveExploreMonthlyPickGridSlot('melbourne').photoClass, 'aspect-[4/3]');
+  const grouped = groupExploreMonthlyPickColumns(
+    EXPECTED_SLUGS.map((slug) => ({ spot: { slug }, entry: { slug } })),
+  );
+  assert.deepEqual(
+    grouped.map((column) => column.map((card) => card.spot.slug)),
+    [
+      ['kyoto', 'chiang-mai', 'dubai'],
+      ['jeju', 'phu-quoc', 'melbourne'],
+    ],
+  );
+  assert.doesNotMatch(layoutB, /distributeFestivalHubMasonryColumns|partitionFestivalHubSegments/);
+  assert.doesNotMatch(layoutB, /sourcesBelow/);
+  assert.equal(existsSync(join(dir, 'exploreMonthlyMasonryLayout.js')), false);
+});
+
 test('Home /explore SEO has no explore_v2 query noindex', () => {
   const home = readFileSync(join(root, 'src/pages/Home/index.jsx'), 'utf8');
   assert.doesNotMatch(home, /readExploreV2QueryParam|exploreV2QueryNoIndex|robotsNoIndex=/);
@@ -139,5 +180,10 @@ test('monthly pick card places text panel below photo frame so caption does not 
   );
   assert.match(item, /explore-v2-monthly-photo-/);
   assert.match(item, /explore-v2-monthly-text-panel/);
+  assert.match(item, /explore-v2-monthly-summary/);
+  assert.match(item, /entry\?\.reason/);
+  assert.doesNotMatch(item, /spot\?\.desc/);
+  assert.doesNotMatch(item, /explore-v2-monthly-source-link/);
+  assert.doesNotMatch(item, /파일·정책|SourceLinks|PhotoCreditLine/);
   assert.doesNotMatch(item, /bg-gradient-to-t from-black\/95/);
 });

@@ -21,10 +21,16 @@ import {
   galleryPersistDropsStoredImages,
   galleryReportErrorReason,
   imagesForGalleryPersist,
+  emptyGalleryExclusionSets,
+  galleryExclusionKeySets,
+  galleryImageUrl,
+  galleryUrlKey,
   resolveGalleryPersistPlaceId,
   resolveLoadedStatsPersistSnapshot,
   skipPersistPlaceGalleryReplaceReason,
+  unionGalleryExclusionSets,
   withoutDroppedGalleryImages,
+  withoutExcludedGalleryImages,
 } from '../../../shared/api/placeGalleryPersist';
 import { buildPlaceDbIdCandidates, getPlaceStableKey, getPlaceStatsId } from '../../../utils/travelSpotResolve';
 import { isPlaceGalleryPhotoCreditEnabled } from '../../../utils/placeGalleryPhotoCreditFlag';
@@ -395,6 +401,10 @@ export const usePlaceGallery = (locationSource, options = {}) => {
   const currentPlaceKeyRef = useRef('');
   /** pickPlaceStatsGalleryRow가 고른 행. alias(dbStatsId)로 쓰지 않는다. */
   const loadedStatsPlaceIdRef = useRef('');
+  const galleryExclusionRef = useRef(emptyGalleryExclusionSets());
+  const exclusionPlaceRef = useRef('');
+  const exclusionLoadSeqRef = useRef(0);
+  const loadGalleryExclusionsRef = useRef(async () => {});
   /** place_stats SELECT gallery_urls — replace no-op·Tour→스톡 덮어쓰기 방지 */
   const loadedStatsGalleryRef = useRef(null);
   const canonicalStatsIdRef = useRef('');
@@ -475,7 +485,12 @@ export const usePlaceGallery = (locationSource, options = {}) => {
   // storage 갱신 후 view만 숨김 필터 적용 (upsert는 allImagesRef = storage)
   const processAndSetImages = useCallback(
     (rawImages) => {
-      const storage = capGalleryImages(filterOutSinglePersonPortraits(rawImages));
+      // Pexels 보강은 화면에만 있고 place_stats에는 없다. 관리자 제거는 exclusion으로 다시 붙지 않게 한다.
+      const storage = capGalleryImages(
+        filterOutSinglePersonPortraits(
+          withoutExcludedGalleryImages(rawImages, galleryExclusionRef.current),
+        ),
+      );
       if (!storage.length) {
         allImagesRef.current = [];
         setImages([]);
@@ -487,6 +502,36 @@ export const usePlaceGallery = (locationSource, options = {}) => {
     },
     [syncGalleryViewFromStorage],
   );
+
+  loadGalleryExclusionsRef.current = async (placeId) => {
+    const id = String(placeId || '').trim();
+    if (!id) return;
+    if (exclusionPlaceRef.current !== id) {
+      galleryExclusionRef.current = emptyGalleryExclusionSets();
+      exclusionPlaceRef.current = id;
+    }
+    const seq = ++exclusionLoadSeqRef.current;
+    const { data, error } = await supabase.rpc('gallery_active_exclusion_keys', {
+      p_place_id: id,
+    });
+    if (seq !== exclusionLoadSeqRef.current || exclusionPlaceRef.current !== id) return;
+    if (error) return;
+    galleryExclusionRef.current = unionGalleryExclusionSets(
+      galleryExclusionKeySets(data),
+      galleryExclusionRef.current,
+    );
+    const next = withoutExcludedGalleryImages(allImagesRef.current, galleryExclusionRef.current);
+    if (next.length === allImagesRef.current.length) return;
+    processAndSetImages(allImagesRef.current);
+    if (thumbnailOnly) return;
+    const placeKeyPart = currentPlaceKeyRef.current;
+    const primaryQuery = currentQueryRef.current;
+    if (!placeKeyPart || !primaryQuery) return;
+    saveToSmartCache(
+      `days_gallery_${encodeURIComponent(placeKeyPart)}_${primaryQuery}`,
+      allImagesRef.current,
+    );
+  };
 
   const fetchImages = useCallback(async (forceRefresh = false) => {
     if (!locationSource) {
@@ -592,6 +637,9 @@ export const usePlaceGallery = (locationSource, options = {}) => {
       loadedStatsGalleryRef.current = null;
     }
     canonicalStatsIdRef.current = nextCanonicalId;
+    void loadGalleryExclusionsRef.current(
+      resolveGalleryPersistPlaceId(loadedStatsPlaceIdRef.current, nextCanonicalId),
+    );
 
     // 이미 성공한 동일 키 + 이미지가 있을 때만 스킵 (시작 전 마킹하면 hang 후 재시도 불가)
     if (
@@ -996,6 +1044,12 @@ export const usePlaceGallery = (locationSource, options = {}) => {
           if (!statsSnapshot.apply) return;
           if (statsSnapshot.loadedPlaceId) {
             loadedStatsPlaceIdRef.current = statsSnapshot.loadedPlaceId;
+            void loadGalleryExclusionsRef.current(
+              resolveGalleryPersistPlaceId(
+                statsSnapshot.loadedPlaceId,
+                canonicalStatsIdRef.current,
+              ),
+            );
           }
           loadedStatsGalleryRef.current = statsSnapshot.galleryBaseline;
 
@@ -1559,11 +1613,13 @@ export const usePlaceGallery = (locationSource, options = {}) => {
         canonicalStatsIdRef.current,
       );
       if (!placeId) return { ok: false, reason: 'missing' };
+      const imageUrl = galleryImageUrl(imageToRemove) || null;
       const { data, error } = await supabase.functions.invoke('gallery-moderate', {
         body: {
           action: 'remove',
           placeId,
           imageId: String(imageToRemove.id),
+          imageUrl,
         },
       });
       const failure = galleryModerateFailureReason(error, data);
@@ -1571,6 +1627,13 @@ export const usePlaceGallery = (locationSource, options = {}) => {
         console.error('🚨 gallery-moderate remove failed', error || data);
         return { ok: false, reason: failure };
       }
+      if (exclusionPlaceRef.current !== placeId) {
+        galleryExclusionRef.current = emptyGalleryExclusionSets();
+        exclusionPlaceRef.current = placeId;
+      }
+      galleryExclusionRef.current.ids.add(String(imageToRemove.id));
+      const urlKey = galleryUrlKey(imageUrl);
+      if (urlKey) galleryExclusionRef.current.urlKeys.add(urlKey);
       return removeImageFromGalleryStorage(imageToRemove)
         ? { ok: true }
         : { ok: false, reason: 'missing' };

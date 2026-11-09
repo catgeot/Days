@@ -5,6 +5,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { getPlaceStatsId } from '../../utils/travelSpotResolve';
 import { buildPlaceStatsIdentityPayload } from '../../pages/Home/lib/visitedPlaceSearch.js';
+import { browserAuthStorage, gateoAuthOptions } from './authSession.js';
 
 // 1. 비밀 금고(.env)에서 열쇠 꺼내기
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
@@ -15,8 +16,13 @@ if (!supabaseUrl || !supabaseKey) {
   throw new Error("Supabase URL과 Key가 설정되지 않았습니다. .env 파일을 확인하세요!");
 }
 
-// 3. 연결 시작!
-export const supabase = createClient(supabaseUrl, supabaseKey);
+// 3. 연결 시작. 브라우저에서는 localStorage에 세션을 둔다.
+const authStorage = browserAuthStorage();
+export const supabase = createClient(
+  supabaseUrl,
+  supabaseKey,
+  authStorage ? { auth: gateoAuthOptions(authStorage) } : undefined,
+);
 
 // --- 데이터 관리 로직 ---
 

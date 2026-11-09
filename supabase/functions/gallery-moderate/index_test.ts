@@ -183,6 +183,24 @@ Deno.test("200 when a gallery admin applies a valid action", async () => {
   assertEquals(lastLog().actor, "admin-1");
 });
 
+Deno.test("forwards an https imageUrl and drops any other", async () => {
+  reset({ userId: "admin-1", admin: true, apply: { data: { applied: "remove" } } });
+  const ok = await post({
+    ...valid,
+    imageUrl: "https://images.pexels.com/photos/1/a.jpeg",
+  });
+  assertEquals(ok.status, 200);
+  assertEquals(
+    state.rpcCalls[1].args.p_image_url,
+    "https://images.pexels.com/photos/1/a.jpeg",
+  );
+
+  reset({ userId: "admin-1", admin: true, apply: { data: { applied: "remove" } } });
+  const dropped = await post({ ...valid, imageUrl: "http://images.pexels.com/x.jpg" });
+  assertEquals(dropped.status, 200);
+  assertEquals(state.rpcCalls[1].args.p_image_url, null);
+});
+
 Deno.test("400 when action is not allowed", async () => {
   reset({ userId: "admin-1", admin: true });
   const res = await post({ ...valid, action: "purge" });

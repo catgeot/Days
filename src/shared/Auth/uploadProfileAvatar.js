@@ -1,5 +1,6 @@
 import imageCompression from 'browser-image-compression';
 import { fetchUserProfile, supabase } from '../api/supabase';
+import { readSessionUser } from './sessionUser.js';
 import {
   PROFILE_PHOTO_LIMIT,
   normalizeProfilePhotoUrls,
@@ -73,8 +74,7 @@ export async function persistProfileGallery(user, { photos, profilePublic }) {
 export async function uploadProfileAvatar(user, file) {
   const url = await uploadProfilePhotoFile(user, file);
   const profile = await fetchUserProfile(user.id);
-  const { data } = await supabase.auth.getUser();
-  const sessionUser = data.user || user;
+  const sessionUser = (await readSessionUser()) || user;
   const next = normalizeProfilePhotoUrls([
     url,
     ...ownerProfilePhotos(profile, sessionUser),

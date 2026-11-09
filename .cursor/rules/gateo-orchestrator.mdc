@@ -15,7 +15,7 @@ alwaysApply: false
 3. 정착지: [`plans/mapbox-settlement-queue.md`](plans/mapbox-settlement-queue.md) **다음 ⬜ R** + [`mapbox-settlement-plan.md`](plans/mapbox-settlement-plan.md)
 4. 지자체 팔경 **수집**: 종료. 큐 [`korea-local-scenic-lists-queue.md`](plans/korea-local-scenic-lists-queue.md) F 재개 **금지**
 5. 팔경 contentId: 큐 [`korea-local-scenic-contentid-queue.md`](plans/korea-local-scenic-contentid-queue.md) **다음 ⬜** + [`korea-local-scenic-use-plan.md`](plans/korea-local-scenic-use-plan.md) **§9** · method **§5.7**
-5b. 트립닷컴 숙소: 큐 [`tripcom-stay-city-queue.md`](plans/tripcom-stay-city-queue.md) **다음 ⬜** · method **§5.8** · **한 세션 2라운드** · 브랜치 `cursor/tripcom-stay-cities-de61`
+5b. 트립닷컴 숙소: **큐 종료·재개 금지** · [`tripcom-stay-city-queue.md`](plans/tripcom-stay-city-queue.md) · method **§5.8** · 워커를 띄우지 않음
 6. [`.ai-context.md`](.ai-context.md) — **§1.5.3** · [`gateo-commit-push.mdc`](gateo-commit-push.mdc) · 관련 금지 1~2줄
 
 **전반 코드베이스 탐색·이전 워커 로그 전체 Read 금지.**
@@ -100,10 +100,9 @@ alwaysApply: false
 
 ## 트립닷컴 숙소 도시 (§5.8)
 
-- SSOT: `PLANNER_TRIPCOM_HOTEL_CITY_IDS` · 큐 [`tripcom-stay-city-queue.md`](plans/tripcom-stay-city-queue.md) 순서만
-- 한 세션 **2라운드** · IntlCity · 목록에 잡힌 도시만 · 워커 커밋 금지
-- 금지: province · `10279` · 키워드 첫 행 · `honolulu`를 757로 · `raja-ampat` 재시도 · sparse에 city 단정
-- 제시어: `오케스트레이터` + `트립닷컴숙소` · 브랜치 `cursor/tripcom-stay-cities-de61`
+- **큐 종료 (#11)**. R01–R18 ✅. ⬜ 없음. `트립닷컴숙소`가 와도 워커를 띄우지 않는다.
+- SSOT: `PLANNER_TRIPCOM_HOTEL_CITY_IDS` · 큐 [`tripcom-stay-city-queue.md`](plans/tripcom-stay-city-queue.md)
+- 금지: 새 라운드 · province · `10279` · 키워드 첫 행 · `honolulu`를 757로 · `raja-ampat`·`ubud`·로키·시퀘이아·시미란·세인트헬레나 재시도 · sparse에 city 단정
 
 ## 세션 종료(체인 끝)
 
