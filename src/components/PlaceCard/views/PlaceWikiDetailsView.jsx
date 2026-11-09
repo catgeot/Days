@@ -27,6 +27,7 @@ import PlaceWikiLocatorMap from '../common/PlaceWikiLocatorMap';
 import { mobilePlaceHeaderSpacerClass, mobileLandscapeChromeHidden } from '../common/mobilePlaceHeaderInset';
 import { placeScrollSurfaceClass } from '../common/placeScrollSurface';
 import { usePlaceMediaScrollToTop } from '../common/usePlaceMediaScrollToTop';
+import { useGateoPhotoLightboxA11y } from '../../../shared/useGateoPhotoLightboxA11y';
 import { getGalleryImageAttribution } from '../common/galleryImageAttribution';
 import GalleryAttributionLink from '../common/GalleryAttributionLink';
 import {
@@ -110,6 +111,7 @@ const PlaceWikiDetailsView = ({
 
   const aiSectionRef = useRef(null);
   const containerRef = useRef(null);
+  const wikiLightboxRef = useRef(null);
   const scrollToTop = usePlaceMediaScrollToTop('WIKI', containerRef, isActive);
   const [scrollY, setScrollY] = useState(0);
 
@@ -595,6 +597,14 @@ const PlaceWikiDetailsView = ({
     setLightboxIndex(newIndex);
     setLightboxImg(galleryImages[newIndex]);
   }, [lightboxIndex, galleryImages]);
+
+  useGateoPhotoLightboxA11y({
+    open: Boolean(lightboxImg),
+    onClose: () => setLightboxImg(null),
+    rootRef: wikiLightboxRef,
+    onArrowLeft: canGoLightboxPrev ? goLightboxPrev : undefined,
+    onArrowRight: canGoLightboxNext ? goLightboxNext : undefined,
+  });
 
   const renderLightboxAttribution = (wrapperClassName, linkClassName = '') => {
     if (!lightboxAttribution || !lightboxImg) return null;
@@ -1167,17 +1177,14 @@ const PlaceWikiDetailsView = ({
         {/* 라이트박스 모달 — 갤러리 탭 개별 사진 UI와 동일 톤 (body 포털) */}
         {lightboxImg && createPortal(
             <div
+                ref={wikiLightboxRef}
+                data-gateo-photo-lightbox=""
+                data-gateo-photo-lightbox-focus=""
                 className="fixed inset-0 z-[9999] h-[100dvh] min-h-[100svh] w-screen overflow-hidden bg-black animate-fade-in"
                 onClick={() => setLightboxImg(null)}
-                onKeyDown={(e) => {
-                    if (e.key === 'Escape') setLightboxImg(null);
-                    if (e.key === 'ArrowLeft') goLightboxPrev(e);
-                    if (e.key === 'ArrowRight') goLightboxNext(e);
-                }}
                 role="dialog"
                 aria-modal="true"
                 aria-label={t('place.gallery.zoomView')}
-                tabIndex={-1}
             >
                 <div className="relative h-full w-full" onClick={(e) => e.stopPropagation()}>
                     <div className="absolute inset-0 z-10 flex items-center justify-center overflow-hidden">

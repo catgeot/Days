@@ -45,6 +45,7 @@ import { useLocale } from '../../../i18n/LocaleProvider';
 import { useGalleryLongPress } from '../common/galleryLongPress';
 import { GALLERY_REPORT_REASONS } from '../../../shared/api/placeGalleryPersist';
 import { useLightboxHistory } from '../../../shared/useLightboxHistory';
+import { useGateoPhotoLightboxA11y } from '../../../shared/useGateoPhotoLightboxA11y';
 
 const REPORT_REASON_I18N = {
   irrelevant: 'place.gallery.manageReasonIrrelevant',
@@ -984,20 +985,24 @@ const PlaceGalleryView = React.memo(({
     mobileSwipeStartRef.current = null;
   }, [onPinchTouchCancel, onLightboxLongPressCancel]);
 
+  useGateoPhotoLightboxA11y({
+    open: Boolean(selectedImg),
+    onClose: () => setSelectedImg(null),
+    rootRef: lightboxRootRef,
+    onArrowLeft: handlePrev,
+    onArrowRight: handleNext,
+  });
+
   useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === 'Escape' && manageTarget) {
-        setManageTarget(null);
-        return;
-      }
-      if (!selectedImg) return;
-      if (e.key === 'Escape') setSelectedImg(null);
-      if (e.key === 'ArrowLeft') handlePrev();
-      if (e.key === 'ArrowRight') handleNext();
+    if (!manageTarget) return undefined;
+    const onKeyDown = (event) => {
+      if (event.key !== 'Escape') return;
+      event.preventDefault();
+      setManageTarget(null);
     };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [selectedImg, manageTarget, handlePrev, handleNext, setSelectedImg]);
+    window.addEventListener('keydown', onKeyDown, true);
+    return () => window.removeEventListener('keydown', onKeyDown, true);
+  }, [manageTarget]);
 
   const isUIHidden = (!showUI && isFullScreen) || isMobileUIHidden || isMobileLandscapeImmersive;
 
@@ -1056,6 +1061,8 @@ const PlaceGalleryView = React.memo(({
         <div
           ref={lightboxRootRef}
           data-place-lightbox=""
+          data-gateo-photo-lightbox=""
+          data-gateo-photo-lightbox-focus=""
           data-place-lightbox-index={currentIndex}
           className="fixed inset-0 z-[9999] h-[100dvh] min-h-[100svh] w-screen touch-none overscroll-none overflow-hidden bg-black animate-fade-in"
           role="dialog"
@@ -1223,7 +1230,16 @@ const PlaceGalleryView = React.memo(({
     }
 
     return (
-    <div className={wrapperClassName}>
+    <div
+      ref={lightboxRootRef}
+      className={wrapperClassName}
+      data-place-lightbox=""
+      data-gateo-photo-lightbox=""
+      data-gateo-photo-lightbox-focus=""
+      role="dialog"
+      aria-modal="true"
+      aria-label={t('place.gallery.zoomView')}
+    >
       <div className="relative w-full h-full flex items-center justify-center cursor-pointer" onClick={(e) => {
           e.stopPropagation();
           if (suppressOpenClickRef.current) return;
