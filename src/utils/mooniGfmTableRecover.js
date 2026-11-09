@@ -86,7 +86,7 @@ function recoverCollapsedTableLine(line) {
       return row;
     });
   if (rows.length < 2) return raw;
-  if (!rows.every((r) => isMooniGfmTableLine(r) || /^\|/.test(r))) return raw;
+  if (!rows.every((r) => isMooniGfmTableLine(r))) return raw;
   return rows.join('\n');
 }
 

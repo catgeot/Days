@@ -49,3 +49,32 @@ test('normalizeMooniMarkdownBoldSpacing — bold 뒤 한글 glue 분리', () => 
   assert.ok(html.includes('<strong>미야코지마</strong>'), html);
   assert.ok(html.includes('시기라미라지'), html);
 });
+
+test('normalizeMooniMarkdownBoldSpacing — two bold pairs on one line', () => {
+  const md = getMooniModelMarkdownForRender(
+    '우도에는 **천진항과** 하우목동항이 있어요. ** 리조트 체크인**',
+    { stripPhantomTicketMention: true },
+  );
+  assert.match(md, /\*\*천진항과\*\* 하우목동항이 있어요\. \*\*리조트 체크인\*\*/);
+  const html = micromark(md, { extensions: [gfm()], htmlExtensions: [gfmHtml()] });
+  assert.ok(html.includes('<strong>천진항과</strong>'), html);
+  assert.ok(html.includes('<strong>리조트 체크인</strong>'), html);
+  assert.ok(!html.includes('**'), html);
+});
+
+const BOLD_AND_OUTER_TABLE = `**1일차** 요약
+
+| 항목 | 괌 | 오키나와 |
+| :--- | :--- | :--- |
+| **이동** | 직항 | 직항 |`;
+
+test('getMooniModelMarkdownForRender — bold + outer-pipe table', () => {
+  const md = getMooniModelMarkdownForRender(BOLD_AND_OUTER_TABLE, {
+    stripPhantomTicketMention: true,
+  });
+  assert.match(md, /\*\*1일차\*\* 요약/);
+  assert.match(md, /^\| :--- \|/m);
+  const html = micromark(md, { extensions: [gfm()], htmlExtensions: [gfmHtml()] });
+  assert.ok(html.includes('<strong>1일차</strong>'), html);
+  assert.ok(html.includes('<table'), html);
+});
