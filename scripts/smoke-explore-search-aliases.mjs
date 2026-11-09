@@ -43,6 +43,7 @@ import {
   KOREA_HOMONYM_GROUPS,
 } from '../src/pages/Home/lib/koreaPlaceMatchDictionary.js';
 import { normalizeExploreSelectionPin } from '../src/pages/Home/lib/explorePlaceNav.js';
+import { buildKoreaGetbolCollectiveSearchSuggestions } from '../src/pages/Home/lib/exploreKoreaGetbolCollectiveSearch.js';
 
 const langCo = resolveHubAttraction('람코');
 assert.ok(langCo, '람코 → 랑코 해변 attraction');
@@ -311,4 +312,36 @@ for (const q of ['한라산 백록담', '백록담', '화구벽']) {
   assert.equal(pin?.slug, 'tour-127635', q);
 }
 
-console.log('PASS explore-search-aliases (lang co + takamatsu + saba island types + 광천선굴 + korea first-pass + koreaPlaceMatchDictionary SSOT + 춘천 향교 hub + 한라산 별칭)');
+const getbolRows = buildKoreaGetbolCollectiveSearchSuggestions('한국의 갯벌');
+assert.equal(getbolRows.length, 2, '한국의 갯벌 → /place 가능 2건(고창·순천만)');
+assert.ok(
+  getbolRows.some((r) => String(r.name || '').includes('고창 갯벌')),
+  '고창 갯벌',
+);
+assert.ok(
+  getbolRows.some((r) => String(r.name || '').includes('순천만습지')),
+  '순천만습지',
+);
+assert.ok(
+  !getbolRows.some((r) => String(r.name || '').includes('유부도')),
+  '서천(탐색 /place 미지원) 카드 제외',
+);
+assert.ok(
+  getbolRows.every((r) => r.groupTitle && r.groupTitle.includes('일부')),
+  '집합 groupTitle — 일부 장소',
+);
+assert.ok(
+  getbolRows.every((r) => r.badge === '자연유산'),
+  '집합 카드 유형 — hub park(공원) 대신 자연유산',
+);
+assert.ok(
+  getbolRows.every((r) => r.attractionKind === 'park'),
+  'hub SSOT attractionKind 미변경',
+);
+assert.equal(
+  buildKoreaGetbolCollectiveSearchSuggestions('갯벌').length,
+  0,
+  '일반 갯벌 질의는 기존 검색 유지',
+);
+
+console.log('PASS explore-search-aliases (lang co + takamatsu + saba island types + 광천선굴 + korea first-pass + koreaPlaceMatchDictionary SSOT + 춘천 향교 hub + 한라산 별칭 + 한국의 갯벌 집합)');

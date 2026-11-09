@@ -12,6 +12,7 @@
     "ctaLodgingMixed": "View stay & start booking",
     "ctaLodgingMixedNamed": "{{name}} — view stay & start booking",
     "ctaTourProduct": "View product & start booking",
+    "ctaTourProductNamed": "{{name}} — view product & start booking",
     "affiliatePartner": "Affiliate · {{partner}}",
     "partnerMyRealTrip": "MyRealTrip"
   },

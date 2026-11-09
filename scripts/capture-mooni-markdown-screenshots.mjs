@@ -25,5 +25,23 @@ await page.locator('[data-testid="mooni-md-truncated"]').screenshot({
   path: path.join(outDir, 'after-desktop-truncated.png'),
 });
 
+await page.setViewportSize({ width: 390, height: 1280 });
+await page.screenshot({
+  path: path.join(outDir, 'after-mobile-390-table-1280.png'),
+  clip: { x: 0, y: 0, width: 390, height: 1280 },
+});
+const tableBox = await page.locator('[data-testid="mooni-md-table"]').boundingBox();
+if (tableBox) {
+  await page.screenshot({
+    path: path.join(outDir, 'after-mobile-390-table-section.png'),
+    clip: { x: 0, y: Math.max(0, tableBox.y - 8), width: 390, height: Math.min(520, tableBox.height + 24) },
+  });
+}
+
+await page.setViewportSize({ width: 1280, height: 800 });
+await page.locator('[data-testid="mooni-md-table"]').screenshot({
+  path: path.join(outDir, 'after-desktop-1280-table-section.png'),
+});
+
 await browser.close();
 console.log(`mooni markdown screenshots → ${outDir}`);

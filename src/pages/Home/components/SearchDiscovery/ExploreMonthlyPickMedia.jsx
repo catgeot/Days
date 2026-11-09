@@ -3,6 +3,7 @@ import React, { useLayoutEffect, useRef } from 'react';
 const ExploreMonthlyPickMedia = ({
   imageUrl,
   alt = '',
+  title,
   className = '',
   objectPosition = '50% 50%',
   onError,
@@ -33,6 +34,7 @@ const ExploreMonthlyPickMedia = ({
       ref={ref}
       src={imageUrl}
       alt={alt}
+      title={title || undefined}
       loading="lazy"
       onError={(e) => {
         e?.currentTarget?.removeAttribute('src');

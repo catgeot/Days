@@ -60,6 +60,34 @@ function createMooniMarkdownComponents(variant) {
       <ol className={`list-decimal pl-5 mb-2 space-y-1.5 last:mb-0 ${listClass}`}>{children}</ol>
     ),
     li: ({ children }) => <li className="leading-relaxed break-keep">{children}</li>,
+    table: ({ children }) => (
+      <div className="my-2 max-w-full overflow-x-auto">
+        <table className={`w-full text-sm border-collapse ${isDark ? 'text-gray-200' : 'text-slate-700'}`}>
+          {children}
+        </table>
+      </div>
+    ),
+    thead: ({ children }) => (
+      <thead className={isDark ? 'bg-gray-700/40' : 'bg-cyan-50/80'}>{children}</thead>
+    ),
+    th: ({ children }) => (
+      <th
+        className={`border px-2 py-1.5 text-left font-semibold align-top ${
+          isDark ? 'border-gray-600' : 'border-cyan-200'
+        }`}
+      >
+        {children}
+      </th>
+    ),
+    td: ({ children }) => (
+      <td
+        className={`border px-2 py-1.5 align-top ${isDark ? 'border-gray-600/80' : 'border-cyan-100'}`}
+      >
+        {children}
+      </td>
+    ),
+    tr: ({ children }) => <tr>{children}</tr>,
+    tbody: ({ children }) => <tbody>{children}</tbody>,
     a: ({ href, children }) => {
       const label = mooniMarkdownLinkLabelText(children);
       if (!href || shouldStripMooniMarkdownLink(href, label)) {

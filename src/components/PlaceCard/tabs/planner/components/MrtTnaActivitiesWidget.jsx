@@ -14,7 +14,8 @@ import {
   resolveMrtTnaQuery,
 } from '../../../../../utils/fetchMrtTnas';
 
-import PartnerBookingHandoff from '../../../../../shared/affiliate/PartnerBookingHandoff.jsx';
+import StayListPartnerNotice from '../../../../../shared/affiliate/StayListPartnerNotice.jsx';
+import TourCardBookingLink from '../../../../../shared/affiliate/TourCardBookingLink.jsx';
 
 const LG_MQ = '(min-width: 1024px)';
 
@@ -99,96 +100,91 @@ function TnaCard({ item, size = 'md', theme = 'dark', imageClassName, locale = '
   const light = theme === 'light';
   const href = buildMrtTnaProductUrl(item);
   const price = formatPrice(item, locale);
-  const imgBox = imageClassName || 'aspect-square';
+  const imgBox = imageClassName || (large ? 'h-[128px] sm:h-[140px] lg:h-[152px]' : 'h-[112px]');
+  const imageUrl = String(item?.imageUrl || '').trim();
+  const [imageBroken, setImageBroken] = useState(false);
+  useEffect(() => {
+    setImageBroken(false);
+  }, [imageUrl]);
   if (!href) return null;
 
   const shellClass = light
-    ? 'flex flex-col rounded-xl border border-orange-200 bg-white overflow-hidden'
-    : 'flex flex-col rounded-2xl border border-orange-400/30 bg-orange-500/10 overflow-hidden';
+    ? 'flex min-h-0 flex-1 flex-col rounded-xl border border-orange-200 bg-white overflow-hidden transition-colors hover:border-orange-300/80'
+    : 'flex min-h-0 flex-1 flex-col rounded-2xl border border-orange-400/30 bg-zinc-950 overflow-hidden transition-colors hover:border-orange-300/50';
+
+  const showImage = Boolean(imageUrl) && !imageBroken;
 
   return (
-    <div className={shellClass}>
-      <div className="flex min-h-0 flex-1 flex-col">
-        <div
-          className={`relative w-full shrink-0 overflow-hidden ${
-            light ? 'bg-gray-50' : 'bg-white/5'
-          } ${imgBox}`}
-        >
-          {item.imageUrl ? (
-            <img
-              src={item.imageUrl}
-              alt=""
-              loading="lazy"
-              draggable={false}
-              className="absolute inset-0 h-full w-full object-cover object-center"
-            />
-          ) : (
-            <div
-              className={`flex h-full w-full items-center justify-center ${
-                light ? 'text-gray-300' : 'text-white/30'
-              } ${large ? 'text-xs' : 'text-[10px]'}`}
-            >
-              No image
-            </div>
-          )}
-        </div>
-        <div
-          className={`${
-            large ? 'space-y-1.5 px-3 py-2.5' : 'space-y-1 px-2.5 py-2'
-          }`}
-        >
-          {item.category ? (
-            <p
-              className={`break-keep ${
-                light ? 'text-orange-600/80' : 'text-orange-100/70'
-              } ${large ? 'text-[11px]' : 'text-[10px]'}`}
-            >
-              {item.category}
-            </p>
-          ) : null}
-          <p
-            className={`line-clamp-3 break-keep font-semibold leading-snug ${
-              light ? 'text-gray-800' : 'text-white'
-            } ${large ? 'text-[13px]' : 'text-[11px]'}`}
+    <TourCardBookingLink href={href} item={item} className={shellClass}>
+      <div
+        className={`relative w-full shrink-0 overflow-hidden ${
+          light ? 'bg-gray-50' : 'bg-zinc-900'
+        } ${imgBox}`}
+      >
+        {showImage ? (
+          <img
+            src={imageUrl}
+            alt=""
+            loading="lazy"
+            draggable={false}
+            onError={() => setImageBroken(true)}
+            className="absolute inset-0 h-full w-full object-cover object-center"
+          />
+        ) : (
+          <div
+            className={`flex h-full min-h-[inherit] w-full items-center justify-center ${
+              light ? 'text-gray-300' : 'text-white/30'
+            } ${large ? 'text-xs' : 'text-[10px]'}`}
           >
-            {item.itemName}
-          </p>
-          <div className="flex min-w-0 items-end justify-between gap-2">
-            {item.reviewScore != null ? (
-              <span
-                className={`shrink-0 tabular-nums ${
-                  light ? 'text-amber-600' : 'text-orange-100/80'
-                } ${large ? 'text-xs' : 'text-[10px]'}`}
-              >
-                ★ {item.reviewScore}
-              </span>
-            ) : (
-              <span />
-            )}
-            {price ? (
-              <span
-                className={`min-w-0 text-right font-bold tabular-nums break-keep ${
-                  light ? 'text-gray-700' : 'text-white/90'
-                } ${large ? 'text-xs' : 'text-[10px]'}`}
-              >
-                {price}
-              </span>
-            ) : null}
+            No image
           </div>
-        </div>
+        )}
       </div>
       <div
-        className={`border-t ${
-          light ? 'border-orange-100 p-2.5 pt-2' : 'border-white/10 p-2.5 pt-2'
-        }`}
+        className={`flex min-h-0 flex-1 flex-col ${
+          light ? '' : 'bg-zinc-950'
+        } ${large ? 'space-y-1.5 px-3 py-2.5' : 'space-y-1 px-2.5 py-2'}`}
       >
-        <PartnerBookingHandoff
-          href={href}
-          kind="tour"
-          theme={light ? 'light' : 'dark'}
-        />
+        {item.category ? (
+          <p
+            className={`break-keep ${
+              light ? 'text-orange-600/80' : 'text-orange-100/70'
+            } ${large ? 'text-[11px]' : 'text-[10px]'}`}
+          >
+            {item.category}
+          </p>
+        ) : null}
+        <p
+          className={`line-clamp-3 break-keep font-semibold leading-snug ${
+            light ? 'text-gray-800' : 'text-white'
+          } ${large ? 'text-[13px]' : 'text-[11px]'}`}
+        >
+          {item.itemName}
+        </p>
+        <div className="mt-auto flex min-w-0 items-end justify-between gap-2">
+          {item.reviewScore != null ? (
+            <span
+              className={`shrink-0 tabular-nums ${
+                light ? 'text-amber-600' : 'text-orange-100/80'
+              } ${large ? 'text-xs' : 'text-[10px]'}`}
+            >
+              ★ {item.reviewScore}
+            </span>
+          ) : (
+            <span />
+          )}
+          {price ? (
+            <span
+              className={`min-w-0 text-right font-bold tabular-nums break-keep ${
+                light ? 'text-gray-700' : 'text-white/90'
+              } ${large ? 'text-xs' : 'text-[10px]'}`}
+            >
+              {price}
+            </span>
+          ) : null}
+        </div>
       </div>
-    </div>
+    </TourCardBookingLink>
   );
 }
 
@@ -467,7 +463,9 @@ export default function MrtTnaActivitiesWidget({
         <div
           role="group"
           aria-label={t('place.planner.banners.mrtTna.nearbyMoreAria')}
-          className="mt-2 flex flex-col items-center gap-3 pt-3"
+          className={`mt-2 flex flex-col items-center gap-3 pt-3 ${
+            planner ? '' : 'bg-black pb-2'
+          }`}
         >
           <p
             className={`text-[17px] font-bold break-keep ${
@@ -498,7 +496,7 @@ export default function MrtTnaActivitiesWidget({
                   className={
                     planner
                       ? 'rounded-full border border-orange-400 bg-orange-400 px-7 py-1.5 text-[13px] font-bold text-white hover:bg-orange-500 hover:border-orange-500 active:scale-[0.98] transition-all'
-                      : 'rounded-full border border-orange-300/55 bg-orange-500/45 px-7 py-1.5 text-[13px] font-bold text-orange-50 hover:bg-orange-500/60 hover:border-orange-200/70 active:scale-[0.98] transition-all'
+                      : 'rounded-full border border-orange-400/80 bg-orange-600 px-7 py-1.5 text-[13px] font-bold text-white hover:bg-orange-500 hover:border-orange-300 active:scale-[0.98] transition-all'
                   }
                 >
                   {kw}
@@ -600,18 +598,18 @@ export default function MrtTnaActivitiesWidget({
       ? 'grid grid-cols-3 gap-2.5'
       : 'grid grid-cols-1 gap-2.5'
     : 'grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4';
-  // cover 유지 · 4:3보다 세로를 키운 1:1 (상하 잘림 완화)
-  const openImageClass = 'aspect-square';
+  const openImageClass = 'h-[128px] sm:h-[140px] lg:h-[152px]';
 
   return (
     <div
       className={
         planner
           ? 'space-y-4'
-          : 'space-y-4 max-lg:flex max-lg:min-h-[calc(100dvh-8rem)] max-lg:flex-col'
+          : 'space-y-4 max-lg:flex max-lg:min-h-[calc(100dvh-8rem)] max-lg:flex-col max-lg:bg-black'
       }
     >
       {openToolbar}
+      <StayListPartnerNotice theme={planner ? 'light' : 'dark'} />
       <div className="space-y-8">
         {sortedSections
           .filter((sec) => (sec.items?.length || 0) > 0)
@@ -685,7 +683,7 @@ export default function MrtTnaActivitiesWidget({
           className={
             planner
               ? 'mt-3 flex flex-col items-start gap-1.5 px-0.5 pt-8 pb-4'
-              : 'mt-3 flex flex-col items-start gap-1.5 px-0.5 pt-8 pb-4 max-lg:mt-auto max-lg:pb-0 max-lg:pt-6 lg:mt-3 lg:pb-4'
+              : 'mt-3 flex flex-col items-start gap-1.5 bg-black px-0.5 pt-8 pb-4 max-lg:mt-auto max-lg:pb-0 max-lg:pt-6 lg:mt-3 lg:pb-4'
           }
         >
           <a
