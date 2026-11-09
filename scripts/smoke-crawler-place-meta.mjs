@@ -306,6 +306,13 @@ assert(middlewareSrc.includes('/blog/curation'), 'middleware matcher includes cu
 assert(middlewareSrc.includes('/blog'), 'middleware matcher includes blog hub');
 assert(middlewareSrc.includes('/place/:slug'), 'middleware matcher includes tier1 base');
 assert(middlewareSrc.includes('/place/:slug/wiki'), 'middleware matcher includes wiki tab');
+assert(middlewareSrc.includes('/blog/e/:editorialSlug'), 'middleware matcher includes editorial logbook');
+
+const parisEditorialKo = resolveCrawlerMeta('/blog/e/paris-travelogue', 'ko');
+assert(Boolean(parisEditorialKo?.canonicalUrl), 'paris editorial crawler meta resolved');
+assert(parisEditorialKo.canonicalUrl === 'https://www.gateo.kr/blog/e/paris-travelogue', 'paris editorial canonical');
+assert(/오르세|paris/i.test(parisEditorialKo.title), 'paris editorial title localized');
+assert(parseCrawlerPath('/blog/e/paris-travelogue')?.kind === 'editorial-logbook', 'editorial path parsed');
 
 const botDetectSrc = readFileSync(join(root, 'src/edge/botDetect.js'), 'utf8');
 assert(botDetectSrc.includes('kakaotalk-scrap'), 'botDetect includes kakaotalk-scrap');

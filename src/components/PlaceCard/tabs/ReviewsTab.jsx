@@ -49,6 +49,7 @@ import {
   snapshotScrollBeforeOverlay,
 } from '../common/placeScrollMemory.js';
 import { useLightboxHistory } from '../../../shared/useLightboxHistory.js';
+import { useGateoPhotoLightboxA11y } from '../../../shared/useGateoPhotoLightboxA11y.js';
 
 const RelatedBlogCardThumbnail = ({ src }) => {
   const [failed, setFailed] = useState(false);
@@ -698,6 +699,8 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null, isActiv
     [placeSlug],
   );
 
+  const reviewsLightboxRef = useRef(null);
+
   const closeLightbox = useCallback(() => {
     setViewerImages(null);
   }, []);
@@ -709,6 +712,14 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null, isActiv
   }, [reviewsOverlayKey, placeSlug]);
 
   useLightboxHistory(Boolean(viewerImages?.length), closeLightbox);
+
+  useGateoPhotoLightboxA11y({
+    open: Boolean(viewerImages?.length),
+    onClose: closeLightbox,
+    rootRef: reviewsLightboxRef,
+    onArrowLeft: () => setViewerIndex((prev) => (prev === 0 ? viewerImages.length - 1 : prev - 1)),
+    onArrowRight: () => setViewerIndex((prev) => (prev === viewerImages.length - 1 ? 0 : prev + 1)),
+  });
 
   useLayoutEffect(() => {
     if (viewerImages) return undefined;
@@ -1018,6 +1029,12 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null, isActiv
       {/* Lightbox 갤러리 뷰어 모달 */}
       {viewerImages && viewerImages.length > 0 && createPortal(
         <div
+          ref={reviewsLightboxRef}
+          data-gateo-photo-lightbox=""
+          data-gateo-photo-lightbox-focus=""
+          role="dialog"
+          aria-modal="true"
+          aria-label={t('place.reviews.galleryViewerAlt')}
           className="fixed inset-0 z-[9999] bg-black flex flex-col items-center justify-center"
           onClick={closeLightbox}
         >
