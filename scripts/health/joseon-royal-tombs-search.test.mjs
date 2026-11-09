@@ -70,3 +70,11 @@ test('donggureung-royal-tombs hydrate — scenic contentId', () => {
   assert.equal(String(pin.contentId), '125545');
   assert.equal(pin.hubId, 'guri');
 });
+
+test('seooreung-royal-tombs hydrate — Tour contentId 125549', () => {
+  const pin = resolveJoseonRoyalTombsCatalogSlugPin('seooreung-royal-tombs');
+  assert.ok(pin);
+  assert.equal(String(pin.contentId), '125549');
+  assert.equal(pin.hubId, 'goyang');
+  assert.ok(pin.imageUrl?.includes('3527720'));
+});
