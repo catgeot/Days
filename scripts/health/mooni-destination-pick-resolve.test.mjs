@@ -93,3 +93,45 @@ test('session rebound — phuket after phu quoc trip destination', () => {
   assert.equal(r.slug, 'phuket');
   assert.equal(r.source, 'lookup');
 });
+
+test('guam → jeju switch — departure hub not stuck on bound guam', () => {
+  const history = [
+    {
+      role: 'user',
+      text: 'CJU에서 GUM 직항 괌',
+      confirmedDestination: { slug: 'guam', name: '괌' },
+    },
+  ];
+  const r = resolveDestinationFromChat('이번엔 제주 갈게', history, '괌');
+  assert.equal(r.confidence, 'high');
+  assert.equal(r.slug, 'jeju');
+  assert.equal(r.source, 'lookup');
+});
+
+test('guam → jeju 우도 topic — jeju replaces guam', () => {
+  const history = [
+    {
+      role: 'user',
+      text: '괌 항공',
+      confirmedDestination: { slug: 'guam', name: '괌' },
+    },
+  ];
+  const r = resolveDestinationFromChat('제주 우도 가볼만한 곳', history, '괌');
+  assert.equal(r.confidence, 'high');
+  assert.equal(r.slug, 'jeju');
+  assert.equal(r.source, 'lookup');
+});
+
+test('same destination follow-up — guam flight detail keeps guam', () => {
+  const history = [
+    {
+      role: 'user',
+      text: '괌 5박',
+      confirmedDestination: { slug: 'guam', name: '괌' },
+    },
+  ];
+  const r = resolveDestinationFromChat('GUM 도착 후 투몬까지 어떻게 가?', history, '괌');
+  assert.equal(r.confidence, 'high');
+  assert.equal(r.slug, 'guam');
+  assert.equal(r.source, 'bound');
+});
