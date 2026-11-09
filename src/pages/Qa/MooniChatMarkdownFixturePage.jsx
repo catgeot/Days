@@ -38,6 +38,13 @@ const ORDERED_WITH_GAP = `1. 우도 터미널 집결
 
 3. 섭지코지 산책`;
 
+const NO_OUTER_PIPE_COMPARE_TABLE = `구분 | 괌 | 오키나와 | 팔라우 | 보홀
+:--- | :--- | :--- | :--- | :---
+**주요 특징** | 쇼핑 | 문화 | 다이빙 | 자연`;
+
+const DUAL_BOLD_ONE_LINE =
+  '우도에는 **천진항과** 하우목동항이 있어요. ** 리조트 체크인** · **1일차** 오전 **Bohol**';
+
 const COMPARE_TABLE = `| 항목 | 괌 | 오키나와 | 팔라우 | 보홀 |
 | --- | --- | --- | --- | --- |
 | 비자 | 미국령 | 일본 | 무비자 | 필리핀 |
@@ -119,6 +126,28 @@ export default function MooniChatMarkdownFixturePage() {
         <Bubble variant="dark">
           <MooniChatMarkdown
             text={getMooniModelMarkdownForRender(LIVE_MERGED_COMPARE_TABLE, {
+              stripPhantomTicketMention: true,
+            })}
+            variant="dark"
+          />
+        </Bubble>
+      </section>
+      <section data-testid="mooni-md-no-outer-pipe-table" className="space-y-2">
+        <p className="text-gray-400 text-[10px] font-bold uppercase">Compare table (no outer pipes)</p>
+        <Bubble variant="dark">
+          <MooniChatMarkdown
+            text={getMooniModelMarkdownForRender(NO_OUTER_PIPE_COMPARE_TABLE, {
+              stripPhantomTicketMention: true,
+            })}
+            variant="dark"
+          />
+        </Bubble>
+      </section>
+      <section data-testid="mooni-md-dual-bold-line" className="space-y-2">
+        <p className="text-gray-400 text-[10px] font-bold uppercase">Dual bold on one line</p>
+        <Bubble variant="dark">
+          <MooniChatMarkdown
+            text={getMooniModelMarkdownForRender(DUAL_BOLD_ONE_LINE, {
               stripPhantomTicketMention: true,
             })}
             variant="dark"
