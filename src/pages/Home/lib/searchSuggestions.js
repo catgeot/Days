@@ -86,6 +86,8 @@ import {
   isJoseonRoyalTombsCollectiveQuery,
   shouldDemoteJoseonManagementOfficeSearchHit,
 } from './joseonRoyalTombsSearch.js';
+import { stampExploreRestaurantSuggestion } from '../../../shared/search/exploreRestaurantStamp.js';
+import { isExploreRestaurantItem } from '../../../shared/search/tourRestaurantDetect.js';
 
 const normalizeKey = (s) =>
   String(s ?? '')
@@ -116,10 +118,26 @@ function dedupeKey(item) {
 
 function pushUnique(out, seen, item) {
   if (!item?.name) return;
-  const k = dedupeKey(item);
+  const stamped = stampExploreRestaurantSuggestion(item);
+  const k = dedupeKey(stamped);
   if (!k || seen.has(k)) return;
   seen.add(k);
-  out.push(item);
+  out.push(stamped);
+}
+
+function upsertRestaurantByName(out, seen, item) {
+  const stamped = stampExploreRestaurantSuggestion(item);
+  if (!stamped?.name || !isExploreRestaurantItem(stamped)) return;
+  const k = dedupeKey(stamped);
+  if (!k) return;
+  const idx = out.findIndex((row) => dedupeKey(row) === k);
+  if (idx >= 0) {
+    out[idx] = stamped;
+    return;
+  }
+  if (seen.has(k)) return;
+  seen.add(k);
+  out.push(stamped);
 }
 
 async function prependKoreaTourTitleCandidates(query, regional, list) {
@@ -176,7 +194,7 @@ async function appendExploreRestaurantMatches(query, list, matchOpts) {
     const merged = [];
     const seen = new Set();
     for (const item of list || []) pushUnique(merged, seen, item);
-    for (const item of restaurants) pushUnique(merged, seen, item);
+    for (const item of restaurants) upsertRestaurantByName(merged, seen, item);
     return merged;
   } catch {
     return list;
@@ -187,7 +205,10 @@ async function finalizeHybridSuggestions(query, regional, list, max = 24, matchO
   const withRestaurants = await appendExploreRestaurantMatches(query, list, matchOpts);
   const withTour = await prependKoreaTourTitleCandidates(query, regional, withRestaurants);
   const policy = applyExploreAliasTourSuggestionPolicy(query, withTour);
-  const enriched = policy.slice(0, max).map(enrichSearchCandidateScenicMedia);
+  const enriched = policy
+    .slice(0, max)
+    .map(stampExploreRestaurantSuggestion)
+    .map(enrichSearchCandidateScenicMedia);
   return rankSiteSearchExploreCandidates(query, enriched);
 }
 

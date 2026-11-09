@@ -22,6 +22,7 @@ import {
   resolveUniversitySearchHits,
   universityPlaceNeedsCampusSnap,
 } from '../../../utils/mrtStayQuery.js';
+import { stampExploreRestaurantSuggestion } from '../../../shared/search/exploreRestaurantStamp.js';
 
 const MAPBOX_TOKEN = typeof import.meta !== 'undefined' ? import.meta.env?.VITE_MAPBOX_TOKEN : '';
 const SEARCHBOX_BASE = 'https://api.mapbox.com/search/searchbox/v1';
@@ -160,8 +161,10 @@ export function featureToSuggestion(feature, { hubId, parentCity, source = 'mapb
     featureType === 'locality';
   const country = countryFromSearchBoxProperties(props);
 
-  const poiCats = props.poi_category_ids || props.poi_category || [];
-  const firstCat = Array.isArray(poiCats) ? poiCats[0] : '';
+  const poiCatIds = Array.isArray(props.poi_category_ids) ? props.poi_category_ids : [];
+  const poiCatLabels = Array.isArray(props.poi_category) ? props.poi_category : [];
+  const poiCats = [...poiCatIds, ...poiCatLabels];
+  const firstCat = poiCats[0] || '';
   const preferred = String(props.name_preferred || props.name || name).trim();
   const rawLatin = isLatinPlaceName(preferred)
     ? preferred
@@ -181,7 +184,7 @@ export function featureToSuggestion(feature, { hubId, parentCity, source = 'mapb
       : '';
   const latinCountry = isLatinPlaceName(country) ? country : '';
 
-  return {
+  const base = {
     id: `mapbox-${props.mapbox_id || `${lat}-${lng}`}`,
     kind: isPoi ? 'attraction' : isPlaceLike ? 'city' : 'poi',
     badge: isPoi ? '명소' : featureType === 'place' || featureType === 'city' ? '도시' : '장소',
@@ -196,6 +199,8 @@ export function featureToSuggestion(feature, { hubId, parentCity, source = 'mapb
     hubId,
     parentCity: county || undefined,
     ...(isPoi ? { slug: placeUrlSlug(latinName, name), poiAttraction: true } : {}),
+    ...(poiCatIds.length ? { poi_category_ids: poiCatIds } : {}),
+    ...(poiCatLabels.length ? { poi_category: poiCatLabels } : {}),
     attractionKind: firstCat || undefined,
     source,
     uiPlace: true,
@@ -203,6 +208,7 @@ export function featureToSuggestion(feature, { hubId, parentCity, source = 'mapb
     place_formatted: String(props.place_formatted || props.full_address || '').trim(),
     // 선택 카드: 제목·위치 줄과 겹치는 합성 desc 생략 (full_address는 suggest 경로에서만)
   };
+  return stampExploreRestaurantSuggestion(base);
 }
 
 /**
@@ -360,7 +366,9 @@ export async function searchBoxSuggest(query, opts = {}) {
         rawLatin && !(isPoi && county && latinNameIsAdminArea(rawLatin, county))
           ? rawLatin
           : '';
-      return {
+      const poiCatIds = Array.isArray(s.poi_category_ids) ? s.poi_category_ids : [];
+      const poiCatLabels = Array.isArray(s.poi_category) ? s.poi_category : [];
+      const base = {
         id: `suggest-${s.mapbox_id}`,
         kind: isPoi ? 'attraction' : featureType === 'place' || featureType === 'city' ? 'city' : 'poi',
         badge: isPoi ? '명소' : featureType === 'place' || featureType === 'city' ? '도시' : '장소',
@@ -375,10 +383,14 @@ export async function searchBoxSuggest(query, opts = {}) {
         uiPlace: true,
         ...(county ? { parentCity: county } : {}),
         ...(isPoi ? { slug: placeUrlSlug(latinName, suggestName), poiAttraction: true } : {}),
+        ...(poiCatIds.length ? { poi_category_ids: poiCatIds } : {}),
+        ...(poiCatLabels.length ? { poi_category: poiCatLabels } : {}),
+        attractionKind: [...poiCatIds, ...poiCatLabels][0] || undefined,
         desc: s.full_address || s.place_formatted || s.name,
         lat: null,
         lng: null,
       };
+      return stampExploreRestaurantSuggestion(base);
     }).filter((s) => s.name && s.mapboxId);
 
     return { suggestions, sessionToken };
