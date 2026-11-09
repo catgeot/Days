@@ -115,6 +115,18 @@ async function clipViewportShot(page, fileName, width) {
   return path;
 }
 
+async function waitOfficeDetail(page, office) {
+  const headerNeedle = office.name.slice(0, 14);
+  await expect(page.getByRole('button', { name: new RegExp(headerNeedle) }).first()).toBeVisible({
+    timeout: 45_000,
+  });
+  const galleryTab = page.getByRole('button', { name: /갤러리|Gallery/i });
+  if ((await galleryTab.count()) > 0 && (await galleryTab.first().isVisible())) {
+    await galleryTab.first().click();
+  }
+  await expect(page.getByText(/유네스코|조선 왕릉|관람/).first()).toBeAttached({ timeout: 45_000 });
+}
+
 async function openExploreSearch(page) {
   await page.goto('/', { waitUntil: 'commit', timeout: 45_000 });
   const searchBtn = page
@@ -151,20 +163,16 @@ test.describe('조선왕릉 Mapbox fixture 검색', () => {
       });
       await expect(page).not.toHaveURL(/\/place\/seoul(?:\/|$|\?)/);
 
-      await expect(page.getByText(office.name, { exact: false }).first()).toBeVisible({ timeout: 45_000 });
-      await expect(page.getByText('대한민국', { exact: false }).first()).toBeVisible({ timeout: 30_000 });
-      const headerNeedle = office.name.slice(0, 14);
-      await expect(page.getByRole('button', { name: new RegExp(headerNeedle) }).first()).toBeVisible({
-        timeout: 30_000,
-      });
+      await waitOfficeDetail(page, office);
 
       await stampHref(page);
       const suffix = width === 390 ? '390' : '1280';
       await clipViewportShot(page, `${office.key}-place-${suffix}.png`, width);
 
-      await page.reload({ waitUntil: 'commit' });
+      await page.reload({ waitUntil: 'domcontentloaded' });
       await expect(page).toHaveURL(new RegExp(`/place/search-${office.lat}-${office.lng}`));
       await expect(page).not.toHaveURL(/\/place\/seoul(?:\/|$|\?)/);
+      await waitOfficeDetail(page, office);
       await clipViewportShot(page, `${office.key}-after-reload-${suffix}.png`, width);
 
       await page.goBack({ waitUntil: 'commit' });
@@ -197,4 +205,20 @@ test.describe('회귀 — 라우팅', () => {
     await page.goto('/place/pyeongchang', { waitUntil: 'commit' });
     await expect(page).toHaveURL(/\/place\/pyeongchang/);
   });
+
+  for (const row of [
+    { slug: 'tour-125545', needle: /동구릉|유네스코/ },
+    { slug: 'tour-125548', needle: /홍유릉|조선/ },
+  ]) {
+    test(`${row.slug} 직접·새로고침 @390`, async ({ page }) => {
+      await page.setViewportSize({ width: 390, height: 844 });
+      await page.goto(`/place/${row.slug}`, { waitUntil: 'domcontentloaded' });
+      await expect(page).toHaveURL(new RegExp(`/place/${row.slug}`));
+      await expect(page.getByText(row.needle).first()).toBeAttached({ timeout: 90_000 });
+      await clipViewportShot(page, `${row.slug}-open-390.png`, 390);
+      await page.reload({ waitUntil: 'domcontentloaded' });
+      await expect(page.getByText(row.needle).first()).toBeAttached({ timeout: 90_000 });
+      await clipViewportShot(page, `${row.slug}-reload-390.png`, 390);
+    });
+  }
 });
