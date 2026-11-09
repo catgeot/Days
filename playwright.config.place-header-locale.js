@@ -5,7 +5,7 @@ const localBase = `http://127.0.0.1:${port}`;
 
 export default defineConfig({
   testDir: './e2e',
-  testMatch: ['place-header-locale-toggle.spec.js'],
+  testMatch: ['place-header-locale-toggle.spec.js', 'place-header-chrome-overlap.spec.js'],
   fullyParallel: false,
   workers: 1,
   timeout: 120_000,

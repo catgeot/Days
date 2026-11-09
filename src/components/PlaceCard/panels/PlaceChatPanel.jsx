@@ -202,12 +202,12 @@ const PlaceChatPanel = React.memo(({
       >
          {/* Row 1: Home, Location Info, Bookmark, Toolkit (Killer Tab) */}
          <div
-           className="flex flex-col gap-1.5 max-lg:flex-row max-lg:items-center lg:gap-2 min-[1400px]:flex-row min-[1400px]:items-center min-[1400px]:justify-between min-[1400px]:gap-x-4 overflow-hidden w-full min-w-0 pointer-events-auto touch-manipulation"
+           className="flex flex-col gap-1.5 max-lg:flex-row max-lg:items-center max-lg:gap-1 lg:gap-2 min-[1400px]:flex-row min-[1400px]:items-center min-[1400px]:justify-between min-[1400px]:gap-x-4 overflow-hidden w-full min-w-0 pointer-events-auto touch-manipulation"
            data-place-chrome-hit
            onPointerDown={(e) => e.stopPropagation()}
            onClick={(e) => e.stopPropagation()}
          >
-             <div className="flex items-center gap-2.5 min-w-0 flex-1">
+             <div className="flex items-center gap-2 max-lg:gap-1.5 min-w-0 flex-1 max-lg:min-w-0">
              <button
                 type="button"
                 onClick={(event) => {
@@ -251,7 +251,7 @@ const PlaceChatPanel = React.memo(({
                 <Globe className="w-4 h-4 md:w-4 md:h-4 pointer-events-none" />
              </button>
              <div
-                className={`relative z-0 flex flex-col flex-1 min-w-[8rem] basis-[45%] max-w-full justify-center overflow-hidden ${supportsHeaderScrollTop ? 'max-lg:cursor-pointer' : ''}`}
+                className={`flex flex-col flex-1 min-w-0 max-w-full justify-center overflow-hidden max-lg:basis-0 lg:min-w-[8rem] lg:basis-[45%] ${supportsHeaderScrollTop ? 'max-lg:cursor-pointer' : ''}`}
                 onClick={handleHeaderScrollTap}
                 onKeyDown={(event) => {
                     if (supportsHeaderScrollTop && (event.key === 'Enter' || event.key === ' ')) {
@@ -273,7 +273,7 @@ const PlaceChatPanel = React.memo(({
                      >
                         {primaryName || location.name}
                      </button>
-                     <div className="shrink-0 -mt-0.5 min-[1400px]:mr-0.5">
+                     <div className="hidden lg:block shrink-0 -mt-0.5 min-[1400px]:mr-0.5" data-testid="place-header-bookmark-desktop">
                          <BookmarkButton location={location} isBookmarked={isBookmarked} onToggle={onToggleBookmark} />
                      </div>
                  </div>
@@ -294,9 +294,18 @@ const PlaceChatPanel = React.memo(({
                  )}
              </div>
              </div>
-             <div className="relative z-30 flex shrink-0 flex-wrap items-center gap-1.5 md:gap-2 justify-end w-auto lg:w-full min-[1400px]:w-auto min-[1400px]:flex-none min-[1400px]:ml-auto max-lg:pointer-events-auto">
+             <div
+               className="flex shrink-0 flex-nowrap items-center gap-1 max-lg:gap-1 md:gap-2 justify-end w-auto lg:w-full min-[1400px]:w-auto min-[1400px]:flex-none min-[1400px]:ml-auto max-lg:pointer-events-auto"
+               data-testid="place-header-chrome-actions"
+             >
+                 <div
+                   className="lg:hidden shrink-0 flex items-center"
+                   data-testid="place-header-bookmark"
+                 >
+                   <BookmarkButton location={location} isBookmarked={isBookmarked} onToggle={onToggleBookmark} />
+                 </div>
                  <div data-testid="place-header-locale-toggle" className="shrink-0">
-                   <LocaleToggle compact />
+                   <LocaleToggle compact className="shrink-0" />
                  </div>
                  <button
                     type="button"
