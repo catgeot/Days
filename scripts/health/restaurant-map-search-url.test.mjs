@@ -2,8 +2,25 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { buildRestaurantMapSearchUrl } from '../../src/shared/search/restaurantMapSearchUrl.js';
+import {
+  buildRestaurantMapOutboundCueCopy,
+  detectRestaurantMapProviderFromHref,
+  resolveRestaurantMapProvider,
+} from '../../src/shared/search/restaurantMapProvider.js';
 import { isExploreRestaurantItem } from '../../src/shared/search/tourRestaurantDetect.js';
 import { tourRestaurantToExploreSuggestion } from '../../src/pages/Home/lib/tourRestaurantExploreSuggestion.js';
+
+const tKo = (key, opts = {}) => {
+  const dict = {
+    'home.explore.restaurantMapReviewsCta': '지도·리뷰 보기 ↗',
+    'home.explore.restaurantMapProviderNaver': '네이버 지도',
+    'home.explore.restaurantMapProviderGoogle': 'Google 지도',
+  };
+  if (key === 'home.explore.restaurantMapReviewsAria') {
+    return `${opts.name} — 새 탭에서 ${opts.provider} 열기`;
+  }
+  return dict[key] ?? opts.defaultValue ?? key;
+};
 
 test('buildRestaurantMapSearchUrl — domestic Naver', () => {
   const url = buildRestaurantMapSearchUrl({
@@ -22,6 +39,45 @@ test('buildRestaurantMapSearchUrl — overseas Google', () => {
     domestic: false,
   });
   assert.match(url, /^https:\/\/www\.google\.com\/maps\/search\/\?api=1&query=/);
+});
+
+test('resolveRestaurantMapProvider — href and domestic item', () => {
+  const naver = 'https://map.naver.com/p/search/foo';
+  const google = 'https://www.google.com/maps/search/?api=1&query=foo';
+  assert.equal(detectRestaurantMapProviderFromHref(naver), 'naver');
+  assert.equal(detectRestaurantMapProviderFromHref(google), 'google');
+  assert.equal(resolveRestaurantMapProvider({ addr1: '서울특별시' }, naver), 'naver');
+  assert.equal(resolveRestaurantMapProvider({ country: 'Japan' }, google), 'google');
+  assert.equal(resolveRestaurantMapProvider({ country: 'Japan' }), 'google');
+});
+
+test('buildRestaurantMapOutboundCueCopy — CTA·aria·provider 문구', () => {
+  const domestic = buildRestaurantMapSearchUrl({
+    name: '전주 비빔밥',
+    region: '전주',
+    domestic: true,
+  });
+  const domesticCopy = buildRestaurantMapOutboundCueCopy(tKo, {
+    name: '전주 한옥비빔밥',
+    href: domestic,
+    item: { addr1: '전북특별자치도 전주시' },
+  });
+  assert.equal(domesticCopy.cta, '지도·리뷰 보기 ↗');
+  assert.equal(domesticCopy.providerLabel, '네이버 지도');
+  assert.match(domesticCopy.aria, /새 탭에서 네이버 지도 열기/);
+
+  const overseasUrl = buildRestaurantMapSearchUrl({
+    name: 'Ichiran Ramen',
+    city: 'Tokyo',
+    domestic: false,
+  });
+  const overseasCopy = buildRestaurantMapOutboundCueCopy(tKo, {
+    name: 'Ichiran Ramen',
+    href: overseasUrl,
+    item: { country: 'Japan' },
+  });
+  assert.equal(overseasCopy.providerLabel, 'Google 지도');
+  assert.match(overseasCopy.aria, /Google 지도/);
 });
 
 test('isExploreRestaurantItem — contentTypeId 39 and cat1 A05', () => {

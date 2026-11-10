@@ -351,8 +351,10 @@
       },
       "festivalBadge": "축제",
       "restaurantBadge": "식당",
-      "restaurantMapReviewsCta": "지도·리뷰 보기",
-      "restaurantMapReviewsAria": "{{name}} — 지도·리뷰 보기",
+      "restaurantMapReviewsCta": "지도·리뷰 보기 ↗",
+      "restaurantMapReviewsAria": "{{name}} — 새 탭에서 {{provider}} 열기",
+      "restaurantMapProviderNaver": "네이버 지도",
+      "restaurantMapProviderGoogle": "Google 지도",
       "groupTitleSightsSuffix": " 명소",
       "hubBrowseBlurb": "{{name}}의 명소·명물을 둘러보세요.",
       "badge": {
