@@ -175,6 +175,13 @@ async function expectRestaurantPlannerPanel(page) {
   await expect(tablist.or(emptyToolkitCta).first()).toBeVisible({ timeout: 30_000 });
 }
 
+async function expectRestaurantMapCueVisible(page, nameRe) {
+  const mapLink = page.getByRole('link', { name: nameRe }).first();
+  await expect(mapLink).toBeVisible({ timeout: 30_000 });
+  await expect(mapLink).toHaveAttribute('target', '_blank');
+  return mapLink;
+}
+
 test.describe('explore restaurant search card split', () => {
   test.beforeEach(async ({ context }) => {
     await installRestaurantSearchMock(context);
@@ -210,5 +217,29 @@ test.describe('explore restaurant search card split', () => {
     const popup = await popupPromise;
     await expect(popup).toHaveURL(/map\.naver\.com/, { timeout: 20_000 });
     await popup.close();
+  });
+
+  test('1280px — 명동교자 지도 CTA 가시 + gemini-proxy 미호출', async ({ page, context }) => {
+    await page.setViewportSize({ width: 1280, height: 844 });
+    let geminiCalls = 0;
+    await context.route(/gemini-proxy/i, async (route) => {
+      geminiCalls += 1;
+      await route.fulfill({ status: 200, contentType: 'application/json', body: '{}' });
+    });
+
+    const input = await openExploreSearch(page);
+    await input.fill('명동교자');
+    const card = page
+      .locator('[data-search-popover] li')
+      .filter({ has: page.getByRole('link', { name: /명동교자.*네이버 지도/ }) })
+      .first();
+    await expect(card).toBeVisible({ timeout: 30_000 });
+    const mapLink = await expectRestaurantMapCueVisible(page, /명동교자.*네이버 지도/);
+    await expect(mapLink).toHaveAttribute('href', /map\.naver\.com/);
+
+    const bodyBtn = card.locator('button').first();
+    await bodyBtn.click();
+    await page.waitForURL(/\/place\/tour-403053/, { timeout: 60_000 });
+    expect(geminiCalls).toBe(0);
   });
 });
