@@ -11,6 +11,53 @@ import {
 } from '../../utils/travelSpotResolve.js';
 import { restaurantMapSearchRegionLabel, isExploreRestaurantItem } from '../search/tourRestaurantDetect.js';
 import { distanceKm } from '../../utils/rentalAirportMatch.js';
+import {
+  hasExplicitNonKoreaCountry,
+  isDomesticKoreaLocation,
+  isDomesticKoreaLocationForTourApi,
+} from '../../utils/tourApiMatch.js';
+
+const TOUR_API_SLUG_RE = /^tour-\d+$/u;
+
+function isDistrictLevelHubSpot(spot) {
+  const name = String(spot?.name || '').trim();
+  return /(?:시|군|구)$/u.test(name) && name.length <= 8;
+}
+
+function preferCityOverDistrictHub(spot, location) {
+  if (!spot || !isDistrictLevelHubSpot(spot)) return spot;
+  const lat = Number(location?.lat);
+  const lng = Number(location?.lng);
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) return spot;
+  const fromCoords = spotFromCoordsTight(lat, lng);
+  if (!fromCoords || isDistrictLevelHubSpot(fromCoords)) return spot;
+  return fromCoords;
+}
+
+function labelFromCanonicalSpot(spot, locale = 'ko') {
+  if (!spot) return '';
+  const toolkit = mergeCanonicalTravelSpot(spot);
+  const en = locale === 'en' || String(locale).startsWith('en');
+  return (
+    (en ? toolkit?.name_en || toolkit?.name : toolkit?.name || toolkit?.name_en) ||
+    getPlaceStableKey(toolkit) ||
+    ''
+  );
+}
+
+/** 국내 TourAPI POI(slug tour-*) — 해외·명시적 비한국 제외 */
+export function isDomesticTourApiPlace(location) {
+  if (!location || typeof location !== 'object') return false;
+  if (hasExplicitNonKoreaCountry(location)) return false;
+  const rawSlug = String(location.slug || '').trim().toLowerCase();
+  if (!TOUR_API_SLUG_RE.test(rawSlug)) return false;
+  if (isDomesticKoreaLocationForTourApi(location) || isDomesticKoreaLocation(location)) return true;
+  const addr = String(location.addr1 || '').trim();
+  if (addr && detectSidoFromAddr(addr)) return true;
+  const lat = Number(location.lat);
+  const lng = Number(location.lng);
+  return Number.isFinite(lat) && Number.isFinite(lng);
+}
 
 function maxCoordKmForTier(tier) {
   const t = Number(tier) || 3;
@@ -93,8 +140,8 @@ function spotFromCoordsTight(lat, lng) {
  * @param {object | null | undefined} location
  * @returns {{ spot: object, matchKind: string, hub?: object } | null}
  */
-export function resolveRestaurantPlannerCity(location) {
-  if (!isExploreRestaurantItem(location)) return null;
+export function resolveDomesticTourPlannerCity(location) {
+  if (!location || typeof location !== 'object') return null;
 
   const lat = Number(location.lat);
   const lng = Number(location.lng);
@@ -105,13 +152,26 @@ export function resolveRestaurantPlannerCity(location) {
   const hubId = String(location.hubId || '').trim();
   if (hubId) {
     const spot = spotFromHubQuery(hubId);
-    if (spot) return { spot, matchKind: 'hubId' };
+    if (spot) {
+      const lifted = preferCityOverDistrictHub(spot, location);
+      return {
+        spot: lifted,
+        matchKind: lifted !== spot ? 'hubIdCityLift' : 'hubId',
+      };
+    }
   }
 
   const parentCity = String(location.parentCity || '').trim();
   if (parentCity) {
     const fromHub = spotFromHubQuery(parentCity);
-    if (fromHub) return { spot: fromHub, matchKind: 'parentCityHub', hub: resolveCityAttractionHub(parentCity) };
+    if (fromHub) {
+      const lifted = preferCityOverDistrictHub(fromHub, location);
+      return {
+        spot: lifted,
+        matchKind: lifted !== fromHub ? 'parentCityHubLift' : 'parentCityHub',
+        hub: resolveCityAttractionHub(parentCity),
+      };
+    }
     const fromQuery = spotFromOfficialQuery(parentCity);
     if (fromQuery) return { spot: fromQuery, matchKind: 'parentCityOfficial' };
   }
@@ -149,6 +209,11 @@ export function resolveRestaurantPlannerCity(location) {
   return null;
 }
 
+export function resolveRestaurantPlannerCity(location) {
+  if (!isExploreRestaurantItem(location)) return null;
+  return resolveDomesticTourPlannerCity(location);
+}
+
 /** DB·Edge 툴킷 조회/생성에 쓸 도시 travelSpot 행 (식당이면 호스트 도시, 아니면 원본) */
 export function getPlannerToolkitLocation(location) {
   const base = mergeCanonicalTravelSpot(location);
@@ -170,13 +235,21 @@ export function isRestaurantPlannerHostLocation(location) {
  */
 export function getRestaurantPlannerCityLabel(location, locale = 'ko') {
   if (!isRestaurantPlannerHostLocation(location)) return '';
-  const toolkit = getPlannerToolkitLocation(location);
-  const en = locale === 'en' || String(locale).startsWith('en');
-  return (
-    (en ? toolkit?.name_en || toolkit?.name : toolkit?.name || toolkit?.name_en) ||
-    getPlaceStableKey(toolkit) ||
-    ''
-  );
+  return labelFromCanonicalSpot(getPlannerToolkitLocation(location), locale);
+}
+
+/**
+ * 플래너 제목·부제 표시용 도시명 — 저장 툴킷/DB는 건드리지 않음(표시만).
+ * 식당은 getPlannerToolkitLocation과 동일 canonical, 국내 TourAPI 명소는 도시 해석만.
+ */
+export function getPlannerTabCityTitleLabel(location, locale = 'ko') {
+  if (isRestaurantPlannerHostLocation(location)) {
+    return getRestaurantPlannerCityLabel(location, locale);
+  }
+  if (!isDomesticTourApiPlace(location)) return '';
+  const host = resolveDomesticTourPlannerCity(location);
+  if (!host?.spot) return '';
+  return labelFromCanonicalSpot(host.spot, locale);
 }
 
 /**

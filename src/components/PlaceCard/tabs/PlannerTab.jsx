@@ -68,8 +68,7 @@ import {
 import {
   buildPlannerToolkitInvokeBody,
   getPlannerToolkitLocation,
-  getRestaurantPlannerCityLabel,
-  isRestaurantPlannerHostLocation,
+  getPlannerTabCityTitleLabel,
 } from '../../../shared/place/restaurantPlannerCity.js';
 import { isExploreRestaurantItem } from '../../../shared/search/tourRestaurantDetect.js';
 
@@ -126,10 +125,7 @@ const PlannerTab = ({
     const canonicalLocation = useMemo(() => mergeCanonicalTravelSpot(location), [location]);
     const toolkitLocation = useMemo(() => getPlannerToolkitLocation(canonicalLocation), [canonicalLocation]);
     const plannerEligible = isPlacePlannerEligible(canonicalLocation);
-    const restaurantPlannerHost = isRestaurantPlannerHostLocation(canonicalLocation);
-    const plannerCityLabel = restaurantPlannerHost
-        ? getRestaurantPlannerCityLabel(canonicalLocation, locale)
-        : '';
+    const plannerCityLabel = getPlannerTabCityTitleLabel(canonicalLocation, locale);
 
     const guideData = resolvePlannerGuideForDisplay(plannerData, canonicalLocation, locale);
     const storedToolkit = hasStoredToolkitRow(plannerData, canonicalLocation, locale);

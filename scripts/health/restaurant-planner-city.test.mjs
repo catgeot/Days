@@ -5,7 +5,9 @@ import { featureToSuggestion } from '../../src/pages/Home/lib/mapboxSearchBox.js
 import {
   buildPlannerToolkitInvokeBody,
   getPlannerToolkitLocation,
+  getPlannerTabCityTitleLabel,
   getRestaurantPlannerCityLabel,
+  resolveDomesticTourPlannerCity,
   resolveRestaurantPlannerCity,
 } from '../../src/shared/place/restaurantPlannerCity.js';
 import {
@@ -102,6 +104,25 @@ test('도시 판별 — 서울·전주·도쿄', () => {
   assert.equal(tokyo?.spot?.slug, 'tokyo');
 });
 
+test('hubId만(주소 없음) — 구 허브보다 좌표 도시(명동교자→서울)', () => {
+  const hubOnly = {
+    name: '명동교자',
+    slug: 'tour-403053',
+    kind: 'restaurant',
+    exploreRestaurant: true,
+    contentTypeId: '39',
+    lat: 37.563569,
+    lng: 126.985032,
+    parentCity: '중구',
+    hubId: 'junggu',
+    country: '대한민국',
+  };
+  const resolved = resolveRestaurantPlannerCity(hubOnly);
+  assert.equal(resolved?.spot?.slug, 'seoul');
+  assert.equal(getRestaurantPlannerCityLabel(hubOnly, 'ko'), '서울');
+  assert.equal(getPlannerTabCityTitleLabel(hubOnly, 'ko'), '서울');
+});
+
 test('표시명 — 해석 도시 허브(서울 중구·강릉·도쿄)', () => {
   const seoulJung = resolveRestaurantPlannerCity(MYEONGDONG_GYOZA);
   assert.equal(seoulJung?.spot?.slug, 'seoul');
@@ -113,6 +134,32 @@ test('표시명 — 해석 도시 허브(서울 중구·강릉·도쿄)', () => 
 
   assert.equal(getRestaurantPlannerCityLabel(TOKYO_RAMEN, 'ko'), '도쿄');
   assert.equal(getRestaurantPlannerCityLabel(TOKYO_RAMEN, 'en'), 'Tokyo');
+});
+
+test('TourAPI 명소 — 제목 표시만 도시(툴킷 slug는 tour 유지)', () => {
+  const deoksugungTour = {
+    name: '덕수궁',
+    slug: 'tour-126508',
+    kind: 'attraction',
+    contentTypeId: '12',
+    lat: 37.5658,
+    lng: 126.9751,
+    parentCity: '중구',
+    hubId: 'junggu',
+    addr1: '서울특별시 중구 세종대로 99',
+    country: '대한민국',
+  };
+  assert.equal(resolveDomesticTourPlannerCity(deoksugungTour)?.spot?.slug, 'seoul');
+  assert.equal(resolveRestaurantPlannerCity(deoksugungTour), null);
+  assert.equal(getPlannerTabCityTitleLabel(deoksugungTour, 'ko'), '서울');
+});
+
+test('기존 도시·해외 장소 — 도시 제목 템플릿 없음', () => {
+  assert.equal(getPlannerTabCityTitleLabel({ slug: 'paris', name: '파리', country: '프랑스' }, 'ko'), '');
+  assert.equal(
+    getPlannerTabCityTitleLabel({ slug: 'gyeongbokgung-palace', name: '경복궁', country: '대한민국' }, 'ko'),
+    '',
+  );
 });
 
 test('도시 미확정 — 플래너 미지원', () => {
