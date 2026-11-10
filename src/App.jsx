@@ -29,6 +29,9 @@ const MooniFestivalAccessPolishFixturePage = isQaMooniMarkdownFixtureEnabled
 const MooniMarkdownComposerFixturePage = isQaMooniMarkdownFixtureEnabled
   ? lazy(() => import('./pages/Qa/MooniMarkdownComposerFixturePage.jsx'))
   : null;
+const MooniSavedChatMarkdownPage = isQaMooniMarkdownFixtureEnabled
+  ? lazy(() => import('./pages/Qa/MooniSavedChatMarkdownPage.jsx'))
+  : null;
 const galleryWriterHarnessOn = import.meta.env.VITE_GALLERY_WRITER_HARNESS === '1';
 const GallerySingleWriterHarness = galleryWriterHarnessOn
   ? lazy(() => import('./pages/Qa/GallerySingleWriterHarness.jsx'))
@@ -135,6 +138,16 @@ function App() {
                 element={
                   <Suspense fallback={null}>
                     <MooniMarkdownComposerFixturePage />
+                  </Suspense>
+                }
+              />
+            ) : null}
+            {isQaMooniMarkdownFixtureEnabled && MooniSavedChatMarkdownPage ? (
+              <Route
+                path="/qa/mooni-saved-chat-markdown"
+                element={
+                  <Suspense fallback={null}>
+                    <MooniSavedChatMarkdownPage />
                   </Suspense>
                 }
               />

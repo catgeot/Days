@@ -50,6 +50,17 @@ test('normalizeMooniMarkdownBoldSpacing — bold 뒤 한글 glue 분리', () => 
   assert.ok(html.includes('시기라미라지'), html);
 });
 
+test('normalizeMooniMarkdownBoldSpacing — PROD 11/9 우도 open-space tight-close bold', () => {
+  const raw = '우도에는 ** 천진항**과 ** 하우목동항** 두 곳이 있어요.\n\n**이동 시간**: 15분';
+  const md = getMooniModelMarkdownForRender(raw, { stripPhantomTicketMention: true });
+  assert.match(md, /\*\*천진항\*\*과 \*\*하우목동항\*\*/, md);
+  assert.match(md, /\*\*이동 시간\*\*:/, md);
+  const html = micromark(md, { extensions: [gfm()], htmlExtensions: [gfmHtml()] });
+  assert.ok(html.includes('<strong>천진항</strong>'), html);
+  assert.ok(html.includes('<strong>하우목동항</strong>'), html);
+  assert.ok(!html.includes('**'), html);
+});
+
 test('normalizeMooniMarkdownBoldSpacing — PROD 우도 spaced back-to-back bold', () => {
   const raw = '우도에는 ** 천진항과 ** 하우목동항 ** 이 있어요';
   const md = getMooniModelMarkdownForRender(raw, { stripPhantomTicketMention: true });

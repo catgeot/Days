@@ -15,6 +15,7 @@ const PREFIX_PATHS = [
   '/auth/',
   '/p/',
   '/blog/e/',
+  '/qa/',
 ];
 
 function isKnownAppShellPath(pathname) {
