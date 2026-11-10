@@ -12,8 +12,10 @@ import {
   CalendarDays,
   BookOpen,
   UtensilsCrossed,
-  ExternalLink,
 } from 'lucide-react';
+import ExploreRestaurantMapOutboundCue, {
+  buildRestaurantMapOutboundCueCopy,
+} from './ExploreRestaurantMapOutboundCue.jsx';
 import {
   fetchPlaceChatIntroSummaryForLocation,
   needsPlaceChatIntroHydration,
@@ -435,6 +437,11 @@ export function SearchSuggestionList({
             const thumbItem = thumbByIndex[index]
               ? { ...item, imageUrl: thumbByIndex[index] }
               : item;
+            const isRestaurantRow =
+              badgeKey === EXPLORE_BADGE_RESTAURANT || item.kind === 'restaurant';
+            const restaurantAria = isRestaurantRow
+              ? buildRestaurantMapOutboundCueCopy(t, { item, name: displayName }).aria
+              : undefined;
 
             return (
               <React.Fragment key={item.id || `${item.name}-${item.lat}`}>
@@ -449,11 +456,7 @@ export function SearchSuggestionList({
                 <button
                   type="button"
                   onClick={() => onSelect?.(placeFromSearchItem(item, query))}
-                  aria-label={
-                    badgeKey === EXPLORE_BADGE_RESTAURANT || item.kind === 'restaurant'
-                      ? t('home.explore.restaurantMapReviewsAria', { name: displayName })
-                      : undefined
-                  }
+                  aria-label={restaurantAria}
                   className={`w-full flex items-center gap-3 text-left hover:bg-white/[0.1] transition-colors ${
                     isPopover ? 'px-3 py-2.5' : 'px-4 py-3'
                   }`}
@@ -482,11 +485,8 @@ export function SearchSuggestionList({
                     {subtitle ? (
                       <p className="mt-0.5 text-xs text-white/70 truncate break-keep">{subtitle}</p>
                     ) : null}
-                    {badgeKey === EXPLORE_BADGE_RESTAURANT || item.kind === 'restaurant' ? (
-                      <p className="mt-1 inline-flex items-center gap-1 text-[11px] font-medium text-orange-100/90">
-                        <ExternalLink size={12} aria-hidden="true" />
-                        <span>{t('home.explore.restaurantMapReviewsCta')}</span>
-                      </p>
+                    {isRestaurantRow ? (
+                      <ExploreRestaurantMapOutboundCue item={item} name={displayName} />
                     ) : null}
                   </div>
                 </button>
@@ -681,6 +681,14 @@ export function SearchDisambiguationCards({
           const thumbItem = thumbByIndex[index]
             ? { ...hydrated, imageUrl: thumbByIndex[index] }
             : hydrated;
+          const isRestaurantRow =
+            badgeKey === EXPLORE_BADGE_RESTAURANT || item.kind === 'restaurant';
+          const restaurantAria = isRestaurantRow
+            ? buildRestaurantMapOutboundCueCopy(t, {
+                item: hydrated,
+                name: primaryName || item.name,
+              }).aria
+            : undefined;
           return (
             <React.Fragment key={item.id || `${item.name}-${item.lat}`}>
               {showGroup ? (
@@ -694,6 +702,7 @@ export function SearchDisambiguationCards({
             <button
               type="button"
               onClick={() => onSelect?.(placeFromSearchItem(hydrated, query))}
+              aria-label={restaurantAria}
               className="group flex w-full items-stretch gap-3 rounded-2xl border border-white/25 bg-[#32281f]/95 p-3 text-left shadow-[0_4px_20px_rgba(0,0,0,0.35)] hover:border-sky-300/50 hover:bg-[#3a2f25] transition-all"
             >
               <SearchResultThumb
@@ -742,6 +751,13 @@ export function SearchDisambiguationCards({
                     </span>
                   ) : null}
                 </div>
+              ) : null}
+              {isRestaurantRow ? (
+                <ExploreRestaurantMapOutboundCue
+                  item={hydrated}
+                  name={primaryName || item.name}
+                  className="mt-2"
+                />
               ) : null}
               </div>
             </button>

@@ -24,7 +24,7 @@ function rowHtml(item) {
     <div class="badge">${esc(item.badge)}</div>
     <div class="name">${esc(item.name)}</div>
     <div class="meta">${esc(item.parentCity || item.country || '')}</div>
-    ${mapUrl ? `<a class="cta" href="${esc(mapUrl)}">지도·리뷰 보기</a>` : ''}
+    ${mapUrl ? `<p class="cta">지도·리뷰 보기 ↗ <span class="provider">${mapUrl.includes('naver') ? '네이버 지도' : 'Google 지도'}</span></p>` : ''}
   </div>`;
 }
 
@@ -37,7 +37,8 @@ function pageHtml(title, items) {
   .badge{display:inline-block;font-size:11px;background:#3d2a14;color:#ffb86a;padding:2px 7px;border-radius:6px;margin-bottom:6px}
   .name{font-size:15px;font-weight:600}
   .meta{font-size:12px;color:#8fa3b8;margin-top:4px}
-  .cta{display:inline-block;margin-top:8px;font-size:12px;color:#6eb6ff;text-decoration:none}
+  .cta{margin-top:8px;font-size:12px;color:#ffedd5;font-weight:600}
+  .provider{font-size:10px;font-weight:400;color:#fdba74;margin-left:6px}
 </style></head><body>
 <h1>${esc(title)}</h1>
 ${items.map(rowHtml).join('\n')}

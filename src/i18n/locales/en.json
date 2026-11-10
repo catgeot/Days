@@ -580,8 +580,10 @@
       },
       "festivalBadge": "Festival",
       "restaurantBadge": "Restaurant",
-      "restaurantMapReviewsCta": "Maps & reviews",
-      "restaurantMapReviewsAria": "{{name}} — maps and reviews",
+      "restaurantMapReviewsCta": "Map & reviews ↗",
+      "restaurantMapReviewsAria": "{{name}} — open {{provider}} in a new tab",
+      "restaurantMapProviderNaver": "Naver Map",
+      "restaurantMapProviderGoogle": "Google Maps",
       "groupTitleSightsSuffix": " sights",
       "hubBrowseBlurb": "Browse sights and local specialties in {{name}}.",
       "badge": {
