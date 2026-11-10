@@ -24,6 +24,7 @@ const healthScripts = [
   'health/mooni-chat-markdown-boundary.test.mjs',
   'health/mooni-placeholder-urls.test.mjs',
   'health/mooni-saved-chat-render.test.mjs',
+  'health/mooni-live-guest-storage-fixture.test.mjs',
   'smoke-mooni-chat-markdown.mjs',
 ];
 

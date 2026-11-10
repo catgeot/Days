@@ -17,13 +17,13 @@ test('continueMooniOrderedListNumbers — heading does not restart at 1', () => 
   assert.match(md, /^3\. 셋째/m);
 });
 
-test('continueMooniOrderedListNumbers — preserves explicit start 3', () => {
+test('continueMooniOrderedListNumbers — section titles renumber after heading', () => {
   const raw = ['1. 첫째', '### 소제목', '3. 셋째'].join('\n');
   const md = getMooniModelMarkdownForRender(raw, { stripPhantomTicketMention: true });
-  assert.match(md, /^3\. 셋째/m);
+  assert.match(md, /^2\. 셋째/m);
 });
 
-test('continueMooniOrderedListNumbers — paragraph between items does not restart', () => {
+test('continueMooniOrderedListNumbers — next section after blank renumbers', () => {
   const raw = ['1. 우도 출발', '', '중간 안내 문단', '', '1. 성산 일출봉'].join('\n');
   const md = getMooniModelMarkdownForRender(raw, { stripPhantomTicketMention: true });
   assert.match(md, /^2\. 성산 일출봉/m);

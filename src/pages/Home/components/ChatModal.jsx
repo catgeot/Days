@@ -1406,9 +1406,6 @@ const ChatModal = ({
       });
       const stripPhantomTicketMention = !hasTransportCta;
       const polishedFestivalReply = polishFestivalModelReply(festivalMergedReply, lodgingOptions);
-      const displayReply = getMooniModelMarkdownForRender(polishedFestivalReply, {
-        stripPhantomTicketMention,
-      });
       const rawWithLodging = polishedFestivalReply;
       const { hadBracketLinks } = sanitizeMooniModelReply(rawWithLodging, {
         stripPhantomTicketMention,
@@ -1435,7 +1432,7 @@ const ChatModal = ({
         ...newMessages,
         {
           role: 'model',
-          text: displayReply,
+          text: rawWithLodging,
           mooniRawReply: rawWithLodging,
           mooniAt: Date.now(),
           truncated: geminiResult.truncated,
@@ -1528,12 +1525,11 @@ const ChatModal = ({
           userText: messageTextPlain(priorUser),
         });
         const continuedRaw = polishFestivalModelReply(mergedRaw, lodgingOptions);
-        const continuedDisplay = polishFestivalModelReply(displayText, lodgingOptions);
         const nextMessages = messages.map((m, i) =>
           i === modelIdx
             ? {
                 ...m,
-                text: continuedDisplay,
+                text: continuedRaw,
                 mooniRawReply: continuedRaw,
                 truncated: geminiResult.truncated,
                 finishReason: geminiResult.finishReason,

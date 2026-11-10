@@ -39,13 +39,36 @@ function replaceTightBoldPair(full, inner) {
   return `${lead}**${String(inner).trim()}**`;
 }
 
+const WELL_FORMED_BOLD = /\*\*([^\s*][^*\n]*?)\*\*(?!\*)/g;
+const BOLD_SLOT = '\uE000B';
+
+function maskWellFormedBold(markdown) {
+  const slots = [];
+  const masked = String(markdown ?? '').replace(WELL_FORMED_BOLD, (full, inner) => {
+    if (/^\s/.test(inner) || /\s$/.test(inner)) return full;
+    const id = slots.length;
+    slots.push(full);
+    return `${BOLD_SLOT}${id}${BOLD_SLOT}`;
+  });
+  return { masked, slots };
+}
+
+function unmaskWellFormedBold(masked, slots) {
+  return String(masked ?? '').replace(
+    new RegExp(`${BOLD_SLOT}(\\d+)${BOLD_SLOT}`, 'g'),
+    (_, id) => slots[Number(id)] ?? '',
+  );
+}
+
 /** AI 답변 «**13:30 **» — 닫는 ** 앞 공백이 있으면 GFM bold가 깨짐 */
 export function normalizeMooniMarkdownBoldSpacing(markdown) {
   let out = String(markdown ?? '');
   const tailSpaceRe = new RegExp(`${MOONI_BOLD_OPEN}([^*\\n]+?)\\s+\\*\\*`, 'gu');
   const leadSpaceRe = new RegExp(`${MOONI_BOLD_OPEN}\\s+([^*\\n]+?)\\*\\*`, 'gu');
   for (let i = 0; i < 4; i += 1) {
-    const next = out
+    const { masked, slots } = maskWellFormedBold(out);
+    const prev = out;
+    const next = masked
       .replace(BACK_TO_BACK_SPACED_BOLD_RE, (full, a, b) => {
         if (!shouldNormalizeSpacedBoldInner(a) || !shouldNormalizeSpacedBoldInner(b)) return full;
         return `**${a.trim()}** **${b.trim()}**`;
@@ -77,15 +100,8 @@ export function normalizeMooniMarkdownBoldSpacing(markdown) {
         const pad = /^\s/.test(full) ? full.slice(0, full.indexOf('**')) : '';
         return `${pad}**${String(inner).trim()}**`;
       });
-    if (next === out) break;
-    out = next;
+    out = unmaskWellFormedBold(next, slots);
+    if (out === prev) break;
   }
-  return out.replace(
-    /\*\*([^\s*][^*\n]*?)\*\*(?=[\p{Script=Hangul}]{2,})/gu,
-    (full, inner) => {
-      const t = String(inner ?? '').trim();
-      if (t.length < 2) return full;
-      return `**${t}** `;
-    },
-  );
+  return out;
 }
