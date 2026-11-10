@@ -1,15 +1,22 @@
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   buildVisibleMonthlyPickCards,
   exploreV2MonthlyPickHeadline,
+  exploreV2MonthlyPickPreviewHeadline,
+  getExploreMonthlyPickSchedule,
+  monthlyPickHeadingMonthNumber,
   partitionExploreMonthlyPickCardsByHero,
-  resolveExploreV2MonthlyPickKey,
 } from '../../lib/exploreMonthlyPicks';
-import { EXPLORE_V2_MONTHLY_PICK_KEY } from '../../data/spotTraits';
 import ExploreMonthlyPicksLayoutB from './ExploreMonthlyPicksLayoutB';
 
-const ExploreMonthlyPicksSection = ({ onSelectSpot }) => {
-  const monthKey = resolveExploreV2MonthlyPickKey(EXPLORE_V2_MONTHLY_PICK_KEY);
+const ExploreMonthlyPickRow = ({
+  monthKey,
+  headline,
+  onSelectSpot,
+  sectionTestId,
+  headingTestId,
+}) => {
   const cards = useMemo(
     () => (monthKey ? buildVisibleMonthlyPickCards(monthKey) : []),
     [monthKey],
@@ -24,28 +31,71 @@ const ExploreMonthlyPicksSection = ({ onSelectSpot }) => {
     [excludedNoHero],
   );
 
-  const headline = useMemo(() => {
-    if (!monthKey) return '';
-    return exploreV2MonthlyPickHeadline(monthKey);
-  }, [monthKey]);
-
   if (!monthKey || cards.length === 0 || withHero.length === 0) return null;
 
   return (
     <section
-      data-testid="explore-v2-monthly-section"
+      data-testid={sectionTestId}
       data-explore-v2-excluded={excludedLabels.join(',') || undefined}
       className="mb-10 w-full animate-fade-in"
       aria-label={headline}
     >
       <h2
-        data-testid="explore-v2-monthly-heading"
+        data-testid={headingTestId}
         className="mb-4 text-base font-bold text-white md:text-lg"
       >
         {headline}
       </h2>
       <ExploreMonthlyPicksLayoutB cards={withHero} onSelectSpot={onSelectSpot} />
     </section>
+  );
+};
+
+const ExploreMonthlyPicksSection = ({ onSelectSpot }) => {
+  const { t, i18n } = useTranslation();
+  const schedule = useMemo(() => getExploreMonthlyPickSchedule(), []);
+
+  const currentHeadline = useMemo(() => {
+    if (!schedule.currentPickKey) return '';
+    const monthNum = monthlyPickHeadingMonthNumber(schedule.currentPickKey);
+    const isEnUi = String(i18n.language || '')
+      .toLowerCase()
+      .startsWith('en');
+    if (isEnUi && monthNum) {
+      return t('home.explore.monthlyPickHeadline', { month: monthNum });
+    }
+    return exploreV2MonthlyPickHeadline(schedule.currentPickKey);
+  }, [schedule.currentPickKey, i18n.language, t]);
+
+  const previewHeadline = useMemo(() => {
+    if (!schedule.previewPickKey) return '';
+    const monthNum = monthlyPickHeadingMonthNumber(schedule.previewPickKey);
+    const isEnUi = String(i18n.language || '')
+      .toLowerCase()
+      .startsWith('en');
+    if (isEnUi && monthNum) {
+      return t('home.explore.monthlyPickPreviewHeadline', { month: monthNum });
+    }
+    return exploreV2MonthlyPickPreviewHeadline(schedule.previewPickKey);
+  }, [schedule.previewPickKey, i18n.language, t]);
+
+  return (
+    <>
+      <ExploreMonthlyPickRow
+        monthKey={schedule.currentPickKey}
+        headline={currentHeadline}
+        onSelectSpot={onSelectSpot}
+        sectionTestId="explore-v2-monthly-section"
+        headingTestId="explore-v2-monthly-heading"
+      />
+      <ExploreMonthlyPickRow
+        monthKey={schedule.previewPickKey}
+        headline={previewHeadline}
+        onSelectSpot={onSelectSpot}
+        sectionTestId="explore-v2-monthly-preview-section"
+        headingTestId="explore-v2-monthly-preview-heading"
+      />
+    </>
   );
 };
 

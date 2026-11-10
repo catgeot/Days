@@ -1,8 +1,5 @@
 /** Explore v2 spot traits + monthly picks (does not modify travelSpots.js). */
 
-/** Step 1 ships November 2026 picks only (`2026-11-01-november-picks.md`). */
-export const EXPLORE_V2_MONTHLY_PICK_KEY = '2026-11';
-
 /** @typedef {{ url: string, label: string }} MonthlyPickSource */
 /** @typedef {{ slug: string, reason: string, sources: MonthlyPickSource[], checked: string, estimate?: boolean }} MonthlyPickEntry */
 

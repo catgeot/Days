@@ -486,6 +486,8 @@
     "explore": {
       "backHome": "Home",
       "monthlyPickPhotoAlt": "Featured photo of {{name}}",
+      "monthlyPickHeadline": "{{month}} destinations",
+      "monthlyPickPreviewHeadline": "Preview: {{month}} destinations",
       "filterTheme": "Theme",
       "filterContinent": "Region",
       "filterThemePc": "By theme",

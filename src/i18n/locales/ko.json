@@ -265,6 +265,8 @@
     "explore": {
       "backHome": "홈으로",
       "monthlyPickPhotoAlt": "{{name}} 대표 사진",
+      "monthlyPickHeadline": "{{month}}월의 여행지",
+      "monthlyPickPreviewHeadline": "{{month}}월의 여행지 미리 보기",
       "filterTheme": "테마",
       "filterContinent": "대륙",
       "filterThemePc": "테마별",

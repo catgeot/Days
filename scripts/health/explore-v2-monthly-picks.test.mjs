@@ -7,10 +7,7 @@ import { fileURLToPath } from 'node:url';
 const root = join(dirname(fileURLToPath(import.meta.url)), '../..');
 
 import { TRAVEL_SPOTS } from '../../src/pages/Home/data/travelSpots.js';
-import {
-  EXPLORE_V2_MONTHLY_PICK_KEY,
-  MONTHLY_PICKS,
-} from '../../src/pages/Home/data/spotTraits.js';
+import { MONTHLY_PICKS } from '../../src/pages/Home/data/spotTraits.js';
 import {
   isValidMonthlyPickSource,
   normalizeMonthlyPickSource,
@@ -19,6 +16,13 @@ import {
   resolveExploreMonthlyPickHeroUrl,
   partitionExploreMonthlyPickCardsByHero,
   exploreV2MonthlyPickHeadline,
+  exploreV2MonthlyPickPreviewHeadline,
+  getExploreMonthlyPickSchedule,
+  isExploreNextMonthPreviewWindowOpen,
+  resolveExploreCurrentMonthPickKey,
+  resolveExploreNextMonthPreviewPickKey,
+  resolveExploreV2MonthlyPickKey,
+  seoulExploreCalendarParts,
 } from '../../src/pages/Home/lib/exploreMonthlyPicks.js';
 import {
   GATEO_ENV_FLAG_NAMES,
@@ -29,7 +33,12 @@ import {
   resolveExploreMonthlyPickGridSlot,
 } from '../../src/pages/Home/components/SearchDiscovery/exploreMonthlyGridLayout.js';
 
-const MONTH_KEY = EXPLORE_V2_MONTHLY_PICK_KEY;
+const MONTH_KEY = '2026-11';
+
+/** @param {number} y @param {number} m @param {number} d @param {number} [h] @param {number} [min] @param {number} [sec] */
+function instantAtKst(y, m, d, h = 0, min = 0, sec = 0) {
+  return new Date(Date.UTC(y, m - 1, d, h - 9, min, sec));
+}
 const EXPECTED_SLUGS = [
   'kyoto',
   'chiang-mai',
@@ -104,6 +113,73 @@ test('monthly row is code default ON; VITE_GATEO_EXPLORE_V2 stays off', () => {
 
 test('explore_v2 monthly heading is month label only (no spot count)', () => {
   assert.equal(exploreV2MonthlyPickHeadline(MONTH_KEY), '11월의 여행지');
+  assert.equal(exploreV2MonthlyPickPreviewHeadline('2026-12'), '12월의 여행지 미리 보기');
+});
+
+test('KST monthly pick schedule hides preview before 15th and after month rollover', () => {
+  const beforePreview = instantAtKst(2026, 11, 14, 23, 59, 59);
+  assert.equal(isExploreNextMonthPreviewWindowOpen(beforePreview), false);
+  assert.equal(resolveExploreNextMonthPreviewPickKey(beforePreview), null);
+
+  const previewStart = instantAtKst(2026, 11, 15, 0, 0, 0);
+  assert.equal(isExploreNextMonthPreviewWindowOpen(previewStart), true);
+  assert.equal(resolveExploreNextMonthPreviewPickKey(previewStart), '2026-12');
+
+  const previewEnd = instantAtKst(2026, 11, 30, 23, 59, 59);
+  assert.equal(isExploreNextMonthPreviewWindowOpen(previewEnd), true);
+  assert.equal(resolveExploreNextMonthPreviewPickKey(previewEnd), '2026-12');
+
+  const decFirst = instantAtKst(2026, 12, 1, 0, 0, 0);
+  assert.equal(resolveExploreCurrentMonthPickKey(decFirst), '2026-12');
+  assert.equal(isExploreNextMonthPreviewWindowOpen(decFirst), false);
+  assert.equal(resolveExploreNextMonthPreviewPickKey(decFirst), null);
+});
+
+test('UTC instant can differ from KST calendar day at preview boundary', () => {
+  const utc = new Date(Date.UTC(2026, 10, 14, 15, 0, 0));
+  assert.equal(seoulExploreCalendarParts(utc).day, 15);
+  assert.equal(isExploreNextMonthPreviewWindowOpen(utc), true);
+  assert.equal(resolveExploreNextMonthPreviewPickKey(utc), '2026-12');
+});
+
+test('next month key rolls year at December', () => {
+  const kst = instantAtKst(2026, 12, 31, 12, 0, 0);
+  assert.equal(seoulExploreCalendarParts(kst).nextMonthKey, '2027-01');
+  const janFirst = instantAtKst(2027, 1, 1, 0, 0, 0);
+  assert.equal(resolveExploreCurrentMonthPickKey(janFirst), '2027-01');
+});
+
+test('missing MONTHLY_PICKS month hides resolved key (no previous-month fallback)', () => {
+  const novMid = getExploreMonthlyPickSchedule(instantAtKst(2026, 11, 20));
+  assert.equal(novMid.currentPickKey, '2026-11');
+  assert.equal(novMid.previewPickKey, null);
+
+  const decFirst = getExploreMonthlyPickSchedule(instantAtKst(2026, 12, 1));
+  assert.equal(decFirst.currentMonthKey, '2026-12');
+  assert.equal(decFirst.currentPickKey, null);
+  assert.equal(decFirst.previewPickKey, null);
+});
+
+test('preview row appears when next month data exists (injected picks)', () => {
+  const injected = {
+    ...MONTHLY_PICKS,
+    '2026-12': MONTHLY_PICKS[MONTH_KEY],
+  };
+  const schedule = getExploreMonthlyPickSchedule(instantAtKst(2026, 11, 15), injected);
+  assert.equal(schedule.currentPickKey, '2026-11');
+  assert.equal(schedule.previewPickKey, '2026-12');
+  assert.equal(injected['2026-12'].length, 6);
+  const previewCards = buildVisibleMonthlyPickCards(MONTH_KEY);
+  const { withHero } = partitionExploreMonthlyPickCardsByHero(previewCards);
+  assert.equal(withHero.length, 6);
+  assert.equal(resolveExploreV2MonthlyPickKey('2099-01', injected), null);
+});
+
+test('November explore row matches fixed-key era when preview window closed', () => {
+  const nov10 = getExploreMonthlyPickSchedule(instantAtKst(2026, 11, 10));
+  assert.equal(nov10.currentPickKey, '2026-11');
+  assert.equal(nov10.showPreview, false);
+  assert.equal(nov10.previewPickKey, null);
 });
 
 test('2026-11 monthly picks resolve verified place gallery hero (no OG overrides)', () => {
