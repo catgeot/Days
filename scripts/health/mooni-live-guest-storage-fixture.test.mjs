@@ -1,14 +1,87 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
-import { test } from 'node:test';
+import { before, test } from 'node:test';
 import { fileURLToPath } from 'node:url';
+import { JSDOM } from 'jsdom';
+import React, { act } from 'react';
+import { createRoot } from 'react-dom/client';
 import { micromark } from 'micromark';
 import mooniRemarkGfm, { mooniRemarkGfmHtml } from '../../src/components/chat/mooniRemarkGfm.js';
 import {
   getMooniModelMarkdownForRender,
   getMooniModelRawText,
 } from '../../src/pages/Home/lib/mooniModelMessageText.js';
+
+let MooniChatMarkdown;
+
+function ensureMooniReactDom() {
+  if (globalThis.__mooniLiveFixtureDom) return;
+  const dom = new JSDOM('<!doctype html><html><body></body></html>', {
+    url: 'https://localhost/',
+  });
+  const { window } = dom;
+  for (const [name, value] of Object.entries({
+    window,
+    document: window.document,
+    navigator: window.navigator,
+    HTMLElement: window.HTMLElement,
+    Element: window.Element,
+    Node: window.Node,
+    IS_REACT_ACT_ENVIRONMENT: true,
+    requestAnimationFrame: (cb) => setTimeout(cb, 0),
+    cancelAnimationFrame: (id) => clearTimeout(id),
+  })) {
+    Object.defineProperty(globalThis, name, { value, configurable: true, writable: true });
+  }
+  globalThis.__mooniLiveFixtureDom = true;
+}
+
+before(async () => {
+  ensureMooniReactDom();
+  MooniChatMarkdown = (await import('../../src/components/chat/MooniChatMarkdown.jsx')).default;
+});
+
+async function renderMooniReactDom(markdown) {
+  const container = globalThis.document.createElement('div');
+  globalThis.document.body.appendChild(container);
+  const root = createRoot(container);
+  await act(async () => {
+    root.render(React.createElement(MooniChatMarkdown, { text: markdown, variant: 'dark' }));
+    await new Promise((r) => setTimeout(r, 0));
+  });
+  return container;
+}
+
+function visibleOlItemNumbers(ol) {
+  if (!ol) return [];
+  const start = Number.parseInt(ol.getAttribute('start') || '1', 10);
+  const items = [...ol.querySelectorAll(':scope > li')];
+  return items.map((_, i) => start + i);
+}
+
+function assertUdoVisibleNumbering(root, label) {
+  const sectionNums = [...root.querySelectorAll('p')]
+    .map((p) => {
+      const m = p.textContent.trim().match(/^(\d+)\.\s/);
+      return m ? Number(m[1]) : null;
+    })
+    .filter((n) => n != null);
+  assert.deepEqual(sectionNums, [1, 2, 3, 4], `${label}: section paragraphs 1–4`);
+
+  const boardingP = [...root.querySelectorAll('p')].find((p) =>
+    p.textContent.includes('탑승 절차'),
+  );
+  assert.ok(boardingP, `${label}: 탑승 절차 paragraph`);
+  let sib = boardingP.nextElementSibling;
+  while (sib && sib.tagName !== 'OL') sib = sib.nextElementSibling;
+  assert.deepEqual(visibleOlItemNumbers(sib), [1, 2, 3], `${label}: boarding nested 1–3`);
+
+  const departureInOl = [...root.querySelectorAll('ol > li')].some((li) =>
+    li.textContent.includes('출발 항구'),
+  );
+  assert.equal(departureInOl, false, `${label}: section 1 not in <ol>`);
+}
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '../..');
 const fixture = JSON.parse(
@@ -53,16 +126,10 @@ function assertGuamHtml(html, label) {
   assert.ok(html.includes('<strong>12Go (12go.asia)</strong>'), `${label}: 12Go strong`);
 }
 
-function assertUdoHtml(html, md, label) {
+function assertUdoHtml(html, label) {
   assert.ok(html.includes('<strong>천진항</strong>'), `${label}: 천진항`);
   assert.ok(html.includes('<strong>하우목동항</strong>'), `${label}: 하우목동항`);
   assert.ok(!html.includes('**'), `${label}: literal **`);
-  assert.match(md, /2\\\. 탑승 절차\n{1,2}1\. \*\*승선신고서/, `${label}: nested 1 after section 2`);
-  assert.match(md, /\n2\. \*\*신분증/, `${label}: nested 2`);
-  assert.match(md, /\n3\. \*\*선착장/, `${label}: nested 3`);
-  assert.match(md, /3\. 소요 시간 및 도착 항구/, `${label}: section 3 title`);
-  assert.match(md, /4\. 섬 내 이동 수단/, `${label}: section 4 title`);
-  assert.doesNotMatch(md, /6\. 소요 시간/, `${label}: no 6. section renumber`);
 }
 
 for (const field of ['mooniRawReply', 'text']) {
@@ -77,7 +144,7 @@ for (const field of ['mooniRawReply', 'text']) {
     assertGuamHtml(html, `guam.${field}`);
   });
 
-  test(`live guest extract — udo ${field} → bold + list numbering`, () => {
+  test(`live guest extract — udo ${field} → bold + list numbering`, async () => {
     const msg = {
       role: fixture.udo.role,
       finishReason: fixture.udo.finishReason,
@@ -85,7 +152,9 @@ for (const field of ['mooniRawReply', 'text']) {
       ...(field === 'mooniRawReply' ? { mooniRawReply: fixture.udo.mooniRawReply } : {}),
     };
     const { html, md } = renderSavedMessage(msg);
-    assertUdoHtml(html, md, `udo.${field}`);
+    assertUdoHtml(html, `udo.${field}`);
+    const reactRoot = await renderMooniReactDom(md);
+    assertUdoVisibleNumbering(reactRoot, `udo.${field} react-dom`);
   });
 }
 
