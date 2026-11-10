@@ -5,6 +5,7 @@ import { featureToSuggestion } from '../../src/pages/Home/lib/mapboxSearchBox.js
 import {
   buildPlannerToolkitInvokeBody,
   getPlannerToolkitLocation,
+  getRestaurantPlannerCityLabel,
   resolveRestaurantPlannerCity,
 } from '../../src/shared/place/restaurantPlannerCity.js';
 import {
@@ -36,6 +37,33 @@ const JEONJU_REST = {
   lat: 35.8242,
   lng: 127.148,
   addr1: '전라북도 전주시 완산구',
+};
+
+const MYEONGDONG_GYOZA = {
+  name: '명동교자',
+  slug: 'tour-403053',
+  kind: 'restaurant',
+  badge: '식당',
+  exploreRestaurant: true,
+  contentTypeId: '39',
+  cat1: 'A05',
+  lat: 37.563569,
+  lng: 126.985032,
+  addr1: '서울특별시 중구 명동10길 29',
+  parentCity: '중구',
+  hubId: 'junggu',
+};
+
+const GANGNEUNG_REST = {
+  name: '강릉 식당',
+  slug: 'tour-3532662',
+  kind: 'restaurant',
+  exploreRestaurant: true,
+  contentTypeId: '39',
+  lat: 37.7519,
+  lng: 128.876,
+  addr1: '강원특별자치도 강릉시',
+  parentCity: '강릉',
 };
 
 const TOKYO_RAMEN = featureToSuggestion(
@@ -72,6 +100,19 @@ test('도시 판별 — 서울·전주·도쿄', () => {
   assert.equal(jeonju?.spot?.slug, 'jeonju');
   const tokyo = resolveRestaurantPlannerCity(TOKYO_RAMEN);
   assert.equal(tokyo?.spot?.slug, 'tokyo');
+});
+
+test('표시명 — 해석 도시 허브(서울 중구·강릉·도쿄)', () => {
+  const seoulJung = resolveRestaurantPlannerCity(MYEONGDONG_GYOZA);
+  assert.equal(seoulJung?.spot?.slug, 'seoul');
+  assert.equal(getRestaurantPlannerCityLabel(MYEONGDONG_GYOZA, 'ko'), '서울');
+  assert.equal(getRestaurantPlannerCityLabel(MYEONGDONG_GYOZA, 'en'), 'Seoul');
+
+  assert.equal(resolveRestaurantPlannerCity(GANGNEUNG_REST)?.spot?.slug, 'gangneung');
+  assert.equal(getRestaurantPlannerCityLabel(GANGNEUNG_REST, 'ko'), '강릉');
+
+  assert.equal(getRestaurantPlannerCityLabel(TOKYO_RAMEN, 'ko'), '도쿄');
+  assert.equal(getRestaurantPlannerCityLabel(TOKYO_RAMEN, 'en'), 'Tokyo');
 });
 
 test('도시 미확정 — 플래너 미지원', () => {

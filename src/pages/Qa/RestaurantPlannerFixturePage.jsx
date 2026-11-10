@@ -3,6 +3,22 @@ import { useSearchParams } from 'react-router-dom';
 import PlannerTab from '../../components/PlaceCard/tabs/PlannerTab.jsx';
 import { featureToSuggestion } from '../Home/lib/mapboxSearchBox.js';
 
+const MYEONGDONG_GYOZA = {
+  name: '명동교자',
+  slug: 'tour-403053',
+  kind: 'restaurant',
+  badge: '식당',
+  exploreRestaurant: true,
+  contentTypeId: '39',
+  cat1: 'A05',
+  lat: 37.563569,
+  lng: 126.985032,
+  addr1: '서울특별시 중구 명동10길 29',
+  parentCity: '중구',
+  hubId: 'junggu',
+  country: '대한민국',
+};
+
 const GANGNEUNG_RESTAURANT = {
   name: '강릉 초당순두부 맛집',
   slug: 'tour-88001',
@@ -47,6 +63,19 @@ const GANGNEUNG_TOOLKIT = {
   }),
 };
 
+const SEOUL_TOOLKIT = {
+  place_id: 'seoul',
+  toolkit_updated_at: '2026-03-01T00:00:00Z',
+  essential_guide: JSON.stringify({
+    primary_arrival_airports_iata: ['GMP', 'ICN'],
+    categories: {
+      pre_travel: [{ title: '서울 여행 체크', advice: '대중교통·T-money' }],
+      accommodation: { advice: '명동·강남·종로' },
+    },
+    journey_timeline: [{ title: '공항 → 서울', step: 1 }],
+  }),
+};
+
 const TOKYO_TOOLKIT = {
   place_id: 'tokyo',
   toolkit_updated_at: '2026-03-01T00:00:00Z',
@@ -67,10 +96,17 @@ export default function RestaurantPlannerFixturePage() {
 
   const location = useMemo(() => {
     if (city === 'tokyo') return TOKYO_RAMEN;
+    if (city === 'seoul' || city === 'myeongdong' || city === '403053') return MYEONGDONG_GYOZA;
     return GANGNEUNG_RESTAURANT;
   }, [city]);
 
-  const plannerData = after ? (city === 'tokyo' ? TOKYO_TOOLKIT : GANGNEUNG_TOOLKIT) : null;
+  const plannerData = after
+    ? city === 'tokyo'
+      ? TOKYO_TOOLKIT
+      : city === 'seoul' || city === 'myeongdong' || city === '403053'
+        ? SEOUL_TOOLKIT
+        : GANGNEUNG_TOOLKIT
+    : null;
 
   return (
     <div className="min-h-screen bg-neutral-900 flex justify-center py-0">
