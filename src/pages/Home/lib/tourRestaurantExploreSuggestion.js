@@ -14,8 +14,8 @@ import { buildRestaurantMapSearchUrl } from '../../../shared/search/restaurantMa
  */
 export function tourRestaurantToExploreSuggestion(spot, opts = {}) {
   if (!spot) return null;
-  const lat = Number(spot?.lat);
-  const lng = Number(spot?.lng);
+  const lat = Number(spot?.lat ?? spot?.mapy);
+  const lng = Number(spot?.lng ?? spot?.mapx);
   const name = String(spot?.name || spot?.title || '').trim();
   if (!name) return null;
 

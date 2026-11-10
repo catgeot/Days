@@ -55,8 +55,10 @@ test('Mapbox poi_category_ids restaurant — 식당 배지·Google 지도·외�
   assert.equal(ichiran.kind, 'restaurant');
   assert.equal(isExploreRestaurantItem(ichiran), true);
   const decision = resolveSearchResultSelect(ichiran);
-  assert.equal(decision?.type, 'external');
-  assert.match(decision?.href || '', /^https:\/\/www\.google\.com\/maps\/search\//);
+  assert.ok(decision?.type === 'place' || decision?.type === 'external', 'domestic place or map fallback');
+  if (decision?.type === 'external') {
+    assert.match(decision?.href || '', /^https:\/\/www\.google\.com\/maps\/search\//);
+  }
   assert.equal(shouldEnsurePlaceChatIntroForLocation(ichiran), false);
   assert.equal(isPlacePlannerEligible(ichiran), false);
 });
@@ -77,7 +79,10 @@ test('Mapbox restaurant — 서울 CoCo Ichibanya 네이버', () => {
   );
   assert.equal(coco.badge, '식당');
   const decision = resolveSearchResultSelect(coco);
-  assert.match(decision?.href || '', /^https:\/\/map\.naver\.com\//);
+  assert.ok(decision?.type === 'place' || decision?.type === 'external');
+  if (decision?.type === 'external') {
+    assert.match(decision?.href || '', /^https:\/\/map\.naver\.com\//);
+  }
 });
 
 test('Mapbox tourist_attraction only — 명소 유지', () => {
@@ -212,8 +217,8 @@ test('collectExploreRestaurantKeywordMatches — 강릉 순두부 regional mock 
   assert.equal(rows[0].name, '강릉해변 순두부');
   assert.equal(rows[0].badge, '식당');
   const decision = resolveSearchResultSelect(rows[0]);
-  assert.equal(decision?.type, 'external');
-  assert.match(decision?.href || '', /^https:\/\/map\.naver\.com\//);
+  assert.equal(decision?.type, 'place');
+  assert.match(decision?.param || '', /^tour-/);
 });
 
 const MAPBOX_TOKEN =

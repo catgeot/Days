@@ -71,7 +71,7 @@ test('collectExploreRestaurantKeywordMatches — 갯벌 mock TourAPI', async () 
     assert.equal(row.badge, '식당');
     assert.equal(row.kind, 'restaurant');
     const decision = resolveSearchResultSelect(row);
-    assert.equal(decision?.type, 'external');
-    assert.match(decision?.href || '', /^https:\/\/map\.naver\.com\//);
+    assert.equal(decision?.type, 'place', row.name);
+    assert.match(decision?.param || '', /^tour-/);
   }
 });

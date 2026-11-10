@@ -264,21 +264,50 @@ function knownPlaceSlug(param) {
 }
 
 /**
+ * 식당 카드 「지도·리뷰 보기」전용 외부 지도 URL (카드 본문 클릭과 분리).
+ * @param {object | null | undefined} spot
+ */
+export function resolveRestaurantMapSearchHref(spot) {
+  if (!spot || typeof spot !== 'object') return '';
+  return (
+    String(spot.restaurantMapSearchUrl || '').trim() ||
+    buildRestaurantMapSearchUrl({ item: spot, name: spot.name }) ||
+    ''
+  );
+}
+
+function finalizeExploreRestaurantSelect(spot, decision) {
+  if (!isExploreRestaurantItem(spot)) return decision;
+  if (decision?.type === 'place') return decision;
+  const href = resolveRestaurantMapSearchHref(spot);
+  if (href) return { type: 'external', spot, href };
+  return decision;
+}
+
+/**
  * 홈·탐색 검색 결과 탭.
  * `/place`는 SSOT slug만 (카탈로그·허브·정착지·도시).
  * mapbox-/geocode- 는 search- 핀과 같이 홈 써머리 — 이름 slug가 카탈로그와 겹쳐도.
+ * 식당: 본문은 상세(`/place`) 우선 · 상세 불가 시에만 `external`(지도 URL).
  * @param {object | null | undefined} spot
- * @returns {{ type: 'place', spot: object, param: string } | { type: 'home', spot: object } | null}
+ * @returns {{ type: 'place', spot: object, param: string } | { type: 'home', spot: object } | { type: 'external', spot: object, href: string } | null}
  */
 export function resolveSearchResultSelect(spot) {
   if (!spot || typeof spot !== 'object') return null;
+  return finalizeExploreRestaurantSelect(spot, resolveSearchResultSelectCore(spot));
+}
 
+function resolveSearchResultSelectCore(spot) {
   if (isExploreRestaurantItem(spot)) {
-    const href =
-      String(spot.restaurantMapSearchUrl || '').trim() ||
-      buildRestaurantMapSearchUrl({ item: spot, name: spot.name });
-    if (href) {
-      return { type: 'external', spot, href };
+    const tourParam = getPlaceUrlParam(spot);
+    const source = String(spot.source ?? '').trim().toLowerCase();
+    if (
+      tourParam?.startsWith('tour-') &&
+      !isBlockedCountryOnlyPlaceParam(tourParam) &&
+      (source === 'tourapi' || spot.contentId)
+    ) {
+      const pin = normalizeExploreSelectionPin(spot);
+      return { type: 'place', spot: pin, param: tourParam };
     }
   }
 
