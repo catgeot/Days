@@ -538,6 +538,36 @@ export async function fetchKoreaTourAttractionById(contentId) {
   return fetchKoreaTourAttractionByIdLive(id);
 }
 
+/**
+ * /place/tour-* — empty vs transient error (missing vs retry UI).
+ * @returns {Promise<{ status: 'ok', row: object } | { status: 'empty' } | { status: 'error', error: unknown }>}
+ */
+export async function fetchKoreaTourAttractionByIdForPlaceRoute(contentId) {
+  const id = resolveKoreaTourContentId(contentId);
+  if (!/^\d{1,32}$/.test(id)) return { status: 'empty' };
+  try {
+    const { data, error } = await supabase
+      .from('tourapi_attraction')
+      .select(LIST_SELECT)
+      .eq('content_id', id)
+      .eq('active', true)
+      .maybeSingle();
+    if (error) return { status: 'error', error };
+    if (data) return { status: 'ok', row: mapTourAttractionRow(data) };
+    if (/^99\d{8,30}$/.test(id)) return { status: 'empty' };
+    const res = await invokeTourApiProxy(
+      'detailCommon',
+      { contentId: id },
+      { locale: TOUR_API_BODY_LOCALE },
+    );
+    const item = res?.items?.[0] || res?.common || null;
+    const row = mapDetailCommonItemToDbRow(id, item);
+    return row ? { status: 'ok', row: mapTourAttractionRow(row) } : { status: 'empty' };
+  } catch (err) {
+    return { status: 'error', error: err };
+  }
+}
+
 function mapSearchKeywordItemToDbRow(item) {
   const contentId = String(item?.contentId || item?.contentid || '').trim();
   const title = String(item?.title || '').trim();

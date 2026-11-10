@@ -46,6 +46,7 @@ import {
   fetchUiPlacePinFromPlaceStatsSlug,
   isHangulPlaceStatsSlug,
 } from './lib/placeStatsSlugHydrate.js';
+import { inferInitialPlaceRouteResolve } from './lib/placeRouteResolvePolicy.js';
 import { isHiddenKoreaScenicPlaceSlug } from './lib/koreaScenicSpotVisibility.js';
 import { getSystemPrompt, PERSONA_TYPES } from './lib/prompts';
 import { persistMooniLastChatId, persistMooniFreshDraftSession, mooniLastChatScopeInput } from './lib/tripChatUtils';
@@ -545,7 +546,33 @@ function Home() {
   /** /place X 닫기 등 — 홈 복귀 시 써머리 재오픈 생략(핀 flyTo는 유지) */
   const skipHomeSummaryRestoreRef = useRef(false);
   const placeRouteSyncRef = useRef(0);
+  const [placeRouteResolve, setPlaceRouteResolve] = useState(null);
+  const [placeRouteRetryEpoch, setPlaceRouteRetryEpoch] = useState(0);
   const dismissRotateResumeTimerRef = useRef(null);
+
+  const markPlaceRouteResolve = useCallback((slug, status) => {
+    const normalized = String(slug ?? '').trim().toLowerCase();
+    setPlaceRouteResolve((prev) => {
+      if (prev?.slug && prev.slug !== normalized) return prev;
+      return { slug: normalized, status };
+    });
+  }, []);
+
+  const retryPlaceRouteHydration = useCallback(() => {
+    let match = matchPath({ path: '/place/:slug' }, routeLocation.pathname);
+    if (!match) {
+      match = matchPath({ path: '/place/:slug/:tab' }, routeLocation.pathname);
+    }
+    if (!match?.params?.slug) return;
+    let targetSlug = match.params.slug;
+    try {
+      targetSlug = decodeURIComponent(targetSlug);
+    } catch {
+      // ignore malformed percent-encoding in slug
+    }
+    markPlaceRouteResolve(targetSlug.toLowerCase(), 'pending');
+    setPlaceRouteRetryEpoch((n) => n + 1);
+  }, [routeLocation.pathname, markPlaceRouteResolve]);
 
   const clearDismissRotateResumeTimer = useCallback(() => {
     if (dismissRotateResumeTimerRef.current != null) {
@@ -988,6 +1015,13 @@ function Home() {
 
       const normalizedTargetSlug = targetSlug.toLowerCase();
 
+      const initialResolve = inferInitialPlaceRouteResolve(targetSlug, {
+        savedTrips,
+        category,
+        selectedLocation: selectedLocationRef.current,
+      });
+      setPlaceRouteResolve(initialResolve);
+
       if (isHiddenKoreaScenicPlaceSlug(normalizedTargetSlug)) {
         navigate('/korea/theme/scenic', { replace: true });
         return;
@@ -1053,14 +1087,32 @@ function Home() {
       const tourContentMatch = normalizedTargetSlug.match(/^tour-(\d{1,32})$/);
       if (!target && tourContentMatch) {
         let cancelled = false;
+        markPlaceRouteResolve(normalizedTargetSlug, 'pending');
         (async () => {
           try {
-            const { fetchKoreaTourAttractionById } = await import('./lib/koreaTourAttractions.js');
+            const { fetchKoreaTourAttractionByIdForPlaceRoute } = await import(
+              './lib/koreaTourAttractions.js'
+            );
             const { tourAttractionToPoiSuggestion } = await import('./lib/koreaPoiTypeSearch.js');
-            const row = await fetchKoreaTourAttractionById(tourContentMatch[1]);
-            if (cancelled || !row) return;
-            const pin = tourAttractionToPoiSuggestion(row);
-            if (!pin) return;
+            const { runPlaceRouteHydrateWithRetry } = await import('./lib/placeRouteAsyncHydrate.js');
+            const outcome = await runPlaceRouteHydrateWithRetry(() =>
+              fetchKoreaTourAttractionByIdForPlaceRoute(tourContentMatch[1]),
+            );
+            if (cancelled) return;
+            if (outcome.routeStatus === 'missing') {
+              markPlaceRouteResolve(normalizedTargetSlug, 'missing');
+              return;
+            }
+            if (outcome.routeStatus === 'error') {
+              markPlaceRouteResolve(normalizedTargetSlug, 'error');
+              return;
+            }
+            const row = outcome.payload?.row;
+            const pin = row ? tourAttractionToPoiSuggestion(row) : null;
+            if (!pin) {
+              markPlaceRouteResolve(normalizedTargetSlug, 'missing');
+              return;
+            }
             if (pin.kind === 'restaurant' || pin.exploreRestaurant) {
               const prepared = {
                 ...pin,
@@ -1070,10 +1122,14 @@ function Home() {
                 skipScenicGateway: true,
               };
               cachePlaceLocation(prepared);
+              markPlaceRouteResolve(normalizedTargetSlug, 'found');
               navigateToPlace(prepared);
               return;
             }
-            if (!Number.isFinite(Number(pin.lat))) return;
+            if (!Number.isFinite(Number(pin.lat))) {
+              markPlaceRouteResolve(normalizedTargetSlug, 'missing');
+              return;
+            }
             const prepared = enrichJoseonRoyalTombsPromoPin({
               ...pin,
               uiPlace: true,
@@ -1081,12 +1137,15 @@ function Home() {
               canonical_slug: normalizedTargetSlug,
             });
             cachePlaceLocation(prepared);
+            markPlaceRouteResolve(normalizedTargetSlug, 'found');
             navigateToPlace(prepared);
           } catch {
-            // TourAPI offline — /place/tour-* 공유 URL은 캐시·fetch 없으면 빈 화면
+            if (!cancelled) markPlaceRouteResolve(normalizedTargetSlug, 'error');
           }
         })();
-        return;
+        return () => {
+          cancelled = true;
+        };
       }
 
       if (target) {
@@ -1149,6 +1208,8 @@ function Home() {
           const alreadySynced =
             isSameCanonicalPlace(selectedLocationRef.current, focusTarget) &&
             canonicalParam?.toLowerCase() === normalizedTargetSlug;
+
+          markPlaceRouteResolve(normalizedTargetSlug, 'found');
 
           if (!alreadySynced) {
             selectedLocationRef.current = focusTarget;
@@ -1261,42 +1322,71 @@ function Home() {
           setIsCardExpanded(true);
         });
       } else if (isHangulPlaceStatsSlug(targetSlug)) {
+        markPlaceRouteResolve(normalizedTargetSlug, 'pending');
         const hangulSync = ++placeRouteSyncRef.current;
-        fetchUiPlacePinFromPlaceStatsSlug(targetSlug).then((pin) => {
-          if (!pin || hangulSync !== placeRouteSyncRef.current) return;
-          const focusTarget = overlaySessionCuration(
-            enrichJoseonRoyalTombsPromoPin(
-              enrichLocationWithRentalAirport(
-                healPlaceholderCountry(
-                  mergeCanonicalTravelSpot({
-                    ...pin,
-                    id: pin.id || pin.place_id || `loc-${pin.lat}-${pin.lng}`,
-                    type: pin.type || 'temp-base',
-                    category: pin.category || category,
-                  }),
+        (async () => {
+          try {
+            const { fetchUiPlacePinFromPlaceStatsSlugForPlaceRoute } = await import(
+              './lib/placeStatsSlugHydrate.js'
+            );
+            const { runPlaceRouteHydrateWithRetry } = await import('./lib/placeRouteAsyncHydrate.js');
+            const outcome = await runPlaceRouteHydrateWithRetry(() =>
+              fetchUiPlacePinFromPlaceStatsSlugForPlaceRoute(targetSlug),
+            );
+            if (hangulSync !== placeRouteSyncRef.current) return;
+            if (outcome.routeStatus === 'missing') {
+              markPlaceRouteResolve(normalizedTargetSlug, 'missing');
+              return;
+            }
+            if (outcome.routeStatus === 'error') {
+              markPlaceRouteResolve(normalizedTargetSlug, 'error');
+              return;
+            }
+            const pin = outcome.payload?.pin;
+            if (!pin) {
+              markPlaceRouteResolve(normalizedTargetSlug, 'missing');
+              return;
+            }
+            const focusTarget = overlaySessionCuration(
+              enrichJoseonRoyalTombsPromoPin(
+                enrichLocationWithRentalAirport(
+                  healPlaceholderCountry(
+                    mergeCanonicalTravelSpot({
+                      ...pin,
+                      id: pin.id || pin.place_id || `loc-${pin.lat}-${pin.lng}`,
+                      type: pin.type || 'temp-base',
+                      category: pin.category || category,
+                    }),
+                  ),
                 ),
               ),
-            ),
-            { selectedLocation: selectedLocationRef.current },
-          );
-          selectedLocationRef.current = focusTarget;
-          pendingGlobeHomeFocusRef.current = focusTarget;
-          rememberGlobeFocus(focusTarget);
-          addScoutPin(focusTarget);
-          moveToLocation(focusTarget.lat, focusTarget.lng, focusTarget.name, focusTarget.category);
-          setSelectedLocation(focusTarget);
-          setIsCardExpanded(true);
-        });
+              { selectedLocation: selectedLocationRef.current },
+            );
+            selectedLocationRef.current = focusTarget;
+            pendingGlobeHomeFocusRef.current = focusTarget;
+            rememberGlobeFocus(focusTarget);
+            addScoutPin(focusTarget);
+            moveToLocation(focusTarget.lat, focusTarget.lng, focusTarget.name, focusTarget.category);
+            setSelectedLocation(focusTarget);
+            markPlaceRouteResolve(normalizedTargetSlug, 'found');
+            setIsCardExpanded(true);
+          } catch {
+            if (hangulSync === placeRouteSyncRef.current) {
+              markPlaceRouteResolve(normalizedTargetSlug, 'error');
+            }
+          }
+        })();
       } else {
         queueMicrotask(() => setIsCardExpanded(true));
       }
     } else {
+      setPlaceRouteResolve(null);
       queueMicrotask(() => {
         setIsCardExpanded(false);
       });
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps -- /place/ URL sync: only path + savedTrips; add selectedLocation/set/move would loop with microtask hydration
-  }, [routeLocation.pathname, savedTrips]);
+  }, [routeLocation.pathname, savedTrips, placeRouteRetryEpoch]);
 
   const prevPathRef = useRef(routeLocation.pathname);
   useEffect(() => () => {
@@ -1840,6 +1930,8 @@ function Home() {
         <div className={flightCinemaActive ? 'invisible pointer-events-none' : undefined}>
         <Outlet context={{
           location: selectedLocation,
+          placeRouteResolve,
+          onRetryPlaceRoute: retryPlaceRouteHydration,
           isBookmarked: selectedLocation ? savedTrips.some(t => t.destination === selectedLocation.name && t.is_bookmarked) : false,
           isMooniChatOpen: isChatOpen,
           onClose: leavePlaceCard,

@@ -64,3 +64,60 @@ export async function fetchUiPlacePinFromPlaceStatsSlug(slug) {
   }
   return null;
 }
+
+/**
+ * @returns {Promise<{ status: 'ok', pin: object } | { status: 'empty' } | { status: 'error', error: unknown }>}
+ */
+export async function fetchUiPlacePinFromPlaceStatsSlugForPlaceRoute(slug) {
+  const raw = String(slug ?? '').trim();
+  if (!raw || !isHangulPlaceStatsSlug(raw)) return { status: 'empty' };
+
+  const quoted = postgrestQuoted(raw);
+  try {
+    const { data: byId, error: idError } = await supabase
+      .from('place_stats')
+      .select('place_id, name_ko, name_en, lat, lng, image_url')
+      .eq('place_id', raw)
+      .maybeSingle();
+    if (idError) return { status: 'error', error: idError };
+    if (byId) {
+      const spot = visitedRowToSearchSpot(byId);
+      if (spot) {
+        return {
+          status: 'ok',
+          pin: {
+            ...spot,
+            slug: raw,
+            canonical_slug: raw,
+            place_id: raw,
+          },
+        };
+      }
+    }
+
+    const { data: byName, error: nameError } = await supabase
+      .from('place_stats')
+      .select('place_id, name_ko, name_en, lat, lng, image_url')
+      .eq('name_ko', raw)
+      .maybeSingle();
+    if (nameError) return { status: 'error', error: nameError };
+    if (byName) {
+      const placeId = String(byName.place_id || raw).trim();
+      const spot = visitedRowToSearchSpot(byName);
+      if (spot) {
+        return {
+          status: 'ok',
+          pin: {
+            ...spot,
+            slug: placeId,
+            canonical_slug: placeId,
+            place_id: placeId,
+          },
+        };
+      }
+    }
+    return { status: 'empty' };
+  } catch (err) {
+    return { status: 'error', error: err };
+  }
+}

@@ -836,6 +836,18 @@
     }
   },
   "place": {
+    "notFound": {
+      "seoTitle": "Place not found",
+      "title": "We couldn't find that place",
+      "body": "The link may have changed, or this destination isn't on GATEO yet.",
+      "search": "Search destinations"
+    },
+    "loadError": {
+      "seoTitle": "Could not load place",
+      "title": "Please try again in a moment",
+      "body": "The network or server may be briefly unavailable.",
+      "retry": "Try again"
+    },
     "fallback": {
       "destination": "Destination",
       "local": "Local",
