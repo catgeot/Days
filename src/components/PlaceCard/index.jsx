@@ -14,6 +14,7 @@ import {
 import { isGateoPlaceWorldEventsTabEnabled } from '../../shared/gateoFeatureFlags';
 import { mediaModeFromUrlTab } from './common/placeMediaTabRoutes';
 import { isPlacePlannerEligible } from '../../shared/place/placePlannerEligibility.js';
+import PlaceNotFoundView from './PlaceNotFoundView';
 
 const PlaceCard = () => {
   const { slug, tab } = useParams();
@@ -31,6 +32,7 @@ const PlaceCard = () => {
     onNavigateToPlace,
     onGoHome,
     isMooniChatOpen = false,
+    placeRouteResolve = null,
   } = context || {};
 
   const galleryData = usePlaceGallery(contextLocation);
@@ -60,18 +62,20 @@ const PlaceCard = () => {
     }
   }, [contextLocation, slug, tabKey, navigate]);
 
-  useEffect(() => {
-    let timeoutId;
-    if (!contextLocation && slug) {
-      timeoutId = setTimeout(() => {
-        console.warn(`[Safe Path] 유효하지 않은 장소 SLUG(${slug}) 접근. 메인으로 이동합니다.`);
-        navigate('/', { replace: true });
-      }, 3500);
-    }
-    return () => clearTimeout(timeoutId);
-  }, [contextLocation, slug, navigate]);
+  const normalizedSlug = String(slug ?? '').trim().toLowerCase();
+  const resolveForSlug =
+    placeRouteResolve &&
+    String(placeRouteResolve.slug ?? '').trim().toLowerCase() === normalizedSlug
+      ? placeRouteResolve
+      : null;
 
-  if (!contextLocation) return null;
+  if (!contextLocation) {
+    if (resolveForSlug?.status === 'pending') return null;
+    if (resolveForSlug?.status === 'missing') {
+      return <PlaceNotFoundView onGoHome={onGoHome} />;
+    }
+    return null;
+  }
 
   const locationDesc = getPlaceTabSeoDescription(contextLocation, locale, tabKey, t);
   const seoTitle = getPlaceTabSeoTitle(contextLocation, locale, tabKey);

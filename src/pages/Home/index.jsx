@@ -46,6 +46,7 @@ import {
   fetchUiPlacePinFromPlaceStatsSlug,
   isHangulPlaceStatsSlug,
 } from './lib/placeStatsSlugHydrate.js';
+import { inferInitialPlaceRouteResolve } from './lib/placeRouteResolvePolicy.js';
 import { isHiddenKoreaScenicPlaceSlug } from './lib/koreaScenicSpotVisibility.js';
 import { getSystemPrompt, PERSONA_TYPES } from './lib/prompts';
 import { persistMooniLastChatId, persistMooniFreshDraftSession, mooniLastChatScopeInput } from './lib/tripChatUtils';
@@ -545,7 +546,16 @@ function Home() {
   /** /place X 닫기 등 — 홈 복귀 시 써머리 재오픈 생략(핀 flyTo는 유지) */
   const skipHomeSummaryRestoreRef = useRef(false);
   const placeRouteSyncRef = useRef(0);
+  const [placeRouteResolve, setPlaceRouteResolve] = useState(null);
   const dismissRotateResumeTimerRef = useRef(null);
+
+  const markPlaceRouteResolve = useCallback((slug, status) => {
+    const normalized = String(slug ?? '').trim().toLowerCase();
+    setPlaceRouteResolve((prev) => {
+      if (prev?.slug && prev.slug !== normalized) return prev;
+      return { slug: normalized, status };
+    });
+  }, []);
 
   const clearDismissRotateResumeTimer = useCallback(() => {
     if (dismissRotateResumeTimerRef.current != null) {
@@ -988,6 +998,13 @@ function Home() {
 
       const normalizedTargetSlug = targetSlug.toLowerCase();
 
+      const initialResolve = inferInitialPlaceRouteResolve(targetSlug, {
+        savedTrips,
+        category,
+        selectedLocation: selectedLocationRef.current,
+      });
+      setPlaceRouteResolve(initialResolve);
+
       if (isHiddenKoreaScenicPlaceSlug(normalizedTargetSlug)) {
         navigate('/korea/theme/scenic', { replace: true });
         return;
@@ -1053,14 +1070,22 @@ function Home() {
       const tourContentMatch = normalizedTargetSlug.match(/^tour-(\d{1,32})$/);
       if (!target && tourContentMatch) {
         let cancelled = false;
+        markPlaceRouteResolve(normalizedTargetSlug, 'pending');
         (async () => {
           try {
             const { fetchKoreaTourAttractionById } = await import('./lib/koreaTourAttractions.js');
             const { tourAttractionToPoiSuggestion } = await import('./lib/koreaPoiTypeSearch.js');
             const row = await fetchKoreaTourAttractionById(tourContentMatch[1]);
-            if (cancelled || !row) return;
+            if (cancelled) return;
+            if (!row) {
+              markPlaceRouteResolve(normalizedTargetSlug, 'missing');
+              return;
+            }
             const pin = tourAttractionToPoiSuggestion(row);
-            if (!pin) return;
+            if (!pin) {
+              markPlaceRouteResolve(normalizedTargetSlug, 'missing');
+              return;
+            }
             if (pin.kind === 'restaurant' || pin.exploreRestaurant) {
               const prepared = {
                 ...pin,
@@ -1070,10 +1095,14 @@ function Home() {
                 skipScenicGateway: true,
               };
               cachePlaceLocation(prepared);
+              markPlaceRouteResolve(normalizedTargetSlug, 'found');
               navigateToPlace(prepared);
               return;
             }
-            if (!Number.isFinite(Number(pin.lat))) return;
+            if (!Number.isFinite(Number(pin.lat))) {
+              markPlaceRouteResolve(normalizedTargetSlug, 'missing');
+              return;
+            }
             const prepared = enrichJoseonRoyalTombsPromoPin({
               ...pin,
               uiPlace: true,
@@ -1081,12 +1110,15 @@ function Home() {
               canonical_slug: normalizedTargetSlug,
             });
             cachePlaceLocation(prepared);
+            markPlaceRouteResolve(normalizedTargetSlug, 'found');
             navigateToPlace(prepared);
           } catch {
-            // TourAPI offline — /place/tour-* 공유 URL은 캐시·fetch 없으면 빈 화면
+            if (!cancelled) markPlaceRouteResolve(normalizedTargetSlug, 'missing');
           }
         })();
-        return;
+        return () => {
+          cancelled = true;
+        };
       }
 
       if (target) {
@@ -1149,6 +1181,8 @@ function Home() {
           const alreadySynced =
             isSameCanonicalPlace(selectedLocationRef.current, focusTarget) &&
             canonicalParam?.toLowerCase() === normalizedTargetSlug;
+
+          markPlaceRouteResolve(normalizedTargetSlug, 'found');
 
           if (!alreadySynced) {
             selectedLocationRef.current = focusTarget;
@@ -1261,9 +1295,14 @@ function Home() {
           setIsCardExpanded(true);
         });
       } else if (isHangulPlaceStatsSlug(targetSlug)) {
+        markPlaceRouteResolve(normalizedTargetSlug, 'pending');
         const hangulSync = ++placeRouteSyncRef.current;
         fetchUiPlacePinFromPlaceStatsSlug(targetSlug).then((pin) => {
-          if (!pin || hangulSync !== placeRouteSyncRef.current) return;
+          if (hangulSync !== placeRouteSyncRef.current) return;
+          if (!pin) {
+            markPlaceRouteResolve(normalizedTargetSlug, 'missing');
+            return;
+          }
           const focusTarget = overlaySessionCuration(
             enrichJoseonRoyalTombsPromoPin(
               enrichLocationWithRentalAirport(
@@ -1285,12 +1324,14 @@ function Home() {
           addScoutPin(focusTarget);
           moveToLocation(focusTarget.lat, focusTarget.lng, focusTarget.name, focusTarget.category);
           setSelectedLocation(focusTarget);
+          markPlaceRouteResolve(normalizedTargetSlug, 'found');
           setIsCardExpanded(true);
         });
       } else {
         queueMicrotask(() => setIsCardExpanded(true));
       }
     } else {
+      setPlaceRouteResolve(null);
       queueMicrotask(() => {
         setIsCardExpanded(false);
       });
@@ -1840,6 +1881,7 @@ function Home() {
         <div className={flightCinemaActive ? 'invisible pointer-events-none' : undefined}>
         <Outlet context={{
           location: selectedLocation,
+          placeRouteResolve,
           isBookmarked: selectedLocation ? savedTrips.some(t => t.destination === selectedLocation.name && t.is_bookmarked) : false,
           isMooniChatOpen: isChatOpen,
           onClose: leavePlaceCard,

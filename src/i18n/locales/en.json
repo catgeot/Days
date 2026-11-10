@@ -834,6 +834,12 @@
     }
   },
   "place": {
+    "notFound": {
+      "seoTitle": "Place not found",
+      "title": "We couldn't find that place",
+      "body": "The link may have changed, or this destination isn't on GATEO yet.",
+      "search": "Search destinations"
+    },
     "fallback": {
       "destination": "Destination",
       "local": "Local",
