@@ -229,6 +229,7 @@ const PublicViewer = () => {
         onClick={handleBack}
         ariaLabel={t('logbook.public.backTitle')}
         title={t('logbook.public.backTitle')}
+        logbookDetailBack
       />
 
       {showDecorativeHeroBlur && (
@@ -246,7 +247,9 @@ const PublicViewer = () => {
 
       <div
         className={`relative z-10 max-w-3xl mx-auto ${
-          editorial ? 'pt-6 sm:pt-12 px-5 sm:px-6' : 'pt-12 px-4 sm:px-6'
+          editorial
+            ? 'max-md:pt-[max(3rem,env(safe-area-inset-top,0px))] pt-6 sm:pt-12 px-5 sm:px-6'
+            : 'pt-12 px-4 sm:px-6'
         }`}
       >
         {showOwnerEdit ? (
@@ -262,7 +265,10 @@ const PublicViewer = () => {
           }
         >
           {editorial ? (
-            <div className="mb-3">
+            <div
+              data-editorial-logbook-badge-header
+              className="mb-3 w-fit max-w-full max-md:pr-[calc(2.75rem+max(1.25rem,env(safe-area-inset-right,0px))+0.5rem)]"
+            >
               <EditorialLogbookBadge report={report} variant="detail" />
             </div>
           ) : null}

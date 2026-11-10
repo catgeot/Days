@@ -15,7 +15,7 @@ export default function EditorialLogbookBadge({ report, variant = 'feed', classN
   if (variant === 'detail') {
     const secondary = editorialLogbookSecondaryNotice(badgeLocale);
     return (
-      <div className={`flex flex-col gap-1 ${className}`.trim()}>
+      <div data-editorial-logbook-badge className={`flex flex-col gap-1 ${className}`.trim()}>
         <span className={chipClassName}>{primary}</span>
         <p className="text-[11px] text-gray-500 leading-snug">{secondary}</p>
       </div>

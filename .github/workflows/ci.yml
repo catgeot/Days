@@ -410,7 +410,7 @@ jobs:
             cat /tmp/vite-logbook-owner-edit.log
             exit 1
           fi
-          PLAYWRIGHT_BASE_URL=http://127.0.0.1:5199 npx playwright test e2e/logbook-public-owner-edit-390.spec.js e2e/logbook-detail-toolbar-layout.spec.js --project=chromium-logbook-owner-edit --reporter=line
+          PLAYWRIGHT_BASE_URL=http://127.0.0.1:5199 npx playwright test e2e/logbook-public-owner-edit-390.spec.js e2e/logbook-detail-toolbar-layout.spec.js e2e/editorial-travelogue-back-badge.spec.js --project=chromium-logbook-owner-edit --reporter=line
 
   explore-search-bare-ko-e2e:
     name: Explore bare KO search E2E (390·1280)
