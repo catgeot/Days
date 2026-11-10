@@ -60,7 +60,7 @@ test('Mapbox poi_category_ids restaurant — 식당 배지·Google 지도·외�
     assert.match(decision?.href || '', /^https:\/\/www\.google\.com\/maps\/search\//);
   }
   assert.equal(shouldEnsurePlaceChatIntroForLocation(ichiran), false);
-  assert.equal(isPlacePlannerEligible(ichiran), false);
+  assert.equal(isPlacePlannerEligible(ichiran), true);
 });
 
 test('Mapbox restaurant — 서울 CoCo Ichibanya 네이버', () => {

@@ -20,6 +20,7 @@ import QaShareRedirect from './pages/QaShare/QaShareRedirect';
 import { isQaMooniMarkdownFixtureEnabled } from './shared/cloudPreview/isQaMooniMarkdownFixtureEnabled.js';
 import { isGateoFestivalRoadEnabled } from './shared/gateoFeatureFlags.js';
 import { isQaFestivalRoadFixtureEnabled } from './shared/cloudPreview/isQaFestivalRoadFixtureEnabled.js';
+import { isQaRestaurantPlannerFixtureEnabled } from './shared/cloudPreview/isQaRestaurantPlannerFixtureEnabled.js';
 const MooniChatMarkdownFixturePage = isQaMooniMarkdownFixtureEnabled
   ? lazy(() => import('./pages/Qa/MooniChatMarkdownFixturePage.jsx'))
   : null;
@@ -40,6 +41,10 @@ const festivalRoadFixtureOn =
   isQaFestivalRoadFixtureEnabled && isGateoFestivalRoadEnabled();
 const FestivalRoadFixturePage = festivalRoadFixtureOn
   ? lazy(() => import('./pages/Qa/FestivalRoadFixturePage.jsx'))
+  : null;
+const restaurantPlannerFixtureOn = isQaRestaurantPlannerFixtureEnabled();
+const RestaurantPlannerFixturePage = restaurantPlannerFixtureOn
+  ? lazy(() => import('./pages/Qa/RestaurantPlannerFixturePage.jsx'))
   : null;
 import AboutPage from './pages/AboutPage';
 
@@ -217,6 +222,16 @@ function App() {
                   element={
                     <Suspense fallback={null}>
                       <FestivalRoadFixturePage />
+                    </Suspense>
+                  }
+                />
+              ) : null}
+              {restaurantPlannerFixtureOn && RestaurantPlannerFixturePage ? (
+                <Route
+                  path="/qa/restaurant-planner-fixture"
+                  element={
+                    <Suspense fallback={null}>
+                      <RestaurantPlannerFixturePage />
                     </Suspense>
                   }
                 />
