@@ -24,11 +24,18 @@ const healthScripts = [
   'health/mooni-chat-markdown-boundary.test.mjs',
   'health/mooni-placeholder-urls.test.mjs',
   'health/mooni-saved-chat-render.test.mjs',
+  'health/mooni-live-guest-storage-fixture.test.mjs',
   'smoke-mooni-chat-markdown.mjs',
 ];
 
+const jsxHook = path.join(repoRoot, 'scripts/register-jsx-hook.mjs');
 for (const rel of healthScripts) {
-  run(process.execPath, [path.join(root, rel)]);
+  const scriptPath = path.join(root, rel);
+  const needsJsx = rel === 'health/mooni-live-guest-storage-fixture.test.mjs';
+  const nodeArgs = needsJsx
+    ? ['--import', jsxHook, '--test', scriptPath]
+    : [scriptPath];
+  run(process.execPath, nodeArgs, { cwd: needsJsx ? repoRoot : root });
 }
 
 if (!process.env.PREVIEW_URL) {

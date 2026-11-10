@@ -40,14 +40,25 @@ test('normalizeMooniMarkdownBoldSpacing — **N일차** 뒤 오전·지명 bold 
   assert.match(md, /\*\*1일차\*\* 오전 \*\*Bohol\*\*/);
 });
 
-test('normalizeMooniMarkdownBoldSpacing — bold 뒤 한글 glue 분리', () => {
+test('normalizeMooniMarkdownBoldSpacing — well-formed bold+hangul glue is not split', () => {
   const md = getMooniModelMarkdownForRender('**미야코지마**시기라미라지', {
     stripPhantomTicketMention: true,
   });
-  assert.match(md, /\*\*미야코지마\*\* 시기라미라지/);
+  assert.match(md, /\*\*미야코지마\*\*시기라미라지/);
   const html = micromark(md, { extensions: [gfm()], htmlExtensions: [gfmHtml()] });
   assert.ok(html.includes('<strong>미야코지마</strong>'), html);
   assert.ok(html.includes('시기라미라지'), html);
+});
+
+test('normalizeMooniMarkdownBoldSpacing — glued 우도에는** 천진항**과 (PROD 10:28)', () => {
+  const md = getMooniModelMarkdownForRender(
+    '우도에는** 천진항**과 **하우목동항** 두 곳이 있어요.',
+    { stripPhantomTicketMention: true },
+  );
+  assert.match(md, /\*\*천진항\*\*과 \*\*하우목동항\*\*/, md);
+  const html = micromark(md, { extensions: [gfm()], htmlExtensions: [gfmHtml()] });
+  assert.ok(html.includes('<strong>천진항</strong>'), html);
+  assert.ok(!html.includes('**'), html);
 });
 
 test('normalizeMooniMarkdownBoldSpacing — PROD 11/9 우도 open-space tight-close bold', () => {
@@ -94,7 +105,7 @@ test('getMooniModelMarkdownForRender — bold + outer-pipe table', () => {
     stripPhantomTicketMention: true,
   });
   assert.match(md, /\*\*1일차\*\* 요약/);
-  assert.match(md, /^\| :--- \|/m);
+  assert.match(md, /^\| --- \|/m);
   const html = micromark(md, { extensions: [gfm()], htmlExtensions: [gfmHtml()] });
   assert.ok(html.includes('<strong>1일차</strong>'), html);
   assert.ok(html.includes('<table'), html);

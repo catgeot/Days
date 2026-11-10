@@ -3,6 +3,8 @@ import { recoverMooniCollapsedGfmTables } from '../../../utils/mooniGfmTableReco
 import { sanitizeMooniMarkdownLinks } from '../../../utils/mooniPlaceholderUrls.js';
 import { sanitizeMooniModelReply } from '../../../utils/mooniReplySanitizer.js';
 import { normalizeMooniMarkdownBoldSpacing } from '../../../utils/mooniMarkdownBoldSpacing.js';
+import { stripOrphanMarkdownBoldAsterisks } from '../../../utils/mooniMarkdownOrphanBold.js';
+import { escapeMicromarkBoldParentheses } from '../../../utils/mooniMarkdownBoldParens.js';
 import { stripMooniScheduleTrailingPipes } from '../../../utils/mooniMarkdownScheduleLine.js';
 import { continueMooniOrderedListNumbers } from '../../../utils/mooniMarkdownOrderedList.js';
 
@@ -25,5 +27,7 @@ export function getMooniModelMarkdownForRender(raw, options = {}) {
   md = stripMooniScheduleTrailingPipes(md);
   md = continueMooniOrderedListNumbers(md);
   md = ensureItineraryMarkdownLineBreaks(sanitizeMooniMarkdownLinks(md));
-  return normalizeMooniMarkdownBoldSpacing(md);
+  md = normalizeMooniMarkdownBoldSpacing(md);
+  md = stripOrphanMarkdownBoldAsterisks(md);
+  return escapeMicromarkBoldParentheses(md);
 }

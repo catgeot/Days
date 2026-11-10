@@ -49,8 +49,8 @@ test('getMooniModelMarkdownForRender — table without outer pipes survives poli
   const md = getMooniModelMarkdownForRender(NO_OUTER_PIPE_TABLE, {
     stripPhantomTicketMention: true,
   });
-  assert.match(md, /^:--- \| :--- \|/m, md);
-  assert.match(md, /^\*\*주요 특징\*\* \|/m, md);
+  assert.match(md, /^\| --- \| --- \|/m, md);
+  assert.match(md, /^\| \*\*주요 특징\*\* \|/m, md);
   const html = renderMooniGfm(md);
   assert.ok(html.includes('<table'), html);
   assert.ok(html.includes('>구분</th>'), html);
@@ -62,7 +62,8 @@ const OUTER_PIPE_TABLE = `| 구분 | 괌 | 오키나와 |
 
 test('getMooniModelMarkdownForRender — outer-pipe :--- table', () => {
   const md = getMooniModelMarkdownForRender(OUTER_PIPE_TABLE, { stripPhantomTicketMention: true });
-  assert.match(md, /^\| :--- \| :--- \|/m);
+  assert.match(md, /^\| --- \| --- \|/m);
+  assert.match(md, /^\| \*\*이동\*\* \|/m);
   const html = renderMooniGfm(md);
   assert.ok(html.includes('<table'), html);
 });
