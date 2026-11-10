@@ -72,25 +72,26 @@ async function expectNoMonthlyHorizontalOverflow(page) {
   expect(overflow).toBeLessThanOrEqual(1);
 }
 
-async function expectNoFullWidthMonthlyBanner(page) {
-  const fullSpan = await page.getByTestId('explore-v2-monthly-layout-b').evaluate((root) => {
-    return [...root.querySelectorAll('[data-testid^="explore-v2-monthly-item-"]')].some((el) => {
-      const grid = root;
+async function expectNoFullWidthMonthlyBannerOnDesktop(page) {
+  const fullSpan = await page.getByTestId('explore-v2-monthly-layout-desktop').evaluate((root) => {
+    return [...root.querySelectorAll('[data-pick-index]')].some((el) => {
       const itemLeft = el.offsetLeft;
       const itemWidth = el.offsetWidth;
-      const gridWidth = grid.clientWidth;
+      const gridWidth = root.clientWidth;
       return itemLeft <= 2 && itemWidth >= gridWidth - 4;
     });
   });
   expect(fullSpan).toBe(false);
 }
 
-async function expectMobileColumnMosaic(page) {
+async function expectMobileLayoutB(page) {
   const report = await page.getByTestId('explore-v2-monthly-layout-b').evaluate((root) => {
     const width = root.clientWidth;
-    const item = (slug) => root.querySelector(`[data-testid="explore-v2-monthly-item-${slug}"]`);
+    const item = (slug) =>
+      root.querySelector(`[data-testid="explore-v2-monthly-item-${slug}"]`);
     const box = (slug) => {
       const el = item(slug);
+      const r = el.getBoundingClientRect();
       return { w: el.offsetWidth / width, top: el.offsetTop, h: el.offsetHeight };
     };
     return {
@@ -102,18 +103,59 @@ async function expectMobileColumnMosaic(page) {
       melbourne: box('melbourne'),
     };
   });
-  expect(report.kyoto.w).toBeGreaterThan(0.5);
-  expect(report.kyoto.w).toBeLessThan(0.7);
-  expect(report.jeju.w).toBeGreaterThan(0.32);
-  expect(report.jeju.w).toBeLessThan(report.kyoto.w);
-  expect(Math.abs(report.kyoto.top - report.jeju.top)).toBeLessThan(2);
-  expect(report.chiang.top).toBeGreaterThan(report.kyoto.top + report.kyoto.h - 2);
-  expect(report.phu.top).toBeGreaterThan(report.jeju.top + report.jeju.h - 2);
-  expect(report.dubai.top).toBeGreaterThan(report.chiang.top);
-  expect(report.melbourne.top).toBeGreaterThan(report.phu.top);
-  for (const box of Object.values(report)) {
-    expect(box.w).toBeLessThan(0.75);
-  }
+  expect(report.kyoto.w).toBeGreaterThan(0.98);
+  expect(report.jeju.w).toBeGreaterThan(0.98);
+  expect(report.chiang.w).toBeGreaterThan(0.45);
+  expect(report.chiang.w).toBeLessThan(0.55);
+  expect(report.phu.w).toBeGreaterThan(0.45);
+  expect(report.dubai.w).toBeGreaterThan(0.45);
+  expect(report.melbourne.w).toBeGreaterThan(0.45);
+  expect(report.jeju.top).toBeGreaterThan(report.kyoto.top + report.kyoto.h - 4);
+}
+
+async function expectDesktopThreeRowGrid(page) {
+  const desktop = page.getByTestId('explore-v2-monthly-layout-desktop');
+  await expect(desktop).toBeVisible();
+  const report = await desktop.evaluate((root) => {
+    const row = (n) => root.querySelector(`[data-testid="explore-v2-monthly-desktop-row-${n}"]`);
+    const rowWidths = (el) => {
+      const items = [...el.querySelectorAll('[data-pick-index]')];
+      return items.map((item) => ({
+        index: Number(item.getAttribute('data-pick-index')),
+        width: item.offsetWidth / el.clientWidth,
+        height: item.getBoundingClientRect().height,
+        variant: item.getAttribute('data-variant'),
+      }));
+    };
+    const row1 = rowWidths(row(1));
+    const row2 = rowWidths(row(2));
+    const row3 = rowWidths(row(3));
+    const tall = root.querySelector('[data-pick-index="1"]');
+    const tallRect = tall?.getBoundingClientRect();
+    return {
+      row1,
+      row2,
+      row3,
+      row1HeightsMatch: Math.abs(row1[0].height - row1[1].height) < 3,
+      row3HeightsMatch: Math.abs(row3[0].height - row3[1].height) < 3,
+      row13HeightsNear:
+        Math.abs(row1[0].height - row3[0].height) < 8 &&
+        Math.abs(row1[1].height - row3[1].height) < 8,
+      row2Shorter:
+        row2[0].height < row1[0].height - 6 && row2[1].height < row1[1].height - 6,
+      tallTallerThanWide: tallRect ? tallRect.height > tallRect.width * 1.02 : false,
+    };
+  });
+  expect(report.row1.map((x) => x.index)).toEqual([0, 1]);
+  expect(report.row2.map((x) => x.index)).toEqual([2, 3]);
+  expect(report.row3.map((x) => x.index)).toEqual([4, 5]);
+  expect(report.row1[0].width).toBeGreaterThan(0.6);
+  expect(report.row1[1].width).toBeGreaterThan(0.28);
+  expect(report.row1[1].width).toBeLessThan(0.4);
+  expect(report.row1HeightsMatch).toBe(true);
+  expect(report.row3HeightsMatch).toBe(true);
+  expect(report.row2Shorter).toBe(true);
+  expect(report.tallTallerThanWide).toBe(true);
 }
 
 async function expectPhotoTallerThanSummary(page) {
@@ -241,7 +283,7 @@ test.describe('Explore monthly picks @flagOff', () => {
     await openExplore(page, { width: 390, height: 844 });
     await expectMonthlyMosaic(page);
     await expectNoMonthlyHorizontalOverflow(page);
-    await expectMobileColumnMosaic(page);
+    await expectMobileLayoutB(page);
     await expectPhotoTallerThanSummary(page);
     await expectIrregularMonthlyCardHeights(page);
     await expectMonthlyCardsDoNotOverlap(page);
@@ -283,18 +325,24 @@ test.describe('Explore monthly picks @flagOff', () => {
     );
   });
 
-  test('1280 — default /explore shows mosaic B without gaps', async ({ page }) => {
+  test('1280 — default /explore shows desktop three-row grid', async ({ page }) => {
     await openExplore(page, { width: 1280, height: 720 });
     await expectMonthlyMosaic(page);
     await expectNoMonthlyHorizontalOverflow(page);
-    await expectNoFullWidthMonthlyBanner(page);
+    await expectDesktopThreeRowGrid(page);
+    await expectNoFullWidthMonthlyBannerOnDesktop(page);
     await expectPhotoTallerThanSummary(page);
-    await expectIrregularMonthlyCardHeights(page);
     await expectMonthlyCardsDoNotOverlap(page);
     await expectMonthlySummaryNotSources(page);
     await expectAllMonthlyPickSlugsVisible(page);
     await expectPhotoAltAndTextPanels(page, (name) => `${name} 대표 사진`);
     await expect(page.getByText('에디터스 픽').first()).toBeVisible({ timeout: 45_000 });
+  });
+
+  test('1440 — desktop three-row grid mirrors row 1 and 3', async ({ page }) => {
+    await openExplore(page, { width: 1440, height: 900 });
+    await expectMonthlyMosaic(page);
+    await expectDesktopThreeRowGrid(page);
   });
 });
 
@@ -335,9 +383,10 @@ test.describe('Explore monthly picks @flagOn', () => {
     await expectNoMonthlyHorizontalOverflow(page);
   });
 
-  test('1280 — env flag on keeps same mosaic B and jeju estimate', async ({ page }) => {
+  test('1280 — env flag on keeps desktop grid and jeju estimate', async ({ page }) => {
     await openExplore(page, { width: 1280, height: 720 });
     await expectMonthlyMosaic(page);
+    await expectDesktopThreeRowGrid(page);
     await expect(
       page.getByTestId('explore-v2-monthly-card-jeju').getByTestId('explore-v2-monthly-estimate'),
     ).toBeVisible();
