@@ -1,6 +1,5 @@
 import { resolveCityAttractionHub } from '../../pages/Home/lib/cityAttractionHubs.js';
 import { extractTourAttractionSigungu } from '../../pages/Home/lib/koreaTourAttractionLocality.js';
-import { resolveKoreaAreaFromCoords } from '../../pages/Korea/resolveKoreaAreaFromCoords.js';
 import { detectSidoFromAddr } from '../../pages/Korea/koreaAreaFilter.js';
 import { hubIdsForArea } from '../../pages/Korea/koreaHubSeeds.js';
 import {
@@ -143,11 +142,6 @@ export function resolveRestaurantPlannerCity(location) {
   }
 
   if (Number.isFinite(lat) && Number.isFinite(lng) && !String(location.addr1 || '').trim()) {
-    const korea = resolveKoreaAreaFromCoords(lat, lng);
-    if (korea?.hubId) {
-      const fromKorea = spotFromHubQuery(korea.hubId);
-      if (fromKorea) return { spot: fromKorea, matchKind: 'koreaCoordsHub' };
-    }
     const fromCoords = spotFromCoordsTight(lat, lng);
     if (fromCoords) return { spot: fromCoords, matchKind: 'coordsTier12' };
   }
