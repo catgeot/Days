@@ -130,8 +130,16 @@ async function main() {
     const plannerHeader = page.getByRole('button', { name: /여행 플래너|Travel planner/i });
     await plannerHeader.waitFor({ state: 'visible', timeout: 30_000 });
     await plannerHeader.click();
-    await page.getByRole('heading', { name: /여행 플래너/ }).waitFor({ state: 'visible', timeout: 30_000 });
-    await page.getByRole('tablist', { name: /플래너 단계|Planner steps/i }).waitFor({ state: 'visible', timeout: 30_000 });
+    await page.getByRole('heading', { name: /여행 플래너|Travel planner/i }).waitFor({ state: 'visible', timeout: 30_000 });
+    const plannerReady = page
+      .getByRole('tablist', { name: /플래너 단계|Planner steps/i })
+      .or(
+        page.getByRole('button', {
+          name: /여행 플래너 만들기|AI 툴킷 실행하기|Run.*planner|Create.*planner/i,
+        }),
+      )
+      .first();
+    await plannerReady.waitFor({ state: 'visible', timeout: 30_000 });
     await page.waitForTimeout(600);
     await shot(page, `restaurant-place-planner-${tag}-ko.png`);
     await context.close();

@@ -163,6 +163,18 @@ async function openExploreSearch(page) {
   return input;
 }
 
+/** 툴킷 행 없으면 #752 빈 플래너(생성 CTA만) — tablist 필수 아님 */
+async function expectRestaurantPlannerPanel(page) {
+  await expect(page.getByRole('heading', { name: /여행 플래너|Travel planner/i })).toBeVisible({
+    timeout: 30_000,
+  });
+  const tablist = page.getByRole('tablist', { name: /플래너 단계|Planner steps/i });
+  const emptyToolkitCta = page.getByRole('button', {
+    name: /여행 플래너 만들기|AI 툴킷 실행하기|Run.*planner|Create.*planner/i,
+  });
+  await expect(tablist.or(emptyToolkitCta).first()).toBeVisible({ timeout: 30_000 });
+}
+
 test.describe('explore restaurant search card split', () => {
   test.beforeEach(async ({ context }) => {
     await installRestaurantSearchMock(context);
@@ -187,8 +199,7 @@ test.describe('explore restaurant search card split', () => {
     const plannerHeader = page.getByRole('button', { name: /여행 플래너|Travel planner/i });
     await expect(plannerHeader).toBeVisible({ timeout: 30_000 });
     await plannerHeader.click();
-    await expect(page.getByRole('heading', { name: /여행 플래너/ })).toBeVisible({ timeout: 30_000 });
-    await expect(page.getByRole('tablist', { name: /플래너 단계|Planner steps/i })).toBeVisible();
+    await expectRestaurantPlannerPanel(page);
 
     await page.goto('/explore');
     const input2 = await openExploreSearch(page);
