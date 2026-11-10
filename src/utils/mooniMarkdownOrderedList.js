@@ -9,8 +9,7 @@ export function continueMooniOrderedListNumbers(markdown) {
   const lines = String(markdown ?? '').split('\n');
   let sectionNum = 0;
   let nestedNum = 0;
-  return lines
-    .map((line) => {
+  const mapped = lines.map((line) => {
       if (BLANK_LINE.test(line)) {
         return line;
       }
@@ -31,6 +30,19 @@ export function continueMooniOrderedListNumbers(markdown) {
         return `${ordered[1]}${sectionNum}. ${rest}`;
       }
       return line;
-    })
-    .join('\n');
+    });
+
+  for (let i = 0; i < mapped.length; i += 1) {
+    const ordered = mapped[i].match(ORDERED_LINE);
+    if (!ordered || /^\*\*/.test(ordered[3].trimStart())) continue;
+    let j = i + 1;
+    while (j < mapped.length && BLANK_LINE.test(mapped[j])) j += 1;
+    if (j < mapped.length && NESTED_ORDERED.test(mapped[j])) {
+      mapped[i] = `${ordered[1]}${ordered[2]}\\. ${ordered[3]}`;
+    }
+  }
+
+  return mapped
+    .join('\n')
+    .replace(/^(\d+\\\. (?!.*\*\*).+)\n(\d+\. \*\*)/gm, '$1\n\n$2');
 }

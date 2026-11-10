@@ -5,26 +5,25 @@ import { getMooniModelMarkdownForRender, getMooniModelRawText } from '../Home/li
 
 const { guam, udo } = liveExtract;
 
-const savedGuamTextOnly = { role: guam.role, text: guam.text, finishReason: guam.finishReason };
-const savedGuamRaw = {
-  role: guam.role,
-  text: guam.text,
-  mooniRawReply: guam.mooniRawReply,
-  finishReason: guam.finishReason,
-};
-const savedUdoTextOnly = { role: udo.role, text: udo.text, finishReason: udo.finishReason };
-const savedUdoRaw = {
-  role: udo.role,
-  text: udo.text,
-  mooniRawReply: udo.mooniRawReply,
-  finishReason: udo.finishReason,
-};
+/** QA·캡처 SSOT — fixture JSON 4경로만 (text·mooniRawReply × guam·udo). */
+function fixtureMessage(entry, mode) {
+  const base = { role: entry.role, finishReason: entry.finishReason };
+  if (mode === 'mooniRawReply') {
+    return { ...base, text: entry.text, mooniRawReply: entry.mooniRawReply };
+  }
+  return { ...base, text: entry.text };
+}
+
+const GUAM_TEXT = fixtureMessage(guam, 'text');
+const GUAM_RAW = fixtureMessage(guam, 'mooniRawReply');
+const UDO_TEXT = fixtureMessage(udo, 'text');
+const UDO_RAW = fixtureMessage(udo, 'mooniRawReply');
 
 function SavedBubble({ msg, testId }) {
   const raw = getMooniModelRawText(msg);
   const display = getMooniModelMarkdownForRender(raw, { stripPhantomTicketMention: true });
   return (
-    <div data-testid={testId} className="w-full max-w-md p-4 rounded-2xl bg-gray-800 text-gray-200">
+    <div data-testid={testId} className="w-full max-w-md p-4 rounded-2xl bg-gray-800 text-gray-200 text-sm leading-relaxed">
       <MooniChatMarkdownBoundary text={display} variant="dark" />
     </div>
   );
@@ -32,23 +31,25 @@ function SavedBubble({ msg, testId }) {
 
 export default function MooniSavedChatMarkdownPage() {
   return (
-    <div className="min-h-screen bg-black/90 p-4 space-y-6">
+    <div className="min-h-screen bg-black/90 p-4 space-y-8">
       <h1 className="text-white text-sm font-mono">MOONi saved chat replay (QA)</h1>
-      <section data-testid="mooni-saved-guam-text-only">
-        <p className="text-cyan-400 text-[10px] font-bold uppercase mb-2">괌 표 — text only (live guest)</p>
-        <SavedBubble msg={savedGuamTextOnly} testId="mooni-saved-guam-text-only-bubble" />
+      <p className="text-gray-500 text-[10px] font-mono">SSOT: src/fixtures/mooniGuestTripsLiveLocalStorageExtract.json</p>
+
+      <section data-testid="mooni-live-guam-text">
+        <p className="text-cyan-400 text-[10px] font-bold uppercase mb-2">guam.text (live guest)</p>
+        <SavedBubble msg={GUAM_TEXT} testId="mooni-saved-guam-text-only-bubble" />
       </section>
-      <section data-testid="mooni-saved-guam-raw">
-        <p className="text-cyan-400 text-[10px] font-bold uppercase mb-2">괌 표 — mooniRawReply (live guest)</p>
-        <SavedBubble msg={savedGuamRaw} testId="mooni-saved-guam-raw-bubble" />
+      <section data-testid="mooni-live-guam-mooniRawReply">
+        <p className="text-cyan-400 text-[10px] font-bold uppercase mb-2">guam.mooniRawReply (live guest · 캡처 괌 표)</p>
+        <SavedBubble msg={GUAM_RAW} testId="mooni-saved-guam-raw-bubble" />
       </section>
-      <section data-testid="mooni-saved-udo-text-only">
-        <p className="text-cyan-400 text-[10px] font-bold uppercase mb-2">우도 — text only (live guest)</p>
-        <SavedBubble msg={savedUdoTextOnly} testId="mooni-saved-udo-text-only-bubble" />
+      <section data-testid="mooni-live-udo-text">
+        <p className="text-cyan-400 text-[10px] font-bold uppercase mb-2">udo.text (live guest)</p>
+        <SavedBubble msg={UDO_TEXT} testId="mooni-saved-udo-text-only-bubble" />
       </section>
-      <section data-testid="mooni-saved-udo-raw">
-        <p className="text-cyan-400 text-[10px] font-bold uppercase mb-2">우도 — mooniRawReply (live guest)</p>
-        <SavedBubble msg={savedUdoRaw} testId="mooni-saved-udo-raw-bubble" />
+      <section data-testid="mooni-live-udo-mooniRawReply">
+        <p className="text-cyan-400 text-[10px] font-bold uppercase mb-2">udo.mooniRawReply (live guest · 캡처 도착·탑승)</p>
+        <SavedBubble msg={UDO_RAW} testId="mooni-saved-udo-raw-bubble" />
       </section>
     </div>
   );

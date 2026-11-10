@@ -15,6 +15,12 @@ const fixture = JSON.parse(
   readFileSync(join(root, 'src/fixtures/mooniGuestTripsLiveLocalStorageExtract.json'), 'utf8'),
 );
 
+test('mooniGuestTripsLiveLocalStorageExtract.json — live extract fingerprint', () => {
+  assert.match(fixture.guam.mooniRawReply, /구분 \| 괌 \(Guam\) \| 오키나와 \(Okinawa\)/);
+  assert.match(fixture.guam.mooniRawReply, /\n: \| : \| : \| : \| :\n\*\*주요 매력\*\*/);
+  assert.match(fixture.udo.mooniRawReply, /우도에는 \*\*천진항\*\*과 \*\*하우목동항\*\* 두/);
+});
+
 function renderMooniHtml(markdown) {
   const store = {};
   mooniRemarkGfm.call({ data: () => store });
@@ -51,7 +57,7 @@ function assertUdoHtml(html, md, label) {
   assert.ok(html.includes('<strong>천진항</strong>'), `${label}: 천진항`);
   assert.ok(html.includes('<strong>하우목동항</strong>'), `${label}: 하우목동항`);
   assert.ok(!html.includes('**'), `${label}: literal **`);
-  assert.match(md, /2\. 탑승 절차\n1\. \*\*승선신고서/, `${label}: nested 1 after section 2`);
+  assert.match(md, /2\\\. 탑승 절차\n{1,2}1\. \*\*승선신고서/, `${label}: nested 1 after section 2`);
   assert.match(md, /\n2\. \*\*신분증/, `${label}: nested 2`);
   assert.match(md, /\n3\. \*\*선착장/, `${label}: nested 3`);
   assert.match(md, /3\. 소요 시간 및 도착 항구/, `${label}: section 3 title`);
