@@ -99,6 +99,9 @@ export function resolveRestaurantPlannerCity(location) {
   const lat = Number(location.lat);
   const lng = Number(location.lng);
 
+  const fromKoreanAddr = spotFromKoreanAddress(location.addr1, location.addr2);
+  if (fromKoreanAddr) return { spot: fromKoreanAddr, matchKind: 'koreanAddrHub' };
+
   const hubId = String(location.hubId || '').trim();
   if (hubId) {
     const spot = spotFromHubQuery(hubId);
@@ -112,9 +115,6 @@ export function resolveRestaurantPlannerCity(location) {
     const fromQuery = spotFromOfficialQuery(parentCity);
     if (fromQuery) return { spot: fromQuery, matchKind: 'parentCityOfficial' };
   }
-
-  const fromKoreanAddr = spotFromKoreanAddress(location.addr1, location.addr2);
-  if (fromKoreanAddr) return { spot: fromKoreanAddr, matchKind: 'koreanAddrHub' };
 
   const regionLabel = restaurantMapSearchRegionLabel(location, 'ko');
   if (regionLabel && regionLabel !== parentCity && !/(?:구|군)$/u.test(regionLabel)) {
@@ -169,13 +169,12 @@ export function isRestaurantPlannerHostLocation(location) {
  * @param {'ko' | 'en' | string} [locale]
  */
 export function getRestaurantPlannerCityLabel(location, locale = 'ko') {
-  const host = resolveRestaurantPlannerCity(location);
-  if (!host?.spot) return '';
+  if (!isRestaurantPlannerHostLocation(location)) return '';
+  const toolkit = getPlannerToolkitLocation(location);
   const en = locale === 'en' || String(locale).startsWith('en');
   return (
-    (en ? host.spot.name_en || host.spot.name : host.spot.name || host.spot.name_en) ||
-  String(host.hub?.name || '').trim() ||
-    getPlaceStableKey(host.spot) ||
+    (en ? toolkit?.name_en || toolkit?.name : toolkit?.name || toolkit?.name_en) ||
+    getPlaceStableKey(toolkit) ||
     ''
   );
 }
