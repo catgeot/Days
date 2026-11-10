@@ -65,6 +65,13 @@ import {
   isPlacePlannerEligible,
   shouldInvokePlaceToolkitUpdate,
 } from '../../../shared/place/placePlannerEligibility.js';
+import {
+  buildPlannerToolkitInvokeBody,
+  getPlannerToolkitLocation,
+  getRestaurantPlannerCityLabel,
+  isRestaurantPlannerHostLocation,
+} from '../../../shared/place/restaurantPlannerCity.js';
+import { isExploreRestaurantItem } from '../../../shared/search/tourRestaurantDetect.js';
 
 // Force Update Toolkit: 관리자 역할 검사가 없으므로 운영 빌드에서는 숨김 (로컬 `vite` 개발 서버에서만 표시)
 const SHOW_TOOLKIT_FORCE_UPDATE = import.meta.env.DEV === true;
@@ -117,15 +124,25 @@ const PlannerTab = ({
     const scrollPlannerToTop = usePlaceMediaScrollToTop('PLANNER', scrollContainerRef, isActive);
 
     const canonicalLocation = useMemo(() => mergeCanonicalTravelSpot(location), [location]);
+    const toolkitLocation = useMemo(() => getPlannerToolkitLocation(canonicalLocation), [canonicalLocation]);
     const plannerEligible = isPlacePlannerEligible(canonicalLocation);
+    const restaurantPlannerHost = isRestaurantPlannerHostLocation(canonicalLocation);
+    const plannerCityLabel = restaurantPlannerHost
+        ? getRestaurantPlannerCityLabel(canonicalLocation, locale)
+        : '';
 
     const guideData = resolvePlannerGuideForDisplay(plannerData, canonicalLocation, locale);
     const storedToolkit = hasStoredToolkitRow(plannerData, canonicalLocation, locale);
-    const showFerryCard = shouldShowFerryCard(canonicalLocation?.slug);
-    const toolkitMismatch = isToolkitLocationMismatch(plannerData, canonicalLocation, locale);
+    const showFerryCard = shouldShowFerryCard(toolkitLocation?.slug || canonicalLocation?.slug);
+    const toolkitMismatch = isToolkitLocationMismatch(plannerData, toolkitLocation, locale);
     const showRunToolkitCta = !storedToolkit;
     const isUpdatingExisting = !!guideData;
-    const localizedPlaceName = getLocalizedPlaceName(canonicalLocation, locale) || canonicalLocation?.name || '';
+    const localizedPlaceName =
+        getLocalizedPlaceName(toolkitLocation, locale) ||
+        toolkitLocation?.name ||
+        getLocalizedPlaceName(canonicalLocation, locale) ||
+        canonicalLocation?.name ||
+        '';
     const loadingMessagesNew = t('place.planner.loading.new', { returnObjects: true });
     const loadingMessagesUpdate = t('place.planner.loading.update', { returnObjects: true });
     const currentMessages = isUpdatingExisting
@@ -225,9 +242,8 @@ const PlannerTab = ({
             setIsRemoteUpdating(false);
             return null;
         }
-        const slug = getPlaceStableKey(canonicalLoc) || canonicalLoc?.slug || location?.slug;
-        const canonicalPlaceId =
-          slug || plannerData?.place_id || canonicalLoc?.name || location?.name;
+        const invokeBody = buildPlannerToolkitInvokeBody(canonicalLoc, locale);
+        const canonicalPlaceId = invokeBody.canonicalPlaceId;
         if (!canonicalPlaceId) {
             setIsRemoteUpdating(false);
             return null;
@@ -248,14 +264,13 @@ const PlannerTab = ({
                 console.log("[PlannerTab] Supabase Edge Function (update-place-toolkit) 호출 시작");
                 const { data, error } = await supabase.functions.invoke('update-place-toolkit', {
                     body: {
-                        placeId: canonicalPlaceId,
-                        canonicalPlaceId,
-                        locationName: localizedPlaceName || placeName || canonicalLoc?.name || location?.name,
-                        lat: canonicalLoc?.lat ?? location?.lat,
-                        lng: canonicalLoc?.lng ?? location?.lng,
-                        country: canonicalLoc?.country ?? location?.country,
-                        slug,
-                        locale,
+                        ...invokeBody,
+                        locationName:
+                            invokeBody.locationName ||
+                            localizedPlaceName ||
+                            placeName ||
+                            canonicalLoc?.name ||
+                            location?.name,
                     },
                 });
 
@@ -348,7 +363,7 @@ const PlannerTab = ({
 
     const rentalPickupBanner = (
         <RentalPickupBanner
-            location={location}
+            location={toolkitLocation}
             essentialGuide={guideData}
             scrollContainerRef={scrollContainerRef}
             className="max-w-md"
@@ -372,7 +387,11 @@ const PlannerTab = ({
         return (
             <div className="w-full h-full flex flex-col items-center justify-center bg-[#f8f9fa] p-6 text-center">
                 <Briefcase size={40} className="text-gray-300 mb-3" aria-hidden />
-                <p className="text-sm text-gray-600 max-w-sm">{t('place.planner.emptyBody')}</p>
+                <p className="text-sm text-gray-600 max-w-sm">
+                    {isExploreRestaurantItem(canonicalLocation)
+                        ? t('place.planner.restaurant.noCity')
+                        : t('place.planner.emptyBody')}
+                </p>
             </div>
         );
     }
@@ -442,9 +461,15 @@ const PlannerTab = ({
                 )}
                 <div className="w-full max-w-lg mx-auto flex flex-col items-center text-center pt-6 lg:pt-0">
                 <Briefcase size={48} className="text-gray-300 mb-4" />
-                <h3 className="text-lg font-bold text-gray-800 mb-2">{t('place.planner.emptyTitle')}</h3>
+                <h3 className="text-lg font-bold text-gray-800 mb-2">
+                    {plannerCityLabel
+                        ? t('place.planner.restaurant.emptyTitle', { city: plannerCityLabel })
+                        : t('place.planner.emptyTitle')}
+                </h3>
                 <p className="text-sm text-gray-500 mb-2 max-w-sm">
-                    {t('place.planner.emptyBody')}
+                    {plannerCityLabel
+                        ? t('place.planner.restaurant.emptyBody', { city: plannerCityLabel })
+                        : t('place.planner.emptyBody')}
                 </p>
                 <p className="text-xs text-gray-400 mb-6 max-w-sm">
                     {t('place.planner.emptyHint')}
@@ -467,7 +492,11 @@ const PlannerTab = ({
                     className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-full font-bold shadow-lg transition-colors text-sm"
                 >
                     <Sparkles size={16} />
-                    <span>{t('place.planner.runToolkit')}</span>
+                    <span>
+                        {plannerCityLabel
+                            ? t('place.planner.restaurant.runToolkit', { city: plannerCityLabel })
+                            : t('place.planner.runToolkit')}
+                    </span>
                 </button>
                 ) : null}
                 {toolkitErrorNotice}
@@ -506,7 +535,9 @@ const PlannerTab = ({
                             <h2 className="text-xl md:text-2xl font-black text-gray-900 flex flex-wrap items-baseline gap-x-2 gap-y-1">
                                 <span className="inline-flex items-center gap-2">
                                     <Briefcase className="text-blue-600" />
-                                    {t('place.planner.title')}
+                                    {plannerCityLabel
+                                        ? t('place.planner.restaurant.title', { city: plannerCityLabel })
+                                        : t('place.planner.title')}
                                 </span>
                                 {guideData?.is_complex ? (
                                     <span className="text-base font-bold tabular-nums text-amber-800/90 md:text-lg md:font-black">
@@ -519,7 +550,9 @@ const PlannerTab = ({
                                 ) : null}
                             </h2>
                             <p className={`${plannerCaption} mt-1 text-gray-600`}>
-                                {t('place.planner.subtitle', { name: localizedPlaceName })}
+                                {plannerCityLabel
+                                    ? t('place.planner.restaurant.subtitle', { city: plannerCityLabel })
+                                    : t('place.planner.subtitle', { name: localizedPlaceName })}
                             </p>
                         </div>
 
@@ -535,7 +568,7 @@ const PlannerTab = ({
                     {isEssentialStage ? renderHybridNotice() : null}
 
                     {isEssentialStage ? (
-                        <RelatedTravelSpots location={location} className="mb-5 shrink-0" />
+                        <RelatedTravelSpots location={toolkitLocation} className="mb-5 shrink-0" />
                     ) : null}
 
                     {isEssentialStage ? (

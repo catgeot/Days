@@ -11,6 +11,7 @@ import { getPlaceStableKey, mergeCanonicalTravelSpot } from '../../../utils/trav
 import { i18n } from '../../../i18n/config';
 import { normalizeAppLocale } from '../../../i18n/constants';
 import { isPlacePlannerEligible } from '../../../shared/place/placePlannerEligibility.js';
+import { getPlannerToolkitLocation } from '../../../shared/place/restaurantPlannerCity.js';
 
 const isDev = import.meta.env.DEV;
 
@@ -23,7 +24,11 @@ export const usePlannerData = (location, mediaMode) => {
     () => (location && typeof location === 'object' ? mergeCanonicalTravelSpot(location) : location),
     [location]
   );
-  const placeKey = getPlaceStableKey(canonicalLocation);
+  const toolkitLocation = useMemo(
+    () => getPlannerToolkitLocation(canonicalLocation),
+    [canonicalLocation],
+  );
+  const placeKey = getPlaceStableKey(toolkitLocation);
   const plannerEligible = isPlacePlannerEligible(canonicalLocation);
   const appLocale = normalizeAppLocale(i18n.language);
 
@@ -56,7 +61,7 @@ export const usePlannerData = (location, mediaMode) => {
     if (!placeKey) return;
     setIsPlannerRefreshing(true);
     try {
-      const data = await fetchToolkitRow(supabase, canonicalLocation, appLocale);
+      const data = await fetchToolkitRow(supabase, toolkitLocation, appLocale);
       if (
         locationRef.current === location ||
         (typeof locationRef.current === 'object' &&
@@ -69,7 +74,7 @@ export const usePlannerData = (location, mediaMode) => {
     } finally {
       setIsPlannerRefreshing(false);
     }
-  }, [location, canonicalLocation, placeKey]);
+  }, [location, toolkitLocation, placeKey, appLocale]);
 
   useEffect(() => {
     if (!placeKey || !plannerEligible) {
@@ -85,7 +90,7 @@ export const usePlannerData = (location, mediaMode) => {
     }
 
     const cached = plannerDataRef.current;
-    const cacheMatchesPlace = toolkitRowMatchesLocation(cached, canonicalLocation);
+    const cacheMatchesPlace = toolkitRowMatchesLocation(cached, toolkitLocation);
 
     // ✅ 장소가 바뀌었거나, 캐시가 현재 장소와 무관하면 리셋
     if (!cacheMatchesPlace) {
@@ -94,7 +99,7 @@ export const usePlannerData = (location, mediaMode) => {
     }
 
     // ✅ place_id만 맞고 essential_guide가 비어 있으면 캐시 무시 후 재조회
-    if (cacheMatchesPlace && !hasUsableToolkitForLocation(cached, canonicalLocation, appLocale)) {
+    if (cacheMatchesPlace && !hasUsableToolkitForLocation(cached, toolkitLocation, appLocale)) {
       if (isDev) {
         console.log(`[usePlannerData] 빈/불일치 툴킷 무시 - placeKey: ${placeKey}, db place_id: ${cached?.place_id}`);
       }
@@ -102,7 +107,7 @@ export const usePlannerData = (location, mediaMode) => {
     }
 
     // ✅ 동일 장소 + 실제 가이드 내용·지리 일치 시에만 재조회 생략
-    if (cacheMatchesPlace && hasUsableToolkitForLocation(cached, canonicalLocation, appLocale)) {
+    if (cacheMatchesPlace && hasUsableToolkitForLocation(cached, toolkitLocation, appLocale)) {
       if (isDev) {
         console.log(`[usePlannerData] 기존 툴킷 유지 - placeKey: ${placeKey}, db place_id: ${cached.place_id}`);
       }
@@ -115,13 +120,13 @@ export const usePlannerData = (location, mediaMode) => {
     setIsToolkitLoading(true);
 
     const fetchToolkitData = async () => {
-      const candidates = buildToolkitPlaceIdCandidates(canonicalLocation);
+      const candidates = buildToolkitPlaceIdCandidates(toolkitLocation);
       if (isDev) {
         console.log(`[usePlannerData] DB 조회 시작 - placeKey: ${placeKey}, candidates:`, candidates);
       }
 
       try {
-        const data = await fetchToolkitRow(supabase, canonicalLocation, appLocale);
+        const data = await fetchToolkitRow(supabase, toolkitLocation, appLocale);
 
         if (isSubscribed) {
           setToolkitData(data || null);
@@ -129,7 +134,7 @@ export const usePlannerData = (location, mediaMode) => {
             if (data) {
               console.log('[usePlannerData] 데이터 로드 완료', {
                 place_id: data.place_id,
-                hasGuide: hasUsableToolkitForLocation(data, canonicalLocation, appLocale),
+                hasGuide: hasUsableToolkitForLocation(data, toolkitLocation, appLocale),
               });
             } else {
               console.log('[usePlannerData] 매칭 행 없음');
@@ -149,7 +154,7 @@ export const usePlannerData = (location, mediaMode) => {
     return () => {
       isSubscribed = false;
     };
-  }, [placeKey, plannerEligible, mediaMode, location, canonicalLocation, appLocale]);
+  }, [placeKey, plannerEligible, mediaMode, location, toolkitLocation, appLocale]);
 
   useEffect(() => {
     const handleToolkitUpdated = (event) => {
@@ -157,7 +162,7 @@ export const usePlannerData = (location, mediaMode) => {
       const essentialGuide = event.detail?.essentialGuide;
       const updateLocale = event.detail?.locale ?? appLocale;
       const guideField = toolkitGuideFieldForLocale(updateLocale);
-      const loc = mergeCanonicalTravelSpot(locationRef.current);
+      const loc = getPlannerToolkitLocation(locationRef.current);
 
       if (!toolkitUpdateMatchesLocation(updatedPlaceId, loc)) return;
 
