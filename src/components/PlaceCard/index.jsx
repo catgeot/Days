@@ -15,6 +15,7 @@ import { isGateoPlaceWorldEventsTabEnabled } from '../../shared/gateoFeatureFlag
 import { mediaModeFromUrlTab } from './common/placeMediaTabRoutes';
 import { isPlacePlannerEligible } from '../../shared/place/placePlannerEligibility.js';
 import PlaceNotFoundView from './PlaceNotFoundView';
+import PlaceRouteErrorView from './PlaceRouteErrorView';
 
 const PlaceCard = () => {
   const { slug, tab } = useParams();
@@ -33,6 +34,7 @@ const PlaceCard = () => {
     onGoHome,
     isMooniChatOpen = false,
     placeRouteResolve = null,
+    onRetryPlaceRoute,
   } = context || {};
 
   const galleryData = usePlaceGallery(contextLocation);
@@ -73,6 +75,9 @@ const PlaceCard = () => {
     if (resolveForSlug?.status === 'pending') return null;
     if (resolveForSlug?.status === 'missing') {
       return <PlaceNotFoundView onGoHome={onGoHome} />;
+    }
+    if (resolveForSlug?.status === 'error') {
+      return <PlaceRouteErrorView onRetry={onRetryPlaceRoute} />;
     }
     return null;
   }

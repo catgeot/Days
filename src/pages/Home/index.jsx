@@ -547,6 +547,7 @@ function Home() {
   const skipHomeSummaryRestoreRef = useRef(false);
   const placeRouteSyncRef = useRef(0);
   const [placeRouteResolve, setPlaceRouteResolve] = useState(null);
+  const [placeRouteRetryEpoch, setPlaceRouteRetryEpoch] = useState(0);
   const dismissRotateResumeTimerRef = useRef(null);
 
   const markPlaceRouteResolve = useCallback((slug, status) => {
@@ -556,6 +557,22 @@ function Home() {
       return { slug: normalized, status };
     });
   }, []);
+
+  const retryPlaceRouteHydration = useCallback(() => {
+    let match = matchPath({ path: '/place/:slug' }, routeLocation.pathname);
+    if (!match) {
+      match = matchPath({ path: '/place/:slug/:tab' }, routeLocation.pathname);
+    }
+    if (!match?.params?.slug) return;
+    let targetSlug = match.params.slug;
+    try {
+      targetSlug = decodeURIComponent(targetSlug);
+    } catch {
+      // ignore malformed percent-encoding in slug
+    }
+    markPlaceRouteResolve(targetSlug.toLowerCase(), 'pending');
+    setPlaceRouteRetryEpoch((n) => n + 1);
+  }, [routeLocation.pathname, markPlaceRouteResolve]);
 
   const clearDismissRotateResumeTimer = useCallback(() => {
     if (dismissRotateResumeTimerRef.current != null) {
@@ -1073,15 +1090,25 @@ function Home() {
         markPlaceRouteResolve(normalizedTargetSlug, 'pending');
         (async () => {
           try {
-            const { fetchKoreaTourAttractionById } = await import('./lib/koreaTourAttractions.js');
+            const { fetchKoreaTourAttractionByIdForPlaceRoute } = await import(
+              './lib/koreaTourAttractions.js'
+            );
             const { tourAttractionToPoiSuggestion } = await import('./lib/koreaPoiTypeSearch.js');
-            const row = await fetchKoreaTourAttractionById(tourContentMatch[1]);
+            const { runPlaceRouteHydrateWithRetry } = await import('./lib/placeRouteAsyncHydrate.js');
+            const outcome = await runPlaceRouteHydrateWithRetry(() =>
+              fetchKoreaTourAttractionByIdForPlaceRoute(tourContentMatch[1]),
+            );
             if (cancelled) return;
-            if (!row) {
+            if (outcome.routeStatus === 'missing') {
               markPlaceRouteResolve(normalizedTargetSlug, 'missing');
               return;
             }
-            const pin = tourAttractionToPoiSuggestion(row);
+            if (outcome.routeStatus === 'error') {
+              markPlaceRouteResolve(normalizedTargetSlug, 'error');
+              return;
+            }
+            const row = outcome.payload?.row;
+            const pin = row ? tourAttractionToPoiSuggestion(row) : null;
             if (!pin) {
               markPlaceRouteResolve(normalizedTargetSlug, 'missing');
               return;
@@ -1113,7 +1140,7 @@ function Home() {
             markPlaceRouteResolve(normalizedTargetSlug, 'found');
             navigateToPlace(prepared);
           } catch {
-            if (!cancelled) markPlaceRouteResolve(normalizedTargetSlug, 'missing');
+            if (!cancelled) markPlaceRouteResolve(normalizedTargetSlug, 'error');
           }
         })();
         return () => {
@@ -1297,36 +1324,58 @@ function Home() {
       } else if (isHangulPlaceStatsSlug(targetSlug)) {
         markPlaceRouteResolve(normalizedTargetSlug, 'pending');
         const hangulSync = ++placeRouteSyncRef.current;
-        fetchUiPlacePinFromPlaceStatsSlug(targetSlug).then((pin) => {
-          if (hangulSync !== placeRouteSyncRef.current) return;
-          if (!pin) {
-            markPlaceRouteResolve(normalizedTargetSlug, 'missing');
-            return;
-          }
-          const focusTarget = overlaySessionCuration(
-            enrichJoseonRoyalTombsPromoPin(
-              enrichLocationWithRentalAirport(
-                healPlaceholderCountry(
-                  mergeCanonicalTravelSpot({
-                    ...pin,
-                    id: pin.id || pin.place_id || `loc-${pin.lat}-${pin.lng}`,
-                    type: pin.type || 'temp-base',
-                    category: pin.category || category,
-                  }),
+        (async () => {
+          try {
+            const { fetchUiPlacePinFromPlaceStatsSlugForPlaceRoute } = await import(
+              './lib/placeStatsSlugHydrate.js'
+            );
+            const { runPlaceRouteHydrateWithRetry } = await import('./lib/placeRouteAsyncHydrate.js');
+            const outcome = await runPlaceRouteHydrateWithRetry(() =>
+              fetchUiPlacePinFromPlaceStatsSlugForPlaceRoute(targetSlug),
+            );
+            if (hangulSync !== placeRouteSyncRef.current) return;
+            if (outcome.routeStatus === 'missing') {
+              markPlaceRouteResolve(normalizedTargetSlug, 'missing');
+              return;
+            }
+            if (outcome.routeStatus === 'error') {
+              markPlaceRouteResolve(normalizedTargetSlug, 'error');
+              return;
+            }
+            const pin = outcome.payload?.pin;
+            if (!pin) {
+              markPlaceRouteResolve(normalizedTargetSlug, 'missing');
+              return;
+            }
+            const focusTarget = overlaySessionCuration(
+              enrichJoseonRoyalTombsPromoPin(
+                enrichLocationWithRentalAirport(
+                  healPlaceholderCountry(
+                    mergeCanonicalTravelSpot({
+                      ...pin,
+                      id: pin.id || pin.place_id || `loc-${pin.lat}-${pin.lng}`,
+                      type: pin.type || 'temp-base',
+                      category: pin.category || category,
+                    }),
+                  ),
                 ),
               ),
-            ),
-            { selectedLocation: selectedLocationRef.current },
-          );
-          selectedLocationRef.current = focusTarget;
-          pendingGlobeHomeFocusRef.current = focusTarget;
-          rememberGlobeFocus(focusTarget);
-          addScoutPin(focusTarget);
-          moveToLocation(focusTarget.lat, focusTarget.lng, focusTarget.name, focusTarget.category);
-          setSelectedLocation(focusTarget);
-          markPlaceRouteResolve(normalizedTargetSlug, 'found');
-          setIsCardExpanded(true);
-        });
+              { selectedLocation: selectedLocationRef.current },
+            );
+            selectedLocationRef.current = focusTarget;
+            pendingGlobeHomeFocusRef.current = focusTarget;
+            rememberGlobeFocus(focusTarget);
+            addScoutPin(focusTarget);
+            moveToLocation(focusTarget.lat, focusTarget.lng, focusTarget.name, focusTarget.category);
+            setSelectedLocation(focusTarget);
+            markPlaceRouteResolve(normalizedTargetSlug, 'found');
+            setIsCardExpanded(true);
+          } catch {
+            if (hangulSync === placeRouteSyncRef.current) {
+              markPlaceRouteResolve(normalizedTargetSlug, 'error');
+            }
+          }
+        })();
       } else {
         queueMicrotask(() => setIsCardExpanded(true));
       }
@@ -1337,7 +1386,7 @@ function Home() {
       });
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps -- /place/ URL sync: only path + savedTrips; add selectedLocation/set/move would loop with microtask hydration
-  }, [routeLocation.pathname, savedTrips]);
+  }, [routeLocation.pathname, savedTrips, placeRouteRetryEpoch]);
 
   const prevPathRef = useRef(routeLocation.pathname);
   useEffect(() => () => {
@@ -1882,6 +1931,7 @@ function Home() {
         <Outlet context={{
           location: selectedLocation,
           placeRouteResolve,
+          onRetryPlaceRoute: retryPlaceRouteHydration,
           isBookmarked: selectedLocation ? savedTrips.some(t => t.destination === selectedLocation.name && t.is_bookmarked) : false,
           isMooniChatOpen: isChatOpen,
           onClose: leavePlaceCard,
