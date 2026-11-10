@@ -58,18 +58,52 @@ test('merge dedupes same slug across slug and location lists', () => {
   assert.equal(travelogueRowKey(row), 'slug:rio-de-janeiro-travelogue');
 });
 
-test('dedupeTraveloguesAgainstVisitStories removes cairo visit story overlap', () => {
+test('dedupeTraveloguesAgainstVisitStories keeps published editorial travelogue on dedicated card', () => {
   const row = publishedEditorial({
     id: 66,
     slug: 'cairo-travelogue',
-    title: '카이로 GATEO 기행문',
+    title: '사막이 강을 만나는 곳',
   });
   const visitStories = [
     {
-      id: 66,
+      id: 'review-1',
+      kind: 'review',
+      title: '골목의 코샤리',
+      href: '',
+    },
+  ];
+  const out = dedupeTraveloguesAgainstVisitStories([row], visitStories);
+  assert.equal(out.length, 1);
+  assert.equal(out[0].slug, 'cairo-travelogue');
+});
+
+test('selectPlaceEditorialTravelogueCards keeps cairo editorial when visit stories omit it', () => {
+  const row = publishedEditorial({
+    id: 66,
+    slug: 'cairo-travelogue',
+    title: '사막이 강을 만나는 곳',
+    place_slug: 'cairo',
+  });
+  const visitStories = [{ id: 'r1', kind: 'review', title: '리뷰', href: '' }];
+  const cards = selectPlaceEditorialTravelogueCards([row], visitStories);
+  assert.equal(cards.length, 1);
+  assert.equal(cards[0].slug, 'cairo-travelogue');
+});
+
+test('dedupeTraveloguesAgainstVisitStories still removes non-editorial logbook overlap', () => {
+  const row = {
+    id: 99,
+    title: '나일강의 저녁',
+    slug: 'user-cairo-trip',
+    is_editorial: false,
+    status: 'published',
+  };
+  const visitStories = [
+    {
+      id: 99,
       kind: 'logbook',
-      title: '카이로 GATEO 기행문',
-      href: '/blog/e/cairo-travelogue',
+      title: '나일강의 저녁',
+      href: '/blog/e/user-cairo-trip',
     },
   ];
   const out = dedupeTraveloguesAgainstVisitStories([row], visitStories);

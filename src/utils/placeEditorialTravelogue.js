@@ -40,6 +40,7 @@ export function dedupeTraveloguesAgainstVisitStories(items, visitStories) {
     if (story?.id != null) ids.add(String(story.id));
   }
   return (items || []).filter((row) => {
+    if (isEditorialLogbookPublished(row)) return true;
     const href = publicLogbookDetailPath(row);
     if (href && hrefs.has(href)) return false;
     if (row?.id != null && ids.has(String(row.id))) return false;

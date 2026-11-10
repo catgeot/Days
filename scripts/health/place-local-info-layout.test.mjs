@@ -107,6 +107,24 @@ test('sketch assigns the first matching section once', () => {
   ]);
 });
 
+test('selectVisitStories excludes editorial logbooks (GATEO 기행문 stays on dedicated card)', () => {
+  const names = ['파리', 'Paris', 'paris'];
+  const stories = selectVisitStories([
+    {
+      id: 71,
+      kind: 'logbook',
+      title: '오르세 시계 너머의 센강',
+      date: '2026-10-26',
+      editorial: true,
+      href: '/blog/e/paris-travelogue',
+    },
+    { id: 'rev', kind: 'review', title: '몽마르트 골목', date: '2026-10-20', editorial: false },
+    { id: 'user', kind: 'logbook', title: '루브르 한 바퀴', date: '2026-09-01', editorial: false },
+  ], names);
+  assert.equal(stories.some((row) => row.href === '/blog/e/paris-travelogue'), false);
+  assert.deepEqual(stories.map((row) => row.title), ['몽마르트 골목', '루브르 한 바퀴']);
+});
+
 test('visit story titles come from stored titles only', () => {
   const names = ['카이로', 'Cairo', 'cairo'];
   const stories = selectVisitStories([
@@ -119,8 +137,8 @@ test('visit story titles come from stored titles only', () => {
     { id: '7', kind: 'review', title: '예시 제목', editorial: false },
   ], names);
   assert.deepEqual(stories.map((row) => row.title), ['사흘의 윤곽', '나일강의 저녁']);
-  assert.equal(stories[0].kind, 'logbook');
-  assert.equal(stories[0].editorial, true);
+  assert.equal(stories[0].kind, 'review');
+  assert.equal(stories[0].editorial, false);
   assert.equal(stories.some((row) => row.title === '예시 제목'), false);
   assert.equal(stories.some((row) => !row.title), false);
 });

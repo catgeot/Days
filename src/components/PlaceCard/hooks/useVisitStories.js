@@ -77,7 +77,7 @@ export function useVisitStories(location) {
       ...(card?.aliases || []),
     ];
     const entries = [
-      ...(blogs || []).map((blog) => ({
+      ...(blogs || []).filter((blog) => !blog.is_editorial).map((blog) => ({
         id: blog.id,
         kind: 'logbook',
         title: blog.title,
