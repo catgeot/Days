@@ -29,8 +29,11 @@ import {
   isGateoExploreV2Enabled,
 } from '../../src/shared/gateoFeatureFlags.js';
 import {
-  groupExploreMonthlyPickColumns,
-  resolveExploreMonthlyPickGridSlot,
+  EXPLORE_MONTHLY_PICK_DESKTOP_ROWS,
+  EXPLORE_MONTHLY_PICK_LAYOUT_B_GRID_CLASS,
+  resolveExploreMonthlyPickDesktopVariant,
+  resolveExploreMonthlyPickLayoutBGridClass,
+  resolveExploreMonthlyPickLayoutBVariant,
 } from '../../src/pages/Home/components/SearchDiscovery/exploreMonthlyGridLayout.js';
 
 const MONTH_KEY = '2026-11';
@@ -209,38 +212,30 @@ test('monthly row renders mosaic B only (no layout query branch)', () => {
   assert.doesNotMatch(lib, /readExploreV2LayoutParam|readExploreV2QueryParam/);
 });
 
-test('monthly layout B uses two columns without row span or full-width banners', () => {
+test('monthly layout: xl desktop 3-row grid + sub-xl layout B (hero, tiles, jeju wide)', () => {
   const dir = join(root, 'src/pages/Home/components/SearchDiscovery');
   const layoutB = readFileSync(join(dir, 'ExploreMonthlyPicksLayoutB.jsx'), 'utf8');
   const gridLayout = readFileSync(join(dir, 'exploreMonthlyGridLayout.js'), 'utf8');
   assert.match(layoutB, /exploreMonthlyGridLayout/);
-  assert.match(layoutB, /groupExploreMonthlyPickColumns/);
-  assert.match(layoutB, /EXPLORE_MONTHLY_PICK_BOARD_CLASS/);
-  assert.doesNotMatch(layoutB, /distributeExploreMonthlyPickColumns|matchMedia/);
-  assert.match(gridLayout, /items-start/);
-  assert.match(gridLayout, /lg:grid-cols-3/);
-  assert.match(gridLayout, /lg:contents/);
-  assert.doesNotMatch(gridLayout, /col-span-12|row-span|row-start|col-start|grid-cols-6/);
-  assert.equal(resolveExploreMonthlyPickGridSlot('kyoto').variant, 'portrait');
-  assert.equal(resolveExploreMonthlyPickGridSlot('kyoto').photoClass, 'aspect-[4/5]');
-  assert.equal(resolveExploreMonthlyPickGridSlot('chiang-mai').photoClass, 'aspect-[3/2]');
-  assert.equal(resolveExploreMonthlyPickGridSlot('phu-quoc').photoClass, 'aspect-[3/2]');
-  assert.equal(resolveExploreMonthlyPickGridSlot('jeju').variant, 'landscape');
-  assert.equal(resolveExploreMonthlyPickGridSlot('jeju').photoClass, 'aspect-[3/2]');
-  assert.equal(resolveExploreMonthlyPickGridSlot('dubai').photoClass, 'aspect-[4/5]');
-  assert.equal(resolveExploreMonthlyPickGridSlot('melbourne').photoClass, 'aspect-[4/3]');
-  const grouped = groupExploreMonthlyPickColumns(
-    EXPECTED_SLUGS.map((slug) => ({ spot: { slug }, entry: { slug } })),
-  );
-  assert.deepEqual(
-    grouped.map((column) => column.map((card) => card.spot.slug)),
-    [
-      ['kyoto', 'chiang-mai', 'dubai'],
-      ['jeju', 'phu-quoc', 'melbourne'],
-    ],
-  );
+  assert.match(layoutB, /EXPLORE_MONTHLY_PICK_LAYOUT_B_GRID_CLASS/);
+  assert.match(layoutB, /EXPLORE_MONTHLY_PICK_DESKTOP_ROWS/);
+  assert.match(layoutB, /explore-v2-monthly-layout-desktop/);
+  assert.match(layoutB, /useExploreMonthlyPickDesktopLayout/);
+  assert.match(gridLayout, /grid-cols-6/);
+  assert.match(gridLayout, /EXPLORE_MONTHLY_PICK_LAYOUT_B_GRID_CLASS/);
+  assert.equal(EXPLORE_MONTHLY_PICK_LAYOUT_B_GRID_CLASS.includes('grid-cols-12'), true);
+  assert.equal(resolveExploreMonthlyPickLayoutBVariant(0, 'kyoto'), 'hero');
+  assert.equal(resolveExploreMonthlyPickLayoutBVariant(3, 'jeju'), 'wide');
+  assert.equal(resolveExploreMonthlyPickLayoutBGridClass(0, 'kyoto'), 'col-span-12');
+  assert.equal(resolveExploreMonthlyPickLayoutBGridClass(3, 'jeju'), 'col-span-12');
+  assert.equal(resolveExploreMonthlyPickLayoutBGridClass(1, 'chiang-mai'), 'col-span-6');
+  assert.equal(resolveExploreMonthlyPickDesktopVariant(0), 'wide');
+  assert.equal(resolveExploreMonthlyPickDesktopVariant(1), 'tall');
+  assert.equal(resolveExploreMonthlyPickDesktopVariant(2), 'mid');
+  assert.equal(resolveExploreMonthlyPickDesktopVariant(5), 'wide');
+  const desktopIndices = EXPLORE_MONTHLY_PICK_DESKTOP_ROWS.flat().map((s) => s.index);
+  assert.deepEqual(desktopIndices, [0, 1, 2, 3, 4, 5]);
   assert.doesNotMatch(layoutB, /distributeFestivalHubMasonryColumns|partitionFestivalHubSegments/);
-  assert.doesNotMatch(layoutB, /sourcesBelow/);
   assert.equal(existsSync(join(dir, 'exploreMonthlyMasonryLayout.js')), false);
 });
 
