@@ -80,13 +80,15 @@ export function selectVisitStories(entries, placeNames) {
   const seen = new Set();
   const rows = [];
   for (const entry of entries || []) {
+    const kind = entry.kind === 'review' ? 'review' : 'logbook';
+    if (kind === 'logbook' && Boolean(entry.editorial || entry.is_editorial)) continue;
     const title = String(entry?.title || '').trim();
     const key = normTitle(title);
     if (!key || nameKeys.has(key) || seen.has(key)) continue;
     seen.add(key);
     rows.push({
       id: String(entry.id || key),
-      kind: entry.kind === 'review' ? 'review' : 'logbook',
+      kind,
       title,
       editorial: Boolean(entry.editorial || entry.is_editorial),
       date: entry.date || entry.created_at || entry.published_at || '',
