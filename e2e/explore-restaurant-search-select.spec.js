@@ -184,7 +184,11 @@ test.describe('explore restaurant search card split', () => {
     await bodyBtn.click();
     await page.waitForURL(/\/place\/tour-403053/, { timeout: 60_000 });
     await expect(page).toHaveURL(/\/place\/tour-403053(?:\/|$|\?)/);
-    await expect(page.getByRole('button', { name: /서울|Seoul/i }).first()).toBeVisible({ timeout: 30_000 });
+    const plannerHeader = page.getByRole('button', { name: /여행 플래너|Travel planner/i });
+    await expect(plannerHeader).toBeVisible({ timeout: 30_000 });
+    await plannerHeader.click();
+    await expect(page.getByRole('heading', { name: /여행 플래너/ })).toBeVisible({ timeout: 30_000 });
+    await expect(page.getByRole('tablist', { name: /플래너 단계|Planner steps/i })).toBeVisible();
 
     await page.goto('/explore');
     const input2 = await openExploreSearch(page);

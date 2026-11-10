@@ -48,7 +48,7 @@ async function installMock(context) {
     }
     const action = String(body.action || '').trim();
     const row = RESTAURANT_ROWS[0];
-  if (action === 'searchKeyword') {
+    if (action === 'searchKeyword') {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -116,7 +116,7 @@ async function main() {
     await installMock(context);
     const page = await context.newPage();
     await page.goto(`${BASE}/explore`, { waitUntil: 'domcontentloaded' });
-    const input = page.getByRole('textbox').first();
+    const input = page.getByRole('textbox', { name: /예: 속초|e\.g\. Sokcho/i }).first();
     await input.waitFor({ state: 'visible', timeout: 60_000 });
     await input.fill('명동교자');
     const card = page
@@ -127,8 +127,12 @@ async function main() {
     await shot(page, `restaurant-search-card-${tag}-ko.png`);
     await card.locator('button').first().click();
     await page.waitForURL(/\/place\/tour-403053/, { timeout: 60_000 });
-    await page.getByRole('tab', { name: /플래너|Planner/i }).click({ timeout: 30_000 }).catch(() => {});
-    await page.waitForTimeout(800);
+    const plannerHeader = page.getByRole('button', { name: /여행 플래너|Travel planner/i });
+    await plannerHeader.waitFor({ state: 'visible', timeout: 30_000 });
+    await plannerHeader.click();
+    await page.getByRole('heading', { name: /여행 플래너/ }).waitFor({ state: 'visible', timeout: 30_000 });
+    await page.getByRole('tablist', { name: /플래너 단계|Planner steps/i }).waitFor({ state: 'visible', timeout: 30_000 });
+    await page.waitForTimeout(600);
     await shot(page, `restaurant-place-planner-${tag}-ko.png`);
     await context.close();
   }
