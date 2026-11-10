@@ -863,7 +863,7 @@ function FestivalRow({
           <FestivalPhotoFrame
             src={img}
             alt={item.title || ''}
-            className={`w-full h-full object-cover ${viewed ? 'opacity-75 saturate-[.55]' : ''}`}
+            className="w-full h-full object-cover"
             loading="lazy"
             decoding="async"
             referrerPolicy="no-referrer"

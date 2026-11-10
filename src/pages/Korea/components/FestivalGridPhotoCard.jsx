@@ -146,7 +146,7 @@ export default function FestivalGridPhotoCard({
                 fetchPriority={priorityThumb ? 'high' : undefined}
                 decoding="async"
                 referrerPolicy="no-referrer"
-                className={`absolute inset-0 z-[1] h-full w-full ${photoFitClass} ${viewed ? 'opacity-75 saturate-[.55]' : ''}`}
+                className={`absolute inset-0 z-[1] h-full w-full ${photoFitClass}`}
                 pendingShimmer={!thumbDecoded}
                 fallback={
                   <span className="absolute inset-0" data-festival-grid-thumb-fallback="">
@@ -202,9 +202,7 @@ export default function FestivalGridPhotoCard({
               <p
                 className={`${
                   isWideCard ? 'text-[14px]' : 'text-[13px]'
-                } font-bold leading-[1.32] line-clamp-2 break-keep ${
-                  viewed ? 'text-stone-500' : 'text-stone-900'
-                }`}
+                } font-bold leading-[1.32] line-clamp-2 break-keep text-stone-900`}
               >
                 {titleLines.primary}
               </p>
@@ -221,9 +219,7 @@ export default function FestivalGridPhotoCard({
             <p
               className={`${
                 isWideCard ? 'text-[14px]' : 'text-[13px]'
-              } font-bold leading-[1.32] line-clamp-2 break-keep ${
-                viewed ? 'text-stone-500' : 'text-stone-900'
-              }`}
+              } font-bold leading-[1.32] line-clamp-2 break-keep text-stone-900`}
               {...koText}
             >
               {titleLines?.primary}
