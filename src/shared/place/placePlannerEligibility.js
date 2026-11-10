@@ -1,13 +1,16 @@
 import { isExploreRestaurantItem } from '../search/tourRestaurantDetect.js';
 import { getPlaceStableKey } from '../../utils/travelSpotResolve.js';
+import { resolveRestaurantPlannerCity } from './restaurantPlannerCity.js';
 
 /**
- * TourPOI·음식점 — 여행 플래너·place_toolkit UI·Edge 생성 대상 아님.
+ * TourPOI·음식점 — 도시 호스트가 확실할 때만 플래너·toolkit UI·Edge 생성.
  * @param {object | null | undefined} location
  */
 export function isPlacePlannerEligible(location) {
   if (!location || typeof location !== 'object') return false;
-  if (isExploreRestaurantItem(location)) return false;
+  if (isExploreRestaurantItem(location)) {
+    return resolveRestaurantPlannerCity(location) != null;
+  }
   const stable = String(getPlaceStableKey(location) || location.slug || '').toLowerCase();
   if (location.uiPlace === true && location.kind === 'restaurant') return false;
   if (/^tour-\d+$/u.test(stable) && (location.contentTypeId === '39' || location.content_type_id === '39')) {

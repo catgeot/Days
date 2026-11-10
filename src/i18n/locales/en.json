@@ -1027,6 +1027,14 @@
       "emptyMismatch": "Saved toolkit content does not match {{name}}. Please run the AI toolkit again.",
       "emptyStale": "A saved record exists but the guide body is empty. Run again below or tap Reload saved data.",
       "runToolkit": "Run AI toolkit",
+      "restaurant": {
+        "noCity": "We can't tie a travel planner to this restaurant because its city isn't clear enough.",
+        "title": "{{city}} travel planner",
+        "subtitle": "Essential survival info and curated picks for {{city}}",
+        "emptyTitle": "{{city}} travel planner",
+        "emptyBody": "Run the guide for visas, transport, stays, eSIM, and more for {{city}}?",
+        "runToolkit": "Build {{city}} travel planner"
+      },
       "toolkitChecking": "Checking AI toolkit",
       "toolkitCreating": "Building AI toolkit",
       "searchOn": "Search on {{label}}",
