@@ -153,20 +153,21 @@ const PlannerTab = ({
             ? loadingMessagesNew
             : LOADING_MESSAGES_NEW);
 
-    // isRemoteUpdating 플래그를 로딩 조건에 추가
+    const isFetchingStoredToolkit = isPlannerLoading && !isRemoteUpdating;
+    const isGeneratingToolkit = isRemoteUpdating;
     const isLoading = isPlannerLoading || isRemoteUpdating;
 
-    // 로딩 메시지 순차적 변경 (주기 4초로 변경)
+    // 로딩 메시지 순차적 변경 (주기 4초로 변경) — AI 생성·갱신 중에만
     useEffect(() => {
         let interval;
-        if (isLoading) {
+        if (isGeneratingToolkit) {
             setLoadingStep(0);
             interval = setInterval(() => {
                 setLoadingStep((prev) => (prev < currentMessages.length - 1 ? prev + 1 : prev));
             }, 4000); // 4초마다 다음 메시지로
         }
         return () => clearInterval(interval);
-    }, [isLoading, currentMessages]);
+    }, [isGeneratingToolkit, currentMessages]);
 
     useEffect(() => {
         if (!isActive) return undefined;
@@ -396,9 +397,40 @@ const PlannerTab = ({
         );
     }
 
-    if (isLoading) {
+    if (isFetchingStoredToolkit) {
         return (
-            <div className="w-full h-full flex flex-col bg-[#f8f9fa]">
+            <div
+                className="w-full h-full flex flex-col bg-[#f8f9fa]"
+                data-planner-stored-fetch-loading=""
+            >
+                {mobileSecondaryNav && (
+                    <div className={`lg:hidden shrink-0 border-b border-gray-200/90 bg-[#f8f9fa] px-2 pb-2 ${mobilePlaceHeaderScrollPadding}`}>
+                        {mobileSecondaryNav}
+                    </div>
+                )}
+                <div className="flex flex-1 flex-col p-4 sm:p-6 min-h-0 overflow-y-auto">
+                    <div className="w-full max-w-2xl mx-auto flex flex-col gap-5 animate-pulse">
+                        <div className="flex items-center gap-2 text-sm text-gray-500 font-medium">
+                            <Loader2 size={16} className="animate-spin text-blue-500 shrink-0" aria-hidden />
+                            <span>{t('place.summary.preparing')}</span>
+                        </div>
+                        <div className="h-8 bg-gray-200/90 rounded-lg w-2/3 max-w-xs" />
+                        <div className="h-4 bg-gray-200/70 rounded w-full max-w-md" />
+                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                            <div className="h-32 bg-gray-200/80 rounded-2xl" />
+                            <div className="h-32 bg-gray-200/80 rounded-2xl" />
+                        </div>
+                        <div className="h-24 bg-gray-200/75 rounded-2xl w-full" />
+                        <div className="h-20 bg-gray-200/70 rounded-2xl w-full" />
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    if (isGeneratingToolkit) {
+        return (
+            <div className="w-full h-full flex flex-col bg-[#f8f9fa]" data-planner-toolkit-generating="">
                 {mobileSecondaryNav && (
                     <div className={`lg:hidden shrink-0 border-b border-gray-200/90 bg-[#f8f9fa] px-2 pb-2 ${mobilePlaceHeaderScrollPadding}`}>
                         {mobileSecondaryNav}
