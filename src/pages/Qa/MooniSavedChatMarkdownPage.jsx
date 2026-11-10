@@ -2,11 +2,14 @@ import React from 'react';
 import { MooniChatMarkdownBoundary } from '../../components/chat/MooniChatMarkdownBoundary.jsx';
 import { getMooniModelMarkdownForRender, getMooniModelRawText } from '../Home/lib/mooniModelMessageText.js';
 
-const LIVE_GUAM_TABLE =
-  '구분 | 괌 | 오키나와 | 팔라우 | 보홀 : | : | : | : | 주요 특징 | 쇼핑과 휴양의 조화 | 일본식 문화와 휴양 | 세계적인 다이빙 명소 | 자연 친화적, 돌고래 투어 이동 편의 | 직항 많고 접근성 좋음 | 직항 많고 교통 편리 | 직항 적음, 경유 필요 | 세부 경유 또는 직항 주요 활동 | 쇼핑, 해양 액티비티 | 역사 유적, 드라이브 | 스쿠버 다이빙, 스노클링 | 초콜릿 힐, 안경원숭이 추천 동행 | 가족 여행객 | 가족, 커플, 친구 | 다이빙 애호가 | 자연을 선호하는 커플';
+const LIVE_GUAM_TABLE = `구분 | 괌 | 오키나와 | 팔라우 | 보홀
+: | : | : | : | :
+**주요 특징** | 쇼핑과 휴양의 조화 | 일본식 문화와 휴양 | 세계적인 다이빙 명소 | 자연 친화적, 돌고래 투어
+이동 편의 | 직항 많고 접근성 좋음 | 직항 많고 교통 편리 | 직항 적음, 경유 필요 | 세부 경유 또는 직항
+주요 활동 | 쇼핑, 해양 액티비티 | 역사 유적, 드라이브 | 스쿠버 다이빙, 스노클링 | 초콜릿 힐, 안경원숭이
+추천 동행 | 가족 여행객 | 가족, 커플, 친구 | 다이빙 애호가 | 자연을 선호하는 커플`;
 
-const LIVE_UDO_BOLD =
-  '우도에는 ** 천진항**과 ** 하우목동항** 두 곳이 있어요.\n\n**이동 시간**: 15분\n\n**출발 항구 선택**: 성산';
+const LIVE_UDO_BOLD = '우도에는** 천진항**과 **하우목동항** 두 곳이 있어요.\n\n**이동 시간**: 15분';
 
 const savedTextOnly = { role: 'model', text: LIVE_GUAM_TABLE };
 const savedRaw = { role: 'model', text: LIVE_GUAM_TABLE, mooniRawReply: LIVE_GUAM_TABLE };
