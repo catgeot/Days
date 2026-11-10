@@ -13,7 +13,12 @@ const page = await context.newPage();
 
 await page.goto(`${baseURL}/qa/mooni-markdown-fixture`, { waitUntil: 'networkidle' });
 
-for (const testId of ['mooni-md-table', 'mooni-md-collapsed-table', 'mooni-md-live-merged-table']) {
+for (const testId of [
+  'mooni-md-table',
+  'mooni-md-collapsed-table',
+  'mooni-md-live-merged-table',
+  'mooni-md-prod-collapsed-compare',
+]) {
   const tableCount = await page.locator(`[data-testid="${testId}"] table`).count();
   if (tableCount < 1) {
     throw new Error(`${testId}: expected <table>, got ${tableCount}`);
@@ -80,6 +85,37 @@ await page.setViewportSize({ width: 1280, height: 800 });
 await page.locator('[data-testid="mooni-md-live-merged-table"]').screenshot({
   path: path.join(outDir, 'live-merged-table-desktop-1280.png'),
 });
+
+const prodCompare = await page.locator('[data-testid="mooni-md-prod-collapsed-compare"]').boundingBox();
+if (prodCompare) {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.screenshot({
+    path: path.join(outDir, 'prod-guam-compare-mobile-390.png'),
+    clip: {
+      x: 0,
+      y: Math.max(0, prodCompare.y - 8),
+      width: 390,
+      height: Math.min(720, prodCompare.height + 24),
+    },
+  });
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.locator('[data-testid="mooni-md-prod-collapsed-compare"]').screenshot({
+    path: path.join(outDir, 'prod-guam-compare-desktop-1280.png'),
+  });
+}
+
+const udoBold = await page.locator('[data-testid="mooni-md-udo-spaced-bold"]').boundingBox();
+if (udoBold) {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.screenshot({
+    path: path.join(outDir, 'udo-spaced-bold-mobile-390.png'),
+    clip: { x: 0, y: Math.max(0, udoBold.y - 8), width: 390, height: Math.min(120, udoBold.height + 16) },
+  });
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.locator('[data-testid="mooni-md-udo-spaced-bold"]').screenshot({
+    path: path.join(outDir, 'udo-spaced-bold-desktop-1280.png'),
+  });
+}
 
 await page.setViewportSize({ width: 390, height: 844 });
 await page.locator('[data-testid="mooni-md-ordered-gap"]').screenshot({

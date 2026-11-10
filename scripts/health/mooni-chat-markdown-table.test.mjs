@@ -70,6 +70,23 @@ test('getMooniModelMarkdownForRender — outer-pipe :--- table', () => {
 const LIVE_ONE_LINE_COMPARE =
   '| 구분 | 괌 | 사이판 | 세부 | 보홀 | : | : | : | : | : | **주요 매력** | 괌 | 사이판 | 세부 | 보홀 |';
 
+const PROD_LIVE_Guam_COMPARE =
+  '구분 | 괌 (Guam) | 오키나와 (Okinawa) | 팔라우 (Palau) | 보홀 (Bohol) : | : | : | : | : 주요 매력 | 쇼핑, 휴양, 가족 친화적 | 드라이브, 미식, 역사 탐방 | 최고의 다이빙 및 스노클링 | 자연 경관, 돌고래 투어 분위기 | 세련되고 편리한 휴양지 | 일본 감성의 여유로운 섬 | 원시 자연 그대로의 평화 | 자연과 어우러진 이동 편의 | 렌터카 선호, 교통 편리 | 렌터카 필수 | 투어 위주 이동 | 렌터카/툭툭 이동 추천 대상 | 쇼핑과 휴식을 중시하는 커플 | 먹거리와 문화 체험 선호 커플 | 바다 속 풍경을 사랑하는 커플 | 이색적인 자연 체험 선호 커플';
+
+test('getMooniModelMarkdownForRender — PROD live 괌·오키나와 collapsed compare table', () => {
+  const md = getMooniModelMarkdownForRender(PROD_LIVE_Guam_COMPARE, {
+    stripPhantomTicketMention: true,
+  });
+  assert.match(md, /^\| 구분 \| 괌 \(Guam\) \|/m, md);
+  assert.match(md, /^\| --- \| --- \|/m, md);
+  assert.match(md, /^\| 주요 매력 \|/m, md);
+  assert.match(md, /^\| 분위기 \|/m, md);
+  const html = renderMooniGfm(md);
+  assert.ok(html.includes('<table'), html);
+  assert.ok(html.includes('<th>구분</th>'), html);
+  assert.ok(!md.includes(': | : | :'), 'align row should normalize to ---');
+});
+
 test('getMooniModelMarkdownForRender — live one-line : separator table renders', () => {
   const md = getMooniModelMarkdownForRender(LIVE_ONE_LINE_COMPARE, {
     stripPhantomTicketMention: true,
@@ -78,6 +95,15 @@ test('getMooniModelMarkdownForRender — live one-line : separator table renders
   assert.ok(html.includes('<table'), html);
   assert.ok(html.includes('>구분</th>'), html);
   assert.ok(html.includes('<strong>주요 매력</strong>'), html);
+});
+
+test('getMooniModelMarkdownForRender — single pipe in prose stays prose', () => {
+  const md = getMooniModelMarkdownForRender('교통 · KTX 05:03 | 서울 출발 안내', {
+    stripPhantomTicketMention: true,
+  });
+  assert.equal(md.includes('\n| '), false, md);
+  const html = renderMooniGfm(md);
+  assert.ok(!html.includes('<table'), html);
 });
 
 test('getMooniModelMarkdownForRender — comparison table survives chip strip', () => {

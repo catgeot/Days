@@ -28,6 +28,11 @@ const COLLAPSED_COMPARE_TABLE =
 const LIVE_MERGED_COMPARE_TABLE =
   '| 구분 | 괌 | 사이판 | 세부 | 보홀 | : | : | : | : | : | **주요 매력** | 괌 비치 | 사이판 다이빙 | 세부 망고 | 보홀 고래';
 
+const PROD_COLLAPSED_GUAM_COMPARE =
+  '구분 | 괌 (Guam) | 오키나와 (Okinawa) | 팔라우 (Palau) | 보홀 (Bohol) : | : | : | : | : 주요 매력 | 쇼핑, 휴양, 가족 친화적 | 드라이브, 미식, 역사 탐방 | 최고의 다이빙 및 스노클링 | 자연 경관, 돌고래 투어 분위기 | 세련되고 편리한 휴양지 | 일본 감성의 여유로운 섬 | 원시 자연 그대로의 평화 | 자연과 어우러진 이동 편의 | 렌터카 선호, 교통 편리 | 렌터카 필수 | 투어 위주 이동 | 렌터카/툭툭 이동 추천 대상 | 쇼핑과 휴식을 중시하는 커플 | 먹거리와 문화 체험 선호 커플 | 바다 속 풍경을 사랑하는 커플 | 이색적인 자연 체험 선호 커플';
+
+const UDO_DUAL_SPACED_BOLD = '우도에는 ** 천진항과 ** 하우목동항 ** 이 있어요';
+
 const ORDERED_WITH_GAP = `1. 우도 터미널 집결
 
 짧은 이동 안내
@@ -148,6 +153,28 @@ export default function MooniChatMarkdownFixturePage() {
         <Bubble variant="dark">
           <MooniChatMarkdown
             text={getMooniModelMarkdownForRender(DUAL_BOLD_ONE_LINE, {
+              stripPhantomTicketMention: true,
+            })}
+            variant="dark"
+          />
+        </Bubble>
+      </section>
+      <section data-testid="mooni-md-prod-collapsed-compare" className="space-y-2">
+        <p className="text-gray-400 text-[10px] font-bold uppercase">PROD collapsed 괌 compare (11/10)</p>
+        <Bubble variant="dark">
+          <MooniChatMarkdown
+            text={getMooniModelMarkdownForRender(PROD_COLLAPSED_GUAM_COMPARE, {
+              stripPhantomTicketMention: true,
+            })}
+            variant="dark"
+          />
+        </Bubble>
+      </section>
+      <section data-testid="mooni-md-udo-spaced-bold" className="space-y-2">
+        <p className="text-gray-400 text-[10px] font-bold uppercase">PROD 우도 spaced bold (11/9)</p>
+        <Bubble variant="dark">
+          <MooniChatMarkdown
+            text={getMooniModelMarkdownForRender(UDO_DUAL_SPACED_BOLD, {
               stripPhantomTicketMention: true,
             })}
             variant="dark"

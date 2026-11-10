@@ -2,6 +2,49 @@ import { isMooniGfmTableLine } from './mooniGfmTableLine.js';
 
 const COLLAPSED_ROW_SPLIT = /\s+\|\s+\|\s+/g;
 
+const EMBEDDED_ROW_LABEL_RE =
+  /^(.*?)\s+(주요 매력|분위기|이동 편의|추천 대상)$/u;
+
+function splitEmbeddedRowLabel(cell) {
+  const t = String(cell ?? '').trim();
+  const m = t.match(EMBEDDED_ROW_LABEL_RE);
+  if (!m?.[1]?.trim()) return [t];
+  return [m[1].trim(), m[2]];
+}
+
+/** Header·align 셀에 붙은 ` :` / `: 라벨` 분해 */
+function expandCollapsedTableCells(cells) {
+  const out = [];
+  for (const cell of cells) {
+    const t = String(cell ?? '').trim();
+    if (!t) continue;
+    const headerTail = t.match(/^(.+?)\s+:\s*$/);
+    if (headerTail && !isAlignCell(t)) {
+      out.push(headerTail[1]);
+      out.push(':');
+      continue;
+    }
+    const alignHead = t.match(/^:+\s+(.+)$/);
+    if (alignHead) {
+      out.push(':');
+      out.push(alignHead[1]);
+      continue;
+    }
+    out.push(t);
+  }
+  return out;
+}
+
+function flattenBodyCells(cells) {
+  const out = [];
+  for (const cell of cells) {
+    for (const piece of splitEmbeddedRowLabel(cell)) {
+      out.push(piece);
+    }
+  }
+  return out;
+}
+
 function isAlignCell(cell) {
   const t = String(cell ?? '').trim();
   if (!t) return false;
@@ -30,8 +73,9 @@ function normalizeAlignRow(colCount) {
 
 /** Gemini·스트리밍에서 한 줄로 붙은 `cell | : | : | body` 표를 행 단위로 복구 */
 function recoverMergedPipeCells(line) {
-  const cells = splitTableCells(line);
+  let cells = splitTableCells(line);
   if (!cells) return null;
+  cells = expandCollapsedTableCells(cells);
 
   let alignStart = -1;
   for (let i = 0; i < cells.length; i += 1) {
@@ -52,8 +96,10 @@ function recoverMergedPipeCells(line) {
 
   const rows = [formatTableRow(header), normalizeAlignRow(colCount)];
   let idx = alignEnd;
-  while (idx < cells.length) {
-    const slice = cells.slice(idx, idx + colCount);
+  const body = flattenBodyCells(cells.slice(idx));
+  idx = 0;
+  while (idx < body.length) {
+    const slice = body.slice(idx, idx + colCount);
     if (slice.length < colCount) break;
     rows.push(formatTableRow(slice));
     idx += colCount;
