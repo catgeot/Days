@@ -11,7 +11,7 @@ const TEST_TIMEOUT_MS = IS_CI ? 120_000 : 240_000;
 const OVERVIEW_BASELINE_POLL_MS = IS_CI ? 35_000 : 60_000;
 const SKELETON_WAIT_MS = IS_CI ? 30_000 : 45_000;
 const SCROLL_TO_BOTTOM_POLL_MS = IS_CI ? 35_000 : 60_000;
-const SCROLL_HEIGHT_SETTLE_POLLS = 3;
+const SCROLL_HEIGHT_SETTLE_POLLS = IS_CI ? 4 : 3;
 const MIN_PRE_TAP_SCROLL_TOP_PX = 2000;
 const OVERVIEW_SCROLL_HEIGHT_FACTOR = 1.5;
 /** scrollTop must stay within reachable range (short 사진/영상 tabs). */
@@ -90,31 +90,18 @@ async function nudgePrimaryScrollerToBottom(dialog) {
   });
 }
 
-async function waitForPrimaryScrollHeightSettled(dialog) {
-  let lastHeight = -1;
-  let stablePolls = 0;
-  await expect
-    .poll(
-      async () => {
-        const { scrollHeight } = await measurePrimaryScroller(dialog);
-        if (scrollHeight === lastHeight) {
-          stablePolls += 1;
-        } else {
-          lastHeight = scrollHeight;
-          stablePolls = 0;
-        }
-        return stablePolls >= SCROLL_HEIGHT_SETTLE_POLLS;
-      },
-      { timeout: SKELETON_WAIT_MS },
-    )
-    .toBe(true);
-}
-
 async function scrollPrimarySheetToBottom(dialog) {
-  await waitForPrimaryScrollHeightSettled(dialog);
+  let lastScrollHeight = -1;
+  let stableBottomPolls = 0;
   await expect
     .poll(
       async () => {
+        const before = await measurePrimaryScroller(dialog);
+        if (before.scrollHeight !== lastScrollHeight) {
+          lastScrollHeight = before.scrollHeight;
+          stableBottomPolls = 0;
+        }
+
         await nudgePrimaryScrollerToBottom(dialog);
         await dialog.evaluate(
           () =>
@@ -122,13 +109,21 @@ async function scrollPrimarySheetToBottom(dialog) {
               requestAnimationFrame(() => requestAnimationFrame(resolve));
             }),
         );
-        const metrics = await measurePrimaryScroller(dialog);
-        if (!isPrimaryScrollerAtBottom(metrics)) {
+
+        const after = await measurePrimaryScroller(dialog);
+        if (after.scrollHeight !== lastScrollHeight) {
+          lastScrollHeight = after.scrollHeight;
+          stableBottomPolls = 0;
           return false;
         }
-        await nudgePrimaryScrollerToBottom(dialog);
-        const settled = await measurePrimaryScroller(dialog);
-        return isPrimaryScrollerAtBottom(settled);
+
+        if (!isPrimaryScrollerAtBottom(after)) {
+          stableBottomPolls = 0;
+          return false;
+        }
+
+        stableBottomPolls += 1;
+        return stableBottomPolls >= SCROLL_HEIGHT_SETTLE_POLLS;
       },
       { timeout: SCROLL_TO_BOTTOM_POLL_MS },
     )
@@ -210,6 +205,7 @@ async function assertPreTapScrollDepth({
   slug,
   testInfo,
 }) {
+  await scrollPrimarySheetToBottom(dialog);
   const preTap = await measurePrimaryScroller(dialog);
   const scrollBudget = Math.max(
     MIN_PRE_TAP_SCROLL_TOP_PX,
