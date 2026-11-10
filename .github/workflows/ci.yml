@@ -461,7 +461,7 @@ jobs:
             cat /tmp/vite-explore-bare-ko.log
             exit 1
           fi
-          PLAYWRIGHT_BASE_URL=http://127.0.0.1:5201 npx playwright test e2e/explore-search-bare-ko.spec.js --project=chromium-explore-bare-ko-390 --reporter=line
+          PLAYWRIGHT_BASE_URL=http://127.0.0.1:5201 npx playwright test e2e/explore-search-bare-ko.spec.js e2e/explore-restaurant-search-select.spec.js --project=chromium-explore-bare-ko-390 --project=chromium-explore-restaurant-search-select --reporter=line
 
   explore-v2-monthly-e2e:
     name: Explore v2 monthly picks E2E (390·1280, flag off/on)

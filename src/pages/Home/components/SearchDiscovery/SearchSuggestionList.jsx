@@ -13,9 +13,7 @@ import {
   BookOpen,
   UtensilsCrossed,
 } from 'lucide-react';
-import ExploreRestaurantMapOutboundCue, {
-  buildRestaurantMapOutboundCueCopy,
-} from './ExploreRestaurantMapOutboundCue.jsx';
+import ExploreRestaurantMapOutboundCue from './ExploreRestaurantMapOutboundCue.jsx';
 import {
   fetchPlaceChatIntroSummaryForLocation,
   needsPlaceChatIntroHydration,
@@ -439,9 +437,6 @@ export function SearchSuggestionList({
               : item;
             const isRestaurantRow =
               badgeKey === EXPLORE_BADGE_RESTAURANT || item.kind === 'restaurant';
-            const restaurantAria = isRestaurantRow
-              ? buildRestaurantMapOutboundCueCopy(t, { item, name: displayName }).aria
-              : undefined;
 
             return (
               <React.Fragment key={item.id || `${item.name}-${item.lat}`}>
@@ -453,43 +448,46 @@ export function SearchSuggestionList({
                   </li>
                 ) : null}
                 <li>
-                <button
-                  type="button"
-                  onClick={() => onSelect?.(placeFromSearchItem(item, query))}
-                  aria-label={restaurantAria}
-                  className={`w-full flex items-center gap-3 text-left hover:bg-white/[0.1] transition-colors ${
-                    isPopover ? 'px-3 py-2.5' : 'px-4 py-3'
-                  }`}
-                >
-                  <SearchResultThumb
-                    item={thumbItem}
-                    kind={item.kind}
-                    iconSize={isPopover ? 16 : 18}
-                    sizeClass={isPopover ? 'h-10 w-10' : 'h-12 w-12'}
-                  />
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-sm font-semibold text-white truncate">{displayName}</span>
-                      {secondaryName ? (
-                        <span className="text-xs font-medium text-white/85 shrink-0">{secondaryName}</span>
-                      ) : null}
-                      {rankBlurb ? (
-                        <span className="shrink-0 rounded-md border border-amber-300/50 bg-amber-400/15 px-1.5 py-0.5 text-[10px] font-extrabold text-amber-100">
-                          {rankBlurb}
+                  <button
+                    type="button"
+                    onClick={() => onSelect?.(placeFromSearchItem(item, query))}
+                    className={`w-full flex items-center gap-3 text-left hover:bg-white/[0.1] transition-colors ${
+                      isPopover ? 'px-3 py-2.5' : 'px-4 py-3'
+                    }`}
+                  >
+                    <SearchResultThumb
+                      item={thumbItem}
+                      kind={item.kind}
+                      iconSize={isPopover ? 16 : 18}
+                      sizeClass={isPopover ? 'h-10 w-10' : 'h-12 w-12'}
+                    />
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="text-sm font-semibold text-white truncate">{displayName}</span>
+                        {secondaryName ? (
+                          <span className="text-xs font-medium text-white/85 shrink-0">{secondaryName}</span>
+                        ) : null}
+                        {rankBlurb ? (
+                          <span className="shrink-0 rounded-md border border-amber-300/50 bg-amber-400/15 px-1.5 py-0.5 text-[10px] font-extrabold text-amber-100">
+                            {rankBlurb}
+                          </span>
+                        ) : null}
+                        <span className={`shrink-0 rounded-full border px-2 py-0.5 text-[10px] font-medium ${badgeClass}`}>
+                          {badge}
                         </span>
+                      </div>
+                      {subtitle ? (
+                        <p className="mt-0.5 text-xs text-white/70 truncate break-keep">{subtitle}</p>
                       ) : null}
-                      <span className={`shrink-0 rounded-full border px-2 py-0.5 text-[10px] font-medium ${badgeClass}`}>
-                        {badge}
-                      </span>
                     </div>
-                    {subtitle ? (
-                      <p className="mt-0.5 text-xs text-white/70 truncate break-keep">{subtitle}</p>
-                    ) : null}
-                    {isRestaurantRow ? (
-                      <ExploreRestaurantMapOutboundCue item={item} name={displayName} />
-                    ) : null}
-                  </div>
-                </button>
+                  </button>
+                  {isRestaurantRow ? (
+                    <ExploreRestaurantMapOutboundCue
+                      item={item}
+                      name={displayName}
+                      className={isPopover ? 'px-3 pb-2.5 -mt-1' : 'px-4 pb-3 -mt-1'}
+                    />
+                  ) : null}
                 </li>
               </React.Fragment>
             );
@@ -683,12 +681,6 @@ export function SearchDisambiguationCards({
             : hydrated;
           const isRestaurantRow =
             badgeKey === EXPLORE_BADGE_RESTAURANT || item.kind === 'restaurant';
-          const restaurantAria = isRestaurantRow
-            ? buildRestaurantMapOutboundCueCopy(t, {
-                item: hydrated,
-                name: primaryName || item.name,
-              }).aria
-            : undefined;
           return (
             <React.Fragment key={item.id || `${item.name}-${item.lat}`}>
               {showGroup ? (
@@ -699,11 +691,11 @@ export function SearchDisambiguationCards({
                   <span className="h-px flex-1 bg-white/15" />
                 </div>
               ) : null}
+              <div className="rounded-2xl border border-white/25 bg-[#32281f]/95 shadow-[0_4px_20px_rgba(0,0,0,0.35)] hover:border-sky-300/50 hover:bg-[#3a2f25] transition-all">
             <button
               type="button"
               onClick={() => onSelect?.(placeFromSearchItem(hydrated, query))}
-              aria-label={restaurantAria}
-              className="group flex w-full items-stretch gap-3 rounded-2xl border border-white/25 bg-[#32281f]/95 p-3 text-left shadow-[0_4px_20px_rgba(0,0,0,0.35)] hover:border-sky-300/50 hover:bg-[#3a2f25] transition-all"
+              className="group flex w-full items-stretch gap-3 p-3 text-left"
             >
               <SearchResultThumb
                 item={thumbItem}
@@ -752,15 +744,16 @@ export function SearchDisambiguationCards({
                   ) : null}
                 </div>
               ) : null}
+              </div>
+            </button>
               {isRestaurantRow ? (
                 <ExploreRestaurantMapOutboundCue
                   item={hydrated}
                   name={primaryName || item.name}
-                  className="mt-2"
+                  className="px-3 pb-3 -mt-1"
                 />
               ) : null}
               </div>
-            </button>
             </React.Fragment>
           );
         })}

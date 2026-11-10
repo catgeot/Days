@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * 홈 검색 = /explore SearchDiscoveryModal → buildLocalSearchSuggestions + runExploreHybridSuggestUpdate.
- * 갯벌 — 유네스코 3건은 /place, 음식점은 external.
+ * 갯벌 — 유네스코 3건은 /place, 음식점은 tour 상세.
  */
 import assert from 'node:assert/strict';
 import test from 'node:test';
@@ -78,7 +78,8 @@ test('갯벌 — local·hybrid·site hybrid·debounced paint', async () => {
   const restaurants = hybrid.filter((r) => isExploreRestaurantItem(r));
   assert.ok(restaurants.length >= 1, 'hybrid merges restaurant keyword rows');
   for (const row of restaurants) {
-    assert.equal(placeParam(row)?.type, 'external', row.name);
+    assert.equal(placeParam(row)?.type, 'place', row.name);
+    assert.match(String(placeParam(row)?.param || ''), /^tour-/);
   }
 
   const siteHybrid = await buildExploreSiteSearchHybridSuggestions('갯벌', { locale: 'ko' });

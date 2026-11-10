@@ -9,6 +9,10 @@ import {
 } from '../../src/shared/search/restaurantMapProvider.js';
 import { isExploreRestaurantItem } from '../../src/shared/search/tourRestaurantDetect.js';
 import { tourRestaurantToExploreSuggestion } from '../../src/pages/Home/lib/tourRestaurantExploreSuggestion.js';
+import {
+  resolveRestaurantMapSearchHref,
+  resolveSearchResultSelect,
+} from '../../src/pages/Home/lib/exploreRecentHistory.js';
 
 const tKo = (key, opts = {}) => {
   const dict = {
@@ -125,6 +129,41 @@ const GETBOL_RESTAURANT_FIXTURES = [
     mapx: 127.03,
   },
 ];
+
+test('resolveSearchResultSelect — 식당 본문 tour 상세 · 지도 URL 분리', () => {
+  const mingdongRaw = {
+    title: '명동교자',
+    contentId: '403053',
+    contentTypeId: '39',
+    cat1: 'A05',
+    addr1: '서울특별시 중구',
+    mapy: 37.5636,
+    mapx: 126.985,
+  };
+  const mingdong = tourRestaurantToExploreSuggestion(mingdongRaw, { query: '명동교자' });
+  const body = resolveSearchResultSelect(mingdong);
+  assert.equal(body?.type, 'place');
+  assert.equal(body?.param, 'tour-403053');
+  assert.match(resolveRestaurantMapSearchHref(mingdong), /^https:\/\/map\.naver\.com\//);
+
+  const gangneung = {
+    id: 'tour-restaurant-3532662',
+    kind: 'restaurant',
+    exploreRestaurant: true,
+    name: '내마음에찜',
+    lat: 37.751,
+    lng: 128.876,
+    source: 'tourapi',
+    contentId: '3532662',
+    contentTypeId: '39',
+    cat1: 'A05',
+    addr1: '강원특별자치도 강릉시',
+  };
+  const gangBody = resolveSearchResultSelect(gangneung);
+  assert.equal(gangBody?.type, 'place');
+  assert.equal(gangBody?.param, 'tour-3532662');
+  assert.match(resolveRestaurantMapSearchHref(gangneung), /^https:\/\/map\.naver\.com\//);
+});
 
 test('갯벌 대표 식당 4곳 — 식당 배지·외부 URL', () => {
   for (const row of GETBOL_RESTAURANT_FIXTURES) {
