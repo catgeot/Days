@@ -41,3 +41,12 @@
 - 사람 요청으로 PR [#712](https://github.com/catgeot/Days/pull/712)를 squash 병합했다. `main` `b8501e59`. 좁은 화면은 왼쪽이 조금 넓은 두 열, 넓은 화면은 세 칸이다. 출처 링크는 카드에 없다.
 - `/qa/explore-monthly`는 `https://www.gateo.kr/explore`로 간다. 확인은 `https://www.gateo.kr/explore`.
 - 주제 종료. 다음 제시어 없음.
+
+## 투어 카드 UI #2, PR704 후속 (좁은 diff)
+
+- PR [#704](https://github.com/catgeot/Days/pull/704)의 sitemap/RSS/crawler 4파일 churn 없이 투어 UI·handoff·e2e 10파일만 최신 `main`에 재적용. 선행 #704은 Draft 유지.
+- `TourCardBookingLink`·`StayListPartnerNotice` 1회 고지·카드별 CTA·제휴 줄 제거·사진 높이 확대 (`MrtTnaActivitiesWidget`, `EventTnaStrip`).
+- 코드 `72a754bd` · 브랜치 `cursor/tour-card-readability-dce1` · 후속 Draft PR [#720](https://github.com/catgeot/Days/pull/720). CI [42474780179](https://github.com/catgeot/Days/actions/runs/42474780179) success.
+- 검증: fixture mock 해운대 `e2e/tour-list-card-readability.spec.js` 3/3 · `smoke:partner-booking-handoff` · `npm run build`. 강릉 실 API·라이브 Preview 미확인.
+- Preview `https://days-git-cursor-tour-card-readability-dce1-catgeots-projects.vercel.app/`. **머지·배포 금지**.
+- 다음: 부모 — 강릉 등 실 응답 Preview QA 후 Ready/머지 판단.
