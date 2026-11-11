@@ -824,3 +824,5 @@ flowchart LR
 **#57**: 허브 리스트가 Unsplash 빈티지 흑백(이스탄불 거리 스캔, 흑백 Macy's)을 고르던 문제를 고침. 캡션 B&W·회색 스와치는 건너뛰고 컬러를 고름. 세션 캐시 `list-photo-v3-color`.
 
 **다음**: 사람 Preview — `/world-events` 이스탄불·추수감사절 카드가 컬러인지. merge는 QA 후.
+
+**#59 (별도 브랜치, wave3와 합치지 않음)**: 목록·본문 스크롤 「위로」. `cursor/world-events-scroll-up-be96` · PR #764 · tip `af614ff7`. 확인은 그 git Preview `/world-events`. `/qa/world-events`는 계속 wave3.
