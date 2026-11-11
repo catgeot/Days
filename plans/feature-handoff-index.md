@@ -1428,6 +1428,35 @@ PROD https://www.gateo.kr/
 
 ---
 
+### 세계 행사 스크롤 「위로」 (#59)
+
+| | |
+|--|--|
+| **상태** | **#59** 목록·본문 「위로」 **push** · tip `af614ff7` · PR [#764](https://github.com/catgeot/Days/pull/764) · 사람 Preview는 같은 턴 링크 |
+| **브랜치** | `cursor/world-events-scroll-up-be96` |
+| **PR** | [#764](https://github.com/catgeot/Days/pull/764) |
+| **플랜** | [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) **§9** |
+| **일지** | [`2026-11-12-project-log.md`](./2026-11-12-project-log.md) |
+| **Preview** | git `https://days-git-cursor-world-events-scroll-up-be96-catgeots-projects.vercel.app/world-events` · 본문 예 `/world-events/edinburgh-fringe-2026` |
+| **금지** | `worldEvents.json` 직편집 · UI 리디자인 · 이 버튼을 `/qa/world-events`(wave3)에서 확인 · wave3와 브랜치 합치기 |
+| **VERIFY** | `npm run smoke:world-events-hub` PASS · 로컬 Playwright 목록·본문 스크롤 후 「위로」 클릭 시 맨 위 · `smoke:world-events-detail`은 옥토버페스트 opening 날짜 단언이 오늘(2026-11-12) 기준으로 기존 FAIL |
+
+**게이트**: 사람 Preview OK 전 merge 금지. `/qa/world-events`는 wave3라 이 버튼이 없다.
+
+**다음 제시어** (#60 피드백이 있을 때만):
+
+```
+세계행사 일정 #60, 위로 버튼 피드백
+@plans/feature-handoff-index.md
+@plans/2026-11-12-project-log.md
+@plans/world-events-detail-ux-plan.md
+브랜치 cursor/world-events-scroll-up-be96 · PR #764
+금지: worldEvents.json 직편집 · UI 리디자인 · /qa/world-events 로 이 버튼 확인 · wave3와 합치기
+작업: 목록·본문 「위로」 피드백이 있으면 같은 브랜치에서만 반영
+```
+
+---
+
 ### 세계 행사·축제 일정 연동 — 리스트 썸네일 컬러 (#57)
 
 | | |
