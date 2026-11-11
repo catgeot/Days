@@ -4,13 +4,13 @@
  * 상세 규칙: AGENTS.md Cloud「세션 표기 · 고정 Preview · 작업 로그」
  */
 export const cloudPreviewProject = {
-  active: false,
-  title: '탐색 페이지',
-  sessionNo: 4,
-  sessionPhase: '카드 피드백',
-  branch: 'cursor/explore-cards-d0e2',
-  previewPath: '/explore',
-  qaShareSlug: 'explore-monthly',
+  active: true,
+  title: '세계행사 일정',
+  sessionNo: 59,
+  sessionPhase: '스크롤 위로 버튼',
+  branch: 'cursor/world-events-scroll-up-be96',
+  previewPath: '/world-events',
+  qaShareSlug: '',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-11-12-world-events-59-scroll-top',
+    session: '세계행사 일정 #59, 스크롤 위로 버튼',
+    title: '목록·상세 「위로」',
+    detail:
+      '세계 행사 목록과 행사 본문을 조금 내리면 오른쪽 아래에 「위로」가 나타납니다. 누르면 그 페이지 본문만 맨 위로 올라갑니다. 상세에서는 무니 버튼이 「위로」 위로 올라갑니다. 채팅이 열려 있으면 「위로」는 숨깁니다. Preview /world-events — 목록을 내린 뒤 「위로」, 카드로 들어간 본문에서도 같은 버튼.',
+    at: '2026-11-12T05:00:00.000Z',
+  },
   {
     id: '2026-11-08-explore-monthly-cards-4',
     session: '탐색 페이지 #4, 카드 피드백',
