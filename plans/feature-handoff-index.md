@@ -18,7 +18,7 @@
 
 | | |
 |--|--|
-| **상태** | **#1 push** · tip `18bd90c0` · PR [#767](https://github.com/catgeot/Days/pull/767) · **사람 Preview** |
+| **상태** | **#1 push** · tip `734f42fa` · PR [#767](https://github.com/catgeot/Days/pull/767) · **사람 Preview** · 이 브랜치만 Preview 배포 켬 |
 | **브랜치** | `cursor/scenic-cards-f089` |
 | **플랜** | 별도 플랜 없음. 이 행이 핸드오프 |
 | **일지** | [`2026-11-12-project-log.md`](./2026-11-12-project-log.md) |
