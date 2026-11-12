@@ -5,9 +5,6 @@ import AppOutlineBackButton from '../../shared/navigation/AppOutlineBackButton';
 import { OutboundSearchButtons } from '../../shared/outbound/OutboundSearchButtons.jsx';
 import {
   ArrowUp,
-  Bike,
-  Building2,
-  CalendarDays,
   ChevronLeft,
   ChevronRight,
   Expand,
@@ -103,6 +100,7 @@ import { fetchNearbyFestivals } from '../../utils/fetchNearbyFestivals';
 import { detectSidoCode } from '../Korea/festivalRegionTags';
 import ScenicStayStrip from './ScenicStayStrip';
 import ScenicTnaStrip from './ScenicTnaStrip';
+import ScenicNearbyCardGrid from './ScenicNearbyCardGrid.jsx';
 import ReadableDetailProse from '../../shared/readableDetail/ReadableDetailProse';
 import { shouldUseReadableDetailProse } from '../../shared/readableDetail/splitTourApiDetailParagraphs';
 
@@ -381,22 +379,19 @@ function ThemeSpotCrossRail({
 
       {showNearbyHubs ? (
         <CrossRailSection title={t('korea.theme.spotDetail.crossNearbyHubs')}>
-          <ul className="space-y-1.5">
-            {cross.nearbyHubs.map((h) => (
-              <li key={h.hubId}>
-                <CrossTextButton onClick={() => openNearbyScenicHome(h)}>
-                  <span className="inline-flex items-center gap-1.5">
-                    <MapPin size={14} className="text-amber-700" aria-hidden="true" />
-                    {localizedHubLabel(locale, { hubId: h.hubId, name: h.name }) ||
-                      h.name}
-                    <span className="text-[11px] font-medium text-stone-500">
-                      {t('korea.theme.spotDetail.scenicChip')}
-                    </span>
-                  </span>
-                </CrossTextButton>
-              </li>
-            ))}
-          </ul>
+          <ScenicNearbyCardGrid
+            variant="hub"
+            ariaLabel={t('korea.theme.spotDetail.crossNearbyHubs')}
+            items={cross.nearbyHubs.map((h) => ({
+              key: String(h.hubId),
+              title:
+                localizedHubLabel(locale, { hubId: h.hubId, name: h.name }) ||
+                h.name,
+              meta: t('korea.theme.spotDetail.scenicChip'),
+              thumbUrls: [],
+              onActivate: () => openNearbyScenicHome(h),
+            }))}
+          />
         </CrossRailSection>
       ) : null}
 
@@ -520,28 +515,16 @@ function nearbyThumbUrls(spot, extraThumb) {
   return out;
 }
 
-function NearbyPoiRowThumb({ spot, extraThumb }) {
-  const urls = nearbyThumbUrls(spot, extraThumb);
-  const [thumbIndex, setThumbIndex] = useState(0);
-  const thumb = urls[thumbIndex] || '';
-  if (!thumb) {
-    return (
-      <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-800">
-        <Landmark size={18} aria-hidden="true" />
-      </div>
-    );
-  }
-  return (
-    <img
-      key={thumb}
-      src={thumb}
-      alt=""
-      loading="lazy"
-      decoding="async"
-      onError={() => setThumbIndex((i) => i + 1)}
-      className="h-14 w-14 shrink-0 rounded-xl object-cover bg-stone-200"
-    />
-  );
+function nearbyListCardItem(spot, { title, meta, onActivate, textProps, extraThumb } = {}) {
+  return {
+    key: String(spot?.contentId || spot?.id || title || spot?.name || ''),
+    title: String(title || spot?.name || ''),
+    meta: meta || '',
+    distLabel: formatDistKm(spot?.distKm),
+    thumbUrls: nearbyThumbUrls(spot, extraThumb),
+    onActivate,
+    textProps,
+  };
 }
 
 function cleanUrlCandidate(raw) {
@@ -709,47 +692,6 @@ function formatDistKm(km) {
 
 function foodPlaceLabel(spot) {
   return String(spot?.locality || spot?.region || '').trim();
-}
-
-function NearbyPoiAttractionRow({ spot, extraThumb, onSelect }) {
-  const dist = formatDistKm(spot.distKm);
-  const place = foodPlaceLabel(spot);
-  const rankBlurb = String(spot?.rankBlurb || '').trim();
-  const clickable = isNearbyAttractionRowClickable(spot);
-  const Inner = clickable ? 'button' : 'div';
-  const innerProps = clickable
-    ? {
-        type: 'button',
-        onClick: () => onSelect?.(mergeNearbyRowWithLocalScenicDetail(spot)),
-      }
-    : {};
-  return (
-    <li>
-      <Inner
-        {...innerProps}
-        className={`flex w-full gap-3 rounded-2xl border border-stone-200 bg-stone-50 p-2.5 text-left ${
-          clickable ? 'hover:bg-amber-50 hover:border-amber-300 transition-colors' : ''
-        }`}
-      >
-        <NearbyPoiRowThumb spot={spot} extraThumb={extraThumb} />
-        <span className="min-w-0 flex-1">
-          <span className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-            <span className="block text-sm font-bold text-stone-800 leading-snug line-clamp-2 break-keep">
-              {spot.name}
-            </span>
-            {rankBlurb ? (
-              <span className="text-[11px] font-semibold text-stone-500 break-keep">
-                {rankBlurb}
-              </span>
-            ) : null}
-          </span>
-          <span className="mt-0.5 block text-[11px] text-stone-500 tabular-nums break-keep">
-            {[rankBlurb ? null : place, dist].filter(Boolean).join(' · ')}
-          </span>
-        </span>
-      </Inner>
-    </li>
-  );
 }
 
 /**
@@ -2284,42 +2226,16 @@ export default function ThemeSpotDetailModal({
                     </p>
                   )}
                   {nearbyFood.length > 0 && (
-                    <ul className="space-y-2" aria-label={t('korea.theme.spotDetail.nearFoodAria')}>
-                      {nearbyFood.map((food) => {
-                        const thumb = toHttps(food.firstImage);
-                        const dist = formatDistKm(food.distKm);
-                        const place = foodPlaceLabel(food);
-                        return (
-                          <li key={food.contentId || food.id}>
-                            <button
-                              type="button"
-                              onClick={() => setSelectedFood(food)}
-                              className="flex w-full gap-3 rounded-2xl border border-stone-200 bg-stone-50 p-2.5 text-left hover:bg-amber-50 hover:border-amber-300 transition-colors"
-                            >
-                              {thumb ? (
-                                <img
-                                  src={thumb}
-                                  alt=""
-                                  className="h-14 w-14 shrink-0 rounded-xl object-cover bg-stone-200"
-                                />
-                              ) : (
-                                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-orange-50 text-orange-800">
-                                  <Utensils size={18} aria-hidden="true" />
-                                </div>
-                              )}
-                              <span className="min-w-0 flex-1">
-                                <span className="block text-sm font-bold text-stone-800 leading-snug line-clamp-2 break-keep">
-                                  {food.name}
-                                </span>
-                                <span className="mt-0.5 block text-[11px] text-stone-500 tabular-nums break-keep">
-                                  {[place, dist].filter(Boolean).join(' · ')}
-                                </span>
-                              </span>
-                            </button>
-                          </li>
-                        );
-                      })}
-                    </ul>
+                    <ScenicNearbyCardGrid
+                      variant="food"
+                      ariaLabel={t('korea.theme.spotDetail.nearFoodAria')}
+                      items={nearbyFood.map((food) =>
+                        nearbyListCardItem(food, {
+                          meta: foodPlaceLabel(food),
+                          onActivate: () => setSelectedFood(food),
+                        }),
+                      )}
+                    />
                   )}
                 </section>
               )}
@@ -2349,42 +2265,16 @@ export default function ThemeSpotDetailModal({
                     </p>
                   )}
                   {nearbyLeports.length > 0 && (
-                    <ul className="space-y-2" aria-label={t('korea.theme.spotDetail.nearLeportsAria')}>
-                      {nearbyLeports.map((row) => {
-                        const thumb = toHttps(row.firstImage);
-                        const dist = formatDistKm(row.distKm);
-                        const place = foodPlaceLabel(row);
-                        return (
-                          <li key={row.contentId || row.id}>
-                            <button
-                              type="button"
-                              onClick={() => setSelectedLeports(row)}
-                              className="flex w-full gap-3 rounded-2xl border border-stone-200 bg-stone-50 p-2.5 text-left hover:bg-amber-50 hover:border-amber-300 transition-colors"
-                            >
-                              {thumb ? (
-                                <img
-                                  src={thumb}
-                                  alt=""
-                                  className="h-14 w-14 shrink-0 rounded-xl object-cover bg-stone-200"
-                                />
-                              ) : (
-                                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-sky-50 text-sky-800">
-                                  <Bike size={18} aria-hidden="true" />
-                                </div>
-                              )}
-                              <span className="min-w-0 flex-1">
-                                <span className="block text-sm font-bold text-stone-800 leading-snug line-clamp-2 break-keep">
-                                  {row.name}
-                                </span>
-                                <span className="mt-0.5 block text-[11px] text-stone-500 tabular-nums break-keep">
-                                  {[place, dist].filter(Boolean).join(' · ')}
-                                </span>
-                              </span>
-                            </button>
-                          </li>
-                        );
-                      })}
-                    </ul>
+                    <ScenicNearbyCardGrid
+                      variant="leports"
+                      ariaLabel={t('korea.theme.spotDetail.nearLeportsAria')}
+                      items={nearbyLeports.map((row) =>
+                        nearbyListCardItem(row, {
+                          meta: foodPlaceLabel(row),
+                          onActivate: () => setSelectedLeports(row),
+                        }),
+                      )}
+                    />
                   )}
                 </section>
               )}
@@ -2414,42 +2304,16 @@ export default function ThemeSpotDetailModal({
                     </p>
                   )}
                   {nearbyCulture.length > 0 && (
-                    <ul className="space-y-2" aria-label={t('korea.theme.spotDetail.nearCultureAria')}>
-                      {nearbyCulture.map((row) => {
-                        const thumb = toHttps(row.firstImage);
-                        const dist = formatDistKm(row.distKm);
-                        const place = foodPlaceLabel(row);
-                        return (
-                          <li key={row.contentId || row.id}>
-                            <button
-                              type="button"
-                              onClick={() => setSelectedCulture(row)}
-                              className="flex w-full gap-3 rounded-2xl border border-stone-200 bg-stone-50 p-2.5 text-left hover:bg-amber-50 hover:border-amber-300 transition-colors"
-                            >
-                              {thumb ? (
-                                <img
-                                  src={thumb}
-                                  alt=""
-                                  className="h-14 w-14 shrink-0 rounded-xl object-cover bg-stone-200"
-                                />
-                              ) : (
-                                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-violet-50 text-violet-800">
-                                  <Building2 size={18} aria-hidden="true" />
-                                </div>
-                              )}
-                              <span className="min-w-0 flex-1">
-                                <span className="block text-sm font-bold text-stone-800 leading-snug line-clamp-2 break-keep">
-                                  {row.name}
-                                </span>
-                                <span className="mt-0.5 block text-[11px] text-stone-500 tabular-nums break-keep">
-                                  {[place, dist].filter(Boolean).join(' · ')}
-                                </span>
-                              </span>
-                            </button>
-                          </li>
-                        );
-                      })}
-                    </ul>
+                    <ScenicNearbyCardGrid
+                      variant="culture"
+                      ariaLabel={t('korea.theme.spotDetail.nearCultureAria')}
+                      items={nearbyCulture.map((row) =>
+                        nearbyListCardItem(row, {
+                          meta: foodPlaceLabel(row),
+                          onActivate: () => setSelectedCulture(row),
+                        }),
+                      )}
+                    />
                   )}
                 </section>
               )}
@@ -2481,40 +2345,58 @@ export default function ThemeSpotDetailModal({
                   )}
                   {(nearbyAttractions.length > 0 ||
                     nearbyAttractionsHasLocalScenic) && (
-                    <ul
-                      className="space-y-2"
+                    <div
+                      className="space-y-3"
                       aria-label={t('korea.theme.spotDetail.nearAttractionsAria')}
                     >
                       {nearbyAttractionsGrouped.groups.map((group) => (
-                        <React.Fragment key={group.listId}>
-                          <li className="list-none pt-0.5">
-                            <p className="text-[11px] font-bold tracking-wide text-stone-500 break-keep">
-                              {group.title}
-                            </p>
-                          </li>
-                          {group.items.map((attr) => (
-                            <NearbyPoiAttractionRow
-                              key={attr.contentId || attr.id}
-                              spot={attr}
-                              extraThumb={nearbyThumbById.get(
+                        <div key={group.listId} className="space-y-2">
+                          <p className="text-[11px] font-bold tracking-wide text-stone-500 break-keep">
+                            {group.title}
+                          </p>
+                          <ScenicNearbyCardGrid
+                            variant="attraction"
+                            items={group.items.map((attr) => {
+                              const rankBlurb = String(attr?.rankBlurb || '').trim();
+                              const clickable = isNearbyAttractionRowClickable(attr);
+                              return nearbyListCardItem(attr, {
+                                meta: rankBlurb || foodPlaceLabel(attr),
+                                extraThumb: nearbyThumbById.get(
+                                  String(attr.contentId || '').trim(),
+                                ),
+                                onActivate: clickable
+                                  ? () =>
+                                      setSelectedAttraction(
+                                        mergeNearbyRowWithLocalScenicDetail(attr),
+                                      )
+                                  : undefined,
+                              });
+                            })}
+                          />
+                        </div>
+                      ))}
+                      {nearbyAttractionsGrouped.rest.length > 0 ? (
+                        <ScenicNearbyCardGrid
+                          variant="attraction"
+                          items={nearbyAttractionsGrouped.rest.map((attr) => {
+                            const rankBlurb = String(attr?.rankBlurb || '').trim();
+                            const clickable = isNearbyAttractionRowClickable(attr);
+                            return nearbyListCardItem(attr, {
+                              meta: rankBlurb || foodPlaceLabel(attr),
+                              extraThumb: nearbyThumbById.get(
                                 String(attr.contentId || '').trim(),
-                              )}
-                              onSelect={setSelectedAttraction}
-                            />
-                          ))}
-                        </React.Fragment>
-                      ))}
-                      {nearbyAttractionsGrouped.rest.map((attr) => (
-                        <NearbyPoiAttractionRow
-                          key={attr.contentId || attr.id}
-                          spot={attr}
-                          extraThumb={nearbyThumbById.get(
-                            String(attr.contentId || '').trim(),
-                          )}
-                          onSelect={setSelectedAttraction}
+                              ),
+                              onActivate: clickable
+                                ? () =>
+                                    setSelectedAttraction(
+                                      mergeNearbyRowWithLocalScenicDetail(attr),
+                                    )
+                                : undefined,
+                            });
+                          })}
                         />
-                      ))}
-                    </ul>
+                      ) : null}
+                    </div>
                   )}
                 </section>
               )}
@@ -2543,13 +2425,10 @@ export default function ThemeSpotDetailModal({
                     </p>
                   )}
                   {nearbyFestivals.length > 0 && (
-                    <ul
-                      className="space-y-2"
-                      aria-label={t('korea.theme.spotDetail.nearFestivalsAria')}
-                    >
-                      {nearbyFestivals.map((fest) => {
-                        const thumbFest = toHttps(fest.firstImage);
-                        const dist = formatDistKm(fest.distKm);
+                    <ScenicNearbyCardGrid
+                      variant="festival"
+                      ariaLabel={t('korea.theme.spotDetail.nearFestivalsAria')}
+                      items={nearbyFestivals.map((fest) => {
                         const when = formatFestivalDetailDateRange(
                           fest.eventStartDate,
                           fest.eventEndDate,
@@ -2557,47 +2436,14 @@ export default function ThemeSpotDetailModal({
                           locale,
                         );
                         const place = String(fest.locality || fest.region || '').trim();
-                        return (
-                          <li key={fest.contentId}>
-                            <button
-                              type="button"
-                              onClick={() => openFestival(fest)}
-                              className="flex w-full gap-3 rounded-2xl border border-stone-200 bg-stone-50 p-2.5 text-left hover:bg-amber-50 hover:border-amber-300 transition-colors"
-                            >
-                              {thumbFest ? (
-                                <img
-                                  src={thumbFest}
-                                  alt=""
-                                  className="h-14 w-14 shrink-0 rounded-xl object-cover bg-stone-200"
-                                />
-                              ) : (
-                                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-rose-50 text-rose-800">
-                                  <CalendarDays size={18} aria-hidden="true" />
-                                </div>
-                              )}
-                              <span className="min-w-0 flex-1">
-                                <span className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-                                  <span
-                                    className="text-sm font-bold text-stone-800 leading-snug line-clamp-2 break-keep"
-                                    {...koText}
-                                  >
-                                    {fest.title || fest.name}
-                                  </span>
-                                  {dist ? (
-                                    <span className="shrink-0 rounded-full bg-stone-100 px-1.5 py-0.5 text-[10px] font-bold tabular-nums text-stone-600">
-                                      {dist}
-                                    </span>
-                                  ) : null}
-                                </span>
-                                <span className="mt-0.5 block text-[11px] text-stone-500 break-keep" {...koText}>
-                                  {[place, when].filter(Boolean).join(' · ')}
-                                </span>
-                              </span>
-                            </button>
-                          </li>
-                        );
+                        return nearbyListCardItem(fest, {
+                          title: fest.title || fest.name,
+                          meta: [place, when].filter(Boolean).join(' · '),
+                          onActivate: () => openFestival(fest),
+                          textProps: koText,
+                        });
                       })}
-                    </ul>
+                    />
                   )}
                 </section>
               )}

@@ -4,13 +4,13 @@
  * 상세 규칙: AGENTS.md Cloud「세션 표기 · 고정 Preview · 작업 로그」
  */
 export const cloudPreviewProject = {
-  active: false,
-  title: '명승 카드',
+  active: true,
+  title: '명승 본문 카드',
   sessionNo: 1,
-  sessionPhase: '축제형 카드 리스트',
-  branch: 'cursor/scenic-cards-f089',
-  previewPath: '/korea/theme/scenic',
-  qaShareSlug: '',
+  sessionPhase: '주변 카드',
+  branch: 'cursor/scenic-body-cards-da58',
+  previewPath: '/korea/theme/scenic?spot=gyeongbokgung',
+  qaShareSlug: 'scenic-body-cards',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-11-12-scenic-body-cards-1',
+    session: '명승 본문 카드 #1, 주변 카드',
+    title: '주변 목록을 사진 카드로',
+    detail:
+      '명승 본문의 주변 맛집·레포츠·문화·관광지·인근 축제·인근 여행지가 두 열 카드입니다. 사진이 있으면 사진을 넣고, 없으면 같은 칸에 아이콘을 넣습니다. 맛집 아이콘은 여덟 가지이고, 좌우·위·대각으로 붙은 카드는 같은 아이콘을 쓰지 않습니다. Preview /korea/theme/scenic?spot=gyeongbokgung — 경복궁 본문을 내려 주변 맛집 카드.',
+    at: '2026-11-12T08:40:00.000Z',
+  },
   {
     id: '2026-11-12-scenic-cards-1',
     session: '명승 카드 #1, 축제형 카드 리스트',
