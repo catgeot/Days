@@ -7,7 +7,8 @@
       "cursor/explore-search-fix-bfa1": true,
       "cursor/explore-cards-d0e2": true,
       "cursor/scenic-cards-f089": true,
-      "cursor/world-events-scroll-up-be96": true
+      "cursor/world-events-scroll-up-be96": true,
+      "cursor/scenic-body-cards-da58": true
     }
   },
   "redirects": [
@@ -255,6 +256,11 @@
     {
       "source": "/qa/scenic-cards",
       "destination": "https://www.gateo.kr/korea/theme/scenic",
+      "permanent": false
+    },
+    {
+      "source": "/qa/scenic-body-cards",
+      "destination": "https://days-git-cursor-scenic-body-cards-da58-catgeots-projects.vercel.app/korea/theme/scenic?spot=gyeongbokgung",
       "permanent": false
     },
     {
