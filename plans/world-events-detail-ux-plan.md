@@ -825,4 +825,6 @@ flowchart LR
 
 **다음**: 사람 Preview — `/world-events` 이스탄불·추수감사절 카드가 컬러인지. merge는 QA 후.
 
-**#59 (별도 브랜치, wave3와 합치지 않음)**: 목록·본문 스크롤 「위로」. `cursor/world-events-scroll-up-be96` · PR #764 · tip `af614ff7`. 확인은 그 git Preview `/world-events`. `/qa/world-events`는 계속 wave3.
+**#59 (별도 브랜치, wave3와 합치지 않음)**: 목록·본문 스크롤 「위로」. `cursor/world-events-scroll-up-be96` · PR #764 · tip `960f2ff4`. `vercel.json`에서 이 브랜치만 Preview 배포를 켬. `/qa/world-events`는 계속 wave3.
+
+**#60**: 에든버러 프린지 본문 하단 「QA — raw JSON」이 Preview에 공개됨. `EventTravelGuidePanel.jsx`의 `showRaw`가 `isCloudPreviewSurface()`라 `*.vercel.app`에서 켜진다. 검은 JSON만 제거하고 프리셋·주의사항은 유지. 같은 브랜치 push로 기존 Preview 재배포. main 병합 아님.

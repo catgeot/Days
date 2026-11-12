@@ -1432,27 +1432,30 @@ PROD https://www.gateo.kr/
 
 | | |
 |--|--|
-| **상태** | **#59** 목록·본문 「위로」 **push** · tip `af614ff7` · PR [#764](https://github.com/catgeot/Days/pull/764) · 사람 Preview는 같은 턴 링크 |
+| **상태** | **#59** 목록·본문 「위로」 · Preview 배포 켬 · tip `960f2ff4` · PR [#764](https://github.com/catgeot/Days/pull/764) · **#60** 본문 QA JSON 숨김 후 같은 Preview 재배포 |
 | **브랜치** | `cursor/world-events-scroll-up-be96` |
 | **PR** | [#764](https://github.com/catgeot/Days/pull/764) |
 | **플랜** | [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) **§9** |
 | **일지** | [`2026-11-12-project-log.md`](./2026-11-12-project-log.md) |
 | **Preview** | git `https://days-git-cursor-world-events-scroll-up-be96-catgeots-projects.vercel.app/world-events` · 본문 예 `/world-events/edinburgh-fringe-2026` |
 | **금지** | `worldEvents.json` 직편집 · UI 리디자인 · 이 버튼을 `/qa/world-events`(wave3)에서 확인 · wave3와 브랜치 합치기 |
-| **VERIFY** | `npm run smoke:world-events-hub` PASS · 로컬 Playwright 목록·본문 스크롤 후 「위로」 클릭 시 맨 위 · `smoke:world-events-detail`은 옥토버페스트 opening 날짜 단언이 오늘(2026-11-12) 기준으로 기존 FAIL |
+| **VERIFY** | `npm run smoke:world-events-hub` PASS · `node --test scripts/health/vercel-deployment-enabled.test.mjs` PASS · `smoke:world-events-detail`은 옥토버페스트 opening 날짜가 오늘 기준이라 기존 FAIL |
+| **#60 대상** | `src/pages/WorldEvents/EventTravelGuidePanel.jsx` `showRaw` · `isCloudPreviewSurface()`가 `*.vercel.app`이면 true라 Preview에 「QA — raw JSON」이 보임. `gateo.kr`은 이미 숨김. 읽히는 안내(프리셋·주의사항)는 유지 |
 
-**게이트**: 사람 Preview OK 전 merge 금지. `/qa/world-events`는 wave3라 이 버튼이 없다.
+**게이트**: #764 main 병합 금지. `/qa/world-events`는 wave3. 이 브랜치 `vercel.json`의 `cursor/world-events-scroll-up-be96: true`를 끄지 말 것.
 
-**다음 제시어** (#60 피드백이 있을 때만):
+**다음 제시어** (#60):
 
 ```
-세계행사 일정 #60, 위로 버튼 피드백
+세계행사 일정 #60, 본문 QA JSON 숨김
 @plans/feature-handoff-index.md
 @plans/2026-11-12-project-log.md
 @plans/world-events-detail-ux-plan.md
-브랜치 cursor/world-events-scroll-up-be96 · PR #764
-금지: worldEvents.json 직편집 · UI 리디자인 · /qa/world-events 로 이 버튼 확인 · wave3와 합치기
-작업: 목록·본문 「위로」 피드백이 있으면 같은 브랜치에서만 반영
+브랜치 cursor/world-events-scroll-up-be96 · PR #764 · tip 960f2ff4
+금지: worldEvents.json 직편집 · UI 리디자인 · 새 브랜치 · wave3와 합치기 · main 병합 · vercel.json 배포 예외 제거
+작업: EventTravelGuidePanel의 「QA — raw JSON」검은 블록을 Vercel Preview에서도 제거. 일정 프리셋·주의사항 문장은 유지. isCloudPreviewSurface()가 *.vercel.app에서 true라 지금 노출됨. 같은 브랜치 커밋·push면 기존 Preview가 갱신된다.
+검증: smoke:world-events-detail · Preview /world-events/edinburgh-fringe-2026 에 QA raw JSON이 없는지
+Preview: https://days-git-cursor-world-events-scroll-up-be96-catgeots-projects.vercel.app/world-events/edinburgh-fringe-2026
 ```
 
 ---
