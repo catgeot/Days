@@ -4,13 +4,13 @@
  * 상세 규칙: AGENTS.md Cloud「세션 표기 · 고정 Preview · 작업 로그」
  */
 export const cloudPreviewProject = {
-  active: false,
-  title: '탐색 페이지',
-  sessionNo: 4,
-  sessionPhase: '카드 피드백',
-  branch: 'cursor/explore-cards-d0e2',
-  previewPath: '/explore',
-  qaShareSlug: 'explore-monthly',
+  active: true,
+  title: '명승 카드',
+  sessionNo: 1,
+  sessionPhase: '축제형 카드 리스트',
+  branch: 'cursor/scenic-cards-f089',
+  previewPath: '/korea/theme/scenic',
+  qaShareSlug: 'scenic-cards',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-11-12-scenic-cards-1',
+    session: '명승 카드 #1, 축제형 카드 리스트',
+    title: '명승 목록을 사진 카드로',
+    detail:
+      '명승 홈의 선정 명소·국가유산 명승·관광지·찜/본 항목은 기본이 축제 홈과 같은 사진 카드입니다. 좁은 화면은 두 열, 넓은 화면은 세 열·네 열입니다. 명승 사진은 대부분 가로라 한 줄 배너로 빼지 않고 칸 안에서 채웁니다. 카드에는 이름, 지역, 한 줄 소개, 거리, 별이 있습니다. 본 항목은 사진 안에 표시합니다. 섹션의 「목록 보기」로 예전 행 목록과 크게 보기를 다시 켤 수 있습니다. Preview /qa/scenic-cards — /korea/theme/scenic.',
+    at: '2026-11-12T03:00:00.000Z',
+  },
   {
     id: '2026-11-08-explore-monthly-cards-4',
     session: '탐색 페이지 #4, 카드 피드백',

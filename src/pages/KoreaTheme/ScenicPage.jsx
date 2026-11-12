@@ -125,7 +125,12 @@ import {
   resolveLocalScenicListSpotById,
 } from '../Home/lib/koreaLocalScenicLists';
 import { fetchTourApiFirstImage } from '../../utils/fetchTourApiAttractionDetail';
-import { resolveListImageUrl } from '../../utils/listImageUrl';
+import ScenicSpotCardGrid from './ScenicSpotCardGrid.jsx';
+import {
+  readScenicLegacyListFromSession,
+  writeScenicLegacyListToSession,
+} from './scenicListViewSession.js';
+import { scenicSpotThumbCandidates } from './scenicSpotListThumbs.js';
 import { reconcileThemeNavBack } from '../Home/lib/koreaThemeNavBack';
 import { formatScenicSpotPlaceLabel } from '../Home/lib/scenicSpotPlaceLabel';
 import { useLocale } from '../../i18n/LocaleProvider';
@@ -467,14 +472,6 @@ function kmByIdFromRanked(ranked) {
   return map;
 }
 
-function toHttps(url) {
-  const s = String(url || '').trim();
-  if (!s) return '';
-  if (s.startsWith('//')) return `https:${s}`;
-  if (s.startsWith('http://')) return `https://${s.slice('http://'.length)}`;
-  return s;
-}
-
 function mergeContentIdImageMap(prev, entries) {
   let changed = false;
   const next = new Map(prev);
@@ -558,20 +555,6 @@ function tourListMissingContentIds(spots) {
   ];
 }
 
-function spotListThumbCandidates(spot) {
-  const raw = [spot?.thumbUrl, spot?.firstImage, spot?.imageUrl];
-  /** @type {string[]} */
-  const out = [];
-  const seen = new Set();
-  for (const item of raw) {
-    const url = resolveListImageUrl(toHttps(item), { role: 'list' });
-    if (!url || seen.has(url)) continue;
-    seen.add(url);
-    out.push(url);
-  }
-  return out;
-}
-
 function ListLargeToggleButton({ listLarge, onToggle }) {
   const { t } = useTranslation();
   return (
@@ -605,6 +588,40 @@ function ListLargeToggleButton({ listLarge, onToggle }) {
   );
 }
 
+function ScenicListViewControls({
+  cardGrid,
+  onSetLegacyList,
+  listLarge,
+  onToggleLarge,
+}) {
+  const { t } = useTranslation();
+  if (cardGrid) {
+    return (
+      <button
+        type="button"
+        onClick={() => onSetLegacyList(true)}
+        data-scenic-grid-list-link=""
+        className="h-7 shrink-0 px-1 text-[11px] font-semibold text-stone-600 underline-offset-2 hover:text-amber-900 hover:underline"
+      >
+        {t('korea.festival.gridListView')}
+      </button>
+    );
+  }
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => onSetLegacyList(false)}
+        data-scenic-grid-card-link=""
+        className="h-7 shrink-0 px-1 text-[11px] font-semibold text-stone-600 underline-offset-2 hover:text-amber-900 hover:underline"
+      >
+        {t('korea.festival.gridCardView')}
+      </button>
+      <ListLargeToggleButton listLarge={listLarge} onToggle={onToggleLarge} />
+    </>
+  );
+}
+
 function ScenicListRow({
   spot,
   distanceKm,
@@ -616,7 +633,7 @@ function ScenicListRow({
 }) {
   const { t } = useTranslation();
   const distanceLabel = formatDistanceKm(distanceKm);
-  const candidates = spotListThumbCandidates(spot);
+  const candidates = scenicSpotThumbCandidates(spot);
   const [thumbIndex, setThumbIndex] = useState(0);
   const thumb = candidates[thumbIndex] || '';
   const clickable = typeof onOpen === 'function';
@@ -1653,8 +1670,17 @@ export default function KoreaThemeScenicPage() {
   );
   /** null | curated | heritage | tour | personal — 파드별 목록↔지도 */
   const [mapPod, setMapPod] = useState(null);
-  /** 리스트 행·썸네일 확대 (축제홈과 동일) */
+  /** 리스트 행·썸네일 확대 — 카드 보기에서는 숨김 */
   const [listLarge, setListLarge] = useState(false);
+  const [legacyList, setLegacyList] = useState(() =>
+    readScenicLegacyListFromSession(),
+  );
+  const cardGrid = !legacyList;
+  const setScenicLegacyList = useCallback((legacy) => {
+    const next = Boolean(legacy);
+    setLegacyList(next);
+    writeScenicLegacyListToSession(next);
+  }, []);
   const [openPods, setOpenPods] = useState({
     curated: true,
     heritage: false,
@@ -1725,6 +1751,10 @@ export default function KoreaThemeScenicPage() {
   const [mapFocusView, setMapFocusView] = useState(null);
   const mapOpen = mapPod != null;
   const [viewedList, setViewedList] = useState(() => loadScenicViewed());
+  const viewedIds = useMemo(
+    () => new Set(viewedList.map((row) => String(row.id))),
+    [viewedList],
+  );
   const [chipCounts, setChipCounts] = useState({
     regionCounts: {},
     areaCounts: {},
@@ -4551,9 +4581,11 @@ export default function KoreaThemeScenicPage() {
                   </p>
                 </div>
                 <div className="flex shrink-0 flex-wrap items-center gap-1.5">
-                  <ListLargeToggleButton
+                  <ScenicListViewControls
+                    cardGrid={cardGrid}
+                    onSetLegacyList={setScenicLegacyList}
                     listLarge={listLarge}
-                    onToggle={() => setListLarge((v) => !v)}
+                    onToggleLarge={() => setListLarge((v) => !v)}
                   />
                   <button
                     type="button"
@@ -4643,6 +4675,17 @@ export default function KoreaThemeScenicPage() {
                           {group.items.length}
                         </span>
                       </p>
+                      {cardGrid ? (
+                        <ScenicSpotCardGrid
+                          spots={group.items}
+                          onOpen={openSpot}
+                          favoriteIds={favoriteIds}
+                          viewedIds={viewedIds}
+                          onToggleFavorite={handleToggleFavorite}
+                          locale={locale}
+                          activeId={selectedId}
+                        />
+                      ) : (
                       <ul className={listLarge ? 'space-y-3' : 'space-y-2'}>
                         {group.items.map((spot) => (
                           <li key={`p-${spot.id}`}>
@@ -4657,6 +4700,7 @@ export default function KoreaThemeScenicPage() {
                           </li>
                         ))}
                       </ul>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -4697,9 +4741,11 @@ export default function KoreaThemeScenicPage() {
               </button>
               {openPods.curated ? (
                 <div className="flex shrink-0 items-center gap-1.5">
-                  <ListLargeToggleButton
+                  <ScenicListViewControls
+                    cardGrid={cardGrid}
+                    onSetLegacyList={setScenicLegacyList}
                     listLarge={listLarge}
-                    onToggle={() => setListLarge((v) => !v)}
+                    onToggleLarge={() => setListLarge((v) => !v)}
                   />
                   <button
                     type="button"
@@ -4895,6 +4941,19 @@ export default function KoreaThemeScenicPage() {
               </div>
             ) : null}
 
+            {cardGrid ? (
+              <ScenicSpotCardGrid
+                spots={curatedSpotsWithLocalScenicThumbs}
+                kmById={curatedKmById}
+                onOpen={openSpot}
+                favoriteIds={favoriteIds}
+                viewedIds={viewedIds}
+                onToggleFavorite={handleToggleFavorite}
+                locale={locale}
+                restLabel={t('korea.theme.scenicSectionCuratedRest')}
+                activeId={selectedId}
+              />
+            ) : (
             <ul
               className={`${listLarge ? 'space-y-3' : 'space-y-2'} [overflow-anchor:none]`}
             >
@@ -4935,6 +4994,7 @@ export default function KoreaThemeScenicPage() {
                 );
               })}
             </ul>
+            )}
             {nearActive && (curatedNearHiddenCount > 0 || nearCanWidenRadius) ? (
               <div className="flex flex-wrap gap-2 pt-1">
                 {curatedNearHiddenCount > 0 ? (
@@ -5043,9 +5103,11 @@ export default function KoreaThemeScenicPage() {
               </button>
               {openPods.heritage ? (
                 <div className="flex shrink-0 items-center gap-1.5">
-                  <ListLargeToggleButton
+                  <ScenicListViewControls
+                    cardGrid={cardGrid}
+                    onSetLegacyList={setScenicLegacyList}
                     listLarge={listLarge}
-                    onToggle={() => setListLarge((v) => !v)}
+                    onToggleLarge={() => setListLarge((v) => !v)}
                   />
                   <button
                     type="button"
@@ -5218,6 +5280,17 @@ export default function KoreaThemeScenicPage() {
                       ? t('korea.theme.scenicEmptyHeritageCategory')
                       : t('korea.theme.scenicEmptyHeritageRegion')}
               </p>
+            ) : cardGrid ? (
+              <ScenicSpotCardGrid
+                spots={heritageSpots}
+                kmById={heritageKmById}
+                onOpen={openSpot}
+                favoriteIds={favoriteIds}
+                viewedIds={viewedIds}
+                onToggleFavorite={handleToggleFavorite}
+                locale={locale}
+                activeId={selectedId}
+              />
             ) : (
               <ul
                 className={`${listLarge ? 'space-y-3' : 'space-y-2'} [overflow-anchor:none]`}
@@ -5308,9 +5381,11 @@ export default function KoreaThemeScenicPage() {
               </button>
               {openPods.tour ? (
                 <div className="flex shrink-0 items-center gap-1.5">
-                  <ListLargeToggleButton
+                  <ScenicListViewControls
+                    cardGrid={cardGrid}
+                    onSetLegacyList={setScenicLegacyList}
                     listLarge={listLarge}
-                    onToggle={() => setListLarge((v) => !v)}
+                    onToggleLarge={() => setListLarge((v) => !v)}
                   />
                   <button
                     type="button"
@@ -5575,6 +5650,18 @@ export default function KoreaThemeScenicPage() {
             ) : null}
 
             {dbSpots.length > 0 ? (
+              cardGrid ? (
+                <ScenicSpotCardGrid
+                  spots={dbSpotsWithThumbs}
+                  kmById={dbKmById}
+                  onOpen={openSpot}
+                  favoriteIds={favoriteIds}
+                  viewedIds={viewedIds}
+                  onToggleFavorite={handleToggleFavorite}
+                  locale={locale}
+                  activeId={selectedId}
+                />
+              ) : (
               <ul
                 className={`${listLarge ? 'space-y-3' : 'space-y-2'} [overflow-anchor:none]`}
               >
@@ -5592,6 +5679,7 @@ export default function KoreaThemeScenicPage() {
                   </li>
                 ))}
               </ul>
+              )
             ) : null}
 
             {nearActive &&

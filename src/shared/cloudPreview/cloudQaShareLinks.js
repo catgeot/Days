@@ -8,6 +8,14 @@ export const CLOUD_QA_SHARE_ORIGIN = 'https://www.gateo.kr';
 /** @type {{ slug: string, label: string, branch: string, destination: string, active: boolean }[]} */
 export const CLOUD_QA_SHARE_LINKS = [
   {
+    slug: 'scenic-cards',
+    label: '명승 카드 — 축제형 사진 목록',
+    branch: 'cursor/scenic-cards-f089',
+    destination:
+      'https://days-git-cursor-scenic-cards-f089-catgeots-projects.vercel.app/korea/theme/scenic',
+    active: true,
+  },
+  {
     slug: 'festival-card',
     label: '축제 카드 — 열차 문장·소개 축제',
     branch: 'cursor/festival-access-promo-5b7f',

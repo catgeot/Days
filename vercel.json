@@ -251,6 +251,11 @@
       "permanent": false
     },
     {
+      "source": "/qa/scenic-cards",
+      "destination": "https://days-git-cursor-scenic-cards-f089-catgeots-projects.vercel.app/korea/theme/scenic",
+      "permanent": false
+    },
+    {
       "source": "/qa/scenic-list",
       "destination": "https://days-git-cursor-scenic-list-large-a55c-catgeots-projects.vercel.app/korea/theme/scenic",
       "permanent": false
