@@ -19,6 +19,10 @@ export const GATEO_ENV_FLAG_NAMES = {
   FESTIVAL_ROAD: 'VITE_GATEO_FESTIVAL_ROAD',
   NEARBY_CARDS: 'VITE_GATEO_NEARBY_CARDS',
   KOGL_REELS: 'VITE_GATEO_KOGL_REELS',
+  /** Self-hosted vertical reels page. Default off. `'1'` only. */
+  SELF_REELS: 'VITE_GATEO_SELF_REELS',
+  /** Fixture playback for tests. Never enables the route by itself. */
+  SELF_REELS_FIXTURE: 'VITE_GATEO_SELF_REELS_FIXTURE',
   SCENIC_PLACE_LINKS: 'VITE_GATEO_SCENIC_PLACE_LINKS',
   PLACE_WORLD_EVENTS_TAB: 'VITE_GATEO_PLACE_WORLD_EVENTS_TAB',
   /** Explore Enter panel matches autocomplete groups (hub exact). Default on; `0`/`false`/`off` disables. */
@@ -114,6 +118,16 @@ export function isGateoNearbyCardsEnabled() {
 /** Globe home KOGL reels section. Default off. */
 export function isGateoKoglReelsEnabled() {
   return readGateoEnvFlag(GATEO_ENV_FLAG_NAMES.KOGL_REELS);
+}
+
+/** `/reels` shell. Default off. */
+export function isGateoSelfReelsEnabled() {
+  return readGateoEnvFlag(GATEO_ENV_FLAG_NAMES.SELF_REELS);
+}
+
+/** Test fixture switch. Off unless the page flag is also on. No media lives here. */
+export function isGateoSelfReelsFixtureEnabled() {
+  return isGateoSelfReelsEnabled() && readGateoEnvFlag(GATEO_ENV_FLAG_NAMES.SELF_REELS_FIXTURE);
 }
 
 /** Scenic modal place-card CTA, hub regional grid, SSOT scenic gallery fallback. Unset defaults on; `0`/`false`/`off` disables. */
