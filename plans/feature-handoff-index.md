@@ -14,30 +14,19 @@
 
 ## 활성 목록
 
-### 명승 본문 카드
+### 명승 본문 카드 — 종료
 
 | | |
 |--|--|
-| **상태** | **#1 주변 카드** · tip `cc288c0b` · PR [#772](https://github.com/catgeot/Days/pull/772) |
-| **브랜치** | `cursor/scenic-body-cards-da58` |
-| **플랜** | 별도 플랜 없음. 이 행이 핸드오프 |
+| **상태** | **#1 merge ✅ · 주제 종료** · main `2cdb2f3a` · PR [#772](https://github.com/catgeot/Days/pull/772) · 2026-11-12 18:24 KST |
+| **브랜치** | `cursor/scenic-body-cards-da58` (재사용 없음) |
+| **플랜** | 별도 플랜 없음 |
 | **일지** | [`2026-11-12-project-log.md`](./2026-11-12-project-log.md) |
-| **Preview** | git Preview `/korea/theme/scenic?spot=gyeongbokgung` · `/qa/scenic-body-cards`는 이 브랜치 `vercel.json`이 main에 있어야 본 사이트에서 열림 |
+| **PROD** | `https://www.gateo.kr/korea/theme/scenic?spot=gyeongbokgung` · `/qa/scenic-body-cards` 본 사이트 전환은 PR [#774](https://github.com/catgeot/Days/pull/774) |
 | **소유** | `ThemeSpotDetailModal` · `ScenicNearbyCardGrid` · `scenicNearbyIconSlots.js` |
-| **금지** | 축제 본문 목록까지 이 세션에서 바꾸기 · 같은 도시 명소 목록을 카드로 바꾸기 · 명승 홈 카드 격자 변경 · feature에 `plans/**` 커밋 |
-| **VERIFY** | `node --test scripts/health/scenic-nearby-icon-slots.test.mjs` · `npx vite build` |
+| **금지** | 축제 본문 목록을 이 주제로 다시 열기 · 같은 도시 명소 카드화 · 명승 홈 카드 격자 변경 |
 
-**다음 제시어**
-
-```
-명승 본문 카드 #2, 카드 피드백
-@plans/feature-handoff-index.md
-@plans/2026-11-12-project-log.md
-브랜치 cursor/scenic-body-cards-da58 · PR #772
-금지: 축제 본문 목록을 같이 바꾸기 · 같은 도시 명소 카드화 · 명승 홈 격자 변경 · feature에 plans/** 커밋
-작업: 경복궁 본문에서 주변 맛집 아이콘이 이웃과 다른지, 축제·레포츠·문화 사진 카드, 인근 여행지 아이콘 카드를 본다. 피드백이 있으면 그 한 가지. 없으면 축제 본문도 같은 카드로 맞출지 정한다
-검증: node --test scripts/health/scenic-nearby-icon-slots.test.mjs · npx vite build
-```
+**다음 제시어 없음** (주제 종료). 확인은 `www.gateo.kr/korea/theme/scenic?spot=gyeongbokgung`.
 
 ### 명승 카드 — 종료
 
