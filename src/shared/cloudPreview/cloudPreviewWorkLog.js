@@ -4,13 +4,13 @@
  * 상세 규칙: AGENTS.md Cloud「세션 표기 · 고정 Preview · 작업 로그」
  */
 export const cloudPreviewProject = {
-  active: true,
+  active: false,
   title: '명승 카드',
   sessionNo: 1,
   sessionPhase: '축제형 카드 리스트',
   branch: 'cursor/scenic-cards-f089',
   previewPath: '/korea/theme/scenic',
-  qaShareSlug: 'scenic-cards',
+  qaShareSlug: '',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
