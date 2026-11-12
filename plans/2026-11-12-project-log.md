@@ -2,6 +2,12 @@
 
 이전: [`2026-11-08-project-log.md`](./2026-11-08-project-log.md)
 
+## 명승 카드 #1 종료, main 병합
+
+- 사람 병합 2026-11-12 16:34 KST. main `40c37220` · PR [#767](https://github.com/catgeot/Days/pull/767).
+- 확인은 `https://www.gateo.kr/korea/theme/scenic`. `/qa/scenic-cards`를 본 사이트로 돌리는 변경은 PR [#770](https://github.com/catgeot/Days/pull/770).
+- 다음 제시어 없음.
+
 ## 세계행사 일정 #60, 본문 QA JSON 숨김
 
 - 에든버러 프린지 본문의 추천 방문 윈도·주의사항은 그대로다. 그 아래 검은 「QA — raw JSON」은 Vercel Preview와 라이브에서 보이지 않고, 로컬 vite 개발 서버에서만 남는다.
@@ -29,4 +35,4 @@
 - 코드 `734f42fa` · 브랜치 `cursor/scenic-cards-f089` · PR [#767](https://github.com/catgeot/Days/pull/767). `node --test scripts/health/scenic-card-grid.test.mjs` PASS · `npx vite build` PASS. 로컬 390px에서 서울 카드 사진, 경복궁 상세, 목록 전환 확인. `cursor/*` 배포는 꺼 둔 채 이 브랜치만 `vercel.json`에서 켰다.
 - Preview `https://days-git-cursor-scenic-cards-f089-catgeots-projects.vercel.app/korea/theme/scenic`. `/qa/scenic-cards`는 이 브랜치가 main에 합쳐진 뒤에야 prod 리다이렉트가 있다.
 - 사람 확인: 카드 두 열, 카드로 상세, 「목록 보기」가 예전 행인지.
-- 다음: 명승 카드 #2, Preview OK면 PR 병합. 같은 브랜치만.
+- 종료: 2026-11-12 16:34 KST main `40c37220`. 다음 제시어 없음.
