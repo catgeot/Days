@@ -483,6 +483,16 @@ const travelGuidePanelSrc = readFileSync(
   'utf8',
 );
 assert.match(travelGuidePanelSrc, /localizeEventTravelGuide/, 'EventTravelGuidePanel locale guide');
+assert.match(
+  travelGuidePanelSrc,
+  /return import\.meta\.env\.DEV/,
+  'EventTravelGuidePanel QA raw JSON is local dev only',
+);
+assert.doesNotMatch(
+  travelGuidePanelSrc,
+  /isCloudPreviewSurface/,
+  'EventTravelGuidePanel QA raw JSON stays off Vercel Preview',
+);
 assert.match(detailSrc, /EventStayStrip/, 'EventDetailPage renders in-page stay strip');
 assert.match(detailSrc, /EventMooniFab/, 'EventDetailPage renders Mooni FAB');
 assert.match(detailSrc, /WorldEventScrollTopButton/, 'EventDetailPage scroll-to-top button');

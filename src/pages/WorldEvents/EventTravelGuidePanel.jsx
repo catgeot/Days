@@ -1,11 +1,11 @@
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Sparkles } from 'lucide-react';
-import { isCloudPreviewSurface } from '../../shared/cloudPreview/isCloudPreviewSurface';
 import { localizeEventTravelGuide } from '../../utils/eventTravelGuideLocale';
 
 function isDevQaSurface() {
-  return isCloudPreviewSurface() || import.meta.env.DEV;
+  // Vercel Preview ships a production build on *.vercel.app. Raw JSON stays on local vite dev only.
+  return import.meta.env.DEV;
 }
 
 /**

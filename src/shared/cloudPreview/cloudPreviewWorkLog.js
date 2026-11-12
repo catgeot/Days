@@ -6,8 +6,8 @@
 export const cloudPreviewProject = {
   active: true,
   title: '세계행사 일정',
-  sessionNo: 59,
-  sessionPhase: '스크롤 위로 버튼',
+  sessionNo: 60,
+  sessionPhase: '본문 QA JSON 숨김',
   branch: 'cursor/world-events-scroll-up-be96',
   previewPath: '/world-events',
   qaShareSlug: '',
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-11-12-world-events-60-hide-qa-json',
+    session: '세계행사 일정 #60, 본문 QA JSON 숨김',
+    title: '본문 QA raw JSON 숨김',
+    detail:
+      '행사 본문 「행사 맞춤 여행 가이드」의 추천 방문 윈도·주의사항은 그대로입니다. 그 아래 검은 「QA — raw JSON」블록은 Vercel Preview와 라이브에서 보이지 않고, 로컬 개발 서버에서만 남습니다. Preview /world-events/edinburgh-fringe-2026 — 가이드 문장은 있고 raw JSON은 없는지.',
+    at: '2026-11-12T03:10:00.000Z',
+  },
   {
     id: '2026-11-12-world-events-59-scroll-top',
     session: '세계행사 일정 #59, 스크롤 위로 버튼',
