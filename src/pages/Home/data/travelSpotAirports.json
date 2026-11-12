@@ -1,11 +1,11 @@
 {
   "_meta": {
     "version": 1,
-    "generatedAt": "2026-09-06T11:09:11.489Z",
-    "spotCount": 274,
+    "generatedAt": "2026-11-12T22:24:39.628Z",
+    "spotCount": 275,
     "placeIdCount": 647,
     "stats": {
-      "override": 173,
+      "override": 174,
       "curatedPreserved": 0,
       "toolkitSync": 101,
       "runtime": 0,
@@ -4274,6 +4274,16 @@
       "confidence": "high",
       "bannerNote": "말레이시아 사바는 보통 코타키나발루공항(BKI)이 관문입니다. 국제선은 쿠알라룸푸르(KUL) 경유가 흔합니다. 카리브해 네덜란드령 사바(SAB)와 도착 공항이 다릅니다. 티켓의 최종 도착 코드를 확인해 주세요.",
       "rationale": "사바주 관문 코타키나발루(BKI)"
+    },
+    "khao-lak": {
+      "primaryIatas": [
+        "HKT"
+      ],
+      "preferredLinkIata": "HKT",
+      "kind": "single",
+      "source": "curated-override",
+      "confidence": "high",
+      "rationale": "푸켓(HKT) 국제공항 후 북상 약 1시간"
     }
   },
   "placeIds": {

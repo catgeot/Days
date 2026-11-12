@@ -1,7 +1,7 @@
 {
   "meta": {
-    "generatedAt": "2026-09-06T11:09:11.208Z",
-    "spotCount": 125,
+    "generatedAt": "2026-11-12T22:24:40.032Z",
+    "spotCount": 126,
     "source": "scripts/data/travel-spot-coast-overrides.mjs"
   },
   "spots": {
@@ -194,6 +194,14 @@
       "source": "curated-override"
     },
     "krabi": {
+      "coastKind": "coastal-city",
+      "seaPrimary": "andaman",
+      "seaIds": [
+        "andaman"
+      ],
+      "source": "curated-override"
+    },
+    "khao-lak": {
       "coastKind": "coastal-city",
       "seaPrimary": "andaman",
       "seaIds": [

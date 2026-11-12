@@ -822,6 +822,7 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     rationale: 'ICN→ADD→JRO · 북부 탄자니아 사파리 관문(나이로비·도하 경유도 흔함)'
   },
   'similan-islands': { primaryIatas: ['HKT'], preferredLinkIata: 'HKT', confidence: 'high', rationale: '푸켓(HKT) 후 보트·다이빙 투어' },
+  'khao-lak': { primaryIatas: ['HKT'], preferredLinkIata: 'HKT', confidence: 'high', rationale: '푸켓(HKT) 국제공항 후 북상 약 1시간' },
   bohol: {
     primaryIatas: ['CEB', 'TAG'],
     preferredLinkIata: 'TAG',

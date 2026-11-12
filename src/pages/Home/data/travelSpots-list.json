@@ -4382,5 +4382,20 @@
       "sabah"
     ],
     "country_en": "Malaysia"
+  },
+  {
+    "id": 396,
+    "slug": "khao-lak",
+    "name": "카오락",
+    "name_en": "Khao Lak",
+    "country": "태국",
+    "searchKeys": [
+      "khao-lak",
+      "카오락",
+      "카오 락",
+      "khao lak",
+      "khaolak"
+    ],
+    "country_en": "Thailand"
   }
 ]
