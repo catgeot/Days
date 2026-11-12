@@ -827,4 +827,4 @@ flowchart LR
 
 **#59 (별도 브랜치, wave3와 합치지 않음)**: 목록·본문 스크롤 「위로」. `cursor/world-events-scroll-up-be96` · PR #764 · tip `960f2ff4`. `vercel.json`에서 이 브랜치만 Preview 배포를 켬. `/qa/world-events`는 계속 wave3.
 
-**#60**: 에든버러 프린지 본문 하단 「QA — raw JSON」이 Preview에 공개됨. `EventTravelGuidePanel.jsx`의 `showRaw`가 `isCloudPreviewSurface()`라 `*.vercel.app`에서 켜진다. 검은 JSON만 제거하고 프리셋·주의사항은 유지. 같은 브랜치 push로 기존 Preview 재배포. main 병합 아님.
+**#60**: 본문 「QA — raw JSON」은 `import.meta.env.DEV`일 때만. Preview·라이브에서는 숨기고 방문 윈도·주의사항은 유지. tip `214d80f4`. 같은 git Preview에서 raw JSON 없음 확인. 사람 요청으로 PR #764는 검사 통과 후 main 병합.
