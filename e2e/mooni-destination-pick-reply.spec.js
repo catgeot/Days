@@ -25,7 +25,8 @@ const CONVO_12_TURNS = [
 const GUAM_TURN = '괌으로 5박 6일 부부 스노클링 여행을 가려고 해요';
 const GUAM_OKINAWA_COMPARE = '괌이랑 오키나와 비교해 주세요';
 const VIENNA_FALSE_POSITIVE = '빈 시간에 뭐 할까요';
-const HIGH_CONFIDENCE_TURN = '카오락과 푸꾸옥이요';
+const DUAL_DEST_TURN = '카오락과 푸꾸옥이요';
+const HIGH_CONFIDENCE_TURN = '푸꾸옥이요';
 const PICK_PROMPT = '이 중 어디로 가고 싶으세요?';
 const replyMarker = (n) => `E2E-PICK-REPLY-${n}`;
 const BOLD_TIME_SAMPLE = '**13:30 ** 출발편이에요.';
@@ -143,6 +144,11 @@ test.describe('MOONi destination pick — AI reply first, chips below', () => {
       await expect(reply).toBeVisible({ timeout: 90_000 });
       expect(mock.mooniChatCalls()).toBe(n);
       await expectNoDestinationChipInUserBubbles(page);
+      if (n === 9) {
+        await expect(reply.getByText(PICK_PROMPT, { exact: true })).toBeVisible();
+        await reply.getByRole('button', { name: '푸꾸옥' }).click();
+        await expect(reply.getByText(/목적지 · .*푸꾸옥/)).toBeVisible({ timeout: 60_000 });
+      }
     }
 
     const turn9Reply = page.getByTestId('mooni-model-reply').filter({ hasText: replyMarker(9) });
@@ -228,16 +234,30 @@ test.describe('MOONi destination pick — AI reply first, chips below', () => {
     await expectNoDestinationChipInUserBubbles(page);
   });
 
-  test('카오락 시간별 세부 일정 — 세부(cebu) 칩·목적지 칩 없음', async ({ page, context }) => {
+  test('카오락 시간별 세부 일정 — khao-lak 확정, 세부(cebu) 칩 없음', async ({ page, context }) => {
     await installCountingGeminiMock(context);
     await openHomeMooni(page);
 
     await sendTurn(page, CEBU_GENERIC_DETAIL);
     const reply = page.getByTestId('mooni-model-reply').filter({ hasText: replyMarker(1) });
     await expect(reply).toBeVisible({ timeout: 90_000 });
+    await expect(reply.getByText(/목적지 · .*카오락/)).toBeVisible();
     await expect(reply.getByText(/목적지 · .*세부/)).toHaveCount(0);
     await expect(page.getByText(PICK_PROMPT, { exact: true })).toHaveCount(0);
     await expect(page.getByRole('button', { name: '세부' })).toHaveCount(0);
+  });
+
+  test('카오락·푸꾸옥 — 후보 칩 두 개', async ({ page, context }) => {
+    const mock = await installCountingGeminiMock(context);
+    await openHomeMooni(page);
+
+    await sendTurn(page, DUAL_DEST_TURN);
+    const reply = page.getByTestId('mooni-model-reply').filter({ hasText: replyMarker(1) });
+    await expect(reply).toBeVisible({ timeout: 90_000 });
+    expect(mock.mooniChatCalls()).toBe(1);
+    await expect(reply.getByText(PICK_PROMPT, { exact: true })).toBeVisible();
+    await expect(reply.getByRole('button', { name: '카오락' })).toBeVisible();
+    await expect(reply.getByRole('button', { name: '푸꾸옥' })).toBeVisible();
   });
 
   test('호주→푸켓→세부 일정 — 항공 카드 출발 CEB(막탄세부) 아님', async ({ page, context }) => {
