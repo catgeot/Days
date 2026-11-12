@@ -10,10 +10,9 @@ export const CLOUD_QA_SHARE_LINKS = [
   {
     slug: 'scenic-body-cards',
     label: '명승 본문 — 주변 카드',
-    branch: 'cursor/scenic-body-cards-da58',
-    destination:
-      'https://days-git-cursor-scenic-body-cards-da58-catgeots-projects.vercel.app/korea/theme/scenic?spot=gyeongbokgung',
-    active: true,
+    branch: 'main',
+    destination: 'https://www.gateo.kr/korea/theme/scenic?spot=gyeongbokgung',
+    active: false,
   },
   {
     slug: 'scenic-cards',
