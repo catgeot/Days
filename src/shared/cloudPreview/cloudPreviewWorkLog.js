@@ -32,6 +32,22 @@ export const cloudPreviewWorkLog = [
     at: '2026-11-12T03:00:00.000Z',
   },
   {
+    id: '2026-11-12-world-events-60-hide-qa-json',
+    session: '세계행사 일정 #60, 본문 QA JSON 숨김',
+    title: '본문 QA raw JSON 숨김',
+    detail:
+      '행사 본문 「행사 맞춤 여행 가이드」의 추천 방문 윈도·주의사항은 그대로입니다. 그 아래 검은 「QA — raw JSON」블록은 Vercel Preview와 라이브에서 보이지 않고, 로컬 개발 서버에서만 남습니다. Preview /world-events/edinburgh-fringe-2026 — 가이드 문장은 있고 raw JSON은 없는지.',
+    at: '2026-11-12T03:10:00.000Z',
+  },
+  {
+    id: '2026-11-12-world-events-59-scroll-top',
+    session: '세계행사 일정 #59, 스크롤 위로 버튼',
+    title: '목록·상세 「위로」',
+    detail:
+      '세계 행사 목록과 행사 본문을 조금 내리면 오른쪽 아래에 「위로」가 나타납니다. 누르면 그 페이지 본문만 맨 위로 올라갑니다. 상세에서는 무니 버튼이 「위로」 위로 올라갑니다. 채팅이 열려 있으면 「위로」는 숨깁니다. Preview /world-events — 목록을 내린 뒤 「위로」, 카드로 들어간 본문에서도 같은 버튼.',
+    at: '2026-11-12T05:00:00.000Z',
+  },
+  {
     id: '2026-11-08-explore-monthly-cards-4',
     session: '탐색 페이지 #4, 카드 피드백',
     title: '두 열 배치·사진 비율과 한 줄',

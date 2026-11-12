@@ -14,6 +14,7 @@ test('cursor branches do not auto-deploy and main stays at the Vercel default', 
   assert.equal(vercel.git.deploymentEnabled['cursor/explore-search-fix-bfa1'], true);
   assert.equal(vercel.git.deploymentEnabled['cursor/explore-cards-d0e2'], true);
   assert.equal(vercel.git.deploymentEnabled['cursor/scenic-cards-f089'], true);
+  assert.equal(vercel.git.deploymentEnabled['cursor/world-events-scroll-up-be96'], true);
   const allowed = Object.entries(vercel.git.deploymentEnabled).filter(([, on]) => on === true);
   assert.deepEqual(allowed, [
     ['cursor/auth-session-persist-3163', true],
@@ -21,6 +22,7 @@ test('cursor branches do not auto-deploy and main stays at the Vercel default', 
     ['cursor/explore-search-fix-bfa1', true],
     ['cursor/explore-cards-d0e2', true],
     ['cursor/scenic-cards-f089', true],
+    ['cursor/world-events-scroll-up-be96', true],
   ]);
   assert.equal(Object.hasOwn(vercel.git.deploymentEnabled, 'main'), false);
   assert.equal(vercel.git.deploymentEnabled !== false, true);

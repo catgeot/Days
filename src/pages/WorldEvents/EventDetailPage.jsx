@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, Navigate, useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
@@ -49,6 +49,10 @@ import EventTravelGuidePanel from './EventTravelGuidePanel';
 import EventMooniFab from './EventMooniFab';
 import EventMooniChips from './EventMooniChips';
 import EventTermExplainModal from './EventTermExplainModal';
+import WorldEventScrollTopButton, {
+  scrollWorldEventMainToTop,
+  useWorldEventScrollTop,
+} from './WorldEventScrollTopButton';
 
 export default function EventDetailPage() {
   const { eventId } = useParams();
@@ -100,6 +104,9 @@ export default function EventDetailPage() {
       cancelled = true;
     };
   }, [event?.id]);
+
+  const mainScrollRef = useRef(null);
+  const showScrollTop = useWorldEventScrollTop(mainScrollRef, Boolean(event?.id));
 
   if (!event) {
     return <Navigate to="/world-events" replace />;
@@ -249,7 +256,7 @@ export default function EventDetailPage() {
         </div>
       </header>
 
-      <main className="min-h-0 flex-1 overflow-y-auto">
+      <main ref={mainScrollRef} className="min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto w-full max-w-3xl px-3 py-3 md:px-5 lg:max-w-6xl lg:px-8">
           {showD3Media ? <EventDetailHero event={event} locale={locale} /> : null}
 
@@ -391,7 +398,14 @@ export default function EventDetailPage() {
           ) : null}
         </div>
       </main>
-      <EventMooniFab onClick={() => openEventMooni()} />
+      <WorldEventScrollTopButton
+        visible={showScrollTop && !mooniOpen}
+        onClick={() => scrollWorldEventMainToTop(mainScrollRef)}
+      />
+      <EventMooniFab
+        raised={showScrollTop && !mooniOpen}
+        onClick={() => openEventMooni()}
+      />
       <EventTermExplainModal
         event={event}
         termId={glossaryTermId}
