@@ -2,6 +2,13 @@
 
 이전: [`2026-11-08-project-log.md`](./2026-11-08-project-log.md)
 
+## 명승 본문 카드 #1, 주변 카드
+
+- 명승 본문의 주변 맛집·레포츠·문화·관광지·인근 축제·인근 여행지가 두 열 카드다. 사진이 있으면 사진, 없으면 같은 칸의 아이콘이다. 맛집 아이콘은 여덟 가지이고 좌우·위·대각 이웃은 겹치지 않는다. 같은 도시 명소와 축제 본문 목록은 그대로다.
+- 코드 `cc288c0b` · 브랜치 `cursor/scenic-body-cards-da58` · PR [#772](https://github.com/catgeot/Days/pull/772). `node --test scripts/health/scenic-nearby-icon-slots.test.mjs` PASS · `npx vite build` PASS. 로컬 390px 경복궁 본문에서 맛집 세 칸은 냄비·가게·커피, 축제 여섯 칸은 사진.
+- Preview `https://days-git-cursor-scenic-body-cards-da58-catgeots-projects.vercel.app/korea/theme/scenic?spot=gyeongbokgung`. `/qa/scenic-body-cards`는 이 `vercel.json`이 main에 합쳐진 뒤에 본 사이트에서 열린다.
+- 다음: 명승 본문 카드 #2, 카드 피드백. 같은 브랜치만.
+
 ## 명승 카드 #1 종료, main 병합
 
 - 사람 병합 2026-11-12 16:34 KST. main `40c37220` · PR [#767](https://github.com/catgeot/Days/pull/767).
