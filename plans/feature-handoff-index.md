@@ -1457,7 +1457,7 @@ PROD https://www.gateo.kr/
 
 | | |
 |--|--|
-| **상태** | **#60** 본문 QA raw JSON 숨김 **push** · tip `214d80f4` · PR [#764](https://github.com/catgeot/Days/pull/764) · Preview 재배포 READY · 검사 통과 후 main 병합 |
+| **상태** | **#60** 본문 QA raw JSON 숨김 · main `82a6efd0` · PR [#764](https://github.com/catgeot/Days/pull/764) MERGED · feature tip `214d80f4` |
 | **브랜치** | `cursor/world-events-scroll-up-be96` |
 | **PR** | [#764](https://github.com/catgeot/Days/pull/764) |
 | **플랜** | [`world-events-detail-ux-plan.md`](./world-events-detail-ux-plan.md) **§9** |
@@ -1475,7 +1475,7 @@ PROD https://www.gateo.kr/
 @plans/feature-handoff-index.md
 @plans/2026-11-12-project-log.md
 @plans/world-events-detail-ux-plan.md
-브랜치 cursor/world-events-scroll-up-be96 · PR #764 · tip 214d80f4
+브랜치 cursor/world-events-scroll-up-be96 · main 82a6efd0 · tip 214d80f4
 금지: worldEvents.json 직편집 · UI 리디자인 · 새 브랜치 · wave3와 합치기 · vercel.json 배포 예외 제거
 작업: 목록·본문 「위로」에 새 피드백이 있을 때만 같은 브랜치. QA raw JSON은 로컬 dev만 유지
 Preview: https://days-git-cursor-world-events-scroll-up-be96-catgeots-projects.vercel.app/world-events/edinburgh-fringe-2026
