@@ -6,6 +6,7 @@
       "cursor/festival-access-promo-5b7f": true,
       "cursor/explore-search-fix-bfa1": true,
       "cursor/explore-cards-d0e2": true,
+      "cursor/scenic-cards-f089": true,
       "cursor/world-events-scroll-up-be96": true
     }
   },
@@ -249,6 +250,11 @@
     {
       "source": "/qa/korea-seo",
       "destination": "https://www.gateo.kr/korea",
+      "permanent": false
+    },
+    {
+      "source": "/qa/scenic-cards",
+      "destination": "https://days-git-cursor-scenic-cards-f089-catgeots-projects.vercel.app/korea/theme/scenic",
       "permanent": false
     },
     {
