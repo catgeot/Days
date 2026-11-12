@@ -10,10 +10,9 @@ export const CLOUD_QA_SHARE_LINKS = [
   {
     slug: 'scenic-cards',
     label: '명승 카드 — 축제형 사진 목록',
-    branch: 'cursor/scenic-cards-f089',
-    destination:
-      'https://days-git-cursor-scenic-cards-f089-catgeots-projects.vercel.app/korea/theme/scenic',
-    active: true,
+    branch: 'main',
+    destination: 'https://www.gateo.kr/korea/theme/scenic',
+    active: false,
   },
   {
     slug: 'festival-card',
