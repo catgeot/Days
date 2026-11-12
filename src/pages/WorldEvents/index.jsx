@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
@@ -22,6 +22,10 @@ import {
   getWorldEventsForHubRegion,
 } from '../../utils/worldEvents';
 import { WORLD_EVENT_HUB_REGIONS } from './worldEventHubRegions';
+import WorldEventScrollTopButton, {
+  scrollWorldEventMainToTop,
+  useWorldEventScrollTop,
+} from './WorldEventScrollTopButton';
 
 function chipClass(active) {
   return `shrink-0 rounded-full border px-3 py-1.5 text-xs font-bold transition-colors ${
@@ -152,6 +156,8 @@ export default function WorldEventsHub() {
           region: t(`worldEventsHub.region.${activeRegion}`),
           count: events.length,
         });
+  const mainScrollRef = useRef(null);
+  const showScrollTop = useWorldEventScrollTop(mainScrollRef);
 
   return (
     <div className="relative flex h-[100dvh] max-h-[100dvh] w-full flex-col overflow-hidden bg-stone-100 text-stone-900">
@@ -194,7 +200,7 @@ export default function WorldEventsHub() {
         </div>
       </header>
 
-      <main className="min-h-0 flex-1 overflow-y-auto">
+      <main ref={mainScrollRef} className="min-h-0 flex-1 overflow-y-auto">
         <div className="mx-auto w-full max-w-3xl px-3 py-3 md:px-5 lg:max-w-6xl lg:px-8">
           <p className="px-1 text-sm text-stone-600">{t('worldEventsHub.intro')}</p>
 
@@ -270,6 +276,10 @@ export default function WorldEventsHub() {
           </div>
         </div>
       </main>
+      <WorldEventScrollTopButton
+        visible={showScrollTop}
+        onClick={() => scrollWorldEventMainToTop(mainScrollRef)}
+      />
     </div>
   );
 }

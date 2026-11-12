@@ -483,8 +483,20 @@ const travelGuidePanelSrc = readFileSync(
   'utf8',
 );
 assert.match(travelGuidePanelSrc, /localizeEventTravelGuide/, 'EventTravelGuidePanel locale guide');
+assert.match(
+  travelGuidePanelSrc,
+  /return import\.meta\.env\.DEV/,
+  'EventTravelGuidePanel QA raw JSON is local dev only',
+);
+assert.doesNotMatch(
+  travelGuidePanelSrc,
+  /isCloudPreviewSurface/,
+  'EventTravelGuidePanel QA raw JSON stays off Vercel Preview',
+);
 assert.match(detailSrc, /EventStayStrip/, 'EventDetailPage renders in-page stay strip');
 assert.match(detailSrc, /EventMooniFab/, 'EventDetailPage renders Mooni FAB');
+assert.match(detailSrc, /WorldEventScrollTopButton/, 'EventDetailPage scroll-to-top button');
+assert.match(detailSrc, /raised=\{showScrollTop && !mooniOpen\}/, 'EventDetailPage lifts Mooni above scroll-to-top');
 assert.match(detailSrc, /EventActionChips/, 'EventDetailPage renders action chips');
 assert.match(detailSrc, /placeMeta\.label/, 'EventDetailPage header shows city label');
 assert.match(detailSrc, /showMooniChips/, 'EventDetailPage mooni chips gate');

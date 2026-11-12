@@ -212,6 +212,8 @@ assert.doesNotMatch(hubSrc, /place\.worldEvents\.plannerCta/, 'WorldEvents hub l
 assert.doesNotMatch(hubSrc, /place\.worldEvents\.stayCta/, 'WorldEvents hub list cards omit stay CTA');
 assert.doesNotMatch(hubSrc, /worldEventsHub\.card\.detailCta/, 'WorldEvents hub list cards omit detail chip');
 assert.doesNotMatch(hubSrc, /upload\.wikimedia\.org/, 'WorldEvents hub list does not bake Wikimedia URLs');
+assert.match(hubSrc, /WorldEventScrollTopButton/, 'WorldEvents hub scroll-to-top button');
+assert.match(hubSrc, /useWorldEventScrollTop/, 'WorldEvents hub shows scroll-to-top after main scroll');
 
 const homeUiSrc = readFileSync(join(root, 'src/pages/Home/components/HomeUI.jsx'), 'utf8');
 assert.match(homeUiSrc, /to: '\/world-events'/, 'Home quick link to /world-events');
