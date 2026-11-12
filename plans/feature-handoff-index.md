@@ -14,6 +14,31 @@
 
 ## 활성 목록
 
+### 명승 카드
+
+| | |
+|--|--|
+| **상태** | **#1 push** · tip `18bd90c0` · PR [#767](https://github.com/catgeot/Days/pull/767) · **사람 Preview** |
+| **브랜치** | `cursor/scenic-cards-f089` |
+| **플랜** | 별도 플랜 없음. 이 행이 핸드오프 |
+| **일지** | [`2026-11-12-project-log.md`](./2026-11-12-project-log.md) |
+| **Preview** | git Preview `/korea/theme/scenic` · 배포 후 `/qa/scenic-cards`는 이 브랜치 `vercel.json`이 `main`에 있어야 동작 |
+| **소유** | `ScenicPage` · `ScenicSpotCardGrid` · `ScenicGridPhotoCard` |
+| **금지** | 축제 홈 wide(전폭) 분리를 명승에 다시 넣기 · 명승 홈 칩·지도 리팩터 · feature에 `plans/**` 커밋 |
+| **VERIFY** | `node --test scripts/health/scenic-card-grid.test.mjs` · `npx vite build` PASS |
+
+**다음 제시어**
+
+```
+명승 카드 #2, Preview OK면 PR 병합
+@plans/feature-handoff-index.md
+@plans/2026-11-12-project-log.md
+브랜치 cursor/scenic-cards-f089 · PR #767
+금지: 축제 wide 전폭을 명승에 넣기 · 명승 칩·지도 리팩터 · feature에 plans/** 커밋
+작업: Preview /korea/theme/scenic — 선정 명소가 사진 카드 두 열인지, 카드를 열면 상세인지, 「목록 보기」가 예전 행인지. OK면 PR #767 병합
+검증: node --test scripts/health/scenic-card-grid.test.mjs · npx vite build
+```
+
 ### 사용자 기록 · 용량 관리
 
 | | |
