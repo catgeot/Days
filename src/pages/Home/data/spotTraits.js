@@ -99,4 +99,118 @@ export const MONTHLY_PICKS = {
       estimate: false,
     },
   ],
+  '2026-12': [
+    {
+      slug: 'sapporo',
+      reason: '화이트일루 11/20~3/14 오도리~12/25',
+      sources: [
+        {
+          url: 'https://www.sapporo.travel/en/event/event-list/sapporo_white_illumination/',
+          label: '삿포로 관광',
+        },
+        {
+          url: 'https://www.sapporo.travel/white-illumination/event/illumination/odori/',
+          label: '오도리 회장',
+        },
+        {
+          url: 'https://www.visit-hokkaido.jp/en/event/detail_11003.html',
+          label: '홋카이도 관광',
+        },
+      ],
+      checked: '2026-11-10',
+      estimate: false,
+    },
+    {
+      slug: 'vienna',
+      reason: '라트하우스 마켓 11/13~12/26',
+      sources: [
+        {
+          url: 'https://www.wien.info/de/aktuell/veranstaltungen/wiener-christkindlmarkt-1001446',
+          label: '빈 관광청',
+        },
+        {
+          url: 'https://www.christkindlmarkt.at/besuch/',
+          label: '크리스트킨들마르크트',
+        },
+        {
+          url: 'https://www.wien.gv.at/freizeit/weihnachtsmaerkte',
+          label: '빈 시청',
+        },
+      ],
+      checked: '2026-11-10',
+      estimate: false,
+    },
+    {
+      slug: 'hong-kong',
+      reason: 'WinterFest 11/18~1/5',
+      sources: [
+        {
+          url: 'https://www.discoverhongkong.com/eng/events/hong-kong-winterfest.html',
+          label: '홍콩관광청 WinterFest',
+        },
+        {
+          url: 'https://www.discoverhongkong.com/eng/events/hong-kong-winterfest/winter-wonderland-in-tsim-sha-tsui.html',
+          label: '침사추이',
+        },
+        {
+          url: 'https://www.discoverhongkong.com/eng/events/hong-kong-winterfest/winter-wonderland-in-causeway-bay.html',
+          label: '코즈웨이베이',
+        },
+      ],
+      checked: '2026-11-10',
+      estimate: false,
+    },
+    {
+      slug: 'seoul',
+      reason: '서울빛초롱 12/11~1/31 청계천 18~23 무료',
+      sources: [
+        {
+          url: 'https://www.stolantern.com/',
+          label: '서울빛초롱축제 공식',
+        },
+        {
+          url: 'https://korean.visitseoul.net/events/2026SeoulLanternFestival/KOPi0rhml',
+          label: '서울 공식 관광정보',
+        },
+      ],
+      checked: '2026-11-13',
+      estimate: false,
+    },
+    {
+      slug: 'sydney',
+      reason: '시드니 새해 불꽃 12/31 21시·자정',
+      sources: [
+        {
+          url: 'https://www.sydneynewyearseve.com/',
+          label: '시드니 새해맞이',
+        },
+        {
+          url: 'https://www.sydneynewyearseve.com/fireworks',
+          label: '불꽃놀이',
+        },
+        {
+          url: 'https://www.nsw.gov.au/visiting-and-exploring-nsw/nsw-events/new-years-eve-sydney',
+          label: 'NSW 정부',
+        },
+      ],
+      checked: '2026-11-10',
+      estimate: false,
+    },
+    {
+      slug: 'reykjavik',
+      reason: '오로라 9월~4월 가능(보장 없음)',
+      sources: [
+        {
+          url: 'https://visitreykjavik.is/reykjavik-faqs',
+          label: '비짓 레이캬비크 FAQ',
+        },
+        {
+          url: 'https://visitreykjavik.is/festivals-and-events-reykjavik/new-years-eve-reykjavik',
+          label: '새해 전야',
+        },
+      ],
+      checked: '2026-11-10',
+      estimate: false,
+    },
+  ],
 };
