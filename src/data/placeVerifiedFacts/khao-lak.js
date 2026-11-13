@@ -78,7 +78,7 @@ export const KHAO_LAK_CITY_FACTS = {
         + '셋째 날: 북쪽으로 반남켐 쓰나미 추모공원(추모공원·해변 08:00~20:00, 박물관 수~일 08:30~16:30)에 들른 뒤 따꾸아빠 올드타운을 걸어요.',
       [TAT_KHAO_LAK, BANG_NIANG_MARKET, PRD_SIMILAN, TAT_JP_BAN_NAM, TAT_JP_TAKUA],
       DAY,
-      { id: 'itinerary', headingKey: 'khao-lak-3days' },
+      { id: 'itinerary' },
     ),
     verifiedSlot(
       '돈',
