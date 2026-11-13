@@ -16,7 +16,7 @@ export const KHAO_LAK_EN_VALUES = {
   'khao-lak:safety':
     'On the MOFA travel alert, Phang Nga and Phuket are at level 1 (exercise caution).\nLevels 2 and 3 apply to the southern border (southern Songkhla, Pattani, Narathiwat, Yala), Tak Province, and within 50km of the Thailand–Cambodia border.\nTourist Police: 1155.\nThe consular call center is +82-2-3210-0404.',
   'khao-lak:season':
-    'Similan Islands National Park is open 2026-10-15~2027-05-15.\nOvernight stays are banned on all islands; only same-day visits (morning out, evening return) are allowed.\nForeign national park admission is THB 500 for adults and THB 250 for children.\nMost boats leave near Thap Lamu Pier (Thai Mueang district) by speedboat or catamaran for about 1 hour 30 minutes.\nRestaurants, shops, and restrooms are only on islands 4 and 8.\nThere are no ATMs on the islands, and Koh Tachai has been closed to landings since 2016.\nOpen areas may change with weather and conditions.\nYou can also check Similan season, fees, and island rules at https://www.gateo.kr/place/similan-islands as well.',
+    'Similan Islands National Park is open 2026-10-15~2027-05-15.\nOvernight stays are banned on all islands; only same-day visits (morning out, evening return) are allowed.\nForeign national park admission is THB 500 for adults and THB 250 for children.\nMost boats leave near Thap Lamu Pier (Thai Mueang district) by speedboat or catamaran for about 1 hour 30 minutes.\nRestaurants, shops, and restrooms are only on islands 4 and 8.\nThere are no ATMs on the islands, and Koh Tachai has been closed to landings since 2016.\nOpen areas may change with weather and conditions.\nYou can also check Similan season, fees, and island rules below.',
 };
 
 export const KHAO_LAK_SOURCE_EN = {

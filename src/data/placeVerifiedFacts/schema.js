@@ -29,13 +29,29 @@ export const ATTRACTION_SLOT_IDS = [
  * @param {string} value
  * @param {{ name: string, url: string }[]} sources
  * @param {string} checkedAt
- * @param {{ id: string, headingKey?: string, kind?: 'event' | 'standing', checkedOn?: string, endsAt?: string, linkRole?: 'booking' | 'map' | null, linkLabel?: string | null }} meta
+ * @param {{ id: string, headingKey?: string, kind?: 'event' | 'standing', checkedOn?: string, endsAt?: string, linkRole?: 'booking' | 'map' | null, linkLabel?: string | null, placeLinks?: { path: string, label: string, labelEn?: string }[] }} meta
  */
 function sourceRecord(item) {
   const name = publicSourceName(item.name);
   const url = String(item.url || '').trim();
   if (!/^https?:\/\//i.test(url)) return { name };
   return { name, url };
+}
+
+function normalizePlaceLinks(links) {
+  if (!Array.isArray(links)) return undefined;
+  const out = links
+    .map((item) => {
+      const path = String(item?.path || '').trim();
+      const normalized = path.replace(/\/$/, '');
+      if (!/^\/place\/[^/?#]+$/i.test(normalized)) return null;
+      const label = String(item?.label || '').trim();
+      if (!label) return null;
+      const labelEn = item?.labelEn ? String(item.labelEn).trim() : null;
+      return { path: normalized, label, labelEn };
+    })
+    .filter(Boolean);
+  return out.length ? out : undefined;
 }
 
 export function verifiedSlot(label, value, sources, checkedAt, meta) {
@@ -56,6 +72,7 @@ export function verifiedSlot(label, value, sources, checkedAt, meta) {
     headingKey: meta.headingKey ? String(meta.headingKey).trim() : null,
     linkRole: meta.linkRole || null,
     linkLabel: meta.linkLabel ? String(meta.linkLabel).trim() : null,
+    placeLinks: normalizePlaceLinks(meta.placeLinks),
   };
 }
 

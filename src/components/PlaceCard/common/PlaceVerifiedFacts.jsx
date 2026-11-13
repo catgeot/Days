@@ -12,6 +12,7 @@ import {
   TIME_RANGE_CLASS,
 } from '../../../data/placeVerifiedFacts/index.js';
 import { splitItineraryPlaceMentions } from '../../../data/placeVerifiedFacts/itineraryLinks.js';
+import { placeLinkLabelForLocale } from '../../../data/placeVerifiedFacts/factPlaceLinks.js';
 import {
   plannerSlotForToolkit,
   verifiedFactSlots,
@@ -188,6 +189,32 @@ function FactRuns({ text, light = false }) {
   ));
 }
 
+function factPlaceLinkClass(light) {
+  return light
+    ? 'mt-3 inline-flex min-h-9 items-center gap-0.5 rounded-full border border-sky-700/35 bg-sky-50 px-3 py-1.5 text-xs font-semibold text-sky-900 transition-colors hover:bg-sky-100 active:bg-sky-200'
+    : 'mt-3 inline-flex min-h-9 items-center gap-0.5 rounded-full border border-sky-300/45 bg-sky-500/20 px-3 py-1.5 text-xs font-semibold text-sky-100 transition-colors hover:bg-sky-500/30 active:bg-sky-500/40';
+}
+
+function FactPlaceLinks({ links, locale, light }) {
+  if (!Array.isArray(links) || !links.length) return null;
+  return (
+    <div data-fact-place-links="" className="flex flex-wrap gap-2">
+      {links.map((link) => (
+        <Link
+          key={link.path}
+          to={link.path}
+          data-fact-place-link={link.path}
+          className={factPlaceLinkClass(light)}
+          onClick={(event) => event.stopPropagation()}
+        >
+          <span>{placeLinkLabelForLocale(link, locale)}</span>
+          <span aria-hidden>›</span>
+        </Link>
+      ))}
+    </div>
+  );
+}
+
 function FactValue({ slot, slug, locale, light }) {
   const text = presentFactText(factValueForLocale(slug, slot, locale));
   if ((slot.linkRole === 'booking' || slot.linkRole === 'map') && /^https?:\/\//.test(slot.value)) {
@@ -220,29 +247,35 @@ function FactValue({ slot, slug, locale, light }) {
       ? 'font-semibold text-sky-800 underline underline-offset-2'
       : 'font-semibold text-sky-200 underline underline-offset-2';
     return (
-      <p data-fact-value="" className={valueClass}>
-        {splitItineraryPlaceMentions(text).map((part, index) => (
-          part.type === 'link' ? (
-            <Link
-              key={`${part.href}-${index}`}
-              to={part.href}
-              data-itinerary-place={part.href}
-              className={linkClass}
-              onClick={(event) => event.stopPropagation()}
-            >
-              {part.text}
-            </Link>
-          ) : (
-            <FactRuns key={`t-${index}`} text={part.text} light={light} />
-          )
-        ))}
-      </p>
+      <>
+        <p data-fact-value="" className={valueClass}>
+          {splitItineraryPlaceMentions(text).map((part, index) => (
+            part.type === 'link' ? (
+              <Link
+                key={`${part.href}-${index}`}
+                to={part.href}
+                data-itinerary-place={part.href}
+                className={linkClass}
+                onClick={(event) => event.stopPropagation()}
+              >
+                {part.text}
+              </Link>
+            ) : (
+              <FactRuns key={`t-${index}`} text={part.text} light={light} />
+            )
+          ))}
+        </p>
+        <FactPlaceLinks links={slot.placeLinks} locale={locale} light={light} />
+      </>
     );
   }
   return (
-    <p data-fact-value="" className={valueClass}>
-      <FactRuns text={text} light={light} />
-    </p>
+    <>
+      <p data-fact-value="" className={valueClass}>
+        <FactRuns text={text} light={light} />
+      </p>
+      <FactPlaceLinks links={slot.placeLinks} locale={locale} light={light} />
+    </>
   );
 }
 
@@ -554,7 +587,7 @@ export default function PlaceVerifiedFacts({ location, className = '' }) {
         light={false}
       />
       {open ? (
-        <div id={panelId} className="mt-2 space-y-2.5 px-0.5 pb-1">
+        <div id={panelId} className="mt-2 space-y-2.5 px-0.5 pb-20">
           {filled.map((slot) => (
             <FactTopicRow
               key={slot.id}
