@@ -138,6 +138,8 @@
     "smoke:flight-origin-gateway": "node scripts/smoke-flight-origin-gateway.mjs",
     "smoke:place-label-slug": "node scripts/smoke-place-label-slug.mjs",
     "smoke:globe-label-first-reveal": "node scripts/smoke-globe-label-first-reveal.mjs",
+    "smoke:globe-gateo-label-layers": "node scripts/smoke-globe-gateo-label-layers.mjs",
+    "smoke:globe-gateo-label-runtime": "node scripts/smoke-globe-gateo-label-runtime.mjs",
     "audit:place-seo-en": "node scripts/audit-place-seo-en.mjs",
     "audit:gsc-baseline": "node scripts/audit-gsc-baseline.mjs",
     "smoke:place-gallery-pexels": "node scripts/smoke-place-gallery-pexels.mjs",

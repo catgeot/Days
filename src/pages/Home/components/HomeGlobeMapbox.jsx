@@ -61,7 +61,11 @@ import {
   markGlobeCameraBusy,
   clearGlobeCameraBusy,
   isGlobeCameraBusy,
+  GATEO_LABEL_LAYER_IDS,
+  GATEO_LABEL_OVERLAP_LAYER_ID,
+  GATEO_SOURCE_ID,
 } from '../lib/globeMarkerLayers';
+import { annotateLabelOverlapEligibility } from '../lib/globeMarkerLabelOverlap.js';
 import { GLOBE_MODE, canEndTour, canSkipTour, isTourMode } from '../lib/globeMode';
 import { createGlobeTourEngine } from '../lib/globeTourEngine';
 import { resolveGlobeTourConfig } from '../lib/globeTourResolve';
@@ -545,6 +549,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   const [isStyleTransitioning, setIsStyleTransitioning] = useState(false);
   const [mapReady, setMapReady] = useState(false);
   const [mapZoom, setMapZoom] = useState(GLOBE_VIEW.default.zoom);
+  const [markerZoomEpoch, setMarkerZoomEpoch] = useState(0);
   useEffect(() => {
     reachBoundariesVisibleRef.current = reachBoundariesVisible;
   }, [reachBoundariesVisible]);
@@ -809,6 +814,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     const zoom = map.getZoom();
     if (!Number.isFinite(zoom)) return;
     setMapZoom((prev) => (Math.abs(prev - zoom) < 0.01 ? prev : zoom));
+    setMarkerZoomEpoch((epoch) => epoch + 1);
   }, []);
 
   const resetAndApplyPlaceLabelVisibility = useCallback(() => {
@@ -932,13 +938,15 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   }, [globeTheme]);
 
   const allMarkers = useMemo(() => {
+    const zoomForPolicy = mapZoom;
+
     let result = [];
     const threshold = 0.05;
     const findMatchIndex = (lat, lng) => result.findIndex(
       m => Math.abs(m.lat - lat) < threshold && Math.abs(m.lng - lng) < threshold
     );
-    const maxTier = getMaxTierForZoom(mapZoom);
-    const isHighZoomFullReveal = mapZoom >= HIGH_ZOOM_FULL_REVEAL;
+    const maxTier = getMaxTierForZoom(zoomForPolicy);
+    const isHighZoomFullReveal = zoomForPolicy >= HIGH_ZOOM_FULL_REVEAL;
     const sourceSpots = isHighZoomFullReveal && allTravelSpots.length > 0 ? allTravelSpots : travelSpots;
     const majorCandidates = sourceSpots
       .filter((spot) => passesGlobeTierPolicy(spot, maxTier))
@@ -966,7 +974,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
         });
       });
     } else {
-      const mergeThreshold = getMajorMergeThreshold(mapZoom);
+      const mergeThreshold = getMajorMergeThreshold(zoomForPolicy);
       const majorClusters = [];
       sortedMajors.forEach((spot) => {
         const existingCluster = majorClusters.find((cluster) =>
@@ -1059,7 +1067,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       }
     });
 
-    const collisionThreshold = getMarkerCollisionThreshold(mapZoom);
+    const collisionThreshold = getMarkerCollisionThreshold(zoomForPolicy);
     const markerWeight = (marker) => {
       if (marker.isActive) return 100;
       if (marker.isBookmarked) return 90;
@@ -1095,8 +1103,8 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       existing.clusterCount = (Number(existing.clusterCount) || 1) + 1;
     });
 
-    return keptMarkers;
-  }, [travelSpots, allTravelSpots, savedTrips, tempPinsData, activePinId, mapZoom]);
+    return annotateLabelOverlapEligibility(keptMarkers, zoomForPolicy);
+  }, [travelSpots, allTravelSpots, savedTrips, tempPinsData, activePinId, mapZoom, markerZoomEpoch]);
 
   const markerGeoJSON = useMemo(() => {
     if (isZenMode) {
@@ -2246,13 +2254,19 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       if (regionFlyEndHandlerRef.current === onFlyEnd) {
         regionFlyEndHandlerRef.current = null;
       }
+      syncMapZoom();
       applyRegionFocusVisual();
+    };
+
+    const finishCamera = () => {
+      syncMapZoom();
     };
 
     try {
       map.stop();
       if (useJump) {
         map.jumpTo(camera);
+        finishCamera();
         if (isSeaBasinFly) {
           applyRegionFocusVisual({ emphasizeMarine: !isMobileDevice });
         }
@@ -2279,12 +2293,13 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
         regionFlyEndHandlerRef.current = null;
       }
       map.jumpTo(camera);
+      finishCamera();
       if (isSeaBasinFly) {
         applyRegionFocusVisual();
       }
     }
     return true;
-  }, [globeMode, isMobileDevice, pauseRender]);
+  }, [globeMode, isMobileDevice, pauseRender, syncMapZoom]);
 
   const isGlobeFocusReady = useCallback(() => {
     if (pauseRender) return false;
@@ -2338,6 +2353,55 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       overlayClickUnbindRef.current = null;
     };
   }, []);
+
+  const probeGateoLabelLayers = useCallback(() => {
+    const map = mapRef.current?.getMap();
+    if (!map || map._removed) return { error: 'no-map' };
+    const khaoMarker = allMarkers.find((m) => m.slug === 'khao-lak');
+    try {
+      const layers = Object.fromEntries(
+        GATEO_LABEL_LAYER_IDS.map((id) => [id, Boolean(map.getLayer(id))]),
+      );
+      const activeLayers = GATEO_LABEL_LAYER_IDS.filter((id) => map.getLayer(id));
+      const feats = map.queryRenderedFeatures(undefined, { layers: activeLayers });
+      const slugList = feats.map((f) => f.properties?.slug).filter(Boolean);
+      const slugs = [...new Set(slugList)];
+      const overlapFeats = map.queryRenderedFeatures(undefined, {
+        layers: [GATEO_LABEL_OVERLAP_LAYER_ID].filter((id) => map.getLayer(id)),
+      });
+      const overlapSlugs = overlapFeats.map((f) => f.properties?.slug).filter(Boolean);
+      let khaoInSource = null;
+      try {
+        const srcFeats = map.querySourceFeatures(GATEO_SOURCE_ID, {
+          filter: ['==', ['get', 'slug'], 'khao-lak'],
+        });
+        const props = srcFeats[0]?.properties;
+        khaoInSource = props
+          ? {
+              name: props.name,
+              labelOverlapEligible: props.labelOverlapEligible,
+            }
+          : null;
+      } catch {
+        khaoInSource = { error: 'querySourceFeatures' };
+      }
+      return {
+        zoom: map.getZoom(),
+        layers,
+        labelCount: feats.length,
+        uniqueSlugCount: slugs.length,
+        duplicateSlugCount: slugList.length - slugs.length,
+        overlapLabelCount: overlapFeats.length,
+        overlapSlugs: [...new Set(overlapSlugs)],
+        khaoInMarkers: Boolean(khaoMarker),
+        khaoOverlapEligible: Boolean(khaoMarker?.labelOverlapEligible),
+        khaoInSource,
+        slugs,
+      };
+    } catch (err) {
+      return { error: String(err?.message || err) };
+    }
+  }, [allMarkers]);
 
   useImperativeHandle(ref, () => ({
     pauseRotation: () => {
@@ -2437,7 +2501,8 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     whenGlobeFocusReady,
     getGlobeMode: () => tourEngineRef.current?.getMode?.() ?? globeMode,
     suppressOverlayClick,
-  }), [addRipple, clearImmerseState, clearRegionFocus, closeFlightCinema, endTour, ensureInteractionReady, exitImmerse, flyToAndPin, flyToRegion, globeMode, immerseToPin, isGlobeFocusReady, isStyleTransitioning, mapReady, pauseRender, pivotTourExplore, resetAndApplyPlaceLabelVisibility, skipTour, startFlightCinema, startTour, suppressOverlayClick, tryRevealGlobeOverlays, whenGlobeFocusReady]);
+    probeGateoLabelLayers,
+  }), [addRipple, clearImmerseState, clearRegionFocus, closeFlightCinema, endTour, ensureInteractionReady, exitImmerse, flyToAndPin, flyToRegion, globeMode, immerseToPin, isGlobeFocusReady, isStyleTransitioning, mapReady, pauseRender, pivotTourExplore, probeGateoLabelLayers, resetAndApplyPlaceLabelVisibility, skipTour, startFlightCinema, startTour, suppressOverlayClick, tryRevealGlobeOverlays, whenGlobeFocusReady]);
 
   useEffect(() => {
     highlightCategoryRef.current = highlightCategory;

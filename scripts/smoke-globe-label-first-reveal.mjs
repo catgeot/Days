@@ -128,7 +128,7 @@ async function main() {
     'first load must reuse EN-toggle text-field apply',
   );
   assert(
-    globeSrc.includes('[locale, globeTheme, applySatelliteBasemapLabels, mapReady]'),
+    /\[locale,\s*globeTheme,\s*applySatelliteBasemapLabels,\s*mapReady/.test(globeSrc),
     'locale effect must wait for mapReady (Safari first mount mapRef is null)',
   );
   assert(
