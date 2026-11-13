@@ -8,6 +8,14 @@ export const CLOUD_QA_SHARE_ORIGIN = 'https://www.gateo.kr';
 /** @type {{ slug: string, label: string, branch: string, destination: string, active: boolean }[]} */
 export const CLOUD_QA_SHARE_LINKS = [
   {
+    slug: 'scenic-body-wide',
+    label: '명승 본문 — 넓은 화면·인근 여행지',
+    branch: 'cursor/scenic-body-wide-fddc',
+    destination:
+      'https://days-git-cursor-scenic-body-wide-fddc-catgeots-projects.vercel.app/korea/theme/scenic?spot=gyeongbokgung',
+    active: true,
+  },
+  {
     slug: 'scenic-body-cards',
     label: '명승 본문 — 주변 카드',
     branch: 'main',

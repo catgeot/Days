@@ -172,14 +172,14 @@ export default function ScenicNearbyCardGrid({ variant, ariaLabel, items }) {
         Array.isArray(item.thumbUrls) &&
         item.thumbUrls.length > 0,
     }));
-    return assignNearbyIconSlots(entries, iconIds.length, 2);
+    return assignNearbyIconSlots(entries, iconIds.length, 4);
   }, [rows, exhausted, iconIds.length]);
 
   if (!rows.length) return null;
 
   return (
     <ul
-      className="grid grid-cols-2 items-stretch gap-2"
+      className="grid grid-cols-2 items-stretch gap-2 lg:grid-cols-4"
       aria-label={ariaLabel || undefined}
       data-scenic-nearby-cards=""
       data-scenic-nearby-variant={variant}

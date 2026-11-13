@@ -1834,7 +1834,7 @@ export default function ThemeSpotDetailModal({
       />
       <div
         ref={dialogRef}
-        className="relative z-10 pointer-events-auto flex h-full w-full max-w-lg flex-col overflow-hidden rounded-2xl border border-stone-200 bg-white text-stone-900 shadow-2xl md:h-auto md:max-h-[min(90dvh,52rem)] md:max-w-2xl md:rounded-3xl lg:max-w-3xl"
+        className="relative z-10 pointer-events-auto flex h-full w-full max-w-lg flex-col overflow-hidden rounded-2xl border border-stone-200 bg-white text-stone-900 shadow-2xl md:h-auto md:max-h-[90dvh] md:max-w-2xl md:rounded-3xl lg:max-w-6xl xl:max-w-7xl"
         role="dialog"
         aria-modal="true"
         aria-labelledby="korea-theme-spot-modal-title"
@@ -1948,7 +1948,7 @@ export default function ThemeSpotDetailModal({
                 fetchPriority="high"
                 decoding="async"
                 onError={() => markGalleryImageBroken(hero)}
-                className="aspect-[16/9] w-full object-cover pointer-events-none select-none sm:aspect-[2/1]"
+                className="aspect-[16/9] w-full object-cover pointer-events-none select-none sm:aspect-[2/1] lg:aspect-[3/1]"
               />
               <span className="absolute bottom-3 left-3 inline-flex items-center gap-1.5 rounded-full border border-white/30 bg-stone-900/55 px-2.5 py-1 text-[11px] font-bold text-white opacity-95 group-hover:bg-stone-900/70">
                 <Expand size={13} aria-hidden="true" />
@@ -1976,7 +1976,7 @@ export default function ThemeSpotDetailModal({
             </div>
           )}
 
-          <div className="min-w-0 space-y-4 px-4 py-4 pb-6 sm:px-5 sm:pb-7">
+          <div className="min-w-0 space-y-4 px-4 py-4 pb-6 sm:px-5 sm:pb-7 lg:px-8">
             {spot.source !== 'cha' && spot.blurb ? (
               <p
                 className="text-sm font-semibold leading-relaxed text-amber-950/90 break-keep break-words"
@@ -2130,7 +2130,7 @@ export default function ThemeSpotDetailModal({
                     count: galleryList.length,
                   })}
                 </p>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-3 gap-2 lg:grid-cols-6">
                   {galleryList.map((url, index) => (
                     <button
                       key={`${url}-${index}`}

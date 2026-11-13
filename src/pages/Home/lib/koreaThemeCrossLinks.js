@@ -11,7 +11,10 @@ import {
   scenicRegionForAreaCode,
 } from './koreaTourAttractionMap.js';
 import { scenicClusterIdForHubId } from './koreaScenicClusters.js';
-import { nearbyHubsForFestival } from '../../Korea/nearbyFestivalHubs.js';
+import {
+  NEARBY_HUB_MAX_KM,
+  nearbyHubsForFestival,
+} from '../../Korea/nearbyFestivalHubs.js';
 import { festivalLngLat } from '../../Korea/koreaFestivalCorridors.js';
 import {
   resolveMrtStayQuery,
@@ -423,14 +426,58 @@ export function scenicHomePathForHubId(hubId) {
   return `/korea/theme/scenic?${params.toString()}`;
 }
 
+function haversineKm(lat1, lng1, lat2, lng2) {
+  const toRad = (d) => (d * Math.PI) / 180;
+  const dLat = toRad(lat2 - lat1);
+  const dLng = toRad(lng2 - lng1);
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
+  return 6371 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+/** 선정 명소가 1곳 이상인 hub. 종로처럼 구 단위·선정 0건은 명승 홈이 빈다. */
+let curatedScenicHubByIdCache = null;
+function curatedScenicHubById() {
+  if (curatedScenicHubByIdCache) return curatedScenicHubByIdCache;
+  const byId = new Map();
+  for (const spot of listKoreaScenicSpots()) {
+    const hubId = normId(spot?.hubId);
+    if (!hubId || byId.has(hubId)) continue;
+    const hub = resolveCityAttractionHub(hubId);
+    const lat = Number(hub?.lat);
+    const lng = Number(hub?.lng);
+    const spotLat = Number(spot?.lat);
+    const spotLng = Number(spot?.lng);
+    byId.set(hubId, {
+      hubId,
+      name: String(hub?.name || spot.hubId || hubId),
+      lat: Number.isFinite(lat) ? lat : spotLat,
+      lng: Number.isFinite(lng) ? lng : spotLng,
+    });
+  }
+  curatedScenicHubByIdCache = byId;
+  return byId;
+}
+
+function themeSpotLatLng(spot, item) {
+  const lat = Number(spot?.lat);
+  const lng = Number(spot?.lng);
+  if (Number.isFinite(lat) && Number.isFinite(lng)) return { lat, lng };
+  return festivalLngLat(item?.mapx, item?.mapy) || null;
+}
+
 /**
  * 축제 nearbyHubs 패턴 재사용 — spot 좌표/area로 인근 hub.
+ * 선정 명소가 없는 구(종로)는 빼고, 거리 안의 선정 시·군으로 채운다.
  * @param {{ lat?: number, lng?: number, mapx?: unknown, mapy?: unknown, hubId?: string, areaCode?: string|number, region?: string, addr1?: string }} spot
  * @param {Array<{ hubId: string, name: string, lat?: number, lng?: number }>} hubList
  * @param {{ limit?: number, maxKm?: number }} [opts]
  */
 export function listNearbyHubsForThemeSpot(spot, hubList, opts = {}) {
   if (!spot) return [];
+  const limit = opts.limit ?? DEFAULT_NEARBY_LIMIT;
+  const maxKm = opts.maxKm ?? NEARBY_HUB_MAX_KM;
   const areaCode = resolveThemeSpotAreaCode(spot);
   const lat = Number(spot.lat);
   const lng = Number(spot.lng);
@@ -445,12 +492,42 @@ export function listNearbyHubsForThemeSpot(spot, hubList, opts = {}) {
     item.mapx = lng;
     item.mapy = lat;
   }
-  const hubs = nearbyHubsForFestival(item, hubList, {
-    limit: opts.limit ?? DEFAULT_NEARBY_LIMIT,
-    maxKm: opts.maxKm,
-  });
+  const hubs = nearbyHubsForFestival(item, hubList, { limit, maxKm });
   const selfHub = normId(spot.hubId);
-  return hubs.filter((h) => normId(h?.hubId) !== selfHub);
+  const curated = curatedScenicHubById();
+  const picked = [];
+  const seen = new Set();
+  if (selfHub) seen.add(selfHub);
+  for (const h of hubs) {
+    const id = normId(h?.hubId);
+    if (!id || seen.has(id) || !curated.has(id)) continue;
+    seen.add(id);
+    picked.push(h);
+    if (picked.length >= limit) return picked;
+  }
+  const origin = themeSpotLatLng(spot, item);
+  if (!origin) return picked;
+  const ranked = [];
+  for (const hub of curated.values()) {
+    if (seen.has(hub.hubId)) continue;
+    if (!Number.isFinite(hub.lat) || !Number.isFinite(hub.lng)) continue;
+    const km = haversineKm(origin.lat, origin.lng, hub.lat, hub.lng);
+    if (!Number.isFinite(km) || km > maxKm) continue;
+    ranked.push({ hub, km });
+  }
+  ranked.sort(
+    (a, b) => a.km - b.km || a.hub.name.localeCompare(b.hub.name, 'ko'),
+  );
+  for (const row of ranked) {
+    picked.push({
+      hubId: row.hub.hubId,
+      name: row.hub.name,
+      lat: row.hub.lat,
+      lng: row.hub.lng,
+    });
+    if (picked.length >= limit) break;
+  }
+  return picked;
 }
 
 /**

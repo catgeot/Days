@@ -9,6 +9,7 @@
       "cursor/scenic-cards-f089": true,
       "cursor/world-events-scroll-up-be96": true,
       "cursor/scenic-body-cards-da58": true,
+      "cursor/scenic-body-wide-fddc": true,
       "cursor/edge-middleware-bundle-fix-e37f": true
     }
   },
@@ -257,6 +258,11 @@
     {
       "source": "/qa/scenic-cards",
       "destination": "https://www.gateo.kr/korea/theme/scenic",
+      "permanent": false
+    },
+    {
+      "source": "/qa/scenic-body-wide",
+      "destination": "https://days-git-cursor-scenic-body-wide-fddc-catgeots-projects.vercel.app/korea/theme/scenic?spot=gyeongbokgung",
       "permanent": false
     },
     {
