@@ -10,3 +10,4 @@
 - Preview 배포가 본문과 무관하게 엣지 컴파일에서 실패했다. `926797b3`에서 기행문 메타가 `locationDisplay`를 묶지 않게 했다. 생성된 기행문 메타 파일은 그대로다.
 - Preview `/qa/scenic-body-wide` · git `https://days-git-cursor-scenic-body-wide-fddc-catgeots-projects.vercel.app/korea/theme/scenic?spot=gyeongbokgung`.
 - 다음 제시어 없음. 같은 턴 Preview에서 본문 너비와 인근 시·군을 확인한다.
+- 코드 PR [#783](https://github.com/catgeot/Days/pull/783) main `5db98255` · 2026-11-13 19:54 KST. 주제 종료. 확인은 `https://www.gateo.kr/korea/theme/scenic?spot=gyeongbokgung`.

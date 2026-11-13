@@ -14,21 +14,19 @@
 
 ## 활성 목록
 
-### 명승 본문
+### 명승 본문 — 종료
 
 | | |
 |--|--|
-| **상태** | **#1 넓은 본문** · tip `926797b3` · PR [#783](https://github.com/catgeot/Days/pull/783) · 병합 전 |
-| **브랜치** | `cursor/scenic-body-wide-fddc` |
+| **상태** | **#1 merge ✅ · 주제 종료** · main `5db98255` · PR [#783](https://github.com/catgeot/Days/pull/783) · 2026-11-13 19:54 KST |
+| **브랜치** | `cursor/scenic-body-wide-fddc` (재사용 없음) |
 | **플랜** | 별도 플랜 없음 |
 | **일지** | [`2026-11-13-project-log.md`](./2026-11-13-project-log.md) |
-| **Preview** | `/qa/scenic-body-wide` → git Preview `/korea/theme/scenic?spot=gyeongbokgung` |
-| **git Preview** | `https://days-git-cursor-scenic-body-wide-fddc-catgeots-projects.vercel.app/korea/theme/scenic?spot=gyeongbokgung` |
+| **PROD** | `https://www.gateo.kr/korea/theme/scenic?spot=gyeongbokgung` |
 | **소유** | `ThemeSpotDetailModal` · `listNearbyHubsForThemeSpot` · `ScenicPage` 빈 hub 파드 |
-| **금지** | 본문 너비를 다시 `lg:max-w-3xl`로 줄이기 · 선정 0건 구(종로)를 인근 여행지로 되돌리기 · feature에 `plans/**` 커밋 |
-| **VERIFY** | `node scripts/smoke-korea-theme-cross-links.mjs` · `node --test scripts/health/scenic-nearby-icon-slots.test.mjs` |
+| **금지** | 본문 너비를 다시 `lg:max-w-3xl`로 줄이기 · 선정 0건 구(종로)를 인근 여행지로 되돌리기 |
 
-**다음 제시어 없음** (이번 요청은 #1에서 반영). 확인은 `/qa/scenic-body-wide`.
+**다음 제시어 없음** (주제 종료). 확인은 `https://www.gateo.kr/korea/theme/scenic?spot=gyeongbokgung`.
 
 ### 명승 본문 카드 — 종료
 
