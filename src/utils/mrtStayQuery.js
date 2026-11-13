@@ -110,9 +110,10 @@ const MRT_STAY_KEYWORD_OVERRIDES = {
     altKeywords: ['피피동', 'Phi Phi Don', '크라비', 'Krabi', '피피'],
   },
   'similan-islands': {
-    keyword: '카오락',
-    altKeywords: ['Khao Lak', '시밀란', 'Similan'],
+    keyword: '시밀란',
+    altKeywords: ['Similan'],
   },
+  'khao-lak': { keyword: '카오락', altKeywords: ['Khao Lak'] },
   'andaman-islands': {
     keyword: '포트블레어',
     altKeywords: ['Port Blair', '안다만', 'Andaman'],

@@ -19,6 +19,7 @@ import {
   X,
 } from 'lucide-react';
 import { getLocalizedPlaceName } from '../../../components/PlaceCard/common/locationDisplay';
+import { getPlaceStayLodgingGuidance } from '../../../data/placeStayLodgingGuidance.js';
 import { buildGygActivitiesSearchQuery } from '../../../components/PlaceCard/tabs/planner/locationRules';
 import {
   MRT_STAY_PAGE_SIZE,
@@ -1271,12 +1272,15 @@ export default function GlobeStayStrip({
   const name = getLocalizedPlaceName(location, i18n.language) || location?.name || '';
   const country = location?.country || '';
   const isScanning = Boolean(location?.isScanning);
+  const lodgingGuidance = getPlaceStayLodgingGuidance(slug);
+  const guidanceOnly = Boolean(lodgingGuidance);
   const placeKey = `${slug}|${name}|${country}|${location?.lat}|${location?.lng}`;
   const datesKey = `${stayDates.checkIn}|${stayDates.checkOut}`;
   const guestsKey = `a${guests.adultCount}c${guests.childCount}`;
   const fetchKey = `${placeKey}|${datesKey}|${guestsKey}`;
   fetchKeyRef.current = fetchKey;
-  const eligible = canShowMrtStayStrip(location, { hidden }) && !isScanning;
+  const eligible =
+    (guidanceOnly || canShowMrtStayStrip(location, { hidden })) && !isScanning;
   const peerTourEligible = useMemo(() => {
     if (isScanning) return false;
     if (canShowMrtTnaStrip(location)) return true;
@@ -1388,7 +1392,7 @@ export default function GlobeStayStrip({
 
   // fetchKey already encodes place+dates+guests. location identity must not abort Photon.
   useEffect(() => {
-    if (!eligible || !expanded) return undefined;
+    if (!eligible || !expanded || getPlaceStayLodgingGuidance(slug)) return undefined;
     if (fetchedKeyRef.current === fetchKey) return undefined;
     if (inflightKeyRef.current === fetchKey) return undefined;
 
@@ -1449,6 +1453,29 @@ export default function GlobeStayStrip({
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps -- fetchKey captures location+dates+guests
   }, [eligible, expanded, fetchKey]);
+
+  const lodgingGuidancePanel = useMemo(() => {
+    if (!lodgingGuidance) return null;
+    const en = String(i18n.language || '').toLowerCase().startsWith('en');
+    const before = en ? lodgingGuidance.messageBefore_en : lodgingGuidance.messageBefore_ko;
+    const after = en ? lodgingGuidance.messageAfter_en : lodgingGuidance.messageAfter_ko;
+    const linkLabel = en ? lodgingGuidance.linkLabel_en : lodgingGuidance.linkLabel_ko;
+    const href = `/place/${lodgingGuidance.linkSlug}`;
+    return (
+      <div className="flex min-h-[min(360px,calc(100%-5rem))] w-full flex-col items-center justify-center px-4 py-10 text-center">
+        <p className="max-w-md break-keep text-[14px] font-medium leading-relaxed text-white/85 lg:text-[15px]">
+          {before}
+          <a
+            href={href}
+            className="font-bold text-amber-200 underline underline-offset-2 hover:text-amber-100"
+          >
+            {linkLabel}
+          </a>
+          {after}
+        </p>
+      </div>
+    );
+  }, [lodgingGuidance, i18n.language]);
 
   const applyStayFilters = useCallback((next) => {
     const dates = normalizeMrtStayDates(next?.checkIn, next?.checkOut);
@@ -1813,21 +1840,27 @@ export default function GlobeStayStrip({
           border-radius: 9999px;
         }
       `}</style>
-      <div className="mb-3.5">{renderDateBar({ embedInPanel: true })}</div>
-      {status === 'loading' ? (
-        <div
-          className="flex min-h-[min(360px,calc(100%-5rem))] flex-col items-center justify-center gap-3 px-4 py-10"
-          role="status"
-          aria-live="polite"
-          aria-busy="true"
-        >
-          <Loader2 size={28} className="animate-spin text-amber-200/90" aria-hidden="true" />
-          <p className="text-sm font-medium text-white/70">{t('home.stayStrip.loadingStays')}</p>
-          <p className="text-xs text-white/40">{t('home.stayStrip.loadingWait')}</p>
-        </div>
-      ) : null}
-      {status === 'empty' || status === 'error' ? emptyState : null}
-      {desktopList}
+      {guidanceOnly ? (
+        lodgingGuidancePanel
+      ) : (
+        <>
+          <div className="mb-3.5">{renderDateBar({ embedInPanel: true })}</div>
+          {status === 'loading' ? (
+            <div
+              className="flex min-h-[min(360px,calc(100%-5rem))] flex-col items-center justify-center gap-3 px-4 py-10"
+              role="status"
+              aria-live="polite"
+              aria-busy="true"
+            >
+              <Loader2 size={28} className="animate-spin text-amber-200/90" aria-hidden="true" />
+              <p className="text-sm font-medium text-white/70">{t('home.stayStrip.loadingStays')}</p>
+              <p className="text-xs text-white/40">{t('home.stayStrip.loadingWait')}</p>
+            </div>
+          ) : null}
+          {status === 'empty' || status === 'error' ? emptyState : null}
+          {desktopList}
+        </>
+      )}
       <StayModalExtraFooter
         location={location}
         onSwitchToTour={onSwitchToTour}
@@ -1941,6 +1974,10 @@ export default function GlobeStayStrip({
               ref={mobileListScrollRef}
               className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 py-3 pb-[max(5.5rem,calc(env(safe-area-inset-bottom)+3.75rem))]"
             >
+              {guidanceOnly ? (
+                lodgingGuidancePanel
+              ) : (
+                <>
               <div className="mb-3.5">{renderDateBar({ embedInPanel: true })}</div>
               {status === 'loading' ? (
                 <div className="flex flex-col items-center justify-center gap-2 py-16 text-white/50">
@@ -2017,6 +2054,8 @@ export default function GlobeStayStrip({
                   ) : null}
                 </>
               ) : null}
+                </>
+              )}
               <StayModalExtraFooter
                 location={location}
                 onSwitchToTour={onSwitchToTour}

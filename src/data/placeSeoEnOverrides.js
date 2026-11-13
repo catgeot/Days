@@ -514,6 +514,11 @@ export const PLACE_SEO_EN_OVERRIDES = {
       'Explore Krabi, Thailand — dramatic limestone karsts, Railay Beach accessible only by boat, rock climbing cliffs, emerald pools, and jungle hot springs.',
     keywords_en: ['Krabi', 'Thailand', 'Railay Beach', 'rock climbing', 'limestone karst', 'island travel'],
   },
+  'khao-lak': {
+    desc_en:
+      'Stay in Khao Lak, Thailand — a low-key Andaman coast town in Phang Nga, about an hour north of Phuket Airport (HKT) and the main gateway for Similan Islands day trips.',
+    keywords_en: ['Khao Lak', 'Thailand', 'Phang Nga', 'Andaman coast', 'Similan Islands', 'beach resort'],
+  },
   'kuala-lumpur': {
     desc_en:
       'Explore Kuala Lumpur, Malaysia — home to the Petronas Towers, Batu Caves temples, and a multicultural mix of mosques, Chinese shrines, shopping, and street food.',

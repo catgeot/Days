@@ -7446,5 +7446,32 @@ export const TRAVEL_SPOTS = [
       "세피록",
       "BKI"
     ]
+  },
+  {
+    "id": 396,
+    "slug": "khao-lak",
+    "name": "카오락",
+    "name_en": "Khao Lak",
+    "country": "태국",
+    "country_en": "Thailand",
+    "lat": 8.6475,
+    "lng": 98.2483,
+    "tier": 2,
+    "popularity": 70,
+    "continent": "asia",
+    "categories": [
+      "paradise"
+    ],
+    "primaryCategory": "paradise",
+    "category": "paradise",
+    "showOnGlobe": true,
+    "denseRegion": "southeast-asia",
+    "desc": "태국 팡아주 안다만 해안의 휴양 동네예요. 푸켓 공항에서 차로 약 1시간 거리이고, 시미란 국립공원 당일 투어의 출발지 가까이에 있어요.",
+    "keywords": [
+      "안다만해",
+      "시미란",
+      "휴양",
+      "HKT"
+    ]
   }
 ];

@@ -21780,6 +21780,186 @@ export default {
       }
     }
   },
+  "khao-lak": {
+    "gallery": {
+      "ko": {
+        "title": "카오락 여행 사진 · 갤러리",
+        "description": "카오락 여행 사진과 갤러리. 태국 팡아주 안다만 해안의 휴양 동네예요. 푸켓 공항에서 차로 약 1시간 거리이고, 시미란 국립공원 당일 투어의 출발지 가까이에 있어요.",
+        "keywords": "안다만해, 시미란, 휴양, HKT, 카오락 사진, 카오락 갤러리, 카오락 여행, 카오락 여행 사진, 사진, 갤러리, 여행, 여행 사진, 카오락, Khao Lak",
+        "canonicalUrl": "https://www.gateo.kr/place/khao-lak/gallery",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/khao-lak/gallery"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/khao-lak/gallery?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/khao-lak/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1506929562872-bb421704ef0f?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "카오락",
+        "countryName": "태국",
+        "slug": "khao-lak",
+        "tab": "gallery",
+        "destIata": "HKT",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1506929562872-bb421704ef0f?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "카오락 여행 사진"
+          }
+        ]
+      },
+      "en": {
+        "title": "Khao Lak travel photos · gallery",
+        "description": "Browse Khao Lak travel photos and gallery images. Stay in Khao Lak, Thailand — a low-key Andaman coast town in Phang Nga, about an hour north of Phuket Airport (HKT) and the main gateway for Similan Islands day trips.",
+        "keywords": "Khao Lak, Thailand, Phang Nga, Andaman coast, Similan Islands, beach resort, Khao Lak photos, Khao Lak gallery, Khao Lak pictures, Khao Lak travel, photos, gallery, pictures, travel",
+        "canonicalUrl": "https://www.gateo.kr/place/khao-lak/gallery?lang=en",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/khao-lak/gallery"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/khao-lak/gallery?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/khao-lak/gallery"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1506929562872-bb421704ef0f?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Khao Lak",
+        "countryName": "Thailand",
+        "slug": "khao-lak",
+        "tab": "gallery",
+        "destIata": "HKT",
+        "galleryImages": [
+          {
+            "urls": {
+              "regular": "https://images.unsplash.com/photo-1506929562872-bb421704ef0f?auto=format&fit=crop&w=1200&h=630&q=80"
+            },
+            "alt_description": "Khao Lak travel photo"
+          }
+        ]
+      }
+    },
+    "planner": {
+      "ko": {
+        "title": "카오락 여행 · 준비 가이드",
+        "description": "인천(ICN)→HKT 항공 경로. 경유 HKG·BKK. 약 6시간. 카오락 자유여행 준비·항공·숙소·현지 팁. MOONi(무니) AI 도슨트에게 일정·교통을 물어보세요. 태국 팡아주 안다만 해안의 휴양 동네예요. 푸켓 공항에서 차로 약 1시간 거리이고, 시미란 국립공원 당일 투어의 출발지 가까이에 있어요.",
+        "keywords": "안다만해, 시미란, 휴양, HKT, 카오락 여행, 카오락 관광, 카오락 플래너, 카오락 여행 준비, 카오락 여행 가이드, 카오락 여행 계획, 카오락 자유여행, 카오락 배낭, 카오락 항공, 카오락 항공 경로, 카오락 항공편, 카오락 직항, 카오락 비행, 여행, 관광, 플래너, 여행 준비, 여행 가이드, 여행 계획, 자유여행, 배낭, 항공, 항공 경로, 항공편, 직항, 비행, 인천 카오락, 서울 카오락, ICN HKT, ICN→HKG·BKK→HKT, 카오락, Khao Lak",
+        "canonicalUrl": "https://www.gateo.kr/place/khao-lak/planner",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/khao-lak/planner"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/khao-lak/planner?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/khao-lak/planner"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1506929562872-bb421704ef0f?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "카오락",
+        "countryName": "태국",
+        "slug": "khao-lak",
+        "tab": "planner",
+        "destIata": "HKT"
+      },
+      "en": {
+        "title": "Khao Lak travel · trip planner",
+        "description": "Flight route ICN→HKG·BKK→HKT via HKG, BKK. About 6 hours. Plan independent travel to Khao Lak — flights, stays, and local tips. Ask MOONi, your AI travel docent. Stay in Khao Lak, Thailand — a low-key Andaman coast town in Phang Nga, about an hour north of Phuket Airport (HKT) and the main gateway for Similan Islands day trips.",
+        "keywords": "Khao Lak, Thailand, Phang Nga, Andaman coast, Similan Islands, beach resort, Khao Lak travel, Khao Lak trip planner, Khao Lak plan a trip, Khao Lak trip planning, Khao Lak free travel, Khao Lak independent travel, Khao Lak backpacking, Khao Lak flights, Khao Lak flight route, Khao Lak air route, Khao Lak nonstop, travel, trip planner, plan a trip, trip planning, free travel, independent travel, backpacking, flights, flight route, air route, nonstop, ICN to HKT, ICN HKT, ICN→HKG·BKK→HKT, Khao Lak connecting flights",
+        "canonicalUrl": "https://www.gateo.kr/place/khao-lak/planner?lang=en",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/khao-lak/planner"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/khao-lak/planner?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/khao-lak/planner"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1506929562872-bb421704ef0f?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Khao Lak",
+        "countryName": "Thailand",
+        "slug": "khao-lak",
+        "tab": "planner",
+        "destIata": "HKT"
+      }
+    },
+    "wiki": {
+      "ko": {
+        "title": "카오락 여행 스케치",
+        "description": "카오락 여행 스케치·로컬 왓슨 현지 팁·자유여행 가이드. 태국 팡아주 안다만 해안의 휴양 동네예요. 푸켓 공항에서 차로 약 1시간 거리이고, 시미란 국립공원 당일 투어의 출발지 가까이에 있어요.",
+        "keywords": "안다만해, 시미란, 휴양, HKT, 카오락 여행, 카오락 여행 스케치, 카오락 가이드, 카오락 자유여행, 카오락 현지 팁, 카오락 로컬 팁, 카오락 자유여행 팁, 여행, 여행 스케치, 가이드, 자유여행, 현지 팁, 로컬 팁, 자유여행 팁, 카오락, Khao Lak",
+        "canonicalUrl": "https://www.gateo.kr/place/khao-lak/wiki",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/khao-lak/wiki"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/khao-lak/wiki?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/khao-lak/wiki"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1506929562872-bb421704ef0f?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "카오락",
+        "countryName": "태국",
+        "slug": "khao-lak",
+        "tab": "wiki",
+        "destIata": "HKT"
+      },
+      "en": {
+        "title": "Khao Lak travel sketch · guide",
+        "description": "Khao Lak travel sketch, Local Watson tips, and independent travel guide. Stay in Khao Lak, Thailand — a low-key Andaman coast town in Phang Nga, about an hour north of Phuket Airport (HKT) and the main gateway for Similan Islands day trips.",
+        "keywords": "Khao Lak, Thailand, Phang Nga, Andaman coast, Similan Islands, beach resort, Khao Lak travel guide, Khao Lak travel sketch, Khao Lak free travel, Khao Lak local tips, Khao Lak independent travel, travel guide, travel sketch, free travel, local tips, independent travel",
+        "canonicalUrl": "https://www.gateo.kr/place/khao-lak/wiki?lang=en",
+        "hreflangAlternates": [
+          {
+            "hreflang": "ko",
+            "href": "https://www.gateo.kr/place/khao-lak/wiki"
+          },
+          {
+            "hreflang": "en",
+            "href": "https://www.gateo.kr/place/khao-lak/wiki?lang=en"
+          },
+          {
+            "hreflang": "x-default",
+            "href": "https://www.gateo.kr/place/khao-lak/wiki"
+          }
+        ],
+        "ogImage": "https://images.unsplash.com/photo-1506929562872-bb421704ef0f?auto=format&fit=crop&w=1200&h=630&q=80",
+        "placeName": "Khao Lak",
+        "countryName": "Thailand",
+        "slug": "khao-lak",
+        "tab": "wiki",
+        "destIata": "HKT"
+      }
+    }
+  },
   "kilimanjaro": {
     "gallery": {
       "ko": {

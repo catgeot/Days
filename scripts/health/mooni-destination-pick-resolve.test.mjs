@@ -55,10 +55,10 @@ test('theme-only question — no keyword pick candidates', () => {
   assert.deepEqual(slugs(r), []);
 });
 
-test('카오락 시간별 세부 일정 — no cebu (generic 세부)', () => {
+test('카오락 시간별 세부 일정 — khao-lak, no cebu (generic 세부)', () => {
   const r = resolveDestinationFromChat('카오락 시간별 세부 일정 짜 줘', [], MOONI);
-  assert.equal(r.confidence, 'none');
-  assert.notEqual(r.slug, 'cebu');
+  assert.equal(r.confidence, 'high');
+  assert.equal(r.slug, 'khao-lak');
   assert.ok(!slugs(r).includes('cebu'));
 });
 

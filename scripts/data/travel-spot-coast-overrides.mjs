@@ -43,6 +43,7 @@ export const TRAVEL_SPOT_COAST_OVERRIDES = {
   phuket: { coastKind: 'island', seaPrimary: 'andaman', seaIds: ['andaman'] },
   'phi-phi-islands': { coastKind: 'archipelago', seaPrimary: 'andaman' },
   krabi: { coastKind: 'coastal-city', seaPrimary: 'andaman' },
+  'khao-lak': { coastKind: 'coastal-city', seaPrimary: 'andaman' },
   'similan-islands': { coastKind: 'archipelago', seaPrimary: 'andaman' },
   'koh-samui': { coastKind: 'island', seaPrimary: 'gulf-of-thailand' },
   'phu-quoc': { coastKind: 'island', seaPrimary: 'gulf-of-thailand' },
