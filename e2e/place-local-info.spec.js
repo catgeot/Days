@@ -209,12 +209,23 @@ test.describe('place card local info v2', () => {
     await expect(seasonValue).toContainText('250바트');
     await expect(seasonValue).toContainText('당일');
     await expect(seasonValue).toContainText('숙박');
+    await expect(seasonValue).not.toContainText('gateo.kr/place');
+    const similanLink = page.locator('[data-local-info-row="season"]:visible [data-fact-place-link="/place/similan-islands"]');
+    await expect(similanLink).toBeVisible();
+    await expect(similanLink).toContainText('시미란 제도');
 
     await openTab(page, '여행 플래너');
     await expect(page).toHaveURL(/\/place\/khao-lak\/planner/);
     await expect(page.getByRole('button', { name: '확인된 입국 정보' })).toBeVisible({ timeout: 30_000 });
     await page.getByRole('tab', { name: '이동·통신' }).click();
     await expect(page.getByRole('button', { name: '확인된 공항→시내 정보' })).toBeVisible();
+
+    await page.goto('/place/khao-lak?lang=ko');
+    await expect(page.getByText('카오락').first()).toBeVisible({ timeout: 60_000 });
+    await page.getByRole('button', { name: /현지 정보/ }).first().click();
+    await page.locator('[data-local-info-row="season"]:visible button').click();
+    await page.locator('[data-local-info-row="season"]:visible [data-fact-place-link="/place/similan-islands"]').click();
+    await expect(page).toHaveURL(/\/place\/similan-islands(?:\/|$|\?)/, { timeout: 30_000 });
   });
 
   test('파리 치안 endsAt 이후에는 현지 정보·치안 행이 기본 접힘이다', async ({ page }) => {
