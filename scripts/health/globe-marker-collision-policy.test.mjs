@@ -57,14 +57,18 @@ test('khao-lak merges into phuket cluster below tier-2 zoom', () => {
   );
 });
 
-test('phuket and khao-lak are label overlap-eligible when separate at tier-2', () => {
+test('khao-lak is overlap-eligible hidden sister at tier-2 (phuket representative)', () => {
   const phuket = TRAVEL_SPOTS.find((s) => s.slug === 'phuket');
   const khao = TRAVEL_SPOTS.find((s) => s.slug === 'khao-lak');
-  const out = annotateLabelOverlapEligibility([
-    { ...phuket, type: 'major' },
-    { ...khao, type: 'major' },
-  ]);
-  assert.ok(out.every((m) => m.labelOverlapEligible));
+  const out = annotateLabelOverlapEligibility(
+    [
+      { ...phuket, type: 'major' },
+      { ...khao, type: 'major' },
+    ],
+    2.7,
+  );
+  assert.ok(out.find((m) => m.slug === 'khao-lak')?.labelOverlapEligible);
+  assert.ok(!out.find((m) => m.slug === 'phuket')?.labelOverlapEligible);
 });
 
 test('khao-lak and phuket stay separate from tier-2 zoom upward', () => {

@@ -23,6 +23,12 @@ export const HIGH_ZOOM_FULL_REVEAL = 3.0;
 /** Gateo major pin labels may overlap once tier-2 destinations are eligible (Mapbox symbol collision). */
 export const GLOBE_MAJOR_LABEL_OVERLAP_MIN_ZOOM = TIER_STAGE_ZOOM_LEVELS.tier2;
 
+/**
+ * Mapbox label zoom split — low layer maxzoom and hi layers minzoom share this value
+ * (maxzoom is exclusive at >= value; minzoom is inclusive at >= value).
+ */
+export const GLOBE_LABEL_TIER2_BOUNDARY_ZOOM = TIER_STAGE_ZOOM_LEVELS.tier2;
+
 /** denseRegion 없는 희소·섬 지역은 passesGlobeTierPolicy()로 tier 필터 생략 */
 
 export const GLOBE_ZOOM_POLICY = {

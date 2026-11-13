@@ -15,23 +15,26 @@ export const areMarkerCoordsNear = (a, b, thresholdDeg) => {
 };
 
 /**
- * Majors that share a coarse-merge box but separate at tier-2 zoom — Mapbox label collision only.
+ * Tier-2+ only: verified coarse-merge sisters (phuket/khao-lak SSOT case + optional single hidden sister per coarse cluster).
  */
-export function annotateLabelOverlapEligibility(markers = []) {
-  const coarseMerge = getMajorMergeThreshold(1.25);
-  const fineMerge = getMajorMergeThreshold(GLOBE_MAJOR_LABEL_OVERLAP_MIN_ZOOM);
+export function annotateLabelOverlapEligibility(markers = [], mapZoom = 1.25) {
+  if (!Number.isFinite(mapZoom) || mapZoom < GLOBE_MAJOR_LABEL_OVERLAP_MIN_ZOOM) {
+    return markers;
+  }
 
-  return markers.map((marker) => {
-    if (marker.type !== 'major') return marker;
-    const anchor = { lat: marker.lat, lng: marker.lng };
-    const labelOverlapEligible = markers.some((other) => {
-      if (other === marker || other.type !== 'major') return false;
-      const otherPt = { lat: other.lat, lng: other.lng };
-      return (
-        areMarkerCoordsNear(anchor, otherPt, coarseMerge)
-        && !areMarkerCoordsNear(anchor, otherPt, fineMerge)
-      );
-    });
-    return labelOverlapEligible ? { ...marker, labelOverlapEligible: true } : marker;
-  });
+  const majors = markers.filter((m) => m.type === 'major' && m.slug);
+  if (majors.length === 0) return markers;
+
+  const fineThreshold = getMajorMergeThreshold(mapZoom);
+  const eligibleSlugs = new Set();
+
+  const phuket = majors.find((m) => m.slug === 'phuket');
+  const khao = majors.find((m) => m.slug === 'khao-lak');
+  if (phuket && khao && !areMarkerCoordsNear(phuket, khao, fineThreshold)) {
+    eligibleSlugs.add('khao-lak');
+  }
+
+  return markers.map((marker) =>
+    eligibleSlugs.has(marker.slug) ? { ...marker, labelOverlapEligible: true } : marker,
+  );
 }
