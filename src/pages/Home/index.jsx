@@ -66,6 +66,7 @@ import {
   needsPlaceChatIntroHydration,
   shouldEnsurePlaceChatIntroForLocation,
 } from './lib/placeChatIntro';
+import { peekCachedPlaceChatIntroEn } from './lib/placeChatIntroDisplay.js';
 import { isDomesticKoreaLocation } from '../../utils/tourApiMatch.js';
 import { fetchDomesticTourOverview } from '../../utils/tourKeywordPick.js';
 import { GLOBE_MODE, isTourMode } from './lib/globeMode';
@@ -532,10 +533,14 @@ function Home() {
       ) {
         return prev;
       }
-      return {
+      if (!needsPlaceChatIntroHydration(prev)) return prev;
+      const next = {
         ...prev,
         desc: summary,
+        placeChatIntroApplied: true,
       };
+      selectedLocationRef.current = next;
+      return next;
     });
   }, [setSelectedLocation]);
 
@@ -1240,10 +1245,12 @@ function Home() {
                   (pinName && prev.name === pinName) ||
                   isSameCanonicalPlace(prev, focusTarget);
                 if (!same || !needsPlaceChatIntroHydration(prev)) return prev;
+                const placeChatIntroEn = peekCachedPlaceChatIntroEn(prev);
                 const next = {
                   ...prev,
                   desc: summary,
                   placeChatIntroApplied: true,
+                  ...(placeChatIntroEn ? { placeChatIntroEn } : {}),
                 };
                 selectedLocationRef.current = next;
                 return next;

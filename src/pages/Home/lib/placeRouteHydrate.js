@@ -90,6 +90,7 @@ export function overlaySessionCuration(target, options = {}) {
     curationSummary: curationSummary || source.curationSummary,
     isCorrected: source.isCorrected ?? true,
     placeChatIntroApplied: sourceIntro || Boolean(target.placeChatIntroApplied),
+    placeChatIntroEn: source.placeChatIntroEn || target.placeChatIntroEn,
     desc,
   };
 }

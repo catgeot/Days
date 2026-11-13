@@ -104,6 +104,7 @@ import {
   needsPlaceChatIntroHydration,
   shouldEnsurePlaceChatIntroForLocation,
 } from '../lib/placeChatIntro.js';
+import { peekCachedPlaceChatIntroEn } from '../lib/placeChatIntroDisplay.js';
 import { isDomesticKoreaLocation } from '../../../utils/tourApiMatch.js';
 import { fetchDomesticTourOverview } from '../../../utils/tourKeywordPick.js';
 import { lookupVisitedPlacesForSearch } from '../lib/visitedPlaceSearchLookup.js';
@@ -559,10 +560,12 @@ export function useHomeHandlers({
           isSameCanonicalPlace(prev, pin);
         if (!same) return prev;
         if (!needsPlaceChatIntroHydration(prev)) return prev;
+        const placeChatIntroEn = peekCachedPlaceChatIntroEn(prev);
         return prepareResolvedLocation({
           ...prev,
           desc: summary,
           placeChatIntroApplied: true,
+          ...(placeChatIntroEn ? { placeChatIntroEn } : {}),
         });
       });
     };

@@ -56,6 +56,7 @@ test('palgyeong overlay desc — ensure yes, display hydrate no', () => {
   const birae = {
     name: '비래폭포',
     parentCity: '합천',
+    localScenicListId: 'hwacheon-gugyeong',
     desc: '합천 지역의 대표 명승으로, 계곡과 폭포가 어우러진 자연 경관입니다.',
   };
   assert.equal(shouldEnsurePlaceChatIntroForLocation(birae), true);
