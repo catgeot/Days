@@ -213,6 +213,8 @@ test('Home gallery PR drift guard; MOONi session wiring line allowlist', () => {
     /^[+-].*readExploreV2QueryParam/,
     /^[+-].*exploreV2QueryNoIndex/,
     /^[+-].*robotsNoIndex/,
+    /^[+-].*prevPath\.startsWith\('\/auth'\)/,
+    /^[+-].*syncHomeViewportAfterInput\(\);/,
     /^[+-].*routeLocation\.pathname\.startsWith\('\/explore'\)/,
     /^[+-].*routeLocation\.search/,
     /^[+-].*cachePlaceLocation/,

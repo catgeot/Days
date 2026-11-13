@@ -397,5 +397,29 @@ export default defineConfig({
         ignoreHTTPSErrors: true,
       },
     },
+    {
+      name: 'chromium-ios-login-globe-viewport',
+      testMatch: /ios-login-globe-viewport\.spec\.js/,
+      timeout: 240_000,
+      use: {
+        ...devices['Desktop Chrome'],
+        baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://127.0.0.1:5204',
+        locale: 'ko-KR',
+        deviceScaleFactor: 1,
+        ignoreHTTPSErrors: true,
+      },
+    },
+    {
+      name: 'webkit-ios-login-globe-viewport',
+      testMatch: /ios-login-globe-viewport\.spec\.js/,
+      timeout: 240_000,
+      use: {
+        ...devices['iPhone 13'],
+        baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://127.0.0.1:5204',
+        locale: 'ko-KR',
+        deviceScaleFactor: 1,
+        ignoreHTTPSErrors: true,
+      },
+    },
   ],
 });
