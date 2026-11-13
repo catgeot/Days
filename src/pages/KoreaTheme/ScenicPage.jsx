@@ -1681,11 +1681,29 @@ export default function KoreaThemeScenicPage() {
     setLegacyList(next);
     writeScenicLegacyListToSession(next);
   }, []);
-  const [openPods, setOpenPods] = useState({
+  const emptyCuratedHub =
+    Boolean(hubId) && !searchActive && !nearActive && curatedSpots.length === 0;
+  const emptyHubOpenedRef = useRef('');
+  const [openPods, setOpenPods] = useState(() => ({
     curated: true,
-    heritage: false,
-    tour: false,
-  });
+    heritage: emptyCuratedHub,
+    tour: emptyCuratedHub,
+  }));
+
+  // 선정 0건 hub(종로 등)는 국가유산·관광지가 접혀 있어 빈 페이지로 보인다
+  useEffect(() => {
+    if (searchActive || nearActive || !hubId || curatedSpots.length > 0) {
+      if (!hubId || curatedSpots.length > 0) emptyHubOpenedRef.current = '';
+      return;
+    }
+    if (emptyHubOpenedRef.current === hubId) return;
+    emptyHubOpenedRef.current = hubId;
+    setOpenPods((prev) =>
+      prev.heritage && prev.tour
+        ? prev
+        : { ...prev, heritage: true, tour: true },
+    );
+  }, [hubId, curatedSpots.length, searchActive, nearActive]);
 
   useEffect(() => {
     if (!openPods.tour || !dbSpots.length) return undefined;

@@ -243,6 +243,30 @@ const seoulBundle = resolveThemeCrossLinks(seoulSpot);
 assert(seoulBundle.areaCode === '1', 'seoul areaCode 1');
 assert(seoulBundle.packageCta == null, 'seoul has no city package CTA (avoid false busan-like)');
 
+const gyeongbokAddr = resolveThemeCrossLinks({
+  ...seoulSpot,
+  addr1: '서울특별시 종로구 사직로 161',
+});
+const curatedHubIds = new Set(
+  listKoreaScenicSpots().map((s) => String(s.hubId || '').trim().toLowerCase()),
+);
+assert(
+  gyeongbokAddr.nearbyHubs.length >= 2,
+  `gyeongbok nearby is more than the empty jongno card (got ${gyeongbokAddr.nearbyHubs.map((h) => h.hubId).join(',')})`,
+);
+assert(
+  gyeongbokAddr.nearbyHubs.every((h) => h.hubId !== 'jongno'),
+  `gyeongbok nearby skips jongno (got ${gyeongbokAddr.nearbyHubs.map((h) => h.hubId).join(',')})`,
+);
+assert(
+  gyeongbokAddr.nearbyHubs.every((h) => curatedHubIds.has(h.hubId)),
+  'gyeongbok nearby hubs each have curated spots',
+);
+assert(
+  gyeongbokAddr.nearbyHubs.every((h) => String(h.scenicPath || '').includes(`hub=${h.hubId}`)),
+  'gyeongbok nearby scenic paths keep hub',
+);
+
 const insadong = listKoreaScenicSpots().find((s) => s.id === 'insadong');
 assert(Boolean(insadong), 'insadong scenic exists');
 const insadongBundle = resolveThemeCrossLinks(insadong);
@@ -508,6 +532,20 @@ const libSrc = readFileSync(
   'utf8',
 );
 assert(libSrc.includes('nearbyHubsForFestival'), 'reuses festival nearby matcher');
+assert(libSrc.includes('curatedScenicHubById'), 'nearby hubs require curated spots');
+const modalSrc = readFileSync(
+  join(root, 'src/pages/KoreaTheme/ThemeSpotDetailModal.jsx'),
+  'utf8',
+);
+assert(modalSrc.includes('lg:max-w-6xl xl:max-w-7xl'), 'spot modal uses wide desktop width');
+const scenicPageSrc = readFileSync(
+  join(root, 'src/pages/KoreaTheme/ScenicPage.jsx'),
+  'utf8',
+);
+assert(
+  scenicPageSrc.includes('emptyHubOpenedRef'),
+  'empty curated hub opens heritage and tour',
+);
 assert(libSrc.includes('resolveMrtStayQuery'), 'wires stay query');
 assert(libSrc.includes('resolveMrtTnaQuery'), 'wires tna query');
 assert(libSrc.includes('extractTourAttractionSigungu'), 'uses addr→sigungu for MRT');

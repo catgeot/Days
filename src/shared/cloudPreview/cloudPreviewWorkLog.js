@@ -4,13 +4,13 @@
  * 상세 규칙: AGENTS.md Cloud「세션 표기 · 고정 Preview · 작업 로그」
  */
 export const cloudPreviewProject = {
-  active: false,
-  title: '명승 본문 카드',
+  active: true,
+  title: '명승 본문',
   sessionNo: 1,
-  sessionPhase: '주변 카드',
-  branch: 'cursor/scenic-body-cards-da58',
+  sessionPhase: '넓은 본문',
+  branch: 'cursor/scenic-body-wide-fddc',
   previewPath: '/korea/theme/scenic?spot=gyeongbokgung',
-  qaShareSlug: '',
+  qaShareSlug: 'scenic-body-wide',
 };
 
 /** @returns {string} 예: Cloud 작업 규칙 #1, 이어하기·Preview 고정 */
@@ -23,6 +23,14 @@ export function cloudPreviewSessionLabel(project = cloudPreviewProject) {
  * 최신이 배열 앞.
  */
 export const cloudPreviewWorkLog = [
+  {
+    id: '2026-11-13-scenic-body-wide-1',
+    session: '명승 본문 #1, 넓은 본문',
+    title: '넓은 본문·인근 여행지',
+    detail:
+      '명승 명소 본문이 넓은 화면에서 명승 홈과 같은 너비로 열립니다. 사진은 가로로 넓어지고 글이 아래로 밀리지 않게 비율을 낮춥니다. 경복궁 인근 여행지는 선정 명소가 없는 종로 대신, 선정 명소가 있는 가까운 시·군으로 갑니다. 선정 명소가 0곳인 시·군 홈은 국가유산 명승과 관광지 목록을 펼칩니다. Preview /qa/scenic-body-wide — /korea/theme/scenic?spot=gyeongbokgung.',
+    at: '2026-11-13T10:20:00.000Z',
+  },
   {
     id: '2026-11-12-scenic-body-cards-1',
     session: '명승 본문 카드 #1, 주변 카드',
