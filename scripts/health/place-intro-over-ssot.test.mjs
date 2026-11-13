@@ -131,8 +131,8 @@ test('EN display prefers cached @en intro over placeSeoEnOverrides when flag on'
   });
 });
 
-test('handlePlaceIntroReady documents placeChatIntroApplied in Home source', () => {
+test('handlePlaceIntroReady documents place intro patch in Home source', () => {
   const home = readFileSync(join(root, 'src/pages/Home/index.jsx'), 'utf8');
-  assert.match(home, /placeChatIntroApplied:\s*true/);
+  assert.match(home, /buildPlaceChatIntroAppliedPatch/);
   assert.match(home, /needsPlaceChatIntroHydration\(prev\)/);
 });
