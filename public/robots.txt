@@ -7,6 +7,7 @@ Allow: /korea/
 Allow: /logbook
 Allow: /p/
 Disallow: /auth/
+Disallow: /admin/
 
 # 네이버 검색 봇
 User-agent: Yeti

@@ -84,6 +84,9 @@ const koreaHubRoutes = [
   { path: '/korea/theme/courses', changefreq: 'weekly', priority: '0.7' },
 ];
 
+/** Admin · 내부 도구 — sitemap에 넣지 않음 (scripts/health/reels-bench.test.mjs 와 동기) */
+const sitemapExcludedPaths = ['/admin/reels-bench', '/admin/gallery'];
+
 // Sitemap 생성
 function generateSitemap() {
   const urls = [];
