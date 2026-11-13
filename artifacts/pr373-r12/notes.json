@@ -1,0 +1,86 @@
+{
+  "branchBase": "https://127.0.0.1:4173",
+  "viewport": {
+    "width": 1280,
+    "height": 800
+  },
+  "capturedAt": "2026-10-23T07:41:34.164Z",
+  "runs": [
+    {
+      "flow": "paris",
+      "size": "1280",
+      "file": "branch-paris-1280-after-home-settled.jpg",
+      "atCapture": {
+        "centerLat": 48.856600000000014,
+        "centerLng": 2.352200000000039,
+        "zoom": 2.35,
+        "idleAt": 1792741264537,
+        "gateoDots": 1,
+        "homeGlobeFlyOutcome": "arrived",
+        "canvasBackingMismatch": false,
+        "summaryOpen": false
+      },
+      "atCapturePlus3s": {
+        "centerLat": 48.856600000000014,
+        "centerLng": 2.352200000000039,
+        "zoom": 2.35,
+        "idleAt": 1792741267852,
+        "gateoDots": 1,
+        "homeGlobeFlyOutcome": "arrived",
+        "canvasBackingMismatch": false,
+        "summaryOpen": false
+      }
+    },
+    {
+      "flow": "tokyo",
+      "size": "1280",
+      "file": "branch-tokyo-1280-after-home-settled.jpg",
+      "atCapture": {
+        "centerLat": 35.66999999999999,
+        "centerLng": 139.76,
+        "zoom": 2.35,
+        "idleAt": 1792741276888,
+        "gateoDots": 0,
+        "homeGlobeFlyOutcome": "arrived",
+        "canvasBackingMismatch": false,
+        "summaryOpen": false
+      },
+      "atCapturePlus3s": {
+        "centerLat": 35.66999999999999,
+        "centerLng": 139.76,
+        "zoom": 2.35,
+        "idleAt": 1792741280626,
+        "gateoDots": 1,
+        "homeGlobeFlyOutcome": "arrived",
+        "canvasBackingMismatch": false,
+        "summaryOpen": false
+      }
+    },
+    {
+      "flow": "jeju",
+      "size": "1280",
+      "file": "branch-jeju-1280-after-home-settled.jpg",
+      "atCapture": {
+        "centerLat": 33.49959999999997,
+        "centerLng": 126.53120000000001,
+        "zoom": 2.35,
+        "idleAt": 1792741289812,
+        "gateoDots": 1,
+        "homeGlobeFlyOutcome": "arrived",
+        "canvasBackingMismatch": false,
+        "summaryOpen": false
+      },
+      "atCapturePlus3s": {
+        "centerLat": 33.49959999999997,
+        "centerLng": 126.53120000000001,
+        "zoom": 2.35,
+        "idleAt": 1792741291042,
+        "gateoDots": 1,
+        "homeGlobeFlyOutcome": "arrived",
+        "canvasBackingMismatch": false,
+        "summaryOpen": false
+      }
+    }
+  ],
+  "pass": true
+}

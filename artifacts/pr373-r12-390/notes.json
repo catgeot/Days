@@ -1,0 +1,90 @@
+{
+  "gitHead": "38d3b769",
+  "branchBase": "https://127.0.0.1:4173",
+  "viewport": {
+    "width": 390,
+    "height": 844,
+    "deviceScaleFactor": 1
+  },
+  "capturedAt": "2026-10-23T07:47:56.988Z",
+  "runs": [
+    {
+      "flow": "paris",
+      "size": "390",
+      "file": "branch-paris-390-after-home-settled.jpg",
+      "atCapture": {
+        "centerLat": 48.856600000000014,
+        "centerLng": 2.352200000000039,
+        "zoom": 2.35,
+        "idleAt": 1792741649915,
+        "gateoDots": 1,
+        "homeGlobeFlyOutcome": "short",
+        "canvasBackingMismatch": false,
+        "summaryOpen": false
+      },
+      "atCapturePlus3s": {
+        "centerLat": 48.856600000000014,
+        "centerLng": 2.352200000000039,
+        "zoom": 2.35,
+        "idleAt": 1792741650726,
+        "gateoDots": 1,
+        "homeGlobeFlyOutcome": "short",
+        "canvasBackingMismatch": false,
+        "summaryOpen": false
+      }
+    },
+    {
+      "flow": "tokyo",
+      "size": "390",
+      "file": "branch-tokyo-390-after-home-settled.jpg",
+      "atCapture": {
+        "centerLat": 35.66999999999999,
+        "centerLng": 139.76,
+        "zoom": 2.35,
+        "idleAt": 1792741662301,
+        "gateoDots": 1,
+        "homeGlobeFlyOutcome": "short",
+        "canvasBackingMismatch": false,
+        "summaryOpen": false
+      },
+      "atCapturePlus3s": {
+        "centerLat": 35.66999999999999,
+        "centerLng": 139.76,
+        "zoom": 2.35,
+        "idleAt": 1792741666301,
+        "gateoDots": 1,
+        "homeGlobeFlyOutcome": "short",
+        "canvasBackingMismatch": false,
+        "summaryOpen": false
+      }
+    },
+    {
+      "flow": "jeju",
+      "size": "390",
+      "file": "branch-jeju-390-after-home-settled.jpg",
+      "atCapture": {
+        "centerLat": 33.49959999999997,
+        "centerLng": 126.53120000000001,
+        "zoom": 2.35,
+        "idleAt": 1792741673106,
+        "gateoDots": 1,
+        "homeGlobeFlyOutcome": "arrived",
+        "canvasBackingMismatch": false,
+        "summaryOpen": false
+      },
+      "atCapturePlus3s": {
+        "centerLat": 33.49959999999997,
+        "centerLng": 126.53120000000001,
+        "zoom": 2.35,
+        "idleAt": 1792741674334,
+        "gateoDots": 1,
+        "homeGlobeFlyOutcome": "arrived",
+        "canvasBackingMismatch": false,
+        "summaryOpen": false
+      }
+    }
+  ],
+  "pass": true,
+  "r12Base": "ae7af1c5",
+  "captureNote": "390 artifacts; homeFlySettleHold for short/interrupted in same push"
+}

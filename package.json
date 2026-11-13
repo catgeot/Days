@@ -152,6 +152,7 @@
     "smoke:reviews-related-tab": "node scripts/smoke-reviews-related-tab.mjs",
     "smoke:summary-close-guard": "node scripts/smoke-summary-close-guard.mjs",
     "smoke:globe-page-zoom-lock": "node scripts/smoke-globe-page-zoom-lock.mjs",
+    "smoke:home-globe-fly-session": "node scripts/smoke-home-globe-fly-session.mjs",
     "smoke:release-notes-footer": "node scripts/smoke-release-notes-footer.mjs",
     "smoke:klook-affiliate": "node scripts/smoke-klook-affiliate.mjs",
     "smoke:paris-transit-planner-links": "node scripts/smoke-paris-transit-planner-links.mjs",

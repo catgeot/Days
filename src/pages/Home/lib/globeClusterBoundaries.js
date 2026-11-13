@@ -1,5 +1,6 @@
 import { getClusterMembersWithCoords } from '../../../utils/travelSpotClusters.js';
 import { isGlobeMapStyleReady } from './globeMapStyleGuard.js';
+import { setLayoutPropertyIfChanged } from './globeMapStyleWrite.js';
 import { raiseLayersToTopIfNeeded } from './globeMapLayerOrder.js';
 
 export const CLUSTER_HULL_SOURCE_ID = 'gateo-cluster-hull';
@@ -302,10 +303,10 @@ export function setClusterBoundaryVisibility(map, visible) {
       if (!map.getLayer(layerId)) continue;
       // 면 채움은 항상 숨김 — 점선 경계·POI만 토글
       if (layerId === CLUSTER_HULL_FILL_ID) {
-        map.setLayoutProperty(layerId, 'visibility', 'none');
+        setLayoutPropertyIfChanged(map, layerId, 'visibility', 'none');
         continue;
       }
-      map.setLayoutProperty(layerId, 'visibility', visibility);
+      setLayoutPropertyIfChanged(map, layerId, 'visibility', visibility);
     }
   });
 }

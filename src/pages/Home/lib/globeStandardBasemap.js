@@ -1,3 +1,5 @@
+import { setConfigPropertyIfChanged } from './globeMapStyleWrite';
+
 /** Mapbox Standard (`mapbox://styles/mapbox/standard`) runtime config — valid keys only. */
 
 const VALID_KEYS = new Set([
@@ -107,11 +109,7 @@ export function applyStandardBasemapConfig(map, entries = []) {
   const apply = () => {
     for (const [key, value] of entries) {
       if (!VALID_KEYS.has(key)) continue;
-      try {
-        map.setConfigProperty('basemap', key, value);
-      } catch {
-        // Style may not be Standard yet.
-      }
+      setConfigPropertyIfChanged(map, 'basemap', key, value);
     }
   };
 
