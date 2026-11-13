@@ -198,6 +198,7 @@ const HomeGlobeAdapter = forwardRef((props, ref) => {
       whenGlobeFocusReady: (options) => runWhenGlobeFocusReady(options),
       getGlobeMode: () => childRef.current?.getGlobeMode?.(),
       suppressOverlayClick: (ms) => childRef.current?.suppressOverlayClick?.(ms),
+      probeGateoLabelLayers: () => childRef.current?.probeGateoLabelLayers?.() ?? { error: 'no-probe' },
     };
     globeApiRef.current = api;
     return api;

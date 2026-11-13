@@ -1,18 +1,29 @@
 import { localizedMarkerPinLabel } from '../../../i18n/globeUi.js';
-import { GLOBE_MAJOR_LABEL_OVERLAP_MIN_ZOOM } from './globeZoomPolicy.js';
+import { GLOBE_MAJOR_LABEL_OVERLAP_MIN_ZOOM, TIER_STAGE_ZOOM_LEVELS } from './globeZoomPolicy.js';
 
 /** Mapbox GeoJSON layers for gateo globe markers (GPU-attached, no DOM jitter) */
 
 export const GATEO_SOURCE_ID = 'gateo-spots';
 export const GATEO_DOT_LAYER_ID = 'gateo-spots-dot';
 export const GATEO_LABEL_LAYER_ID = 'gateo-spots-label';
+export const GATEO_LABEL_HI_LAYER_ID = 'gateo-spots-label-hi';
+export const GATEO_LABEL_HI_OVERLAP_LAYER_ID = 'gateo-spots-label-hi-overlap';
 export const GATEO_ACTIVE_LAYER_ID = 'gateo-spots-active';
+
+export const GATEO_LABEL_LAYER_IDS = [
+  GATEO_LABEL_LAYER_ID,
+  GATEO_LABEL_HI_LAYER_ID,
+  GATEO_LABEL_HI_OVERLAP_LAYER_ID,
+];
 
 export const GATEO_LAYER_IDS = [
   GATEO_DOT_LAYER_ID,
-  GATEO_LABEL_LAYER_ID,
+  ...GATEO_LABEL_LAYER_IDS,
   GATEO_ACTIVE_LAYER_ID
 ];
+
+/** Below tier-2: strict collision. At tier-2+: split strict vs overlap-eligible majors. */
+export const GLOBE_LABEL_LAYER_LOW_MAX_ZOOM = TIER_STAGE_ZOOM_LEVELS.tier2 - 0.01;
 
 const CATEGORY_COLORS = {
   paradise: '#67d6ff',
@@ -27,19 +38,49 @@ const CATEGORY_COLORS = {
 const IS_ACTIVE = ['==', ['to-number', ['get', 'isActive']], 1];
 const IS_MAJOR = ['==', ['get', 'type'], 'major'];
 const SHOW_DOT = ['!=', ['get', 'type'], 'major'];
-
-const MAJOR_LABEL_TEXT_ALLOW_OVERLAP = [
-  'case',
-  IS_MAJOR,
-  ['step', ['zoom'], false, GLOBE_MAJOR_LABEL_OVERLAP_MIN_ZOOM, true],
-  false,
-];
+const LABEL_OVERLAP_ELIGIBLE = ['==', ['to-number', ['get', 'labelOverlapEligible']], 1];
+const LABEL_NOT_OVERLAP_ELIGIBLE = ['!=', ['to-number', ['get', 'labelOverlapEligible']], 1];
 
 const DOT_RADIUS = ['interpolate', ['linear'], ['zoom'], 1, 3, 3, 5, 6, 7];
 
 const LABEL_TEXT_SIZE = ['interpolate', ['linear'], ['zoom'], 1, 10, 3, 11, 5, 12, 8, 13];
 
 const ACTIVE_RING_RADIUS = ['interpolate', ['linear'], ['zoom'], 1, 10, 3, 14, 6, 18];
+
+const LABEL_LAYOUT_CORE = {
+  'text-field': ['get', 'name'],
+  'text-font': ['DIN Pro Medium', 'Arial Unicode MS Regular'],
+  'text-size': LABEL_TEXT_SIZE,
+  'text-offset': [
+    'case',
+    IS_MAJOR,
+    ['literal', [0, 0]],
+    ['literal', [0.9, 0]]
+  ],
+  'text-anchor': [
+    'case',
+    IS_MAJOR,
+    'center',
+    'left'
+  ],
+  'text-max-width': 8,
+  'text-ignore-placement': false,
+  'symbol-sort-key': ['-', 4, ['to-number', ['get', 'tier']]]
+};
+
+const LABEL_PAINT = {
+  'text-color': [
+    'case',
+    IS_ACTIVE,
+    '#fecaca',
+    IS_MAJOR,
+    ['get', 'color'],
+    '#e6edf7'
+  ],
+  'text-halo-color': 'rgba(2,6,23,0.95)',
+  'text-halo-width': 1.2,
+  'text-opacity': ['to-number', ['get', 'opacity']]
+};
 
 const truncate = (str, length = 12) => {
   if (!str) return '';
@@ -80,6 +121,7 @@ export function markerToFeature(marker, index = 0, locale = 'ko') {
       isBookmarked: marker.isBookmarked ? 1 : 0,
       hasChat: marker.hasChat ? 1 : 0,
       hiddenClusterCount: Number(marker.hiddenClusterCount) || 0,
+      labelOverlapEligible: marker.labelOverlapEligible ? 1 : 0,
       opacity: marker.isGhost ? 0.55 : 1
     }
   };
@@ -114,8 +156,6 @@ function mapIsCameraMoving(map) {
 export function gateoMarkerLayersReady(map) {
   if (!isGlobeMapStyleReady(map)) return false;
   try {
-    // getLayer throws "Style is not done loading" while the style is mid-load
-    // (e.g. 2s reveal fallback before idle/styledata).
     return GATEO_LAYER_IDS.every((id) => Boolean(map.getLayer(id)));
   } catch {
     return false;
@@ -150,12 +190,26 @@ export function setGateoMarkerLayerVisibility(map, visible) {
 /** Symbol placement races flyTo during flight cinema — hide text labels only. */
 export function setGateoMarkerLabelVisibility(map, visible) {
   if (!isGlobeMapStyleReady(map)) return;
-  try {
-    if (!map.getLayer(GATEO_LABEL_LAYER_ID)) return;
-    map.setLayoutProperty(GATEO_LABEL_LAYER_ID, 'visibility', visible ? 'visible' : 'none');
-  } catch {
-    // Style may be mid-transition.
-  }
+  const visibility = visible ? 'visible' : 'none';
+  GATEO_LABEL_LAYER_IDS.forEach((layerId) => {
+    try {
+      if (!map.getLayer(layerId)) return;
+      map.setLayoutProperty(layerId, 'visibility', visibility);
+    } catch {
+      // Style may be mid-transition.
+    }
+  });
+}
+
+function syncOneLabelLayer(map, layerId, textAllowOverlap) {
+  if (!map.getLayer(layerId)) return;
+  map.setLayoutProperty(layerId, 'text-size', LABEL_TEXT_SIZE);
+  map.setLayoutProperty(layerId, 'text-font', ['DIN Pro Medium', 'Arial Unicode MS Regular']);
+  map.setLayoutProperty(layerId, 'text-offset', LABEL_LAYOUT_CORE['text-offset']);
+  map.setLayoutProperty(layerId, 'text-anchor', LABEL_LAYOUT_CORE['text-anchor']);
+  map.setLayoutProperty(layerId, 'symbol-sort-key', LABEL_LAYOUT_CORE['symbol-sort-key']);
+  map.setLayoutProperty(layerId, 'text-allow-overlap', textAllowOverlap);
+  map.setPaintProperty(layerId, 'text-color', LABEL_PAINT['text-color']);
 }
 
 /** 레이어가 이미 있을 때 스타일·필터 동기화 (테마 전환·핫리로드) */
@@ -164,37 +218,34 @@ export function syncGateoMarkerLayerStyle(map) {
 
   safeMapUpdate(map, () => {
     map.setFilter(GATEO_DOT_LAYER_ID, SHOW_DOT);
-
-    map.setLayoutProperty(GATEO_LABEL_LAYER_ID, 'text-size', LABEL_TEXT_SIZE);
-    map.setLayoutProperty(GATEO_LABEL_LAYER_ID, 'text-font', ['DIN Pro Medium', 'Arial Unicode MS Regular']);
-    map.setLayoutProperty(GATEO_LABEL_LAYER_ID, 'text-offset', [
-      'case',
-      IS_MAJOR,
-      ['literal', [0, 0]],
-      ['literal', [0.9, 0]]
-    ]);
-    map.setLayoutProperty(GATEO_LABEL_LAYER_ID, 'text-anchor', [
-      'case',
-      IS_MAJOR,
-      'center',
-      'left'
-    ]);
-    map.setLayoutProperty(GATEO_LABEL_LAYER_ID, 'symbol-sort-key', [
-      '-',
-      4,
-      ['to-number', ['get', 'tier']]
-    ]);
-    map.setLayoutProperty(GATEO_LABEL_LAYER_ID, 'text-allow-overlap', MAJOR_LABEL_TEXT_ALLOW_OVERLAP);
-
-    map.setPaintProperty(GATEO_LABEL_LAYER_ID, 'text-color', [
-      'case',
-      IS_ACTIVE,
-      '#fecaca',
-      IS_MAJOR,
-      ['get', 'color'],
-      '#e6edf7'
-    ]);
+    syncOneLabelLayer(map, GATEO_LABEL_LAYER_ID, false);
+    syncOneLabelLayer(map, GATEO_LABEL_HI_LAYER_ID, false);
+    syncOneLabelLayer(map, GATEO_LABEL_HI_OVERLAP_LAYER_ID, true);
   });
+}
+
+function addGateoLabelLayer(map, {
+  id,
+  minzoom,
+  maxzoom,
+  filter,
+  textAllowOverlap,
+  bindPointerCursor,
+}) {
+  map.addLayer({
+    id,
+    type: 'symbol',
+    source: GATEO_SOURCE_ID,
+    ...(minzoom != null ? { minzoom } : {}),
+    ...(maxzoom != null ? { maxzoom } : {}),
+    ...(filter ? { filter } : {}),
+    layout: {
+      ...LABEL_LAYOUT_CORE,
+      'text-allow-overlap': textAllowOverlap,
+    },
+    paint: LABEL_PAINT,
+  });
+  bindPointerCursor(id);
 }
 
 export function setupGateoMarkerLayers(map) {
@@ -245,51 +296,34 @@ export function setupGateoMarkerLayers(map) {
     });
     bindPointerCursor(GATEO_DOT_LAYER_ID);
 
-    map.addLayer({
+    addGateoLabelLayer(map, {
       id: GATEO_LABEL_LAYER_ID,
-      type: 'symbol',
-      source: GATEO_SOURCE_ID,
-      layout: {
-        'text-field': ['get', 'name'],
-        'text-font': ['DIN Pro Medium', 'Arial Unicode MS Regular'],
-        'text-size': LABEL_TEXT_SIZE,
-        'text-offset': [
-          'case',
-          IS_MAJOR,
-          ['literal', [0, 0]],
-          ['literal', [0.9, 0]]
-        ],
-        'text-anchor': [
-          'case',
-          IS_MAJOR,
-          'center',
-          'left'
-        ],
-        'text-max-width': 8,
-        'text-allow-overlap': MAJOR_LABEL_TEXT_ALLOW_OVERLAP,
-        'text-ignore-placement': false,
-        'symbol-sort-key': ['-', 4, ['to-number', ['get', 'tier']]]
-      },
-      paint: {
-        'text-color': [
-          'case',
-          IS_ACTIVE,
-          '#fecaca',
-          IS_MAJOR,
-          ['get', 'color'],
-          '#e6edf7'
-        ],
-        'text-halo-color': 'rgba(2,6,23,0.95)',
-        'text-halo-width': 1.2,
-        'text-opacity': ['to-number', ['get', 'opacity']]
-      }
+      maxzoom: GLOBE_LABEL_LAYER_LOW_MAX_ZOOM,
+      textAllowOverlap: false,
+      bindPointerCursor,
     });
-    bindPointerCursor(GATEO_LABEL_LAYER_ID);
+
+    addGateoLabelLayer(map, {
+      id: GATEO_LABEL_HI_LAYER_ID,
+      minzoom: GLOBE_MAJOR_LABEL_OVERLAP_MIN_ZOOM,
+      filter: LABEL_NOT_OVERLAP_ELIGIBLE,
+      textAllowOverlap: false,
+      bindPointerCursor,
+    });
+
+    addGateoLabelLayer(map, {
+      id: GATEO_LABEL_HI_OVERLAP_LAYER_ID,
+      minzoom: GLOBE_MAJOR_LABEL_OVERLAP_MIN_ZOOM,
+      filter: LABEL_OVERLAP_ELIGIBLE,
+      textAllowOverlap: true,
+      bindPointerCursor,
+    });
 
     syncGateoMarkerLayerStyle(map);
     setGateoMarkerLayerVisibility(map, false);
     return true;
-  } catch {
+  } catch (err) {
+    console.error('[gateo] setupGateoMarkerLayers failed', err);
     return false;
   }
 }
@@ -376,6 +410,8 @@ export function scheduleUpdateGateoMarkerSource(map, geojson) {
 
 const LAYER_HIT_PRIORITY = {
   [GATEO_LABEL_LAYER_ID]: 0,
+  [GATEO_LABEL_HI_LAYER_ID]: 0,
+  [GATEO_LABEL_HI_OVERLAP_LAYER_ID]: 0,
   [GATEO_DOT_LAYER_ID]: 1,
   [GATEO_ACTIVE_LAYER_ID]: 2
 };
@@ -416,7 +452,7 @@ function markerHitFromEntry(entry) {
 export function findGateoMarkerAtPoint(map, point, clickLngLat = null, thresholdPx = 32) {
   if (!map || !point) return null;
 
-  const layers = [GATEO_LABEL_LAYER_ID, GATEO_DOT_LAYER_ID, GATEO_ACTIVE_LAYER_ID]
+  const layers = [...GATEO_LABEL_LAYER_IDS, GATEO_DOT_LAYER_ID, GATEO_ACTIVE_LAYER_ID]
     .filter((id) => map.getLayer(id));
   if (layers.length === 0) return null;
 

@@ -61,7 +61,9 @@ import {
   markGlobeCameraBusy,
   clearGlobeCameraBusy,
   isGlobeCameraBusy,
+  GATEO_LABEL_LAYER_IDS,
 } from '../lib/globeMarkerLayers';
+import { annotateLabelOverlapEligibility } from '../lib/globeMarkerLabelOverlap.js';
 import { GLOBE_MODE, canEndTour, canSkipTour, isTourMode } from '../lib/globeMode';
 import { createGlobeTourEngine } from '../lib/globeTourEngine';
 import { resolveGlobeTourConfig } from '../lib/globeTourResolve';
@@ -1095,7 +1097,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       existing.clusterCount = (Number(existing.clusterCount) || 1) + 1;
     });
 
-    return keptMarkers;
+    return annotateLabelOverlapEligibility(keptMarkers);
   }, [travelSpots, allTravelSpots, savedTrips, tempPinsData, activePinId, mapZoom]);
 
   const markerGeoJSON = useMemo(() => {
@@ -2339,6 +2341,27 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     };
   }, []);
 
+  const probeGateoLabelLayers = useCallback(() => {
+    const map = mapRef.current?.getMap();
+    if (!map || map._removed) return { error: 'no-map' };
+    try {
+      const layers = Object.fromEntries(
+        GATEO_LABEL_LAYER_IDS.map((id) => [id, Boolean(map.getLayer(id))]),
+      );
+      const activeLayers = GATEO_LABEL_LAYER_IDS.filter((id) => map.getLayer(id));
+      const feats = map.queryRenderedFeatures(undefined, { layers: activeLayers });
+      const slugs = [...new Set(feats.map((f) => f.properties?.slug).filter(Boolean))];
+      return {
+        zoom: map.getZoom(),
+        layers,
+        labelCount: feats.length,
+        slugs,
+      };
+    } catch (err) {
+      return { error: String(err?.message || err) };
+    }
+  }, []);
+
   useImperativeHandle(ref, () => ({
     pauseRotation: () => {
       autoRotateRef.current = false;
@@ -2437,7 +2460,8 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     whenGlobeFocusReady,
     getGlobeMode: () => tourEngineRef.current?.getMode?.() ?? globeMode,
     suppressOverlayClick,
-  }), [addRipple, clearImmerseState, clearRegionFocus, closeFlightCinema, endTour, ensureInteractionReady, exitImmerse, flyToAndPin, flyToRegion, globeMode, immerseToPin, isGlobeFocusReady, isStyleTransitioning, mapReady, pauseRender, pivotTourExplore, resetAndApplyPlaceLabelVisibility, skipTour, startFlightCinema, startTour, suppressOverlayClick, tryRevealGlobeOverlays, whenGlobeFocusReady]);
+    probeGateoLabelLayers,
+  }), [addRipple, clearImmerseState, clearRegionFocus, closeFlightCinema, endTour, ensureInteractionReady, exitImmerse, flyToAndPin, flyToRegion, globeMode, immerseToPin, isGlobeFocusReady, isStyleTransitioning, mapReady, pauseRender, pivotTourExplore, probeGateoLabelLayers, resetAndApplyPlaceLabelVisibility, skipTour, startFlightCinema, startTour, suppressOverlayClick, tryRevealGlobeOverlays, whenGlobeFocusReady]);
 
   useEffect(() => {
     highlightCategoryRef.current = highlightCategory;

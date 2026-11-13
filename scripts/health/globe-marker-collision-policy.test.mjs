@@ -8,6 +8,7 @@ import {
   getMajorMergeThreshold,
   getMarkerCollisionThreshold,
 } from '../../src/pages/Home/lib/globeZoomPolicy.js';
+import { annotateLabelOverlapEligibility } from '../../src/pages/Home/lib/globeMarkerLabelOverlap.js';
 
 const normalizeLngDelta = (a, b) => {
   const diff = Math.abs(a - b) % 360;
@@ -54,6 +55,16 @@ test('khao-lak merges into phuket cluster below tier-2 zoom', () => {
     phuketCluster.items.some((s) => s.slug === 'khao-lak'),
     'khao-lak hidden in phuket merge below tier-2 zoom',
   );
+});
+
+test('phuket and khao-lak are label overlap-eligible when separate at tier-2', () => {
+  const phuket = TRAVEL_SPOTS.find((s) => s.slug === 'phuket');
+  const khao = TRAVEL_SPOTS.find((s) => s.slug === 'khao-lak');
+  const out = annotateLabelOverlapEligibility([
+    { ...phuket, type: 'major' },
+    { ...khao, type: 'major' },
+  ]);
+  assert.ok(out.every((m) => m.labelOverlapEligible));
 });
 
 test('khao-lak and phuket stay separate from tier-2 zoom upward', () => {
