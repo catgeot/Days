@@ -20,6 +20,9 @@ export const TIER_STAGE_ZOOM_LEVELS = {
 
 export const HIGH_ZOOM_FULL_REVEAL = 3.0;
 
+/** Gateo major pin labels may overlap once tier-2 destinations are eligible (Mapbox symbol collision). */
+export const GLOBE_MAJOR_LABEL_OVERLAP_MIN_ZOOM = TIER_STAGE_ZOOM_LEVELS.tier2;
+
 /** denseRegion 없는 희소·섬 지역은 passesGlobeTierPolicy()로 tier 필터 생략 */
 
 export const GLOBE_ZOOM_POLICY = {
@@ -50,13 +53,13 @@ export const getMaxTierForZoom = (zoom) => {
 export const getMajorMergeThreshold = (zoom) => {
   if (zoom >= HIGH_ZOOM_FULL_REVEAL) return 0.12;
   if (zoom < 1.7) return 1.75;
-  if (zoom < 2.5) return 1.1;
+  if (zoom < TIER_STAGE_ZOOM_LEVELS.tier2) return 1.1;
   return 0.55;
 };
 
 export const getMarkerCollisionThreshold = (zoom) => {
   if (zoom >= HIGH_ZOOM_FULL_REVEAL) return 0.06;
   if (zoom < 1.7) return 1.2;
-  if (zoom < 2.5) return 0.82;
+  if (zoom < TIER_STAGE_ZOOM_LEVELS.tier2) return 0.82;
   return 0.42;
 };

@@ -1,4 +1,5 @@
 import { localizedMarkerPinLabel } from '../../../i18n/globeUi.js';
+import { GLOBE_MAJOR_LABEL_OVERLAP_MIN_ZOOM } from './globeZoomPolicy.js';
 
 /** Mapbox GeoJSON layers for gateo globe markers (GPU-attached, no DOM jitter) */
 
@@ -26,6 +27,13 @@ const CATEGORY_COLORS = {
 const IS_ACTIVE = ['==', ['to-number', ['get', 'isActive']], 1];
 const IS_MAJOR = ['==', ['get', 'type'], 'major'];
 const SHOW_DOT = ['!=', ['get', 'type'], 'major'];
+
+const MAJOR_LABEL_TEXT_ALLOW_OVERLAP = [
+  'case',
+  IS_MAJOR,
+  ['step', ['zoom'], false, GLOBE_MAJOR_LABEL_OVERLAP_MIN_ZOOM, true],
+  false,
+];
 
 const DOT_RADIUS = ['interpolate', ['linear'], ['zoom'], 1, 3, 3, 5, 6, 7];
 
@@ -176,6 +184,7 @@ export function syncGateoMarkerLayerStyle(map) {
       4,
       ['to-number', ['get', 'tier']]
     ]);
+    map.setLayoutProperty(GATEO_LABEL_LAYER_ID, 'text-allow-overlap', MAJOR_LABEL_TEXT_ALLOW_OVERLAP);
 
     map.setPaintProperty(GATEO_LABEL_LAYER_ID, 'text-color', [
       'case',
@@ -257,7 +266,7 @@ export function setupGateoMarkerLayers(map) {
           'left'
         ],
         'text-max-width': 8,
-        'text-allow-overlap': false,
+        'text-allow-overlap': MAJOR_LABEL_TEXT_ALLOW_OVERLAP,
         'text-ignore-placement': false,
         'symbol-sort-key': ['-', 4, ['to-number', ['get', 'tier']]]
       },
