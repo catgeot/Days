@@ -2,10 +2,10 @@ import { supabase } from '../../../shared/api/supabase.js';
 import {
   isPlaceChatIntroKeyAccepted,
   isPlaceChatIntroSummaryAccepted,
-} from './placeChatIntroLimits';
-import { apiClient } from './apiClient';
+} from './placeChatIntroLimits.js';
+import { apiClient } from './apiClient.js';
 import { isPlaceholderCountry } from '../../../utils/travelSpotResolve';
-import { MOONI_TOPIC_HINT } from './mooniQuickReplies';
+import { MOONI_TOPIC_HINT } from './mooniQuickReplies.js';
 import { i18n } from '../../../i18n/config';
 import { normalizeAppLocale } from '../../../i18n/constants';
 import { getMooniPromptBundle } from '../../../i18n/mooniPromptBundles';
@@ -431,4 +431,32 @@ export async function ensurePlaceChatIntroForLocation(locOrName, options = {}) {
 
   introEnsureInflight.set(inflightKey, promise);
   return promise;
+}
+
+/** DB·AI 호출 없이 캐시된 @en intro만 (표시용) */
+export function peekCachedPlaceChatIntroEn(location) {
+  if (!location || typeof location !== 'object') return '';
+  const stored = String(location.placeChatIntroEn || '').trim();
+  if (stored) return stored;
+
+  const keys = buildPlaceChatIntroKeys(location, 'en');
+  const placeName = getLocalizedPlaceName(location, 'en') || location.name || '';
+  for (const key of keys) {
+    const raw = loadPlaceChatIntroLocal(key, 'en');
+    if (!raw) continue;
+    const stripped = stripPlaceChatIntroForSummary(raw, placeName);
+    if (stripped) return stripped;
+  }
+  return '';
+}
+
+/** place_chat_intro hydrate 후 selectedLocation에 넣을 필드 묶음 */
+export function buildPlaceChatIntroAppliedPatch(location, summary) {
+  if (!summary) return {};
+  const placeChatIntroEn = peekCachedPlaceChatIntroEn(location);
+  return {
+    desc: summary,
+    placeChatIntroApplied: true,
+    ...(placeChatIntroEn ? { placeChatIntroEn } : {}),
+  };
 }

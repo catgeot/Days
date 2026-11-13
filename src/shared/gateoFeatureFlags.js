@@ -31,6 +31,8 @@ export const GATEO_ENV_FLAG_NAMES = {
   MOONI_SCOPED_FESTIVAL: 'VITE_GATEO_MOONI_SCOPED_FESTIVAL',
   /** Explore page v2 (step 2+). Default off. Monthly picks row is code default ON and ignores this flag. */
   EXPLORE_V2: 'VITE_GATEO_EXPLORE_V2',
+  /** SSOT 실문장 desc도 place_chat_intro로 요약 칸 표시. 기본 off. */
+  PLACE_INTRO_OVER_SSOT: 'VITE_GATEO_PLACE_INTRO_OVER_SSOT',
 };
 
 /** @param {string} name */
@@ -158,6 +160,11 @@ export function isGateoPlaceGalleryOverviewFallbackEnabled() {
 /** Explore v2 rollout. Default off; `'1'` enables preview UI. */
 export function isGateoExploreV2Enabled() {
   return readGateoEnvFlag(GATEO_ENV_FLAG_NAMES.EXPLORE_V2);
+}
+
+/** travelSpots 실문장도 무니 intro로 요약 칸 교체. 기본 off. */
+export function isGateoPlaceIntroOverSsotEnabled() {
+  return readGateoEnvFlag(GATEO_ENV_FLAG_NAMES.PLACE_INTRO_OVER_SSOT);
 }
 
 export function isGateoMooniScopedFestivalEnabled() {

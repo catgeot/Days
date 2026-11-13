@@ -62,6 +62,7 @@ import { getAddressFromCoordinates } from './lib/geocoding';
 import { resolveSessionBoundSpot } from '../../utils/resolveDestinationFromChat';
 import {
   buildMooniBoundSpotFromLocation,
+  buildPlaceChatIntroAppliedPatch,
   ensurePlaceChatIntroForLocation,
   needsPlaceChatIntroHydration,
   shouldEnsurePlaceChatIntroForLocation,
@@ -532,10 +533,13 @@ function Home() {
       ) {
         return prev;
       }
-      return {
+      if (!needsPlaceChatIntroHydration(prev)) return prev;
+      const next = {
         ...prev,
-        desc: summary,
+        ...buildPlaceChatIntroAppliedPatch(prev, summary),
       };
+      selectedLocationRef.current = next;
+      return next;
     });
   }, [setSelectedLocation]);
 
@@ -1242,8 +1246,7 @@ function Home() {
                 if (!same || !needsPlaceChatIntroHydration(prev)) return prev;
                 const next = {
                   ...prev,
-                  desc: summary,
-                  placeChatIntroApplied: true,
+                  ...buildPlaceChatIntroAppliedPatch(prev, summary),
                 };
                 selectedLocationRef.current = next;
                 return next;

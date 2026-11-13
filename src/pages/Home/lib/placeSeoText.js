@@ -1,4 +1,7 @@
 import { isSyntheticOrEmptyPlaceDesc } from './placeDescText.js';
+import { peekCachedPlaceChatIntroEn } from './placeChatIntroDisplay.js';
+import { isPlaceIntroLocked } from './placeIntroProtection.js';
+import { isGateoPlaceIntroOverSsotEnabled } from '../../../shared/gateoFeatureFlags.js';
 import { PLACE_SEO_EN_OVERRIDES } from '../../../data/placeSeoEnOverrides.js';
 import {
   getPlaceSearchQuerySuffixes,
@@ -72,6 +75,11 @@ export function getLocalizedPlaceDesc(location, locale = 'ko') {
     return koDesc;
   }
 
+  if (isGateoPlaceIntroOverSsotEnabled() && !isPlaceIntroLocked(location)) {
+    const mooniEn = peekCachedPlaceChatIntroEn(location);
+    if (mooniEn) return mooniEn;
+  }
+
   const override = slug ? PLACE_SEO_EN_OVERRIDES[slug] : null;
   if (override?.desc_en) {
     return override.desc_en.trim();
@@ -97,6 +105,11 @@ export function getPlaceOverviewDescForDisplay(location, locale = 'ko') {
 
   if (locale !== 'en') {
     return koDesc;
+  }
+
+  if (isGateoPlaceIntroOverSsotEnabled() && !isPlaceIntroLocked(location)) {
+    const mooniEn = peekCachedPlaceChatIntroEn(location);
+    if (mooniEn) return mooniEn;
   }
 
   const override = slug ? PLACE_SEO_EN_OVERRIDES[slug] : null;

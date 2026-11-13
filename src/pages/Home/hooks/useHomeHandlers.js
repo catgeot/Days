@@ -100,6 +100,7 @@ import {
   samePlaceCenter,
 } from '../lib/uiPlaceAssetQuery.js';
 import {
+  buildPlaceChatIntroAppliedPatch,
   ensurePlaceChatIntroForLocation,
   needsPlaceChatIntroHydration,
   shouldEnsurePlaceChatIntroForLocation,
@@ -561,8 +562,7 @@ export function useHomeHandlers({
         if (!needsPlaceChatIntroHydration(prev)) return prev;
         return prepareResolvedLocation({
           ...prev,
-          desc: summary,
-          placeChatIntroApplied: true,
+          ...buildPlaceChatIntroAppliedPatch(prev, summary),
         });
       });
     };
