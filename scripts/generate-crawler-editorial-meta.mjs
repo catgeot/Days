@@ -11,14 +11,16 @@ import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { LOGBOOK_EDITORIAL_SECONDARY_EN } from '../src/utils/logbookEditorial.js';
-import { getPlaceOgImageUrl } from '../src/pages/Home/lib/placeSeoOg.js';
 import {
   getLocalizedCountryName,
   getLocalizedPlaceName,
 } from '../src/components/PlaceCard/common/locationDisplay.js';
+import { DEFAULT_OG_IMAGE, getPlaceOgImageUrl } from '../src/pages/Home/lib/placeSeoOg.js';
 import { TRAVEL_SPOTS } from '../src/pages/Home/data/travelSpots.js';
+import { resolveLogbookFeedExcerpt } from '../src/utils/logbookDek.js';
+import { logbookHeroImageUrl } from '../src/utils/logbookImageSrc.js';
 
+const META_DESCRIPTION_MAX = 150;
 const SITE_ORIGIN = 'https://www.gateo.kr';
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const listFile = join(root, 'src/data/logbookEditorialPublished.json');
@@ -41,6 +43,13 @@ function buildHreflang(slug) {
   ];
 }
 
+function resolveEditorialOgImage(row, spot) {
+  const cover = logbookHeroImageUrl(row.images, { maxWidth: 1200 });
+  if (cover) return cover;
+  if (spot) return getPlaceOgImageUrl(spot);
+  return DEFAULT_OG_IMAGE;
+}
+
 const published = JSON.parse(readFileSync(listFile, 'utf8'));
 /** @type {Record<string, Record<string, object>>} */
 const meta = {};
@@ -58,47 +67,39 @@ for (const row of published) {
   const countryKo = spot ? getLocalizedCountryName(spot, 'ko') : '';
   const countryEn = spot ? getLocalizedCountryName(spot, 'en') : '';
   const headline = String(row.title || '').trim();
-  const disclosureKo = String(row.disclosure_badge || '').trim() || 'GATEO 에디터 · AI 보조 · 실제 방문기 아님';
-  const disclosureEn = `GATEO Editor · ${LOGBOOK_EDITORIAL_SECONDARY_EN}`;
-  const ogImage = spot ? getPlaceOgImageUrl(spot) : 'https://www.gateo.kr/og-default.png';
+  const description = resolveLogbookFeedExcerpt(row, META_DESCRIPTION_MAX);
+  const ogImage = resolveEditorialOgImage(row, spot);
 
-  const titleKo = countryKo ? `${headline} — ${placeNameKo}(${countryKo}) GATEO 기행문` : `${headline} — ${placeNameKo} GATEO 기행문`;
-  const titleEn = countryEn
-    ? `${headline} — ${placeNameEn} (${countryEn}) GATEO travelogue`
-    : `${headline} — ${placeNameEn} GATEO travelogue`;
+  const kwKo = [placeNameKo, headline, '기행문', '여행 블로그', 'GATEO'].filter(Boolean).join(', ');
+  const kwEn = [placeNameEn, headline, 'travelogue', 'travel blog', 'GATEO'].filter(Boolean).join(', ');
 
-  const descKo = `${disclosureKo}. ${placeNameKo} 여행 아티클 — GATEO 에디터 기행문.`;
-  const descEn = `${disclosureEn}. ${placeNameEn} travel article — GATEO editorial travelogue.`;
-
-  const kwKo = [placeNameKo, '기행문', '여행 블로그', 'GATEO', '에디터'].filter(Boolean).join(', ');
-  const kwEn = [placeNameEn, 'travelogue', 'travel blog', 'GATEO', 'editorial'].filter(Boolean).join(', ');
+  const base = {
+    title: headline,
+    description,
+    ogImage,
+    editorialSlug: slug,
+    articleTitle: headline,
+    placeName: placeNameKo,
+    countryName: countryKo,
+    placeSlug: row.place_slug || null,
+  };
 
   meta[slug] = {
     ko: {
-      title: titleKo,
-      description: descKo,
+      ...base,
       keywords: kwKo,
       canonicalUrl: buildEditorialPageUrl(slug, 'ko'),
       hreflangAlternates: buildHreflang(slug),
-      ogImage,
-      editorialSlug: slug,
-      articleTitle: headline,
-      placeName: placeNameKo,
-      countryName: countryKo,
-      placeSlug: row.place_slug || null,
     },
     en: {
-      title: titleEn,
-      description: descEn,
+      ...base,
+      title: headline,
+      description,
       keywords: kwEn,
-      canonicalUrl: buildEditorialPageUrl(slug, 'en'),
-      hreflangAlternates: buildHreflang(slug),
-      ogImage,
-      editorialSlug: slug,
-      articleTitle: headline,
       placeName: placeNameEn,
       countryName: countryEn,
-      placeSlug: row.place_slug || null,
+      canonicalUrl: buildEditorialPageUrl(slug, 'en'),
+      hreflangAlternates: buildHreflang(slug),
     },
   };
 }

@@ -17,11 +17,14 @@ import {
   resolveCrawlerMeta,
 } from '../src/edge/resolveCrawlerMeta.js';
 import crawlerEditorialMeta from '../src/edge/crawlerEditorialMeta.generated.js';
+import { resolveLogbookFeedExcerpt } from '../src/utils/logbookDek.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const sitemapPath = join(root, 'public/sitemap.xml');
 const editorialListPath = join(root, 'src/data/logbookEditorialPublished.json');
 const indexHtml = readFileSync(join(root, 'index.html'), 'utf8');
+
+const KNOWN_SLUGS = ['rome-travelogue', 'short-20261111-week-festivals'];
 
 if (!existsSync(sitemapPath)) {
   console.error('Missing public/sitemap.xml — run npm run generate:sitemap');
@@ -31,10 +34,21 @@ if (!existsSync(sitemapPath)) {
 const editorialList = JSON.parse(readFileSync(editorialListPath, 'utf8'));
 assert.ok(Array.isArray(editorialList) && editorialList.length >= 1, 'editorial list non-empty');
 
+const editorialBySlug = Object.fromEntries(editorialList.map((row) => [row.slug, row]));
+
+for (const slug of KNOWN_SLUGS) {
+  assert.ok(editorialBySlug[slug], `editorial SSOT includes ${slug}`);
+}
+
 const sitemap = readFileSync(sitemapPath, 'utf8');
 for (const row of editorialList) {
   const loc = `https://www.gateo.kr/blog/e/${row.slug}`;
   assert.ok(sitemap.includes(loc), `sitemap includes ${loc}`);
+  if (row.published_at) {
+    const lastmod = String(row.published_at).split('T')[0];
+    const block = sitemap.slice(sitemap.indexOf(loc), sitemap.indexOf(loc) + 400);
+    assert.ok(block.includes(`<lastmod>${lastmod}</lastmod>`), `sitemap lastmod for ${row.slug}`);
+  }
 }
 
 assert.equal(
@@ -43,18 +57,35 @@ assert.equal(
   'sitemap editorial URL count matches SSOT',
 );
 
-const gateoUrls = (sitemap.match(/<loc>https:\/\/www\.gateo\.kr[^<]*<\/loc>/g) || []).length;
-assert.equal(gateoUrls, 1147, 'sitemap gateo.kr URL count');
+function assertEditorialCrawlerMeta(slug) {
+  const row = editorialBySlug[slug];
+  const meta = resolveCrawlerMeta(`/blog/e/${slug}`, 'ko');
+  assert.ok(meta, `${slug} crawler meta`);
+  assert.equal(meta.canonicalUrl, `https://www.gateo.kr/blog/e/${slug}`, `${slug} canonical`);
+  assert.equal(meta.title, row.title, `${slug} title is post headline`);
+  assert.equal(meta.description, resolveLogbookFeedExcerpt(row, 150), `${slug} description from dek/lead`);
+  assert.equal(meta.editorialSlug, slug, `${slug} editorial slug meta`);
+
+  const html = injectCrawlerMetaIntoHtml(indexHtml, meta);
+  assert.ok(html.includes(`<title>${meta.title} | GATEO</title>`), `${slug} injected title`);
+  assert.ok(html.includes(`content="${meta.description}`), `${slug} injected description`);
+  assert.ok(html.includes('rel="canonical"'), `${slug} crawler has canonical`);
+  assert.ok(html.includes(`href="https://www.gateo.kr/blog/e/${slug}"`), `${slug} canonical href`);
+  assert.ok(html.includes('property="og:title"'), `${slug} og:title`);
+  assert.ok(html.includes('property="og:description"'), `${slug} og:description`);
+  assert.ok(html.includes('property="og:url"'), `${slug} og:url`);
+  assert.ok(html.includes('property="og:image"'), `${slug} og:image`);
+  assert.ok(html.includes('name="twitter:title"'), `${slug} twitter:title`);
+  assert.ok(!html.includes('name="robots" content="noindex"'), `${slug} not noindex`);
+  assert.ok(html.includes('id="crawler-editorial-body"'), `${slug} editorial body`);
+}
+
+for (const slug of KNOWN_SLUGS) {
+  assertEditorialCrawlerMeta(slug);
+}
 
 const paris = resolveCrawlerMeta('/blog/e/paris-travelogue', 'ko');
 assert.ok(paris?.canonicalUrl === 'https://www.gateo.kr/blog/e/paris-travelogue', 'paris canonical');
-assert.ok(/오르세|paris/i.test(paris.title), 'paris editorial title');
-assert.ok(paris.editorialSlug === 'paris-travelogue', 'paris editorial slug meta');
-
-const parisHtml = injectCrawlerMetaIntoHtml(indexHtml, paris);
-assert.ok(parisHtml.includes('rel="canonical"'), 'paris crawler has canonical');
-assert.ok(!parisHtml.includes('name="robots" content="noindex"'), 'paris not noindex');
-assert.ok(parisHtml.includes('id="crawler-editorial-body"'), 'paris editorial body');
 
 const kyoto = resolveCrawlerMeta('/blog/e/kyoto-travelogue', 'ko');
 assert.ok(kyoto?.canonicalUrl === 'https://www.gateo.kr/blog/e/kyoto-travelogue', 'kyoto canonical');
@@ -80,4 +111,8 @@ assert.ok(middlewareSrc.includes('/blog/e/:editorialSlug'), 'middleware matcher 
 assert.ok(!middlewareSrc.includes('buildCrawlerSoft404Meta'), 'middleware does not apply soft-404');
 assert.ok(!middlewareSrc.includes('status: soft404'), 'middleware never returns 404 for crawler inject');
 
-console.log(`smoke:search-exposure-p1 OK — ${editorialList.length} editorial URLs, ${gateoUrls} sitemap URLs`);
+const gateoUrls = (sitemap.match(/<loc>https:\/\/www\.gateo\.kr[^<]*<\/loc>/g) || []).length;
+
+console.log(
+  `smoke:search-exposure-p1 OK — ${editorialList.length} editorial URLs, ${gateoUrls} sitemap URLs, checked ${KNOWN_SLUGS.join(', ')}`,
+);

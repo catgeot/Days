@@ -26,6 +26,7 @@ import LogbookOwnerEditButton from './components/LogbookOwnerEditButton';
 import { isLogbookReportOwner } from './utils/logbookReportOwner';
 import { buildEditorialLogbookJsonLd } from './lib/logbookEditorialJsonLd';
 import SEO from '../../components/SEO';
+import { resolveLogbookFeedExcerpt } from '../../utils/logbookDek';
 import { navigateAppBack } from '../../shared/navigation/navigateAppBack';
 import AppOutlineBackButton from '../../shared/navigation/AppOutlineBackButton';
 
@@ -170,6 +171,11 @@ const PublicViewer = () => {
     return `${window.location.origin}/p/${report.id}`;
   }, [report]);
 
+  const editorialSeoDescription = useMemo(
+    () => (report && isEditorialLogbook(report) ? resolveLogbookFeedExcerpt(report, 150) : ''),
+    [report],
+  );
+
   const editorialJsonLd = useMemo(
     () => (report && isEditorialLogbook(report) ? buildEditorialLogbookJsonLd(report, pageUrl) : null),
     [report, pageUrl],
@@ -214,7 +220,7 @@ const PublicViewer = () => {
       {editorial ? (
         <SEO
           title={report.title}
-          description={report.disclosure_badge || undefined}
+          description={editorialSeoDescription || undefined}
           url={report.slug ? `/blog/e/${report.slug}` : `/p/${report.id}`}
           image={heroImageUrl}
           type="article"
