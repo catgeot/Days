@@ -18,7 +18,7 @@
 
 | | |
 |--|--|
-| **상태** | **#1 넓은 본문** · tip `688da29c` · PR [#783](https://github.com/catgeot/Days/pull/783) · 병합 전 |
+| **상태** | **#1 넓은 본문** · tip `926797b3` · PR [#783](https://github.com/catgeot/Days/pull/783) · 병합 전 |
 | **브랜치** | `cursor/scenic-body-wide-fddc` |
 | **플랜** | 별도 플랜 없음 |
 | **일지** | [`2026-11-13-project-log.md`](./2026-11-13-project-log.md) |
