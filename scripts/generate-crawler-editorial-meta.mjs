@@ -11,44 +11,14 @@ import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import {
-  getLocalizedCountryName,
-  getLocalizedPlaceName,
-} from '../src/components/PlaceCard/common/locationDisplay.js';
-import { DEFAULT_OG_IMAGE, getPlaceOgImageUrl } from '../src/pages/Home/lib/placeSeoOg.js';
 import { TRAVEL_SPOTS } from '../src/pages/Home/data/travelSpots.js';
-import { resolveLogbookFeedExcerpt } from '../src/utils/logbookDek.js';
-import { logbookHeroImageUrl } from '../src/utils/logbookImageSrc.js';
+import { buildEditorialCrawlerMetaBundle } from '../src/edge/editorialCrawlerMetaFromRow.js';
 
-const META_DESCRIPTION_MAX = 150;
-const SITE_ORIGIN = 'https://www.gateo.kr';
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const listFile = join(root, 'src/data/logbookEditorialPublished.json');
 const outFile = join(root, 'src/edge/crawlerEditorialMeta.generated.js');
 
 const spotsBySlug = Object.fromEntries(TRAVEL_SPOTS.filter((s) => s?.slug).map((s) => [s.slug, s]));
-
-function buildEditorialPageUrl(slug, locale) {
-  const path = `/blog/e/${slug}`;
-  if (locale === 'en') return `${SITE_ORIGIN}${path}?lang=en`;
-  return `${SITE_ORIGIN}${path}`;
-}
-
-function buildHreflang(slug) {
-  const path = `/blog/e/${slug}`;
-  return [
-    { hreflang: 'ko', href: `${SITE_ORIGIN}${path}` },
-    { hreflang: 'en', href: `${SITE_ORIGIN}${path}?lang=en` },
-    { hreflang: 'x-default', href: `${SITE_ORIGIN}${path}` },
-  ];
-}
-
-function resolveEditorialOgImage(row, spot) {
-  const cover = logbookHeroImageUrl(row.images, { maxWidth: 1200 });
-  if (cover) return cover;
-  if (spot) return getPlaceOgImageUrl(spot);
-  return DEFAULT_OG_IMAGE;
-}
 
 const published = JSON.parse(readFileSync(listFile, 'utf8'));
 /** @type {Record<string, Record<string, object>>} */
@@ -57,51 +27,7 @@ const meta = {};
 for (const row of published) {
   const slug = String(row.slug || '').trim();
   if (!slug) continue;
-  const spot = spotsBySlug[row.place_slug] || null;
-  const placeNameKo = spot
-    ? getLocalizedPlaceName(spot, 'ko') || spot.name
-    : String(row.place_slug || '').replace(/-/g, ' ');
-  const placeNameEn = spot
-    ? getLocalizedPlaceName(spot, 'en') || spot.name_en || spot.name
-    : placeNameKo;
-  const countryKo = spot ? getLocalizedCountryName(spot, 'ko') : '';
-  const countryEn = spot ? getLocalizedCountryName(spot, 'en') : '';
-  const headline = String(row.title || '').trim();
-  const description = resolveLogbookFeedExcerpt(row, META_DESCRIPTION_MAX);
-  const ogImage = resolveEditorialOgImage(row, spot);
-
-  const kwKo = [placeNameKo, headline, '기행문', '여행 블로그', 'GATEO'].filter(Boolean).join(', ');
-  const kwEn = [placeNameEn, headline, 'travelogue', 'travel blog', 'GATEO'].filter(Boolean).join(', ');
-
-  const base = {
-    title: headline,
-    description,
-    ogImage,
-    editorialSlug: slug,
-    articleTitle: headline,
-    placeName: placeNameKo,
-    countryName: countryKo,
-    placeSlug: row.place_slug || null,
-  };
-
-  meta[slug] = {
-    ko: {
-      ...base,
-      keywords: kwKo,
-      canonicalUrl: buildEditorialPageUrl(slug, 'ko'),
-      hreflangAlternates: buildHreflang(slug),
-    },
-    en: {
-      ...base,
-      title: headline,
-      description,
-      keywords: kwEn,
-      placeName: placeNameEn,
-      countryName: countryEn,
-      canonicalUrl: buildEditorialPageUrl(slug, 'en'),
-      hreflangAlternates: buildHreflang(slug),
-    },
-  };
+  meta[slug] = buildEditorialCrawlerMetaBundle(row, { spotsBySlug });
 }
 
 mkdirSync(dirname(outFile), { recursive: true });

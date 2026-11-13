@@ -195,7 +195,7 @@ assert(
   'index.html bangkok KO travel static link',
 );
 
-const sitemap = readFileSync(join(root, 'public/sitemap.xml'), 'utf8');
+const sitemap = readFileSync(join(root, 'public/sitemap-core.xml'), 'utf8');
 assert(
   sitemap.includes('/place/phuket/gallery') && sitemap.includes('/place/phuket/planner'),
   'sitemap includes phuket gallery and planner tab URLs',

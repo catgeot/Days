@@ -1,9 +1,16 @@
 import { isCrawlerRequest } from './src/edge/botDetect.js';
 import { injectCrawlerMetaIntoHtml } from './src/edge/injectCrawlerMeta.js';
+import { fetchPublishedEditorialIndex } from './src/edge/editorialSupabase.js';
+import { resolveEditorialCrawlerMetaLive } from './src/edge/resolveEditorialCrawlerMetaLive.js';
+import { buildSitemapBlogXml } from './src/edge/sitemapBlogXml.js';
 import { getCrawlerMetaKind, parseCrawlerPath, resolveCrawlerMeta } from './src/edge/resolveCrawlerMeta.js';
+
+const SITEMAP_BLOG_CACHE = 'public, s-maxage=300, stale-while-revalidate=600';
+const CRAWLER_LIVE_CACHE = 'public, s-maxage=300, stale-while-revalidate=600, max-age=0';
 
 export const config = {
   matcher: [
+    '/sitemap-blog.xml',
     '/',
     '/korea',
     '/korea/theme/scenic',
@@ -20,19 +27,55 @@ export const config = {
   ],
 };
 
+async function serveSitemapBlog() {
+  const rows = await fetchPublishedEditorialIndex();
+  const body = buildSitemapBlogXml(rows);
+  return new Response(body, {
+    status: 200,
+    headers: {
+      'content-type': 'application/xml; charset=utf-8',
+      'cache-control': SITEMAP_BLOG_CACHE,
+      'x-sitemap-blog': 'live',
+    },
+  });
+}
+
 export default async function middleware(request) {
+  const url = new URL(request.url);
+
+  if (url.pathname === '/sitemap-blog.xml') {
+    try {
+      return await serveSitemapBlog();
+    } catch {
+      return new Response(buildSitemapBlogXml([]), {
+        status: 200,
+        headers: {
+          'content-type': 'application/xml; charset=utf-8',
+          'cache-control': 'public, max-age=60',
+          'x-sitemap-blog': 'fallback-empty',
+        },
+      });
+    }
+  }
+
   if (!isCrawlerRequest(request)) {
     return;
   }
 
-  const url = new URL(request.url);
   const parsed = parseCrawlerPath(url.pathname);
   if (!parsed) {
     return;
   }
 
   const locale = url.searchParams.get('lang') === 'en' ? 'en' : 'ko';
-  const meta = resolveCrawlerMeta(url.pathname, locale);
+  let meta = resolveCrawlerMeta(url.pathname, locale);
+  let metaSource = meta ? 'bundle' : null;
+
+  if (!meta && parsed.kind === 'editorial-logbook') {
+    meta = await resolveEditorialCrawlerMetaLive(parsed.slug, locale);
+    metaSource = meta ? 'live' : null;
+  }
+
   if (!meta) {
     return;
   }
@@ -53,8 +96,9 @@ export default async function middleware(request) {
     status: 200,
     headers: {
       'content-type': 'text/html; charset=utf-8',
-      'cache-control': 'public, max-age=0, must-revalidate',
+      'cache-control': metaSource === 'live' ? CRAWLER_LIVE_CACHE : 'public, max-age=0, must-revalidate',
       'x-crawler-meta': kind,
+      ...(metaSource === 'live' ? { 'x-crawler-meta-source': 'live' } : {}),
     },
   });
 }

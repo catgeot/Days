@@ -39,7 +39,7 @@ function normalizePath(pathname) {
   return raw.replace(/\/+$/, '') || '/';
 }
 
-function toMetaRow(row, locale) {
+export function toCrawlerMetaRow(row, locale) {
   if (!row) return null;
   return {
     locale,
@@ -108,13 +108,13 @@ export function resolveCrawlerMeta(pathname, locale = 'ko') {
   if (!parsed) return null;
 
   if (parsed.kind === 'hub' || parsed.kind === 'explore-category') {
-    return toMetaRow(crawlerHubMeta?.[parsed.path]?.[locale], locale);
+    return toCrawlerMetaRow(crawlerHubMeta?.[parsed.path]?.[locale], locale);
   }
 
   if (parsed.kind === 'place-base') {
     const gallery = crawlerPlaceMeta?.[parsed.slug]?.gallery?.[locale];
     if (!gallery) return null;
-    return toMetaRow(
+    return toCrawlerMetaRow(
       {
         ...gallery,
         title: placeBaseTitle(gallery.placeName, locale),
@@ -133,12 +133,12 @@ export function resolveCrawlerMeta(pathname, locale = 'ko') {
 
   if (parsed.kind === 'place-tab') {
     const row = crawlerPlaceMeta?.[parsed.slug]?.[parsed.tab]?.[locale];
-    return toMetaRow(row, locale);
+    return toCrawlerMetaRow(row, locale);
   }
 
   if (parsed.kind === 'editorial-logbook') {
     const row = crawlerEditorialMeta?.[parsed.slug]?.[locale];
-    return toMetaRow(row, locale);
+    return toCrawlerMetaRow(row, locale);
   }
 
   return null;
