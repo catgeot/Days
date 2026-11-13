@@ -134,23 +134,7 @@ function generateSitemap() {
     priority: '0.85',
   });
 
-  const editorialListPath = path.join(__dirname, '../src/data/logbookEditorialPublished.json');
-  if (fs.existsSync(editorialListPath)) {
-    const editorialList = JSON.parse(fs.readFileSync(editorialListPath, 'utf8'));
-    if (Array.isArray(editorialList)) {
-      editorialList.forEach((row) => {
-        const slug = String(row?.slug || '').trim();
-        if (!slug) return;
-        const lastmod = row.published_at ? String(row.published_at).split('T')[0] : today;
-        urls.push({
-          loc: `${baseUrl}/blog/e/${slug}`,
-          lastmod,
-          changefreq: 'monthly',
-          priority: '0.75',
-        });
-      });
-    }
-  }
+  // Editorial /blog/e/* → dynamic sitemap-blog.xml (Edge middleware + Supabase)
 
   // 각 여행지 — 기본·갤러리·플래너·위키 (외부 검색 「지명+여행/갤러리/플래너/스케치」)
   const placeTabSeoRoutes = ['', '/gallery', '/planner', '/wiki'];
@@ -321,20 +305,37 @@ ${recentSpots
 }
 
 // 파일 저장
+function generateSitemapIndex(coreLastmod) {
+  const mod = coreLastmod || today;
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <sitemap>
+    <loc>${baseUrl}/sitemap-core.xml</loc>
+    <lastmod>${mod}</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>${baseUrl}/sitemap-blog.xml</loc>
+    <lastmod>${mod}</lastmod>
+  </sitemap>
+</sitemapindex>`;
+}
+
 async function main() {
   const { PLACE_SEO_EN_OVERRIDES } = await import('../src/data/placeSeoEnOverrides.js');
 
-  const sitemap = generateSitemap();
+  const sitemapCore = generateSitemap();
+  const sitemapIndex = generateSitemapIndex(today);
   const rssKo = generateRSS('ko', PLACE_SEO_EN_OVERRIDES);
   const rssEn = generateRSS('en', PLACE_SEO_EN_OVERRIDES);
 
-  fs.writeFileSync(path.join(__dirname, '../public/sitemap.xml'), sitemap, 'utf-8');
+  fs.writeFileSync(path.join(__dirname, '../public/sitemap-core.xml'), sitemapCore, 'utf-8');
+  fs.writeFileSync(path.join(__dirname, '../public/sitemap.xml'), sitemapIndex, 'utf-8');
   fs.writeFileSync(path.join(__dirname, '../public/rss.xml'), rssKo, 'utf-8');
   fs.writeFileSync(path.join(__dirname, '../public/rss-en.xml'), rssEn, 'utf-8');
 
-  const urlCount = (sitemap.match(/<url>/g) || []).length;
-  console.log('✅ Sitemap 생성 완료: public/sitemap.xml');
-  console.log(`   - 총 ${urlCount}개 URL 포함 (korea 허브 ${koreaHubRoutes.length})`);
+  const urlCount = (sitemapCore.match(/<url>/g) || []).length;
+  console.log('✅ Sitemap 생성 완료: public/sitemap.xml (index) + sitemap-core.xml');
+  console.log(`   - core ${urlCount}개 URL (korea 허브 ${koreaHubRoutes.length}); blog → /sitemap-blog.xml (live)`);
   console.log('✅ RSS 피드 생성 완료: public/rss.xml · public/rss-en.xml');
   console.log('   - 최근 50개 여행지 · gallery canonical 링크');
   console.log('');

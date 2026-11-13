@@ -20,9 +20,12 @@ if (!url || !key) {
   process.exit(1);
 }
 
+const select =
+  'slug,title,dek,content,images,disclosure_badge,published_at,place_slug,locale';
+
 const endpoint =
-  `${url}/rest/v1/reports?select=slug,title,disclosure_badge,published_at,place_slug,locale` +
-  '&is_editorial=eq.true&status=eq.published&order=published_at.desc';
+  `${url}/rest/v1/reports?select=${select}` +
+  '&is_editorial=eq.true&status=eq.published&is_deleted=eq.false&order=published_at.desc';
 
 const res = await fetch(endpoint, {
   headers: { apikey: key, Authorization: `Bearer ${key}` },

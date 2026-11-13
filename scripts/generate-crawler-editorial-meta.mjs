@@ -11,35 +11,14 @@ import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { LOGBOOK_EDITORIAL_SECONDARY_EN } from '../src/utils/logbookEditorial.js';
-import { getPlaceOgImageUrl } from '../src/pages/Home/lib/placeSeoOg.js';
-import {
-  getLocalizedCountryName,
-  getLocalizedPlaceName,
-} from '../src/components/PlaceCard/common/locationDisplay.js';
 import { TRAVEL_SPOTS } from '../src/pages/Home/data/travelSpots.js';
+import { buildEditorialCrawlerMetaBundle } from '../src/edge/editorialCrawlerMetaFromRow.js';
 
-const SITE_ORIGIN = 'https://www.gateo.kr';
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const listFile = join(root, 'src/data/logbookEditorialPublished.json');
 const outFile = join(root, 'src/edge/crawlerEditorialMeta.generated.js');
 
 const spotsBySlug = Object.fromEntries(TRAVEL_SPOTS.filter((s) => s?.slug).map((s) => [s.slug, s]));
-
-function buildEditorialPageUrl(slug, locale) {
-  const path = `/blog/e/${slug}`;
-  if (locale === 'en') return `${SITE_ORIGIN}${path}?lang=en`;
-  return `${SITE_ORIGIN}${path}`;
-}
-
-function buildHreflang(slug) {
-  const path = `/blog/e/${slug}`;
-  return [
-    { hreflang: 'ko', href: `${SITE_ORIGIN}${path}` },
-    { hreflang: 'en', href: `${SITE_ORIGIN}${path}?lang=en` },
-    { hreflang: 'x-default', href: `${SITE_ORIGIN}${path}` },
-  ];
-}
 
 const published = JSON.parse(readFileSync(listFile, 'utf8'));
 /** @type {Record<string, Record<string, object>>} */
@@ -48,59 +27,7 @@ const meta = {};
 for (const row of published) {
   const slug = String(row.slug || '').trim();
   if (!slug) continue;
-  const spot = spotsBySlug[row.place_slug] || null;
-  const placeNameKo = spot
-    ? getLocalizedPlaceName(spot, 'ko') || spot.name
-    : String(row.place_slug || '').replace(/-/g, ' ');
-  const placeNameEn = spot
-    ? getLocalizedPlaceName(spot, 'en') || spot.name_en || spot.name
-    : placeNameKo;
-  const countryKo = spot ? getLocalizedCountryName(spot, 'ko') : '';
-  const countryEn = spot ? getLocalizedCountryName(spot, 'en') : '';
-  const headline = String(row.title || '').trim();
-  const disclosureKo = String(row.disclosure_badge || '').trim() || 'GATEO 에디터 · AI 보조 · 실제 방문기 아님';
-  const disclosureEn = `GATEO Editor · ${LOGBOOK_EDITORIAL_SECONDARY_EN}`;
-  const ogImage = spot ? getPlaceOgImageUrl(spot) : 'https://www.gateo.kr/og-default.png';
-
-  const titleKo = countryKo ? `${headline} — ${placeNameKo}(${countryKo}) GATEO 기행문` : `${headline} — ${placeNameKo} GATEO 기행문`;
-  const titleEn = countryEn
-    ? `${headline} — ${placeNameEn} (${countryEn}) GATEO travelogue`
-    : `${headline} — ${placeNameEn} GATEO travelogue`;
-
-  const descKo = `${disclosureKo}. ${placeNameKo} 여행 아티클 — GATEO 에디터 기행문.`;
-  const descEn = `${disclosureEn}. ${placeNameEn} travel article — GATEO editorial travelogue.`;
-
-  const kwKo = [placeNameKo, '기행문', '여행 블로그', 'GATEO', '에디터'].filter(Boolean).join(', ');
-  const kwEn = [placeNameEn, 'travelogue', 'travel blog', 'GATEO', 'editorial'].filter(Boolean).join(', ');
-
-  meta[slug] = {
-    ko: {
-      title: titleKo,
-      description: descKo,
-      keywords: kwKo,
-      canonicalUrl: buildEditorialPageUrl(slug, 'ko'),
-      hreflangAlternates: buildHreflang(slug),
-      ogImage,
-      editorialSlug: slug,
-      articleTitle: headline,
-      placeName: placeNameKo,
-      countryName: countryKo,
-      placeSlug: row.place_slug || null,
-    },
-    en: {
-      title: titleEn,
-      description: descEn,
-      keywords: kwEn,
-      canonicalUrl: buildEditorialPageUrl(slug, 'en'),
-      hreflangAlternates: buildHreflang(slug),
-      ogImage,
-      editorialSlug: slug,
-      articleTitle: headline,
-      placeName: placeNameEn,
-      countryName: countryEn,
-      placeSlug: row.place_slug || null,
-    },
-  };
+  meta[slug] = buildEditorialCrawlerMetaBundle(row, { spotsBySlug });
 }
 
 mkdirSync(dirname(outFile), { recursive: true });

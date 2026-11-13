@@ -386,9 +386,25 @@ async function probeSitemap() {
       record(id, name, 'fail', `HTTP ${response.status}`, 'P1');
       return;
     }
-    if (!/<urlset[\s>]/i.test(xml)) {
-      record(id, name, 'fail', 'Missing <urlset> in sitemap.xml', 'P1');
+    const isIndex = /<sitemapindex[\s>]/i.test(xml);
+    const isUrlset = /<urlset[\s>]/i.test(xml);
+    if (!isIndex && !isUrlset) {
+      record(id, name, 'fail', 'Missing <urlset> or <sitemapindex> in sitemap.xml', 'P1');
       return;
+    }
+    if (isIndex) {
+      const coreRes = await fetchWithTimeout(`${siteUrl}/sitemap-core.xml`);
+      const coreXml = await coreRes.text();
+      if (!coreRes.ok || !/<urlset[\s>]/i.test(coreXml)) {
+        record(id, name, 'fail', `sitemap-core.xml HTTP ${coreRes.status}`, 'P1');
+        return;
+      }
+      const blogRes = await fetchWithTimeout(`${siteUrl}/sitemap-blog.xml`);
+      const blogXml = await blogRes.text();
+      if (!blogRes.ok || !/<urlset[\s>]/i.test(blogXml)) {
+        record(id, name, 'fail', `sitemap-blog.xml HTTP ${blogRes.status}`, 'P1');
+        return;
+      }
     }
     record(id, name, 'pass', `HTTP ${response.status}`, 'P1');
   } catch (error) {

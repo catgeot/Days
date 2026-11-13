@@ -47,6 +47,9 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Blog editorial SEO smoke
+        run: npm run smoke:search-exposure-p1
+
       - name: Festival road QA fixture absent from default prod bundle
         run: |
           if grep -rq '/qa/festival-road' dist/assets/; then
