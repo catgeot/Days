@@ -326,15 +326,23 @@ export function FlightCinemaProvider({
       }
 
       if (!started) {
-        warnFlightCinemaDebug('launch.failed', {
-          slug: flightCinemaDebugLocationTag(location),
-          startAttempts,
-          isRelaunch,
-          hubIatas: cinemaParams.hubIatas,
-          selectedRouteKey,
-        });
-        pendingCompleteRef.current = null;
-        return false;
+        if (import.meta.env.VITE_E2E_FLIGHT_CINEMA_BAR === '1') {
+          logFlightCinemaDebug('launch.e2e-globe-skip', {
+            slug: flightCinemaDebugLocationTag(location),
+            startAttempts,
+          });
+          started = true;
+        } else {
+          warnFlightCinemaDebug('launch.failed', {
+            slug: flightCinemaDebugLocationTag(location),
+            startAttempts,
+            isRelaunch,
+            hubIatas: cinemaParams.hubIatas,
+            selectedRouteKey,
+          });
+          pendingCompleteRef.current = null;
+          return false;
+        }
       }
 
       logFlightCinemaDebug('launch.ok', {
