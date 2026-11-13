@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import AppOutlineBackButton from '../../shared/navigation/AppOutlineBackButton';
@@ -961,7 +962,7 @@ export default function ThemeSpotDetailModal({
     overlayZClass === 'z-[55]' ||
     overlayZClass === 'z-55';
   const nestedChildZ = overlayElevated ? 'z-[60]' : 'z-[55]';
-  const lightboxZ = overlayElevated ? 'z-[65]' : 'z-[60]';
+  const THEME_SPOT_LIGHTBOX_Z = 'z-[80]';
 
   const restoreThemeSpotInteraction = useCallback(() => {
     const dialog = dialogRef.current;
@@ -1857,9 +1858,10 @@ export default function ThemeSpotDetailModal({
       />
       <div
         ref={dialogRef}
+        inert={lightboxOpen ? true : undefined}
         className="relative z-10 pointer-events-auto flex h-full w-full max-w-lg flex-col overflow-hidden rounded-2xl border border-stone-200 bg-white text-stone-900 shadow-2xl md:h-auto md:max-h-[90dvh] md:max-w-2xl md:rounded-3xl lg:max-w-6xl xl:max-w-7xl"
         role="dialog"
-        aria-modal="true"
+        aria-modal={lightboxOpen ? undefined : 'true'}
         aria-labelledby="korea-theme-spot-modal-title"
       >
         <div className="flex shrink-0 items-start justify-between gap-2 border-b border-stone-200/80 px-4 py-2.5 sm:gap-3 sm:px-5 sm:py-3">
@@ -2610,81 +2612,94 @@ export default function ThemeSpotDetailModal({
         />
       ) : null}
 
-      {lightboxOpen && hero ? (
-        <div
-          ref={lightboxRootRef}
-          className={`fixed inset-0 ${lightboxZ} flex items-center justify-center bg-stone-950/90 p-3 md:p-8`}
-          onClick={(e) => {
-            e.stopPropagation();
-            closeLightbox();
-          }}
-          role="presentation"
-        >
+      {lightboxOpen && hero && typeof document !== 'undefined'
+        ? createPortal(
           <div
-            data-gateo-photo-lightbox=""
-            data-gateo-photo-lightbox-focus=""
-            className="relative flex h-full w-full max-w-6xl flex-col"
-            onClick={(e) => e.stopPropagation()}
-            role="dialog"
-            aria-modal="true"
-            aria-label={t('korea.theme.spotDetail.lightboxAria')}
+            ref={lightboxRootRef}
+            data-theme-spot-lightbox=""
+            className={`fixed inset-0 ${THEME_SPOT_LIGHTBOX_Z} flex items-center justify-center touch-none pointer-events-auto bg-stone-950/90 p-3 md:p-8`}
+            onClick={(e) => {
+              e.stopPropagation();
+              closeLightbox();
+            }}
+            role="presentation"
           >
-            <div className="flex shrink-0 items-center justify-between gap-3 pb-3">
-              <p className="text-sm font-bold text-white/90 tabular-nums">
-                {galleryUrls.length > 1
-                  ? `${activeImage + 1} / ${galleryUrls.length}`
-                  : t('korea.theme.spotDetail.lightboxPhoto')}
-              </p>
-              <button
-                type="button"
-                onClick={closeLightbox}
-                aria-label={t('korea.theme.spotDetail.lightboxClose')}
-                className="flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white hover:bg-white/20"
-              >
-                <X size={20} aria-hidden="true" />
-              </button>
-            </div>
-            <div className="relative min-h-0 flex-1">
-              <div
-                className="flex h-full items-center justify-center touch-none"
-                onTouchStart={onLightboxTouchStart}
-                onTouchMove={onPinchTouchMove}
-                onTouchEnd={onLightboxTouchEnd}
-                onTouchCancel={onLightboxTouchCancel}
-              >
-                <img
-                  src={hero}
-                  alt=""
-                  draggable={false}
-                  style={lightboxTransformStyle}
-                  onError={() => markGalleryImageBroken(hero)}
-                  className="max-h-full max-w-full object-contain select-none"
-                />
+            <div
+              data-gateo-photo-lightbox=""
+              data-gateo-photo-lightbox-focus=""
+              className="relative flex h-full w-full max-w-6xl flex-col"
+              onClick={(e) => e.stopPropagation()}
+              role="dialog"
+              aria-modal="true"
+              aria-label={t('korea.theme.spotDetail.lightboxAria')}
+            >
+              <div className="flex shrink-0 items-center justify-between gap-3 pb-3">
+                <p className="text-sm font-bold text-white/90 tabular-nums">
+                  {galleryUrls.length > 1
+                    ? `${activeImage + 1} / ${galleryUrls.length}`
+                    : t('korea.theme.spotDetail.lightboxPhoto')}
+                </p>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    closeLightbox();
+                  }}
+                  aria-label={t('korea.theme.spotDetail.lightboxClose')}
+                  className="pointer-events-auto flex h-10 w-10 min-h-10 min-w-10 touch-manipulation items-center justify-center rounded-full border border-white/20 bg-white/10 text-white hover:bg-white/20"
+                >
+                  <X size={20} aria-hidden="true" />
+                </button>
               </div>
-              {galleryUrls.length > 1 ? (
-                <>
-                  <button
-                    type="button"
-                    onClick={() => stepLightbox(-1)}
-                    aria-label={t('korea.theme.spotDetail.lightboxPrev')}
-                    className="absolute left-0 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-stone-900/55 text-white hover:bg-stone-900/75 md:left-2"
-                  >
-                    <ChevronLeft size={22} aria-hidden="true" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => stepLightbox(1)}
-                    aria-label={t('korea.theme.spotDetail.lightboxNext')}
-                    className="absolute right-0 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-stone-900/55 text-white hover:bg-stone-900/75 md:right-2"
-                  >
-                    <ChevronRight size={22} aria-hidden="true" />
-                  </button>
-                </>
-              ) : null}
+              <div className="relative min-h-0 flex-1">
+                <div
+                  className="flex h-full items-center justify-center touch-none"
+                  onTouchStart={onLightboxTouchStart}
+                  onTouchMove={onPinchTouchMove}
+                  onTouchEnd={onLightboxTouchEnd}
+                  onTouchCancel={onLightboxTouchCancel}
+                >
+                  <img
+                    src={hero}
+                    alt=""
+                    draggable={false}
+                    style={lightboxTransformStyle}
+                    onError={() => markGalleryImageBroken(hero)}
+                    className="max-h-full max-w-full object-contain select-none"
+                  />
+                </div>
+                {galleryUrls.length > 1 ? (
+                  <>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        stepLightbox(-1);
+                      }}
+                      aria-label={t('korea.theme.spotDetail.lightboxPrev')}
+                      className="pointer-events-auto absolute left-0 top-1/2 flex h-11 w-11 min-h-11 min-w-11 -translate-y-1/2 touch-manipulation items-center justify-center rounded-full border border-white/20 bg-stone-900/55 text-white hover:bg-stone-900/75 md:left-2"
+                    >
+                      <ChevronLeft size={22} aria-hidden="true" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        stepLightbox(1);
+                      }}
+                      aria-label={t('korea.theme.spotDetail.lightboxNext')}
+                      className="pointer-events-auto absolute right-0 top-1/2 flex h-11 w-11 min-h-11 min-w-11 -translate-y-1/2 touch-manipulation items-center justify-center rounded-full border border-white/20 bg-stone-900/55 text-white hover:bg-stone-900/75 md:right-2"
+                    >
+                      <ChevronRight size={22} aria-hidden="true" />
+                    </button>
+                  </>
+                ) : null}
+              </div>
             </div>
-          </div>
-        </div>
-      ) : null}
+          </div>,
+          document.body,
+        )
+        : null}
 
       {videosOpen ? (
         <div
