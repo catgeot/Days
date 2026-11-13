@@ -14,6 +14,24 @@ const BRIGHT_PNG = Buffer.from(
   'base64',
 );
 
+async function assertBodyUnlocked(page) {
+  await expect
+    .poll(async () => page.evaluate(() => document.body.style.overflow), {
+      timeout: 15_000,
+    })
+    .not.toBe('hidden');
+  await expect
+    .poll(async () => page.evaluate(() => document.body.style.overflowY), {
+      timeout: 15_000,
+    })
+    .not.toBe('hidden');
+  await expect
+    .poll(async () => page.evaluate(() => document.querySelectorAll('[inert]').length), {
+      timeout: 15_000,
+    })
+    .toBe(0);
+}
+
 async function shot(page, name, viewport) {
   await page.setViewportSize({
     width: viewport.width,
@@ -108,6 +126,10 @@ for (const viewport of VIEWPORTS) {
       await expect(rootDialog).toBeVisible();
       const rootClose = rootDialog.getByRole('button', { name: /^닫기$/ });
       await expect(rootClose).toBeEnabled();
+      await rootClose.click();
+      await expect(rootDialog).toBeHidden({ timeout: 15_000 });
+      await assertBodyUnlocked(page);
+      await shot(page, '03-all-modals-closed', viewport);
     });
   });
 }
