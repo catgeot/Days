@@ -101,6 +101,8 @@ import { detectSidoCode } from '../Korea/festivalRegionTags';
 import ScenicStayStrip from './ScenicStayStrip';
 import ScenicTnaStrip from './ScenicTnaStrip';
 import ScenicNearbyCardGrid from './ScenicNearbyCardGrid.jsx';
+import ScenicNearbySectionHeader from './ScenicNearbySectionHeader.jsx';
+import { SCENIC_NEARBY_SECTION_COPY } from './scenicNearbySectionCopy.js';
 import ReadableDetailProse from '../../shared/readableDetail/ReadableDetailProse';
 import { shouldUseReadableDetailProse } from '../../shared/readableDetail/splitTourApiDetailParagraphs';
 
@@ -155,6 +157,27 @@ function CrossRailSection({ title, children }) {
       <h3 className="text-[11px] font-bold uppercase tracking-[0.14em] text-stone-500">
         {title}
       </h3>
+      {children}
+    </section>
+  );
+}
+
+function ScenicNearbyListSection({ variant, status, count = 0, children }) {
+  const { t } = useTranslation();
+  const copy = SCENIC_NEARBY_SECTION_COPY[variant];
+  if (!copy || status === 'idle' || status === 'nocoords') return null;
+  return (
+    <section
+      className="space-y-3 border-t border-stone-200 pt-5"
+      data-scenic-nearby-section=""
+      data-scenic-nearby-section-variant={variant}
+    >
+      <ScenicNearbySectionHeader
+        variant={variant}
+        title={t(copy.titleKey)}
+        description={t(copy.descriptionKey)}
+        count={count}
+      />
       {children}
     </section>
   );
@@ -2202,159 +2225,163 @@ export default function ThemeSpotDetailModal({
               </div>
             </section>
 
-            {!isApiPoiCross &&
-              nearbyFoodStatus !== 'idle' &&
-              nearbyFoodStatus !== 'nocoords' && (
-                <section className="space-y-2 border-t border-stone-200/80 pt-4">
-                  <h3 className="text-[11px] font-bold uppercase tracking-[0.14em] text-stone-500">
-                    {t('korea.theme.spotDetail.nearFood')}
-                  </h3>
-                  {nearbyFoodStatus === 'loading' && (
-                    <div className="flex items-center gap-2 text-sm text-stone-500 py-1">
-                      <Loader2 size={16} className="animate-spin" aria-hidden="true" />
-                      {t('korea.theme.spotDetail.nearFoodLoading')}
-                    </div>
-                  )}
-                  {nearbyFoodStatus === 'error' && nearbyFood.length === 0 && (
-                    <p className="text-xs text-stone-500">
-                      {t('korea.theme.spotDetail.nearFoodError')}
-                    </p>
-                  )}
-                  {nearbyFoodStatus === 'empty' && (
-                    <p className="text-xs text-stone-500">
-                      {t('korea.theme.spotDetail.nearFoodEmpty')}
-                    </p>
-                  )}
-                  {nearbyFood.length > 0 && (
-                    <ScenicNearbyCardGrid
-                      variant="food"
-                      ariaLabel={t('korea.theme.spotDetail.nearFoodAria')}
-                      items={nearbyFood.map((food) =>
-                        nearbyListCardItem(food, {
-                          meta: foodPlaceLabel(food),
-                          onActivate: () => setSelectedFood(food),
-                        }),
-                      )}
-                    />
-                  )}
-                </section>
-              )}
-
-            {!isApiPoiCross &&
-              nearbyLeportsStatus !== 'idle' &&
-              nearbyLeportsStatus !== 'nocoords' && (
-                <section className="space-y-2 border-t border-stone-200/80 pt-4">
-                  <h3 className="text-[11px] font-bold uppercase tracking-[0.14em] text-stone-500">
-                    {t('korea.theme.spotDetail.nearLeports')}
-                  </h3>
-                  {nearbyLeportsStatus === 'loading' && (
-                    <div className="flex items-center gap-2 text-sm text-stone-500 py-1">
-                      <Loader2 size={16} className="animate-spin" aria-hidden="true" />
-                      {t('korea.theme.spotDetail.nearLeportsLoading')}
-                    </div>
-                  )}
-                  {nearbyLeportsStatus === 'error' &&
-                    nearbyLeports.length === 0 && (
-                      <p className="text-xs text-stone-500">
-                        {t('korea.theme.spotDetail.nearLeportsError')}
-                      </p>
+            {!isApiPoiCross ? (
+              <ScenicNearbyListSection
+                variant="food"
+                status={nearbyFoodStatus}
+                count={nearbyFood.length}
+              >
+                {nearbyFoodStatus === 'loading' && (
+                  <div className="flex items-center gap-2 text-sm text-stone-500 py-1">
+                    <Loader2 size={16} className="animate-spin" aria-hidden="true" />
+                    {t('korea.theme.spotDetail.nearFoodLoading')}
+                  </div>
+                )}
+                {nearbyFoodStatus === 'error' && nearbyFood.length === 0 && (
+                  <p className="text-xs text-stone-500">
+                    {t('korea.theme.spotDetail.nearFoodError')}
+                  </p>
+                )}
+                {nearbyFoodStatus === 'empty' && (
+                  <p className="text-xs text-stone-500">
+                    {t('korea.theme.spotDetail.nearFoodEmpty')}
+                  </p>
+                )}
+                {nearbyFood.length > 0 && (
+                  <ScenicNearbyCardGrid
+                    variant="food"
+                    ariaLabel={t('korea.theme.spotDetail.nearFoodAria')}
+                    items={nearbyFood.map((food) =>
+                      nearbyListCardItem(food, {
+                        meta: foodPlaceLabel(food),
+                        onActivate: () => setSelectedFood(food),
+                      }),
                     )}
-                  {nearbyLeportsStatus === 'empty' && (
-                    <p className="text-xs text-stone-500">
-                      {t('korea.theme.spotDetail.nearLeportsEmpty')}
-                    </p>
-                  )}
-                  {nearbyLeports.length > 0 && (
-                    <ScenicNearbyCardGrid
-                      variant="leports"
-                      ariaLabel={t('korea.theme.spotDetail.nearLeportsAria')}
-                      items={nearbyLeports.map((row) =>
-                        nearbyListCardItem(row, {
-                          meta: foodPlaceLabel(row),
-                          onActivate: () => setSelectedLeports(row),
-                        }),
-                      )}
-                    />
-                  )}
-                </section>
-              )}
+                  />
+                )}
+              </ScenicNearbyListSection>
+            ) : null}
 
-            {!isApiPoiCross &&
-              nearbyCultureStatus !== 'idle' &&
-              nearbyCultureStatus !== 'nocoords' && (
-                <section className="space-y-2 border-t border-stone-200/80 pt-4">
-                  <h3 className="text-[11px] font-bold uppercase tracking-[0.14em] text-stone-500">
-                    {t('korea.theme.spotDetail.nearCulture')}
-                  </h3>
-                  {nearbyCultureStatus === 'loading' && (
-                    <div className="flex items-center gap-2 text-sm text-stone-500 py-1">
-                      <Loader2 size={16} className="animate-spin" aria-hidden="true" />
-                      {t('korea.theme.spotDetail.nearCultureLoading')}
-                    </div>
-                  )}
-                  {nearbyCultureStatus === 'error' &&
-                    nearbyCulture.length === 0 && (
-                      <p className="text-xs text-stone-500">
-                        {t('korea.theme.spotDetail.nearCultureError')}
-                      </p>
-                    )}
-                  {nearbyCultureStatus === 'empty' && (
+            {!isApiPoiCross ? (
+              <ScenicNearbyListSection
+                variant="leports"
+                status={nearbyLeportsStatus}
+                count={nearbyLeports.length}
+              >
+                {nearbyLeportsStatus === 'loading' && (
+                  <div className="flex items-center gap-2 text-sm text-stone-500 py-1">
+                    <Loader2 size={16} className="animate-spin" aria-hidden="true" />
+                    {t('korea.theme.spotDetail.nearLeportsLoading')}
+                  </div>
+                )}
+                {nearbyLeportsStatus === 'error' &&
+                  nearbyLeports.length === 0 && (
                     <p className="text-xs text-stone-500">
-                      {t('korea.theme.spotDetail.nearCultureEmpty')}
+                      {t('korea.theme.spotDetail.nearLeportsError')}
                     </p>
                   )}
-                  {nearbyCulture.length > 0 && (
-                    <ScenicNearbyCardGrid
-                      variant="culture"
-                      ariaLabel={t('korea.theme.spotDetail.nearCultureAria')}
-                      items={nearbyCulture.map((row) =>
-                        nearbyListCardItem(row, {
-                          meta: foodPlaceLabel(row),
-                          onActivate: () => setSelectedCulture(row),
-                        }),
-                      )}
-                    />
-                  )}
-                </section>
-              )}
+                {nearbyLeportsStatus === 'empty' && (
+                  <p className="text-xs text-stone-500">
+                    {t('korea.theme.spotDetail.nearLeportsEmpty')}
+                  </p>
+                )}
+                {nearbyLeports.length > 0 && (
+                  <ScenicNearbyCardGrid
+                    variant="leports"
+                    ariaLabel={t('korea.theme.spotDetail.nearLeportsAria')}
+                    items={nearbyLeports.map((row) =>
+                      nearbyListCardItem(row, {
+                        meta: foodPlaceLabel(row),
+                        onActivate: () => setSelectedLeports(row),
+                      }),
+                    )}
+                  />
+                )}
+              </ScenicNearbyListSection>
+            ) : null}
 
-            {isApiPoiCross &&
-              nearbyAttractionsStatus !== 'idle' &&
-              nearbyAttractionsStatus !== 'nocoords' && (
-                <section className="space-y-2 border-t border-stone-200/80 pt-4">
-                  <h3 className="text-[11px] font-bold uppercase tracking-[0.14em] text-stone-500">
-                    {t('korea.theme.spotDetail.nearAttractions')}
-                  </h3>
-                  {nearbyAttractionsStatus === 'loading' && (
-                    <div className="flex items-center gap-2 text-sm text-stone-500 py-1">
-                      <Loader2 size={16} className="animate-spin" aria-hidden="true" />
-                      {t('korea.theme.spotDetail.nearAttractionsLoading')}
-                    </div>
-                  )}
-                  {nearbyAttractionsStatus === 'error' &&
-                    nearbyAttractions.length === 0 && (
-                      <p className="text-xs text-stone-500">
-                        {t('korea.theme.spotDetail.nearAttractionsError')}
-                      </p>
-                    )}
-                  {nearbyAttractionsStatus === 'empty' &&
-                    !nearbyAttractionsHasLocalScenic && (
+            {!isApiPoiCross ? (
+              <ScenicNearbyListSection
+                variant="culture"
+                status={nearbyCultureStatus}
+                count={nearbyCulture.length}
+              >
+                {nearbyCultureStatus === 'loading' && (
+                  <div className="flex items-center gap-2 text-sm text-stone-500 py-1">
+                    <Loader2 size={16} className="animate-spin" aria-hidden="true" />
+                    {t('korea.theme.spotDetail.nearCultureLoading')}
+                  </div>
+                )}
+                {nearbyCultureStatus === 'error' &&
+                  nearbyCulture.length === 0 && (
                     <p className="text-xs text-stone-500">
-                      {t('korea.theme.spotDetail.nearAttractionsEmpty')}
+                      {t('korea.theme.spotDetail.nearCultureError')}
                     </p>
                   )}
-                  {(nearbyAttractions.length > 0 ||
-                    nearbyAttractionsHasLocalScenic) && (
-                    <div
-                      className="space-y-3"
-                      aria-label={t('korea.theme.spotDetail.nearAttractionsAria')}
-                    >
-                      {nearbyAttractionsGrouped.groups.map((group) => (
-                        <div key={group.listId} className="space-y-2">
-                          <p className="text-[11px] font-bold tracking-wide text-stone-500 break-keep">
-                            {group.title}
-                          </p>
-                          <ScenicNearbyCardGrid
+                {nearbyCultureStatus === 'empty' && (
+                  <p className="text-xs text-stone-500">
+                    {t('korea.theme.spotDetail.nearCultureEmpty')}
+                  </p>
+                )}
+                {nearbyCulture.length > 0 && (
+                  <ScenicNearbyCardGrid
+                    variant="culture"
+                    ariaLabel={t('korea.theme.spotDetail.nearCultureAria')}
+                    items={nearbyCulture.map((row) =>
+                      nearbyListCardItem(row, {
+                        meta: foodPlaceLabel(row),
+                        onActivate: () => setSelectedCulture(row),
+                      }),
+                    )}
+                  />
+                )}
+              </ScenicNearbyListSection>
+            ) : null}
+
+            {isApiPoiCross ? (
+              <ScenicNearbyListSection
+                variant="attraction"
+                status={nearbyAttractionsStatus}
+                count={
+                  nearbyAttractionsGrouped.groups.reduce(
+                    (sum, g) => sum + (g.items?.length || 0),
+                    0,
+                  ) + nearbyAttractionsGrouped.rest.length
+                }
+              >
+                {nearbyAttractionsStatus === 'loading' && (
+                  <div className="flex items-center gap-2 text-sm text-stone-500 py-1">
+                    <Loader2 size={16} className="animate-spin" aria-hidden="true" />
+                    {t('korea.theme.spotDetail.nearAttractionsLoading')}
+                  </div>
+                )}
+                {nearbyAttractionsStatus === 'error' &&
+                  nearbyAttractions.length === 0 && (
+                    <p className="text-xs text-stone-500">
+                      {t('korea.theme.spotDetail.nearAttractionsError')}
+                    </p>
+                  )}
+                {nearbyAttractionsStatus === 'empty' &&
+                  !nearbyAttractionsHasLocalScenic && (
+                  <p className="text-xs text-stone-500">
+                    {t('korea.theme.spotDetail.nearAttractionsEmpty')}
+                  </p>
+                )}
+                {(nearbyAttractions.length > 0 ||
+                  nearbyAttractionsHasLocalScenic) && (
+                  <div
+                    className="space-y-3"
+                    aria-label={t('korea.theme.spotDetail.nearAttractionsAria')}
+                  >
+                    {nearbyAttractionsGrouped.groups.map((group) => (
+                      <div key={group.listId} className="space-y-2">
+                        <ScenicNearbySectionHeader
+                          variant="attraction"
+                          title={group.title}
+                          count={group.items?.length || 0}
+                          compact
+                        />
+                        <ScenicNearbyCardGrid
                             variant="attraction"
                             items={group.items.map((attr) => {
                               const rankBlurb = String(attr?.rankBlurb || '').trim();
@@ -2398,55 +2425,54 @@ export default function ThemeSpotDetailModal({
                       ) : null}
                     </div>
                   )}
-                </section>
-              )}
+              </ScenicNearbyListSection>
+            ) : null}
 
-            {!isApiPoiCross &&
-              nearbyFestivalsStatus !== 'idle' &&
-              nearbyFestivalsStatus !== 'nocoords' && (
-                <section className="space-y-2 border-t border-stone-200/80 pt-4">
-                  <h3 className="text-[11px] font-bold uppercase tracking-[0.14em] text-stone-500">
-                    {t('korea.theme.spotDetail.nearFestivals')}
-                  </h3>
-                  {nearbyFestivalsStatus === 'loading' && (
-                    <div className="flex items-center gap-2 text-sm text-stone-500 py-1">
-                      <Loader2 size={16} className="animate-spin" aria-hidden="true" />
-                      {t('korea.theme.spotDetail.nearFestivalsLoading')}
-                    </div>
-                  )}
-                  {nearbyFestivalsStatus === 'error' && nearbyFestivals.length === 0 && (
-                    <p className="text-xs text-stone-500">
-                      {t('korea.theme.spotDetail.nearFestivalsError')}
-                    </p>
-                  )}
-                  {nearbyFestivalsStatus === 'empty' && (
-                    <p className="text-xs text-stone-500">
-                      {t('korea.theme.spotDetail.nearFestivalsEmpty')}
-                    </p>
-                  )}
-                  {nearbyFestivals.length > 0 && (
-                    <ScenicNearbyCardGrid
-                      variant="festival"
-                      ariaLabel={t('korea.theme.spotDetail.nearFestivalsAria')}
-                      items={nearbyFestivals.map((fest) => {
-                        const when = formatFestivalDetailDateRange(
-                          fest.eventStartDate,
-                          fest.eventEndDate,
-                          undefined,
-                          locale,
-                        );
-                        const place = String(fest.locality || fest.region || '').trim();
-                        return nearbyListCardItem(fest, {
-                          title: fest.title || fest.name,
-                          meta: [place, when].filter(Boolean).join(' · '),
-                          onActivate: () => openFestival(fest),
-                          textProps: koText,
-                        });
-                      })}
-                    />
-                  )}
-                </section>
-              )}
+            {!isApiPoiCross ? (
+              <ScenicNearbyListSection
+                variant="festival"
+                status={nearbyFestivalsStatus}
+                count={nearbyFestivals.length}
+              >
+                {nearbyFestivalsStatus === 'loading' && (
+                  <div className="flex items-center gap-2 text-sm text-stone-500 py-1">
+                    <Loader2 size={16} className="animate-spin" aria-hidden="true" />
+                    {t('korea.theme.spotDetail.nearFestivalsLoading')}
+                  </div>
+                )}
+                {nearbyFestivalsStatus === 'error' && nearbyFestivals.length === 0 && (
+                  <p className="text-xs text-stone-500">
+                    {t('korea.theme.spotDetail.nearFestivalsError')}
+                  </p>
+                )}
+                {nearbyFestivalsStatus === 'empty' && (
+                  <p className="text-xs text-stone-500">
+                    {t('korea.theme.spotDetail.nearFestivalsEmpty')}
+                  </p>
+                )}
+                {nearbyFestivals.length > 0 && (
+                  <ScenicNearbyCardGrid
+                    variant="festival"
+                    ariaLabel={t('korea.theme.spotDetail.nearFestivalsAria')}
+                    items={nearbyFestivals.map((fest) => {
+                      const when = formatFestivalDetailDateRange(
+                        fest.eventStartDate,
+                        fest.eventEndDate,
+                        undefined,
+                        locale,
+                      );
+                      const place = String(fest.locality || fest.region || '').trim();
+                      return nearbyListCardItem(fest, {
+                        title: fest.title || fest.name,
+                        meta: [place, when].filter(Boolean).join(' · '),
+                        onActivate: () => openFestival(fest),
+                        textProps: koText,
+                      });
+                    })}
+                  />
+                )}
+              </ScenicNearbyListSection>
+            ) : null}
 
             <ThemeSpotCrossRail
               spot={spot}

@@ -88,7 +88,26 @@ assert(!modalSrc.includes('장소 카드 보기'), 'modal does not link to place
 assert(!modalSrc.includes('setPlaceReturnTo'), 'modal does not set place returnTo');
 assert(modalSrc.includes('Escape'), 'modal Esc close');
 assert(modalSrc.includes('fetchNearbyFestivals'), 'modal loads nearby festivals');
-assert(modalSrc.includes("t('korea.theme.spotDetail.nearFestivals')"), 'modal has nearby festivals section');
+assert(modalSrc.includes('ScenicNearbySectionHeader'), 'modal uses prominent nearby section headers');
+assert(modalSrc.includes('ScenicNearbyListSection'), 'modal wraps nearby lists with section chrome');
+const nearbyHeaderSrc = readFileSync(
+  join(root, 'src/pages/KoreaTheme/ScenicNearbySectionHeader.jsx'),
+  'utf8',
+);
+assert(
+  nearbyHeaderSrc.includes('data-scenic-nearby-section-heading'),
+  'nearby section headers marked for QA',
+);
+const nearbyCopySrc = readFileSync(
+  join(root, 'src/pages/KoreaTheme/scenicNearbySectionCopy.js'),
+  'utf8',
+);
+assert(
+  nearbyCopySrc.includes("nearFestivals") &&
+    nearbyCopySrc.includes("nearLeports") &&
+    nearbyCopySrc.includes("nearCulture"),
+  'nearby section copy lists all scenic categories',
+);
 assert(modalSrc.includes('resolveThemeCrossLinks'), 'modal wires cross-links matcher');
 assert(modalSrc.includes('ScenicStayStrip'), 'modal renders ScenicStayStrip like festival stay');
 assert(modalSrc.includes('hideStayStrip={isApiPoiCross}'), 'nested POI modals hide stay strip');
