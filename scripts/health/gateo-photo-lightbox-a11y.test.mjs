@@ -39,6 +39,11 @@ test('overlay parents consume lightbox escape flag', () => {
   assert.match(theme, /consumeGateoPhotoLightboxEscapeHandled/);
 });
 
+test('theme spot modal portals lightbox to document body', () => {
+  const theme = readFileSync(join(root, 'src/pages/KoreaTheme/ThemeSpotDetailModal.jsx'), 'utf8');
+  assert.match(theme, /createPortal\([\s\S]*data-theme-spot-lightbox[\s\S]*document\.body/);
+});
+
 test('layer stack respects registration order', () => {
   registerGateoPhotoLightboxLayer('a');
   registerGateoPhotoLightboxLayer('b');
