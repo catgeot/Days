@@ -26,4 +26,6 @@ export const KHAO_LAK_SOURCE_EN = {
   '태국 정부홍보국': 'Thailand Government Public Relations Department',
   '푸켓 국제공항 교통 안내': 'Phuket International Airport transport guide',
   'TDAC (태국 디지털 입국카드)': 'TDAC (Thailand Digital Arrival Card)',
+  '방니앙 시장': 'Bang Niang Market',
+  '국립공원청': 'Department of National Parks, Wildlife and Plant Conservation (DNP)',
 };
