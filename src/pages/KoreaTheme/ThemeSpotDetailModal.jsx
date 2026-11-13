@@ -35,6 +35,7 @@ import {
 } from '../Home/lib/koreaThemeNavBack';
 import { buildMooniBoundSpotFromLocation } from '../Home/lib/placeChatIntro';
 import MooniBoundChatHost from '../Home/components/MooniBoundChatHost';
+import { useGateoBodyScrollLockEffect } from '../../shared/hooks/useGateoBodyScrollLockEffect.js';
 import { useTrustBarOverlayLockEffect } from '../../shared/hooks/useTrustBarOverlayLockEffect.js';
 import { formatFestivalDetailDateRange } from '../Korea/festivalDateFilter.js';
 import mooniChar from '../../assets/MOONI_transparent.webp';
@@ -866,6 +867,7 @@ export default function ThemeSpotDetailModal({
   onOfficialHomeNavigate,
 }) {
   useTrustBarOverlayLockEffect(Boolean(spot));
+  useGateoBodyScrollLockEffect(Boolean(spot));
   const { t } = useTranslation();
   const { locale } = useLocale();
   const isEnglish = String(locale || '').startsWith('en');
@@ -1174,11 +1176,8 @@ export default function ThemeSpotDetailModal({
       }
     };
     window.addEventListener('keydown', onKey);
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
     return () => {
       window.removeEventListener('keydown', onKey);
-      document.body.style.overflow = prev;
     };
   }, [
     onClose,
