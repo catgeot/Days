@@ -510,6 +510,14 @@ export const CLOUD_QA_SHARE_LINKS = [
     active: true,
   },
   {
+    slug: 'scenic-nearby-headings',
+    label: '명승 상세 — 주변 섹션 제목 가독성',
+    branch: 'cursor/scenic-nearby-headings-b949',
+    destination:
+      'https://days-git-cursor-scenic-nearby-headings-b949-catgeots-projects.vercel.app/korea/theme/scenic?hub=jongno&spot=cha-1351100670000',
+    active: true,
+  },
+  {
     slug: 'home-korea',
     label: '홈·축제 헤더 간소화',
     branch: 'main',

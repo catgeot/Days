@@ -73,6 +73,12 @@ test('scenic detail nearby lists render the card grid', () => {
     'utf8',
   );
   assert.match(src, /ScenicNearbyCardGrid/);
+  assert.match(src, /ScenicNearbySectionHeader/);
+  const headerSrc = readFileSync(
+    join(root, 'src/pages/KoreaTheme/ScenicNearbySectionHeader.jsx'),
+    'utf8',
+  );
+  assert.match(headerSrc, /data-scenic-nearby-section-heading/);
   for (const variant of ['food', 'leports', 'culture', 'festival', 'attraction', 'hub']) {
     assert.match(src, new RegExp(`variant="${variant}"`));
   }

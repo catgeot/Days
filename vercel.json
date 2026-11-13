@@ -10,6 +10,7 @@
       "cursor/world-events-scroll-up-be96": true,
       "cursor/scenic-body-cards-da58": true,
       "cursor/scenic-body-wide-fddc": true,
+      "cursor/scenic-nearby-headings-b949": true,
       "cursor/edge-middleware-bundle-fix-e37f": true
     }
   },
@@ -353,6 +354,11 @@
     {
       "source": "/qa/scenic-mooni",
       "destination": "https://days-git-cursor-scenic-mooni-b353-catgeots-projects.vercel.app/korea/theme/scenic?spot=gyeongbokgung",
+      "permanent": false
+    },
+    {
+      "source": "/qa/scenic-nearby-headings",
+      "destination": "https://days-git-cursor-scenic-nearby-headings-b949-catgeots-projects.vercel.app/korea/theme/scenic?hub=jongno&spot=cha-1351100670000",
       "permanent": false
     },
     {
