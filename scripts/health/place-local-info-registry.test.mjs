@@ -22,8 +22,8 @@ const giza = CAIRO_ATTRACTION_FACTS.find((card) => card.slug === 'giza-pyramids'
 const gem = CAIRO_ATTRACTION_FACTS.find((card) => card.slug === 'grand-egyptian-museum');
 const museum = CAIRO_ATTRACTION_FACTS.find((card) => card.slug === 'egyptian-museum-cairo');
 
-test('registry maps cairo and paris and keeps ko and en card data', () => {
-  assert.deepEqual(Object.keys(localInfoRegistry), ['cairo', 'paris']);
+test('registry maps cairo, paris, and khao-lak and keeps ko and en card data', () => {
+  assert.deepEqual(Object.keys(localInfoRegistry), ['cairo', 'paris', 'khao-lak']);
   assert.equal(localInfoRegistry.cairo.ko.city.slug, 'cairo');
   assert.equal(localInfoRegistry.cairo.en.city.name, 'Cairo');
   assert.equal(localInfoRegistry.cairo.ko.attractions.length, 4);
@@ -58,6 +58,8 @@ test('registry lookup keeps cairo when the rollout flag is off and renders nothi
     globalThis.__VITE_ENV__[flag] = '1';
     assert.equal(resolveVerifiedFacts('paris').slug, 'paris');
     assert.equal(resolveVerifiedFacts({ slug: 'paris', name: '파리' }).kind, 'city');
+    assert.equal(resolveVerifiedFacts('khao-lak').slug, 'khao-lak');
+    assert.equal(resolveVerifiedFacts({ slug: 'khao-lak', name: '카오락' }).kind, 'city');
     assert.equal(resolveVerifiedFacts('cairo').kind, 'city');
   } finally {
     globalThis.__VITE_ENV__[flag] = prev;

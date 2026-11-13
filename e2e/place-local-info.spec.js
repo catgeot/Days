@@ -171,6 +171,52 @@ test.describe('place card local info v2', () => {
     await expect(safety.locator('[data-fact-value]:visible')).toContainText('3차 시위');
   });
 
+  test('카오락 검색에서 현지 정보 칸과 시미란 시즌을 접어서 보여 준다', async ({ page }) => {
+    await page.goto('/place/khao-lak?lang=ko');
+    await expect(page.getByText('카오락').first()).toBeVisible({ timeout: 60_000 });
+
+    const gallery = page.locator('[data-local-info="gallery"]:visible');
+    await expect(gallery).toBeVisible();
+    await expect(gallery).toContainText('현지 정보');
+    await expect(gallery).toContainText('7개 주제');
+
+    const factsHeader = page.getByRole('button', { name: /현지 정보/ }).first();
+    await factsHeader.click();
+    const rows = page.locator('[data-local-info-row]:visible');
+    await expect(rows).toHaveCount(7);
+    await expect(page.locator('[data-local-info-row="entry"]:visible')).toContainText('입국');
+    await expect(page.locator('[data-local-info-row="airport"]:visible')).toContainText('공항→시내');
+    await expect(page.locator('[data-local-info-row="stay-area"]:visible')).toContainText('머물 지역');
+    await expect(page.locator('[data-local-info-row="itinerary"]:visible')).toContainText('1·2·3일 동선');
+    await expect(page.locator('[data-local-info-row="money-safety"]:visible')).toContainText('돈');
+    await expect(page.locator('[data-local-info-row="safety"]:visible')).toContainText('치안');
+    await expect(page.locator('[data-local-info-row="season"]:visible')).toContainText('시즌');
+
+    await page.locator('[data-local-info-row="itinerary"]:visible button').click();
+    const itineraryValue = page.locator('[data-local-info-row="itinerary"]:visible [data-fact-value]:visible');
+    await expect(itineraryValue).toContainText('낭통 해변');
+    await expect(itineraryValue).toContainText('방삭');
+    await expect(itineraryValue).toContainText('팍윕 해변');
+    await expect(itineraryValue).toContainText('방니앙 시장');
+    await expect(itineraryValue).toContainText('똔총파 폭포');
+    await expect(itineraryValue).toContainText('탑라무 선착장');
+    await expect(itineraryValue).toContainText('반남켐 쓰나미 추모공원');
+    await expect(itineraryValue).toContainText('따꾸아빠 올드타운');
+
+    await page.locator('[data-local-info-row="season"]:visible button').click();
+    const seasonValue = page.locator('[data-local-info-row="season"]:visible [data-fact-value]:visible');
+    await expect(seasonValue).toContainText('500바트');
+    await expect(seasonValue).toContainText('250바트');
+    await expect(seasonValue).toContainText('당일');
+    await expect(seasonValue).toContainText('숙박');
+
+    await openTab(page, '여행 플래너');
+    await expect(page).toHaveURL(/\/place\/khao-lak\/planner/);
+    await expect(page.getByRole('button', { name: '확인된 입국 정보' })).toBeVisible({ timeout: 30_000 });
+    await page.getByRole('tab', { name: '이동·통신' }).click();
+    await expect(page.getByRole('button', { name: '확인된 공항→시내 정보' })).toBeVisible();
+  });
+
   test('파리 치안 endsAt 이후에는 현지 정보·치안 행이 기본 접힘이다', async ({ page }) => {
     await page.addInitScript(() => {
       globalThis.__GATEO_FRESHNESS_TODAY__ = '2026-11-06';

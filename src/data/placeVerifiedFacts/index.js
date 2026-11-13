@@ -4,6 +4,10 @@ import {
   resolveVerifiedFacts as resolveCairoVerifiedFacts,
 } from './cairo.js';
 import {
+  KHAO_LAK_CITY_FACTS,
+  resolveKhaoLakVerifiedFacts,
+} from './khao-lak.js';
+import {
   PARIS_CITY_FACTS,
   resolveParisVerifiedFacts,
 } from './paris.js';
@@ -64,11 +68,22 @@ export const localInfoRegistry = {
       attractions: [],
     },
   },
+  'khao-lak': {
+    ko: {
+      city: KHAO_LAK_CITY_FACTS,
+      attractions: [],
+    },
+    en: {
+      city: cardForLocale(KHAO_LAK_CITY_FACTS, 'en'),
+      attractions: [],
+    },
+  },
 };
 
 const RESOLVERS = [
   { slug: 'cairo', pilot: true, resolve: resolveCairoVerifiedFacts },
   { slug: 'paris', pilot: false, resolve: resolveParisVerifiedFacts },
+  { slug: 'khao-lak', pilot: false, resolve: resolveKhaoLakVerifiedFacts },
 ];
 
 /**
