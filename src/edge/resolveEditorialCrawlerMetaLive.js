@@ -1,5 +1,5 @@
 import crawlerEditorialMeta from './crawlerEditorialMeta.generated.js';
-import { buildEditorialCrawlerMetaBundle } from './editorialCrawlerMetaFromRow.js';
+import { buildEditorialCrawlerMetaLiveBundle } from './editorialCrawlerMetaLive.js';
 import { fetchPublishedEditorialBySlug } from './editorialSupabase.js';
 import { toCrawlerMetaRow } from './resolveCrawlerMeta.js';
 
@@ -20,6 +20,6 @@ export async function resolveEditorialCrawlerMetaLive(slug, locale = 'ko', optio
   const row = await fetchPublishedEditorialBySlug(slug, options);
   if (!row) return null;
 
-  const bundle = buildEditorialCrawlerMetaBundle(row);
+  const bundle = buildEditorialCrawlerMetaLiveBundle(row);
   return toCrawlerMetaRow(bundle[loc], loc);
 }

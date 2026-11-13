@@ -1,4 +1,4 @@
-import { DEFAULT_OG_IMAGE, buildCrawlerGalleryJsonLd } from '../pages/Home/lib/placeSeoOg.js';
+import { DEFAULT_OG_IMAGE, buildCrawlerGalleryJsonLd } from './edgeCrawlerSeoConstants.js';
 
 const SITE_NAME = 'GATEO';
 
