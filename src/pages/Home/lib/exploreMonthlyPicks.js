@@ -37,18 +37,42 @@ export function resolveExploreCurrentMonthPickKey(now = new Date()) {
   return monthKey;
 }
 
-/** KST 15일 00:00 ~ 말일 23:59:59 */
-export function isExploreNextMonthPreviewWindowOpen(now = new Date()) {
+/**
+ * KST 기준 미리보기 시작일(월 중 day, inclusive). 일반 15일. 2026-11→12만 20일.
+ * @param {Date} [now]
+ * @param {Record<string, unknown>} [picks]
+ */
+export function exploreNextMonthPreviewMinDay(now = new Date(), picks = MONTHLY_PICKS) {
+  const { year, month, nextMonthKey } = seoulExploreCalendarParts(now);
+  if (
+    year === 2026 &&
+    month === 11 &&
+    nextMonthKey === '2026-12' &&
+    Array.isArray(picks['2026-12'])
+  ) {
+    return 20;
+  }
+  return 15;
+}
+
+/** KST minDay 00:00 ~ 말일 23:59:59 */
+export function isExploreNextMonthPreviewWindowOpen(
+  now = new Date(),
+  picks = MONTHLY_PICKS,
+) {
   const { day } = seoulExploreCalendarParts(now);
-  return day >= 15;
+  return day >= exploreNextMonthPreviewMinDay(now, picks);
 }
 
 /**
  * @param {Date} [now]
  * @returns {string | null} next month YYYY-MM when preview window is open
  */
-export function resolveExploreNextMonthPreviewPickKey(now = new Date()) {
-  if (!isExploreNextMonthPreviewWindowOpen(now)) return null;
+export function resolveExploreNextMonthPreviewPickKey(
+  now = new Date(),
+  picks = MONTHLY_PICKS,
+) {
+  if (!isExploreNextMonthPreviewWindowOpen(now, picks)) return null;
   return seoulExploreCalendarParts(now).nextMonthKey;
 }
 
@@ -58,7 +82,7 @@ export function resolveExploreNextMonthPreviewPickKey(now = new Date()) {
  */
 export function getExploreMonthlyPickSchedule(now = new Date(), picks = MONTHLY_PICKS) {
   const { monthKey, nextMonthKey } = seoulExploreCalendarParts(now);
-  const showPreview = isExploreNextMonthPreviewWindowOpen(now);
+  const showPreview = isExploreNextMonthPreviewWindowOpen(now, picks);
   const currentPickKey = resolveExploreV2MonthlyPickKey(monthKey, picks);
   const previewMonthKey = showPreview ? nextMonthKey : null;
   const previewPickKey = previewMonthKey
