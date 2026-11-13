@@ -1,6 +1,9 @@
 /** English sentences for the Cairo pilot cards. Numbers match the Korean value; unit words are English. */
 
+import { KHAO_LAK_EN_VALUES, KHAO_LAK_SOURCE_EN } from './khao-lakEn.js';
+
 const EN_VALUES = {
+  ...KHAO_LAK_EN_VALUES,
   'cairo:entry':
     'e-Visa eligibility depends on nationality. Check visa2egypt.gov.eg.\nApply on the government portal and pay by card.\nA tourist single entry is USD 25, and a multiple entry is USD 60.\nYour passport must have at least 6 months left on the arrival date. Bring a printed e-Visa, your travel itinerary, and your accommodation booking.',
   'cairo:airport':
@@ -36,6 +39,7 @@ const EN_VALUES = {
 };
 
 const SOURCE_EN = {
+  ...KHAO_LAK_SOURCE_EN,
   '카이로국제공항 교통 안내': 'Cairo International Airport transport guide',
   'EU 출입국 시스템(EES)': 'EU Entry/Exit System (EES)',
   '루브르 박물관 방문 안내': 'Louvre visit guide',
