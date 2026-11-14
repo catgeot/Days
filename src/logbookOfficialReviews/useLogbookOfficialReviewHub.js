@@ -2,6 +2,14 @@ import { useCallback, useEffect, useState } from 'react';
 import { supabase } from '../shared/api/supabase';
 import { isLogbookOfficialReviewHubActive } from '../utils/logbookReviewFilterFlag.js';
 import { fetchEditorialReviewIndex } from './editorialReviewIndex.js';
+import { LOGBOOK_REVIEW_FILTER_E2E_FIXTURE } from './logbookReviewFilterE2eFixture.js';
+
+function isLogbookReviewFilterE2eFixture() {
+  const raw =
+    import.meta.env?.VITE_GATEO_LOGBOOK_REVIEW_FILTER_E2E ??
+    globalThis.__VITE_ENV__?.VITE_GATEO_LOGBOOK_REVIEW_FILTER_E2E;
+  return String(raw || '') === '1';
+}
 
 /**
  * Loads official editorial reviews for the logbook hub card. No-op when flag is off (no network).
@@ -29,7 +37,11 @@ export function useLogbookOfficialReviewHub() {
     setIsLoading(true);
     setLoadFailed(false);
 
-    void fetchEditorialReviewIndex(supabase)
+    const loadPromise = isLogbookReviewFilterE2eFixture()
+      ? Promise.resolve(LOGBOOK_REVIEW_FILTER_E2E_FIXTURE)
+      : fetchEditorialReviewIndex(supabase);
+
+    void loadPromise
       .then((data) => {
         if (cancelled) return;
         setRows(data);

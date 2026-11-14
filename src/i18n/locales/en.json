@@ -2431,6 +2431,23 @@
     "calendar": {
       "month": "{{month}}/{{year}}"
     },
+    "officialReviewHub": {
+      "countSuffix": " reviews",
+      "loadFailed": "We couldn't load reviews.",
+      "retry": "Try again",
+      "loadMore": "Load more",
+      "imagePreparing": "Photo coming soon",
+      "photoAlt": "{{city}} review photo — {{reviewer}}",
+      "filter": {
+        "all": "All",
+        "domestic": "Korea",
+        "overseas": "Abroad",
+        "otherCities": "{{count}} more",
+        "majorAria": "Review regions",
+        "cityAria": "Review cities",
+        "otherCitiesAria": "More cities"
+      }
+    },
     "curationCard": {
       "title": "Curation for you",
       "body": "Hidden gems, practical tips, and your pick list — all in one place.",

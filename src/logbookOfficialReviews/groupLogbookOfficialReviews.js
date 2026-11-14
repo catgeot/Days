@@ -1,4 +1,5 @@
 import travelSpotsList from '../pages/Home/data/travelSpots-list.json' with { type: 'json' };
+import { shortenLogbookReviewPlaceName } from './logbookReviewPlaceLabel.js';
 
 /** 0건이면 칩에서 숨김 — travelSpots-list에 국가 없을 때 폴백 */
 export const LOGBOOK_REVIEW_FILTER_DOMESTIC_SLUGS = new Set([
@@ -23,6 +24,10 @@ export const LOGBOOK_REVIEW_FILTER_DOMESTIC_SLUGS = new Set([
   'mokpo',
   'jeju-island',
   'seogwipo',
+  'hwaseong-fortress',
+  'donggureung-royal-tombs',
+  'gochang-tidal-flat',
+  'suncheon-bay-wetland',
 ]);
 
 const spotBySlug = new Map(
@@ -62,18 +67,24 @@ export function groupLogbookOfficialReviews(rows) {
     else overseasCount += 1;
 
     const placeName = String(row?.place_name || '').trim() || slug;
+    const shortPlaceName = shortenLogbookReviewPlaceName(placeName) || placeName;
     const prev = cityMap.get(slug);
     if (prev) {
       prev.count += 1;
       if (!prev.placeName && placeName) prev.placeName = placeName;
+      if (!prev.shortPlaceName && shortPlaceName) prev.shortPlaceName = shortPlaceName;
     } else {
-      cityMap.set(slug, { slug, placeName, count: 1, domestic });
+      cityMap.set(slug, { slug, placeName, shortPlaceName, count: 1, domestic });
     }
   }
 
   const cities = [...cityMap.values()]
     .filter((c) => c.count > 0)
-    .sort((a, b) => b.count - a.count || a.placeName.localeCompare(b.placeName, 'ko'));
+    .sort(
+      (a, b) =>
+        b.count - a.count ||
+        (a.shortPlaceName || a.placeName).localeCompare(b.shortPlaceName || b.placeName, 'ko'),
+    );
 
   return {
     total: list.length,

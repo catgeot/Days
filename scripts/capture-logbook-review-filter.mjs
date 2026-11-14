@@ -12,7 +12,8 @@ import { chromium } from '@playwright/test';
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const outDir = process.env.CAPTURE_OUT_DIR || '/opt/cursor/artifacts/logbook-review-filter';
 const baseHost = process.env.CAPTURE_BASE_URL || 'https://127.0.0.1:4173';
-const flagOnPath = '/blog?tab=public&lang=ko&logbook_review_hub=1&logbook_filter=1';
+const flagOnPath =
+  '/blog?tab=public&lang=ko&logbook_review_hub=1&logbook_filter=1&region=overseas';
 const flagOffPath = '/blog?tab=public&lang=ko&logbook_review_hub=1';
 
 mkdirSync(outDir, { recursive: true });
@@ -73,8 +74,9 @@ async function captureMode(browser, width, filterOn, tag) {
   await expandHub(page);
   if (filterOn) {
     await page.getByTestId('logbook-review-filter').waitFor({ timeout: 10_000 });
-    const domestic = page.getByTestId('logbook-review-filter-major-domestic');
-    await assertScrollYStable(page, () => domestic.click());
+    await page.getByTestId('logbook-official-review-hub-card-grid').waitFor({ timeout: 10_000 });
+    const overseas = page.getByTestId('logbook-review-filter-major-overseas');
+    await assertScrollYStable(page, () => overseas.click());
     const items = await page.getByTestId('logbook-official-review-hub-item').count();
     const metrics = await page.evaluate(() => {
       const filter = document.querySelector('[data-testid="logbook-review-filter"]');

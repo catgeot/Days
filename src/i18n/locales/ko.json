@@ -2194,6 +2194,23 @@
     "calendar": {
       "month": "{{year}}년 {{month}}월"
     },
+    "officialReviewHub": {
+      "countSuffix": "편",
+      "loadFailed": "리뷰를 불러오지 못했어요",
+      "retry": "다시 시도",
+      "loadMore": "더 보기",
+      "imagePreparing": "사진 준비 중",
+      "photoAlt": "{{city}} 리뷰 사진 — {{reviewer}}",
+      "filter": {
+        "all": "전체",
+        "domestic": "국내",
+        "overseas": "해외",
+        "otherCities": "다른 도시 {{count}}",
+        "majorAria": "리뷰 대분류",
+        "cityAria": "리뷰 도시",
+        "otherCitiesAria": "그 외 도시"
+      }
+    },
     "curationCard": {
       "title": "당신만을 위한 큐레이션",
       "body": "전용 페이지에서 숨은 낙원·실용 팁·나의 추천 목록을 한곳에서 봅니다.",
