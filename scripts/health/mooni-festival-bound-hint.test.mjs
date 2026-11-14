@@ -162,6 +162,17 @@ test('bound hint — itinerary ask includes day-route coach line', async () => {
   assert.match(hint, /하루 동선·일정/);
 });
 
+test('bound hint — 운영 일정 질문은 day-route coach 없음', async () => {
+  const ask = '축제 기간 중 일정 알려줘';
+  assert.equal(isFestivalItineraryAsk(ask), false);
+  const { hint } = await resolveMooniChatKoreaFestivalHint({
+    userText: ask,
+    festivalContext: FESTIVAL_CTX_2048902,
+    locale: 'ko',
+  });
+  assert.ok(!/하루 동선·일정/.test(hint));
+});
+
 test('2048902 bound hint — 일정 질문에 매칭 없음·겹침 문구 없음', async () => {
   const { hint } = await resolveMooniChatKoreaFestivalHint({
     userText: HAEUNDAE_SCHEDULE_ASK,

@@ -201,8 +201,7 @@ const JUNK_FESTIVAL_REGION_QUERY_RE = /^(?:다른|또|비슷한|그\s*밖|비슷
  */
 export function isFestivalItineraryAsk(userText, chipId = '') {
   if (String(chipId || '') === 'festival_day') return true;
-  if (isPlanItineraryIntentText(userText)) return true;
-  return BOUND_FESTIVAL_SCHEDULE_IN_PERIOD_RE.test(String(userText || ''));
+  return isPlanItineraryIntentText(userText);
 }
 
 /**
