@@ -16,7 +16,8 @@ if (!baseHost) {
   process.exit(1);
 }
 
-const shareQuery = vercelShare ? `_vercel_share=${encodeURIComponent(vercelShare)}` : '';
+const isLocalHost = /^https?:\/\/(127\.0\.0\.1|localhost)(:\d+)?$/i.test(baseHost);
+const shareQuery = !isLocalHost && vercelShare ? `_vercel_share=${encodeURIComponent(vercelShare)}` : '';
 const flagQuery = ['tab=public', 'lang=ko', 'logbook_review_hub=1', 'logbook_filter=1', shareQuery]
   .filter(Boolean)
   .join('&');
@@ -43,8 +44,19 @@ async function waitForHubReady(page) {
 
 async function waitForCardMediaSettled(page) {
   await page.waitForFunction(
-    () =>
-      document.querySelectorAll('[data-testid="logbook-official-review-hub-card-photo-loading"]').length === 0,
+    () => {
+      const items = [...document.querySelectorAll('[data-testid="logbook-official-review-hub-item"]')];
+      if (items.length === 0) return false;
+      return items.every((item) => {
+        const loading = item.querySelector(
+          '[data-testid="logbook-official-review-hub-card-photo-loading"]',
+        );
+        const ready =
+          item.querySelector('[data-testid="logbook-official-review-hub-card-photo"]') ||
+          item.querySelector('[data-testid="logbook-official-review-hub-card-fallback"]');
+        return !loading && !!ready;
+      });
+    },
     { timeout: 45_000 },
   );
   await page.waitForTimeout(300);

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ImageIcon } from 'lucide-react';
@@ -83,8 +83,17 @@ function HubReviewCardFallback({ cityLabel, personaLabel, preparingLabel }) {
   );
 }
 
+const CARD_MEDIA_LOAD_TIMEOUT_MS = 8_000;
+
 function HubReviewCardMedia({ thumbSrc, alt, cityLabel, personaLabel, preparingLabel }) {
   const [loadState, setLoadState] = useState(() => (thumbSrc ? 'pending' : 'fail'));
+  const gradient = logbookReviewPersonaFallbackGradient(personaLabel);
+
+  useEffect(() => {
+    if (loadState !== 'pending' || !thumbSrc) return undefined;
+    const timer = setTimeout(() => setLoadState('fail'), CARD_MEDIA_LOAD_TIMEOUT_MS);
+    return () => clearTimeout(timer);
+  }, [loadState, thumbSrc]);
 
   if (!thumbSrc || loadState === 'fail') {
     return (
@@ -96,19 +105,29 @@ function HubReviewCardMedia({ thumbSrc, alt, cityLabel, personaLabel, preparingL
     );
   }
 
+  const loadingBackdrop = (
+    <div
+      className={`absolute inset-0 bg-gradient-to-br ${gradient}`}
+      aria-hidden
+      data-testid="logbook-official-review-hub-card-photo-loading"
+    />
+  );
+
   if (loadState === 'pending') {
     return (
       <>
+        {loadingBackdrop}
         <img
           src={thumbSrc}
           alt=""
           aria-hidden
-          className="hidden size-0 overflow-hidden opacity-0 pointer-events-none"
+          className="absolute inset-0 h-full w-full object-cover object-center opacity-0"
           decoding="async"
+          loading="eager"
+          fetchPriority="high"
           onLoad={() => setLoadState('ok')}
           onError={() => setLoadState('fail')}
         />
-        <div className="absolute inset-0 bg-gray-100" aria-hidden data-testid="logbook-official-review-hub-card-photo-loading" />
       </>
     );
   }
@@ -119,6 +138,7 @@ function HubReviewCardMedia({ thumbSrc, alt, cityLabel, personaLabel, preparingL
       alt={alt}
       className="absolute inset-0 h-full w-full object-cover object-center"
       decoding="async"
+      loading="eager"
       data-testid="logbook-official-review-hub-card-photo"
       onError={() => setLoadState('fail')}
     />
@@ -162,9 +182,10 @@ export default function LogbookOfficialReviewCardGrid({ reviews }) {
               data-hub-place-slug={slug || undefined}
               data-review-id={review.id}
               data-hub-has-thumb={thumbSrc ? 'true' : 'false'}
+              data-hub-thumb-src={thumbSrc || undefined}
               data-hub-persona-badge={badgeLabel}
             >
-              <div className="relative aspect-[4/3] w-full overflow-hidden bg-gray-100">
+              <div className="relative aspect-[4/3] w-full overflow-hidden bg-gray-50">
                 <HubReviewCardMedia
                   thumbSrc={thumbSrc}
                   alt={photoAlt}
@@ -187,7 +208,7 @@ export default function LogbookOfficialReviewCardGrid({ reviews }) {
                 </div>
                 {title ? (
                   <p
-                    className="text-sm font-medium text-gray-800 line-clamp-2 break-keep"
+                    className="min-w-0 text-sm font-medium leading-snug text-gray-800 line-clamp-2 break-keep"
                     data-testid="logbook-official-review-hub-card-title"
                   >
                     {title}
@@ -195,7 +216,7 @@ export default function LogbookOfficialReviewCardGrid({ reviews }) {
                 ) : null}
                 {summary ? (
                   <p
-                    className="hidden text-xs text-gray-500 line-clamp-1 break-keep xl:block"
+                    className="min-w-0 max-xl:hidden text-xs leading-snug text-gray-500 line-clamp-1 break-keep"
                     data-testid="logbook-official-review-hub-card-summary"
                   >
                     {summary}

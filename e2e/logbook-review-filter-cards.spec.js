@@ -11,6 +11,20 @@ async function openHub(page, path = HUB_PATH) {
   await page.getByTestId('logbook-review-filter').waitFor({ timeout: 10_000 });
 }
 
+async function assertTextLineCount(page, testId, maxLines, tolerance = 0.35) {
+  const metrics = await page.evaluate((id) => {
+    const el = document.querySelector(`[data-testid="${id}"]`);
+    if (!el) return null;
+    const style = getComputedStyle(el);
+    const lineHeight = parseFloat(style.lineHeight);
+    const height = el.getBoundingClientRect().height;
+    if (!Number.isFinite(lineHeight) || lineHeight <= 0) return null;
+    return { height, lineHeight, lines: height / lineHeight };
+  }, testId);
+  expect(metrics).toBeTruthy();
+  expect(metrics.lines).toBeLessThanOrEqual(maxLines + tolerance);
+}
+
 async function assertCityRowSingleLine(page, { requireOverflow = false } = {}) {
   const metrics = await page.evaluate(() => {
     const row = document.querySelector('[data-testid="logbook-review-filter-city-row"]');
@@ -79,7 +93,9 @@ test.describe('LogBook review filter cards @mocked', () => {
     const summary = page.getByTestId('logbook-official-review-hub-card-summary').first();
     if ((await summary.count()) > 0) {
       await expect(summary).toBeVisible();
+      await assertTextLineCount(page, 'logbook-official-review-hub-card-summary', 1);
     }
+    await assertTextLineCount(page, 'logbook-official-review-hub-card-title', 2);
     await assertCityRowSingleLine(page);
   });
 
