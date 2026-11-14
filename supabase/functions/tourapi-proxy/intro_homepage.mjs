@@ -1,5 +1,10 @@
 /** TourAPI proxy — intro attach + homepage policy (TOURAPI_PROXY_INTRO_HOMEPAGE=on). */
 
+import {
+  FESTIVAL_HOMEPAGE_OVERRIDES,
+  preferHttpsFestivalHomepage,
+} from "../../../src/pages/Korea/lib/festivalPublicHomepage.js";
+
 export const DETAIL_INTRO_DAILY_CAP = 250;
 
 /** Max live detailIntro calls per festivalWindow response (cold-cache safety). */
@@ -21,14 +26,7 @@ export function isIntroHomepageEnabled(envValue = undefined) {
 }
 
 /** @type {Record<string, { url: string, verifiedAt: string, source: string }>} */
-export const HOMEPAGE_OVERRIDES = {
-  637693: {
-    url:
-      "https://www.changwon.go.kr/cwportal/depart/11063/14383/14384.web",
-    verifiedAt: "2026-10-18",
-    source: "manual: Cos verified 200, 제26회, 2026.10.31~11.8",
-  },
-};
+export const HOMEPAGE_OVERRIDES = FESTIVAL_HOMEPAGE_OVERRIDES;
 
 export function kstYmd(now = new Date()) {
   return new Intl.DateTimeFormat("en-CA", {
@@ -156,7 +154,7 @@ export function resolvePublicHomepage(contentId, rawHomepage) {
     const url = homepageUrlFromCandidate(candidate);
     if (!url) continue;
     if (isGoKrPortalFrontPage(url)) continue;
-    return formatResolvedHomepageUrl(candidate, url);
+    return preferHttpsFestivalHomepage(formatResolvedHomepageUrl(candidate, url));
   }
   return null;
 }

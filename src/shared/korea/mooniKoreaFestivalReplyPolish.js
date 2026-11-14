@@ -36,6 +36,7 @@ import { fitMooniKoreaFestivalHint } from './mooniKoreaFestivalHintBudget.js';
 import {
   extractMooniFestivalLocationQueryText,
   isFestivalItineraryAsk,
+  isFestivalOperatingScheduleAsk,
   isMooniKoreaFestivalQueryText,
   shouldMooniScopedFestivalReplaceEmptyCandidates,
 } from '../../pages/Home/lib/mooniKoreaFestivalTurn.js';
@@ -3258,6 +3259,7 @@ export function polishFestivalModelReplyBaseline(reply, options = {}) {
   if (chipId === 'festival_nearby' || isFestivalFoodAsk(foodCtx)) {
     text = stripUnverifiedFoodDetailClaims(text, options);
   }
+  text = stripFestivalUnaskedRouteAndFood(text, options);
   text = stripMooniUiChipLabels(text);
   return text;
 }
@@ -3361,6 +3363,7 @@ export function polishFestivalModelReply(reply, options = {}) {
     text = rewriteLeadingBareFestivalPeriod(text, options);
     text = stripGangneungAccessItxMentions(text, options);
   }
+  text = stripFestivalUnaskedRouteAndFood(text, options);
   text = stripMooniUiChipLabels(text);
   return text;
 }
@@ -3374,6 +3377,53 @@ function trimBoundFestivalHintForAccess(hint, locale = 'ko') {
     .split('\n')
     .filter((line) => !drop.test(line.trim()))
     .join('\n');
+}
+
+function trimBoundFestivalHintForOperatingSchedule(hint, locale = 'ko') {
+  const en = String(locale || '').slice(0, 2) === 'en';
+  const drop = en
+    ? [
+      /^- (?:Overview|Program|Nearby|Nearby restaurants|Where to eat)/,
+      /^- Nearby \(GATEO\)/,
+      /^- Official page URL/,
+      /Introduce only restaurant names/,
+      /Walking-distance restaurants/,
+    ]
+    : [
+      /^- (?:개요|프로그램|근처|주변 맛집|근처 먹을 곳)/,
+      /^- 근처\(GATEO\)/,
+      /^- 공식 안내 URL/,
+      /주변 맛집 목록/,
+      /걸어서 갈 만한 맛집/,
+    ];
+  return String(hint || '')
+    .split('\n')
+    .filter((line) => !drop.some((re) => re.test(line.trim())))
+    .join('\n');
+}
+
+const FESTIVAL_DAY_ROUTE_REPLY_RE =
+  /동선을\s*권해|둘러보는\s*동선|여유롭게\s*둘러보|오전에는[\s\S]{0,120}?(?:오후|낮)[\s\S]{0,120}?(?:저녁|점등)|낮에는[\s\S]{0,80}?(?:저녁|해가\s*지면)|(?:in the\s+)?morning[\s\S]{0,80}?(?:afternoon|evening).{0,60}(?:route|itinerary)/i;
+
+/** Deterministic strip when the turn is operating schedule only (LLM may still add route/food). */
+export function stripFestivalUnaskedRouteAndFood(text, options = {}) {
+  if (!isFestivalOperatingScheduleAsk(options.userText, options.chipId)) {
+    return String(text || '');
+  }
+  let next = filterPreservingBreaks(String(text || ''), (part) => (
+    FESTIVAL_DAY_ROUTE_REPLY_RE.test(part)
+  ));
+  const entries = festivalFoodPlaceEntries(
+    options.nearbyRestaurants,
+    foodAnswerLocale(options.locale),
+    8,
+  );
+  for (const row of entries) {
+    const name = String(row?.name || '').trim();
+    if (!name || !next.includes(name)) continue;
+    next = filterPreservingBreaks(next, (part) => part.includes(name));
+  }
+  return next.replace(/\n{3,}/g, '\n\n').trim();
 }
 
 function festivalAccessVenueGuidanceLines(ctx, locale = 'ko') {
@@ -4527,11 +4577,16 @@ export function buildMooniBoundFestivalSystemHint(festivalContext, locale = 'ko'
   const program = speakVenuePhrases(clipFact(ctx?.program, 500));
   if (program) lines.push(isEn ? `- Program: ${program}` : `- 프로그램: ${program}`);
 
+  const scheduleOnly = isFestivalOperatingScheduleAsk(
+    String(ctx?.userText || ''),
+    String(ctx?.chipId || ''),
+  );
+
   const nearby = filterVenueAreaNearbyNames(
     listedPlaceNames(ctx?.nearbyPlaces),
     { venue: ctx?.venue, address: ctx?.address },
   );
-  if (nearby.length) {
+  if (nearby.length && !scheduleOnly) {
     lines.push(isEn ? `- Nearby (GATEO): ${nearby.join(', ')}` : `- 근처(GATEO): ${nearby.join(', ')}`);
     if (!isEn) {
       lines.push('- 근처 장소는 «A, B, C» 또는 «A와 B, C»로 잇는다. «A와 B 그리고 C»처럼 쉼표 없이 «그리고»로 잇지 않는다.');
@@ -4541,7 +4596,7 @@ export function buildMooniBoundFestivalSystemHint(festivalContext, locale = 'ko'
     }
   }
   const foodEntries = festivalFoodPlaceEntries(ctx?.nearbyRestaurants, isEn ? 'en' : 'ko', 4);
-  if (foodEntries.length) {
+  if (foodEntries.length && !scheduleOnly) {
     lines.push(isEn
       ? `- Nearby restaurants (GATEO 주변 맛집): ${foodEntries.map(formatFestivalFoodHintItem).join(', ')}`
       : `- 주변 맛집(GATEO): ${foodEntries.map(formatFestivalFoodHintItem).join(', ')}`);
@@ -4756,7 +4811,11 @@ export async function resolveMooniChatKoreaFestivalHint(input = {}) {
   const userText = String(input.userText || '');
   const festivalContext = input.festivalContext;
   if (festivalContext && String(festivalContext.title || '').trim()) {
-    let hint = buildMooniBoundFestivalSystemHint(festivalContext, input.locale, input.now);
+    let hint = buildMooniBoundFestivalSystemHint(
+      { ...festivalContext, userText, chipId: input.chipId },
+      input.locale,
+      input.now,
+    );
     const enFood = String(input.locale || '').slice(0, 2) === 'en';
     if (isFestivalAccessAsk({ userText, chipId: input.chipId })) {
       hint = trimBoundFestivalHintForAccess(hint, input.locale);
@@ -4797,7 +4856,12 @@ export async function resolveMooniChatKoreaFestivalHint(input = {}) {
         ? `\n- This question is where to eat. ${festivalFoodCoach('en', foodSparse(foodEntries))}`
         : `\n- 이번 질문은 근처 먹을 곳이다. ${festivalFoodCoach('ko', foodSparse(foodEntries))}`;
     }
-    if (isFestivalItineraryAsk(userText, input.chipId)) {
+    if (isFestivalOperatingScheduleAsk(userText, input.chipId)) {
+      hint = trimBoundFestivalHintForOperatingSchedule(hint, input.locale);
+      hint += enFood
+        ? '\n- This turn is operating schedule only (dates, hours, venue). Do not propose a day route (morning/afternoon/evening) or name restaurants.'
+        : '\n- 이번 질문은 축제 운영 일정(기간·시간·장소)만이에요. 하루 동선·오전·낮·저녁 코스·맛집 이름은 쓰지 않아요.';
+    } else if (isFestivalItineraryAsk(userText, input.chipId)) {
       hint += enFood
         ? '\n- This turn is a day plan or route. Propose a time-ordered flow (morning, afternoon, evening). Do not answer with only the festival overview, dates, or a nearby-sights list.'
         : '\n- 이번 질문은 하루 동선·일정이에요. 오전·낮·저녁 순으로 짧게 동선을 제안해요. 축제 개요·날짜만 반복하거나 근처 명소 나열로만 끝내지 않아요.';
