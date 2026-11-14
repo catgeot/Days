@@ -1,4 +1,5 @@
 import { DEFAULT_OG_IMAGE, buildCrawlerGalleryJsonLd } from './edgeCrawlerSeoConstants.js';
+import { resolveSocialShareImageUrl } from '../shared/seo/socialOgImage.js';
 
 const SITE_NAME = 'GATEO';
 
@@ -140,7 +141,7 @@ export function buildCrawlerHeadTags(meta) {
   const ogLocaleAlt = locale === 'en' ? 'ko_KR' : 'en_US';
   const desc = escapeAttr(description);
   const kw = escapeAttr(keywords);
-  const imageUrl = escapeAttr(ogImage || DEFAULT_OG_IMAGE);
+  const imageUrl = escapeAttr(resolveSocialShareImageUrl(ogImage || DEFAULT_OG_IMAGE));
   const hreflang = robotsNoIndex
     ? ''
     : hreflangAlternates
@@ -187,13 +188,13 @@ export function injectCrawlerMetaIntoHtml(html, meta) {
   const headTags = buildCrawlerHeadTags(meta);
   let out = html.replace(/<html[^>]*>/i, `<html lang="${escapeAttr(meta.locale)}">`);
 
-  out = out.replace(/<title>[\s\S]*?<\/title>/i, '');
-  out = out.replace(/<meta name="description"[^>]*>/gi, '');
-  out = out.replace(/<meta name="keywords"[^>]*>/gi, '');
-  out = out.replace(/<link rel="canonical"[^>]*>/gi, '');
-  out = out.replace(/<link rel="alternate" hreflang="[^"]*"[^>]*>/gi, '');
-  out = out.replace(/<meta property="og:[^"]*"[^>]*>/gi, '');
-  out = out.replace(/<meta name="twitter:[^"]*"[^>]*>/gi, '');
+  out = out.replace(/<title>[\s\S]*?<\/title>/gi, '');
+  out = out.replace(/<meta\b[^>]*\bname=["']description["'][^>]*>/gi, '');
+  out = out.replace(/<meta\b[^>]*\bname=["']keywords["'][^>]*>/gi, '');
+  out = out.replace(/<link\b[^>]*\brel=["']canonical["'][^>]*>/gi, '');
+  out = out.replace(/<link\b[^>]*\brel=["']alternate["'][^>]*\bhreflang=["'][^"']+["'][^>]*>/gi, '');
+  out = out.replace(/<meta\b[^>]*\bproperty=["']og:[^"']+["'][^>]*>/gi, '');
+  out = out.replace(/<meta\b[^>]*\bname=["']twitter:[^"']+["'][^>]*>/gi, '');
   out = out.replace(
     /<script type="application\/ld\+json" data-schema-type="ImageGallery">[\s\S]*?<\/script>/gi,
     '',

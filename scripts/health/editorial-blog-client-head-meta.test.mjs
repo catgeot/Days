@@ -255,7 +255,10 @@ test('home-path SEO still replaces defaults with site description', async () => 
   const ogDescriptions = [...globalThis.document.querySelectorAll('meta[property="og:description"]')].map((el) =>
     el.getAttribute('content'),
   );
-  assert.ok(ogDescriptions.includes(homeDescription));
+  assert.equal(ogDescriptions.length, 1);
+  assert.equal(ogDescriptions[0], homeDescription);
+  assert.equal(globalThis.document.querySelectorAll('meta[property="og:title"]').length, 1);
+  assert.equal(globalThis.document.querySelectorAll('meta[property="og:image"]').length, 1);
   assert.match(globalThis.document.title, /GATEO/);
 });
 
