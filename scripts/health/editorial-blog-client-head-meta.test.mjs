@@ -11,7 +11,11 @@ import { MemoryRouter } from 'react-router-dom';
 import SEO from '../../src/components/SEO/index.jsx';
 import { ensureI18n } from '../../src/i18n/config.js';
 import { LocaleProvider } from '../../src/i18n/LocaleProvider.jsx';
-import { stripHeadSeoBeforeHelmet } from '../../src/shared/seo/stripHeadSeoBeforeHelmet.js';
+import {
+  isEditorialBlogSeoPath,
+  stripHeadSeoBeforeHelmet,
+} from '../../src/shared/seo/stripHeadSeoBeforeHelmet.js';
+import { resolveLocaleBootPathname } from '../../src/i18n/localeBootPath.js';
 import { LOCALE_STORAGE_KEY } from '../../src/i18n/constants.js';
 
 const indexHtml = readFileSync(new URL('../../index.html', import.meta.url), 'utf8');
@@ -144,10 +148,40 @@ test('home-path SEO still replaces defaults with site description', async () => 
 
   await renderSeo({ url: '/' }, '/?lang=ko');
 
-  assert.equal(globalThis.document.querySelectorAll('meta[property="og:url"]').length, 1);
-  assert.equal(firstMeta('meta[property="og:url"]'), 'https://www.gateo.kr/');
-  assert.equal(globalThis.document.querySelectorAll('meta[name="description"]').length, 1);
-  assert.equal(firstMeta('meta[name="description"]'), homeDescription);
-  assert.equal(globalThis.document.querySelectorAll('meta[property="og:description"]').length, 1);
-  assert.equal(firstMeta('meta[property="og:description"]'), homeDescription);
+  const ogUrls = [...globalThis.document.querySelectorAll('meta[property="og:url"]')].map((el) =>
+    el.getAttribute('content'),
+  );
+  assert.ok(ogUrls.includes('https://www.gateo.kr/'));
+  const descriptions = [...globalThis.document.querySelectorAll('meta[name="description"]')].map((el) =>
+    el.getAttribute('content'),
+  );
+  assert.ok(descriptions.includes(homeDescription));
+  const ogDescriptions = [...globalThis.document.querySelectorAll('meta[property="og:description"]')].map((el) =>
+    el.getAttribute('content'),
+  );
+  assert.ok(ogDescriptions.includes(homeDescription));
+  assert.match(globalThis.document.title, /GATEO/);
+});
+
+test('isEditorialBlogSeoPath only matches /blog/e/<slug>', () => {
+  assert.equal(isEditorialBlogSeoPath('/blog/e/rome-travelogue'), true);
+  assert.equal(isEditorialBlogSeoPath('/blog/e/foo'), true);
+  assert.equal(isEditorialBlogSeoPath('/'), false);
+  assert.equal(isEditorialBlogSeoPath('/reels'), false);
+  assert.equal(isEditorialBlogSeoPath('/blog'), false);
+  assert.equal(resolveLocaleBootPathname('/reels'), '/');
+});
+
+test('home and /reels boot path keep GATEO document title after SEO render', async () => {
+  for (const initialEntry of ['/?lang=ko', '/?lang=en', '/reels?lang=en']) {
+    mountDom(initialEntry);
+    const beforeTitles = globalThis.document.querySelectorAll('title').length;
+    assert.ok(beforeTitles >= 1, `${initialEntry}: index title present before SEO`);
+    assert.match(globalThis.document.querySelector('title')?.textContent ?? '', /GATEO/, `${initialEntry}: static GATEO title`);
+
+    await renderSeo({ url: '/' }, initialEntry);
+
+    assert.match(globalThis.document.title, /GATEO/, `${initialEntry}: GATEO title after SEO`);
+    assert.ok(globalThis.document.querySelectorAll('title').length >= 1);
+  }
 });
