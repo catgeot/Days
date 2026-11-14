@@ -41,10 +41,19 @@ async function waitForHubReady(page) {
   }
 }
 
+async function waitForCardMediaSettled(page) {
+  await page.waitForFunction(
+    () =>
+      document.querySelectorAll('[data-testid="logbook-official-review-hub-card-photo-loading"]').length === 0,
+    { timeout: 45_000 },
+  );
+  await page.waitForTimeout(300);
+}
+
 async function shot(page, file, width, height) {
   await page.setViewportSize({ width, height });
   await page.evaluate(() => document.fonts?.ready);
-  await page.waitForTimeout(400);
+  await waitForCardMediaSettled(page);
   const path = join(outDir, file);
   await page.screenshot({ path, clip: { x: 0, y: 0, width, height } });
   console.log('shot', path);
