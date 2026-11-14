@@ -3,6 +3,7 @@ import {
   hasExplicitNonKoreaCountry,
   isDomesticKoreaLocation,
 } from '../../../utils/tourApiMatch.js';
+import { isPlanItineraryIntentText } from '../../../utils/chatIntentClassifier.js';
 
 const FESTIVAL_INTENT_RE = /축제|페스티벌|festival/i;
 
@@ -176,4 +177,28 @@ export function shouldOmitMooniGeminiHistoryForKoreaFestivalTurn(
   boundPlaceName = '',
 ) {
   return mooniKoreaFestivalQueryConflictsOverseasBound(userText, boundSpot, boundPlaceName);
+}
+
+const BOUND_FESTIVAL_OTHER_EVENTS_RE =
+  /(?:다른|또|그\s*밖|비슷한)\s*(?:축제|행사)|(?:축제|행사).*(?:뭐\s*있|추천|알려)/;
+
+const BOUND_FESTIVAL_SCHEDULE_IN_PERIOD_RE =
+  /기간\s*중.*(?:일정|토요일|일요일|하루|당일)|(?:토요일|일요일|하루|당일).*(?:일정|코스|동선)/;
+
+/**
+ * scoped festival «0건» 답으로 AI 본문을 덮어쓸지 — 축제 상세(바운드)에서 일정 질문은 제외.
+ * @param {string} userText
+ * @param {{ boundFestivalSession?: boolean }} [opts]
+ */
+export function shouldMooniScopedFestivalReplaceEmptyCandidates(userText, opts = {}) {
+  if (opts.boundFestivalSession !== true) return true;
+  const text = String(userText || '');
+  if (isPlanItineraryIntentText(text)) return false;
+  if (BOUND_FESTIVAL_SCHEDULE_IN_PERIOD_RE.test(text)) return false;
+  if (BOUND_FESTIVAL_OTHER_EVENTS_RE.test(text)) return true;
+  if (/(?:이번|다음|다다음)\s*주(?:말)?/.test(text) && /(?:축제|행사)/.test(text)) {
+    return true;
+  }
+  if (/축제\s*(?:추천|알려|있)/.test(text)) return true;
+  return false;
 }

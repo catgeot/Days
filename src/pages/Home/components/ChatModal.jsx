@@ -1403,6 +1403,7 @@ const ChatModal = ({
         locale: i18n.language,
         upcomingFallback: mooniFestivalUpcomingFallback,
         scopedFestivalEnabled: isGateoMooniScopedFestivalEnabled(),
+        boundFestivalSession: Boolean(mooniPlaceContext?.festivalContext?.title),
       });
       const stripPhantomTicketMention = !hasTransportCta;
       const polishedFestivalReply = polishFestivalModelReply(festivalMergedReply, lodgingOptions);

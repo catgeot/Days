@@ -7,8 +7,10 @@ import {
   NO_MATCH_KO,
   NO_MATCH_KO_DETAIL,
   buildMooniKoreaFestivalSystemHint,
+  mergeMooniKoreaFestivalReply,
   resolveMooniChatKoreaFestivalHint,
 } from '../../src/shared/korea/mooniKoreaFestivalAssist.js';
+import { shouldMooniScopedFestivalReplaceEmptyCandidates } from '../../src/pages/Home/lib/mooniKoreaFestivalTurn.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '../..');
 
@@ -89,6 +91,67 @@ test('비축제 세션 — #394 매칭 없음 힌트 유지', () => {
   });
   assert.ok(hint.includes(NO_MATCH_KO) || hint.includes('매칭 없음'));
   assert.ok(hint.includes(NO_MATCH_KO_DETAIL) || hint.includes('겹치는 행사가 없습니다'));
+});
+
+const HAEUNDAE_SCHEDULE_ASK =
+  '해운대 빛축제(2026.11.28~2027.1.10) 기간 중 토요일 하루 일정을 짜 줘';
+
+const FESTIVAL_CTX_2048902 = {
+  contentId: '2048902',
+  title: '해운대 빛축제',
+  eventStartDate: '20261128',
+  eventEndDate: '20270110',
+  gateoUrl: 'https://www.gateo.kr/korea/?festival=2048902',
+  venue: '해운대해수욕장',
+};
+
+test('bound 축제 상세 — 기간 중 토요일 일정 질문은 0건 덮어쓰기 금지', () => {
+  assert.equal(
+    shouldMooniScopedFestivalReplaceEmptyCandidates(HAEUNDAE_SCHEDULE_ASK, {
+      boundFestivalSession: true,
+    }),
+    false,
+  );
+  const aiBody =
+    '토요일이면 오후에 해운대 입구부터 산책하고, 저녁 조명 시간에 맞춰 윈드블래스트 쪽을 보는 흐름이 좋아요.';
+  const merged = mergeMooniKoreaFestivalReply(aiBody, {
+    candidates: [],
+    userText: HAEUNDAE_SCHEDULE_ASK,
+    locale: 'ko',
+    scopedFestivalEnabled: true,
+    boundFestivalSession: true,
+  });
+  assert.equal(merged, aiBody);
+  assert.ok(!merged.includes(NO_MATCH_KO_DETAIL));
+  assert.ok(!/겹치는\s*행사는\s*없어요/.test(merged));
+});
+
+test('bound 축제 상세 — 이번 주 다른 축제 찾기는 0건 덮어쓰기 유지', () => {
+  assert.equal(
+    shouldMooniScopedFestivalReplaceEmptyCandidates('이번 주말 부산 다른 축제 있어?', {
+      boundFestivalSession: true,
+    }),
+    true,
+  );
+  const merged = mergeMooniKoreaFestivalReply('모델 본문', {
+    candidates: [],
+    userText: '부산 이번 주말 축제',
+    locale: 'ko',
+    scopedFestivalEnabled: true,
+    boundFestivalSession: true,
+  });
+  assert.match(merged, /겹치는 행사는 없어요|GATEO 축제 목록/);
+});
+
+test('2048902 bound hint — 일정 질문에 매칭 없음·겹침 문구 없음', async () => {
+  const { hint } = await resolveMooniChatKoreaFestivalHint({
+    userText: HAEUNDAE_SCHEDULE_ASK,
+    festivalContext: FESTIVAL_CTX_2048902,
+    locale: 'ko',
+  });
+  assert.ok(hint.includes('해운대 빛축제'));
+  assert.ok(!hint.includes(NO_MATCH_KO_DETAIL));
+  assert.ok(!hint.includes('[GATEO 한국 축제 — 매칭 없음]'));
 });
 
 test('ChatModal · usePlaceChat — resolvePlaceChatKoreaFestivalHint 경로', () => {
