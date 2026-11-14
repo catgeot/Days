@@ -12,6 +12,7 @@ import {
   resolvePlaceOgImageUrl,
 } from '../../pages/Home/lib/placeSeoOg.js';
 import { buildTravelerAggregateRatingSchema } from '../../utils/placeReviewStats.js';
+import { stripHeadSeoBeforeHelmet } from '../../shared/seo/stripHeadSeoBeforeHelmet.js';
 
 const SCHEMA_TYPES = {
   TOURIST_ATTRACTION: 'TouristAttraction',
@@ -172,6 +173,8 @@ const SEO = ({
       document.querySelector(`script[data-schema-type="${SCHEMA_TYPES.IMAGE_GALLERY}"]`)?.remove();
     };
   }, [gallerySchema]);
+
+  stripHeadSeoBeforeHelmet();
 
   return (
     <Helmet>

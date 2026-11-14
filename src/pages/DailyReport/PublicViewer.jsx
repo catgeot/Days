@@ -29,6 +29,7 @@ import SEO from '../../components/SEO';
 import { resolveLogbookFeedExcerpt } from '../../utils/logbookDek';
 import { navigateAppBack } from '../../shared/navigation/navigateAppBack';
 import AppOutlineBackButton from '../../shared/navigation/AppOutlineBackButton';
+import { stripHeadSeoBeforeHelmet } from '../../shared/seo/stripHeadSeoBeforeHelmet.js';
 
 const SCHEMA_TYPE = 'EditorialLogbookArticle';
 
@@ -200,7 +201,16 @@ const PublicViewer = () => {
     );
   }
 
-  if (!report) return <div className="min-h-screen bg-white flex justify-center items-center text-gray-400 animate-pulse">{t('logbook.common.loadingFragments')}</div>;
+  if (!report) {
+    if (editorialSlug) {
+      stripHeadSeoBeforeHelmet();
+    }
+    return (
+      <div className="min-h-screen bg-white flex justify-center items-center text-gray-400 animate-pulse">
+        {t('logbook.common.loadingFragments')}
+      </div>
+    );
+  }
 
   const editorial = isEditorialLogbook(report);
   const imageUrls = logbookImageUrlList(report.images);
