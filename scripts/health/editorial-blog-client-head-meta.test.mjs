@@ -20,7 +20,7 @@ import { LOCALE_STORAGE_KEY } from '../../src/i18n/constants.js';
 
 const indexHtml = readFileSync(new URL('../../index.html', import.meta.url), 'utf8');
 
-function mountDom(pathname = '/blog/e/rome-travelogue?lang=ko') {
+function mountDom(pathname = '/blog/e/rome-travelogue?lang=ko', { bootStrip = true } = {}) {
   const dom = new JSDOM(indexHtml, { url: `https://www.gateo.kr${pathname}` });
   dom.window.localStorage.setItem(LOCALE_STORAGE_KEY, 'ko');
   Object.defineProperty(globalThis, 'window', { value: dom.window, configurable: true, writable: true });
@@ -38,6 +38,7 @@ function mountDom(pathname = '/blog/e/rome-travelogue?lang=ko') {
     configurable: true,
     writable: true,
   });
+  if (bootStrip) stripHeadSeoBeforeHelmet();
   return dom;
 }
 
@@ -89,7 +90,7 @@ function firstMeta(selector) {
 }
 
 test('stripHeadSeoBeforeHelmet removes index.html default og and description tags', () => {
-  mountDom();
+  mountDom('/?lang=ko', { bootStrip: false });
   assert.ok(globalThis.document.querySelectorAll('meta[property="og:title"]').length >= 1);
   stripHeadSeoBeforeHelmet();
   assert.equal(globalThis.document.querySelectorAll('meta[property="og:title"]').length, 0);
@@ -274,9 +275,6 @@ test('isEditorialBlogSeoPath only matches /blog/e/<slug>', () => {
 test('home and /reels boot path keep GATEO document title after SEO render', async () => {
   for (const initialEntry of ['/?lang=ko', '/?lang=en', '/reels?lang=en']) {
     mountDom(initialEntry);
-    const beforeTitles = globalThis.document.querySelectorAll('title').length;
-    assert.ok(beforeTitles >= 1, `${initialEntry}: index title present before SEO`);
-    assert.match(globalThis.document.querySelector('title')?.textContent ?? '', /GATEO/, `${initialEntry}: static GATEO title`);
 
     await renderSeo({ url: '/' }, initialEntry);
 

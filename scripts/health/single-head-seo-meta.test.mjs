@@ -18,10 +18,11 @@ import {
   DEFAULT_SITE_OG_IMAGE,
 } from '../../src/shared/seo/socialOgImage.js';
 import { injectCrawlerMetaIntoHtml } from '../../src/edge/injectCrawlerMeta.js';
+import { stripHeadSeoBeforeHelmet } from '../../src/shared/seo/stripHeadSeoBeforeHelmet.js';
 
 const indexHtml = readFileSync(new URL('../../index.html', import.meta.url), 'utf8');
 
-function mountDom(pathname = '/') {
+function mountDom(pathname = '/', { bootStrip = true } = {}) {
   const dom = new JSDOM(indexHtml, { url: `https://www.gateo.kr${pathname}` });
   dom.window.localStorage.setItem(LOCALE_STORAGE_KEY, 'ko');
   Object.defineProperty(globalThis, 'window', { value: dom.window, configurable: true, writable: true });
@@ -39,6 +40,7 @@ function mountDom(pathname = '/') {
     configurable: true,
     writable: true,
   });
+  if (bootStrip) stripHeadSeoBeforeHelmet();
   return dom;
 }
 

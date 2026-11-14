@@ -13,7 +13,10 @@ import {
 } from '../../pages/Home/lib/placeSeoOg.js';
 import { buildTravelerAggregateRatingSchema } from '../../utils/placeReviewStats.js';
 import { isWikimediaOgImageUrl, resolveSocialShareImageUrl } from '../../shared/seo/socialOgImage.js';
-import { stripHeadSeoBeforeHelmet } from '../../shared/seo/stripHeadSeoBeforeHelmet.js';
+import {
+  isEditorialBlogSeoPath,
+  stripHeadSeoBeforeHelmet,
+} from '../../shared/seo/stripHeadSeoBeforeHelmet.js';
 
 const SCHEMA_TYPES = {
   TOURIST_ATTRACTION: 'TouristAttraction',
@@ -184,9 +187,13 @@ const SEO = ({
     };
   }, [gallerySchema]);
 
-  if (strippedStaticHeadForPath.current !== pagePath) {
-    strippedStaticHeadForPath.current = pagePath;
-    stripHeadSeoBeforeHelmet();
+  if (isEditorialBlogSeoPath(pagePath)) {
+    if (strippedStaticHeadForPath.current !== pagePath) {
+      strippedStaticHeadForPath.current = pagePath;
+      stripHeadSeoBeforeHelmet();
+    }
+  } else {
+    strippedStaticHeadForPath.current = '';
   }
 
   return (
