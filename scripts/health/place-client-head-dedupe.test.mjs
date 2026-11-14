@@ -15,13 +15,15 @@ import { ensureI18n } from '../../src/i18n/config.js';
 import { LocaleProvider } from '../../src/i18n/LocaleProvider.jsx';
 import { LOCALE_STORAGE_KEY } from '../../src/i18n/constants.js';
 import { stripHeadSeoBeforeHelmet } from '../../src/shared/seo/stripHeadSeoBeforeHelmet.js';
+import { placeCanonicalPath } from '../../src/shared/seo/placeCanonicalPath.js';
 
 const indexHtml = readFileSync(new URL('../../index.html', import.meta.url), 'utf8');
 const i18n = ensureI18n('ko');
 const placeImage = getPlaceOgImageUrl({ slug: 'bora-bora', name: '보라보라', name_en: 'Bora Bora' });
 const HOME_TITLE = 'GATEO | AI 도슨트와 함께하는 3D 세계 여행';
 const PLACE_TITLE = '보라보라 | GATEO';
-const PLACE_CANONICAL = 'https://www.gateo.kr/place/bora-bora/gallery';
+const PLACE_BASE_CANONICAL = 'https://www.gateo.kr/place/bora-bora';
+const PLACE_GALLERY_CANONICAL = 'https://www.gateo.kr/place/bora-bora/gallery';
 
 let root;
 
@@ -53,6 +55,7 @@ function headSnapshot() {
     ogTitles: [...head.querySelectorAll('meta[property="og:title"]')].map((el) => el.getAttribute('content')),
     ogImages: [...head.querySelectorAll('meta[property="og:image"]')].map((el) => el.getAttribute('content')),
     canonicals: [...head.querySelectorAll('link[rel="canonical"]')].map((el) => el.href),
+    ogUrls: [...head.querySelectorAll('meta[property="og:url"]')].map((el) => el.getAttribute('content')),
   };
 }
 
@@ -71,7 +74,7 @@ function PlaceHead() {
   return React.createElement(SEO, {
     title: '보라보라',
     description: '보라보라 여행. 명소, 플래너, AI 도슨트를 GATEO에서 확인하세요.',
-    url: `/place/${slug}/${tabKey}`,
+    url: placeCanonicalPath(slug, tab),
     location: { slug, name: '보라보라', name_en: 'Bora Bora' },
     tab: tabKey,
   });
@@ -193,13 +196,13 @@ test('fresh load keeps one title, og:title, og:image, and canonical', async () =
     {
       path: '/place/bora-bora',
       title: PLACE_TITLE,
-      canonical: PLACE_CANONICAL,
+      canonical: PLACE_BASE_CANONICAL,
       ogImage: placeImage,
     },
     {
       path: '/place/bora-bora/gallery',
       title: PLACE_TITLE,
-      canonical: PLACE_CANONICAL,
+      canonical: PLACE_GALLERY_CANONICAL,
       ogImage: placeImage,
     },
     {
@@ -233,10 +236,10 @@ test('fresh load keeps one title, og:title, og:image, and canonical', async () =
     assert.equal(snap.titles[0], row.title, row.path);
     assert.equal(snap.ogTitles[0], row.title, row.path);
     assert.equal(snap.canonicals[0], row.canonical, row.path);
+    assert.equal(snap.ogUrls[0], row.canonical, row.path);
     if (row.ogImage) assert.equal(snap.ogImages[0], row.ogImage, row.path);
     if (row.path.startsWith('/place/')) {
       assert.equal(snap.titles.includes(HOME_TITLE), false);
-      assert.equal(snap.canonicals.includes('https://www.gateo.kr/place/bora-bora'), false);
     }
     await act(async () => {
       root.unmount();
@@ -250,8 +253,8 @@ test('SPA moves keep one head tag and do not throw removeChild', async () => {
   await renderAt('/', navRef);
   const steps = [
     { path: '/', title: HOME_TITLE, canonical: 'https://www.gateo.kr/' },
-    { path: '/place/bora-bora', title: PLACE_TITLE, canonical: PLACE_CANONICAL },
-    { path: '/place/bora-bora/gallery', title: PLACE_TITLE, canonical: PLACE_CANONICAL },
+    { path: '/place/bora-bora', title: PLACE_TITLE, canonical: PLACE_BASE_CANONICAL },
+    { path: '/place/bora-bora/gallery', title: PLACE_TITLE, canonical: PLACE_GALLERY_CANONICAL },
     { path: '/blog', title: '여행 기록 | GATEO', canonical: 'https://www.gateo.kr/blog' },
     { path: '/blog/e/rome-travelogue', title: '로마 기행 | GATEO', canonical: 'https://www.gateo.kr/blog/e/rome-travelogue' },
     { path: '/korea', title: '한국의 축제 | GATEO', canonical: 'https://www.gateo.kr/korea' },
@@ -270,6 +273,7 @@ test('SPA moves keep one head tag and do not throw removeChild', async () => {
     assert.equal(snap.ogTitles[0], step.title, step.path);
     assert.equal(snap.canonicals[0], step.canonical, step.path);
     if (step.path.startsWith('/place/')) {
+      assert.equal(snap.ogUrls[0], step.canonical, step.path);
       assert.equal(snap.ogImages[0], placeImage);
       assert.equal(snap.titles.includes(HOME_TITLE), false);
     }
