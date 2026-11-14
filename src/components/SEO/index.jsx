@@ -187,16 +187,14 @@ const SEO = ({
     };
   }, [gallerySchema]);
 
-  useEffect(() => {
-    if (!isEditorialBlogSeoPath(pagePath)) {
-      strippedStaticHeadForPath.current = '';
-      return undefined;
+  if (isEditorialBlogSeoPath(pagePath)) {
+    if (strippedStaticHeadForPath.current !== pagePath) {
+      strippedStaticHeadForPath.current = pagePath;
+      stripHeadSeoBeforeHelmet();
     }
-    if (strippedStaticHeadForPath.current === pagePath) return undefined;
-    strippedStaticHeadForPath.current = pagePath;
-    stripHeadSeoBeforeHelmet();
-    return undefined;
-  }, [pagePath]);
+  } else {
+    strippedStaticHeadForPath.current = '';
+  }
 
   return (
     <Helmet>
