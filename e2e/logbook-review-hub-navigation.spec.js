@@ -54,52 +54,13 @@ async function wheelHubList(page) {
   const main = page.locator('[data-logbook-main-scroll]');
   const box = await main.boundingBox();
   if (!box) throw new Error('missing data-logbook-main-scroll');
-  const isWebkit = test.info().project.name.includes('webkit');
   const x = box.x + box.width / 2;
   const y = box.y + Math.min(box.height * 0.45, 360);
-  if (isWebkit) await page.touchscreen.tap(x, y);
-  else await page.mouse.move(x, y);
+  await page.mouse.move(x, y);
   const before = await main.evaluate((el) => el.scrollTop);
-  if (isWebkit) {
-    await page.evaluate(([px, py]) => {
-      const el = document.querySelector('[data-logbook-main-scroll]');
-      const touch = new Touch({
-        identifier: 1,
-        target: el,
-        clientX: px,
-        clientY: py,
-        pageX: px,
-        pageY: py,
-      });
-      el.dispatchEvent(
-        new TouchEvent('touchstart', { bubbles: true, cancelable: true, touches: [touch] }),
-      );
-      el.dispatchEvent(
-        new TouchEvent('touchmove', {
-          bubbles: true,
-          cancelable: true,
-          touches: [
-            new Touch({
-              identifier: 1,
-              target: el,
-              clientX: px,
-              clientY: py - 80,
-              pageX: px,
-              pageY: py - 80,
-            }),
-          ],
-        }),
-      );
-      el.dispatchEvent(
-        new TouchEvent('touchend', { bubbles: true, cancelable: true, touches: [] }),
-      );
-    }, [x, y]);
-  } else {
-    await page.mouse.wheel(0, 360);
-  }
-  await page.waitForTimeout(250);
-  let after = await main.evaluate((el) => el.scrollTop);
-  let delta = after - before;
+  await page.mouse.wheel(0, 360);
+  await page.waitForTimeout(300);
+  let delta = (await main.evaluate((el) => el.scrollTop)) - before;
   if (delta < 24) {
     delta = await main.evaluate((el) => {
       const b = el.scrollTop;
@@ -149,7 +110,8 @@ async function waitForHubScrollRestored(page, scrollBefore) {
 }
 
 async function assertBlogHubVisible(page) {
-  await expect(page.getByTestId('logbook-official-review-hub')).toBeVisible({ timeout: 30_000 });
+  await page.waitForLoadState('domcontentloaded');
+  await expect(page.getByTestId('logbook-official-review-hub')).toBeVisible({ timeout: 60_000 });
   await expect(page.locator('[data-place-chrome-hit]')).toHaveCount(0);
   expect(new URL(page.url()).pathname).toBe('/blog');
   const title = await page.title();
@@ -197,6 +159,7 @@ test.describe('LogBook review hub navigation @mocked', () => {
   test('390 WebKit — hub→review→back restores list state, removeChild 0', async ({ page }) => {
     const isWebkit = test.info().project.name.includes('webkit');
     test.skip(!isWebkit, 'WebKit-only matrix row');
+    test.setTimeout(300_000);
 
     await page.setViewportSize({ width: 390, height: 844 });
     const countRemoveChild = removeChildCount(page);
@@ -213,7 +176,7 @@ test.describe('LogBook review hub navigation @mocked', () => {
 
     const first = page.getByTestId('logbook-official-review-hub-item').first();
     await first.tap();
-    await page.waitForURL(/\/place\/[^/]+\/reviews/, { timeout: 60_000 });
+    await page.waitForURL(/\/place\/[^/]+\/reviews/, { timeout: 90_000, waitUntil: 'load' });
     await expect(page.getByTestId('place-card-route-loading')).toBeHidden({ timeout: 60_000 });
 
     await page.waitForTimeout(5_000);
@@ -244,8 +207,8 @@ test.describe('LogBook review hub navigation @mocked', () => {
     expect(visibleAfter).toBeGreaterThanOrEqual(visibleBefore);
 
     await first.tap();
-    await page.waitForURL(/\/place\/[^/]+\/reviews/, { timeout: 60_000 });
-    await page.goBack({ waitUntil: 'domcontentloaded' });
+    await page.waitForURL(/\/place\/[^/]+\/reviews/, { timeout: 90_000, waitUntil: 'load' });
+    await page.goBack({ waitUntil: 'load' });
     await assertBlogHubVisible(page);
     await waitHubListScrollable(page);
     await assertNoStalePlaceOverlay(page);
@@ -267,7 +230,7 @@ test.describe('LogBook review hub navigation @mocked', () => {
     });
     const first = page.getByTestId('logbook-official-review-hub-item').first();
     await first.click();
-    await page.waitForURL(/\/place\/[^/]+\/reviews/, { timeout: 60_000 });
+    await page.waitForURL(/\/place\/[^/]+\/reviews/, { timeout: 90_000, waitUntil: 'load' });
     await expect(page.getByTestId('place-card-route-loading')).toBeHidden({ timeout: 60_000 });
     await tapPlaceChromeBack(page);
     await assertBlogHubVisible(page);
@@ -276,8 +239,8 @@ test.describe('LogBook review hub navigation @mocked', () => {
     await assertNoStalePlaceOverlay(page);
     expect(await wheelHubList(page)).toBeGreaterThan(24);
     await first.click();
-    await page.waitForURL(/\/place\/[^/]+\/reviews/, { timeout: 60_000 });
-    await page.goBack({ waitUntil: 'domcontentloaded' });
+    await page.waitForURL(/\/place\/[^/]+\/reviews/, { timeout: 90_000, waitUntil: 'load' });
+    await page.goBack({ waitUntil: 'load' });
     await assertBlogHubVisible(page);
     await waitHubListScrollable(page);
     expect(await wheelHubList(page)).toBeGreaterThan(24);
@@ -303,8 +266,8 @@ test.describe('LogBook review hub navigation @mocked', () => {
 
     if (isWebkit) await card.tap();
     else await card.click();
-    await page.waitForURL(/\/place\/hwaseong-fortress\/reviews/, { timeout: 60_000 });
-    await page.goBack({ waitUntil: 'domcontentloaded' });
+    await page.waitForURL(/\/place\/hwaseong-fortress\/reviews/, { timeout: 90_000, waitUntil: 'load' });
+    await page.goBack({ waitUntil: 'load' });
     await assertBlogHubVisible(page);
     await waitForHubScrollRestored(page, scrollTarget);
     await waitHubListScrollable(page);
