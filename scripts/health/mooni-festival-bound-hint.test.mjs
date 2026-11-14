@@ -10,7 +10,10 @@ import {
   mergeMooniKoreaFestivalReply,
   resolveMooniChatKoreaFestivalHint,
 } from '../../src/shared/korea/mooniKoreaFestivalAssist.js';
-import { shouldMooniScopedFestivalReplaceEmptyCandidates } from '../../src/pages/Home/lib/mooniKoreaFestivalTurn.js';
+import {
+  isFestivalItineraryAsk,
+  shouldMooniScopedFestivalReplaceEmptyCandidates,
+} from '../../src/pages/Home/lib/mooniKoreaFestivalTurn.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '../..');
 
@@ -141,6 +144,33 @@ test('bound 축제 상세 — 이번 주 다른 축제 찾기는 0건 덮어쓰�
     boundFestivalSession: true,
   });
   assert.match(merged, /겹치는 행사는 없어요|GATEO 축제 목록/);
+});
+
+test('1095732 style — 일정을 짜 줘 is itinerary intent', () => {
+  const ask =
+    '서울빛초롱축제(12.11~1.31) 기간 중 토요일 하루 일정을 짜 줘';
+  assert.equal(isFestivalItineraryAsk(ask), true);
+});
+
+test('bound hint — itinerary ask includes day-route coach line', async () => {
+  const ask = HAEUNDAE_SCHEDULE_ASK;
+  const { hint } = await resolveMooniChatKoreaFestivalHint({
+    userText: ask,
+    festivalContext: FESTIVAL_CTX_2048902,
+    locale: 'ko',
+  });
+  assert.match(hint, /하루 동선·일정/);
+});
+
+test('bound hint — 운영 일정 질문은 day-route coach 없음', async () => {
+  const ask = '축제 기간 중 일정 알려줘';
+  assert.equal(isFestivalItineraryAsk(ask), false);
+  const { hint } = await resolveMooniChatKoreaFestivalHint({
+    userText: ask,
+    festivalContext: FESTIVAL_CTX_2048902,
+    locale: 'ko',
+  });
+  assert.ok(!/하루 동선·일정/.test(hint));
 });
 
 test('2048902 bound hint — 일정 질문에 매칭 없음·겹침 문구 없음', async () => {

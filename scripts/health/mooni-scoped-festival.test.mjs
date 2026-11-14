@@ -364,3 +364,14 @@ assert.match(
   }),
   /https:\/\/www\.gateo\.kr\/korea\//,
 );
+
+test('zero-candidate KO — 다른 축제 질문에 다른과 없음', () => {
+  const body = buildMooniKoreaFestivalZeroCandidateUserReply({
+    locale: 'ko',
+    userText: '다른 축제 있어?',
+    boundPlaceName: '서울빛초롱축제',
+    window: { label: '앞으로 30일' },
+  });
+  assert.doesNotMatch(body, /다른과/);
+  assert.match(body, /다른 행사와 겹치는 행사는 없어요/);
+});

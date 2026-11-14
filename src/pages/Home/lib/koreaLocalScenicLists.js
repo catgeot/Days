@@ -542,7 +542,7 @@ export function resolveLocalScenicHubId(opts = {}) {
   ) {
     return bestSameSidoId;
   }
-  if (bestId && bestKm <= LOCAL_SCENIC_NEAR_HUB_KM) return bestId;
+  if (!areaCode && bestId && bestKm <= LOCAL_SCENIC_NEAR_HUB_KM) return bestId;
   return hid || null;
 }
 

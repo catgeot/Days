@@ -23,12 +23,42 @@ test('isPlanItineraryIntentText — Korean itinerary phrasings', () => {
   assert.equal(isPlanItineraryIntentText('오키나와 4박5일 코스 추천해줘'), true);
   assert.equal(isPlanItineraryIntentText('숙소랑 투어도 같이 알려줘'), true);
   assert.equal(isPlanItineraryIntentText('2박3일 동선 잡아줘'), true);
+  assert.equal(
+    isPlanItineraryIntentText('서울빛초롱축제 기간 중 토요일 하루 일정을 짜 줘'),
+    true,
+  );
 });
 
 test('isPlanItineraryIntentText — negatives stay non-itinerary', () => {
   assert.equal(isPlanItineraryIntentText('이곳 맛집 추천해줘'), false);
   assert.equal(isPlanItineraryIntentText('비자 필요해?'), false);
   assert.equal(isPlanItineraryIntentText('인천에서 항공편 어떻게 예약해?'), false);
+});
+
+test('isPlanItineraryIntentText — festival operating schedule (not day plan)', () => {
+  assert.equal(isPlanItineraryIntentText('축제 기간 중 일정 알려줘'), false);
+  assert.equal(isPlanItineraryIntentText('기간 중 운영 일정 알려줘'), false);
+  assert.equal(
+    isPlanItineraryIntentText('기간 중 토요일 일정만 알려줘'),
+    false,
+  );
+});
+
+test('isPlanItineraryIntentText — festival day-plan phrasings stay itinerary', () => {
+  assert.equal(
+    isPlanItineraryIntentText(
+      '서울빛초롱축제(12.11~1.31) 기간 중 토요일 하루 일정을 짜 줘',
+    ),
+    true,
+  );
+  assert.equal(
+    isPlanItineraryIntentText('기간 중 토요일 동선 짜 줘'),
+    true,
+  );
+  assert.equal(
+    isPlanItineraryIntentText('축제 보고 하루 코스 추천해 줘'),
+    true,
+  );
 });
 
 test('classifyChatIntent — plan_itinerary primary for schedule asks', () => {

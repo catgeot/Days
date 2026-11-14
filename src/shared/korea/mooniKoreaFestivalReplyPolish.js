@@ -35,6 +35,7 @@ import {
 import { fitMooniKoreaFestivalHint } from './mooniKoreaFestivalHintBudget.js';
 import {
   extractMooniFestivalLocationQueryText,
+  isFestivalItineraryAsk,
   isMooniKoreaFestivalQueryText,
   shouldMooniScopedFestivalReplaceEmptyCandidates,
 } from '../../pages/Home/lib/mooniKoreaFestivalTurn.js';
@@ -1482,6 +1483,7 @@ export function isFestivalFoodAsk(input = {}) {
 const FESTIVAL_SIGHTS_ASK_RE = /볼\s*거리|분위기|볼\s*수\s*있|what\s+to\s+see|on[- ]site\s+atmosphere/i;
 
 export function isFestivalSightsAsk(input = {}) {
+  if (isFestivalItineraryAsk(input.userText, input.chipId)) return false;
   if (String(input.chipId || '') === 'festival_sights') return true;
   if (isFestivalFoodAsk(input)) return false;
   return FESTIVAL_SIGHTS_ASK_RE.test(String(input.userText || ''));
@@ -4343,8 +4345,14 @@ export function buildMooniKoreaFestivalZeroCandidateUserReply(input = {}) {
     return body.trim();
   }
 
+  const otherEventsAsk = /(?:다른|또)\s*(?:축제|행사)/.test(String(input.userText || ''));
+  const regionPhrase = otherEventsAsk
+    ? '다른 행사와 '
+    : region
+      ? `${region}${koreanTopicWaOrGwa(region)} `
+      : '';
   let body =
-    `GATEO가 확인한 축제 중 ${windowLabel} ${region}${koreanTopicWaOrGwa(region)} 겹치는 행사는 없어요. ` +
+    `GATEO가 확인한 축제 중 ${windowLabel} ${regionPhrase}겹치는 행사는 없어요. ` +
     `[GATEO 축제 목록](${koreaUrl})에서 날짜가 확인된 축제를 볼 수 있어요.`;
   if (upcoming.length) {
     const lines = upcoming.map(
@@ -4788,6 +4796,11 @@ export async function resolveMooniChatKoreaFestivalHint(input = {}) {
       hint += enFood
         ? `\n- This question is where to eat. ${festivalFoodCoach('en', foodSparse(foodEntries))}`
         : `\n- 이번 질문은 근처 먹을 곳이다. ${festivalFoodCoach('ko', foodSparse(foodEntries))}`;
+    }
+    if (isFestivalItineraryAsk(userText, input.chipId)) {
+      hint += enFood
+        ? '\n- This turn is a day plan or route. Propose a time-ordered flow (morning, afternoon, evening). Do not answer with only the festival overview, dates, or a nearby-sights list.'
+        : '\n- 이번 질문은 하루 동선·일정이에요. 오전·낮·저녁 순으로 짧게 동선을 제안해요. 축제 개요·날짜만 반복하거나 근처 명소 나열로만 끝내지 않아요.';
     }
     if (isFestivalLodgingAsk({ userText, chipId: input.chipId })) {
       const lodgingUrl = gateoKoreaFestivalLodgingUrl(festivalContext.contentId);
