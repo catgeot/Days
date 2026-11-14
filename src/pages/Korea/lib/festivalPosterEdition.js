@@ -49,52 +49,45 @@ export function isPriorEditionPoster(posterYear, festivalYear) {
 }
 
 /**
- * @param {{ eventStartDate?: string, eventStartdate?: string, eventstartdate?: string }} fields
+ * @param {{ eventStartDate?: string, eventStartdate?: string, eventstartdate?: string } | null | undefined} fields
  * @returns {number | null}
  */
-export function festivalEditionYearFromEventFields(fields = {}) {
+export function festivalEditionYearFromEventFields(fields) {
+  if (fields == null || typeof fields !== 'object') return null;
   const raw = fields.eventStartDate || fields.eventstartdate || fields.eventStartdate;
   return festivalEditionYearFromStart(raw);
 }
 
 /**
- * @param {{ caption?: string }} slide
+ * @param {string} text
  * @returns {boolean}
  */
-export function isFestivalPosterCaption(slide = {}) {
-  const cap = String(slide.caption || '').trim().toLowerCase();
-  return /포스터/.test(cap) || /\bposter\b/.test(cap);
+export function hasExplicitPriorEditionMarker(text = '') {
+  const raw = String(text || '');
+  if (/예년/.test(raw)) return true;
+  const lower = raw.toLowerCase();
+  return /\bprevious\s+year\b/.test(lower)
+    || /\bprior\s+(year|edition)\b/.test(lower);
 }
 
 /**
- * When TourAPI omits a year on common.firstimage but ships a dated current poster slide, treat the common hero as prior.
+ * Prior-edition label only with positive evidence (dated caption/URL or explicit prior-year copy).
+ * Yearless images are never labelled.
  * @param {{
  *   posterYear?: number | null,
  *   festivalYear?: number | null,
- *   activeUrl?: string,
- *   commonFirstImage?: string,
- *   slides?: { url?: string, caption?: string }[],
+ *   caption?: string,
+ *   credit?: string,
  * }} args
  */
 export function shouldMarkPriorEditionPosterMeta({
   posterYear = null,
   festivalYear = null,
-  activeUrl = '',
-  commonFirstImage = '',
-  slides = [],
+  caption = '',
+  credit = '',
 } = {}) {
   if (isPriorEditionPoster(posterYear, festivalYear)) return true;
-  if (!Number.isFinite(festivalYear) || posterYear != null) return false;
-  const active = String(activeUrl || '').trim();
-  const common = String(commonFirstImage || '').trim();
-  if (!active || !common || active !== common) return false;
-  for (const slide of slides) {
-    if (String(slide.url || '').trim() === active) continue;
-    if (!isFestivalPosterCaption(slide)) continue;
-    const year = detectPosterEditionYear(slide);
-    if (year === festivalYear) return true;
-  }
-  return false;
+  return hasExplicitPriorEditionMarker(`${caption} ${credit}`);
 }
 
 /**

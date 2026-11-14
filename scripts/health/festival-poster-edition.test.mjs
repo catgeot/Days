@@ -47,7 +47,12 @@ test('prior edition label gate', () => {
   assert.equal(isPriorEditionPoster(null, 2026), false);
 });
 
-test('1095732-shaped fixture — caption year vs common hero without year', () => {
+test('festivalEditionYearFromEventFields is null-safe', () => {
+  assert.equal(festivalEditionYearFromEventFields(null), null);
+  assert.equal(festivalEditionYearFromEventFields(undefined), null);
+});
+
+test('1095732-shaped fixture — caption year only; yearless hero never labelled', () => {
   const { festivalYear, commonFirstImage, slides } = FIXTURE_1095732_POSTER;
   const priorCaptionIndex = slides.findIndex((s) => /2025/.test(s.caption));
   assert.ok(priorCaptionIndex >= 0);
@@ -55,9 +60,7 @@ test('1095732-shaped fixture — caption year vs common hero without year', () =
     shouldMarkPriorEditionPosterMeta({
       posterYear: detectPosterEditionYear(slides[priorCaptionIndex]),
       festivalYear,
-      activeUrl: slides[priorCaptionIndex].url,
-      commonFirstImage,
-      slides,
+      caption: slides[priorCaptionIndex].caption,
     }),
     true,
   );
@@ -65,9 +68,7 @@ test('1095732-shaped fixture — caption year vs common hero without year', () =
     shouldMarkPriorEditionPosterMeta({
       posterYear: detectPosterEditionYear(slides[1]),
       festivalYear,
-      activeUrl: slides[1].url,
-      commonFirstImage,
-      slides,
+      caption: slides[1].caption,
     }),
     false,
   );
@@ -75,10 +76,18 @@ test('1095732-shaped fixture — caption year vs common hero without year', () =
     shouldMarkPriorEditionPosterMeta({
       posterYear: null,
       festivalYear,
-      activeUrl: commonFirstImage,
-      commonFirstImage,
-      slides,
+      caption: '',
+      credit: '',
+    }),
+    false,
+  );
+  assert.equal(
+    shouldMarkPriorEditionPosterMeta({
+      posterYear: null,
+      festivalYear,
+      caption: '예년 포스터 안내',
     }),
     true,
   );
+  assert.equal(detectPosterEditionYear({ url: commonFirstImage, caption: '' }), null);
 });

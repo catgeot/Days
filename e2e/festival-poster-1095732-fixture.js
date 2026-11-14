@@ -17,8 +17,8 @@ export const FESTIVAL_POSTER_WINDOW_ITEM = {
   mapx: '126.9776330000',
   mapy: '37.5692040000',
   areaCode: '1',
-  firstimage: `${E2E_IMAGE}/common-poster.png`,
-  imageUrl: `${E2E_IMAGE}/common-poster.png`,
+  firstimage: `${E2E_IMAGE}/common-scene.png`,
+  imageUrl: `${E2E_IMAGE}/common-scene.png`,
 };
 
 export function buildFestivalPoster1095732Detail() {
@@ -40,8 +40,8 @@ export function buildFestivalPoster1095732Detail() {
       contentId: FESTIVAL_POSTER_E2E_ID,
       contentTypeId: '15',
       title: '서울빛초롱축제',
-      firstimage: `${E2E_IMAGE}/common-poster.png`,
-      imageUrl: `${E2E_IMAGE}/common-poster.png`,
+      firstimage: `${E2E_IMAGE}/common-scene.png`,
+      imageUrl: `${E2E_IMAGE}/common-scene.png`,
       mapx: '126.9776330000',
       mapy: '37.5692040000',
       addr1: '서울특별시 중구 태평로1가',
@@ -96,7 +96,7 @@ export async function installFestivalPoster1095732Fixtures(target) {
       }
     });
   }
-  await target.route(/supabase\.co\/functions\/v1\/tourapi-proxy/i, async (route) => {
+  await target.route(/tourapi-proxy/i, async (route) => {
     if (route.request().method() !== 'POST') {
       await route.fulfill({ status: 200, headers: CORS, body: '' });
       return;

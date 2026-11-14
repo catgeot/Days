@@ -182,6 +182,17 @@ export default defineConfig({
       use: { ...devices['iPhone 13'] },
     },
     {
+      name: 'webkit-festival-poster-prior-390',
+      testMatch: /korea-festival-poster-prior-390\.spec\.js/,
+      use: {
+        ...devices['iPhone 13'],
+        viewport: { width: 390, height: 844 },
+        deviceScaleFactor: 1,
+        locale: 'ko-KR',
+        ignoreHTTPSErrors: true,
+      },
+    },
+    {
       name: 'webkit-pr492-qa',
       testMatch: /pr492-qa-screenshots\.spec\.js/,
       use: {
