@@ -5,6 +5,8 @@ import {
   installExploreBichchorongSearchMock,
   installDelayedGangwonGeolocation,
 } from './explore-bichchorong-search-mock.js';
+import { GYEONGBOKGUNG_SCENIC, installExploreGyeongbokgungSearchMock } from './explore-gyeongbokgung-search-mock.js';
+import { installExploreGeminiMock } from './explore-gemini-mock.js';
 
 test.use({
   ignoreHTTPSErrors: true,
@@ -58,6 +60,28 @@ test.describe('Explore 빛초롱 search — WebKit 390 touch', () => {
     ]);
     await expect(page.locator('#korea-festival-sheet-title')).toContainText(/서울빛초롱축제/, {
       timeout: 90_000,
+    });
+  });
+
+  test('tap scenic card (경복궁) opens place in one touch', async ({ page }) => {
+    await installExploreGyeongbokgungSearchMock(page.context());
+    await installExploreGeminiMock(page.context());
+    const input = await openExploreSearch(page);
+    await input.fill('경복궁');
+    const scenicBtn = page
+      .locator('[data-search-popover] button')
+      .filter({ hasText: /경복궁/ })
+      .filter({ hasNotText: /MOONi|무니/i })
+      .first();
+    await expect(scenicBtn).toBeVisible({ timeout: 90_000 });
+    const placePath = new RegExp(`/place/(tour-${GYEONGBOKGUNG_SCENIC.content_id}|gyeongbokgung)`);
+    await Promise.all([
+      page.waitForURL(placePath, { timeout: 90_000, waitUntil: 'load' }),
+      scenicBtn.tap(),
+    ]);
+    await expect(page.getByText(/경복궁/).first()).toBeVisible({ timeout: 60_000 });
+    await expect(page.getByRole('button', { name: /여행 플래너|Travel/i })).toBeVisible({
+      timeout: 60_000,
     });
   });
 
