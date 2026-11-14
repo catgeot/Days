@@ -40,3 +40,8 @@ export function isLogbookOfficialReviewHubActive() {
   if (isGateoLogbookReviewHubEnabled()) return true;
   return readTruthyQueryParam(LOGBOOK_REVIEW_HUB_PREVIEW_QUERY_PARAM);
 }
+
+/** Editorial review detail hero + 2-line hub cards (prod: hub + filter env both ON). */
+export function isLogbookEditorialReviewDetailLayoutActive() {
+  return isLogbookOfficialReviewHubActive() && isGateoLogbookReviewFilterEnabled();
+}
