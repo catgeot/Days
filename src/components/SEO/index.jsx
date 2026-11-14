@@ -12,10 +12,8 @@ import {
   resolvePlaceOgImageUrl,
 } from '../../pages/Home/lib/placeSeoOg.js';
 import { buildTravelerAggregateRatingSchema } from '../../utils/placeReviewStats.js';
-import {
-  isEditorialBlogSeoPath,
-  stripHeadSeoBeforeHelmet,
-} from '../../shared/seo/stripHeadSeoBeforeHelmet.js';
+import { isWikimediaOgImageUrl, resolveSocialShareImageUrl } from '../../shared/seo/socialOgImage.js';
+import { stripHeadSeoBeforeHelmet } from '../../shared/seo/stripHeadSeoBeforeHelmet.js';
 
 const SCHEMA_TYPES = {
   TOURIST_ATTRACTION: 'TouristAttraction',
@@ -71,11 +69,19 @@ const SEO = ({
     }
     return DEFAULT_OG_IMAGE;
   }, [image, location, isGalleryTab, galleryImages]);
-  const seoImage = resolvedOgImage || DEFAULT_OG_IMAGE;
+  const seoImage = useMemo(() => {
+    const primary = image || resolvedOgImage || DEFAULT_OG_IMAGE;
+    if (!isWikimediaOgImageUrl(primary)) return primary;
+    if (location) {
+      const placeFallback = resolvePlaceOgImageUrl(location, isGalleryTab ? galleryImages : null);
+      return resolveSocialShareImageUrl(placeFallback);
+    }
+    return resolveSocialShareImageUrl(primary);
+  }, [image, resolvedOgImage, location, isGalleryTab, galleryImages]);
   const hreflangAlternates = useMemo(() => buildHreflangAlternates(pagePath), [pagePath]);
   const ogLocale = locale === 'en' ? 'en_US' : 'ko_KR';
   const ogLocaleAlternate = locale === 'en' ? 'ko_KR' : 'en_US';
-  const editorialStripForPath = useRef('');
+  const strippedStaticHeadForPath = useRef('');
 
   const displayName = useMemo(() => {
     if (!location) return '';
@@ -178,13 +184,9 @@ const SEO = ({
     };
   }, [gallerySchema]);
 
-  if (isEditorialBlogSeoPath(pagePath)) {
-    if (editorialStripForPath.current !== pagePath) {
-      editorialStripForPath.current = pagePath;
-      stripHeadSeoBeforeHelmet();
-    }
-  } else {
-    editorialStripForPath.current = '';
+  if (strippedStaticHeadForPath.current !== pagePath) {
+    strippedStaticHeadForPath.current = pagePath;
+    stripHeadSeoBeforeHelmet();
   }
 
   return (

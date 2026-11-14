@@ -84,9 +84,13 @@ import {
 } from '../lib/koreaPoiTypeSearch.js';
 import {
   preferEnterSuggestion,
+  preferEnterFestivalSuggestion,
   placeNameMatchesSearchQuery,
+  pickEnterFestivalMatches,
   pickEnterSuggestionMatches,
 } from '../lib/searchEnterMatch.js';
+import { buildExploreSiteSearchHybridSuggestions } from '../lib/exploreSiteSearchHybrid.js';
+import { normalizeSearchSuggestions } from '../lib/normalizeSearchSuggestions.js';
 import {
   effectiveExploreSearchQuery,
   applyRegionalHubLabels,
@@ -892,6 +896,27 @@ export function useHomeHandlers({
         }
       }
 
+      let hybridEnterSuggestions = [];
+      try {
+        hybridEnterSuggestions = await buildExploreSiteSearchHybridSuggestions(query);
+      } catch {
+        hybridEnterSuggestions = [];
+      }
+      const festDirect = preferEnterFestivalSuggestion(query, hybridEnterSuggestions);
+      if (festDirect) return festDirect;
+
+      const festMatches = pickEnterFestivalMatches(query, hybridEnterSuggestions);
+      if (festMatches.length >= 1 && hybridEnterSuggestions.length >= 2) {
+        const normalized = normalizeSearchSuggestions(query, hybridEnterSuggestions);
+        if (normalized.length >= 2) {
+          return makeDisambiguationResult(query, normalized, {
+            title: `'${query}' → 도시·명소·여행지`,
+            submitParity: true,
+            showMooni: true,
+          });
+        }
+      }
+
       try {
         const koreaFirstAsync = await resolveKoreaDestinationFirstPass(query);
         if (koreaFirstAsync) {
@@ -949,7 +974,9 @@ export function useHomeHandlers({
       try {
         const hybridMatches = pickEnterSuggestionMatches(
           query,
-          await buildHybridSearchSuggestions(query),
+          hybridEnterSuggestions.length
+            ? hybridEnterSuggestions
+            : await buildHybridSearchSuggestions(query),
         ).slice(0, 8);
         if (hybridMatches.length >= 1) {
           return ensureDisambiguation(

@@ -915,8 +915,21 @@ function Home() {
       if (prepared.uiPlace == null) prepared.uiPlace = true;
     }
     cachePlaceLocation(prepared);
-    navigate(`/place/${param}${tabSuffix}`);
-  }, [category, navigate, addScoutPin, moveToLocation, rememberGlobeFocus, setSelectedLocation]);
+    const placeHref = `/place/${param}${tabSuffix}`;
+    if (routeLocation.pathname.startsWith('/explore') && typeof window !== 'undefined') {
+      window.location.assign(placeHref);
+      return;
+    }
+    navigate(placeHref);
+  }, [
+    category,
+    navigate,
+    addScoutPin,
+    moveToLocation,
+    rememberGlobeFocus,
+    setSelectedLocation,
+    routeLocation.pathname,
+  ]);
 
   /** 장소카드 헤더 지구본 — URL SSOT 포커스 고정 후 홈 (연관 키워드 점프 후 stale selectedLocation race 방지) */
   const goHomeFromPlace = useCallback(() => {
@@ -2070,6 +2083,10 @@ function Home() {
 
             // 선택 카드 유지 (홈으로 나가지 않음)
             if (selectedFromSearch?.__disambiguation === true) {
+              return selectedFromSearch;
+            }
+
+            if (selectedFromSearch?.kind === 'festival' && selectedFromSearch?.festivalContentId) {
               return selectedFromSearch;
             }
 

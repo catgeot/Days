@@ -2471,8 +2471,8 @@ export default function KoreaFestivalHub() {
   );
 
   const shouldApplyBootLocation = useCallback(
-    () => !userRegionExplicitRef.current,
-    [],
+    () => !userRegionExplicitRef.current && !searchActive,
+    [searchActive],
   );
 
   useFestivalLocationBoot({
