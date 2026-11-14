@@ -1,4 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
+import {
+  buildLogbookHubReturnTo,
+  readLogbookReviewHubSession,
+} from '../../../logbookOfficialReviews/logbookReviewHubSession.js';
+import { scheduleLogbookHubScrollRestore } from '../../../logbookOfficialReviews/logbookReviewHubScrollRestore.js';
 import { createPortal } from 'react-dom';
 import Sidebar from './Sidebar';
 import { Globe, LogOut } from 'lucide-react';
@@ -38,6 +43,17 @@ const DailyLayout = () => {
 
   useEffect(() => {
     setProfileOpen(false);
+  }, [location.pathname, location.search]);
+
+  useEffect(() => {
+    if (!location.pathname.startsWith('/blog')) return undefined;
+    const session = readLogbookReviewHubSession();
+    if (typeof session?.scrollY !== 'number' || session.scrollY <= 0) return undefined;
+    const current = buildLogbookHubReturnTo(location.pathname, location.search);
+    if (session.returnTo && session.returnTo !== current) return undefined;
+    const el = mainScrollRef.current;
+    if (!el) return undefined;
+    return scheduleLogbookHubScrollRestore(el, session.scrollY);
   }, [location.pathname, location.search]);
 
   useEffect(() => {

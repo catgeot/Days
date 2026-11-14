@@ -2,7 +2,7 @@ import React, { useState, useEffect, useLayoutEffect, useRef, useMemo, useCallba
 import { EditorialReviewText } from './EditorialReviewText.jsx';
 import { ReviewLinkChips } from './ReviewLinkChips.jsx';
 import { createPortal } from 'react-dom';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation, Trans } from 'react-i18next';
 import { PenSquare, Star, MessageSquare, Image as ImageIcon, MoreVertical, Trash2, Edit, X, ChevronLeft, ChevronRight, Heart, Eye, BookOpen } from 'lucide-react';
 import { usePlaceReviews } from '../../../hooks/usePlaceReviews';
@@ -551,12 +551,14 @@ export const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onTog
 const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null, isActive = true }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const routeLocation = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const focusReviewId = parsePlaceReviewFocusId(searchParams);
   const scrollContainerRef = useRef(null);
   const focusSessionRef = useRef(null);
   const userCancelledDeepLinkRef = useRef(false);
   const prevFocusReviewIdRef = useRef(focusReviewId);
+  const consumedReviewDeepLinkRef = useRef(null);
   usePlaceMediaScrollToTop('REVIEWS', scrollContainerRef, !focusReviewId);
   const [user, setUser] = useState(null);
 
@@ -604,10 +606,24 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null, isActiv
   } = usePlaceReviews(placeSlug, user);
 
   const consumeReviewDeepLink = React.useCallback(() => {
-    if (!parsePlaceReviewFocusId(searchParams)) return;
+    const reviewId = parsePlaceReviewFocusId(searchParams);
+    if (!reviewId || consumedReviewDeepLinkRef.current === reviewId) return;
+    consumedReviewDeepLinkRef.current = reviewId;
     const next = placeReviewFocusSearchWithoutReview(searchParams);
-    setSearchParams(next, { replace: true });
-  }, [searchParams, setSearchParams]);
+    const search = next.toString();
+    navigate(
+      {
+        pathname: routeLocation.pathname,
+        search: search ? `?${search}` : '',
+        hash: routeLocation.hash,
+      },
+      {
+        replace: true,
+        preventScrollReset: true,
+        state: routeLocation.state,
+      },
+    );
+  }, [navigate, routeLocation.hash, routeLocation.pathname, routeLocation.state, searchParams]);
 
   useEffect(() => {
     userCancelledDeepLinkRef.current = false;
@@ -664,7 +680,9 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null, isActiv
 
     session.promise.then(() => {
       if (cancelled) return;
-      consumeReviewDeepLink();
+      requestAnimationFrame(() => {
+        if (!cancelled) consumeReviewDeepLink();
+      });
     });
 
     return () => {
@@ -680,6 +698,10 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null, isActiv
       }
     };
   }, [isActive, focusReviewId, isLoading, reviews, placeSlug, consumeReviewDeepLink]);
+
+  useEffect(() => {
+    if (!focusReviewId) consumedReviewDeepLinkRef.current = null;
+  }, [focusReviewId]);
 
   useEffect(() => () => {
     focusSessionRef.current?.abort();

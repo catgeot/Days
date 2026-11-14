@@ -310,6 +310,10 @@ test('Home gallery PR drift guard; MOONi session wiring line allowlist', () => {
     /^[+-].*festivalContentId/,
     /^[+-].*kind === 'festival'/,
     /^[+-]\s*return selectedFromSearch;/,
+    /^[+-].*isLogbookPlaceReturnPath/,
+    /^[+-].*navigatePlaceReturnToBlog/,
+    /^[+-].*logbookBlogReturnNavigate/,
+    /^[+-].*leavePlaceCard/,
   ];
 
   const exploreHandlersLine =

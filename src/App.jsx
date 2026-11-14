@@ -69,6 +69,7 @@ const PreviewDebugChrome = isPreviewDebugChromeBundled
   : null;
 import { LocaleProvider } from './i18n/LocaleProvider';
 import AppHistoryRecorder from './shared/navigation/AppHistoryRecorder';
+import { installLogbookBlogReturnPopGuard } from './shared/navigation/logbookBlogReturnNavigate.js';
 import { installPersistedBlankPageReload } from './shared/lib/persistedBlankPageReload.js';
 import { recordInstagramVisitIfLanding } from './pages/Korea/socialPromoInstagramSession.js';
 
@@ -110,6 +111,10 @@ function EnWorldEventDetailRedirect() {
 }
 
 function App() {
+  useEffect(() => {
+    installLogbookBlogReturnPopGuard();
+  }, []);
+
   useEffect(() => {
     supabase.auth.getSession().then(() => {
       const { pathname, search, hash } = window.location;

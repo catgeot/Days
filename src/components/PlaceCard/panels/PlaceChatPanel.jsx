@@ -25,7 +25,9 @@ import { resolvePlaceCardBack } from '../../../pages/Home/lib/placeCardBack';
 import {
   clearPlaceReturnTo,
   peekPlaceReturnTo,
+  isLogbookPlaceReturnPath,
 } from '../../../pages/Home/lib/placeReturnTo';
+import { navigatePlaceReturnToBlog } from '../../../shared/navigation/logbookBlogReturnNavigate.js';
 import PlaceWorldEventsSection from '../common/PlaceWorldEventsSection';
 import PlaceWorldEventsChatPreview from '../common/PlaceWorldEventsChatPreview';
 import PlaceCrossLinksSection from '../common/PlaceCrossLinksSection';
@@ -228,6 +230,10 @@ const PlaceChatPanel = React.memo(({
                       return;
                     }
                     if (action.type === 'push') {
+                      if (action.clearReturnTo && isLogbookPlaceReturnPath(action.path)) {
+                        navigatePlaceReturnToBlog(navigate, action.path);
+                        return;
+                      }
                       if (action.clearReturnTo) clearPlaceReturnTo();
                       navigate(action.path);
                       return;

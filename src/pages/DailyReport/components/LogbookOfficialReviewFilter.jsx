@@ -4,6 +4,7 @@ import {
   LOGBOOK_REVIEW_FILTER_MAJOR,
 } from '../../../logbookOfficialReviews/groupLogbookOfficialReviews.js';
 import { buildLogbookReviewCityChipLayout } from '../../../logbookOfficialReviews/logbookReviewCityChips.js';
+import { resolveLogbookReviewCityChipLabel } from '../../../logbookOfficialReviews/logbookReviewPlaceLabel.js';
 
 function reviewFilterChipClass(active) {
   return `shrink-0 inline-flex max-w-[14rem] items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 ${
@@ -13,8 +14,8 @@ function reviewFilterChipClass(active) {
   }`;
 }
 
-function CityChipButton({ chip, active, onCityChange }) {
-  const label = chip.shortPlaceName || chip.placeName || chip.slug;
+function CityChipButton({ chip, active, onCityChange, lang }) {
+  const label = resolveLogbookReviewCityChipLabel(chip, lang);
   return (
     <button
       key={chip.slug}
@@ -45,7 +46,8 @@ export default function LogbookOfficialReviewFilter({
   onMajorChange,
   onCityChange,
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const lang = i18n.language?.startsWith('en') ? 'en' : 'ko';
   const [otherExpanded, setOtherExpanded] = useState(false);
 
   const majorOptions = [
@@ -125,6 +127,7 @@ export default function LogbookOfficialReviewFilter({
               <CityChipButton
                 key={chip.slug}
                 chip={chip}
+                lang={lang}
                 active={citySlug === chip.slug}
                 onCityChange={(slug) => {
                   setOtherExpanded(false);
@@ -155,6 +158,7 @@ export default function LogbookOfficialReviewFilter({
                 <CityChipButton
                   key={chip.slug}
                   chip={chip}
+                  lang={lang}
                   active={citySlug === chip.slug}
                   onCityChange={(slug) => {
                     onCityChange(slug);
