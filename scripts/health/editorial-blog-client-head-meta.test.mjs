@@ -96,6 +96,26 @@ test('stripHeadSeoBeforeHelmet removes index.html default og and description tag
   assert.equal(globalThis.document.querySelectorAll('meta[name="description"]').length, 0);
 });
 
+test('stripHeadSeoBeforeHelmet keeps react-helmet nodes with data-rh="true"', () => {
+  mountDom('/blog/e/rome-travelogue?lang=ko');
+  const helmetTitle = globalThis.document.createElement('title');
+  helmetTitle.setAttribute('data-rh', 'true');
+  helmetTitle.textContent = 'Helmet title | GATEO';
+  globalThis.document.head.appendChild(helmetTitle);
+  const helmetOg = globalThis.document.createElement('meta');
+  helmetOg.setAttribute('property', 'og:title');
+  helmetOg.setAttribute('content', 'Helmet title | GATEO');
+  helmetOg.setAttribute('data-rh', 'true');
+  globalThis.document.head.appendChild(helmetOg);
+
+  stripHeadSeoBeforeHelmet();
+
+  assert.equal(globalThis.document.querySelectorAll('title').length, 1);
+  assert.equal(globalThis.document.title, 'Helmet title | GATEO');
+  assert.equal(globalThis.document.querySelectorAll('meta[property="og:title"]').length, 1);
+  assert.equal(firstMeta('meta[property="og:title"]'), 'Helmet title | GATEO');
+});
+
 test('editorial SEO keeps single post-specific description and og fields after render', async () => {
   mountDom('/blog/e/rome-travelogue?lang=ko');
   const articleTitle = '로마, 영원의 도시를 걷다';
@@ -121,6 +141,82 @@ test('editorial SEO keeps single post-specific description and og fields after r
   assert.equal(globalThis.document.querySelectorAll('meta[property="og:url"]').length, 1);
   assert.equal(firstMeta('meta[property="og:url"]'), 'https://www.gateo.kr/blog/e/rome-travelogue');
   assert.equal(globalThis.document.querySelector('link[rel="canonical"]')?.href, 'https://www.gateo.kr/blog/e/rome-travelogue');
+});
+
+test('editorial SEO survives parent re-render (view count style update)', async () => {
+  mountDom('/blog/e/rome-travelogue?lang=ko');
+  const articleTitle = '석양 전의 콜로세움';
+  const articleDescription = '콜로세움과 포로는 한 장의 표로, 바티칸은 일요일이 아닌 날에';
+
+  function EditorialHarness({ tick }) {
+    return React.createElement(
+      React.Fragment,
+      null,
+      React.createElement(SEO, {
+        title: articleTitle,
+        description: articleDescription,
+        url: '/blog/e/rome-travelogue',
+        type: 'article',
+        image: 'https://www.gateo.kr/og-image.png',
+      }),
+      React.createElement('span', { 'data-tick': String(tick) }),
+    );
+  }
+
+  container = globalThis.document.createElement('div');
+  globalThis.document.body.appendChild(container);
+  root = createRoot(container);
+
+  await act(async () => {
+    root.render(
+      React.createElement(
+        MemoryRouter,
+        { initialEntries: ['/blog/e/rome-travelogue?lang=ko'] },
+        React.createElement(
+          HelmetProvider,
+          null,
+          React.createElement(
+            LocaleProvider,
+            null,
+            React.createElement(I18nextProvider, { i18n }, React.createElement(EditorialHarness, { tick: 0 })),
+          ),
+        ),
+      ),
+    );
+  });
+  await act(async () => {
+    await new Promise((resolve) => setTimeout(resolve, 0));
+  });
+
+  globalThis.document.querySelectorAll('title, meta[property^="og:"], meta[name="description"], meta[name^="twitter:"]').forEach((el) => {
+    el.setAttribute('data-rh', 'true');
+  });
+
+  await act(async () => {
+    root.render(
+      React.createElement(
+        MemoryRouter,
+        { initialEntries: ['/blog/e/rome-travelogue?lang=ko'] },
+        React.createElement(
+          HelmetProvider,
+          null,
+          React.createElement(
+            LocaleProvider,
+            null,
+            React.createElement(I18nextProvider, { i18n }, React.createElement(EditorialHarness, { tick: 42 })),
+          ),
+        ),
+      ),
+    );
+  });
+  await act(async () => {
+    await new Promise((resolve) => setTimeout(resolve, 0));
+  });
+
+  assert.match(globalThis.document.title, /석양 전의 콜로세움/);
+  assert.equal(globalThis.document.querySelectorAll('title').length, 1);
+  assert.equal(globalThis.document.querySelectorAll('meta[property="og:title"]').length, 1);
+  assert.equal(firstMeta('meta[property="og:description"]'), articleDescription);
 });
 
 test('editorial SEO does not leave duplicate home-default og:description', async () => {

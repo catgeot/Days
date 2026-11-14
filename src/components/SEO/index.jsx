@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
@@ -75,6 +75,7 @@ const SEO = ({
   const hreflangAlternates = useMemo(() => buildHreflangAlternates(pagePath), [pagePath]);
   const ogLocale = locale === 'en' ? 'en_US' : 'ko_KR';
   const ogLocaleAlternate = locale === 'en' ? 'ko_KR' : 'en_US';
+  const editorialStripForPath = useRef('');
 
   const displayName = useMemo(() => {
     if (!location) return '';
@@ -178,7 +179,12 @@ const SEO = ({
   }, [gallerySchema]);
 
   if (isEditorialBlogSeoPath(pagePath)) {
-    stripHeadSeoBeforeHelmet();
+    if (editorialStripForPath.current !== pagePath) {
+      editorialStripForPath.current = pagePath;
+      stripHeadSeoBeforeHelmet();
+    }
+  } else {
+    editorialStripForPath.current = '';
   }
 
   return (

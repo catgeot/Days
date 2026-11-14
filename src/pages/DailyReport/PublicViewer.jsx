@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { supabase } from '../../shared/api/supabase';
 import { MapPin, Home, Compass, PenTool, User } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
@@ -29,7 +29,10 @@ import SEO from '../../components/SEO';
 import { resolveLogbookFeedExcerpt } from '../../utils/logbookDek';
 import { navigateAppBack } from '../../shared/navigation/navigateAppBack';
 import AppOutlineBackButton from '../../shared/navigation/AppOutlineBackButton';
-import { stripHeadSeoBeforeHelmet } from '../../shared/seo/stripHeadSeoBeforeHelmet.js';
+import {
+  isEditorialBlogSeoPath,
+  stripHeadSeoBeforeHelmet,
+} from '../../shared/seo/stripHeadSeoBeforeHelmet.js';
 
 const SCHEMA_TYPE = 'EditorialLogbookArticle';
 
@@ -189,6 +192,17 @@ const PublicViewer = () => {
     };
   }, [editorialJsonLd]);
 
+  const loadingHeadStripSlug = useRef('');
+
+  useLayoutEffect(() => {
+    if (report || !editorialSlug) return;
+    const path = `/blog/e/${editorialSlug}`;
+    if (!isEditorialBlogSeoPath(path)) return;
+    if (loadingHeadStripSlug.current === editorialSlug) return;
+    loadingHeadStripSlug.current = editorialSlug;
+    stripHeadSeoBeforeHelmet();
+  }, [editorialSlug, report]);
+
   if (errorMsg) {
     return (
       <div className="min-h-screen bg-white flex flex-col justify-center items-center text-gray-500">
@@ -202,9 +216,6 @@ const PublicViewer = () => {
   }
 
   if (!report) {
-    if (editorialSlug) {
-      stripHeadSeoBeforeHelmet();
-    }
     return (
       <div className="min-h-screen bg-white flex justify-center items-center text-gray-400 animate-pulse">
         {t('logbook.common.loadingFragments')}
