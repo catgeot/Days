@@ -8,6 +8,7 @@ import PlaceRestaurantMapOutbound from '../common/PlaceRestaurantMapOutbound';
 import { isExploreRestaurantItem } from '../../../shared/search/tourRestaurantDetect.js';
 import PlaceCrossLinksSection from '../common/PlaceCrossLinksSection';
 import PlaceGalleryFactsAndStories from '../common/PlaceGalleryFactsAndStories';
+import PlaceGalleryLocaleNoticeChips from './PlaceGalleryLocaleNoticeChips';
 
 export default function GalleryInfoOverviewScrollContent({
   selectedPlace,
@@ -68,15 +69,10 @@ export default function GalleryInfoOverviewScrollContent({
     <div className="animate-fade-in space-y-5">
       {restaurantPin ? <PlaceRestaurantMapOutbound location={selectedPlace} /> : null}
       <div className="space-y-4">
-        {showDescriptionInKoreanLabel ? (
-          <span className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-white/5 px-2.5 py-1 text-[11px] text-gray-300">
-            {t('place.localeNotice.descriptionInKorean')}
-          </span>
-        ) : showKoreanGuideNotice ? (
-          <span className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-white/5 px-2.5 py-1 text-[11px] text-gray-300">
-            ℹ️ {t('place.localeNotice.koreanGuide')}
-          </span>
-        ) : null}
+        <PlaceGalleryLocaleNoticeChips
+          showDescriptionInKoreanLabel={showDescriptionInKoreanLabel}
+          showKoreanGuideNotice={showKoreanGuideNotice}
+        />
         {(overviewQuery || curationOverview) && (
           <div className="rounded-xl border border-violet-400/25 bg-violet-500/10 px-3.5 py-3.5">
             {overviewQuery && (

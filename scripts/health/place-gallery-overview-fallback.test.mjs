@@ -472,11 +472,51 @@ test('synthetic hub attraction desc is empty for display when flag on', () => {
 });
 
 test('Gallery UI wires EN korean description label i18n key', () => {
-  const scroll = readFileSync(
-    join(root, 'src/components/PlaceCard/views/GalleryInfoOverviewScrollContent.jsx'),
+  const chips = readFileSync(
+    join(root, 'src/components/PlaceCard/views/PlaceGalleryLocaleNoticeChips.jsx'),
     'utf8',
   );
-  assert.match(scroll, /descriptionInKorean/);
+  assert.match(chips, /descriptionInKorean/);
+  assert.match(chips, /koreanGuide/);
+  assert.match(chips, /role="status"/);
+});
+
+test('mobile gallery overview — notice section when body empty (donggureung-class)', () => {
+  const notices = readFileSync(
+    join(root, 'src/components/PlaceCard/common/galleryOverviewLocaleNotices.js'),
+    'utf8',
+  );
+  assert.match(notices, /shouldShowMobileGalleryOverviewSection/);
+  assert.match(notices, /resolveGalleryOverviewLocaleNotices/);
+  const gallery = readFileSync(
+    join(root, 'src/components/PlaceCard/views/PlaceGalleryView.jsx'),
+    'utf8',
+  );
+  assert.match(gallery, /shouldShowMobileGalleryOverviewSection/);
+  assert.match(gallery, /showMobileGalleryOverview/);
+  assert.doesNotMatch(gallery, /hasPlaceOverview && \(\s*\n\s*<div[^>]+data-place-gallery-mobile-overview/);
+});
+
+test('mobile gallery overview uses hydration hook + koreanGuide notice', () => {
+  const gallery = readFileSync(
+    join(root, 'src/components/PlaceCard/views/PlaceGalleryView.jsx'),
+    'utf8',
+  );
+  const mobile = readFileSync(
+    join(root, 'src/components/PlaceCard/views/PlaceGalleryMobileOverviewCard.jsx'),
+    'utf8',
+  );
+  assert.match(gallery, /usePlaceGalleryOverviewHydration/);
+  assert.match(gallery, /PlaceGalleryMobileOverviewCard/);
+  assert.match(gallery, /data-place-gallery-mobile-overview/);
+  assert.match(mobile, /PlaceGalleryLocaleNoticeChips/);
+  assert.match(
+    readFileSync(
+      join(root, 'src/components/PlaceCard/common/galleryOverviewLocaleNotices.js'),
+      'utf8',
+    ),
+    /isPlaceDescKoreanOnly/,
+  );
 });
 
 test('fetchDomesticTourOverview (main) uses searchKeyword path not ForLocation shortcut', () => {

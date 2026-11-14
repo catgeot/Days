@@ -21,6 +21,17 @@ const placeIntroOverSsotE2e =
 const placeIntroOverSsotPort = 5193;
 const placeIntroOverSsotLocalBase = `http://127.0.0.1:${placeIntroOverSsotPort}`;
 
+const placeGalleryOverviewLocaleE2e =
+  process.env.PLACE_GALLERY_OVERVIEW_LOCALE_E2E === '1' ||
+  /place-gallery-overview-locale-390|chromium-place-gallery-overview-locale-390/.test(
+    playwrightArgv,
+  );
+const placeGalleryOverviewLocalePort = 5195;
+const placeGalleryOverviewLocaleLocalBase = `http://127.0.0.1:${placeGalleryOverviewLocalePort}`;
+const placeGalleryOverviewLocaleExternalPreview = Boolean(
+  process.env.PLAYWRIGHT_BASE_URL?.includes(`127.0.0.1:${placeGalleryOverviewLocalePort}`),
+);
+
 export default defineConfig({
   testDir: './e2e',
   fullyParallel: false,
@@ -39,7 +50,17 @@ export default defineConfig({
           timeout: 120_000,
         },
       }
-    : nearbyCardsE2e
+    : placeGalleryOverviewLocaleE2e && !placeGalleryOverviewLocaleExternalPreview
+      ? {
+          webServer: {
+            command: `BROWSER=none DEV_SSL=0 VITE_GATEO_PLACE_INTRO_OVER_SSOT=1 npx vite --host 127.0.0.1 --port ${placeGalleryOverviewLocalePort}`,
+            url: `${placeGalleryOverviewLocaleLocalBase}/`,
+            reuseExistingServer: true,
+            timeout: 120_000,
+          },
+          use: { baseURL: placeGalleryOverviewLocaleLocalBase },
+        }
+      : nearbyCardsE2e
       ? {
           webServer: {
             command: `BROWSER=none DEV_SSL=0 VITE_GATEO_NEARBY_CARDS=${nearbyCardsFlag} npx vite --host 127.0.0.1 --port ${nearbyCardsPort}`,
@@ -50,7 +71,11 @@ export default defineConfig({
         }
       : {}),
   use: {
-    baseURL: siteUrl,
+    baseURL: placeGalleryOverviewLocaleE2e
+      ? placeGalleryOverviewLocaleLocalBase
+      : placeIntroOverSsotE2e
+        ? placeIntroOverSsotLocalBase
+        : siteUrl,
     trace: process.env.CI ? 'off' : 'on-first-retry',
     screenshot: process.env.CI ? 'off' : 'only-on-failure',
     video: process.env.CI ? 'off' : 'retain-on-failure',
@@ -423,6 +448,18 @@ export default defineConfig({
         deviceScaleFactor: 1,
         ignoreHTTPSErrors: true,
         ...(placeIntroOverSsotE2e ? { baseURL: placeIntroOverSsotLocalBase } : {}),
+      },
+    },
+    {
+      name: 'chromium-place-gallery-overview-locale-390',
+      testMatch: /place-gallery-overview-locale-390\.spec\.js/,
+      timeout: 180_000,
+      use: {
+        ...devices['Desktop Chrome'],
+        viewport: { width: 390, height: 844 },
+        deviceScaleFactor: 1,
+        ignoreHTTPSErrors: true,
+        ...(placeGalleryOverviewLocaleE2e ? { baseURL: placeGalleryOverviewLocaleLocalBase } : {}),
       },
     },
     {
