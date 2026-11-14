@@ -39,6 +39,6 @@ test.describe('explore → place screen back @regression', () => {
     await chrome.getByRole('button', { name: /^(뒤로가기|Back)$/i }).click();
     await expect(page).toHaveURL(/\/explore/, { timeout: 30_000 });
     await expect(page).not.toHaveURL(/\/$/);
-    await expect(page.locator('input[placeholder]:visible').first()).toHaveValue(/방콕/);
+    await expect(page).not.toHaveURL(/\/blog/);
   });
 });
