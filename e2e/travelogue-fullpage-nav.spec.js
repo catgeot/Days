@@ -115,14 +115,14 @@ async function openRomeFromExplore(page, { preferDirect = false } = {}) {
 }
 
 async function openRomeFromExploreForScreenBack(page) {
-  await page.goto('/explore?lang=ko');
+  await page.goto('/?lang=ko', { waitUntil: 'domcontentloaded' });
   await page.evaluate(() => {
     sessionStorage.setItem(
       'gateo:explore-return-snapshot',
       JSON.stringify({ path: '/explore', query: '?lang=ko', scrollY: 0, seq: 1 }),
     );
   });
-  await page.goto('/place/rome?lang=ko');
+  await page.goto('/place/rome?lang=ko', { waitUntil: 'domcontentloaded' });
   await expect(page).toHaveURL(/\/place\/rome/, { timeout: 30_000 });
 }
 
