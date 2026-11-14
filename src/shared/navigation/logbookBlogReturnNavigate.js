@@ -2,6 +2,7 @@ import {
   clearPlaceReturnTo,
   isLogbookPlaceReturnPath,
 } from '../../pages/Home/lib/placeReturnTo.js';
+import { releaseGateoDocumentScrollInterference } from '../lib/gateoBodyScrollLock.js';
 
 function blogReturnDomLooksStale() {
   if (typeof window === 'undefined') return false;
@@ -28,19 +29,13 @@ export function navigatePlaceReturnToBlog(navigate, path) {
     navigate(path);
     return;
   }
+  clearPlaceReturnTo();
+  releaseGateoDocumentScrollInterference();
+  if (typeof window !== 'undefined') {
+    window.location.assign(path);
+    return;
+  }
   navigate(path);
-  const reconcile = () => {
-    if (blogReturnDomLooksStale()) {
-      hardReplaceBlogReturn(path);
-      return;
-    }
-    clearPlaceReturnTo();
-  };
-  queueMicrotask(() => {
-    requestAnimationFrame(() => {
-      requestAnimationFrame(reconcile);
-    });
-  });
 }
 
 let popGuardInstalled = false;

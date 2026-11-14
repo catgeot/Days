@@ -7,6 +7,20 @@ export function resetGateoBodyScrollLockForTests() {
   saved = null;
 }
 
+/** Clears ref-counted lock state and inline body/html overflow from modals, lightboxes, galleries. */
+export function releaseGateoDocumentScrollInterference() {
+  if (typeof document === 'undefined') return;
+  depth = 0;
+  saved = null;
+  const { body, documentElement: html } = document;
+  body.style.removeProperty('overflow');
+  body.style.removeProperty('overflow-y');
+  body.style.removeProperty('touch-action');
+  body.style.removeProperty('position');
+  html.style.removeProperty('overflow');
+  html.style.removeProperty('overflow-y');
+}
+
 export function gateoBodyScrollLockDepth() {
   return depth;
 }

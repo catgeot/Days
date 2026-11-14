@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useId, useMemo, useState } from 'react';
-import { Link, useLocation, useSearchParams } from 'react-router-dom';
+import { useLocation, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ChevronDown, Sparkles } from 'lucide-react';
 import { LOGBOOK_OFFICIAL_REVIEW_CARD_TITLE } from '../../../logbookOfficialReviews/constants.js';
@@ -355,7 +355,13 @@ const LogbookOfficialReviewHubCard = () => {
     return null;
   }
 
-  if (isLoading && totalCount === 0) {
+  const hubSession = readLogbookReviewHubSession();
+  const hubReturnCurrent = buildLogbookHubReturnTo(location.pathname, location.search);
+  const hubRestorePending =
+    hubSession?.returnTo === hubReturnCurrent &&
+    (hubSession?.expanded || hubSession?.visibleCount > 0);
+
+  if (isLoading && totalCount === 0 && !hubRestorePending) {
     return null;
   }
 
@@ -363,13 +369,14 @@ const LogbookOfficialReviewHubCard = () => {
   const headerRound = expanded ? 'rounded-t-2xl' : 'rounded-2xl';
   const displayFilteredCount =
     filterEnabled && filteredTotal !== totalCount ? filteredTotal : undefined;
+  const hubLoadingShell = isLoading && totalCount === 0 && hubRestorePending;
 
   return (
     <section
       className={HUB_CARD_LAYOUT_CLASS}
       aria-label={hubTitle}
       data-testid="logbook-official-review-hub"
-      data-hub-state="ready"
+      data-hub-state={hubLoadingShell ? 'loading' : 'ready'}
     >
       <HubTitleRow
         panelId={panelId}
@@ -388,7 +395,12 @@ const LogbookOfficialReviewHubCard = () => {
           className="border-t border-gray-100 px-3 pb-4 pt-2 sm:px-4"
           data-testid="logbook-official-review-hub-panel"
         >
-          {filterEnabled ? (
+          {hubLoadingShell ? (
+            <p className="min-h-[420px] py-6 text-center text-sm text-gray-500" data-testid="logbook-official-review-hub-loading">
+              {t('logbook.officialReviewHub.loading', { defaultValue: '리뷰 목록을 불러오는 중…' })}
+            </p>
+          ) : null}
+          {!hubLoadingShell && filterEnabled ? (
             <LogbookOfficialReviewFilter
               major={filterMajor}
               citySlug={filterCitySlug}
@@ -400,13 +412,13 @@ const LogbookOfficialReviewHubCard = () => {
               onCityChange={onCityChange}
             />
           ) : null}
-          {filterEnabled ? (
+          {!hubLoadingShell && filterEnabled ? (
             <LogbookOfficialReviewCardGrid
               reviews={visibleRows}
               hubLinkState={hubLinkState}
               onHubReviewNavigate={onHubReviewNavigate}
             />
-          ) : (
+          ) : !hubLoadingShell ? (
             <ul className="divide-y divide-gray-100">
               {visibleRows.map((review) => {
                 const slug = String(review.place_slug || '').trim();
@@ -419,9 +431,8 @@ const LogbookOfficialReviewHubCard = () => {
 
                 return (
                   <li key={review.id}>
-                    <Link
-                      to={href}
-                      state={hubLinkState}
+                    <a
+                      href={href}
                       onPointerDown={(event) => {
                         if (event.button !== 0) return;
                         onHubReviewNavigate();
@@ -453,13 +464,13 @@ const LogbookOfficialReviewHubCard = () => {
                           <p className="mt-1 text-[11px] text-gray-400">{dateLabel}</p>
                         ) : null}
                       </div>
-                    </Link>
+                    </a>
                   </li>
                 );
               })}
             </ul>
-          )}
-          {hasMore ? (
+          ) : null}
+          {!hubLoadingShell && hasMore ? (
             <div className="pt-2 flex justify-center">
               <button
                 type="button"

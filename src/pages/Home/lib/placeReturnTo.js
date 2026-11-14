@@ -1,3 +1,5 @@
+import { readLogbookReviewHubSession } from '../../../logbookOfficialReviews/logbookReviewHubSession.js';
+
 const KEY = 'gateo:place-return-to';
 const ALLOWED_EXACT = new Set([
   '/korea',
@@ -79,10 +81,12 @@ export function peekPlaceReturnTo(routeState) {
     routeState &&
     typeof routeState === 'object' &&
     /** @type {{ fromLogbookReviewHub?: unknown }} */ (routeState).fromLogbookReviewHub === true;
-  if (!fromHub) return null;
   try {
     const stored = sessionStorage.getItem(KEY);
-    if (isAllowed(stored)) return stored;
+    if (!isAllowed(stored)) return null;
+    if (fromHub) return stored;
+    const hubSession = readLogbookReviewHubSession();
+    if (hubSession?.returnTo && stored === hubSession.returnTo) return stored;
   } catch {
     /* private mode */
   }

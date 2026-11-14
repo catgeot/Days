@@ -23,6 +23,7 @@ import { decodeHtmlEntities } from '../../../utils/decodeHtmlEntities';
 import { placePathSuffixForMediaMode, expandedMediaModesIncludingWorldEvents } from '../common/placeMediaTabRoutes';
 import { isGateoPlaceWorldEventsTabEnabled } from '../../../shared/gateoFeatureFlags';
 import { isPlacePlannerEligible } from '../../../shared/place/placePlannerEligibility.js';
+import { releaseGateoDocumentScrollInterference } from '../../../shared/lib/gateoBodyScrollLock.js';
 
 const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, onOpenMooni, onNavigateToPlace, onGoHome, isMooniChatOpen = false, galleryData, onToggleBookmark, initialTab = 'GALLERY' }) => {
   const navigate = useNavigate();
@@ -85,6 +86,8 @@ const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, onOpenM
     resetIosZoomAfterInput();
     onClose?.();
   }, [onClose]);
+
+  useEffect(() => () => releaseGateoDocumentScrollInterference(), []);
 
   useEffect(() => {
     if (prevMediaModeRef.current === 'PLANNER' && mediaMode !== 'PLANNER') {

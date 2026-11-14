@@ -223,17 +223,26 @@ const PlaceChatPanel = React.memo(({
                     const idx = window.history.state?.idx;
                     const prevPath =
                       typeof idx === 'number' ? getAppHistoryPath(idx - 1) : null;
+                    const returnTo = peekPlaceReturnTo(routeLocation.state);
                     const action = resolvePlaceCardBack({
                       historyIdx: typeof idx === 'number' ? idx : null,
                       prevPath,
-                      returnTo: peekPlaceReturnTo(routeLocation.state),
+                      returnTo,
                       exploreReturnPath: peekExploreReturn()?.path ?? null,
                     });
+                    const prevName = prevPath ? prevPath.split('?')[0] : '';
                     if (placeBackShouldFullPageToExplore(action, prevPath)) {
                       hardNavigatePlaceExploreBack(prevPath);
                       return;
                     }
                     if (action.type === 'history') {
+                      const blogPath =
+                        (returnTo && isLogbookPlaceReturnPath(returnTo) ? returnTo : null) ||
+                        (prevName.startsWith('/blog') && prevPath ? prevPath : null);
+                      if (blogPath) {
+                        navigatePlaceReturnToBlog(navigate, blogPath);
+                        return;
+                      }
                       navigate(-1);
                       return;
                     }

@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ImageIcon } from 'lucide-react';
 import { formatLogbookDisplayDate } from '../../../utils/logbookDisplayDate';
@@ -203,14 +202,12 @@ export default function LogbookOfficialReviewCardGrid({
 
         return (
           <li key={review.id} className="min-w-0">
-            <Link
-              to={href}
-              state={hubLinkState}
+            <a
+              href={href}
               onPointerDown={(event) => {
                 if (event.button !== 0) return;
                 onHubReviewNavigate?.();
               }}
-              onClick={() => onHubReviewNavigate?.()}
               className="group flex h-full flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-colors hover:border-indigo-100 hover:bg-gray-50/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
               data-testid="logbook-official-review-hub-item"
               data-hub-place-slug={slug || undefined}
@@ -258,7 +255,7 @@ export default function LogbookOfficialReviewCardGrid({
                   </p>
                 ) : null}
               </div>
-            </Link>
+            </a>
           </li>
         );
       })}

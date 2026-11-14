@@ -12,6 +12,12 @@ const previewEnv = {
   DEV_SSL: '0',
 };
 
+const usePrebuiltDist = process.env.PLAYWRIGHT_USE_PREBUILT_DIST === '1';
+const previewStart = `npx vite preview --host 127.0.0.1 --port ${port} --strictPort --outDir dist`;
+const webServerCommand = usePrebuiltDist
+  ? previewStart
+  : `mkdir -p dist && npm run build && ${previewStart}`;
+
 export default defineConfig({
   testDir: './e2e',
   testMatch: /logbook-review-hub-navigation\.spec\.js/,
@@ -22,7 +28,7 @@ export default defineConfig({
   timeout: 180_000,
   reporter: process.env.CI ? [['line']] : [['list']],
   webServer: {
-    command: `mkdir -p dist && npm run build && npx vite preview --host 127.0.0.1 --port ${port} --strictPort --outDir dist`,
+    command: webServerCommand,
     env: previewEnv,
     url: `${baseURL}/`,
     reuseExistingServer: !process.env.CI,

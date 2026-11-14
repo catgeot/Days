@@ -17,6 +17,7 @@ import {
   describeHitElement,
   logLogbookHeaderDebug,
 } from '../../../shared/cloudPreview/logbookHeaderDebug';
+import { releaseGateoDocumentScrollInterference } from '../../../shared/lib/gateoBodyScrollLock.js';
 
 const MOBILE_HEADER_BAND_PX = 112;
 
@@ -43,6 +44,12 @@ const DailyLayout = () => {
 
   useEffect(() => {
     setProfileOpen(false);
+  }, [location.pathname, location.search]);
+
+  useEffect(() => {
+    if (!location.pathname.startsWith('/blog')) return undefined;
+    releaseGateoDocumentScrollInterference();
+    return () => releaseGateoDocumentScrollInterference();
   }, [location.pathname, location.search]);
 
   useEffect(() => {

@@ -7,6 +7,7 @@ import {
   peekPlaceReturnTo,
   clearPlaceReturnTo,
 } from '../../src/pages/Home/lib/placeReturnTo.js';
+import { snapshotLogbookReviewHubSession } from '../../src/logbookOfficialReviews/logbookReviewHubSession.js';
 
 test('placeReturnTo allows /blog with query', () => {
   assert.equal(isLogbookPlaceReturnPath('/blog?tab=public&lang=ko&region=overseas'), true);
@@ -43,11 +44,13 @@ test('resolvePlaceCardBack — push prev /blog when returnTo missing', () => {
 test('setPlaceReturnTo session for blog — hub flag only', () => {
   const store = new Map();
   const prev = globalThis.sessionStorage;
+  const prevWindow = globalThis.window;
   globalThis.sessionStorage = {
     setItem: (k, v) => store.set(k, v),
     getItem: (k) => store.get(k) ?? null,
     removeItem: (k) => store.delete(k),
   };
+  globalThis.window = globalThis;
   clearPlaceReturnTo();
   setPlaceReturnTo('/blog?tab=public');
   assert.equal(peekPlaceReturnTo(null), null);
@@ -55,8 +58,11 @@ test('setPlaceReturnTo session for blog — hub flag only', () => {
     peekPlaceReturnTo({ fromLogbookReviewHub: true }),
     '/blog?tab=public',
   );
+  snapshotLogbookReviewHubSession({ returnTo: '/blog?tab=public' });
+  assert.equal(peekPlaceReturnTo(null), '/blog?tab=public');
   clearPlaceReturnTo();
   globalThis.sessionStorage = prev;
+  globalThis.window = prevWindow;
 });
 
 test('explore snapshot + missing prevPath uses history', () => {

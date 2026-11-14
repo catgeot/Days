@@ -8,6 +8,7 @@ import { JSDOM } from 'jsdom';
 import {
   gateoBodyScrollLockDepth,
   pushGateoBodyScrollLock,
+  releaseGateoDocumentScrollInterference,
   resetGateoBodyScrollLockForTests,
 } from '../../src/shared/lib/gateoBodyScrollLock.js';
 
@@ -39,6 +40,20 @@ test('nested locks restore original overflow when the last lock releases', () =>
   assert.equal(document.body.style.overflow, '');
   assert.equal(document.body.style.overflowY, '');
 
+  dom.window.close();
+});
+
+test('releaseGateoDocumentScrollInterference clears stacked locks and inline body overflow', () => {
+  const dom = new JSDOM('<!DOCTYPE html><html><body style="overflow: hidden; touch-action: none"></body></html>');
+  globalThis.document = dom.window.document;
+  document.documentElement.style.overflow = 'hidden';
+  const release = pushGateoBodyScrollLock();
+  release();
+  releaseGateoDocumentScrollInterference();
+  assert.equal(gateoBodyScrollLockDepth(), 0);
+  assert.equal(document.body.style.overflow, '');
+  assert.equal(document.body.style.touchAction, '');
+  assert.equal(document.documentElement.style.overflow, '');
   dom.window.close();
 });
 
