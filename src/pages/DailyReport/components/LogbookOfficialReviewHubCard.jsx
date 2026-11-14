@@ -3,6 +3,11 @@ import { Link, useLocation, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ChevronDown, Sparkles } from 'lucide-react';
 import { LOGBOOK_OFFICIAL_REVIEW_CARD_TITLE } from '../../../logbookOfficialReviews/constants.js';
+import {
+  buildLogbookHubReturnTo,
+  readLogbookReviewHubSession,
+} from '../../../logbookOfficialReviews/logbookReviewHubSession.js';
+import { prepareLogbookReviewHubNavigation } from '../../../logbookOfficialReviews/logbookReviewHubNavigate.js';
 import { useLogbookOfficialReviewHub } from '../../../logbookOfficialReviews/useLogbookOfficialReviewHub.js';
 import { formatLogbookDisplayDate } from '../../../utils/logbookDisplayDate';
 import {
@@ -104,13 +109,14 @@ function HubTitleRow({
   asToggle = true,
   showChevron = true,
   countSuffix,
+  title,
 }) {
   const rowClass = `flex w-full min-w-0 items-center gap-2 px-4 py-3.5 text-left ${headerRound}`;
   const inner = (
     <>
       <Sparkles size={18} className="shrink-0 text-indigo-500" aria-hidden />
       <span className="min-w-0 flex-1 truncate text-sm font-bold text-gray-900">
-        {LOGBOOK_OFFICIAL_REVIEW_CARD_TITLE}
+        {title}
       </span>
       {typeof totalCount === 'number' ? (
         <span
@@ -162,6 +168,9 @@ function HubTitleRow({
 
 const LogbookOfficialReviewHubCard = () => {
   const { t } = useTranslation();
+  const hubTitle = t('logbook.officialReviewHub.title', {
+    defaultValue: LOGBOOK_OFFICIAL_REVIEW_CARD_TITLE,
+  });
   const [, setSearchParams] = useSearchParams();
   const location = useLocation();
   const panelId = useId();
@@ -173,6 +182,37 @@ const LogbookOfficialReviewHubCard = () => {
   const [filterMajor, setFilterMajor] = useState(LOGBOOK_REVIEW_FILTER_MAJOR.ALL);
   const [filterCitySlug, setFilterCitySlug] = useState('');
   const { enabled, rows, isLoading, loadFailed, totalCount, retry } = useLogbookOfficialReviewHub();
+
+  useEffect(() => {
+    const session = readLogbookReviewHubSession();
+    if (!session) return;
+    const current = buildLogbookHubReturnTo(location.pathname, location.search);
+    if (session.returnTo && session.returnTo !== current) return;
+    if (session.expanded) setExpanded(true);
+    if (typeof session.visibleCount === 'number' && session.visibleCount > 0) {
+      setVisibleCount(Math.max(pageSize, session.visibleCount));
+    }
+  }, [location.pathname, location.search, pageSize]);
+
+  const hubLinkState = useMemo(
+    () => ({
+      returnTo: buildLogbookHubReturnTo(location.pathname, location.search),
+      fromLogbookReviewHub: true,
+    }),
+    [location.pathname, location.search],
+  );
+
+  const onHubReviewNavigate = useCallback(() => {
+    const scrollRoot = document.querySelector('[data-logbook-main-scroll]');
+    const scrollY = scrollRoot && 'scrollTop' in scrollRoot ? scrollRoot.scrollTop : 0;
+    prepareLogbookReviewHubNavigation({
+      pathname: location.pathname,
+      search: location.search,
+      expanded,
+      visibleCount,
+      scrollY,
+    });
+  }, [location.pathname, location.search, expanded, visibleCount]);
 
   useEffect(() => {
     if (!filterEnabled) return;
@@ -247,7 +287,7 @@ const LogbookOfficialReviewHubCard = () => {
     return (
       <section
         className={HUB_CARD_LAYOUT_CLASS}
-        aria-label={LOGBOOK_OFFICIAL_REVIEW_CARD_TITLE}
+        aria-label={hubTitle}
         data-testid="logbook-official-review-hub"
         data-hub-state="load-failed"
       >
@@ -258,6 +298,7 @@ const LogbookOfficialReviewHubCard = () => {
           showChevron={false}
           headerRound="rounded-t-2xl"
           countSuffix={countSuffix}
+          title={hubTitle}
         />
         <div className="border-t border-gray-100 px-4 pb-3.5 pt-2">
           <p className="text-sm text-gray-600">{t('logbook.officialReviewHub.loadFailed')}</p>
@@ -290,7 +331,7 @@ const LogbookOfficialReviewHubCard = () => {
   return (
     <section
       className={HUB_CARD_LAYOUT_CLASS}
-      aria-label={LOGBOOK_OFFICIAL_REVIEW_CARD_TITLE}
+      aria-label={hubTitle}
       data-testid="logbook-official-review-hub"
       data-hub-state="ready"
     >
@@ -301,6 +342,7 @@ const LogbookOfficialReviewHubCard = () => {
         filteredCount={displayFilteredCount}
         headerRound={headerRound}
         countSuffix={countSuffix}
+        title={hubTitle}
         onToggle={() => setExpanded((open) => !open)}
       />
 
@@ -323,7 +365,11 @@ const LogbookOfficialReviewHubCard = () => {
             />
           ) : null}
           {filterEnabled ? (
-            <LogbookOfficialReviewCardGrid reviews={visibleRows} />
+            <LogbookOfficialReviewCardGrid
+              reviews={visibleRows}
+              hubLinkState={hubLinkState}
+              onHubReviewNavigate={onHubReviewNavigate}
+            />
           ) : (
             <ul className="divide-y divide-gray-100">
               {visibleRows.map((review) => {
@@ -339,6 +385,11 @@ const LogbookOfficialReviewHubCard = () => {
                   <li key={review.id}>
                     <Link
                       to={href}
+                      state={hubLinkState}
+                      onPointerDown={(event) => {
+                        if (event.button !== 0) return;
+                        onHubReviewNavigate();
+                      }}
                       className={`flex py-3 px-1 rounded-lg hover:bg-gray-50 transition-colors${thumbSrc ? ' gap-3' : ''}`}
                       data-testid="logbook-official-review-hub-item"
                       data-hub-place-slug={slug || undefined}

@@ -1,4 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
+import {
+  buildLogbookHubReturnTo,
+  readLogbookReviewHubSession,
+} from '../../../logbookOfficialReviews/logbookReviewHubSession.js';
 import { createPortal } from 'react-dom';
 import Sidebar from './Sidebar';
 import { Globe, LogOut } from 'lucide-react';
@@ -38,6 +42,22 @@ const DailyLayout = () => {
 
   useEffect(() => {
     setProfileOpen(false);
+  }, [location.pathname, location.search]);
+
+  useEffect(() => {
+    if (!location.pathname.startsWith('/blog')) return undefined;
+    const session = readLogbookReviewHubSession();
+    if (!session?.scrollY) return undefined;
+    const current = buildLogbookHubReturnTo(location.pathname, location.search);
+    if (session.returnTo && session.returnTo !== current) return undefined;
+    const el = mainScrollRef.current;
+    if (!el) return undefined;
+    const restore = () => {
+      el.scrollTop = session.scrollY;
+    };
+    requestAnimationFrame(restore);
+    const t = window.setTimeout(restore, 150);
+    return () => window.clearTimeout(t);
   }, [location.pathname, location.search]);
 
   useEffect(() => {

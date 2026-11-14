@@ -1,4 +1,4 @@
-import { isKoreaPlaceReturnPath } from './placeReturnTo.js';
+import { isKoreaPlaceReturnPath, isLogbookPlaceReturnPath } from './placeReturnTo.js';
 
 function pathnameOf(path) {
   if (typeof path !== 'string' || !path.startsWith('/')) return '';
@@ -27,8 +27,24 @@ export function resolvePlaceCardBack(input) {
   const exploreReturnPath =
     typeof input?.exploreReturnPath === 'string' ? input.exploreReturnPath : null;
 
+  if (returnTo && (returnTo.split('?')[0] === '/blog' || returnTo.startsWith('/blog?'))) {
+    return { type: 'push', path: returnTo, clearReturnTo: true };
+  }
+
   if (typeof historyIdx === 'number' && historyIdx > 0) {
     if (prevName.startsWith('/place/') || prevName.startsWith('/explore')) {
+      return { type: 'history' };
+    }
+    if (prevName.startsWith('/blog')) {
+      const blogTarget =
+        returnTo && isLogbookPlaceReturnPath(returnTo)
+          ? returnTo
+          : prevPath && isLogbookPlaceReturnPath(prevPath)
+            ? prevPath
+            : null;
+      if (blogTarget) {
+        return { type: 'push', path: blogTarget, clearReturnTo: true };
+      }
       return { type: 'history' };
     }
     if (returnTo && isKoreaPlaceReturnPath(prevPath)) {

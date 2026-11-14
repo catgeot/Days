@@ -2196,6 +2196,7 @@
       "month": "{{year}}년 {{month}}월"
     },
     "officialReviewHub": {
+      "title": "GATEO 리뷰어 리뷰",
       "countSuffix": "편",
       "loadFailed": "리뷰를 불러오지 못했어요",
       "retry": "다시 시도",

@@ -2433,6 +2433,7 @@
       "month": "{{month}}/{{year}}"
     },
     "officialReviewHub": {
+      "title": "GATEO reviewer reviews",
       "countSuffix": " reviews",
       "loadFailed": "We couldn't load reviews.",
       "retry": "Try again",

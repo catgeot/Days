@@ -13,8 +13,19 @@ const ALLOWED_EXACT = new Set([
  * @param {unknown} path
  * @returns {path is string}
  */
+function isBlogReturnPath(path) {
+  if (typeof path !== 'string' || !path.startsWith('/')) return false;
+  const pathname = path.split('?')[0];
+  return pathname === '/blog' || pathname.startsWith('/blog/');
+}
+
+export function isLogbookPlaceReturnPath(path) {
+  return isBlogReturnPath(path);
+}
+
 function isAllowed(path) {
   if (typeof path !== 'string' || !path.startsWith('/')) return false;
+  if (isBlogReturnPath(path)) return true;
   if (ALLOWED_EXACT.has(path)) return true;
   const pathname = path.split('?')[0];
   if (pathname === '/korea') return true;
