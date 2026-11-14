@@ -47,3 +47,60 @@ export function isPriorEditionPoster(posterYear, festivalYear) {
     && Number.isFinite(festivalYear)
     && posterYear < festivalYear;
 }
+
+/**
+ * @param {{ eventStartDate?: string, eventStartdate?: string, eventstartdate?: string } | null | undefined} fields
+ * @returns {number | null}
+ */
+export function festivalEditionYearFromEventFields(fields) {
+  if (fields == null || typeof fields !== 'object') return null;
+  const raw = fields.eventStartDate || fields.eventstartdate || fields.eventStartdate;
+  return festivalEditionYearFromStart(raw);
+}
+
+/**
+ * @param {string} text
+ * @returns {boolean}
+ */
+export function hasExplicitPriorEditionMarker(text = '') {
+  const raw = String(text || '');
+  if (/예년/.test(raw)) return true;
+  const lower = raw.toLowerCase();
+  return /\bprevious\s+year\b/.test(lower)
+    || /\bprior\s+(year|edition)\b/.test(lower);
+}
+
+/**
+ * Prior-edition label only with positive evidence (dated caption/URL or explicit prior-year copy).
+ * Yearless images are never labelled.
+ * @param {{
+ *   posterYear?: number | null,
+ *   festivalYear?: number | null,
+ *   caption?: string,
+ *   credit?: string,
+ * }} args
+ */
+export function shouldMarkPriorEditionPosterMeta({
+  posterYear = null,
+  festivalYear = null,
+  caption = '',
+  credit = '',
+} = {}) {
+  if (isPriorEditionPoster(posterYear, festivalYear)) return true;
+  return hasExplicitPriorEditionMarker(`${caption} ${credit}`);
+}
+
+/**
+ * @param {number} index
+ * @param {string[]} imageUrls
+ * @param {string[]} imageCaptions
+ * @param {string[]} imageCredits
+ */
+export function festivalPosterMetaAtIndex(index, imageUrls, imageCaptions, imageCredits) {
+  const i = Number.isInteger(index) && index >= 0 ? index : 0;
+  return {
+    url: imageUrls[i] || '',
+    caption: imageCaptions[i] || '',
+    credit: imageCredits[i] || '',
+  };
+}

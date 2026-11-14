@@ -168,8 +168,9 @@ import { shouldShowFestivalNearbyListSection } from './lib/festivalDetailSection
 import { formatFestivalPhotoCreditLine } from './festivalPhotoCredit.js';
 import {
   detectPosterEditionYear,
-  festivalEditionYearFromStart,
-  isPriorEditionPoster,
+  festivalEditionYearFromEventFields,
+  festivalPosterMetaAtIndex,
+  shouldMarkPriorEditionPosterMeta,
 } from './lib/festivalPosterEdition.js';
 import { resolveFestivalPublicHomepage, preferHttpsFestivalHomepage } from './lib/festivalPublicHomepage.js';
 import { useFestivalHeroPhotoDecoded } from './useFestivalHeroPhotoDecoded.js';
@@ -1374,6 +1375,13 @@ export default function FestivalDetailSheet({
       const commonHit = detailData?.common || null;
       const infoRows = Array.isArray(detailData?.info) ? detailData.info : [];
       let slides = collectFestivalGallerySlides(imageData, seed);
+      const commonHero = toHttps(
+        commonHit?.firstimage || commonHit?.firstImage || commonHit?.imageUrl || '',
+      );
+      if (commonHero) {
+        slides = slides.filter((row) => row.url !== commonHero);
+        slides.unshift({ url: commonHero, caption: '' });
+      }
       let credits = [];
       let captions = [];
       if (Array.isArray(detailData?.manualImages) && detailData.manualImages.length) {
@@ -1392,7 +1400,16 @@ export default function FestivalDetailSheet({
       }
       const urls = slides.map((row) => row.url);
       setImageCredits(credits);
-      setImageCaptions(captions);
+      setImageCaptions((prevCaptions) => {
+        if (
+          imageOwnerRef.current === String(contentId)
+          && prevCaptions.length > captions.length
+          && urls.length <= 1
+        ) {
+          return prevCaptions;
+        }
+        return captions;
+      });
 
       if (!detailData?.ok && !imageData?.ok) {
         setIntro(null);
@@ -1440,7 +1457,10 @@ export default function FestivalDetailSheet({
     }
 
     if (prefetchMatches) {
-      applyDetailPayload(prefetchedTourDetail, { ok: true, images: [] });
+      const introHit = prefetchedTourDetail?.intro || pickFirst(prefetchedTourDetail) || null;
+      const commonHit = prefetchedTourDetail?.common || null;
+      if (introHit) setIntro(introHit);
+      if (commonHit) setCommon(commonHit);
     }
 
     const nearbyPt = festivalLngLat(item?.mapx, item?.mapy);
@@ -2495,17 +2515,28 @@ export default function FestivalDetailSheet({
     imageCredits[activeImage],
     locale,
   );
-  const festivalEditionYear = festivalEditionYearFromStart(
-    item?.eventStartDate || intro?.eventStartDate || intro?.eventstartdate,
-  );
-  const posterEditionYear = detectPosterEditionYear({
-    url: imageUrls[activeImage] || '',
-    caption: imageCaptions[activeImage] || '',
-    credit: imageCredits[activeImage] || '',
-  });
-  const showPriorEditionPosterLabel = isPriorEditionPoster(
-    posterEditionYear,
-    festivalEditionYear,
+  const festivalEditionYear =
+    festivalEditionYearFromEventFields(intro)
+    ?? festivalEditionYearFromEventFields(item)
+    ?? festivalEditionYearFromEventFields(common);
+  const priorPosterLabelAt = (index) => {
+    const meta = festivalPosterMetaAtIndex(index, imageUrls, imageCaptions, imageCredits);
+    const posterEditionYear = detectPosterEditionYear(meta);
+    return shouldMarkPriorEditionPosterMeta({
+      posterYear: posterEditionYear,
+      festivalYear: festivalEditionYear,
+      caption: meta.caption,
+      credit: meta.credit,
+    });
+  };
+  const showPriorEditionPosterLabel = priorPosterLabelAt(activeImage);
+  const lightboxPosterIndex = lightboxSlides.rawIndex >= 0
+    ? lightboxSlides.rawIndex
+    : activeImage;
+  const showLightboxPriorEditionPosterLabel = priorPosterLabelAt(lightboxPosterIndex);
+  const lightboxPhotoCredit = formatFestivalPhotoCreditLine(
+    imageCredits[lightboxPosterIndex],
+    locale,
   );
   const koTitle = String(item?.title || common?.title || '').trim();
   const displayTitle =
@@ -2600,6 +2631,7 @@ export default function FestivalDetailSheet({
             ref={heroColRef}
             className="relative flex shrink-0 flex-col md:w-[46%] lg:w-1/2 md:min-h-0 md:self-stretch bg-stone-100"
             data-festival-photo-strip={photoStripMode}
+            data-festival-prior-poster={showPriorEditionPosterLabel ? '1' : '0'}
             style={
               heroStrip.loadedCount > 1 && heroColMin.current > 0
                 ? { minHeight: heroColMin.current }
@@ -3920,6 +3952,20 @@ export default function FestivalDetailSheet({
                   </>
                 )}
               </div>
+              {(showLightboxPriorEditionPosterLabel || lightboxPhotoCredit) ? (
+                <p
+                  className="relative z-30 mt-3 shrink-0 px-1 text-center text-xs leading-snug text-white/85"
+                  data-festival-lightbox-caption=""
+                >
+                  {showLightboxPriorEditionPosterLabel ? (
+                    <span className="font-semibold text-white">
+                      {t('korea.festival.detail.posterPriorEdition')}
+                      {lightboxPhotoCredit ? ' · ' : null}
+                    </span>
+                  ) : null}
+                  {lightboxPhotoCredit || null}
+                </p>
+              ) : null}
             </div>
           </div>,
           document.body,

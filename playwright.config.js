@@ -32,6 +32,7 @@ const placeGalleryOverviewLocaleExternalPreview = Boolean(
   process.env.PLAYWRIGHT_BASE_URL?.includes(`127.0.0.1:${placeGalleryOverviewLocalePort}`),
 );
 
+
 export default defineConfig({
   testDir: './e2e',
   fullyParallel: false,
@@ -179,6 +180,17 @@ export default defineConfig({
       name: 'webkit-festival-hero-credit',
       testMatch: /korea-festival-hero-credit-en\.spec\.js/,
       use: { ...devices['iPhone 13'] },
+    },
+    {
+      name: 'webkit-festival-poster-prior-390',
+      testMatch: /korea-festival-poster-prior-390\.spec\.js/,
+      use: {
+        ...devices['iPhone 13'],
+        viewport: { width: 390, height: 844 },
+        deviceScaleFactor: 1,
+        locale: 'ko-KR',
+        ignoreHTTPSErrors: true,
+      },
     },
     {
       name: 'webkit-pr492-qa',

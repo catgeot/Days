@@ -6,6 +6,7 @@ import {
   splitPlaceOverview,
 } from '../../src/components/PlaceCard/common/placeOverviewText.js';
 import {
+  galleryDisplaysEnglishOverview,
   resolveGalleryOverviewLocaleNotices,
   shouldShowMobileGalleryOverviewSection,
 } from '../../src/components/PlaceCard/common/galleryOverviewLocaleNotices.js';
@@ -23,6 +24,18 @@ const yapLikePin = {
   desc: '야프는 미크로네시아 연방의 돌돈화로 유명한 섬으로, 전통 돌돈 통화와 잠수·문화 체험이 알려져 있습니다.',
   placeChatIntroApplied: true,
 };
+
+test('EN yap-like — hide koreanGuide when English overview body shows', () => {
+  const enBody = 'Yap is known for stone money and traditional Pacific Island culture.';
+  assert.equal(galleryDisplaysEnglishOverview({ locale: 'en', fixedOverview: enBody }), true);
+  const notices = resolveGalleryOverviewLocaleNotices({
+    locale: 'en',
+    location: yapLikePin,
+    showDescriptionInKoreanLabel: false,
+    fixedOverview: enBody,
+  });
+  assert.equal(notices.showKoreanGuideNotice, false);
+});
 
 test('mobile section — EN koreanGuide when body empty', () => {
   const pin = {

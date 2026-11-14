@@ -24,6 +24,8 @@ export default function PlaceGalleryMobileOverviewCard({
     locale,
     location,
     showDescriptionInKoreanLabel,
+    curationOverview,
+    fixedOverview,
   });
   const hasOverviewBody = hasGalleryOverviewBody({
     overviewQuery,
