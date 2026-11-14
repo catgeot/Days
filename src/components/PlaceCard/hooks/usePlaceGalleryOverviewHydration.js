@@ -1,7 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
-import { splitPlaceOverview } from '../common/placeOverviewText';
+import {
+  resolveGalleryOverviewFixed,
+  shouldFetchGalleryOverviewHydration,
+  splitPlaceOverview,
+} from '../common/placeOverviewText';
 import { isGateoPlaceGalleryOverviewFallbackEnabled } from '../../../shared/gateoFeatureFlags.js';
-import { shouldUsePlaceGalleryReadonlyOverview } from '../../../pages/Home/lib/placeDescText.js';
 import {
   hydratePlaceGalleryOverview,
   onPlaceChatIntroSaved,
@@ -54,8 +57,17 @@ export function usePlaceGalleryOverviewHydration(location, locale) {
 
   useEffect(() => {
     if (!flagOn) return undefined;
-    if (!location || !shouldUsePlaceGalleryReadonlyOverview(location)) return undefined;
-    if (base.fixed || base.curation) return undefined;
+    if (
+      !shouldFetchGalleryOverviewHydration({
+        locale,
+        baseFixed: base.fixed,
+        curation: base.curation,
+        location,
+        flagOn,
+      })
+    ) {
+      return undefined;
+    }
 
     let cancelled = false;
     hydratePlaceGalleryOverview(location, { lng: locale })
@@ -69,7 +81,12 @@ export function usePlaceGalleryOverviewHydration(location, locale) {
     };
   }, [flagOn, location, locale, base.fixed, base.curation, introSavedTick]);
 
-  const fixed = base.fixed || (flagOn ? hydratedFixed : '');
+  const fixed = resolveGalleryOverviewFixed({
+    baseFixed: base.fixed,
+    hydratedFixed,
+    locale,
+    flagOn,
+  });
 
   return useMemo(
     () => ({

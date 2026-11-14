@@ -2,7 +2,11 @@ import {
   isSyntheticOrEmptyPlaceDesc,
   shouldUsePlaceGalleryReadonlyOverview,
 } from '../../../pages/Home/lib/placeDescText.js';
-import { getLocalizedPlaceDesc, getPlaceOverviewDescForDisplay } from '../../../pages/Home/lib/placeSeoText.js';
+import {
+  getLocalizedPlaceDesc,
+  getPlaceOverviewDescForDisplay,
+  overviewTextIsKoreanOnly,
+} from '../../../pages/Home/lib/placeSeoText.js';
 import { isGateoPlaceGalleryOverviewFallbackEnabled } from '../../../shared/gateoFeatureFlags.js';
 
 /**
@@ -37,6 +41,33 @@ export function splitPlaceOverview(location, locale = 'ko') {
     fixed,
     originalQuery: String(location?.originalQuery || '').trim(),
   };
+}
+
+/** EN in-page switch — KO base.fixed가 있어도 hydrate EN이 오면 우선 */
+export function resolveGalleryOverviewFixed({ baseFixed, hydratedFixed, locale, flagOn }) {
+  const base = String(baseFixed || '').trim();
+  const hydrated = flagOn ? String(hydratedFixed || '').trim() : '';
+  if (locale === 'en' && overviewTextIsKoreanOnly(base) && hydrated) {
+    return hydrated;
+  }
+  return base || hydrated;
+}
+
+export function shouldFetchGalleryOverviewHydration({
+  locale,
+  baseFixed,
+  curation,
+  location,
+  flagOn,
+}) {
+  if (!flagOn || !location || !shouldUsePlaceGalleryReadonlyOverview(location)) {
+    const enKoreanBody = locale === 'en' && overviewTextIsKoreanOnly(baseFixed);
+    if (enKoreanBody) return true;
+    if (baseFixed || curation) return false;
+    return false;
+  }
+  if (baseFixed || curation) return false;
+  return true;
 }
 
 function normalizeProgramBlock(segment) {
