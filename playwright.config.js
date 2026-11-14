@@ -21,6 +21,12 @@ const placeIntroOverSsotE2e =
 const placeIntroOverSsotPort = 5193;
 const placeIntroOverSsotLocalBase = `http://127.0.0.1:${placeIntroOverSsotPort}`;
 
+const placeGalleryOverviewLocaleE2e =
+  process.env.PLACE_GALLERY_OVERVIEW_LOCALE_E2E === '1' ||
+  /place-gallery-overview-locale-390/.test(playwrightArgv);
+const placeGalleryOverviewLocalePort = 5195;
+const placeGalleryOverviewLocaleLocalBase = `http://127.0.0.1:${placeGalleryOverviewLocalePort}`;
+
 export default defineConfig({
   testDir: './e2e',
   fullyParallel: false,
@@ -39,7 +45,17 @@ export default defineConfig({
           timeout: 120_000,
         },
       }
-    : nearbyCardsE2e
+    : placeGalleryOverviewLocaleE2e
+      ? {
+          webServer: {
+            command: `BROWSER=none DEV_SSL=0 VITE_GATEO_PLACE_INTRO_OVER_SSOT=1 npx vite --host 127.0.0.1 --port ${placeGalleryOverviewLocalePort}`,
+            url: `${placeGalleryOverviewLocaleLocalBase}/`,
+            reuseExistingServer: !process.env.CI,
+            timeout: 120_000,
+          },
+          use: { baseURL: placeGalleryOverviewLocaleLocalBase },
+        }
+      : nearbyCardsE2e
       ? {
           webServer: {
             command: `BROWSER=none DEV_SSL=0 VITE_GATEO_NEARBY_CARDS=${nearbyCardsFlag} npx vite --host 127.0.0.1 --port ${nearbyCardsPort}`,

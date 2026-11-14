@@ -479,6 +479,22 @@ test('Gallery UI wires EN korean description label i18n key', () => {
   assert.match(scroll, /descriptionInKorean/);
 });
 
+test('mobile gallery overview uses hydration hook + koreanGuide notice', () => {
+  const gallery = readFileSync(
+    join(root, 'src/components/PlaceCard/views/PlaceGalleryView.jsx'),
+    'utf8',
+  );
+  const mobile = readFileSync(
+    join(root, 'src/components/PlaceCard/views/PlaceGalleryMobileOverviewCard.jsx'),
+    'utf8',
+  );
+  assert.match(gallery, /usePlaceGalleryOverviewHydration/);
+  assert.match(gallery, /PlaceGalleryMobileOverviewCard/);
+  assert.match(gallery, /data-place-gallery-mobile-overview/);
+  assert.match(mobile, /place\.localeNotice\.koreanGuide/);
+  assert.match(mobile, /isPlaceDescKoreanOnly/);
+});
+
 test('fetchDomesticTourOverview (main) uses searchKeyword path not ForLocation shortcut', () => {
   const src = readFileSync(join(root, 'src/utils/tourKeywordPick.js'), 'utf8');
   const match = src.match(/export async function fetchDomesticTourOverview\(placeName\)\s*\{[\s\S]*?\n\}/);

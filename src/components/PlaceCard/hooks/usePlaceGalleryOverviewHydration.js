@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import {
   resolveGalleryOverviewFixed,
   shouldFetchGalleryOverviewHydration,
@@ -34,7 +34,7 @@ export function usePlaceGalleryOverviewHydration(location, locale) {
   const [hydratedFixed, setHydratedFixed] = useState('');
   const [introSavedTick, setIntroSavedTick] = useState(0);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     setHydratedFixed('');
   }, [locationOverviewKey(location), locale]);
 

@@ -43,12 +43,15 @@ export function splitPlaceOverview(location, locale = 'ko') {
   };
 }
 
-/** EN in-page switch — KO base.fixed가 있어도 hydrate EN이 오면 우선 */
+/** EN in-page switch — KO base.fixed가 있어도 hydrate EN이 오면 우선 (KO-session stale hydrate 제외) */
 export function resolveGalleryOverviewFixed({ baseFixed, hydratedFixed, locale, flagOn }) {
   const base = String(baseFixed || '').trim();
   const hydrated = flagOn ? String(hydratedFixed || '').trim() : '';
-  if (locale === 'en' && overviewTextIsKoreanOnly(base) && hydrated) {
-    return hydrated;
+  if (locale === 'en') {
+    if (hydrated && !overviewTextIsKoreanOnly(hydrated)) {
+      return hydrated;
+    }
+    return base;
   }
   return base || hydrated;
 }

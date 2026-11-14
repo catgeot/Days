@@ -90,6 +90,25 @@ test('EN→KO switch — Korean base wins without stale EN hydrate', () => {
   assert.doesNotMatch(merged, /Stale English/);
 });
 
+test('EN — stale KO hydrate from prior locale must not display', () => {
+  const staleKoHydrate = '추크 라군은 수중 박물관으로 불리는 곳입니다.';
+  const merged = resolveGalleryOverviewFixed({
+    baseFixed: '',
+    hydratedFixed: staleKoHydrate,
+    locale: 'en',
+    flagOn: true,
+  });
+  assert.equal(merged, '');
+  const withEnHydrate = resolveGalleryOverviewFixed({
+    baseFixed: staleKoHydrate,
+    hydratedFixed: 'Chuuk Lagoon is known for WWII shipwreck diving.',
+    locale: 'en',
+    flagOn: true,
+  });
+  assert.match(withEnHydrate, /Chuuk/);
+  assert.equal(overviewTextIsKoreanOnly(withEnHydrate), false);
+});
+
 test('EN with no translation — placeholder label only when body stays Korean', () => {
   const { fixed: enBase } = splitPlaceOverview(yapLikePin, 'en');
   const merged = resolveGalleryOverviewFixed({
