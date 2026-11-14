@@ -194,6 +194,31 @@ const LogbookOfficialReviewHubCard = () => {
     }
   }, [location.pathname, location.search, pageSize]);
 
+  useEffect(() => {
+    if (!expanded) return undefined;
+    const session = readLogbookReviewHubSession();
+    if (typeof session?.scrollY !== 'number' || session.scrollY <= 0) return undefined;
+    const current = buildLogbookHubReturnTo(location.pathname, location.search);
+    if (session.returnTo && session.returnTo !== current) return undefined;
+    if (isLoading) return undefined;
+    const scrollRoot = document.querySelector('[data-logbook-main-scroll]');
+    if (!scrollRoot) return undefined;
+    const target = session.scrollY;
+    const restore = () => {
+      scrollRoot.scrollTop = target;
+    };
+    const timers = [0, 100, 300, 600].map((ms) => window.setTimeout(restore, ms));
+    requestAnimationFrame(restore);
+    return () => timers.forEach((id) => window.clearTimeout(id));
+  }, [
+    expanded,
+    isLoading,
+    visibleCount,
+    rows.length,
+    location.pathname,
+    location.search,
+  ]);
+
   const hubLinkState = useMemo(
     () => ({
       returnTo: buildLogbookHubReturnTo(location.pathname, location.search),

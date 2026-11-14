@@ -73,6 +73,15 @@ test.describe('LogBook review hub navigation @mocked', () => {
     expect(title.length).toBeGreaterThan(3);
     expect(title).toMatch(/GATEO|LogBook|logbook/i);
 
+    await page.waitForFunction(
+      (before) => {
+        const el = document.querySelector('[data-logbook-main-scroll]');
+        if (!el) return false;
+        return Math.abs(el.scrollTop - before) < 80;
+      },
+      scrollBefore,
+      { timeout: 20_000 },
+    );
     const scrollAfter = await page.evaluate(() => {
       const el = document.querySelector('[data-logbook-main-scroll]');
       return el?.scrollTop ?? 0;

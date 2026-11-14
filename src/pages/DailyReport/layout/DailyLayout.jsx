@@ -47,17 +47,22 @@ const DailyLayout = () => {
   useEffect(() => {
     if (!location.pathname.startsWith('/blog')) return undefined;
     const session = readLogbookReviewHubSession();
-    if (!session?.scrollY) return undefined;
+    if (typeof session?.scrollY !== 'number' || session.scrollY <= 0) return undefined;
     const current = buildLogbookHubReturnTo(location.pathname, location.search);
     if (session.returnTo && session.returnTo !== current) return undefined;
     const el = mainScrollRef.current;
     if (!el) return undefined;
+    const target = session.scrollY;
     const restore = () => {
-      el.scrollTop = session.scrollY;
+      el.scrollTop = target;
     };
+    const timers = [0, 50, 150, 400, 800, 1200].map((ms) =>
+      window.setTimeout(restore, ms),
+    );
     requestAnimationFrame(restore);
-    const t = window.setTimeout(restore, 150);
-    return () => window.clearTimeout(t);
+    return () => {
+      timers.forEach((id) => window.clearTimeout(id));
+    };
   }, [location.pathname, location.search]);
 
   useEffect(() => {
