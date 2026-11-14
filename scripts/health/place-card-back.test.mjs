@@ -59,6 +59,29 @@ test('setPlaceReturnTo session for blog — hub flag only', () => {
   globalThis.sessionStorage = prev;
 });
 
+test('explore snapshot + missing prevPath uses history', () => {
+  const action = resolvePlaceCardBack({
+    historyIdx: 2,
+    prevPath: null,
+    returnTo: null,
+    exploreReturnPath: '/explore',
+  });
+  assert.deepEqual(action, { type: 'history' });
+});
+
+test('explore snapshot + idx 1 still pushes explore path', () => {
+  const action = resolvePlaceCardBack({
+    historyIdx: 1,
+    prevPath: null,
+    returnTo: null,
+    exploreReturnPath: '/explore/asia',
+  });
+  assert.deepEqual(action, {
+    type: 'push',
+    path: '/explore/asia',
+  });
+});
+
 test('explore prev wins over stale blog session', () => {
   const store = new Map();
   const prev = globalThis.sessionStorage;

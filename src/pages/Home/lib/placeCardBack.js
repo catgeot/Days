@@ -56,12 +56,13 @@ export function resolvePlaceCardBack(input) {
     return { type: 'push', path: returnTo, clearReturnTo: true };
   }
 
-  if (
-    exploreReturnPath &&
-    exploreReturnPath.startsWith('/explore') &&
-    (prevName === '' || prevName === '/')
-  ) {
-    return { type: 'push', path: exploreReturnPath };
+  if (exploreReturnPath && exploreReturnPath.startsWith('/explore')) {
+    if (prevPath == null && typeof historyIdx === 'number' && historyIdx > 1) {
+      return { type: 'history' };
+    }
+    if (prevName === '' || prevName === '/' || prevPath == null) {
+      return { type: 'push', path: exploreReturnPath };
+    }
   }
 
   return { type: 'close' };
