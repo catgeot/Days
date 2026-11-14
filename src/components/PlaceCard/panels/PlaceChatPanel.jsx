@@ -20,6 +20,10 @@ import { relatedPlacePathSuffix, relatedPlaceTabForMediaMode } from '../common/r
 import { mobileLandscapeChromeHidden } from '../common/mobilePlaceHeaderInset';
 import mooniChar from '../../../assets/MOONI_transparent.webp';
 import { getAppHistoryPath } from '../../../shared/navigation/appHistoryPathIndex';
+import {
+  hardNavigatePlaceExploreBack,
+  placeBackShouldFullPageToExplore,
+} from '../../../shared/navigation/hardAppBack';
 import { peekExploreReturn } from '../../../pages/Home/lib/exploreReturnSnapshot';
 import { resolvePlaceCardBack } from '../../../pages/Home/lib/placeCardBack';
 import {
@@ -225,6 +229,10 @@ const PlaceChatPanel = React.memo(({
                       returnTo: peekPlaceReturnTo(routeLocation.state),
                       exploreReturnPath: peekExploreReturn()?.path ?? null,
                     });
+                    if (placeBackShouldFullPageToExplore(action, prevPath)) {
+                      hardNavigatePlaceExploreBack(prevPath);
+                      return;
+                    }
                     if (action.type === 'history') {
                       navigate(-1);
                       return;
