@@ -1,6 +1,17 @@
 /** Deterministic rows for Playwright / preview without Supabase. */
 export const LOGBOOK_REVIEW_FILTER_E2E_FIXTURE = [
   {
+    id: 'a9e7d546-7b70-47ce-bea1-362f36d12156',
+    place_slug: 'hwaseong-fortress',
+    place_name: '수원 화성',
+    place_name_en: 'Hwaseong Fortress',
+    persona_label: '느린산책',
+    content: '수원 화성 성곽을 따라 걷는 공식 리뷰 픽스처입니다.',
+    images: ['https://images.unsplash.com/photo-1609137144813-7d81c76720dd?w=400'],
+    created_at: '2026-11-12T08:00:00Z',
+    is_public: true,
+  },
+  {
     id: 'e2e-1',
     place_slug: 'paris',
     place_name: '파리 · 루브르 주변',
@@ -134,8 +145,9 @@ export const LOGBOOK_REVIEW_FILTER_E2E_FIXTURE = [
     id: `e2e-extra-${i}`,
     place_slug: `city-${i}`,
     place_name: `도시${i}`,
+    place_name_en: `City ${i}`,
     persona_label: '야경렌즈',
-    content: `도시 ${i} 산책 후기예요.`,
+    content: `City ${i} stroll review (fixture).`,
     images: [],
     created_at: `2026-10-${20 - i}T08:00:00Z`,
     is_public: true,

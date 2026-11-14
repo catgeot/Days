@@ -1,4 +1,4 @@
-import { isKoreaPlaceReturnPath } from './placeReturnTo.js';
+import { isKoreaPlaceReturnPath, isLogbookPlaceReturnPath } from './placeReturnTo.js';
 
 function pathnameOf(path) {
   if (typeof path !== 'string' || !path.startsWith('/')) return '';
@@ -31,21 +31,38 @@ export function resolvePlaceCardBack(input) {
     if (prevName.startsWith('/place/') || prevName.startsWith('/explore')) {
       return { type: 'history' };
     }
+    if (prevName.startsWith('/blog')) {
+      const blogTarget =
+        returnTo && isLogbookPlaceReturnPath(returnTo)
+          ? returnTo
+          : prevPath && isLogbookPlaceReturnPath(prevPath)
+            ? prevPath
+            : null;
+      if (blogTarget) {
+        return { type: 'push', path: blogTarget, clearReturnTo: true };
+      }
+      return { type: 'history' };
+    }
     if (returnTo && isKoreaPlaceReturnPath(prevPath)) {
       return { type: 'push', path: returnTo, clearReturnTo: true };
     }
+  }
+
+  if (returnTo && isLogbookPlaceReturnPath(returnTo)) {
+    return { type: 'push', path: returnTo, clearReturnTo: true };
   }
 
   if (returnTo) {
     return { type: 'push', path: returnTo, clearReturnTo: true };
   }
 
-  if (
-    exploreReturnPath &&
-    exploreReturnPath.startsWith('/explore') &&
-    (prevName === '' || prevName === '/')
-  ) {
-    return { type: 'push', path: exploreReturnPath };
+  if (exploreReturnPath && exploreReturnPath.startsWith('/explore')) {
+    if (prevPath == null && typeof historyIdx === 'number' && historyIdx > 1) {
+      return { type: 'history' };
+    }
+    if (prevName === '' || prevName === '/' || prevPath == null) {
+      return { type: 'push', path: exploreReturnPath };
+    }
   }
 
   return { type: 'close' };

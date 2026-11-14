@@ -14,7 +14,7 @@ import {
 } from '../../../utils/placeReviewContentBlocks.js';
 import { stripReviewInlineMarkdown } from '../../../utils/reviewInlineMarkdown.js';
 import { buildPlaceReviewsHref } from '../../../utils/placeReviewFocus.js';
-import { shortenLogbookReviewPlaceName } from '../../../logbookOfficialReviews/logbookReviewPlaceLabel.js';
+import { resolveLogbookReviewPlaceDisplayName } from '../../../logbookOfficialReviews/logbookReviewPlaceLabel.js';
 import { logbookReviewPersonaFallbackGradient } from '../../../logbookOfficialReviews/logbookReviewPersonaFallback.js';
 import { optimizeLogbookReviewCardThumbUrl } from '../../../logbookOfficialReviews/logbookReviewCardThumbUrl.js';
 
@@ -169,7 +169,11 @@ function HubReviewCardMedia({
   );
 }
 
-export default function LogbookOfficialReviewCardGrid({ reviews }) {
+export default function LogbookOfficialReviewCardGrid({
+  reviews,
+  hubLinkState,
+  onHubReviewNavigate,
+}) {
   const { t, i18n } = useTranslation();
   const preparingLabel = t('logbook.officialReviewHub.imagePreparing');
   const lang = i18n.language?.startsWith('en') ? 'en' : 'ko';
@@ -187,8 +191,7 @@ export default function LogbookOfficialReviewCardGrid({ reviews }) {
         const thumbSrc = thumb?.src ?? null;
         const title = editorialReviewCardTitle(review);
         const summary = editorialReviewCardSummary(review, title);
-        const placeName = String(review.place_name || '').trim();
-        const cityLabel = shortenLogbookReviewPlaceName(placeName) || placeName;
+        const cityLabel = resolveLogbookReviewPlaceDisplayName(review, lang);
         const dateLabel = formatLogbookDisplayDate(review.created_at, {
           locale: lang === 'en' ? 'en' : 'ko',
         });
@@ -202,6 +205,12 @@ export default function LogbookOfficialReviewCardGrid({ reviews }) {
           <li key={review.id} className="min-w-0">
             <Link
               to={href}
+              state={hubLinkState}
+              onPointerDown={(event) => {
+                if (event.button !== 0) return;
+                onHubReviewNavigate?.();
+              }}
+              onClick={() => onHubReviewNavigate?.()}
               className="group flex h-full flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-colors hover:border-indigo-100 hover:bg-gray-50/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
               data-testid="logbook-official-review-hub-item"
               data-hub-place-slug={slug || undefined}

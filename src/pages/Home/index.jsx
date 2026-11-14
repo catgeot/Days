@@ -85,8 +85,10 @@ import { shouldLockHomeGlobePageZoom } from './lib/homeGlobePageZoomLock';
 import { useHomeGlobePageZoomLock } from './hooks/useHomeGlobePageZoomLock';
 import {
   clearPlaceReturnTo,
+  isLogbookPlaceReturnPath,
   peekPlaceReturnTo,
 } from './lib/placeReturnTo';
+import { navigatePlaceReturnToBlog } from '../../shared/navigation/logbookBlogReturnNavigate.js';
 import { clearExploreReturn, peekExploreReturn } from './lib/exploreReturnSnapshot';
 import {
   claimCurationHomeHandoff,
@@ -953,6 +955,10 @@ function Home() {
   const leavePlaceCard = useCallback(() => {
     const returnTo = peekPlaceReturnTo(routeLocation.state);
     if (returnTo) {
+      if (isLogbookPlaceReturnPath(returnTo)) {
+        navigatePlaceReturnToBlog(navigate, returnTo);
+        return;
+      }
       clearPlaceReturnTo();
       navigate(returnTo);
       return;

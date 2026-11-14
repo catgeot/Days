@@ -16,6 +16,7 @@ import { mediaModeFromUrlTab } from './common/placeMediaTabRoutes';
 import { isPlacePlannerEligible } from '../../shared/place/placePlannerEligibility.js';
 import PlaceNotFoundView from './PlaceNotFoundView';
 import PlaceRouteErrorView from './PlaceRouteErrorView';
+import PlaceCardRouteLoading from './PlaceCardRouteLoading.jsx';
 
 const PlaceCard = () => {
   const { slug, tab } = useParams();
@@ -72,7 +73,7 @@ const PlaceCard = () => {
       : null;
 
   if (!contextLocation) {
-    if (resolveForSlug?.status === 'pending') return null;
+    if (resolveForSlug?.status === 'pending') return <PlaceCardRouteLoading />;
     if (resolveForSlug?.status === 'missing') {
       return <PlaceNotFoundView onGoHome={onGoHome} />;
     }
