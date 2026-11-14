@@ -200,13 +200,13 @@ test.describe('LogBook review hub navigation @mocked', () => {
     await waitForHubScrollRestored(page, scrollBefore);
     await waitHubListScrollable(page);
     await assertNoStalePlaceOverlay(page);
-    const scrollDelta = await wheelHubList(page);
-    expect(scrollDelta).toBeGreaterThan(24);
-    const scrollAfter = await page.evaluate(() => {
+    const scrollRestored = await page.evaluate(() => {
       const el = document.querySelector('[data-logbook-main-scroll]');
       return el?.scrollTop ?? 0;
     });
-    expect(Math.abs(scrollAfter - scrollBefore)).toBeLessThan(80);
+    expect(Math.abs(scrollRestored - scrollBefore)).toBeLessThan(80);
+    const scrollDelta = await wheelHubList(page);
+    expect(scrollDelta).toBeGreaterThan(24);
     const visibleAfter = await page.getByTestId('logbook-official-review-hub-item').count();
     expect(visibleAfter).toBeGreaterThanOrEqual(visibleBefore);
 
