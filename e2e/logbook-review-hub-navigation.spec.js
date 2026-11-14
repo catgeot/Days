@@ -4,6 +4,9 @@ const HUB_PATH =
   '/blog?tab=public&lang=ko&logbook_review_hub=1&logbook_filter=1&region=overseas';
 const HUB_PATH_EN =
   '/blog?tab=public&lang=en&logbook_review_hub=1&logbook_filter=1&region=overseas';
+const HUB_PATH_DOMESTIC =
+  '/blog?tab=public&lang=ko&logbook_review_hub=1&logbook_filter=1&region=domestic';
+const HWASEONG_REVIEW_ID = 'a9e7d546-7b70-47ce-bea1-362f36d12156';
 
 function removeChildCount(page) {
   const errs = [];
@@ -34,6 +37,67 @@ async function scrollHub(page) {
     const el = document.querySelector('[data-logbook-main-scroll]');
     if (el) el.scrollTop = 280;
   });
+}
+
+async function waitForHubScrollRestored(page, scrollBefore) {
+  await page.waitForFunction(
+    (before) => {
+      const el = document.querySelector('[data-logbook-main-scroll]');
+      if (!el) return false;
+      const scrolled =
+        Math.abs(el.scrollTop - before) < 80 ||
+        (el.dataset.logbookHubScrollRestored === '1' &&
+          Math.abs(Number(el.dataset.logbookHubScrollTarget || NaN) - before) < 80);
+      return scrolled && Math.abs(el.scrollTop - before) < 80;
+    },
+    scrollBefore,
+    { timeout: 30_000 },
+  );
+}
+
+async function assertBlogHubVisible(page) {
+  await expect(page.getByTestId('logbook-official-review-hub')).toBeVisible({ timeout: 30_000 });
+  await expect(page.locator('[data-place-chrome-hit]')).toHaveCount(0);
+  expect(new URL(page.url()).pathname).toBe('/blog');
+  const title = await page.title();
+  expect(title.length).toBeGreaterThan(3);
+}
+
+async function tapPlaceChromeBack(page) {
+  const chrome = page.locator('[data-place-chrome-hit]');
+  await expect(chrome).toBeVisible();
+  const backBtn = chrome.getByRole('button', { name: /^(뒤로가기|Back)$/i });
+  const isWebkit = test.info().project.name.includes('webkit');
+  if (isWebkit) await backBtn.tap();
+  else await backBtn.click();
+}
+
+async function openHwaseongReviewFromHub(page) {
+  await openHub(page, HUB_PATH_DOMESTIC);
+  await page.getByTestId('logbook-review-filter-major-domestic').click();
+  await scrollHub(page);
+  const card = page.locator(
+    `[data-testid="logbook-official-review-hub-item"][data-review-id="${HWASEONG_REVIEW_ID}"]`,
+  );
+  await expect(card).toBeVisible({ timeout: 30_000 });
+  const scrollBefore = await page.evaluate(() => {
+    const el = document.querySelector('[data-logbook-main-scroll]');
+    return el?.scrollTop ?? 0;
+  });
+  const isWebkit = test.info().project.name.includes('webkit');
+  if (isWebkit) await card.tap();
+  else await card.click();
+  await page.waitForURL(
+    new RegExp(
+      `/place/hwaseong-fortress/reviews\\?.*review=${HWASEONG_REVIEW_ID.replace(/-/g, '\\-')}`,
+    ),
+    { timeout: 60_000 },
+  );
+  await expect(page.getByTestId('place-card-route-loading')).toBeHidden({ timeout: 60_000 });
+  await expect
+    .poll(() => page.url(), { timeout: 60_000 })
+    .toMatch(/\/place\/hwaseong-fortress\/reviews/);
+  return { card, scrollBefore };
 }
 
 test.describe('LogBook review hub navigation @mocked', () => {
@@ -73,17 +137,7 @@ test.describe('LogBook review hub navigation @mocked', () => {
     expect(title.length).toBeGreaterThan(3);
     expect(title).toMatch(/GATEO|LogBook|logbook/i);
 
-    await page.waitForFunction(
-      (before) => {
-        const el = document.querySelector('[data-logbook-main-scroll]');
-        if (!el || el.dataset.logbookHubScrollRestored !== '1') return false;
-        const target = Number(el.dataset.logbookHubScrollTarget || NaN);
-        if (!Number.isFinite(target)) return false;
-        return Math.abs(target - before) < 80 && Math.abs(el.scrollTop - before) < 80;
-      },
-      scrollBefore,
-      { timeout: 30_000 },
-    );
+    await waitForHubScrollRestored(page, scrollBefore);
     const scrollAfter = await page.evaluate(() => {
       const el = document.querySelector('[data-logbook-main-scroll]');
       return el?.scrollTop ?? 0;
@@ -100,6 +154,28 @@ test.describe('LogBook review hub navigation @mocked', () => {
     await expect(page.getByTestId('logbook-official-review-hub')).toBeVisible();
     await expect(page.locator('[data-place-chrome-hit]')).toHaveCount(0);
     expect((await page.title()).length).toBeGreaterThan(3);
+  });
+
+  test('hwaseong review deeplink — screen·browser back to /blog (prod path)', async ({
+    page,
+  }) => {
+    const isWebkit = test.info().project.name.includes('webkit');
+    const is1280 = test.info().project.name.includes('1280');
+    test.skip(!isWebkit && !is1280, '390 WebKit or 1280 Chromium only');
+
+    const { card, scrollBefore: scrollTarget } = await openHwaseongReviewFromHub(page);
+
+    await tapPlaceChromeBack(page);
+    await assertBlogHubVisible(page);
+    await waitForHubScrollRestored(page, scrollTarget);
+    await expect(page.getByTestId('logbook-review-filter-major-domestic')).toBeVisible();
+
+    if (isWebkit) await card.tap();
+    else await card.click();
+    await page.waitForURL(/\/place\/hwaseong-fortress\/reviews/, { timeout: 60_000 });
+    await page.goBack({ waitUntil: 'domcontentloaded' });
+    await assertBlogHubVisible(page);
+    await waitForHubScrollRestored(page, scrollTarget);
   });
 
   test('1280 — EN hub title + city chip label', async ({ page }) => {

@@ -617,9 +617,13 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null, isActiv
         search: search ? `?${search}` : '',
         hash: routeLocation.hash,
       },
-      { replace: true, preventScrollReset: true },
+      {
+        replace: true,
+        preventScrollReset: true,
+        state: routeLocation.state,
+      },
     );
-  }, [navigate, routeLocation.hash, routeLocation.pathname, searchParams]);
+  }, [navigate, routeLocation.hash, routeLocation.pathname, routeLocation.state, searchParams]);
 
   useEffect(() => {
     userCancelledDeepLinkRef.current = false;

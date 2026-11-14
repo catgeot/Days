@@ -3,7 +3,7 @@ import {
   buildLogbookHubReturnTo,
   readLogbookReviewHubSession,
 } from '../../../logbookOfficialReviews/logbookReviewHubSession.js';
-import { applyLogbookHubScrollRestore } from '../../../logbookOfficialReviews/logbookReviewHubScrollRestore.js';
+import { scheduleLogbookHubScrollRestore } from '../../../logbookOfficialReviews/logbookReviewHubScrollRestore.js';
 import { createPortal } from 'react-dom';
 import Sidebar from './Sidebar';
 import { Globe, LogOut } from 'lucide-react';
@@ -53,19 +53,7 @@ const DailyLayout = () => {
     if (session.returnTo && session.returnTo !== current) return undefined;
     const el = mainScrollRef.current;
     if (!el) return undefined;
-    const target = session.scrollY;
-    let cancelled = false;
-    let ticks = 0;
-    const tryRestore = () => {
-      if (cancelled) return;
-      if (applyLogbookHubScrollRestore(el, target)) return;
-      ticks += 1;
-      if (ticks < 40) window.setTimeout(tryRestore, 100);
-    };
-    requestAnimationFrame(tryRestore);
-    return () => {
-      cancelled = true;
-    };
+    return scheduleLogbookHubScrollRestore(el, session.scrollY);
   }, [location.pathname, location.search]);
 
   useEffect(() => {

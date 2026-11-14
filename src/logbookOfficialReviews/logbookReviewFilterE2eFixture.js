@@ -1,6 +1,17 @@
 /** Deterministic rows for Playwright / preview without Supabase. */
 export const LOGBOOK_REVIEW_FILTER_E2E_FIXTURE = [
   {
+    id: 'a9e7d546-7b70-47ce-bea1-362f36d12156',
+    place_slug: 'hwaseong-fortress',
+    place_name: '수원 화성',
+    place_name_en: 'Hwaseong Fortress',
+    persona_label: '느린산책',
+    content: '수원 화성 성곽을 따라 걷는 공식 리뷰 픽스처입니다.',
+    images: ['https://images.unsplash.com/photo-1609137144813-7d81c76720dd?w=400'],
+    created_at: '2026-11-12T08:00:00Z',
+    is_public: true,
+  },
+  {
     id: 'e2e-1',
     place_slug: 'paris',
     place_name: '파리 · 루브르 주변',
