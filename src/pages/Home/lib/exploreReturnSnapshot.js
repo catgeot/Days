@@ -1,7 +1,38 @@
-/** 탐색홈 검색·선택 리스트 → 장소카드 왕복. 메모리만 (새로고침 시 초기화). */
+/** 탐색홈 검색·선택 리스트 → 장소카드 왕복. /explore→place assign 시 메모리 스냅샷 보존용. */
 
+const SESSION_KEY = 'gateo:explore-return-snapshot';
 let snapshot = null;
 let seq = 0;
+
+function readSessionSnapshot() {
+  if (typeof window === 'undefined') return null;
+  try {
+    const raw = sessionStorage.getItem(SESSION_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === 'object' ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+function writeSessionSnapshot(data) {
+  if (typeof window === 'undefined' || !data) return;
+  try {
+    sessionStorage.setItem(SESSION_KEY, JSON.stringify(data));
+  } catch {
+    /* private mode */
+  }
+}
+
+function clearSessionSnapshot() {
+  if (typeof window === 'undefined') return;
+  try {
+    sessionStorage.removeItem(SESSION_KEY);
+  } catch {
+    /* ignore */
+  }
+}
 
 /**
  * @param {{
@@ -22,12 +53,14 @@ export function rememberExploreReturn(data) {
     disambiguation: data.disambiguation ?? null,
     scrollTop: Number.isFinite(data.scrollTop) ? data.scrollTop : 0,
   };
+  writeSessionSnapshot(snapshot);
 }
 
 export function peekExploreReturn() {
-  return snapshot;
+  return snapshot ?? readSessionSnapshot();
 }
 
 export function clearExploreReturn() {
   snapshot = null;
+  clearSessionSnapshot();
 }
