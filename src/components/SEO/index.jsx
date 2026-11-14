@@ -13,7 +13,10 @@ import {
 } from '../../pages/Home/lib/placeSeoOg.js';
 import { buildTravelerAggregateRatingSchema } from '../../utils/placeReviewStats.js';
 import { isWikimediaOgImageUrl, resolveSocialShareImageUrl } from '../../shared/seo/socialOgImage.js';
-import { stripHeadSeoBeforeHelmet } from '../../shared/seo/stripHeadSeoBeforeHelmet.js';
+import {
+  isEditorialBlogSeoPath,
+  stripHeadSeoBeforeHelmet,
+} from '../../shared/seo/stripHeadSeoBeforeHelmet.js';
 
 const SCHEMA_TYPES = {
   TOURIST_ATTRACTION: 'TouristAttraction',
@@ -184,10 +187,16 @@ const SEO = ({
     };
   }, [gallerySchema]);
 
-  if (strippedStaticHeadForPath.current !== pagePath) {
+  useEffect(() => {
+    if (!isEditorialBlogSeoPath(pagePath)) {
+      strippedStaticHeadForPath.current = '';
+      return undefined;
+    }
+    if (strippedStaticHeadForPath.current === pagePath) return undefined;
     strippedStaticHeadForPath.current = pagePath;
     stripHeadSeoBeforeHelmet();
-  }
+    return undefined;
+  }, [pagePath]);
 
   return (
     <Helmet>
