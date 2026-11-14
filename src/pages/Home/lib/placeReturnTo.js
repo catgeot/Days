@@ -75,6 +75,11 @@ export function peekPlaceReturnTo(routeState) {
       ? /** @type {{ returnTo?: unknown }} */ (routeState).returnTo
       : null;
   if (isAllowed(fromState)) return fromState;
+  const fromHub =
+    routeState &&
+    typeof routeState === 'object' &&
+    /** @type {{ fromLogbookReviewHub?: unknown }} */ (routeState).fromLogbookReviewHub === true;
+  if (!fromHub) return null;
   try {
     const stored = sessionStorage.getItem(KEY);
     if (isAllowed(stored)) return stored;

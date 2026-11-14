@@ -466,6 +466,7 @@ jobs:
             exit 1
           fi
           PLAYWRIGHT_BASE_URL=http://127.0.0.1:5201 npx playwright test e2e/explore-search-bare-ko.spec.js e2e/explore-restaurant-search-select.spec.js e2e/explore-search-bichchorong-tap.spec.js --project=chromium-explore-bare-ko-390 --project=chromium-explore-restaurant-search-select --project=webkit-explore-bichchorong-tap --reporter=line
+          PLAYWRIGHT_BASE_URL=http://127.0.0.1:5201 npx playwright test e2e/explore-place-screen-back.spec.js --project=chromium-explore-bare-ko-390 --reporter=line
 
   place-gallery-overview-locale-e2e:
     name: Place gallery overview locale (390)

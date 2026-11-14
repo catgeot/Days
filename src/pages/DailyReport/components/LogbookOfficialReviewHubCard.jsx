@@ -8,6 +8,10 @@ import {
   readLogbookReviewHubSession,
 } from '../../../logbookOfficialReviews/logbookReviewHubSession.js';
 import { prepareLogbookReviewHubNavigation } from '../../../logbookOfficialReviews/logbookReviewHubNavigate.js';
+import {
+  applyLogbookHubScrollRestore,
+  clearLogbookHubScrollRestored,
+} from '../../../logbookOfficialReviews/logbookReviewHubScrollRestore.js';
 import { useLogbookOfficialReviewHub } from '../../../logbookOfficialReviews/useLogbookOfficialReviewHub.js';
 import { formatLogbookDisplayDate } from '../../../utils/logbookDisplayDate';
 import {
@@ -204,12 +208,18 @@ const LogbookOfficialReviewHubCard = () => {
     const scrollRoot = document.querySelector('[data-logbook-main-scroll]');
     if (!scrollRoot) return undefined;
     const target = session.scrollY;
-    const restore = () => {
-      scrollRoot.scrollTop = target;
+    let cancelled = false;
+    let ticks = 0;
+    const tryRestore = () => {
+      if (cancelled) return;
+      if (applyLogbookHubScrollRestore(scrollRoot, target)) return;
+      ticks += 1;
+      if (ticks < 50) window.setTimeout(tryRestore, 100);
     };
-    const timers = [0, 100, 300, 600].map((ms) => window.setTimeout(restore, ms));
-    requestAnimationFrame(restore);
-    return () => timers.forEach((id) => window.clearTimeout(id));
+    requestAnimationFrame(tryRestore);
+    return () => {
+      cancelled = true;
+    };
   }, [
     expanded,
     isLoading,
@@ -229,6 +239,7 @@ const LogbookOfficialReviewHubCard = () => {
 
   const onHubReviewNavigate = useCallback(() => {
     const scrollRoot = document.querySelector('[data-logbook-main-scroll]');
+    clearLogbookHubScrollRestored(scrollRoot);
     const scrollY = scrollRoot && 'scrollTop' in scrollRoot ? scrollRoot.scrollTop : 0;
     prepareLogbookReviewHubNavigation({
       pathname: location.pathname,

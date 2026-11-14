@@ -40,7 +40,7 @@ test('resolvePlaceCardBack — push prev /blog when returnTo missing', () => {
   });
 });
 
-test('setPlaceReturnTo session for blog', () => {
+test('setPlaceReturnTo session for blog — hub flag only', () => {
   const store = new Map();
   const prev = globalThis.sessionStorage;
   globalThis.sessionStorage = {
@@ -50,7 +50,32 @@ test('setPlaceReturnTo session for blog', () => {
   };
   clearPlaceReturnTo();
   setPlaceReturnTo('/blog?tab=public');
-  assert.equal(peekPlaceReturnTo(null), '/blog?tab=public');
+  assert.equal(peekPlaceReturnTo(null), null);
+  assert.equal(
+    peekPlaceReturnTo({ fromLogbookReviewHub: true }),
+    '/blog?tab=public',
+  );
+  clearPlaceReturnTo();
+  globalThis.sessionStorage = prev;
+});
+
+test('explore prev wins over stale blog session', () => {
+  const store = new Map();
+  const prev = globalThis.sessionStorage;
+  globalThis.sessionStorage = {
+    setItem: (k, v) => store.set(k, v),
+    getItem: (k) => store.get(k) ?? null,
+    removeItem: (k) => store.delete(k),
+  };
+  clearPlaceReturnTo();
+  setPlaceReturnTo('/blog?tab=public&lang=ko');
+  const action = resolvePlaceCardBack({
+    historyIdx: 2,
+    prevPath: '/explore',
+    returnTo: peekPlaceReturnTo(null),
+    exploreReturnPath: null,
+  });
+  assert.deepEqual(action, { type: 'history' });
   clearPlaceReturnTo();
   globalThis.sessionStorage = prev;
 });

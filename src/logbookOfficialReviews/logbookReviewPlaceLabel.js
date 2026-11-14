@@ -20,6 +20,10 @@ export function shortenLogbookReviewPlaceName(placeName) {
 export function resolveLogbookReviewPlaceDisplayName(review, lang) {
   const placeName = String(review?.place_name || '').trim();
   const slug = String(review?.place_slug || '').trim().toLowerCase();
+  if (lang === 'en') {
+    const fixtureEn = String(review?.place_name_en || '').trim();
+    if (fixtureEn) return fixtureEn;
+  }
   const spot = slug ? spotBySlug.get(slug) : null;
   if (lang === 'en' && spot) {
     const en =

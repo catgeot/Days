@@ -27,10 +27,6 @@ export function resolvePlaceCardBack(input) {
   const exploreReturnPath =
     typeof input?.exploreReturnPath === 'string' ? input.exploreReturnPath : null;
 
-  if (returnTo && (returnTo.split('?')[0] === '/blog' || returnTo.startsWith('/blog?'))) {
-    return { type: 'push', path: returnTo, clearReturnTo: true };
-  }
-
   if (typeof historyIdx === 'number' && historyIdx > 0) {
     if (prevName.startsWith('/place/') || prevName.startsWith('/explore')) {
       return { type: 'history' };
@@ -50,6 +46,10 @@ export function resolvePlaceCardBack(input) {
     if (returnTo && isKoreaPlaceReturnPath(prevPath)) {
       return { type: 'push', path: returnTo, clearReturnTo: true };
     }
+  }
+
+  if (returnTo && isLogbookPlaceReturnPath(returnTo)) {
+    return { type: 'push', path: returnTo, clearReturnTo: true };
   }
 
   if (returnTo) {

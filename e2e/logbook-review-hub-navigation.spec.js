@@ -76,11 +76,13 @@ test.describe('LogBook review hub navigation @mocked', () => {
     await page.waitForFunction(
       (before) => {
         const el = document.querySelector('[data-logbook-main-scroll]');
-        if (!el) return false;
-        return Math.abs(el.scrollTop - before) < 80;
+        if (!el || el.dataset.logbookHubScrollRestored !== '1') return false;
+        const target = Number(el.dataset.logbookHubScrollTarget || NaN);
+        if (!Number.isFinite(target)) return false;
+        return Math.abs(target - before) < 80 && Math.abs(el.scrollTop - before) < 80;
       },
       scrollBefore,
-      { timeout: 20_000 },
+      { timeout: 30_000 },
     );
     const scrollAfter = await page.evaluate(() => {
       const el = document.querySelector('[data-logbook-main-scroll]');
