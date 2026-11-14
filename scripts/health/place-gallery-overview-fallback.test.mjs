@@ -379,7 +379,13 @@ test('hook path — no save RPC or AI ensure', () => {
   assert.doesNotMatch(hook, /persistPlaceChatIntroSummary/);
   assert.doesNotMatch(hook, /ensurePlaceChatIntroForLocation/);
   assert.doesNotMatch(hook, /generatePlaceChatIntroWithAi/);
-  assert.match(hook, /shouldUsePlaceGalleryReadonlyOverview/);
+  assert.match(hook, /shouldFetchGalleryOverviewHydration/);
+  const overviewText = readFileSync(
+    join(root, 'src/components/PlaceCard/common/placeOverviewText.js'),
+    'utf8',
+  );
+  assert.match(overviewText, /export function shouldFetchGalleryOverviewHydration/);
+  assert.match(overviewText, /shouldUsePlaceGalleryReadonlyOverview/);
 });
 
 test('gallery entry views — overview hook only, no ensure or save', () => {
