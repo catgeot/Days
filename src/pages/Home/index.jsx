@@ -9,12 +9,8 @@ import SearchDiscoveryModal from './components/SearchDiscoveryModal';
 import LogoPanel from './components/LogoPanel';
 import SiteUpdateBanner from '../../shared/components/SiteUpdateBanner';
 import HomePlaceCardSummary from './components/HomePlaceCardSummary';
-import SEO from '../../components/SEO';
+import HomeDocumentHead from './HomeDocumentHead';
 import { useLocale } from '../../i18n/LocaleProvider';
-import {
-  getExploreCategorySeoBundle,
-  parseExploreCategoryPath,
-} from './lib/exploreCategorySeo';
 import { supabase } from '../../shared/api/supabase';
 import { subscribeAuthUser } from '../../shared/Auth/sessionUser.js';
 import { trackMooniOpenIfRising } from '../../shared/analytics/trackEvent.js';
@@ -1793,12 +1789,6 @@ function Home() {
     await globeRef.current?.endTour?.();
   }, []);
 
-  const exploreCategorySeo = useMemo(() => {
-    const parsed = parseExploreCategoryPath(routeLocation.pathname);
-    if (!parsed) return null;
-    return getExploreCategorySeoBundle(parsed.continent, parsed.category, locale);
-  }, [routeLocation.pathname, locale]);
-
   return (
     <FlightCinemaProvider
       globeRef={globeRef}
@@ -1808,12 +1798,7 @@ function Home() {
       onPendingChange={setFlightCinemaLaunchPending}
     >
     <div className="relative w-full h-screen bg-black text-white overflow-hidden font-sans">
-      <SEO
-        title={exploreCategorySeo?.title}
-        description={exploreCategorySeo?.description}
-        keywords={exploreCategorySeo?.keywords}
-        url={exploreCategorySeo?.path}
-      />
+      <HomeDocumentHead />
       <div className="w-full h-full">
         <HomeGlobe
           ref={globeRef}

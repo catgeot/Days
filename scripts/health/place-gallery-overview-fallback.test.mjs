@@ -314,6 +314,18 @@ test('Home gallery PR drift guard; MOONi session wiring line allowlist', () => {
     /^[+-].*navigatePlaceReturnToBlog/,
     /^[+-].*logbookBlogReturnNavigate/,
     /^[+-].*leavePlaceCard/,
+    /^-\s*import SEO from '\.\.\/\.\.\/components\/SEO';$/,
+    /^\+\s*import HomeDocumentHead from '\.\/HomeDocumentHead';$/,
+    /^-\s*import \{$/,
+    /^-\s*getExploreCategorySeoBundle,$/,
+    /^-\s*parseExploreCategoryPath,$/,
+    /^[+-].*[Ee]xploreCategory/,
+    /^-\s*const parsed = parseExploreCategoryPath\(routeLocation\.pathname\);$/,
+    /^-\s*if \(!parsed\) return null;$/,
+    /^-\s*\}, \[routeLocation\.pathname, locale\]\);$/,
+    /^-\s*<SEO$/,
+    /^-\s*\/>$/,
+    /^\+\s*<HomeDocumentHead \/>$/,
   ];
 
   const exploreHandlersLine =
