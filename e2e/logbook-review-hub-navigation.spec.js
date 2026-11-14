@@ -56,11 +56,15 @@ async function wheelHubList(page) {
   if (!box) throw new Error('missing data-logbook-main-scroll');
   const x = box.x + box.width / 2;
   const y = box.y + Math.min(box.height * 0.45, 360);
-  await page.mouse.move(x, y);
+  const isMobile = Boolean(test.info().project.use.isMobile);
   const before = await main.evaluate((el) => el.scrollTop);
-  await page.mouse.wheel(0, 360);
-  await page.waitForTimeout(300);
-  let delta = (await main.evaluate((el) => el.scrollTop)) - before;
+  let delta = 0;
+  if (!isMobile) {
+    await page.mouse.move(x, y);
+    await page.mouse.wheel(0, 360);
+    await page.waitForTimeout(300);
+    delta = (await main.evaluate((el) => el.scrollTop)) - before;
+  }
   if (delta < 24) {
     delta = await main.evaluate((el) => {
       const b = el.scrollTop;
