@@ -43,8 +43,10 @@ const GalleryInfoView = React.memo(({ selectedPlace, selectedImg, relatedPlaces 
                 locale,
                 location: selectedPlace,
                 showDescriptionInKoreanLabel,
+                curationOverview,
+                fixedOverview,
             }),
-        [locale, selectedPlace, showDescriptionInKoreanLabel],
+        [locale, selectedPlace, showDescriptionInKoreanLabel, curationOverview, fixedOverview],
     );
 
     const photoAttribution = useMemo(

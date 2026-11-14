@@ -141,6 +141,47 @@ test.describe('place gallery overview locale @390', () => {
     await expect(mobileOverview).not.toContainText(STALE_KO_MARKER);
   });
 
+  test('yap EN — English overview without koreanGuide notice', async ({ page }) => {
+    await seedYapEnIntro(page);
+    await page.goto('/place/yap?lang=en', { waitUntil: 'domcontentloaded', timeout: 90_000 });
+    const mobileOverview = await revealMobileGalleryOverview(page);
+    await expect.poll(async () => mobileOverview.innerText(), { timeout: 120_000 }).toMatch(/stone money|Pacific/i);
+    await expect(
+      mobileOverview.getByRole('status', { name: /Detailed guide is currently provided in Korean/i }),
+    ).toHaveCount(0);
+  });
+
+  test('chuuk EN — hydrated English overview without koreanGuide notice', async ({ page }) => {
+    const MOCK_EN_CHUUK = 'Chuuk Lagoon is known for WWII shipwreck diving and stone-fort islets.';
+    const keys = ['Chuuk', '추크', 'Micronesia Chuuk'];
+    await page.addInitScript(
+      ({ enIntro, keys: introKeys }) => {
+        const stamp = { savedAt: Date.now() };
+        for (const key of introKeys) {
+          localStorage.setItem(
+            `days_place_chat_intro:${encodeURIComponent(`${key}@en`)}`,
+            JSON.stringify({ summary: enIntro, ...stamp }),
+          );
+        }
+      },
+      { enIntro: MOCK_EN_CHUUK, keys },
+    );
+    await page.route(/\/rest\/v1\/place_chat_intro/i, async (route) => {
+      const url = decodeURIComponent(route.request().url());
+      const isEn = /@en/.test(url) || /destination_key=eq\.[^&]*@en/i.test(url);
+      const body = isEn
+        ? JSON.stringify([{ destination_key: 'Chuuk@en', summary: MOCK_EN_CHUUK }])
+        : '[]';
+      return route.fulfill({ status: 200, contentType: 'application/json', body });
+    });
+    await page.goto('/place/chuuk?lang=en', { waitUntil: 'domcontentloaded', timeout: 90_000 });
+    const mobileOverview = await revealMobileGalleryOverview(page);
+    await expect.poll(async () => mobileOverview.innerText(), { timeout: 120_000 }).toMatch(/shipwreck|Chuuk/i);
+    await expect(
+      mobileOverview.getByRole('status', { name: /Detailed guide is currently provided in Korean/i }),
+    ).toHaveCount(0);
+  });
+
   test('yap KO→EN→KO — mobile round trip', async ({ page }) => {
     await seedYapEnIntro(page);
     await page.goto('/place/yap?lang=ko', { waitUntil: 'domcontentloaded', timeout: 90_000 });

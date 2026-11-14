@@ -32,6 +32,7 @@ const placeGalleryOverviewLocaleExternalPreview = Boolean(
   process.env.PLAYWRIGHT_BASE_URL?.includes(`127.0.0.1:${placeGalleryOverviewLocalePort}`),
 );
 
+
 export default defineConfig({
   testDir: './e2e',
   fullyParallel: false,

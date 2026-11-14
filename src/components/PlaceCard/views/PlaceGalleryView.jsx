@@ -1020,8 +1020,10 @@ const PlaceGalleryView = React.memo(({
         locale,
         location,
         showDescriptionInKoreanLabel,
+        curationOverview,
+        fixedOverview,
       }),
-    [locale, location, showDescriptionInKoreanLabel],
+    [locale, location, showDescriptionInKoreanLabel, curationOverview, fixedOverview],
   );
   const showMobileGalleryOverview = useMemo(
     () =>

@@ -168,8 +168,9 @@ import { shouldShowFestivalNearbyListSection } from './lib/festivalDetailSection
 import { formatFestivalPhotoCreditLine } from './festivalPhotoCredit.js';
 import {
   detectPosterEditionYear,
-  festivalEditionYearFromStart,
-  isPriorEditionPoster,
+  festivalEditionYearFromEventFields,
+  festivalPosterMetaAtIndex,
+  shouldMarkPriorEditionPosterMeta,
 } from './lib/festivalPosterEdition.js';
 import { resolveFestivalPublicHomepage, preferHttpsFestivalHomepage } from './lib/festivalPublicHomepage.js';
 import { useFestivalHeroPhotoDecoded } from './useFestivalHeroPhotoDecoded.js';
@@ -1374,6 +1375,12 @@ export default function FestivalDetailSheet({
       const commonHit = detailData?.common || null;
       const infoRows = Array.isArray(detailData?.info) ? detailData.info : [];
       let slides = collectFestivalGallerySlides(imageData, seed);
+      const commonHero = toHttps(
+        commonHit?.firstimage || commonHit?.firstImage || commonHit?.imageUrl || '',
+      );
+      if (commonHero && !slides.some((row) => row.url === commonHero)) {
+        slides.unshift({ url: commonHero, caption: '' });
+      }
       let credits = [];
       let captions = [];
       if (Array.isArray(detailData?.manualImages) && detailData.manualImages.length) {
@@ -2495,17 +2502,34 @@ export default function FestivalDetailSheet({
     imageCredits[activeImage],
     locale,
   );
-  const festivalEditionYear = festivalEditionYearFromStart(
-    item?.eventStartDate || intro?.eventStartDate || intro?.eventstartdate,
+  const festivalEditionYear = festivalEditionYearFromEventFields(intro)
+    ?? festivalEditionYearFromEventFields(item);
+  const commonFirstImage = toHttps(
+    common?.firstimage || common?.firstImage || common?.imageUrl || '',
   );
-  const posterEditionYear = detectPosterEditionYear({
-    url: imageUrls[activeImage] || '',
-    caption: imageCaptions[activeImage] || '',
-    credit: imageCredits[activeImage] || '',
-  });
-  const showPriorEditionPosterLabel = isPriorEditionPoster(
-    posterEditionYear,
-    festivalEditionYear,
+  const festivalPosterSlides = imageUrls.map((url, index) => ({
+    url,
+    caption: imageCaptions[index] || '',
+  }));
+  const priorPosterLabelAt = (index) => {
+    const meta = festivalPosterMetaAtIndex(index, imageUrls, imageCaptions, imageCredits);
+    const posterEditionYear = detectPosterEditionYear(meta);
+    return shouldMarkPriorEditionPosterMeta({
+      posterYear: posterEditionYear,
+      festivalYear: festivalEditionYear,
+      activeUrl: meta.url,
+      commonFirstImage,
+      slides: festivalPosterSlides,
+    });
+  };
+  const showPriorEditionPosterLabel = priorPosterLabelAt(activeImage);
+  const lightboxPosterIndex = lightboxSlides.rawIndex >= 0
+    ? lightboxSlides.rawIndex
+    : activeImage;
+  const showLightboxPriorEditionPosterLabel = priorPosterLabelAt(lightboxPosterIndex);
+  const lightboxPhotoCredit = formatFestivalPhotoCreditLine(
+    imageCredits[lightboxPosterIndex],
+    locale,
   );
   const koTitle = String(item?.title || common?.title || '').trim();
   const displayTitle =
@@ -3920,6 +3944,20 @@ export default function FestivalDetailSheet({
                   </>
                 )}
               </div>
+              {(showLightboxPriorEditionPosterLabel || lightboxPhotoCredit) ? (
+                <p
+                  className="relative z-30 mt-3 shrink-0 px-1 text-center text-xs leading-snug text-white/85"
+                  data-festival-lightbox-caption=""
+                >
+                  {showLightboxPriorEditionPosterLabel ? (
+                    <span className="font-semibold text-white">
+                      {t('korea.festival.detail.posterPriorEdition')}
+                      {lightboxPhotoCredit ? ' · ' : null}
+                    </span>
+                  ) : null}
+                  {lightboxPhotoCredit || null}
+                </p>
+              ) : null}
             </div>
           </div>,
           document.body,
