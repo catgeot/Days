@@ -102,6 +102,8 @@ async function openRomeFromExplore(page, { preferDirect = false } = {}) {
   await expect(search).toBeVisible({ timeout: 60_000 });
   await search.click();
   await expect(page).toHaveURL(/\/explore/, { timeout: 30_000 });
+  await page.waitForLoadState('load');
+  await page.waitForLoadState('networkidle', { timeout: 20_000 }).catch(() => {});
   const input = page.locator('input[placeholder]:visible').first();
   await input.fill('로마');
   const row = page
@@ -112,18 +114,13 @@ async function openRomeFromExplore(page, { preferDirect = false } = {}) {
   await expect(row).toBeVisible({ timeout: 20_000 });
   await row.click();
   await expect(page).toHaveURL(/\/place\/rome/, { timeout: 60_000 });
+  await page.waitForLoadState('load');
 }
 
+/** explore→로마 카드 클릭으로 스냅샷·히스토리를 쌓은 뒤 화면 ← 검증용 */
 async function openRomeFromExploreForScreenBack(page) {
-  await page.goto('/?lang=ko', { waitUntil: 'domcontentloaded' });
-  await page.evaluate(() => {
-    sessionStorage.setItem(
-      'gateo:explore-return-snapshot',
-      JSON.stringify({ path: '/explore', query: '?lang=ko', scrollY: 0, seq: 1 }),
-    );
-  });
-  await page.goto('/place/rome?lang=ko', { waitUntil: 'domcontentloaded' });
-  await expect(page).toHaveURL(/\/place\/rome/, { timeout: 30_000 });
+  await page.goto('/?lang=ko', { waitUntil: 'load' });
+  await openRomeFromExplore(page);
 }
 
 test.describe('travelogue full-page navigation hotfix', () => {
@@ -187,8 +184,21 @@ test.describe('travelogue full-page navigation hotfix', () => {
       ]);
     }
 
-    await page.goto('/place/rome/reviews?lang=ko');
+    await page.goto('/place/rome/reviews?lang=ko', { waitUntil: 'load' });
     await expect(page).toHaveURL(/\/place\/rome\/reviews/, { timeout: 30_000 });
+    const reviewTravelogue = page
+      .locator('a[href*="/blog/e/rome-travelogue"]')
+      .filter({ hasText: '석양 전의 콜로세움' })
+      .first();
+    if (await reviewTravelogue.isVisible().catch(() => false)) {
+      await Promise.all([
+        page.waitForURL(/\/blog\/e\/rome-travelogue/, { timeout: 60_000 }),
+        reviewTravelogue.click(),
+      ]);
+      await expect(page.getByRole('heading', { name: '석양 전의 콜로세움' })).toBeVisible({ timeout: 30_000 });
+      await page.goto('/place/rome/reviews?lang=ko', { waitUntil: 'load' });
+      await expect(page).toHaveURL(/\/place\/rome\/reviews/, { timeout: 30_000 });
+    }
     const expand = page.locator('[data-review-expand-toggle]').first();
     await expect(expand).toBeVisible({ timeout: 20_000 });
     const before = await expand.getAttribute('aria-expanded');
