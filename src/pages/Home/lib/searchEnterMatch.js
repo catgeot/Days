@@ -6,6 +6,7 @@ import { resolveHubAttraction } from './cityAttractionHubs.js';
 import { resolveExploreCityHubExact } from './exploreHubResolve.js';
 import { resolveExploreSearchAlias } from './exploreSearchAliases.js';
 import { buildHybridSearchSuggestions, buildLocalSearchSuggestions } from './searchSuggestions.js';
+import { exploreFestivalSuggestionMatchesQuery } from './exploreFestivalSearchSuggestions.js';
 import {
   isKoreaHomonymChoiceSet,
   shouldOfferKoreaHomonymDisambiguation,
@@ -95,6 +96,36 @@ export function pickEnterSuggestionMatches(query, suggestions) {
     if (!hasUsableCoords(item)) return false;
     return placeNameMatchesSearchQuery(query, item);
   });
+}
+
+/**
+ * @param {string} query
+ * @param {object[]} suggestions
+ * @param {string} [locale]
+ */
+export function pickEnterFestivalMatches(query, suggestions, locale = 'ko') {
+  return (suggestions || []).filter((item) =>
+    exploreFestivalSuggestionMatchesQuery(query, item, locale),
+  );
+}
+
+/**
+ * Enter — one strong festival title match may open 축제 상세 directly.
+ * @param {string} query
+ * @param {object[]} suggestions
+ * @param {string} [locale]
+ */
+export function preferEnterFestivalSuggestion(query, suggestions, locale = 'ko') {
+  const matches = pickEnterFestivalMatches(query, suggestions, locale);
+  if (matches.length !== 1) return null;
+  const hit = matches[0];
+  if (!hit?.festivalContentId) return null;
+  const canonical = normalizeSearchName(resolveEnterSearchCanonical(query));
+  const names = itemSearchNames(hit);
+  if (canonical && names.some((n) => n === canonical)) return hit;
+  const q = normalizeSearchName(query);
+  if (q.length >= 3 && names.some((n) => n.includes(q) || q.includes(n))) return hit;
+  return null;
 }
 
 /**

@@ -441,6 +441,7 @@ jobs:
           VITE_SUPABASE_URL: https://example.supabase.co
           VITE_SUPABASE_ANON_KEY: e2e-anon-placeholder
           VITE_MAPBOX_TOKEN: pk.e2e-explore-bare-ko-placeholder
+          VITE_GATEO_SITE_SEARCH: '1'
         run: npm run build
 
       - name: Playwright — explore-search-bare-ko (390·1280)
@@ -464,7 +465,7 @@ jobs:
             cat /tmp/vite-explore-bare-ko.log
             exit 1
           fi
-          PLAYWRIGHT_BASE_URL=http://127.0.0.1:5201 npx playwright test e2e/explore-search-bare-ko.spec.js e2e/explore-restaurant-search-select.spec.js --project=chromium-explore-bare-ko-390 --project=chromium-explore-restaurant-search-select --reporter=line
+          PLAYWRIGHT_BASE_URL=http://127.0.0.1:5201 npx playwright test e2e/explore-search-bare-ko.spec.js e2e/explore-restaurant-search-select.spec.js e2e/explore-search-bichchorong-tap.spec.js --project=chromium-explore-bare-ko-390 --project=chromium-explore-restaurant-search-select --project=webkit-explore-bichchorong-tap --reporter=line
 
   place-gallery-overview-locale-e2e:
     name: Place gallery overview locale (390)

@@ -135,6 +135,17 @@ test('Home gallery PR drift guard; MOONi session wiring line allowlist', () => {
     /^[+-]\s*return null;$/,
     /^[+-].*ensureDisambiguation/,
     /^[+-].*pickEnterSuggestionMatches/,
+    /^[+-].*preferEnterFestivalSuggestion/,
+    /^[+-].*pickEnterFestivalMatches/,
+    /^[+-].*buildExploreSiteSearchHybridSuggestions/,
+    /^[+-].*normalizeSearchSuggestions/,
+    /^[+-].*hybridEnterSuggestions/,
+    /^[+-].*festDirect/,
+    /^[+-].*festMatches/,
+    /^[+-].*normalized\.length/,
+    /^[+-].*submitParity/,
+    /^[+-].*showMooni/,
+    /^[+-].*도시·명소·여행지/,
     /^[+-].*buildLocalSearchSuggestions/,
     /^[+-].*return \{ __noResults/,
     /^[+-]\s*if \(allowAiTypo\)/,
@@ -251,6 +262,13 @@ test('Home gallery PR drift guard; MOONi session wiring line allowlist', () => {
     /^[+-].*koreaTourAttractions/,
     /^[+-].*koreaPoiTypeSearch/,
     /^[+-].*navigateToPlace/,
+    /^[+-].*placeHref/,
+    /^[+-].*location\.assign\(placeHref\)/,
+    /^[+-].*routeLocation\.pathname\.startsWith\('\/explore'\)/,
+    /^[+-].*openExploreHrefRoute/,
+    /^[+-].*activateHrefSearchSuggestion/,
+    /^[+-].*exploreSuggestionNavigateHref/,
+    /^[+-].*fromSuggestionLink/,
     /^[+-].*shouldEnsurePlaceChatIntroForLocation/,
     /^[+-].*needsPlaceChatIntroHydration/,
     /^[+-].*buildPlaceChatIntroAppliedPatch/,
@@ -284,10 +302,13 @@ test('Home gallery PR drift guard; MOONi session wiring line allowlist', () => {
     /^[+-]\s*\.\.\.pin/,
     /^[+-].*async \(\) => \{/,
     /^[+-].*isPlaceCardVisible=\{isPlaceCardSummaryVisible( \|\| isPlaceRoute)?\}/,
+    /^[+-].*festivalContentId/,
+    /^[+-].*kind === 'festival'/,
+    /^[+-]\s*return selectedFromSearch;/,
   ];
 
   const exploreHandlersLine =
-    /^[+-].*(exploreRegionalPlaceQuery|buildCuratedEnterDisambiguation|buildExploreSubmitParityBroadDisambiguation|isGateoExploreSearchSubmitParityEnabled|resolveExploreCityHubExact|exploreKoreaTourTitleCandidates|buildKoreaTourTitleEnterDisambiguation|parseExploreSearchScope|parseBareKoreaExploreScope|tourTitleChoice|TourAPI 다건|EXPLORE_SEARCH|shouldSkipOverseas|KoreaDestinationFirstPass|effectiveExploreSearchQuery|filterRegionalExploreHits|regionalExploreMapboxOpts|parseKoreaRegionalExploreQuery|regionalScope|filteredRemote|allowAiTypo|treatAsMoodQuery|__noResults|explore-search-ai|firstPassHitToUiPlace|TourAPI|hybrid|isDomesticKoreaLocation|originalQuery|rawLat|rawLng|getCoordinatesFromAddress|searchBoxForward|pickEnterSuggestionMatches|buildHybridSearchSuggestions|buildLocalSearchSuggestions|ensureDisambiguation|Promise|commitLocation|remoteHits|invokeGeminiTask|localChoices|hybridMatches|koreaRetry|searchMode|apiClient|requireChoice|isCorrected|isFacilityQuery|shouldSkipGeocodeForMoodIntent|EXPLORE_SEARCH_HANGUL_RE|query,|mode:|limit: 5|new Promise|setTimeout|reject|verifyAndNormalizeCandidate|for \(const hit|import \{|exploreRegionalPlaceQuery\.js|return null|return commitLocation|return ensureDisambiguation|Explore Enter|country: candidate|원하는 장소를 선택하세요|function shouldSkipOverseasAiTypoForQuery)/;
+    /^[+-].*(exploreRegionalPlaceQuery|buildCuratedEnterDisambiguation|buildExploreSubmitParityBroadDisambiguation|isGateoExploreSearchSubmitParityEnabled|resolveExploreCityHubExact|exploreKoreaTourTitleCandidates|buildKoreaTourTitleEnterDisambiguation|parseExploreSearchScope|parseBareKoreaExploreScope|tourTitleChoice|TourAPI 다건|EXPLORE_SEARCH|shouldSkipOverseas|KoreaDestinationFirstPass|effectiveExploreSearchQuery|filterRegionalExploreHits|regionalExploreMapboxOpts|parseKoreaRegionalExploreQuery|regionalScope|filteredRemote|allowAiTypo|treatAsMoodQuery|__noResults|explore-search-ai|firstPassHitToUiPlace|TourAPI|hybrid|isDomesticKoreaLocation|originalQuery|rawLat|rawLng|getCoordinatesFromAddress|searchBoxForward|pickEnterSuggestionMatches|preferEnterFestivalSuggestion|pickEnterFestivalMatches|buildExploreSiteSearchHybridSuggestions|normalizeSearchSuggestions|festDirect|festMatches|buildHybridSearchSuggestions|buildLocalSearchSuggestions|ensureDisambiguation|Promise|commitLocation|remoteHits|invokeGeminiTask|localChoices|hybridMatches|koreaRetry|searchMode|apiClient|requireChoice|isCorrected|isFacilityQuery|shouldSkipGeocodeForMoodIntent|EXPLORE_SEARCH_HANGUL_RE|query,|mode:|limit: 5|new Promise|setTimeout|reject|verifyAndNormalizeCandidate|for \(const hit|import \{|exploreRegionalPlaceQuery\.js|return null|return commitLocation|return ensureDisambiguation|Explore Enter|country: candidate|원하는 장소를 선택하세요|function shouldSkipOverseasAiTypoForQuery)/;
 
   function isExploreSearchHandlersOnlyDiff(changed) {
     if (!changed.some((line) => exploreHandlersLine.test(line))) return false;

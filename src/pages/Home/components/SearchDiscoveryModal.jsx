@@ -515,6 +515,10 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, onAskMooni,
         dismissSearchKeyboard();
         return;
       }
+      if (result?.kind === 'festival' && result?.festivalContentId) {
+        await handleSuggestionSelect(result);
+        return;
+      }
       if (!result?.name) {
         setSearchSubmitError(
           t('home.explore.searchNoResults', {
@@ -544,8 +548,16 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, onAskMooni,
     }
   };
 
+  const openExploreHrefRoute = (href) => {
+    const target = String(href || '').trim();
+    if (!target.startsWith('/')) return;
+    if (typeof window !== 'undefined') {
+      window.location.assign(target);
+    }
+  };
+
   /** 제안·선택 카드 클릭 — Mapbox retrieve 필요 시 좌표 확보 후 오픈 */
-  const handleSuggestionSelect = async (item) => {
+  const handleSuggestionSelect = async (item, opts = {}) => {
     if (!item) return;
     dismissSearchKeyboard();
     setIsSearchHistoryOpen(false);
@@ -561,16 +573,20 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, onAskMooni,
 
     if (item.kind === 'festival' && item.festivalContentId) {
       captureExploreReturn();
-      navigate(
+      const festHref =
         item.exploreHref ||
-          `/korea?festival=${encodeURIComponent(String(item.festivalContentId))}`,
-      );
+        `/korea?festival=${encodeURIComponent(String(item.festivalContentId))}`;
+      if (!opts.fromSuggestionLink) {
+        openExploreHrefRoute(festHref);
+      }
       return;
     }
 
     if (item.kind === 'review' && item.exploreHref) {
       captureExploreReturn();
-      navigate(item.exploreHref);
+      if (!opts.fromSuggestionLink) {
+        openExploreHrefRoute(item.exploreHref);
+      }
       return;
     }
 
@@ -1420,9 +1436,9 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, onAskMooni,
                 query={query}
                 items={hybridSuggestions}
                 loading={suggestionsLoading}
-                onSelect={(item) => {
+                onSelect={(item, opts) => {
                   setIsSearchHistoryOpen(false);
-                  handleSuggestionSelect(item);
+                  handleSuggestionSelect(item, opts);
                 }}
                 onAskMooni={
                   onAskMooni
