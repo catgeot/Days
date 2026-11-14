@@ -17,7 +17,7 @@ import { contentHasLogbookPhotoPlaceholders } from './utils/logbookMarkdownSnipp
 import { fetchSamePlaceCount, logbookPlaceKey, logbookReadingMinutes } from '../../utils/logbookReadingMeta';
 import LogbookReadFacts from './components/LogbookReadFacts';
 import AppOutlineBackButton from '../../shared/navigation/AppOutlineBackButton';
-import { navigateAppBack } from '../../shared/navigation/navigateAppBack';
+import { hardNavigateAppBack } from '../../shared/navigation/hardAppBack';
 
 function findScrollParent(el) {
   let node = el?.parentElement;
@@ -48,8 +48,8 @@ const Detail = () => {
   const scrollParentRef = useRef(null);
 
   const handleBack = useCallback(() => {
-    navigateAppBack(navigate, { fallback: '/blog' });
-  }, [navigate]);
+    hardNavigateAppBack({ fallback: '/blog' });
+  }, []);
 
   useEffect(() => {
     const getOneReport = async () => {
