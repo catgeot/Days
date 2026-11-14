@@ -960,10 +960,10 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null, isActiv
                   const editorial = isEditorialLogbook(blog);
                   const thumb = logbookHeroImageUrl(blog.images);
                   return (
-                  <div
+                  <a
                     key={blog.id}
-                    onClick={() => navigate(publicLogbookDetailPath(blog))}
-                    className={`shrink-0 w-56 bg-white border rounded-xl overflow-hidden shadow-sm hover:shadow-md hover:-translate-y-1 transition-all cursor-pointer snap-start flex flex-col group ${editorial ? 'border-indigo-100' : 'border-gray-100'}`}
+                    href={publicLogbookDetailPath(blog)}
+                    className={`shrink-0 w-56 bg-white border rounded-xl overflow-hidden shadow-sm hover:shadow-md hover:-translate-y-1 transition-all cursor-pointer snap-start flex flex-col group no-underline ${editorial ? 'border-indigo-100' : 'border-gray-100'}`}
                   >
                     <RelatedBlogCardThumbnail src={thumb} />
                     <div className="p-3 flex flex-col gap-1">
@@ -979,7 +979,7 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null, isActiv
                         {blog.date} · {blog.location}
                       </p>
                     </div>
-                  </div>
+                  </a>
                 );
                 })}
               </div>

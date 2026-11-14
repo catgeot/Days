@@ -1,6 +1,5 @@
 import React from 'react';
 import { ChartColumn, Clock, Files } from 'lucide-react';
-import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 function Fact({ icon: Icon, label, title, href, tone }) {
@@ -11,8 +10,8 @@ function Fact({ icon: Icon, label, title, href, tone }) {
   const icon = <Icon size={tone === 'article' ? 14 : 12} className="text-gray-400 shrink-0" />;
   if (href) {
     return (
-      <Link
-        to={href}
+      <a
+        href={href}
         className={`${className} hover:text-blue-600`}
         title={title}
         aria-label={title}
@@ -20,7 +19,7 @@ function Fact({ icon: Icon, label, title, href, tone }) {
       >
         {icon}
         {label}
-      </Link>
+      </a>
     );
   }
   return (
