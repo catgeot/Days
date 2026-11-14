@@ -91,13 +91,15 @@ async function installRomeMocks(context) {
   );
 }
 
-async function openRomeFromExplore(page, { preferDirect = false } = {}) {
+async function openRomeFromExplore(page, { preferDirect = false, skipHome = false } = {}) {
   if (preferDirect) {
     await page.goto('/place/rome?lang=ko');
     await expect(page).toHaveURL(/\/place\/rome/, { timeout: 30_000 });
     return;
   }
-  await page.goto('/?lang=ko');
+  if (!skipHome) {
+    await page.goto('/?lang=ko', { waitUntil: 'load' });
+  }
   const search = page.getByRole('button', { name: /여행지 검색|여행지 탐색|Search destinations/i }).first();
   await expect(search).toBeVisible({ timeout: 60_000 });
   await search.click();
@@ -120,7 +122,7 @@ async function openRomeFromExplore(page, { preferDirect = false } = {}) {
 /** explore→로마 카드 클릭으로 스냅샷·히스토리를 쌓은 뒤 화면 ← 검증용 */
 async function openRomeFromExploreForScreenBack(page) {
   await page.goto('/?lang=ko', { waitUntil: 'load' });
-  await openRomeFromExplore(page);
+  await openRomeFromExplore(page, { skipHome: true });
 }
 
 test.describe('travelogue full-page navigation hotfix', () => {
