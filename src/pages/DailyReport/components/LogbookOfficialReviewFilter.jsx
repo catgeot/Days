@@ -116,7 +116,7 @@ export default function LogbookOfficialReviewFilter({
       {showCityRow && primary.length > 0 ? (
         <>
           <div
-            className="flex flex-wrap gap-2"
+            className="flex flex-nowrap gap-2 overflow-x-auto overscroll-x-contain touch-pan-x [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
             role="group"
             aria-label={t('logbook.officialReviewHub.filter.cityAria')}
             data-testid="logbook-review-filter-city-row"

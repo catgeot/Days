@@ -17,18 +17,37 @@ import { buildPlaceReviewsHref } from '../../../utils/placeReviewFocus.js';
 import { shortenLogbookReviewPlaceName } from '../../../logbookOfficialReviews/logbookReviewPlaceLabel.js';
 import { logbookReviewPersonaFallbackGradient } from '../../../logbookOfficialReviews/logbookReviewPersonaFallback.js';
 
-const CARD_PREVIEW_MAX = 120;
+const CARD_TITLE_MAX = 72;
+const CARD_SUMMARY_MAX = 110;
 const CARD_THUMB_WIDTH = 480;
 const CARD_THUMB_HEIGHT = 360;
 
-function editorialReviewCardPreview(review) {
-  const titled = placeReviewVisitStoryDisplayTitle(review, CARD_PREVIEW_MAX);
+function editorialReviewCardTitle(review) {
+  const titled = placeReviewVisitStoryDisplayTitle(review, CARD_TITLE_MAX);
   if (titled) return titled;
   const raw = getCollapsedPreviewText(review);
   const plain = stripReviewInlineMarkdown(raw).replace(/\s+/g, ' ').trim();
   if (!plain) return '';
-  if (plain.length <= CARD_PREVIEW_MAX) return plain;
-  return `${plain.slice(0, CARD_PREVIEW_MAX).trim()}…`;
+  if (plain.length <= CARD_TITLE_MAX) return plain;
+  return `${plain.slice(0, CARD_TITLE_MAX).trim()}…`;
+}
+
+function editorialReviewCardSummary(review, title) {
+  const raw = stripReviewInlineMarkdown(getCollapsedPreviewText(review))
+    .replace(/\s+/g, ' ')
+    .trim();
+  if (!raw) return '';
+  const titleNorm = String(title || '').replace(/…$/, '').trim();
+  if (!titleNorm) {
+    return raw.length <= CARD_SUMMARY_MAX ? raw : `${raw.slice(0, CARD_SUMMARY_MAX).trim()}…`;
+  }
+  if (raw === titleNorm || raw === title) return '';
+  if (raw.startsWith(titleNorm)) {
+    const rest = raw.slice(titleNorm.length).replace(/^[.。!\s]+/, '').trim();
+    if (rest.length < 6) return '';
+    return rest.length <= CARD_SUMMARY_MAX ? rest : `${rest.slice(0, CARD_SUMMARY_MAX).trim()}…`;
+  }
+  return raw.length <= CARD_SUMMARY_MAX ? raw : `${raw.slice(0, CARD_SUMMARY_MAX).trim()}…`;
 }
 
 function editorialReviewCardThumbSrc(review) {
@@ -48,37 +67,6 @@ function editorialReviewCardThumbSrc(review) {
   return null;
 }
 
-function HubReviewCardPhoto({ src, alt }) {
-  const [loadState, setLoadState] = useState('pending');
-
-  if (!src || loadState === 'fail') {
-    return null;
-  }
-
-  if (loadState !== 'ok') {
-    return (
-      <img
-        src={src}
-        alt=""
-        aria-hidden
-        className="hidden size-0 overflow-hidden opacity-0 pointer-events-none"
-        decoding="async"
-        onLoad={() => setLoadState('ok')}
-        onError={() => setLoadState('fail')}
-      />
-    );
-  }
-
-  return (
-    <img
-      src={src}
-      alt={alt}
-      className="absolute inset-0 h-full w-full object-cover object-center"
-      decoding="async"
-    />
-  );
-}
-
 function HubReviewCardFallback({ cityLabel, personaLabel, preparingLabel }) {
   const gradient = logbookReviewPersonaFallbackGradient(personaLabel);
   return (
@@ -92,6 +80,48 @@ function HubReviewCardFallback({ cityLabel, personaLabel, preparingLabel }) {
       ) : null}
       <p className="text-[11px] font-medium text-white/90">{preparingLabel}</p>
     </div>
+  );
+}
+
+function HubReviewCardMedia({ thumbSrc, alt, cityLabel, personaLabel, preparingLabel }) {
+  const [loadState, setLoadState] = useState(() => (thumbSrc ? 'pending' : 'fail'));
+
+  if (!thumbSrc || loadState === 'fail') {
+    return (
+      <HubReviewCardFallback
+        cityLabel={cityLabel}
+        personaLabel={personaLabel}
+        preparingLabel={preparingLabel}
+      />
+    );
+  }
+
+  if (loadState === 'pending') {
+    return (
+      <>
+        <img
+          src={thumbSrc}
+          alt=""
+          aria-hidden
+          className="hidden size-0 overflow-hidden opacity-0 pointer-events-none"
+          decoding="async"
+          onLoad={() => setLoadState('ok')}
+          onError={() => setLoadState('fail')}
+        />
+        <div className="absolute inset-0 bg-gray-100" aria-hidden data-testid="logbook-official-review-hub-card-photo-loading" />
+      </>
+    );
+  }
+
+  return (
+    <img
+      src={thumbSrc}
+      alt={alt}
+      className="absolute inset-0 h-full w-full object-cover object-center"
+      decoding="async"
+      data-testid="logbook-official-review-hub-card-photo"
+      onError={() => setLoadState('fail')}
+    />
   );
 }
 
@@ -110,7 +140,8 @@ export default function LogbookOfficialReviewCardGrid({ reviews }) {
         const placePath = slug ? `/place/${slug}` : '';
         const href = placePath ? buildPlaceReviewsHref(placePath, review.id) : '#';
         const thumbSrc = editorialReviewCardThumbSrc(review);
-        const preview = editorialReviewCardPreview(review);
+        const title = editorialReviewCardTitle(review);
+        const summary = editorialReviewCardSummary(review, title);
         const placeName = String(review.place_name || '').trim();
         const cityLabel = shortenLogbookReviewPlaceName(placeName) || placeName;
         const dateLabel = formatLogbookDisplayDate(review.created_at, {
@@ -134,15 +165,13 @@ export default function LogbookOfficialReviewCardGrid({ reviews }) {
               data-hub-persona-badge={badgeLabel}
             >
               <div className="relative aspect-[4/3] w-full overflow-hidden bg-gray-100">
-                {thumbSrc ? (
-                  <HubReviewCardPhoto src={thumbSrc} alt={photoAlt} />
-                ) : (
-                  <HubReviewCardFallback
-                    cityLabel={cityLabel}
-                    personaLabel={review.persona_label}
-                    preparingLabel={preparingLabel}
-                  />
-                )}
+                <HubReviewCardMedia
+                  thumbSrc={thumbSrc}
+                  alt={photoAlt}
+                  cityLabel={cityLabel}
+                  personaLabel={review.persona_label}
+                  preparingLabel={preparingLabel}
+                />
                 <span className="absolute bottom-2 left-2 max-w-[calc(100%-1rem)] truncate rounded-full bg-black/55 px-2 py-0.5 text-[10px] font-bold text-white backdrop-blur-sm">
                   {badgeLabel}
                 </span>
@@ -156,9 +185,20 @@ export default function LogbookOfficialReviewCardGrid({ reviews }) {
                     <span className="text-[11px] text-gray-400">{dateLabel}</span>
                   ) : null}
                 </div>
-                {preview ? (
-                  <p className="text-sm text-gray-600 line-clamp-2 break-keep xl:line-clamp-2">
-                    {preview}
+                {title ? (
+                  <p
+                    className="text-sm font-medium text-gray-800 line-clamp-2 break-keep"
+                    data-testid="logbook-official-review-hub-card-title"
+                  >
+                    {title}
+                  </p>
+                ) : null}
+                {summary ? (
+                  <p
+                    className="hidden text-xs text-gray-500 line-clamp-1 break-keep xl:block"
+                    data-testid="logbook-official-review-hub-card-summary"
+                  >
+                    {summary}
                   </p>
                 ) : null}
               </div>

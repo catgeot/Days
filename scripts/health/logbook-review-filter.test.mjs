@@ -124,10 +124,14 @@ test('hub card wires filter flag without forced scroll', () => {
   assert.match(hub, /LogbookOfficialReviewCardGrid/);
   assert.match(filter, /data-testid="logbook-review-filter"/);
   assert.match(filter, /logbook-review-filter-other-cities/);
+  assert.match(filter, /overflow-x-auto/);
+  assert.match(filter, /flex-nowrap/);
   assert.match(grid, /grid-cols-2/);
   assert.match(grid, /xl:grid-cols-3/);
   assert.match(grid, /aspect-\[4\/3\]/);
   assert.match(grid, /logbook-official-review-hub-card-fallback/);
+  assert.match(grid, /setLoadState\('fail'\)/);
+  assert.match(grid, /logbook-official-review-hub-card-summary/);
   assert.match(grid, /buildPlaceReviewsHref/);
   assert.doesNotMatch(hub, /scrollIntoView/);
   assert.doesNotMatch(filter, /scrollIntoView/);

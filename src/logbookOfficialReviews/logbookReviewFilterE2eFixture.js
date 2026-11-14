@@ -26,7 +26,7 @@ export const LOGBOOK_REVIEW_FILTER_E2E_FIXTURE = [
     place_name: '프라하 · 구시가지',
     persona_label: '로컬하루',
     content: '프라하 골목을 천천히 걸어요.',
-    images: ['https://images.unsplash.com/photo-1541849546-216549fe9d78?w=400'],
+    images: ['https://invalid.gateo.example/e2e-broken-thumb'],
     created_at: '2026-11-08T08:00:00Z',
     is_public: true,
   },

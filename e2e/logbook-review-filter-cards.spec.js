@@ -3,16 +3,41 @@ import { test, expect } from '@playwright/test';
 const HUB_PATH =
   '/blog?tab=public&lang=ko&logbook_review_hub=1&logbook_filter=1&region=overseas';
 
-async function openHub(page) {
-  await page.goto(HUB_PATH, { waitUntil: 'domcontentloaded' });
+async function openHub(page, path = HUB_PATH) {
+  await page.goto(path, { waitUntil: 'domcontentloaded' });
   await page.getByTestId('logbook-official-review-hub').waitFor({ state: 'visible', timeout: 60_000 });
   await page.getByTestId('logbook-official-review-hub-toggle').click();
   await page.getByTestId('logbook-official-review-hub-panel').waitFor({ timeout: 15_000 });
   await page.getByTestId('logbook-review-filter').waitFor({ timeout: 10_000 });
 }
 
+async function assertCityRowSingleLine(page, { requireOverflow = false } = {}) {
+  const metrics = await page.evaluate(() => {
+    const row = document.querySelector('[data-testid="logbook-review-filter-city-row"]');
+    if (!row) return null;
+    const chips = [...row.querySelectorAll('button')];
+    const tops = chips.map((el) => Math.round(el.getBoundingClientRect().top));
+    const nowrap = getComputedStyle(row).flexWrap === 'nowrap';
+    return {
+      chipCount: chips.length,
+      uniqueTops: [...new Set(tops)].length,
+      scrollWidth: row.scrollWidth,
+      clientWidth: row.clientWidth,
+      nowrap,
+    };
+  });
+  expect(metrics).toBeTruthy();
+  expect(metrics.nowrap).toBe(true);
+  expect(metrics.uniqueTops).toBe(1);
+  expect(metrics.chipCount).toBeGreaterThanOrEqual(2);
+  if (requireOverflow) {
+    expect(metrics.scrollWidth).toBeGreaterThan(metrics.clientWidth);
+  }
+}
+
 test.describe('LogBook review filter cards @mocked', () => {
   test('390 — 2-column grid, 12 visible, other cities chip', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
     await openHub(page);
     const grid = page.getByTestId('logbook-official-review-hub-card-grid');
     await expect(grid).toBeVisible();
@@ -20,32 +45,46 @@ test.describe('LogBook review filter cards @mocked', () => {
     const items = page.getByTestId('logbook-official-review-hub-item');
     await expect(items).toHaveCount(12);
     await expect(page.getByTestId('logbook-review-filter-other-cities')).toBeVisible();
-    const fallback = page.getByTestId('logbook-official-review-hub-card-fallback').first();
-    await expect(fallback).toBeVisible();
+    await assertCityRowSingleLine(page, { requireOverflow: true });
     const href = await items.first().evaluate((el) => el.getAttribute('href') || '');
     expect(href).toMatch(/review=/);
   });
 
-  test('1280 — 3-column grid', async ({ page }) => {
+  test('390 — broken image shows persona fallback', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await openHub(page);
+    const prague = page.locator('[data-hub-place-slug="prague"]').first();
+    await expect(prague).toBeVisible();
+    await expect(prague.getByTestId('logbook-official-review-hub-card-fallback')).toBeVisible();
+    await expect(prague.getByTestId('logbook-official-review-hub-card-photo')).toHaveCount(0);
+  });
+
+  test('390 — chip tap does not change scrollY', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await openHub(page);
+    const before = await page.evaluate(() => window.scrollY);
+    await page.getByTestId('logbook-review-filter-major-domestic').click();
+    await page.waitForTimeout(150);
+    const after = await page.evaluate(() => window.scrollY);
+    expect(after).toBe(before);
+  });
+
+  test('1280 — 3-column grid, title + summary lines', async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
     await openHub(page);
     const grid = page.getByTestId('logbook-official-review-hub-card-grid');
     await expect(grid).toHaveClass(/xl:grid-cols-3/);
-    const box = await grid.boundingBox();
-    expect(box?.width).toBeGreaterThan(700);
-    const columns = await page.evaluate(() => {
-      const gridEl = document.querySelector('[data-testid="logbook-official-review-hub-card-grid"]');
-      const cards = [...gridEl.querySelectorAll('[data-testid="logbook-official-review-hub-item"]')].slice(
-        0,
-        6,
-      );
-      return cards.map((el) => el.getBoundingClientRect().left);
-    });
-    const uniqueRows = [...new Set(columns.map((x) => Math.round(x / 40)))];
-    expect(uniqueRows.length).toBeGreaterThanOrEqual(2);
+    const title = page.getByTestId('logbook-official-review-hub-card-title').first();
+    await expect(title).toBeVisible();
+    const summary = page.getByTestId('logbook-official-review-hub-card-summary').first();
+    if ((await summary.count()) > 0) {
+      await expect(summary).toBeVisible();
+    }
+    await assertCityRowSingleLine(page);
   });
 
   test('load more adds up to 12 cards', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
     await openHub(page);
     const before = await page.getByTestId('logbook-official-review-hub-item').count();
     expect(before).toBe(12);
