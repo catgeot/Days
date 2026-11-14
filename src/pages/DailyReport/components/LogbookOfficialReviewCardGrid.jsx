@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ImageIcon } from 'lucide-react';
@@ -10,17 +10,16 @@ import {
 import {
   getCollapsedPreviewText,
   getGalleryImageEntries,
-  resolveReviewThumbnailSrc,
+  resolveReviewImageSrc,
 } from '../../../utils/placeReviewContentBlocks.js';
 import { stripReviewInlineMarkdown } from '../../../utils/reviewInlineMarkdown.js';
 import { buildPlaceReviewsHref } from '../../../utils/placeReviewFocus.js';
 import { shortenLogbookReviewPlaceName } from '../../../logbookOfficialReviews/logbookReviewPlaceLabel.js';
 import { logbookReviewPersonaFallbackGradient } from '../../../logbookOfficialReviews/logbookReviewPersonaFallback.js';
+import { optimizeLogbookReviewCardThumbUrl } from '../../../logbookOfficialReviews/logbookReviewCardThumbUrl.js';
 
 const CARD_TITLE_MAX = 72;
 const CARD_SUMMARY_MAX = 110;
-const CARD_THUMB_WIDTH = 480;
-const CARD_THUMB_HEIGHT = 360;
 
 function editorialReviewCardTitle(review) {
   const titled = placeReviewVisitStoryDisplayTitle(review, CARD_TITLE_MAX);
@@ -50,7 +49,7 @@ function editorialReviewCardSummary(review, title) {
   return raw.length <= CARD_SUMMARY_MAX ? raw : `${raw.slice(0, CARD_SUMMARY_MAX).trim()}…`;
 }
 
-function editorialReviewCardThumbSrc(review) {
+function editorialReviewCardThumb(review) {
   const images = review?.images;
   if (!Array.isArray(images) || images.length === 0) return null;
   const candidates = [...images];
@@ -58,11 +57,10 @@ function editorialReviewCardThumbSrc(review) {
     if (!candidates.includes(img)) candidates.push(img);
   }
   for (const img of candidates) {
-    const src = resolveReviewThumbnailSrc(img, {
-      width: CARD_THUMB_WIDTH,
-      height: CARD_THUMB_HEIGHT,
-    });
-    if (src) return src;
+    const raw = resolveReviewImageSrc(img);
+    if (!raw) continue;
+    const optimized = optimizeLogbookReviewCardThumbUrl(raw);
+    if (optimized.src) return optimized;
   }
   return null;
 }
@@ -85,15 +83,48 @@ function HubReviewCardFallback({ cityLabel, personaLabel, preparingLabel }) {
 
 const CARD_MEDIA_LOAD_TIMEOUT_MS = 8_000;
 
-function HubReviewCardMedia({ thumbSrc, alt, cityLabel, personaLabel, preparingLabel }) {
-  const [loadState, setLoadState] = useState(() => (thumbSrc ? 'pending' : 'fail'));
+function HubReviewCardLoadingShell({ personaLabel }) {
   const gradient = logbookReviewPersonaFallbackGradient(personaLabel);
+  return (
+    <div
+      className={`absolute inset-0 z-0 bg-gradient-to-br ${gradient}`}
+      aria-hidden
+      data-testid="logbook-official-review-hub-card-photo-loading"
+    />
+  );
+}
+
+function HubReviewCardMedia({
+  thumb,
+  alt,
+  cityLabel,
+  personaLabel,
+  preparingLabel,
+  preferEager,
+}) {
+  const thumbSrc = thumb?.src;
+  const [loadState, setLoadState] = useState(() => (thumbSrc ? 'pending' : 'fail'));
+  const [inView, setInView] = useState(false);
+  const mediaRef = useRef(null);
 
   useEffect(() => {
-    if (loadState !== 'pending' || !thumbSrc) return undefined;
+    const el = mediaRef.current;
+    if (!el || !thumbSrc) return undefined;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry?.isIntersecting) setInView(true);
+      },
+      { rootMargin: '120px' },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [thumbSrc]);
+
+  useEffect(() => {
+    if (!inView || loadState !== 'pending' || !thumbSrc) return undefined;
     const timer = setTimeout(() => setLoadState('fail'), CARD_MEDIA_LOAD_TIMEOUT_MS);
     return () => clearTimeout(timer);
-  }, [loadState, thumbSrc]);
+  }, [inView, loadState, thumbSrc]);
 
   if (!thumbSrc || loadState === 'fail') {
     return (
@@ -105,43 +136,36 @@ function HubReviewCardMedia({ thumbSrc, alt, cityLabel, personaLabel, preparingL
     );
   }
 
-  const loadingBackdrop = (
-    <div
-      className={`absolute inset-0 bg-gradient-to-br ${gradient}`}
-      aria-hidden
-      data-testid="logbook-official-review-hub-card-photo-loading"
-    />
-  );
+  const loadingShell = loadState === 'pending' ? (
+    <HubReviewCardLoadingShell personaLabel={personaLabel} />
+  ) : null;
 
-  if (loadState === 'pending') {
-    return (
-      <>
-        {loadingBackdrop}
-        <img
-          src={thumbSrc}
-          alt=""
-          aria-hidden
-          className="absolute inset-0 h-full w-full object-cover object-center opacity-0"
-          decoding="async"
-          loading="eager"
-          fetchPriority="high"
-          onLoad={() => setLoadState('ok')}
-          onError={() => setLoadState('fail')}
-        />
-      </>
-    );
-  }
+  const imgCommon = {
+    decoding: 'async',
+    loading: preferEager ? 'eager' : 'lazy',
+    ...(preferEager ? { fetchPriority: 'high' } : {}),
+    onError: () => setLoadState('fail'),
+  };
 
   return (
-    <img
-      src={thumbSrc}
-      alt={alt}
-      className="absolute inset-0 h-full w-full object-cover object-center"
-      decoding="async"
-      loading="eager"
-      data-testid="logbook-official-review-hub-card-photo"
-      onError={() => setLoadState('fail')}
-    />
+    <div ref={mediaRef} className="absolute inset-0">
+      {loadingShell}
+      <img
+        src={thumbSrc}
+        srcSet={thumb?.srcSet || undefined}
+        sizes={thumb?.sizes || undefined}
+        alt={loadState === 'ok' ? alt : ''}
+        aria-hidden={loadState !== 'ok'}
+        className={`absolute inset-0 z-[1] h-full w-full object-cover object-center ${
+          loadState === 'pending' ? 'opacity-0' : ''
+        }`}
+        data-testid={
+          loadState === 'ok' ? 'logbook-official-review-hub-card-photo' : undefined
+        }
+        onLoad={() => setLoadState('ok')}
+        {...imgCommon}
+      />
+    </div>
   );
 }
 
@@ -155,11 +179,12 @@ export default function LogbookOfficialReviewCardGrid({ reviews }) {
       className="grid grid-cols-2 gap-3 xl:grid-cols-3 xl:gap-4"
       data-testid="logbook-official-review-hub-card-grid"
     >
-      {reviews.map((review) => {
+      {reviews.map((review, index) => {
         const slug = String(review.place_slug || '').trim();
         const placePath = slug ? `/place/${slug}` : '';
         const href = placePath ? buildPlaceReviewsHref(placePath, review.id) : '#';
-        const thumbSrc = editorialReviewCardThumbSrc(review);
+        const thumb = editorialReviewCardThumb(review);
+        const thumbSrc = thumb?.src ?? null;
         const title = editorialReviewCardTitle(review);
         const summary = editorialReviewCardSummary(review, title);
         const placeName = String(review.place_name || '').trim();
@@ -185,13 +210,14 @@ export default function LogbookOfficialReviewCardGrid({ reviews }) {
               data-hub-thumb-src={thumbSrc || undefined}
               data-hub-persona-badge={badgeLabel}
             >
-              <div className="relative aspect-[4/3] w-full overflow-hidden bg-gray-50">
+              <div className="relative aspect-[4/3] w-full overflow-hidden">
                 <HubReviewCardMedia
-                  thumbSrc={thumbSrc}
+                  thumb={thumb}
                   alt={photoAlt}
                   cityLabel={cityLabel}
                   personaLabel={review.persona_label}
                   preparingLabel={preparingLabel}
+                  preferEager={index < 3}
                 />
                 <span className="absolute bottom-2 left-2 max-w-[calc(100%-1rem)] truncate rounded-full bg-black/55 px-2 py-0.5 text-[10px] font-bold text-white backdrop-blur-sm">
                   {badgeLabel}

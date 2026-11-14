@@ -20,6 +20,10 @@ import {
   LOGBOOK_OFFICIAL_REVIEW_HUB_PAGE_SIZE,
 } from '../../src/pages/DailyReport/components/LogbookOfficialReviewHubCard.jsx';
 import { buildPlaceReviewsHref } from '../../src/utils/placeReviewFocus.js';
+import {
+  optimizeLogbookReviewCardThumbUrl,
+  wikimediaCommonsCardThumbUrl,
+} from '../../src/logbookOfficialReviews/logbookReviewCardThumbUrl.js';
 
 const healthRoot = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 
@@ -131,10 +135,38 @@ test('hub card wires filter flag without forced scroll', () => {
   assert.match(grid, /aspect-\[4\/3\]/);
   assert.match(grid, /logbook-official-review-hub-card-fallback/);
   assert.match(grid, /setLoadState\('fail'\)/);
+  assert.match(grid, /optimizeLogbookReviewCardThumbUrl/);
+  assert.match(grid, /loading: preferEager \? 'eager' : 'lazy'/);
   assert.match(grid, /logbook-official-review-hub-card-summary/);
   assert.match(grid, /buildPlaceReviewsHref/);
   assert.doesNotMatch(hub, /scrollIntoView/);
   assert.doesNotMatch(filter, /scrollIntoView/);
+});
+
+test('wikimedia card thumb rewrite — encoded filename', () => {
+  const original =
+    'https://upload.wikimedia.org/wikipedia/commons/5/5b/Colosseum_of_Rome%2C_Italy.jpg';
+  assert.equal(
+    wikimediaCommonsCardThumbUrl(original, 640),
+    'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Colosseum_of_Rome%2C_Italy.jpg/640px-Colosseum_of_Rome%2C_Italy.jpg',
+  );
+  assert.equal(
+    wikimediaCommonsCardThumbUrl(original, 960),
+    'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Colosseum_of_Rome%2C_Italy.jpg/960px-Colosseum_of_Rome%2C_Italy.jpg',
+  );
+  const { src, srcSet } = optimizeLogbookReviewCardThumbUrl(original);
+  assert.match(src, /\/thumb\/5\/5b\//);
+  assert.match(src, /960px-Colosseum_of_Rome%2C_Italy\.jpg/);
+  assert.match(srcSet, /1280px-Colosseum_of_Rome%2C_Italy\.jpg/);
+});
+
+test('optimizeLogbookReviewCardThumbUrl — unsplash only when imgix params exist', () => {
+  const bare = 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34';
+  assert.equal(optimizeLogbookReviewCardThumbUrl(bare).src, bare);
+  const tuned = `${bare}?w=400&fit=crop`;
+  const out = optimizeLogbookReviewCardThumbUrl(tuned).src;
+  assert.match(out, /[?&]w=640/);
+  assert.match(out, /[?&]q=70/);
 });
 
 test('card href includes review deep link', () => {
