@@ -10,12 +10,16 @@ import { chromium } from '@playwright/test';
 
 const outDir = process.env.CAPTURE_OUT_DIR || '/opt/cursor/artifacts/logbook-review-filter-vercel';
 const baseHost = String(process.env.CAPTURE_BASE_URL || '').replace(/\/$/, '');
+const vercelShare = String(process.env.VERCEL_SHARE_TOKEN || '').trim();
 if (!baseHost) {
   console.error('capture-logbook-review-filter-vercel: set CAPTURE_BASE_URL');
   process.exit(1);
 }
 
-const flagQuery = 'tab=public&lang=ko&logbook_review_hub=1&logbook_filter=1';
+const shareQuery = vercelShare ? `_vercel_share=${encodeURIComponent(vercelShare)}` : '';
+const flagQuery = ['tab=public', 'lang=ko', 'logbook_review_hub=1', 'logbook_filter=1', shareQuery]
+  .filter(Boolean)
+  .join('&');
 
 mkdirSync(outDir, { recursive: true });
 
@@ -54,6 +58,9 @@ async function captureScenario(browser, { width, height, major, tag }) {
     locale: 'ko-KR',
   });
   const page = await ctx.newPage();
+  if (shareQuery) {
+    await page.goto(`${baseHost}/?${shareQuery}`, { waitUntil: 'domcontentloaded', timeout: 120_000 });
+  }
   const region = major === 'overseas' ? '&region=overseas' : '&region=all';
   const url = `${baseHost}/blog?${flagQuery}${region}`;
   await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 120_000 });
