@@ -9,8 +9,8 @@ import {
 } from '../../../logbookOfficialReviews/logbookReviewHubSession.js';
 import { prepareLogbookReviewHubNavigation } from '../../../logbookOfficialReviews/logbookReviewHubNavigate.js';
 import {
-  applyLogbookHubScrollRestore,
   clearLogbookHubScrollRestored,
+  scheduleLogbookHubScrollRestore,
 } from '../../../logbookOfficialReviews/logbookReviewHubScrollRestore.js';
 import { useLogbookOfficialReviewHub } from '../../../logbookOfficialReviews/useLogbookOfficialReviewHub.js';
 import { formatLogbookDisplayDate } from '../../../utils/logbookDisplayDate';
@@ -206,20 +206,8 @@ const LogbookOfficialReviewHubCard = () => {
     if (session.returnTo && session.returnTo !== current) return undefined;
     if (isLoading) return undefined;
     const scrollRoot = document.querySelector('[data-logbook-main-scroll]');
-    if (!scrollRoot) return undefined;
-    const target = session.scrollY;
-    let cancelled = false;
-    let ticks = 0;
-    const tryRestore = () => {
-      if (cancelled) return;
-      if (applyLogbookHubScrollRestore(scrollRoot, target)) return;
-      ticks += 1;
-      if (ticks < 50) window.setTimeout(tryRestore, 100);
-    };
-    requestAnimationFrame(tryRestore);
-    return () => {
-      cancelled = true;
-    };
+    if (!(scrollRoot instanceof HTMLElement)) return undefined;
+    return scheduleLogbookHubScrollRestore(scrollRoot, session.scrollY);
   }, [
     expanded,
     isLoading,
