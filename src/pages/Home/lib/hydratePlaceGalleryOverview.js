@@ -62,7 +62,11 @@ export async function hydratePlaceGalleryOverview(location, options = {}) {
     readIntro = fetchPlaceChatIntroSummaryForLocation,
     readTour = fetchDomesticTourOverviewForLocation,
   } = options;
-  if (!location || !shouldUsePlaceGalleryReadonlyOverview(location)) return '';
+  if (!location) return '';
+
+  const locale = String(lng || 'ko').slice(0, 2);
+  const readonly = shouldUsePlaceGalleryReadonlyOverview(location);
+  if (!readonly && locale !== 'en') return '';
 
   const key = overviewCacheKey(location, lng);
   if (overviewMemory.has(key)) {
@@ -80,7 +84,7 @@ export async function hydratePlaceGalleryOverview(location, options = {}) {
         return cachedIntro;
       }
 
-      if (isDomesticKoreaLocation(location)) {
+      if (readonly && isDomesticKoreaLocation(location)) {
         const tourOverview = await readTour(location);
         if (tourOverview) {
           overviewMemory.set(key, tourOverview);
