@@ -27,7 +27,7 @@ import { isLogbookReportOwner } from './utils/logbookReportOwner';
 import { buildEditorialLogbookJsonLd } from './lib/logbookEditorialJsonLd';
 import SEO from '../../components/SEO';
 import { resolveLogbookFeedExcerpt } from '../../utils/logbookDek';
-import { navigateAppBack } from '../../shared/navigation/navigateAppBack';
+import { hardNavigateAppBack } from '../../shared/navigation/hardAppBack';
 import AppOutlineBackButton from '../../shared/navigation/AppOutlineBackButton';
 import {
   isEditorialBlogSeoPath,
@@ -79,8 +79,8 @@ const PublicViewer = () => {
   const { resolveLike, toggleLike } = useLogbookLikes(report ? [report] : [], reactionEnabled);
 
   const handleBack = useCallback(() => {
-    navigateAppBack(navigate, { fallback: '/blog' });
-  }, [navigate]);
+    hardNavigateAppBack();
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
