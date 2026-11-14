@@ -36,6 +36,7 @@ import { fitMooniKoreaFestivalHint } from './mooniKoreaFestivalHintBudget.js';
 import {
   extractMooniFestivalLocationQueryText,
   isMooniKoreaFestivalQueryText,
+  shouldMooniScopedFestivalReplaceEmptyCandidates,
 } from '../../pages/Home/lib/mooniKoreaFestivalTurn.js';
 
 export {
@@ -4698,7 +4699,10 @@ export function mergeMooniKoreaFestivalReply(aiReply, ctx) {
   if (
     ctx?.scopedFestivalEnabled === true &&
     festivalQuestion &&
-    !candidates.length
+    !candidates.length &&
+    shouldMooniScopedFestivalReplaceEmptyCandidates(userText, {
+      boundFestivalSession: ctx?.boundFestivalSession === true,
+    })
   ) {
     const window = parseMooniFestivalTimeWindow(userText, ctx?.now);
     return buildMooniKoreaFestivalZeroCandidateUserReply({
