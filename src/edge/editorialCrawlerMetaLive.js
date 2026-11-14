@@ -1,6 +1,8 @@
 const META_DESCRIPTION_MAX = 150;
 const SITE_ORIGIN = 'https://www.gateo.kr';
-const DEFAULT_OG_IMAGE = 'https://www.gateo.kr/og-image.png';
+import { DEFAULT_SITE_OG_IMAGE, resolveSocialShareImageUrl } from '../shared/seo/socialOgImage.js';
+
+const DEFAULT_OG_IMAGE = DEFAULT_SITE_OG_IMAGE;
 const UNSPLASH_HOST = 'images.unsplash.com';
 
 function buildEditorialPageUrl(slug, locale) {
@@ -82,8 +84,13 @@ function withUnsplashWidth(src, width) {
 function resolveLiveEditorialOgImage(row) {
   const images = row?.images;
   if (Array.isArray(images) && images.length > 0) {
-    const src = imageObjectSrc(images[0]);
-    if (src) return withUnsplashWidth(src, 1200);
+    for (const img of images) {
+      const src = imageObjectSrc(img);
+      if (!src) continue;
+      const sized = withUnsplashWidth(src, 1200);
+      const shareUrl = resolveSocialShareImageUrl(sized, '');
+      if (shareUrl) return shareUrl;
+    }
   }
   return DEFAULT_OG_IMAGE;
 }

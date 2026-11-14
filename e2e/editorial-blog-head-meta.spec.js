@@ -62,6 +62,9 @@ async function readHeadSnapshot(page) {
   return page.evaluate(() => ({
     title: document.title,
     titleNodes: document.querySelectorAll('title').length,
+    ogTitleNodes: document.querySelectorAll('meta[property="og:title"]').length,
+    ogDescriptionNodes: document.querySelectorAll('meta[property="og:description"]').length,
+    ogImageNodes: document.querySelectorAll('meta[property="og:image"]').length,
     description: document.querySelector('meta[name="description"]')?.getAttribute('content') ?? '',
     ogTitle: document.querySelector('meta[property="og:title"]')?.getAttribute('content') ?? '',
     ogDescription: document.querySelector('meta[property="og:description"]')?.getAttribute('content') ?? '',
@@ -78,6 +81,9 @@ async function readHeadSnapshot(page) {
 function assertEditorialHead(head) {
   expect(head.title).toBe(EXPECTED_TITLE);
   expect(head.titleNodes).toBe(1);
+  expect(head.ogTitleNodes).toBe(1);
+  expect(head.ogDescriptionNodes).toBe(1);
+  expect(head.ogImageNodes).toBe(1);
   expect(head.description).toContain('콜로세움');
   expect(head.ogTitle).toBe(EXPECTED_TITLE);
   expect(head.ogDescription).toContain('콜로세움');

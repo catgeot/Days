@@ -1,4 +1,5 @@
 import { DEFAULT_OG_IMAGE, getPlaceOgImageUrl } from '../pages/Home/lib/placeSeoOg.js';
+import { isWikimediaOgImageUrl, resolveSocialShareImageUrl } from '../shared/seo/socialOgImage.js';
 import {
   getLocalizedCountryName,
   getLocalizedPlaceName,
@@ -32,7 +33,9 @@ function placeLabelFromSlug(placeSlug) {
 
 function resolveEditorialOgImage(row, spot) {
   const cover = logbookHeroImageUrl(row.images, { maxWidth: 1200 });
-  if (cover) return cover;
+  if (cover && !isWikimediaOgImageUrl(cover)) {
+    return resolveSocialShareImageUrl(cover);
+  }
   if (spot) return getPlaceOgImageUrl(spot);
   return DEFAULT_OG_IMAGE;
 }
