@@ -441,7 +441,7 @@ export default defineConfig({
     },
     {
       name: 'chromium-explore-bare-ko-390',
-      testMatch: /explore-search-bare-ko\.spec\.js/,
+      testMatch: /explore-search-bare-ko\.spec\.js|explore-place-screen-back\.spec\.js/,
       timeout: 180_000,
       use: {
         ...devices['Desktop Chrome'],
