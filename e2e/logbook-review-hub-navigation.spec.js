@@ -109,7 +109,12 @@ async function readHubScroll(page) {
 
 function pageErrorCount(page) {
   const errors = [];
-  page.on('pageerror', (err) => errors.push(String(err?.message || err)));
+  page.on('pageerror', (err) => {
+    const text = String(err?.message || err);
+    // WebKit reports blocked calls to the CI placeholder Supabase host as pageerrors.
+    if (/due to access control checks/i.test(text)) return;
+    errors.push(text);
+  });
   return () => errors;
 }
 
