@@ -19,7 +19,10 @@ import {
   stripTrailingHubName,
   stripTrailingRegionLabel,
 } from '../../src/pages/Korea/lib/festivalNearbySights.js';
-import { groupNearbySpotsWithLocalScenic } from '../../src/pages/Home/lib/koreaLocalScenicLists.js';
+import {
+  groupNearbySpotsWithLocalScenic,
+  resolveLocalScenicHubId,
+} from '../../src/pages/Home/lib/koreaLocalScenicLists.js';
 import {
   mergeNearbyItemImages,
   missingNearbySightImageIds,
@@ -1110,4 +1113,23 @@ test('locationBasedList for the same coords reopens from the client cache', () =
     tourApiProxyCacheKey(body),
     tourApiProxyCacheKey({ ...body, contentTypeId: '28' }),
   );
+});
+
+test('resolveLocalScenicHubId — 서울 청계천 좌표에 의정부 팔경 hub 오탐 없음', () => {
+  const hubId = resolveLocalScenicHubId({
+    hubId: 'junggu',
+    lat: 37.569204,
+    lng: 126.977633,
+    areaCode: '1',
+  });
+  assert.notEqual(hubId, 'uijeongbu');
+  const grouped = groupNearbySpotsWithLocalScenic([], {
+    hubId: 'junggu',
+    lat: 37.569204,
+    lng: 126.977633,
+    locale: 'ko',
+    areaCode: '1',
+  });
+  const names = grouped.groups.flatMap((g) => g.items.map((i) => i.name));
+  assert.ok(!names.includes('회룡사'), names.join(', '));
 });

@@ -23,6 +23,10 @@ test('isPlanItineraryIntentText — Korean itinerary phrasings', () => {
   assert.equal(isPlanItineraryIntentText('오키나와 4박5일 코스 추천해줘'), true);
   assert.equal(isPlanItineraryIntentText('숙소랑 투어도 같이 알려줘'), true);
   assert.equal(isPlanItineraryIntentText('2박3일 동선 잡아줘'), true);
+  assert.equal(
+    isPlanItineraryIntentText('서울빛초롱축제 기간 중 토요일 하루 일정을 짜 줘'),
+    true,
+  );
 });
 
 test('isPlanItineraryIntentText — negatives stay non-itinerary', () => {

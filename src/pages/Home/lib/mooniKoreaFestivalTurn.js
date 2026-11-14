@@ -143,7 +143,15 @@ export function extractMooniFestivalLocationQueryText(
   if (conflict) return '';
 
   const q = t.replace(/\s+/g, '');
-  if (q.length >= 2) return t.trim();
+  if (q.length >= 2) {
+    const trimmed = t.trim();
+    if (JUNK_FESTIVAL_REGION_QUERY_RE.test(trimmed.replace(/\s+/g, ''))) {
+      const bound = String(boundPlaceName || '').trim();
+      if (bound && bound !== 'MOONi') return bound;
+      return '';
+    }
+    return trimmed;
+  }
 
   const bound = String(boundPlaceName || '').trim();
   if (bound && bound !== 'MOONi') return bound;
@@ -184,6 +192,18 @@ const BOUND_FESTIVAL_OTHER_EVENTS_RE =
 
 const BOUND_FESTIVAL_SCHEDULE_IN_PERIOD_RE =
   /기간\s*중.*(?:일정|토요일|일요일|하루|당일)|(?:토요일|일요일|하루|당일).*(?:일정|코스|동선)/;
+
+const JUNK_FESTIVAL_REGION_QUERY_RE = /^(?:다른|또|비슷한|그\s*밖|비슷)$/;
+
+/**
+ * @param {string} userText
+ * @param {string} [chipId]
+ */
+export function isFestivalItineraryAsk(userText, chipId = '') {
+  if (String(chipId || '') === 'festival_day') return true;
+  if (isPlanItineraryIntentText(userText)) return true;
+  return BOUND_FESTIVAL_SCHEDULE_IN_PERIOD_RE.test(String(userText || ''));
+}
 
 /**
  * scoped festival «0건» 답으로 AI 본문을 덮어쓸지 — 축제 상세(바운드)에서 일정 질문은 제외.
