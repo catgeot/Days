@@ -58,12 +58,13 @@ export default async function middleware(request) {
     }
   }
 
-  if (!isCrawlerRequest(request)) {
+  const parsed = parseCrawlerPath(url.pathname);
+  if (!parsed) {
     return;
   }
 
-  const parsed = parseCrawlerPath(url.pathname);
-  if (!parsed) {
+  const injectEditorialShellForBrowsers = parsed.kind === 'editorial-logbook';
+  if (!isCrawlerRequest(request) && !injectEditorialShellForBrowsers) {
     return;
   }
 

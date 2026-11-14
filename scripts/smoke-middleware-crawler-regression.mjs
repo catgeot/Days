@@ -128,6 +128,21 @@ assert.ok(blogXml.includes(`/blog/e/${LIVE_ONLY_SLUG}`), 'sitemap-blog includes 
 const browser = await runMiddleware('/place/busan', CHROME);
 assert.equal(browser.passThrough, true, 'browser passes through middleware');
 
+const browserEditorial = await runMiddleware('/blog/e/rome-travelogue', CHROME);
+assert.equal(browserEditorial.passThrough, false, 'browser on /blog/e injects editorial shell meta');
+assert.equal(
+  browserEditorial.canonical,
+  'https://www.gateo.kr/blog/e/rome-travelogue',
+  'browser editorial canonical',
+);
+
+const kakaoEditorial = await runMiddleware(
+  '/blog/e/short-20261111-week-festivals',
+  'kakaotalk-scrap/1.0',
+);
+assert.equal(kakaoEditorial.passThrough, false, 'kakao editorial injects');
+assert.ok(kakaoEditorial.hasCrawlerInject, 'kakao editorial crawler-meta marker');
+
 globalThis.fetch = prevFetch;
 process.env.VITE_SUPABASE_URL = prevUrl;
 process.env.VITE_SUPABASE_ANON_KEY = prevKey;

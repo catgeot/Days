@@ -269,6 +269,7 @@
     "test:e2e:place-header-locale": "playwright test --config=playwright.config.place-header-locale.js",
     "test:e2e:mooni-destination-pick": "playwright test --config=playwright.config.mooni-destination-pick.js",
     "test:e2e:reels-locale": "playwright test --config=playwright.config.reels-locale.js",
+    "test:e2e:editorial-blog-head-meta": "playwright test --config=playwright.config.editorial-blog-head-meta.js",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui"
   },
