@@ -22,8 +22,13 @@ test('ReviewsTab wires editorial detail hero behind flag', () => {
     'utf8',
   );
   assert.match(reviews, /LogbookEditorialReviewDetailHero/);
+  assert.match(reviews, /isGateoOfficialEditorialPlaceReview/);
   assert.match(reviews, /isLogbookEditorialReviewDetailLayoutActive/);
-  assert.match(reviews, /hubDetailLayout/);
+  const layout = readFileSync(
+    join(healthRoot, 'src/logbookOfficialReviews/logbookEditorialReviewDetailLayout.js'),
+    'utf8',
+  );
+  assert.match(layout, /markLogbookEditorialReviewDetailLayoutFromHub/);
 });
 
 test('hub cards — city/date + one summary line only', () => {

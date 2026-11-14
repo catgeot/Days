@@ -50,6 +50,7 @@ import {
 } from '../common/placeScrollMemory.js';
 import { useLightboxHistory } from '../../../shared/useLightboxHistory.js';
 import { useGateoPhotoLightboxA11y } from '../../../shared/useGateoPhotoLightboxA11y.js';
+import { isGateoOfficialEditorialPlaceReview } from '../../../logbookOfficialReviews/gateoOfficialEditorialPlaceReview.js';
 import { isLogbookEditorialReviewDetailLayoutActive } from '../../../utils/logbookReviewFilterFlag.js';
 import LogbookEditorialReviewDetailHero from '../../../logbookOfficialReviews/LogbookEditorialReviewDetailHero.jsx';
 
@@ -261,7 +262,7 @@ export const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onTog
   const [isExpanded, setIsExpanded] = useState(false);
   const [hasViewed, setHasViewed] = useState(false);
   const hubDetailLayout =
-    review.is_editorial === true && isLogbookEditorialReviewDetailLayoutActive();
+    isGateoOfficialEditorialPlaceReview(review) && isLogbookEditorialReviewDetailLayoutActive();
 
   useEffect(() => {
     if (hasViewed || !onVisible) return;

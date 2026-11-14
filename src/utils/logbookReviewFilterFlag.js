@@ -41,7 +41,7 @@ export function isLogbookOfficialReviewHubActive() {
   return readTruthyQueryParam(LOGBOOK_REVIEW_HUB_PREVIEW_QUERY_PARAM);
 }
 
-/** Editorial review detail hero + 2-line hub cards (prod: hub + filter env both ON). */
-export function isLogbookEditorialReviewDetailLayoutActive() {
-  return isLogbookOfficialReviewHubActive() && isGateoLogbookReviewFilterEnabled();
-}
+export {
+  isLogbookEditorialReviewDetailLayoutActive,
+  markLogbookEditorialReviewDetailLayoutFromHub,
+} from '../logbookOfficialReviews/logbookEditorialReviewDetailLayout.js';
