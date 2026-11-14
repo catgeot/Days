@@ -661,6 +661,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Install Playwright browsers (Chromium + WebKit)
+        run: npx playwright install --with-deps webkit chromium
+
       - name: Playwright — logbook-review-filter-cards
         env:
           VITE_SUPABASE_URL: https://example.supabase.co

@@ -42,5 +42,15 @@ export default defineConfig({
         deviceScaleFactor: 1,
       },
     },
+    {
+      name: 'webkit-logbook-review-filter-390',
+      use: {
+        ...devices['Desktop Safari'],
+        viewport: { width: 390, height: 844 },
+        deviceScaleFactor: 1,
+        isMobile: true,
+        hasTouch: true,
+      },
+    },
   ],
 });

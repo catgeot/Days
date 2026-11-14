@@ -24,6 +24,10 @@ import {
   optimizeLogbookReviewCardThumbUrl,
   wikimediaCommonsCardThumbUrl,
 } from '../../src/logbookOfficialReviews/logbookReviewCardThumbUrl.js';
+import {
+  logbookReviewFilterUrlNeedsNormalize,
+  parseLogbookReviewFilterFromSearch,
+} from '../../src/logbookOfficialReviews/logbookReviewFilterUrl.js';
 
 const healthRoot = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 
@@ -126,6 +130,9 @@ test('hub card wires filter flag without forced scroll', () => {
   assert.match(hub, /isGateoLogbookReviewFilterEnabled/);
   assert.match(hub, /LogbookOfficialReviewFilter/);
   assert.match(hub, /LogbookOfficialReviewCardGrid/);
+  assert.match(hub, /logbookReviewFilterUrlNeedsNormalize/);
+  assert.match(hub, /replace: false/);
+  assert.match(hub, /location\.search/);
   assert.match(filter, /data-testid="logbook-review-filter"/);
   assert.match(filter, /logbook-review-filter-other-cities/);
   assert.match(filter, /overflow-x-auto/);
@@ -141,6 +148,12 @@ test('hub card wires filter flag without forced scroll', () => {
   assert.match(grid, /buildPlaceReviewsHref/);
   assert.doesNotMatch(hub, /scrollIntoView/);
   assert.doesNotMatch(filter, /scrollIntoView/);
+});
+
+test('logbookReviewFilterUrlNeedsNormalize — invalid region only', () => {
+  assert.equal(logbookReviewFilterUrlNeedsNormalize('?region=overseas'), false);
+  assert.equal(logbookReviewFilterUrlNeedsNormalize('?region=nope'), true);
+  assert.equal(parseLogbookReviewFilterFromSearch('?region=nope').major, 'all');
 });
 
 test('wikimedia card thumb rewrite — encoded filename', () => {

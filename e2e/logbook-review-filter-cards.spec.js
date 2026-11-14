@@ -3,6 +3,19 @@ import { test, expect } from '@playwright/test';
 const HUB_PATH =
   '/blog?tab=public&lang=ko&logbook_review_hub=1&logbook_filter=1&region=overseas';
 
+const HUB_PATH_ALL =
+  '/blog?tab=public&lang=ko&logbook_review_hub=1&logbook_filter=1';
+
+async function tapChip(page, testId) {
+  const chip = page.getByTestId(testId);
+  const useTouch = test.info().project.name.includes('webkit');
+  if (useTouch) {
+    await chip.tap();
+  } else {
+    await chip.click();
+  }
+}
+
 async function openHub(page, path = HUB_PATH) {
   await page.goto(path, { waitUntil: 'domcontentloaded' });
   await page.getByTestId('logbook-official-review-hub').waitFor({ state: 'visible', timeout: 60_000 });
@@ -77,10 +90,49 @@ test.describe('LogBook review filter cards @mocked', () => {
     await page.setViewportSize({ width: 390, height: 844 });
     await openHub(page);
     const before = await page.evaluate(() => window.scrollY);
-    await page.getByTestId('logbook-review-filter-major-domestic').click();
+    await tapChip(page, 'logbook-review-filter-major-domestic');
     await page.waitForTimeout(150);
     const after = await page.evaluate(() => window.scrollY);
     expect(after).toBe(before);
+  });
+
+  test('filter chips push history — back and forward', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await openHub(page, HUB_PATH_ALL);
+    await tapChip(page, 'logbook-review-filter-major-overseas');
+    await expect(page).toHaveURL(/region=overseas/);
+    await expect(page).not.toHaveURL(/[?&]city=/);
+    await expect(page.getByTestId('logbook-review-filter-major-overseas')).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+    await tapChip(page, 'logbook-review-filter-city-paris');
+    await expect(page).toHaveURL(/region=overseas/);
+    await expect(page).toHaveURL(/city=paris/);
+    await expect(page.getByTestId('logbook-review-filter-city-paris')).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+    await page.goBack();
+    await expect(page).toHaveURL(/region=overseas/);
+    await expect(page).not.toHaveURL(/[?&]city=/);
+    await expect(page.getByTestId('logbook-review-filter-major-overseas')).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+    await page.goBack();
+    await expect(page).not.toHaveURL(/region=overseas/);
+    await expect(page.getByTestId('logbook-review-filter-major-all')).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+    await page.goForward();
+    await expect(page).toHaveURL(/region=overseas/);
+    await expect(page).not.toHaveURL(/[?&]city=/);
+    await expect(page.getByTestId('logbook-review-filter-major-overseas')).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
   });
 
   test('1280 — 3-column grid, title + summary lines', async ({ page }) => {

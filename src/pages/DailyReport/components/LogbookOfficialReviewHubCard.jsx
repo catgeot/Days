@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useId, useMemo, useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useLocation, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ChevronDown, Sparkles } from 'lucide-react';
 import { LOGBOOK_OFFICIAL_REVIEW_CARD_TITLE } from '../../../logbookOfficialReviews/constants.js';
@@ -22,6 +22,7 @@ import {
 } from '../../../logbookOfficialReviews/groupLogbookOfficialReviews.js';
 import {
   applyLogbookReviewFilterToSearchParams,
+  logbookReviewFilterUrlNeedsNormalize,
   parseLogbookReviewFilterFromSearch,
 } from '../../../logbookOfficialReviews/logbookReviewFilterUrl.js';
 import { isGateoLogbookReviewFilterEnabled } from '../../../utils/logbookReviewFilterFlag.js';
@@ -161,7 +162,8 @@ function HubTitleRow({
 
 const LogbookOfficialReviewHubCard = () => {
   const { t } = useTranslation();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [, setSearchParams] = useSearchParams();
+  const location = useLocation();
   const panelId = useId();
   const [expanded, setExpanded] = useState(false);
   const filterEnabled = isGateoLogbookReviewFilterEnabled();
@@ -174,18 +176,30 @@ const LogbookOfficialReviewHubCard = () => {
 
   useEffect(() => {
     if (!filterEnabled) return;
-    const parsed = parseLogbookReviewFilterFromSearch(searchParams);
+    if (logbookReviewFilterUrlNeedsNormalize(location.search)) {
+      const parsed = parseLogbookReviewFilterFromSearch(location.search);
+      const next = applyLogbookReviewFilterToSearchParams(
+        new URLSearchParams(location.search),
+        parsed.major,
+        parsed.citySlug,
+      );
+      setSearchParams(next, { replace: true });
+      return;
+    }
+    const parsed = parseLogbookReviewFilterFromSearch(location.search);
     setFilterMajor(parsed.major);
     setFilterCitySlug(parsed.citySlug);
-  }, [filterEnabled, searchParams]);
+  }, [filterEnabled, location.search, setSearchParams]);
 
   const syncFilterToUrl = useCallback(
     (major, citySlug) => {
       if (!filterEnabled) return;
-      const next = applyLogbookReviewFilterToSearchParams(searchParams, major, citySlug);
-      setSearchParams(next, { replace: true });
+      setSearchParams(
+        (prev) => applyLogbookReviewFilterToSearchParams(prev, major, citySlug),
+        { replace: false },
+      );
     },
-    [filterEnabled, searchParams, setSearchParams],
+    [filterEnabled, setSearchParams],
   );
 
   const grouped = useMemo(() => groupLogbookOfficialReviews(rows), [rows]);
