@@ -33,7 +33,9 @@ import GalleryGridPhotoCredit from '../common/GalleryGridPhotoCredit';
 import GalleryAttributionLink from '../common/GalleryAttributionLink';
 import { isPlaceGalleryPhotoCreditEnabled } from '../../../utils/placeGalleryPhotoCreditFlag';
 import { usePlaceGalleryOverviewHydration } from '../hooks/usePlaceGalleryOverviewHydration';
+import { shouldShowMobileGalleryOverviewSection } from '../common/galleryOverviewLocaleNotices.js';
 import PlaceGalleryMobileOverviewCard from './PlaceGalleryMobileOverviewCard';
+import { resolveGalleryOverviewLocaleNotices } from '../common/galleryOverviewLocaleNotices.js';
 import PlaceWorldEventsSection from '../common/PlaceWorldEventsSection';
 import PlaceGalleryFactsAndStories from '../common/PlaceGalleryFactsAndStories';
 import { usePlaceDesktopLeftInfoLayout } from '../common/usePlaceDesktopLeftInfoLayout';
@@ -1012,6 +1014,25 @@ const PlaceGalleryView = React.memo(({
     originalQuery: overviewQuery,
     showDescriptionInKoreanLabel,
   } = usePlaceGalleryOverviewHydration(location, locale);
+  const localeNotices = useMemo(
+    () =>
+      resolveGalleryOverviewLocaleNotices({
+        locale,
+        location,
+        showDescriptionInKoreanLabel,
+      }),
+    [locale, location, showDescriptionInKoreanLabel],
+  );
+  const showMobileGalleryOverview = useMemo(
+    () =>
+      shouldShowMobileGalleryOverviewSection({
+        curationOverview,
+        fixedOverview,
+        overviewQuery,
+        localeNotices,
+      }),
+    [curationOverview, fixedOverview, overviewQuery, localeNotices],
+  );
   const hasPlaceOverview = Boolean(curationOverview || fixedOverview);
   const { mountInGallery } = usePlaceDesktopLeftInfoLayout();
 
@@ -1417,7 +1438,7 @@ const PlaceGalleryView = React.memo(({
           )}
 
           <div className="px-6 landscape-phone:px-3">
-            {hasPlaceOverview && (
+            {showMobileGalleryOverview && (
               <div
                 className={`lg:hidden mb-4 ${mobileLandscapeChromeHidden}`}
                 data-place-gallery-mobile-overview=""

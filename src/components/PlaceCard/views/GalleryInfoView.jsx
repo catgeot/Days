@@ -4,7 +4,8 @@ import { Camera, MapPin, Compass, Sparkles } from 'lucide-react';
 import { getGalleryImageAttribution } from '../common/galleryImageAttribution';
 import { usePlaceGalleryOverviewHydration } from '../hooks/usePlaceGalleryOverviewHydration';
 import { getLocalizedPlaceName } from '../common/locationDisplay';
-import { getLocalizedPlaceKeywords, isPlaceDescKoreanOnly } from '../../../pages/Home/lib/placeSeoText.js';
+import { getLocalizedPlaceKeywords } from '../../../pages/Home/lib/placeSeoText.js';
+import { resolveGalleryOverviewLocaleNotices } from '../common/galleryOverviewLocaleNotices.js';
 import { useLocale } from '../../../i18n/LocaleProvider';
 import { usePlaceDesktopLeftInfoLayout } from '../common/usePlaceDesktopLeftInfoLayout';
 import GalleryInfoOverviewScrollContent from './GalleryInfoOverviewScrollContent';
@@ -16,9 +17,6 @@ const GalleryInfoView = React.memo(({ selectedPlace, selectedImg, relatedPlaces 
         () => getLocalizedPlaceKeywords(selectedPlace, locale),
         [selectedPlace, locale],
     );
-    const showKoreanGuideNotice =
-        locale === 'en' &&
-        isPlaceDescKoreanOnly(selectedPlace);
     const isPhotoMode = !!selectedImg;
     const summaryScrollRef = useRef(null);
     const showRelatedDock = !isPhotoMode && relatedPlaces.length > 0;
@@ -39,6 +37,16 @@ const GalleryInfoView = React.memo(({ selectedPlace, selectedImg, relatedPlaces 
         showDescriptionInKoreanLabel,
     } = usePlaceGalleryOverviewHydration(selectedPlace, locale);
 
+    const localeNotices = useMemo(
+        () =>
+            resolveGalleryOverviewLocaleNotices({
+                locale,
+                location: selectedPlace,
+                showDescriptionInKoreanLabel,
+            }),
+        [locale, selectedPlace, showDescriptionInKoreanLabel],
+    );
+
     const photoAttribution = useMemo(
         () => (selectedImg ? getGalleryImageAttribution(selectedImg) : null),
         [selectedImg],
@@ -50,8 +58,8 @@ const GalleryInfoView = React.memo(({ selectedPlace, selectedImg, relatedPlaces 
         description,
         photoAttribution,
         selectedImg,
-        showKoreanGuideNotice: showDescriptionInKoreanLabel ? false : showKoreanGuideNotice,
-        showDescriptionInKoreanLabel,
+        showKoreanGuideNotice: localeNotices.showKoreanGuideNotice,
+        showDescriptionInKoreanLabel: localeNotices.showDescriptionInKoreanLabel,
         overviewQuery,
         curationOverview,
         fixedOverview,

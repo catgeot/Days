@@ -5,6 +5,10 @@ import {
   shouldFetchGalleryOverviewHydration,
   splitPlaceOverview,
 } from '../../src/components/PlaceCard/common/placeOverviewText.js';
+import {
+  resolveGalleryOverviewLocaleNotices,
+  shouldShowMobileGalleryOverviewSection,
+} from '../../src/components/PlaceCard/common/galleryOverviewLocaleNotices.js';
 import { overviewTextIsKoreanOnly } from '../../src/pages/Home/lib/placeSeoText.js';
 import {
   hydratePlaceGalleryOverview,
@@ -19,6 +23,29 @@ const yapLikePin = {
   desc: '야프는 미크로네시아 연방의 돌돈화로 유명한 섬으로, 전통 돌돈 통화와 잠수·문화 체험이 알려져 있습니다.',
   placeChatIntroApplied: true,
 };
+
+test('mobile section — EN koreanGuide when body empty', () => {
+  const pin = {
+    slug: 'donggureung-royal-tombs',
+    name: '동구릉',
+    desc: '경기 구리·남양주 조선 왕릉군으로 유네스코 세계문화유산입니다.',
+  };
+  const notices = resolveGalleryOverviewLocaleNotices({
+    locale: 'en',
+    location: pin,
+    showDescriptionInKoreanLabel: false,
+  });
+  assert.equal(notices.showKoreanGuideNotice, true);
+  assert.equal(
+    shouldShowMobileGalleryOverviewSection({
+      curationOverview: '',
+      fixedOverview: '',
+      overviewQuery: '',
+      localeNotices: notices,
+    }),
+    true,
+  );
+});
 
 test('KO overview uses SSOT Korean desc without EN hydrate', () => {
   const { fixed } = splitPlaceOverview(yapLikePin, 'ko');

@@ -2,7 +2,11 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Sparkles } from 'lucide-react';
 import PlaceOverviewProse from '../common/PlaceOverviewProse';
-import { isPlaceDescKoreanOnly } from '../../../pages/Home/lib/placeSeoText.js';
+import {
+  hasGalleryOverviewBody,
+  resolveGalleryOverviewLocaleNotices,
+} from '../common/galleryOverviewLocaleNotices.js';
+import PlaceGalleryLocaleNoticeChips from './PlaceGalleryLocaleNoticeChips';
 
 /**
  * Gallery scroll overview (@media below lg). Desktop uses GalleryInfoOverviewScrollContent.
@@ -16,20 +20,28 @@ export default function PlaceGalleryMobileOverviewCard({
   showDescriptionInKoreanLabel = false,
 }) {
   const { t } = useTranslation();
-  const showKoreanGuideNotice =
-    locale === 'en' && isPlaceDescKoreanOnly(location) && !showDescriptionInKoreanLabel;
+  const notices = resolveGalleryOverviewLocaleNotices({
+    locale,
+    location,
+    showDescriptionInKoreanLabel,
+  });
+  const hasOverviewBody = hasGalleryOverviewBody({
+    overviewQuery,
+    curationOverview,
+    fixedOverview,
+  });
+  const noticeOnly = notices.showAnyLocaleNotice && !hasOverviewBody;
 
   return (
-    <div className="rounded-2xl border border-white/10 bg-black/35 px-4 py-4 backdrop-blur-md shadow-inner space-y-3.5">
-      {showDescriptionInKoreanLabel ? (
-        <span className="inline-flex items-center rounded-full border border-white/15 bg-white/5 px-2.5 py-1 text-[11px] text-gray-300">
-          {t('place.localeNotice.descriptionInKorean')}
-        </span>
-      ) : showKoreanGuideNotice ? (
-        <span className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-white/5 px-2.5 py-1 text-[11px] text-gray-300">
-          ℹ️ {t('place.localeNotice.koreanGuide')}
-        </span>
-      ) : null}
+    <div
+      className={`rounded-2xl border border-white/10 bg-black/35 backdrop-blur-md shadow-inner space-y-3.5 ${
+        noticeOnly ? 'px-4 py-3' : 'px-4 py-4'
+      }`}
+    >
+      <PlaceGalleryLocaleNoticeChips
+        showDescriptionInKoreanLabel={notices.showDescriptionInKoreanLabel}
+        showKoreanGuideNotice={notices.showKoreanGuideNotice}
+      />
       {(overviewQuery || curationOverview) && (
         <div className="rounded-xl border border-violet-400/25 bg-violet-500/10 px-3 py-3">
           {overviewQuery && (
@@ -43,7 +55,7 @@ export default function PlaceGalleryMobileOverviewCard({
           {curationOverview && <PlaceOverviewProse text={curationOverview} variant="curation" />}
         </div>
       )}
-      {fixedOverview && <PlaceOverviewProse text={fixedOverview} variant="mobile" />}
+      {fixedOverview ? <PlaceOverviewProse text={fixedOverview} variant="mobile" /> : null}
     </div>
   );
 }
