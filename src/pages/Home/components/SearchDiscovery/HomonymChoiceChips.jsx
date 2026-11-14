@@ -36,7 +36,15 @@ export function HomonymChoiceChips({
           <button
             key={item.id || koreaHomonymChipLabel(item)}
             type="button"
-            onClick={() => onSelect?.(item)}
+            onPointerDown={(event) => {
+              if (event.pointerType === 'mouse' && event.button !== 0) return;
+              event.preventDefault();
+              onSelect?.(item);
+            }}
+            onClick={(event) => {
+              if (event.pointerType !== 'mouse') return;
+              onSelect?.(item);
+            }}
             className="rounded-full border border-white/25 bg-[#32281f]/95 px-3 py-1.5 text-[13px] font-semibold text-white shadow-[0_4px_20px_rgba(0,0,0,0.35)] transition-all break-keep hover:border-sky-300/50 hover:bg-[#3a2f25]"
           >
             {koreaHomonymChipLabel(item)}

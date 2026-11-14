@@ -106,6 +106,30 @@ function exploreItemMatchesTokens(item, tokens, locale) {
  * @param {string} query
  * @param {{ locale?: string }} [opts]
  */
+/**
+ * Explore suggestion row (dropdown / Enter) matches festival tokens.
+ * @param {string} query
+ * @param {object} suggestion
+ * @param {string} [locale]
+ */
+export function exploreFestivalSuggestionMatchesQuery(query, suggestion, locale = 'ko') {
+  if (
+    suggestion?.kind !== 'festival' &&
+    suggestion?.source !== 'korea-festival' &&
+    !suggestion?.festivalContentId
+  ) {
+    return false;
+  }
+  const pseudo = {
+    title: suggestion?.name,
+    titleEn: suggestion?.name_en,
+    addr1: suggestion?.desc,
+  };
+  const tokens = exploreFestivalSearchTokens(query);
+  if (!tokens.length) return false;
+  return exploreItemMatchesTokens(pseudo, tokens, locale);
+}
+
 export function filterExploreFestivalSearchQuery(items, query, opts = {}) {
   const tokens = exploreFestivalSearchTokens(query);
   if (!tokens.length) return [];

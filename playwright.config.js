@@ -412,6 +412,21 @@ export default defineConfig({
       },
     },
     {
+      name: 'webkit-explore-bichchorong-tap',
+      testMatch: /explore-search-bichchorong-tap\.spec\.js/,
+      timeout: 180_000,
+      use: {
+        ...devices['iPhone 13'],
+        baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://127.0.0.1:5201',
+        locale: 'ko-KR',
+        viewport: { width: 390, height: 844 },
+        deviceScaleFactor: 1,
+        isMobile: true,
+        hasTouch: true,
+        ignoreHTTPSErrors: true,
+      },
+    },
+    {
       name: 'chromium-explore-restaurant-search-select',
       testMatch: /explore-restaurant-search-select\.spec\.js/,
       timeout: 180_000,

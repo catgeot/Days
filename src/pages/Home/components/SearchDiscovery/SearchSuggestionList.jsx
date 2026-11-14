@@ -83,6 +83,35 @@ function scenicSearchOverlayDesc(item) {
 }
 
 /** 선택 장소에는 검색 행 전용 개요를 넘기지 않는다. desc로 옮기면 intro hydrate가 skip된다. */
+function activateSearchSuggestion(event, item, searchQuery, onSelect) {
+  if (event?.pointerType === 'mouse' && event.button !== 0) return;
+  if (event?.cancelable) event.preventDefault();
+  event?.stopPropagation?.();
+  onSelect?.(placeFromSearchItem(item, searchQuery));
+}
+
+function exploreSuggestionNavigateHref(item) {
+  const href = String(item?.exploreHref || '').trim();
+  if (!href.startsWith('/')) return '';
+  if (item?.kind === 'festival' && item?.festivalContentId) return href;
+  if (item?.kind === 'review' && href) return href;
+  return '';
+}
+
+function activateHrefSearchSuggestion(event, item, searchQuery, onSelect) {
+  const href = exploreSuggestionNavigateHref(item);
+  if (!href) {
+    activateSearchSuggestion(event, item, searchQuery, onSelect);
+    return;
+  }
+  if (event?.pointerType === 'mouse' && event.button !== 0) return;
+  event?.stopPropagation?.();
+  onSelect?.(placeFromSearchItem(item, searchQuery), { fromSuggestionLink: true });
+  if (typeof window !== 'undefined') {
+    window.location.assign(href);
+  }
+}
+
 function placeFromSearchItem(item, searchQuery = '') {
   let next = item;
   if (item?.searchOverlayDesc) {
@@ -437,6 +466,10 @@ export function SearchSuggestionList({
               : item;
             const isRestaurantRow =
               badgeKey === EXPLORE_BADGE_RESTAURANT || item.kind === 'restaurant';
+            const navigateHref = exploreSuggestionNavigateHref(item);
+            const rowClass = `w-full flex items-center gap-3 text-left hover:bg-white/[0.1] transition-colors ${
+              isPopover ? 'px-3 py-2.5' : 'px-4 py-3'
+            }`;
 
             return (
               <React.Fragment key={item.id || `${item.name}-${item.lat}`}>
@@ -450,36 +483,46 @@ export function SearchSuggestionList({
                 <li>
                   <button
                     type="button"
-                    onClick={() => onSelect?.(placeFromSearchItem(item, query))}
-                    className={`w-full flex items-center gap-3 text-left hover:bg-white/[0.1] transition-colors ${
-                      isPopover ? 'px-3 py-2.5' : 'px-4 py-3'
-                    }`}
+                    onPointerDown={(event) =>
+                      navigateHref
+                        ? activateHrefSearchSuggestion(event, item, query, onSelect)
+                        : activateSearchSuggestion(event, item, query, onSelect)
+                    }
+                    onClick={(event) => {
+                      if (event.pointerType !== 'mouse') return;
+                      if (navigateHref) {
+                        activateHrefSearchSuggestion(event, item, query, onSelect);
+                        return;
+                      }
+                      activateSearchSuggestion(event, item, query, onSelect);
+                    }}
+                    className={rowClass}
                   >
-                    <SearchResultThumb
-                      item={thumbItem}
-                      kind={item.kind}
-                      iconSize={isPopover ? 16 : 18}
-                      sizeClass={isPopover ? 'h-10 w-10' : 'h-12 w-12'}
-                    />
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <span className="text-sm font-semibold text-white truncate">{displayName}</span>
-                        {secondaryName ? (
-                          <span className="text-xs font-medium text-white/85 shrink-0">{secondaryName}</span>
-                        ) : null}
-                        {rankBlurb ? (
-                          <span className="shrink-0 rounded-md border border-amber-300/50 bg-amber-400/15 px-1.5 py-0.5 text-[10px] font-extrabold text-amber-100">
-                            {rankBlurb}
+                      <SearchResultThumb
+                        item={thumbItem}
+                        kind={item.kind}
+                        iconSize={isPopover ? 16 : 18}
+                        sizeClass={isPopover ? 'h-10 w-10' : 'h-12 w-12'}
+                      />
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="text-sm font-semibold text-white truncate">{displayName}</span>
+                          {secondaryName ? (
+                            <span className="text-xs font-medium text-white/85 shrink-0">{secondaryName}</span>
+                          ) : null}
+                          {rankBlurb ? (
+                            <span className="shrink-0 rounded-md border border-amber-300/50 bg-amber-400/15 px-1.5 py-0.5 text-[10px] font-extrabold text-amber-100">
+                              {rankBlurb}
+                            </span>
+                          ) : null}
+                          <span className={`shrink-0 rounded-full border px-2 py-0.5 text-[10px] font-medium ${badgeClass}`}>
+                            {badge}
                           </span>
+                        </div>
+                        {subtitle ? (
+                          <p className="mt-0.5 text-xs text-white/70 truncate break-keep">{subtitle}</p>
                         ) : null}
-                        <span className={`shrink-0 rounded-full border px-2 py-0.5 text-[10px] font-medium ${badgeClass}`}>
-                          {badge}
-                        </span>
                       </div>
-                      {subtitle ? (
-                        <p className="mt-0.5 text-xs text-white/70 truncate break-keep">{subtitle}</p>
-                      ) : null}
-                    </div>
                   </button>
                   {isRestaurantRow ? (
                     <ExploreRestaurantMapOutboundCue
@@ -694,7 +737,11 @@ export function SearchDisambiguationCards({
               <div className="rounded-2xl border border-white/25 bg-[#32281f]/95 shadow-[0_4px_20px_rgba(0,0,0,0.35)] hover:border-sky-300/50 hover:bg-[#3a2f25] transition-all">
             <button
               type="button"
-              onClick={() => onSelect?.(placeFromSearchItem(hydrated, query))}
+              onPointerDown={(event) => activateSearchSuggestion(event, hydrated, query, onSelect)}
+              onClick={(event) => {
+                if (event.pointerType !== 'mouse') return;
+                activateSearchSuggestion(event, hydrated, query, onSelect);
+              }}
               className="group flex w-full items-stretch gap-3 p-3 text-left"
             >
               <SearchResultThumb
