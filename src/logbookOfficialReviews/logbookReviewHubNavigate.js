@@ -1,4 +1,5 @@
 import { setPlaceReturnTo } from '../pages/Home/lib/placeReturnTo.js';
+import { markLogbookEditorialReviewDetailLayoutFromHub } from './logbookEditorialReviewDetailLayout.js';
 import {
   buildLogbookHubReturnTo,
   snapshotLogbookReviewHubSession,
@@ -23,5 +24,6 @@ export function prepareLogbookReviewHubNavigation(input) {
     visibleCount: input.visibleCount,
     scrollY: typeof input.scrollY === 'number' ? input.scrollY : undefined,
   });
+  markLogbookEditorialReviewDetailLayoutFromHub();
   return { returnTo, fromLogbookReviewHub: true };
 }

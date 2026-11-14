@@ -140,11 +140,18 @@ test('hub card wires filter flag without forced scroll', () => {
   assert.match(grid, /grid-cols-2/);
   assert.match(grid, /xl:grid-cols-3/);
   assert.match(grid, /aspect-\[4\/3\]/);
-  assert.match(grid, /logbook-official-review-hub-card-fallback/);
-  assert.match(grid, /setLoadState\('fail'\)/);
-  assert.match(grid, /optimizeLogbookReviewCardThumbUrl/);
-  assert.match(grid, /loading: preferEager \? 'eager' : 'lazy'/);
-  assert.match(grid, /logbook-official-review-hub-card-summary/);
+  assert.match(grid, /LogbookOfficialReviewHubCardMedia/);
+  assert.match(grid, /pickEditorialReviewHubThumb/);
+  assert.match(grid, /preferEager={index < 3}/);
+  const media = readFileSync(
+    join(healthRoot, 'src/logbookOfficialReviews/LogbookOfficialReviewHubCardMedia.jsx'),
+    'utf8',
+  );
+  assert.match(media, /logbook-official-review-hub-card-fallback/);
+  assert.match(media, /setLoadState\('fail'\)/);
+  assert.match(media, /loading: preferEager \? 'eager' : 'lazy'/);
+  assert.doesNotMatch(grid, /logbook-official-review-hub-card-summary/);
+  assert.match(grid, /line-clamp-1/);
   assert.match(grid, /buildPlaceReviewsHref/);
   assert.doesNotMatch(hub, /scrollIntoView/);
   assert.doesNotMatch(filter, /scrollIntoView/);

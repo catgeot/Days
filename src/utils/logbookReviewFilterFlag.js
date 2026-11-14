@@ -40,3 +40,8 @@ export function isLogbookOfficialReviewHubActive() {
   if (isGateoLogbookReviewHubEnabled()) return true;
   return readTruthyQueryParam(LOGBOOK_REVIEW_HUB_PREVIEW_QUERY_PARAM);
 }
+
+export {
+  isLogbookEditorialReviewDetailLayoutActive,
+  markLogbookEditorialReviewDetailLayoutFromHub,
+} from '../logbookOfficialReviews/logbookEditorialReviewDetailLayout.js';

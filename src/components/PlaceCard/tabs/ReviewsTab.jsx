@@ -50,6 +50,9 @@ import {
 } from '../common/placeScrollMemory.js';
 import { useLightboxHistory } from '../../../shared/useLightboxHistory.js';
 import { useGateoPhotoLightboxA11y } from '../../../shared/useGateoPhotoLightboxA11y.js';
+import { isGateoOfficialEditorialPlaceReview } from '../../../logbookOfficialReviews/gateoOfficialEditorialPlaceReview.js';
+import { isLogbookEditorialReviewDetailLayoutActive } from '../../../utils/logbookReviewFilterFlag.js';
+import LogbookEditorialReviewDetailHero from '../../../logbookOfficialReviews/LogbookEditorialReviewDetailHero.jsx';
 
 const RelatedBlogCardThumbnail = ({ src }) => {
   const [failed, setFailed] = useState(false);
@@ -258,6 +261,8 @@ export const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onTog
   const { t, i18n } = useTranslation();
   const [isExpanded, setIsExpanded] = useState(false);
   const [hasViewed, setHasViewed] = useState(false);
+  const hubDetailLayout =
+    isGateoOfficialEditorialPlaceReview(review) && isLogbookEditorialReviewDetailLayoutActive();
 
   useEffect(() => {
     if (hasViewed || !onVisible) return;
@@ -339,7 +344,7 @@ export const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onTog
             }}
           />
         </button>
-        {review.is_editorial ? <EditorialReviewImageCredits images={[img]} /> : null}
+        {review.is_editorial && !hubDetailLayout ? <EditorialReviewImageCredits images={[img]} /> : null}
       </div>
     );
   };
@@ -352,54 +357,57 @@ export const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onTog
       className="bg-white border border-gray-100 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow scroll-mt-4"
       data-review-id={review.id}
     >
-      {/* 작성자 및 별점 정보 */}
-      <div className="flex justify-between items-start mb-3">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold uppercase overflow-hidden">
-            {review.user?.avatar_url ? (
-              <img src={review.user.avatar_url.replace(/^http:\/\//i, 'https://')} alt="profile" className="w-full h-full object-cover" />
-            ) : (
-              (review.user?.display_name || 'U')[0]
-            )}
-          </div>
-          <div>
-            <div className="font-medium text-gray-900 text-sm flex flex-wrap items-center gap-2">
-              {review.is_editorial ? (
-                <span className="text-[11px] font-semibold text-indigo-800 bg-indigo-50 border border-indigo-100 px-2 py-0.5 rounded-md">
-                  {formatGateoReviewerBadge(review.persona_label)}
-                </span>
+      {hubDetailLayout ? (
+        <LogbookEditorialReviewDetailHero review={review} onImageClick={onImageClick} />
+      ) : (
+        <div className="flex justify-between items-start mb-3">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold uppercase overflow-hidden">
+              {review.user?.avatar_url ? (
+                <img src={review.user.avatar_url.replace(/^http:\/\//i, 'https://')} alt="profile" className="w-full h-full object-cover" />
               ) : (
-                <>
-                  {review.user?.display_name || t('place.reviews.anonymous')}
-                  {!review.is_public && (
-                    <span className="text-[10px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded">{t('place.reviews.private')}</span>
-                  )}
-                </>
+                (review.user?.display_name || 'U')[0]
               )}
             </div>
-            <div className="text-xs text-gray-400 mt-0.5">{formatDate(review.created_at)}</div>
+            <div>
+              <div className="font-medium text-gray-900 text-sm flex flex-wrap items-center gap-2">
+                {review.is_editorial ? (
+                  <span className="text-[11px] font-semibold text-indigo-800 bg-indigo-50 border border-indigo-100 px-2 py-0.5 rounded-md">
+                    {formatGateoReviewerBadge(review.persona_label)}
+                  </span>
+                ) : (
+                  <>
+                    {review.user?.display_name || t('place.reviews.anonymous')}
+                    {!review.is_public && (
+                      <span className="text-[10px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded">{t('place.reviews.private')}</span>
+                    )}
+                  </>
+                )}
+              </div>
+              <div className="text-xs text-gray-400 mt-0.5">{formatDate(review.created_at)}</div>
+            </div>
+          </div>
+
+          <div className="flex flex-col items-end gap-1">
+            {review.is_editorial === true ? null : (
+              <div className="flex gap-0.5" data-review-stars="">
+                {renderStars(review.rating)}
+              </div>
+            )}
+
+            {user && user.id === review.user_id && (
+              <div className="flex items-center gap-2 mt-2">
+                <button onClick={() => onEdit(review)} className="text-gray-400 hover:text-blue-600 transition-colors" title={t('place.reviews.edit')}>
+                  <Edit className="w-4 h-4" />
+                </button>
+                <button onClick={() => onDelete(review.id)} className="text-gray-400 hover:text-red-600 transition-colors" title={t('place.reviews.delete')}>
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
+            )}
           </div>
         </div>
-
-        <div className="flex flex-col items-end gap-1">
-          {review.is_editorial === true ? null : (
-            <div className="flex gap-0.5" data-review-stars="">
-              {renderStars(review.rating)}
-            </div>
-          )}
-
-          {user && user.id === review.user_id && (
-            <div className="flex items-center gap-2 mt-2">
-              <button onClick={() => onEdit(review)} className="text-gray-400 hover:text-blue-600 transition-colors" title={t('place.reviews.edit')}>
-                <Edit className="w-4 h-4" />
-              </button>
-              <button onClick={() => onDelete(review.id)} className="text-gray-400 hover:text-red-600 transition-colors" title={t('place.reviews.delete')}>
-                <Trash2 className="w-4 h-4" />
-              </button>
-            </div>
-          )}
-        </div>
-      </div>
+      )}
 
       {review.is_editorial && review.disclosure?.trim() && (
         <p className="text-[11px] text-gray-500 bg-gray-50 border border-gray-100 rounded-md px-2.5 py-1.5 mt-1 leading-snug">
@@ -491,7 +499,7 @@ export const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onTog
             </button>
           )}
         </div>
-        {!isExpanded && leadThumbnailIndex != null ? (
+        {!hubDetailLayout && !isExpanded && leadThumbnailIndex != null ? (
           <CollapsedReviewLeadThumbnail review={review} onImageClick={onImageClick} />
         ) : null}
       </div>
@@ -523,7 +531,7 @@ export const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onTog
               );
             })}
           </div>
-          {review.is_editorial ? (
+          {review.is_editorial && !hubDetailLayout ? (
             <EditorialReviewImageCredits images={galleryEntries.map((entry) => entry.img)} />
           ) : null}
         </div>
