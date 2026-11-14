@@ -121,7 +121,7 @@ test('hub card shows loadFailed retry UI (not blank)', () => {
     ),
     'utf8',
   );
-  assert.match(src, /리뷰를 불러오지 못했어요/);
+  assert.match(src, /officialReviewHub\.loadFailed/);
   assert.match(src, /logbook-official-review-hub-retry/);
   assert.match(src, /data-hub-state="load-failed"/);
   assert.match(src, /LOGBOOK_OFFICIAL_REVIEW_CARD_TITLE/);

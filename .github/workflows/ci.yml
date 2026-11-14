@@ -689,6 +689,38 @@ jobs:
           CI: true
         run: npm run test:e2e:reels-locale
 
+  logbook-review-filter-e2e:
+    name: LogBook review filter cards E2E (390·1280, mocked)
+    runs-on: ubuntu-latest
+    needs: lint-and-build
+    timeout-minutes: 25
+    container:
+      image: mcr.microsoft.com/playwright:v1.60.0-jammy
+      options: --ipc=host
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers (Chromium + WebKit)
+        run: npx playwright install --with-deps webkit chromium
+
+      - name: Playwright — logbook-review-filter-cards
+        env:
+          VITE_SUPABASE_URL: https://example.supabase.co
+          VITE_SUPABASE_ANON_KEY: e2e-anon-placeholder
+          DEV_SSL: '0'
+          CI: true
+        run: npx playwright test -c playwright.config.logbook-review-filter.js --reporter=line
+
   editorial-blog-head-meta-e2e:
     name: Editorial blog head meta E2E
     runs-on: ubuntu-latest
