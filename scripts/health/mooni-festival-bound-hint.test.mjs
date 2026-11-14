@@ -12,6 +12,7 @@ import {
 } from '../../src/shared/korea/mooniKoreaFestivalAssist.js';
 import {
   isFestivalItineraryAsk,
+  isFestivalOperatingScheduleAsk,
   shouldMooniScopedFestivalReplaceEmptyCandidates,
 } from '../../src/pages/Home/lib/mooniKoreaFestivalTurn.js';
 
@@ -165,12 +166,33 @@ test('bound hint — itinerary ask includes day-route coach line', async () => {
 test('bound hint — 운영 일정 질문은 day-route coach 없음', async () => {
   const ask = '축제 기간 중 일정 알려줘';
   assert.equal(isFestivalItineraryAsk(ask), false);
+  assert.equal(isFestivalOperatingScheduleAsk(ask), true);
   const { hint } = await resolveMooniChatKoreaFestivalHint({
     userText: ask,
     festivalContext: FESTIVAL_CTX_2048902,
     locale: 'ko',
   });
   assert.ok(!/하루 동선·일정/.test(hint));
+  assert.match(hint, /운영 일정\(기간·시간·장소\)만/);
+  assert.ok(!/주변 맛집\(GATEO\)/.test(hint));
+});
+
+test('bound hint — 토요일 일정 알려줘 strips restaurants and adds schedule coach', async () => {
+  const ask = '토요일 일정 알려줘';
+  assert.equal(isFestivalOperatingScheduleAsk(ask), true);
+  const ctx = {
+    ...FESTIVAL_CTX_2048902,
+    nearbyRestaurants: [{ name: '테스트식당', distKm: 0.2, cat3: '한식' }],
+    nearbyPlaces: ['해운대해수욕장', '동백섬'],
+  };
+  const { hint } = await resolveMooniChatKoreaFestivalHint({
+    userText: ask,
+    festivalContext: ctx,
+    locale: 'ko',
+  });
+  assert.ok(!/주변 맛집/.test(hint));
+  assert.ok(!/근처\(GATEO\)/.test(hint));
+  assert.match(hint, /맛집 이름은 쓰지 않아요/);
 });
 
 test('2048902 bound hint — 일정 질문에 매칭 없음·겹침 문구 없음', async () => {

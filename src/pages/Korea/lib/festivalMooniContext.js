@@ -18,6 +18,7 @@ import {
   formatNearbyPlaceLabel,
 } from '../../../shared/korea/englishPlaceLabel.js';
 import { parseEngFestivalTitle } from '../festivalTitleEnMerge.js';
+import { resolveFestivalPublicHomepage } from './festivalPublicHomepage.js';
 import { festivalLngLat } from '../koreaFestivalCorridors.js';
 import { stripTrailingRegionLabel } from './festivalNearbySights.js';
 import { festivalOmitsOfficialEventHours } from '../manualFestivalEntries.js';
@@ -115,7 +116,10 @@ export function buildFestivalMooniContext(input = {}) {
     address,
     lat: pt?.lat ?? null,
     lng: pt?.lng ?? null,
-    homepage: String(homepage || intro?.eventhomepage || '').trim(),
+    homepage: (() => {
+      const raw = String(homepage || intro?.eventhomepage || item?.homepage || '').trim();
+      return resolveFestivalPublicHomepage(item?.contentId, raw) || raw;
+    })(),
     tel: plainFact(intro?.sponsor1tel || intro?.sponsor1Tel || intro?.tel || item?.tel || ''),
     parking: plainFact(intro?.parking || '') || parkingFromInfoRows(input.info),
     hubLabel,

@@ -193,6 +193,12 @@ const BOUND_FESTIVAL_OTHER_EVENTS_RE =
 const BOUND_FESTIVAL_SCHEDULE_IN_PERIOD_RE =
   /기간\s*중.*(?:일정|토요일|일요일|하루|당일)|(?:토요일|일요일|하루|당일).*(?:일정|코스|동선)/;
 
+const FESTIVAL_OPERATING_SCHEDULE_RE =
+  /(?:기간\s*중|토요일|일요일|주말|평일).{0,32}(?:운영\s*)?일정|(?:운영|행사)\s*(?:일정|시간)|일정\s*(?:알려|말해)|(?:몇\s*시|언제)\s*(?:해|하|열려)/i;
+
+const FESTIVAL_FOOD_ASK_TURN_RE =
+  /먹을\s*곳|맛집|뭐\s*먹|어디서\s*먹|where\s+to\s+eat|what\s+(?:can|should)\s+i\s+eat|\brestaurants?\b/i;
+
 const JUNK_FESTIVAL_REGION_QUERY_RE = /^(?:다른|또|비슷한|그\s*밖|비슷)$/;
 
 /**
@@ -202,6 +208,20 @@ const JUNK_FESTIVAL_REGION_QUERY_RE = /^(?:다른|또|비슷한|그\s*밖|비슷
 export function isFestivalItineraryAsk(userText, chipId = '') {
   if (String(chipId || '') === 'festival_day') return true;
   return isPlanItineraryIntentText(userText);
+}
+
+/**
+ * 축제 바운드 세션 — 기간·요일·운영 시간만 묻는 턴 (하루 동선·맛집 아님).
+ * @param {string} userText
+ * @param {string} [chipId]
+ */
+export function isFestivalOperatingScheduleAsk(userText, chipId = '') {
+  if (String(chipId || '') === 'festival_day' || String(chipId || '') === 'festival_nearby') {
+    return false;
+  }
+  if (isFestivalItineraryAsk(userText, chipId)) return false;
+  if (FESTIVAL_FOOD_ASK_TURN_RE.test(String(userText || ''))) return false;
+  return FESTIVAL_OPERATING_SCHEDULE_RE.test(String(userText || ''));
 }
 
 /**

@@ -166,6 +166,12 @@ import { FestivalDetailPhotoFallback } from './festivalListThumbBox.jsx';
 import { FestivalPhotoFrame } from './festivalPhotoFrame';
 import { shouldShowFestivalNearbyListSection } from './lib/festivalDetailSectionGate.js';
 import { formatFestivalPhotoCreditLine } from './festivalPhotoCredit.js';
+import {
+  detectPosterEditionYear,
+  festivalEditionYearFromStart,
+  isPriorEditionPoster,
+} from './lib/festivalPosterEdition.js';
+import { resolveFestivalPublicHomepage, preferHttpsFestivalHomepage } from './lib/festivalPublicHomepage.js';
 import { useFestivalHeroPhotoDecoded } from './useFestivalHeroPhotoDecoded.js';
 import { loadNearbyParkingFacts } from './lib/festivalNearbyParking.js';
 import {
@@ -321,20 +327,28 @@ function textsSimilarOrEqual(a, b) {
 }
 
 function collectImageUrls(imageData, fallbackUrl) {
-  const urls = [];
+  return collectFestivalGallerySlides(imageData, fallbackUrl).map((row) => row.url);
+}
+
+function collectFestivalGallerySlides(imageData, fallbackUrl) {
+  const slides = [];
   const seen = new Set();
-  const push = (raw) => {
+  const push = (raw, caption = '') => {
     const url = toHttps(raw);
     if (!url || seen.has(url)) return;
     seen.add(url);
-    urls.push(url);
+    slides.push({
+      url,
+      caption: String(caption || '').trim(),
+    });
   };
   const items = Array.isArray(imageData?.items) ? imageData.items : [];
   for (const it of items) {
-    push(it?.imageUrl || it?.originimgurl || it?.smallimageurl || it?.firstimage);
+    const caption = String(it?.imgname || it?.imgName || it?.title || '').trim();
+    push(it?.imageUrl || it?.originimgurl || it?.smallimageurl || it?.firstimage, caption);
   }
-  push(fallbackUrl);
-  return urls;
+  push(fallbackUrl, '');
+  return slides;
 }
 
 function DetailRow({ label, children, prose = false, highlight = false }) {
@@ -764,6 +778,7 @@ export default function FestivalDetailSheet({
   const [imageUrls, setImageUrls] = useState([]);
   const [heroStrip, setHeroStrip] = useState({ loadedCount: 0, loadedUrls: [], failedUrls: [] });
   const [imageCredits, setImageCredits] = useState([]);
+  const [imageCaptions, setImageCaptions] = useState([]);
   const [detailLoading, setDetailLoading] = useState(false);
   const [heroReady, setHeroReady] = useState(false);
   const heroColRef = useRef(null);
@@ -1358,19 +1373,26 @@ export default function FestivalDetailSheet({
       const introHit = detailData?.intro || pickFirst(detailData) || null;
       const commonHit = detailData?.common || null;
       const infoRows = Array.isArray(detailData?.info) ? detailData.info : [];
-      let urls = collectImageUrls(imageData, seed);
+      let slides = collectFestivalGallerySlides(imageData, seed);
       let credits = [];
+      let captions = [];
       if (Array.isArray(detailData?.manualImages) && detailData.manualImages.length) {
-        urls = [];
+        slides = [];
         credits = [];
+        captions = [];
         for (const row of detailData.manualImages) {
           const url = toHttps(row?.url);
           if (!url) continue;
-          urls.push(url);
+          slides.push({ url, caption: String(row?.title || row?.caption || '').trim() });
           credits.push(String(row?.credit || '').trim());
+          captions.push(String(row?.title || row?.caption || '').trim());
         }
+      } else {
+        captions = slides.map((row) => row.caption);
       }
+      const urls = slides.map((row) => row.url);
       setImageCredits(credits);
+      setImageCaptions(captions);
 
       if (!detailData?.ok && !imageData?.ok) {
         setIntro(null);
@@ -2014,9 +2036,12 @@ export default function FestivalDetailSheet({
 
   const homepage = useMemo(() => {
     const fromIntro = normalizeHomepage(intro?.eventhomepage);
-    if (fromIntro) return fromIntro;
-    return normalizeHomepage(common?.homepage);
-  }, [intro?.eventhomepage, common?.homepage]);
+    const fromCommon = normalizeHomepage(common?.homepage);
+    const raw = fromIntro || fromCommon;
+    const resolved = resolveFestivalPublicHomepage(item?.contentId, raw);
+    if (resolved) return resolved;
+    return preferHttpsFestivalHomepage(raw);
+  }, [intro?.eventhomepage, common?.homepage, item?.contentId]);
 
   const bookingLinks = useMemo(
     () => getVisibleBookingLinks(item?.contentId, { uiLang: locale }),
@@ -2470,6 +2495,18 @@ export default function FestivalDetailSheet({
     imageCredits[activeImage],
     locale,
   );
+  const festivalEditionYear = festivalEditionYearFromStart(
+    item?.eventStartDate || intro?.eventStartDate || intro?.eventstartdate,
+  );
+  const posterEditionYear = detectPosterEditionYear({
+    url: imageUrls[activeImage] || '',
+    caption: imageCaptions[activeImage] || '',
+    credit: imageCredits[activeImage] || '',
+  });
+  const showPriorEditionPosterLabel = isPriorEditionPoster(
+    posterEditionYear,
+    festivalEditionYear,
+  );
   const koTitle = String(item?.title || common?.title || '').trim();
   const displayTitle =
     festivalMapTitle(item, locale) ||
@@ -2622,12 +2659,18 @@ export default function FestivalDetailSheet({
                 </span>
               )}
             </button>
-            {activePhotoCredit && heroPhotoDecoded ? (
+            {(showPriorEditionPosterLabel || (activePhotoCredit && heroPhotoDecoded)) ? (
               <p
                 className="px-4 py-1.5 text-[10px] leading-snug text-stone-500 bg-white border-b border-stone-100"
                 data-festival-photo-credit=""
               >
-                {activePhotoCredit}
+                {showPriorEditionPosterLabel ? (
+                  <span className="font-semibold text-stone-600">
+                    {t('korea.festival.detail.posterPriorEdition')}
+                    {' · '}
+                  </span>
+                ) : null}
+                {activePhotoCredit && heroPhotoDecoded ? activePhotoCredit : null}
               </p>
             ) : null}
             {detailLoading &&
