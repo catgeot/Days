@@ -3232,8 +3232,11 @@ function stripUnverifiedEveningClause(text) {
   }).filter(Boolean).join(' ');
 }
 
-function isScopedFestivalZeroTemplate(text) {
-  return /겹치는\s*행사(?:가|는)\s*없어요|no verified festivals overlapping/i.test(String(text || ''));
+/** Chip turns are not festival searches, so a zero-candidate opener is a leak even when the ending was cut off. */
+function isChipTurnZeroTemplateSentence(part, options = {}) {
+  if (!isMooniChipInstructionTurn(options.userText, options.chipId)) return false;
+  const compact = String(part || '').replace(/\s+/g, ' ').trim();
+  return /^(?:GATEO가\s*확인한\s*축제\s*중|GATEO\s+has\s+no\s+verified\s+festivals|no\s+verified\s+festivals)(?=$|\s|[.!?])/i.test(compact);
 }
 
 function isSightsChipTurn(options = {}) {
@@ -3352,8 +3355,7 @@ function replySentenceParts(text) {
 
 function isRealInstructionLeakSentence(part, options = {}) {
   if (replySentenceLeaksChipInstruction(part)) return true;
-  return isMooniChipInstructionTurn(options.userText, options.chipId)
-    && isScopedFestivalZeroTemplate(part);
+  return isChipTurnZeroTemplateSentence(part, options);
 }
 
 /**

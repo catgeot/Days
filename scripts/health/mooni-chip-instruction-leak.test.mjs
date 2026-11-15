@@ -10,6 +10,8 @@ import {
 import {
   isMooniChipInstructionTurn,
   isMooniInstructionFragment,
+  isVisibleMooniQuestionSentence,
+  mooniChipInstructionSentences,
   mooniFestivalChipSendTexts,
   mooniPlaceChipSendTexts,
   replySentenceLeaksChipInstruction,
@@ -433,6 +435,97 @@ test('one instruction word does not replace a normal answer', () => {
   assert.match(mixedKept, /크루즈게이트가 켜져요/);
   assert.doesNotMatch(mixedKept, /겹치는 행사/);
   assert.doesNotMatch(mixedKept, /볼 수 있는 프로그램은/);
+});
+
+test('instruction sentences are removed whole, and partial overlaps stay', () => {
+  const leaks = [
+    'GATEO가 확인한 축제 중 앞으로 30일 이 축제를 넣어 하루 동선을 짜줘.',
+    'Use airport codes.',
+    '확인된 프로그램과 시간만 말하고.',
+    '없는 맛집은 지어내지 마.',
+    '확인되지 않은 셔틀은 말하지 마.',
+    '링크 없는 외부 사이트로 보내지 마.',
+  ];
+  const day = polishFestivalModelReply(leaks[0], {
+    locale: 'ko',
+    chipId: 'festival_day',
+    userText: koChips.festival.festival_day.sendText,
+    contentId: '2048902',
+    festivalTitle: '해운대 빛축제',
+    program: '크루즈게이트',
+  });
+  assert.doesNotMatch(day, /GATEO가 확인한 축제 중|하루 동선을 짜줘/);
+
+  const airport = polishFestivalModelReply('부산에서 공항철도를 타요. Use airport codes.', {
+    locale: 'en',
+    chipId: 'festival_overseas_airport',
+    userText: enChips.festival.festival_overseas_airport.sendText,
+    contentId: '2048902',
+    festivalTitle: 'Haeundae Light Festival',
+  });
+  assert.match(airport, /부산에서 공항철도를 타요/);
+  assert.doesNotMatch(airport, /Use airport codes/);
+
+  for (const sentence of leaks.slice(2)) {
+    const out = repairFestivalChipInstructionLeak(sentence, {
+      locale: 'ko',
+      chipId: 'festival_sights',
+      userText: SIGHTS_KO,
+      contentId: '2048902',
+      festivalTitle: '해운대 빛축제',
+    });
+    assert.equal(out.includes(sentence.replace(/\.$/, '').slice(0, 8)), false, sentence);
+    assert.doesNotMatch(out, /겹치는 행사/);
+  }
+
+  const hotel = polishFestivalModelReply('How do I get from the airport to the hotel?', {
+    locale: 'en',
+    chipId: 'festival_overseas_airport',
+    userText: enChips.festival.festival_overseas_airport.sendText,
+    contentId: '2048902',
+    festivalTitle: 'Haeundae Light Festival',
+    program: '크루즈게이트',
+  });
+  assert.match(hotel, /How do I get from the airport to the hotel/);
+  assert.doesNotMatch(hotel, /Details are on the|페이지에서 볼 수 있어요|Confirmed programs include/);
+
+  const posted = polishFestivalModelReply('Confirmed programs and hours are posted at the gate.', {
+    locale: 'en',
+    chipId: 'festival_sights',
+    userText: SIGHTS_EN,
+    program: '크루즈게이트\n터널게이트',
+    timeText: '18:00~23:00',
+    contentId: '2048902',
+    festivalTitle: 'Haeundae Light Festival',
+  });
+  assert.match(posted, /Confirmed programs and hours are posted at the gate/);
+  assert.doesNotMatch(posted, /Confirmed programs include/);
+
+  const question = polishFestivalModelReply('What is the on-site feel?', {
+    locale: 'en',
+    chipId: 'festival_sights',
+    userText: SIGHTS_EN,
+    program: '크루즈게이트\n터널게이트',
+    timeText: '18:00~23:00',
+    contentId: '2048902',
+    festivalTitle: 'Haeundae Light Festival',
+  });
+  assert.match(question, /What is the on-site feel\?/);
+  assert.doesNotMatch(question, /Confirmed programs include/);
+
+  const sentences = mooniChipInstructionSentences();
+  assert.ok(sentences.length >= 8, `instruction sentences ${sentences.length}`);
+  for (const sentence of sentences) {
+    assert.equal(isVisibleMooniQuestionSentence(sentence), false, sentence);
+    const alone = repairFestivalChipInstructionLeak(sentence.endsWith('.') ? sentence : `${sentence}.`, {
+      locale: /[가-힣]/.test(sentence) ? 'ko' : 'en',
+      chipId: 'festival_sights',
+      userText: SIGHTS_KO,
+    });
+    assert.equal(replySentenceLeaksChipInstruction(sentence), true, sentence);
+    const bare = sentence.replace(/[.!?。]\s*$/, '');
+    assert.equal(alone.includes(bare), false, `${sentence} => ${alone}`);
+  }
 });
 
 test('on-site does not resolve Seattle, and IT matches only as a word', () => {

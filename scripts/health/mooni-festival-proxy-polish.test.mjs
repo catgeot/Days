@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
 import { repairGeminiReplacementChars } from '../../supabase/functions/_shared/gemini/answerSanitize.mjs';
 import { polishMooniFestivalProxyText, parseFestivalPolishParams } from '../../supabase/functions/_shared/gemini/festivalMooniProxyPolish.mjs';
@@ -790,6 +791,43 @@ test('proxy repair restores a full leak from program fields and keeps a normal s
   assert.match(mixed, /bright beach walk/);
   assert.doesNotMatch(mixed, /no verified festivals overlapping/);
   assert.doesNotMatch(mixed, /Confirmed programs include/);
+});
+
+test('proxy uses the shared instruction sentences and does not build the zero-candidate template', () => {
+  const polish = parseFestivalPolishParams({
+    chipId: 'festival_day',
+    locale: 'ko',
+    userText: '이 축제를 넣어 하루 동선을 짜줘. 확인된 일정과 장소만 쓰고, 없는 프로그램은 지어내지 마.',
+    contentId: '2048902',
+    festivalTitle: '해운대 빛축제',
+    program: '크루즈게이트\n터널게이트',
+    timeText: '18:00~23:00',
+  });
+  const leaked = polishMooniFestivalProxyText(
+    'GATEO가 확인한 축제 중 앞으로 30일 이 축제를 넣어 하루 동선을 짜줘.',
+    polish,
+  );
+  assert.doesNotMatch(leaked, /GATEO가 확인한 축제 중|하루 동선을 짜줘/);
+  assert.match(leaked, /자세한 내용은|크루즈게이트/);
+
+  const kept = polishMooniFestivalProxyText(
+    'How do I get from the airport to the hotel?',
+    parseFestivalPolishParams({
+      chipId: 'festival_overseas_airport',
+      locale: 'en',
+      userText: 'How do I get from the airport to this festival? Use airport codes. Do not invent shuttles.',
+      contentId: '2048902',
+      festivalTitle: 'Haeundae Light Festival',
+    }),
+  );
+  assert.match(kept, /How do I get from the airport to the hotel/);
+  assert.doesNotMatch(kept, /no verified festivals|Use airport codes/);
+
+  const proxy = readFileSync(new URL('../../supabase/functions/_shared/gemini/festivalMooniProxyPolish.mjs', import.meta.url), 'utf8');
+  const tasks = readFileSync(new URL('../../supabase/functions/_shared/gemini/tasks.ts', import.meta.url), 'utf8');
+  assert.doesNotMatch(proxy, /buildMooniKoreaFestivalZeroCandidateUserReply/);
+  assert.doesNotMatch(tasks, /buildMooniKoreaFestivalZeroCandidateUserReply/);
+  assert.match(proxy, /polishFestivalModelReply/);
 });
 
 test('proxy baseline removes 둘러보세요 page closer', () => {

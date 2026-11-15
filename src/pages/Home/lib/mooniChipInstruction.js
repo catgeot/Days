@@ -2,6 +2,10 @@
  * Chip send-text is a model instruction. It must never be interpolated into a
  * user-visible festival search template (region / window / «겹치는 행사» sentence).
  */
+import {
+  FESTIVAL_DOMESTIC_ORIGINS,
+  buildFestivalAccessAskText,
+} from './festivalDomesticOrigins.js';
 
 export const FESTIVAL_CHIP_BUBBLES = [
   {
@@ -172,50 +176,115 @@ export function isMooniChipInstructionTurn(userText, chipId = '') {
   return isMooniInstructionFragment(text);
 }
 
-/**
- * 18 in a row, or the whole sentence (16+) is itself a slice of an instruction.
- * "Confirmed programs include …" shares only 17 characters with "confirmed programs and".
- */
-const LEAK_SPAN_MIN = 18;
-const LEAK_SENTENCE_MIN = 16;
-
-const EXTRA_INSTRUCTION_SPANS = [
-  '에서 이 축제장까지 대중교통과 차로 가는 법을 알려줘',
-  'to this festival by public transit and by car',
-];
-
-function normalizedLeakKey(value) {
+/** Whitespace, punctuation, and case. Partial overlap is not a match. */
+export function normalizeMooniInstructionKey(value) {
   return String(value || '').toLowerCase().replace(/[^\p{L}\p{N}]+/gu, '');
 }
 
-let leakSpanCache = null;
+const QUESTION_END_RE = /(?:알려\s*줘|짜\s*줘|추천해\s*줘|설명해\s*줘|어때|뭐야|할까|하지)[.!?。]?\s*$/u;
+const CLAUSE_END_RE = /(?:마|말하고|쓰고|알려\s*줘|짜\s*줘|추천해\s*줘|설명해\s*줘)[.!?。]?\s*$/u;
 
-function instructionLeakSpans() {
-  if (leakSpanCache) return leakSpanCache;
-  const spans = [];
-  for (const raw of [...mooniFestivalChipSendTexts(), ...EXTRA_INSTRUCTION_SPANS]) {
-    const key = normalizedLeakKey(raw);
-    if (key.length >= LEAK_SENTENCE_MIN) spans.push(key);
+function looksLikeInstructionClause(text) {
+  const t = compact(text);
+  if (normalizeMooniInstructionKey(t).length < 8) return false;
+  if (CLAUSE_END_RE.test(t)) return true;
+  if (/[.!?。]\s*$/.test(t) && normalizeMooniInstructionKey(t).length >= 12) return true;
+  return /^(?:do not|don't|use only|use airport)\b/i.test(t);
+}
+
+function splitInstructionClauses(raw) {
+  const sentences = String(raw || '').split(/(?<=[.!?。])\s+/);
+  const out = [];
+  for (const sentence of sentences) {
+    const bits = sentence.split(/\s*[,，]\s*/).map((bit) => bit.trim()).filter(Boolean);
+    if (bits.length > 1 && bits.every((bit) => looksLikeInstructionClause(bit))) out.push(...bits);
+    else if (sentence.trim()) out.push(sentence.trim());
   }
-  leakSpanCache = spans;
-  return spans;
+  return out;
+}
+
+/** User-visible ask. The model may repeat it. Hidden constraints stay in the set. */
+export function isVisibleMooniQuestionSentence(text) {
+  const t = compact(text);
+  if (!t) return true;
+  if (/[?？]\s*$/.test(t)) return true;
+  if (QUESTION_END_RE.test(t)) return true;
+  if (/^(?:what|how|who|why|where|when|which)\b/i.test(t)) return true;
+  if (/^(?:plan|tell|suggest|recommend|explain)\b/i.test(t) && !/\b(?:do not|don't|use only|use airport)\b/i.test(t)) {
+    return true;
+  }
+  return false;
+}
+
+function accessAskTexts() {
+  const access = [];
+  for (const row of FESTIVAL_DOMESTIC_ORIGINS) {
+    access.push(buildFestivalAccessAskText(row, 'ko'));
+    access.push(buildFestivalAccessAskText(row, 'en'));
+  }
+  return access;
+}
+
+function visibleAskKeys() {
+  const keys = new Set();
+  const visible = [
+    ...mooniPlaceChipSendTexts(),
+    ...FESTIVAL_CHIP_BUBBLES.flatMap((row) => [row.bubbleKo, row.bubbleEn]),
+    ...accessAskTexts(),
+  ];
+  for (const raw of visible) {
+    const key = normalizeMooniInstructionKey(raw);
+    if (key) keys.add(key);
+    for (const clause of splitInstructionClauses(raw)) {
+      const clauseKey = normalizeMooniInstructionKey(clause);
+      if (clauseKey) keys.add(clauseKey);
+    }
+  }
+  return keys;
+}
+
+function instructionCorpus() {
+  return [
+    ...mooniFestivalChipSendTexts(),
+    ...mooniPlaceChipSendTexts(),
+    ...FESTIVAL_CHIP_BUBBLES.flatMap((row) => [row.bubbleKo, row.bubbleEn]),
+    ...accessAskTexts(),
+  ];
+}
+
+let instructionSentenceCache = null;
+
+/** Constraint sentences from chip send text. Visible questions are omitted. */
+export function mooniChipInstructionSentences() {
+  if (instructionSentenceCache) return instructionSentenceCache;
+  const visible = visibleAskKeys();
+  const seen = new Set();
+  const sentences = [];
+  for (const raw of instructionCorpus()) {
+    for (const clause of splitInstructionClauses(raw)) {
+      const key = normalizeMooniInstructionKey(clause);
+      if (key.length < 6 || seen.has(key) || visible.has(key)) continue;
+      if (isVisibleMooniQuestionSentence(clause)) continue;
+      seen.add(key);
+      sentences.push(compact(clause));
+    }
+  }
+  instructionSentenceCache = sentences;
+  return sentences;
 }
 
 /**
+ * True when the reply sentence equals or fully contains one instruction sentence.
+ * A shared phrase that is not the whole instruction sentence does not match.
  * @param {string} sentence
  */
 export function replySentenceLeaksChipInstruction(sentence) {
-  const key = normalizedLeakKey(sentence);
-  if (key.length < LEAK_SENTENCE_MIN) return false;
-  for (const span of instructionLeakSpans()) {
-    if (span.includes(key)) return true;
-    if (key.length < LEAK_SPAN_MIN || span.length < LEAK_SPAN_MIN) continue;
-    const last = span.length - LEAK_SPAN_MIN;
-    for (let i = 0; i <= last; i += 1) {
-      if (key.includes(span.slice(i, i + LEAK_SPAN_MIN))) return true;
-    }
-  }
-  return false;
+  const key = normalizeMooniInstructionKey(sentence);
+  if (!key) return false;
+  return mooniChipInstructionSentences().some((instruction) => {
+    const needle = normalizeMooniInstructionKey(instruction);
+    return needle.length > 0 && key.includes(needle);
+  });
 }
 
 /**
