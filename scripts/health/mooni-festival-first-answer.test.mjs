@@ -1236,7 +1236,8 @@ test('festival replies link GATEO urls and drop sauna, broadcast, and 12Go lines
   assert.match(tasks, /task === "festival_first_answer"/);
   assert.match(tasks, /limitThinking: false/);
   assert.match(limits, /festival_first_answer: 400/);
-  assert.match(chat, /requestFestivalFirstAnswer/);
+  assert.doesNotMatch(chat, /requestFestivalFirstAnswer/);
+  assert.match(chat, /buildFestivalMooniChatOpening/);
   const rendered = renderFestivalFirstAnswer('ko', { title: '강릉 국수 축제', nearby: ['경포해변'] });
   assert.match(rendered.system, /해요체/);
   assert.match(rendered.system, /2~3문장/);
@@ -1515,9 +1516,9 @@ test('festival follow-up keeps facts, lodging areas, and the chat session', asyn
   assert.equal(formatEnglishThenKorean('장칼국수'), 'spicy hand-cut noodles (장칼국수)');
 
   const chat = readFileSync(join(root, 'src/pages/Home/components/ChatModal.jsx'), 'utf8');
-  const firstCall = chat.indexOf('requestFestivalFirstAnswer(festivalMooniContext');
-  const cachedRead = chat.lastIndexOf('readFestivalMooniSession', firstCall);
-  assert.ok(cachedRead > 0 && cachedRead < firstCall);
+  assert.doesNotMatch(chat, /requestFestivalFirstAnswer|generatePlaceChatIntroWithAi/);
+  assert.match(chat, /buildFestivalMooniChatOpening/);
+  assert.match(chat, /fetchPlaceChatIntroSummary/);
   const lodgingHint = await resolveMooniChatKoreaFestivalHint({
     userText: '어디서 자요?',
     festivalContext: {

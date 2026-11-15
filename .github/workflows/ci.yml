@@ -1039,3 +1039,46 @@ jobs:
           VITE_SUPABASE_ANON_KEY: e2e-anon-placeholder
           CI: true
         run: npm run test:e2e:editorial-blog-head-meta
+
+  mooni-open-gemini-budget-e2e:
+    name: MOONi open gemini budget E2E (Chromium 390)
+    runs-on: ubuntu-latest
+    needs: lint-and-build
+    timeout-minutes: 30
+    container:
+      image: mcr.microsoft.com/playwright:v1.60.0-jammy
+      options: --ipc=host
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Playwright Chromium — mooni open does not call gemini-proxy
+        env:
+          VITE_SUPABASE_URL: https://example.supabase.co
+          VITE_SUPABASE_ANON_KEY: e2e-anon-placeholder
+          MOONI_TOURAPI_STUB_ONLY: '1'
+          DEV_SSL: '0'
+        run: |
+          npx vite --host 127.0.0.1 --port 5173 --strictPort > /tmp/vite-mooni-budget.log 2>&1 &
+          ready=0
+          for _ in $(seq 1 90); do
+            if curl -sf -o /dev/null http://127.0.0.1:5173/; then
+              ready=1
+              break
+            fi
+            sleep 2
+          done
+          if [ "$ready" != 1 ]; then
+            cat /tmp/vite-mooni-budget.log
+            exit 1
+          fi
+          SMOKE_SITE_URL=http://127.0.0.1:5173 npx playwright test e2e/mooni-open-gemini-budget.spec.js --project=chromium-mooni-open-budget-390 --reporter=line
