@@ -11,8 +11,6 @@ import { tripHasPersistedDialogue } from '../lib/tripChatUtils';
 import { TRAVEL_SPOTS } from '../data/travelSpots.js';
 import {
   fetchPlaceChatIntroSummary,
-  generatePlaceChatIntroWithAi,
-  persistPlaceChatIntroSummary,
   formatPlaceChatLabel,
   localizeMooniPlaceLabel,
   stripPlaceChatIntroForSummary,
@@ -69,7 +67,6 @@ import {
   planFestivalMooniModelCall,
   transportForFestivalAsk,
 } from '../../Korea/lib/festivalTransportCard.js';
-import { requestFestivalFirstAnswer } from '../../Korea/lib/festivalFirstAnswer.js';
 import {
   festivalSaveExtras,
   festivalTripMatchesLocale,
@@ -473,49 +470,14 @@ const ChatModal = ({
     return label ? `${label} · MOONi` : 'MOONi';
   }, [isMooniUi, activeSessionPlace, introDestinationRaw, festivalMooniContext, i18n.language]);
 
-  const festivalTemplateOpening = useMemo(
+  // Local facts only. festival_first_answer on open burned the IP minute cap (4) before the first chip.
+  const festivalMooniOpening = useMemo(
     () =>
       buildFestivalMooniChatOpening(festivalMooniContext, {
         locale: i18n.language,
       }),
     [festivalMooniContext, i18n.language],
   );
-  const festivalOpeningKey = `${festivalMooniContext?.contentId || ''}:${i18n.language}`;
-  const [festivalModelOpening, setFestivalModelOpening] = useState({ key: '', text: '' });
-  useEffect(() => {
-    if (!festivalMooniContext?.title) return undefined;
-    const contentId = festivalMooniContext.contentId;
-    const cached = readFestivalMooniSession(contentId, i18n.language);
-    if (cached?.opening) {
-      setFestivalModelOpening({ key: festivalOpeningKey, text: cached.opening });
-      return undefined;
-    }
-    let cancelled = false;
-    requestFestivalFirstAnswer(festivalMooniContext, { locale: i18n.language }).then((result) => {
-      if (cancelled) return;
-      const text = typeof result === 'string' ? result : String(result?.text || '');
-      const guidance = typeof result === 'string' ? '' : String(result?.guidance || '').trim();
-      if (text) {
-        writeFestivalMooniSession(contentId, i18n.language, { opening: text });
-        setFestivalModelOpening({ key: festivalOpeningKey, text });
-        return;
-      }
-      if (!guidance) return;
-      const bubble = {
-        role: 'error',
-        text: guidance,
-        mooniGuidance: true,
-        mooniAt: Date.now(),
-      };
-      const cached = readFestivalMooniSession(contentId, i18n.language)?.messages;
-      const next = Array.isArray(cached) && cached.length ? cached : [bubble];
-      writeFestivalMooniSession(contentId, i18n.language, { messages: next });
-      setMessages((prev) => (Array.isArray(prev) && prev.length ? prev : next));
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [festivalMooniContext, festivalOpeningKey, i18n.language]);
 
   useEffect(() => {
     const contentId = String(festivalMooniContext?.contentId || '');
@@ -528,9 +490,6 @@ const ChatModal = ({
       }
     };
   }, [festivalMooniContext?.contentId, i18n.language]);
-  const festivalMooniOpening = festivalModelOpening.key === festivalOpeningKey && festivalModelOpening.text
-    ? festivalModelOpening.text
-    : festivalTemplateOpening;
 
   const placeIntroTarget = useMemo(() => {
     if (!isOpen) return '';
@@ -725,18 +684,10 @@ const ChatModal = ({
 
     (async () => {
       try {
-        let text = await fetchPlaceChatIntroSummary(placeIntroTarget, i18n.language);
-        if (cancelled) return;
-        if (text) {
-          setPlaceIntro(text);
-          notifyPlaceCard(text);
-          return;
-        }
-        text = await generatePlaceChatIntroWithAi(placeIntroTarget, i18n.language);
-        if (cancelled) return;
-        if (!text) return;
+        // Cache only. place_intro on open was a second gemini-proxy admit before the first chip.
+        const text = await fetchPlaceChatIntroSummary(placeIntroTarget, i18n.language);
+        if (cancelled || !text) return;
         setPlaceIntro(text);
-        await persistPlaceChatIntroSummary(placeIntroTarget, text, i18n.language);
         notifyPlaceCard(text);
       } catch (e) {
         if (!cancelled) {
@@ -961,15 +912,7 @@ const ChatModal = ({
     const boundSpot = TRAVEL_SPOTS.find((s) => s.slug === candidate.slug) || candidate;
     const introLabel = formatPlaceChatLabel(boundSpot, i18n.language) || candidate.name;
 
-    let introText = await fetchPlaceChatIntroSummary(introLabel, i18n.language);
-    if (!introText) {
-      try {
-        introText = await generatePlaceChatIntroWithAi(introLabel, i18n.language);
-        await persistPlaceChatIntroSummary(introLabel, introText, i18n.language);
-      } catch {
-        introText = '';
-      }
-    }
+    const introText = await fetchPlaceChatIntroSummary(introLabel, i18n.language);
     if (introText && onPlaceIntroReady) {
       const summary = stripPlaceChatIntroForSummary(introText, introLabel);
       if (summary) {

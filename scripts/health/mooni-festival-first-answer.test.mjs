@@ -18,6 +18,7 @@ import {
   festivalChatHeaderTitle,
   unsupportedFestivalFactMentions,
 } from '../../src/pages/Korea/lib/festivalMooniContext.js';
+import { festivalListDisplayTitle } from '../../src/pages/Korea/festivalDisplayTitle.js';
 import {
   festivalTripMatchesLocale,
   readFestivalMooniSession,
@@ -1010,10 +1011,43 @@ test('English place names lead and Korean stays in parentheses', () => {
   assert.doesNotMatch(ko, /하나예요/);
   assert.match(en, /Hampyeong Expo Park \(함평엑스포공원\)/);
   assert.match(en, /Wolhwa Street \(월화거리\)/);
-  assert.match(en, /Near 함평 나비축제, you can walk to/);
+  assert.match(en, /Near this festival \(함평 나비축제\), you can walk to/);
   assert.doesNotMatch(en, /One nearby/);
+  assert.doesNotMatch(en, /^함평 나비축제 /);
   assert.ok(countFestivalCardSentences(ko) <= 5);
   assert.ok(countFestivalCardSentences(en) <= 5);
+});
+
+test('English opening uses the list title, and Korean stays in parentheses without one', () => {
+  const item = {
+    contentId: '2048902',
+    title: '해운대 빛축제',
+    eventStartDate: '20261128',
+    eventEndDate: '20270110',
+  };
+  const intro = {
+    eventplace: '해운대해수욕장',
+    playtime: '18:00~23:00',
+    program: '크루즈게이트\n터널게이트',
+  };
+  const ctx = buildFestivalMooniContext({ item, intro });
+  const ko = buildFestivalMooniSentenceAnswer(ctx, { locale: 'ko', now: NOW });
+  assert.match(ko, /크루즈게이트와 터널게이트가 있어요/);
+  const bare = buildFestivalMooniSentenceAnswer(ctx, { locale: 'en', now: NOW });
+  assert.match(bare, /^This festival \(해운대 빛축제\) runs 11\/28–1\/10 and starts in 50 days/);
+  assert.doesNotMatch(bare, /^\(해운대 빛축제\) runs/);
+  assert.doesNotMatch(bare, /^해운대 빛축제 runs/);
+  assert.match(bare, /\[해운대 빛축제 page\]/);
+
+  const titledItem = { ...item, titleEn: 'Haeundae Light Festival' };
+  const listTitle = festivalListDisplayTitle(titledItem, 'en');
+  assert.equal(listTitle, 'Haeundae Light Festival (해운대 빛축제)');
+  const titled = buildFestivalMooniSentenceAnswer(
+    buildFestivalMooniContext({ item: titledItem, intro }),
+    { locale: 'en', now: NOW },
+  );
+  assert.match(titled, /^Haeundae Light Festival \(해운대 빛축제\) runs 11\/28–1\/10 and starts in 50 days/);
+  assert.equal(festivalListDisplayTitle({ title: '해운대 빛축제' }, 'en'), '해운대 빛축제');
 });
 
 test('prod Edge 400 on a new chip retries once with a legacy chip', async () => {
@@ -1236,7 +1270,8 @@ test('festival replies link GATEO urls and drop sauna, broadcast, and 12Go lines
   assert.match(tasks, /task === "festival_first_answer"/);
   assert.match(tasks, /limitThinking: false/);
   assert.match(limits, /festival_first_answer: 400/);
-  assert.match(chat, /requestFestivalFirstAnswer/);
+  assert.doesNotMatch(chat, /requestFestivalFirstAnswer/);
+  assert.match(chat, /buildFestivalMooniChatOpening/);
   const rendered = renderFestivalFirstAnswer('ko', { title: '강릉 국수 축제', nearby: ['경포해변'] });
   assert.match(rendered.system, /해요체/);
   assert.match(rendered.system, /2~3문장/);
@@ -1515,9 +1550,9 @@ test('festival follow-up keeps facts, lodging areas, and the chat session', asyn
   assert.equal(formatEnglishThenKorean('장칼국수'), 'spicy hand-cut noodles (장칼국수)');
 
   const chat = readFileSync(join(root, 'src/pages/Home/components/ChatModal.jsx'), 'utf8');
-  const firstCall = chat.indexOf('requestFestivalFirstAnswer(festivalMooniContext');
-  const cachedRead = chat.lastIndexOf('readFestivalMooniSession', firstCall);
-  assert.ok(cachedRead > 0 && cachedRead < firstCall);
+  assert.doesNotMatch(chat, /requestFestivalFirstAnswer|generatePlaceChatIntroWithAi/);
+  assert.match(chat, /buildFestivalMooniChatOpening/);
+  assert.match(chat, /fetchPlaceChatIntroSummary/);
   const lodgingHint = await resolveMooniChatKoreaFestivalHint({
     userText: '어디서 자요?',
     festivalContext: {

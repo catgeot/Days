@@ -99,6 +99,8 @@ export default defineConfig({
         /logbook-public-owner-edit-390\.spec\.js/,
         /logbook-detail-toolbar-layout\.spec\.js/,
         /mooni-destination-pick-reply\.spec\.js/,
+        /mooni-open-gemini-budget\.spec\.js/,
+        /mooni-chip-instruction-leak\.spec\.js/,
         /stay-list-tripcom-footer\.spec\.js/,
         /travelogue-back-nav\.spec\.js/,
       ],
@@ -488,6 +490,19 @@ export default defineConfig({
         deviceScaleFactor: 1,
         ignoreHTTPSErrors: true,
         ...(placeGalleryOverviewLocaleE2e ? { baseURL: placeGalleryOverviewLocaleLocalBase } : {}),
+      },
+    },
+    {
+      name: 'chromium-mooni-open-budget-390',
+      testMatch: /mooni-open-gemini-budget\.spec\.js/,
+      timeout: 180_000,
+      use: {
+        ...devices['Desktop Chrome'],
+        viewport: { width: 390, height: 844 },
+        deviceScaleFactor: 1,
+        locale: 'ko-KR',
+        timezoneId: 'Asia/Seoul',
+        ignoreHTTPSErrors: true,
       },
     },
     {
