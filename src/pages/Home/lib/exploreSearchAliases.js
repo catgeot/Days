@@ -75,6 +75,18 @@ export function canonicalizeExploreSearchQuery(query) {
 }
 
 /**
+ * 공식 제목에 질의어가 없는 별칭 — contentId 행을 제목 검색 없이 붙인다.
+ * @param {string} query
+ * @returns {string}
+ */
+export function exploreAliasListedContentId(query) {
+  const alias = resolveExploreSearchAlias(query);
+  const contentId = String(alias?.contentId || '').trim();
+  if (!alias?.titleOmitsQuery || !/^\d{1,32}$/.test(contentId)) return '';
+  return contentId;
+}
+
+/**
  * Mapbox 보조 쿼리 목록 (원문 + canonical + romanized).
  * @param {string} query
  */

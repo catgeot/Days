@@ -1,11 +1,17 @@
 /**
  * TourAPI title exact 다건(고산사 등) — Enter·하이브리드 제안. contentId로 /place 상세.
  */
-import { canonicalizeExploreSearchQuery } from './exploreSearchAliases.js';
+import {
+  canonicalizeExploreSearchQuery,
+  exploreAliasListedContentId,
+} from './exploreSearchAliases.js';
 import { makeDisambiguationResult } from './cityAttractionHubs.js';
 import { enrichSearchCandidateScenicMedia } from './koreaLocalScenicLists.js';
 import { tourAttractionToPoiSuggestion } from './koreaPoiTypeSearch.js';
-import { tourRowTitleMatchesCompactQuery } from './koreaTourAttractionTitleMatch.js';
+import {
+  tourRowTitleMatchesCompactQuery,
+  tourTitleHeritageLeadRank,
+} from './koreaTourAttractionTitleMatch.js';
 import { resolveCityAttractionHub } from './cityAttractionHubs.js';
 
 const HAS_HANGUL_RE = /[\uAC00-\uD7A3]/;
@@ -46,6 +52,32 @@ export function splitParentheticalRegionTitle(title) {
   return { base, region };
 }
 
+function rowContentId(row) {
+  return String(row?.contentId || row?.content_id || row?.id || '').trim();
+}
+
+async function loadAliasContentRow(contentId, opts) {
+  if (typeof opts.lookupByContentId === 'function') {
+    return opts.lookupByContentId(contentId);
+  }
+  if (typeof opts.lookupRows === 'function') return null;
+  try {
+    const { fetchKoreaTourAttractionById } = await import('./koreaTourAttractions.js');
+    return fetchKoreaTourAttractionById(contentId);
+  } catch {
+    return null;
+  }
+}
+
+function pinContentRowFirst(rows, contentId) {
+  const idx = rows.findIndex((row) => rowContentId(row) === contentId);
+  if (idx <= 0) return rows;
+  const next = rows.slice();
+  const [row] = next.splice(idx, 1);
+  next.unshift(row);
+  return next;
+}
+
 function tourRowInRegion(row, region, hubId) {
   const hay = [row?.addr1, row?.addr2, row?.title, row?.name].map((s) => String(s || '')).join(' ');
   if (hay.includes(region)) return true;
@@ -69,45 +101,64 @@ export async function collectKoreaTourTitleSearchCandidates(query, opts = {}) {
 
   let title = canonicalizeExploreSearchQuery(q);
   let hubId = hubIdFromParentheticalTitle(title);
+  const listedContentId = exploreAliasListedContentId(q);
+  let skipBroad = false;
 
   if (/\s/.test(q)) {
     const { parseKoreaRegionalExploreQuery } = await import('./exploreRegionalPlaceQuery.js');
     const regional = parseKoreaRegionalExploreQuery(q);
-    if (!regional?.placeQuery) return [];
-    title = String(regional.placeQuery || '').trim();
-    hubId = String(regional.hub?.hubId || hubId || '').trim();
-    if (title.length < 2) return [];
+    if (!regional?.placeQuery) {
+      if (!listedContentId) return [];
+      skipBroad = true;
+    } else {
+      title = String(regional.placeQuery || '').trim();
+      hubId = String(regional.hub?.hubId || hubId || '').trim();
+      if (title.length < 2) return [];
+    }
   } else if (/\s/.test(title)) {
-    return [];
+    if (!listedContentId) return [];
+    skipBroad = true;
   }
 
   const titleKey = compactKey(title);
-  if (titleKey.length < 2) return [];
+  if (!skipBroad && titleKey.length < 2) return [];
 
-  const paren = /\s/.test(q) ? null : splitParentheticalRegionTitle(title);
+  const paren = /\s/.test(q) || skipBroad ? null : splitParentheticalRegionTitle(title);
   const lookupTitle = paren ? paren.base : title;
 
   let rows = [];
-  if (typeof opts.lookupRows === 'function') {
-    rows = await opts.lookupRows(lookupTitle);
-  } else {
-    const { lookupKoreaTourAttractionsMatchingTitle } = await import('./koreaTourAttractions.js');
-    rows = await lookupKoreaTourAttractionsMatchingTitle(lookupTitle, {
-      limit: 40,
-      hubId: hubId || undefined,
-    });
+  if (!skipBroad) {
+    if (typeof opts.lookupRows === 'function') {
+      rows = await opts.lookupRows(lookupTitle);
+    } else {
+      const { lookupKoreaTourAttractionsMatchingTitle } = await import('./koreaTourAttractions.js');
+      rows = await lookupKoreaTourAttractionsMatchingTitle(lookupTitle, {
+        limit: 40,
+        hubId: hubId || undefined,
+      });
+    }
   }
 
-  const matchTitle = /\s/.test(q) ? q : title;
-  const exact = (rows || []).filter((row) => {
-    if (tourRowTitleMatchesCompactQuery(row, matchTitle)) return true;
-    if (!paren) return false;
-    const baseKey = compactKey(paren.base);
-    const titleMatchesBase = [row?.title, row?.name]
-      .map(compactKey)
-      .some((k) => k === baseKey || k.startsWith(`${baseKey}(`));
-    return titleMatchesBase && tourRowInRegion(row, paren.region, hubId);
-  });
+  const matchTitle = /\s/.test(q) && !skipBroad ? q : title;
+  let exact = skipBroad
+    ? []
+    : (rows || []).filter((row) => {
+        if (tourRowTitleMatchesCompactQuery(row, matchTitle)) return true;
+        if (!paren) return false;
+        const baseKey = compactKey(paren.base);
+        const titleMatchesBase = [row?.title, row?.name]
+          .map(compactKey)
+          .some((k) => k === baseKey || k.startsWith(`${baseKey}(`));
+        return titleMatchesBase && tourRowInRegion(row, paren.region, hubId);
+      });
+
+  if (listedContentId && !exact.some((row) => rowContentId(row) === listedContentId)) {
+    const extra = await loadAliasContentRow(listedContentId, opts);
+    if (extra && rowContentId(extra) === listedContentId) exact.unshift(extra);
+  }
+
+  exact.sort((a, b) => tourTitleHeritageLeadRank(a, q) - tourTitleHeritageLeadRank(b, q));
+  if (listedContentId) exact = pinContentRowFirst(exact, listedContentId);
   const out = [];
   const seen = new Set();
   for (const row of exact) {

@@ -95,6 +95,45 @@ const GOSANSA_ROWS = [
   EXPLORE_HALLASAN_ROW,
 ];
 
+/** 카탈로그에 있는 강화 고인돌. 대표 유적 125565는 여기 넣지 않는다. */
+export const EXPLORE_GANGHWA_OSANG_DOLMEN_ROW = {
+  content_id: '2765210',
+  title: '강화 오상리 고인돌군',
+  addr1: '인천광역시 강화군 내가면',
+  addr2: '오상리',
+  area_code: '2',
+  sigungu_code: '1',
+  mapx: '126.4022107557',
+  mapy: '37.7309554253',
+  first_image: 'https://tong.visitkorea.or.kr/cms/e2e-ganghwa-osang-dolmen.jpg',
+  active: true,
+  cat1: 'A02',
+  cat2: 'A0201',
+  cat3: 'A02010800',
+  modified_time: '20260101000000',
+};
+
+/** 라이브 searchKeyword·detailCommon만. tourapi_attraction 카탈로그에는 없다. */
+export const EXPLORE_GANGHWA_DOLMEN_UNESCO_ROW = {
+  content_id: '125565',
+  title: '강화 고인돌 유적 [유네스코 세계유산]',
+  addr1: '인천광역시 강화군 하점면 강화대로 994-12',
+  addr2: '부근리',
+  area_code: '2',
+  sigungu_code: '1',
+  mapx: '126.4367939868',
+  mapy: '37.7740846284',
+  first_image: 'https://tong.visitkorea.or.kr/cms/resource/50/4147550_image2_1.jpg',
+  active: true,
+  cat1: 'A02',
+  cat2: 'A0201',
+  cat3: 'A02010800',
+  modified_time: '20260101000000',
+};
+
+const CATALOG_ROWS = [...GOSANSA_ROWS, EXPLORE_GANGHWA_OSANG_DOLMEN_ROW];
+const LIVE_KEYWORD_ROWS = [...CATALOG_ROWS, EXPLORE_GANGHWA_DOLMEN_UNESCO_ROW];
+
 const TOUR_OVERVIEW_BY_ID = {
   '125901':
     '고산사는 충남 홍성 청룡산에 있으며, 창건연대는 미상이나 신라말에 도선국사가 창건하였다고 전해진다.',
@@ -129,9 +168,17 @@ function itemMatchesKeyword(item, keyword) {
   return title.includes(k) || title.replace(/\s+/g, '').includes(k.replace(/\s+/g, ''));
 }
 
-function rowByContentId(id) {
+function findTourRow(rows, id) {
   const resolved = String(id || '').trim() === '127982' ? '125901' : String(id || '').trim();
-  return GOSANSA_ROWS.find((r) => r.content_id === resolved) || null;
+  return rows.find((r) => r.content_id === resolved) || null;
+}
+
+function rowByContentId(id) {
+  return findTourRow(LIVE_KEYWORD_ROWS, id);
+}
+
+function catalogRowByContentId(id) {
+  return findTourRow(CATALOG_ROWS, id);
 }
 
 export async function installExploreTourapiMock(contextOrPage) {
@@ -158,12 +205,12 @@ export async function installExploreTourapiMock(contextOrPage) {
     const sigunguEq = hay.match(/sigungu_code=eq\.(\d+)/i);
     let rows = [];
     if (contentIdEq) {
-      const one = rowByContentId(contentIdEq[1]);
+      const one = catalogRowByContentId(contentIdEq[1]);
       rows = one ? [one] : [];
     } else if (sigunguEq) {
-      rows = GOSANSA_ROWS.filter((r) => String(r.sigungu_code) === sigunguEq[1]);
+      rows = CATALOG_ROWS.filter((r) => String(r.sigungu_code) === sigunguEq[1]);
     } else {
-      rows = [...GOSANSA_ROWS];
+      rows = [...CATALOG_ROWS];
     }
     rows = rows.filter((r) => rowMatchesTitleIlike(r, hay));
     await route.fulfill({
@@ -247,7 +294,7 @@ export async function installExploreTourapiMock(contextOrPage) {
         body: JSON.stringify({
           ok: true,
           items: [
-            ...GOSANSA_ROWS.map((row) => ({
+            ...LIVE_KEYWORD_ROWS.map((row) => ({
               contentId: row.content_id,
               contentid: row.content_id,
               title: row.title,

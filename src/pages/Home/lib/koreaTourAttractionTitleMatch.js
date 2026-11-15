@@ -10,6 +10,42 @@ function normalizeTourTitleKey(s) {
     .replace(/\s+/g, '');
 }
 
+/**
+ * 공식 제목 꼬리. «군»은 고인돌군·지석묘군만 — 시·군 행정명(남원군·조선왕릉군)은 넣지 않는다.
+ * @param {string} after
+ */
+function officialHeritageTail(after) {
+  return String(after || '').replace(/\[유네스코세계(?:문화)?유산\]$/u, '');
+}
+
+function matchesOfficialHeritageSuffix(titleKey, after) {
+  if (titleKey.length < 3 || !after) return false;
+  const tail = officialHeritageTail(after);
+  if (tail === '' && tail !== after) return true;
+  if (tail === '유적' || tail === '군유적' || tail === '유적군') return true;
+  if (tail === '군' && /(?:고인돌|지석묘)$/u.test(titleKey)) return true;
+  return false;
+}
+
+/**
+ * «강화 고인돌»이 제목 앞에 오고 뒤가 유적·유네스코 표기인 행을 앞으로.
+ * 완전 일치(꼬리 없음)는 순서를 바꾸지 않는다.
+ * @param {{ title?: string, name?: string }} row
+ * @param {string} query
+ */
+export function tourTitleHeritageLeadRank(row, query) {
+  const q = normalizeTourTitleKey(query);
+  if (q.length < 2) return 1;
+  const keys = [row?.title, row?.name].map(normalizeTourTitleKey).filter(Boolean);
+  for (const key of keys) {
+    if (!key.startsWith(q)) continue;
+    const rawTail = key.slice(q.length);
+    const tail = officialHeritageTail(rawTail);
+    if (tail === '유적' || tail === '군유적' || (tail === '' && rawTail !== '')) return 0;
+  }
+  return 1;
+}
+
 /** Enter·제안 title exact — «고산사»↔«고산사(홍성)», «대웅전» 접미 */
 export function tourRowTitleMatchesCompactQuery(row, title) {
   const titleKey = normalizeTourTitleKey(title);
@@ -45,6 +81,7 @@ export function tourRowTitleMatchesCompactQuery(row, title) {
     if (!after) return true;
     if (/^\([^)]+\)$/u.test(after)) return true;
     if (/^(?:대웅전|루|전|각|암|탑|동|리|사|터|원|당|문|각|채|각)$/u.test(after)) return true;
+    if (matchesOfficialHeritageSuffix(titleKey, after)) return true;
   }
   const queryParen = titleKey.match(/^(.+)\(([^)]+)\)$/)?.[1];
   if (queryParen && queryParen.length >= 2) {
