@@ -87,6 +87,10 @@ import {
 } from './exploreKoreaGetbolCollectiveSearch.js';
 import { buildJoseonRoyalTombsCollectiveSearchSuggestions } from './exploreJoseonRoyalTombsCollectiveSearch.js';
 import {
+  buildKoreaTourTitleEnterDisambiguation,
+  collectKoreaTourTitleSearchCandidates,
+} from './exploreKoreaTourTitleCandidates.js';
+import {
   isJoseonRoyalTombsCollectiveQuery,
   shouldDemoteJoseonManagementOfficeSearchHit,
 } from './joseonRoyalTombsSearch.js';
@@ -118,6 +122,78 @@ function spotToSuggestion(spot) {
 
 function dedupeKey(item) {
   return normalizeKey(item?.name) || String(item?.id || '');
+}
+
+const TOUR_MAPBOX_SHADOW_MAX_M = 300;
+
+function tourShadowCore(name) {
+  return String(name || '')
+    .toLowerCase()
+    .replace(/\s+/g, '')
+    .replace(/\[[^\]]*\]/g, '')
+    .replace(/유적지$/u, '')
+    .replace(/유적$/u, '')
+    .replace(/도(?=고인돌)/u, '');
+}
+
+function isMapboxSuggestion(item) {
+  const source = String(item?.source || '');
+  if (source === 'mapbox' || source === 'mapbox-geocode') return true;
+  const id = String(item?.id || '');
+  return id.startsWith('mapbox-') || id.startsWith('geocode-');
+}
+
+function distanceMeters(a, b) {
+  const lat1 = Number(a?.lat);
+  const lng1 = Number(a?.lng);
+  const lat2 = Number(b?.lat);
+  const lng2 = Number(b?.lng);
+  if (![lat1, lng1, lat2, lng2].every(Number.isFinite)) return Infinity;
+  const dy = (lat1 - lat2) * 111_320;
+  const dx = (lng1 - lng2) * 111_320 * Math.cos((lat1 * Math.PI) / 180);
+  return Math.hypot(dx, dy);
+}
+
+function mapboxShadowsTour(mapItem, tourItem) {
+  const tour = tourShadowCore(tourItem?.name);
+  const map = tourShadowCore(mapItem?.name);
+  if (tour.length < 4 || map.length < 4) return false;
+  if (!tour.includes(map) && !map.includes(tour)) return false;
+  return distanceMeters(mapItem, tourItem) <= TOUR_MAPBOX_SHADOW_MAX_M;
+}
+
+/** Mapbox POI가 이미 있는 TourAPI 카드와 같은 자리·짧은 이름이면 뺀다. */
+export function dropMapboxShadowsOfTourSuggestions(items) {
+  const list = items || [];
+  const tours = list.filter(
+    (item) => String(item?.source || '') === 'tourapi' && String(item?.contentId || '').trim(),
+  );
+  if (!tours.length) return list;
+  return list.filter((item) => {
+    if (!isMapboxSuggestion(item)) return true;
+    return !tours.some((tour) => mapboxShadowsTour(item, tour));
+  });
+}
+
+export function mergeTourSuggestionsFirst(tourItems, rest) {
+  const merged = [];
+  const seen = new Set();
+  for (const item of tourItems || []) pushUnique(merged, seen, item);
+  for (const item of rest || []) pushUnique(merged, seen, item);
+  return merged;
+}
+
+/**
+ * titleOmitsQuery 별칭의 canonical은 공식 제목 대용이라 Mapbox에 넣지 않는다.
+ * «강화 고인돌 유적»를 다시 지오코딩하면 같은 좌표의 «강화 고인돌» POI가 따로 붙는다.
+ */
+export function exploreHybridMapboxQueries(query, mapboxQuery, localCount) {
+  const typed = String(mapboxQuery || query || '').trim();
+  const base = (localCount < 3 ? buildMapboxSearchQueries(typed) : [typed]).filter(Boolean);
+  if (!exploreAliasListedContentId(query)) return base;
+  const allow = new Set([normalizeKey(query), normalizeKey(typed)].filter(Boolean));
+  const kept = base.filter((mq) => allow.has(normalizeKey(mq)));
+  return kept.length ? kept : [typed].filter(Boolean);
 }
 
 function pushUnique(out, seen, item) {
@@ -155,12 +231,12 @@ async function prependKoreaTourTitleCandidates(query, regional, list, matchOpts)
   const typed = String(query || '').trim();
   if (/\s/.test(typed) && !regional?.placeQuery && !exploreAliasListedContentId(typed)) return list;
   try {
-    const { collectKoreaTourTitleSearchCandidates } = await import('./exploreKoreaTourTitleCandidates.js');
     const tourItems = await collectKoreaTourTitleSearchCandidates(
       regional ? `${regional.regionQuery} ${regional.placeQuery}`.trim() : typed,
       {
         lookupRows: matchOpts?.tourTitleLookupRows,
         lookupByContentId: matchOpts?.tourTitleLookupByContentId,
+        onPartialTourItems: matchOpts?.onPartialTourItems,
       },
     );
     if (!tourItems.length) return list;
@@ -212,8 +288,14 @@ async function appendExploreRestaurantMatches(query, list, matchOpts) {
 
 async function finalizeHybridSuggestions(query, regional, list, max = 24, matchOpts) {
   const withRestaurants = await appendExploreRestaurantMatches(query, list, matchOpts);
-  const withTour = await prependKoreaTourTitleCandidates(query, regional, withRestaurants, matchOpts);
-  const policy = applyExploreAliasTourSuggestionPolicy(query, withTour);
+  const tourItems = matchOpts?.tourItemsPromise
+    ? await matchOpts.tourItemsPromise
+    : await prependKoreaTourTitleCandidates(query, regional, [], matchOpts);
+  const withTour = mergeTourSuggestionsFirst(tourItems, withRestaurants);
+  const policy = applyExploreAliasTourSuggestionPolicy(
+    query,
+    dropMapboxShadowsOfTourSuggestions(withTour),
+  );
   const enriched = policy
     .slice(0, max)
     .map(stampExploreRestaurantSuggestion)
@@ -565,11 +647,31 @@ export function buildLocalSearchSuggestions(query, opts = {}) {
  * @param {{ mapboxLimit?: number, spotLimit?: number, includeMapbox?: boolean }} [opts]
  * @returns {Promise<object[]>}
  */
+function startKoreaTourSuggestionFetch(query, regional, opts) {
+  const fetchOpts = {
+    tourTitleLookupRows: opts.tourTitleLookupRows,
+    tourTitleLookupByContentId: opts.tourTitleLookupByContentId,
+    onPartialTourItems: opts.onTourReady,
+  };
+  const promise = prependKoreaTourTitleCandidates(query, regional, [], fetchOpts);
+  void promise.then((items) => {
+    if (!items?.length || typeof opts.onTourReady !== 'function') return;
+    try {
+      opts.onTourReady(items);
+    } catch {
+      // 첫 페인트 실패가 최종 목록을 막지 않음
+    }
+  });
+  return promise;
+}
+
 export async function buildHybridSearchSuggestions(query, opts = {}) {
   const q = String(query || '').trim();
   if (!q) return [];
 
   const regional = parseExploreSearchScope(q);
+  const tourItemsPromise = startKoreaTourSuggestionFetch(q, regional, opts);
+  const matchOpts = { ...opts, tourItemsPromise };
   const mapboxQuery = effectiveExploreSearchQuery(q);
   const regionalMapbox = regionalExploreMapboxOpts(regional);
   const local = buildLocalSearchSuggestions(q, { spotLimit: opts.spotLimit ?? 5 });
@@ -608,7 +710,7 @@ export async function buildHybridSearchSuggestions(query, opts = {}) {
       pushUnique(merged, seenPoi, enrichSearchCandidateScenicMedia(item));
     }
     if (merged.length >= 1) {
-      return finalizeHybridSuggestions(q, regional, applyScope(merged), 180, opts);
+      return finalizeHybridSuggestions(q, regional, applyScope(merged), 180, matchOpts);
     }
   }
 
@@ -626,22 +728,23 @@ export async function buildHybridSearchSuggestions(query, opts = {}) {
     shouldSkipGeocodeForMood(q) ||
     shouldOfferKoreaHomonymDisambiguation(q)
   ) {
-    return finalizeHybridSuggestions(q, regional, applyScope(prependScopeSync(local)), 24, opts);
+    return finalizeHybridSuggestions(q, regional, applyScope(prependScopeSync(local)), 24, matchOpts);
   }
 
   const mergedLocal = prependScopeSync(local);
   const out = [...mergedLocal];
   const seen = new Set(mergedLocal.map(dedupeKey).filter(Boolean));
   const mapboxLimit = opts.mapboxLimit ?? 6;
-  const mapboxQueries = local.length < 3 ? buildMapboxSearchQueries(mapboxQuery) : [mapboxQuery];
+  const mapboxQueries = exploreHybridMapboxQueries(q, mapboxQuery, local.length);
   const searchBoxTypes = searchBoxTypesForQuery(mapboxQuery);
+  const forward = opts.searchBoxForward || searchBoxForward;
 
   const visitedPromise = lookupVisitedPlacesForSearch(
     canonicalizeExploreSearchQuery(mapboxQuery),
   );
   try {
     for (const mq of mapboxQueries) {
-      const remote = await searchBoxForward(mq, {
+      const remote = await forward(mq, {
         limit: mapboxLimit,
         types: searchBoxTypes,
         language: /[\uAC00-\uD7A3]/.test(mq) ? 'ko' : 'en',
@@ -668,9 +771,9 @@ export async function buildHybridSearchSuggestions(query, opts = {}) {
       pushUnique(withVisited, visitedSeen, item);
     }
     for (const item of regionChecked) pushUnique(withVisited, visitedSeen, item);
-    return finalizeHybridSuggestions(q, regional, withVisited, 24, opts);
+    return finalizeHybridSuggestions(q, regional, withVisited, 24, matchOpts);
   } catch {
-    return finalizeHybridSuggestions(q, regional, regionChecked, 24, opts);
+    return finalizeHybridSuggestions(q, regional, regionChecked, 24, matchOpts);
   }
 }
 
@@ -879,7 +982,6 @@ export async function buildCuratedEnterDisambiguation(query) {
   }
 
   try {
-    const { buildKoreaTourTitleEnterDisambiguation } = await import('./exploreKoreaTourTitleCandidates.js');
     const tourChoice = await buildKoreaTourTitleEnterDisambiguation(q);
     if (tourChoice) return tourChoice;
   } catch {

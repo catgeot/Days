@@ -1,4 +1,8 @@
-import { buildHybridSearchSuggestions, buildLocalSearchSuggestions } from './searchSuggestions.js';
+import {
+  buildHybridSearchSuggestions,
+  buildLocalSearchSuggestions,
+  mergeTourSuggestionsFirst,
+} from './searchSuggestions.js';
 import { isKoreaGetbolCollectiveSearchQuery } from './exploreKoreaGetbolCollectiveSearch.js';
 import {
   applyExploreFestivalMergeStrategy,
@@ -40,7 +44,26 @@ export async function runExploreHybridSuggestUpdate(
   }
   const isEnabled = deps.isSiteSearchEnabled ?? isGateoSiteSearchEnabled;
   const isParityEnabled = deps.isSubmitParityEnabled ?? isGateoExploreSearchSubmitParityEnabled;
-  const buildHybrid = deps.buildHybrid ?? ((q) => buildHybridSearchSuggestions(q));
+  const parityOn = isParityEnabled();
+  const publish = (paintItems) => {
+    if (getCurrentRequestId() !== requestId) return false;
+    const painted = parityOn
+      ? normalizeSearchSuggestions(query, paintItems, {
+          hub: resolveExploreCityHubExact(query),
+          locale,
+        })
+      : paintItems;
+    onPaint?.(painted);
+    return true;
+  };
+  const buildHybrid =
+    deps.buildHybrid ??
+    ((q) =>
+      buildHybridSearchSuggestions(q, {
+        onTourReady: (tourItems) => {
+          publish(mergeTourSuggestionsFirst(tourItems, buildLocalSearchSuggestions(q)));
+        },
+      }));
   const buildFest =
     deps.buildFest ??
     ((q, loc) => buildExploreFestivalSearchSuggestions(q, { locale: loc }).catch(() => []));
@@ -48,11 +71,7 @@ export async function runExploreHybridSuggestUpdate(
   const mergeReview = deps.mergeReview ?? mergeExploreReviewIntoHybridSuggestions;
 
   if (!isParityEnabled()) {
-    const tryPaintMain = (paintItems) => {
-      if (getCurrentRequestId() !== requestId) return false;
-      onPaint?.(paintItems);
-      return true;
-    };
+    const tryPaintMain = publish;
 
     const festPromise = isEnabled() ? buildFest(query, locale) : null;
     const items = await buildHybrid(query);
@@ -84,17 +103,7 @@ export async function runExploreHybridSuggestUpdate(
     return { stale: false };
   }
 
-  const tryPaint = (paintItems) => {
-    if (getCurrentRequestId() !== requestId) return false;
-    const painted = isParityEnabled()
-      ? normalizeSearchSuggestions(query, paintItems, {
-          hub: resolveExploreCityHubExact(query),
-          locale,
-        })
-      : paintItems;
-    onPaint?.(painted);
-    return true;
-  };
+  const tryPaint = publish;
 
   const mergeOpts = { locale, maxItems: EXPLORE_SITE_SEARCH_HYBRID_MAX_ITEMS };
 
