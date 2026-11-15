@@ -8,6 +8,7 @@ import {
   handleStaleBundleLoadFailure,
   markStaleBundleReloadAttempt,
   readStaleBundleReloadGuard,
+  shouldIgnoreStaleBundleSignal,
   staleBundleGuardKey,
 } from '../../src/shared/lib/staleBundleRecovery.js';
 
@@ -69,6 +70,12 @@ describe('staleBundleRecovery guard', () => {
       'fallback',
     );
     assert.equal(reloadCount, 1);
+  });
+
+  it('ignores chunk signals once the document has started leaving', () => {
+    assert.equal(shouldIgnoreStaleBundleSignal({ pageLeaving: true }), true);
+    assert.equal(shouldIgnoreStaleBundleSignal({ pageLeaving: false }), false);
+    assert.equal(shouldIgnoreStaleBundleSignal(), false);
   });
 
   it('clearStaleBundleReloadGuard allows a fresh reload decision', () => {

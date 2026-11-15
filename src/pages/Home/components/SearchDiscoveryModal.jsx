@@ -124,6 +124,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, onAskMooni,
   const exploreRestoreAppliedIdRef = useRef(null);
   const pendingExploreScrollRef = useRef(null);
   const suppressSearchHistoryRef = useRef(false);
+  const exploreRestorePendingRef = useRef(false);
 
   const exploreV2MonthlyVisible = isExploreV2MonthlyRowVisible();
 
@@ -223,12 +224,21 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, onAskMooni,
       if (restored && appliedId !== restored.id) {
         exploreRestoreAppliedIdRef.current = restored.id;
         pendingExploreScrollRef.current = restored.scrollTop ?? 0;
-        suppressSearchHistoryRef.current = true;
-        setQuery(restored.query || '');
-        setDisambiguation(restored.disambiguation ?? null);
+        const nextQuery = restored.query || '';
+        const nextDisambiguation = restored.disambiguation ?? null;
+        const keepPopoverClosed = Boolean(nextQuery.trim() || nextDisambiguation?.candidates?.length);
+        exploreRestorePendingRef.current = keepPopoverClosed;
+        suppressSearchHistoryRef.current = keepPopoverClosed;
+        setQuery(nextQuery);
+        setDisambiguation(nextDisambiguation);
         setIsSearchHistoryOpen(false);
         setActiveQuickSection(null);
         clearExploreReturn();
+        if (!keepPopoverClosed && pendingExploreScrollRef.current != null) {
+          const top = pendingExploreScrollRef.current;
+          pendingExploreScrollRef.current = null;
+          requestAnimationFrame(() => scrollContainerRef.current?.scrollTo({ top }));
+        }
       } else if (!restored && appliedId == null) {
         setQuery(''); // 모달 열릴 때마다 항상 검색어 초기화
         setActiveQuickSection(null);
@@ -245,6 +255,8 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, onAskMooni,
       document.body.style.overflow = 'hidden';
     } else {
       exploreRestoreAppliedIdRef.current = null;
+      exploreRestorePendingRef.current = false;
+      suppressSearchHistoryRef.current = false;
       document.body.style.overflow = '';
       setFilterMode('theme');
       setSelectedContinent('all');
@@ -262,6 +274,10 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, onAskMooni,
     if (!isOpen) return undefined;
     const q = query.trim();
     if (!q) {
+      // 복원 setQuery 전 첫 렌더의 빈 검색어가 suppress를 지우면 팝오버가 다시 열린다.
+      if (exploreRestorePendingRef.current || suppressSearchHistoryRef.current) {
+        return undefined;
+      }
       suppressSearchHistoryRef.current = false;
       setHybridSuggestions([]);
       setSuggestionsLoading(false);
@@ -271,9 +287,19 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, onAskMooni,
     // 큐레이션·SSOT는 동기 즉시 → 드롭다운에 바로 표시
     const local = buildLocalSearchSuggestions(q);
     setHybridSuggestions(local);
-    if (suppressSearchHistoryRef.current) {
+    if (suppressSearchHistoryRef.current || exploreRestorePendingRef.current) {
       suppressSearchHistoryRef.current = false;
+      exploreRestorePendingRef.current = false;
       setIsSearchHistoryOpen(false);
+      if (!disambiguation?.candidates?.length) {
+        const pendingScroll = pendingExploreScrollRef.current;
+        if (pendingScroll != null) {
+          pendingExploreScrollRef.current = null;
+          requestAnimationFrame(() => {
+            scrollContainerRef.current?.scrollTo({ top: pendingScroll });
+          });
+        }
+      }
     } else {
       setIsSearchHistoryOpen(true);
     }
@@ -314,6 +340,8 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, onAskMooni,
   /** 선택 카드·Enter 검색 후 키보드가 남아 리스트를 가리지 않게 */
   useEffect(() => {
     if (!hasChoiceCards) return undefined;
+    exploreRestorePendingRef.current = false;
+    suppressSearchHistoryRef.current = false;
     dismissSearchKeyboard();
     const pendingScroll = pendingExploreScrollRef.current;
     if (pendingScroll != null) {
@@ -328,6 +356,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, onAskMooni,
 
   useEffect(() => {
     if (!isOpen || hasChoiceCards) return;
+    if (exploreRestorePendingRef.current || suppressSearchHistoryRef.current) return;
     const pending = pendingExploreScrollRef.current;
     if (pending == null) return;
     pendingExploreScrollRef.current = null;

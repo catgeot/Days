@@ -116,6 +116,15 @@ function isChunkLoadMessage(message) {
 }
 
 /**
+ * WebKit fires vite:preloadError after beforeunload when location.assign aborts
+ * an in-flight dynamic import. Reloading there cancels /place and reloads /explore.
+ * @param {{ pageLeaving?: boolean }} [signal]
+ */
+export function shouldIgnoreStaleBundleSignal(signal = {}) {
+  return signal.pageLeaving === true;
+}
+
+/**
  * @param {unknown} reason
  * @param {Storage} storage
  * @param {string} bundleId
@@ -149,8 +158,14 @@ export function installStaleBundleRecovery(opts = {}) {
   const storage = opts.storage ?? window.sessionStorage;
   const getBundleId = opts.getBundleId ?? (() => getEntryBundleId(document));
   let handling = false;
+  let pageLeaving = false;
+
+  const onPageLeaving = () => {
+    pageLeaving = true;
+  };
 
   const onFailure = (reason) => {
+    if (shouldIgnoreStaleBundleSignal({ pageLeaving })) return;
     if (handling) return;
     handling = true;
     try {
@@ -180,11 +195,13 @@ export function installStaleBundleRecovery(opts = {}) {
     onFailure(event.error ?? event.message);
   };
 
+  window.addEventListener('beforeunload', onPageLeaving, true);
   window.addEventListener('vite:preloadError', onPreloadError);
   window.addEventListener('unhandledrejection', onUnhandledRejection);
   window.addEventListener('error', onError, true);
 
   return () => {
+    window.removeEventListener('beforeunload', onPageLeaving, true);
     window.removeEventListener('vite:preloadError', onPreloadError);
     window.removeEventListener('unhandledrejection', onUnhandledRejection);
     window.removeEventListener('error', onError, true);
