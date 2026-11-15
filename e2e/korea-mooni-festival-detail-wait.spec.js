@@ -10,8 +10,10 @@ import {
 
 const OUT_DIR = '/opt/cursor/artifacts/mooni-festival-detail-wait';
 const FESTIVAL_ID = '2048902';
+const OTHER_ID = '3610001';
 const SIGHTS = ['크루즈게이트', '터널게이트'];
-const DETAIL_HOLD_MS = 15_000;
+const DETAIL_HOLD_MS = 60_000;
+const CLIENT_WAIT_MS = 12_000;
 
 const LIST_ITEM = {
   contentId: FESTIVAL_ID,
@@ -21,6 +23,17 @@ const LIST_ITEM = {
   addr1: '부산광역시 해운대구 해운대해변로 264',
   mapx: '129.160384',
   mapy: '35.158698',
+  contentTypeId: '15',
+};
+
+const OTHER_ITEM = {
+  contentId: OTHER_ID,
+  title: '광안리 불꽃축제',
+  eventStartDate: '20261128',
+  eventEndDate: '20270110',
+  addr1: '부산광역시 수영구 광안해변로 219',
+  mapx: '129.118621',
+  mapy: '35.153169',
   contentTypeId: '15',
 };
 
@@ -103,7 +116,7 @@ test.describe('festival detail arrives after MOONi opens', () => {
         return;
       }
       const payload = action === 'festivalWindow' && body.locale !== 'en'
-        ? { ok: true, items: [LIST_ITEM], fromCache: false }
+        ? { ok: true, items: [LIST_ITEM, OTHER_ITEM], fromCache: false }
         : { ok: true, items: [], fromCache: true };
       await route.fulfill({
         status: 200,
@@ -177,6 +190,47 @@ test.describe('festival detail arrives after MOONi opens', () => {
     }
     await page.waitForTimeout(400);
     expect(geminiPosts).toHaveLength(1);
+  });
+
+  test('closing during the detail wait sends no gemini request', async ({ page }) => {
+    await openFestivalMooni(page, FESTIVAL_ID);
+    const opening = page.getByTestId('mooni-festival-opening');
+    await expect(opening).toBeVisible();
+    await expect(opening).not.toContainText('크루즈게이트');
+
+    await tapFestivalSightsChip(page);
+    await expect(page.getByText('스캔하고 있습니다')).toBeVisible({ timeout: 10_000 });
+    await page.getByRole('button', { name: '채팅 닫기' }).click();
+    await expect(opening).toBeHidden();
+
+    await page.waitForTimeout(CLIENT_WAIT_MS + 1_500);
+    expect(geminiPosts).toHaveLength(0);
+    releaseDetail();
+    await page.waitForTimeout(500);
+    expect(geminiPosts).toHaveLength(0);
+  });
+
+  test('switching festivals during the detail wait sends no gemini request', async ({ page }) => {
+    await openFestivalMooni(page, FESTIVAL_ID);
+    const opening = page.getByTestId('mooni-festival-opening');
+    await expect(opening).toBeVisible();
+    await expect(opening).not.toContainText('크루즈게이트');
+
+    await tapFestivalSightsChip(page);
+    await expect(page.getByText('스캔하고 있습니다')).toBeVisible({ timeout: 10_000 });
+    const other = page.locator(`[data-festival-id="${OTHER_ID}"]`);
+    await expect(other.first()).toBeAttached();
+    await other.evaluateAll((nodes) => {
+      nodes.forEach((node) => node.click());
+    });
+    await expect(page).toHaveURL(new RegExp(`festival=${OTHER_ID}`));
+    await expect(opening).toBeHidden();
+
+    await page.waitForTimeout(CLIENT_WAIT_MS + 1_500);
+    expect(geminiPosts).toHaveLength(0);
+    releaseDetail();
+    await page.waitForTimeout(500);
+    expect(geminiPosts).toHaveLength(0);
   });
 });
 

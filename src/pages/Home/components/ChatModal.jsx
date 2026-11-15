@@ -58,7 +58,10 @@ import {
   shouldOmitMooniGeminiHistoryForKoreaFestivalTurn,
 } from '../lib/mooniKoreaFestivalTurn.js';
 import { buildFestivalMooniChatOpening } from '../../Korea/lib/festivalMooniBoundSpot.js';
-import { readFestivalContextForAsk } from '../../Korea/lib/festivalDetailContextWait.js';
+import {
+  isFestivalAskCancelled,
+  readFestivalContextForAsk,
+} from '../../Korea/lib/festivalDetailContextWait.js';
 import { festivalChatHeaderTitle } from '../../Korea/lib/festivalMooniContext.js';
 import {
   createMooniSendGate,
@@ -206,6 +209,11 @@ const ChatModal = ({
   messagesRef.current = messages;
   const mooniPlaceContextRef = useRef(mooniPlaceContext);
   mooniPlaceContextRef.current = mooniPlaceContext;
+  const isOpenRef = useRef(isOpen);
+  isOpenRef.current = isOpen;
+  const mountedRef = useRef(true);
+  const festivalAskAbortRef = useRef(null);
+  const festivalAskIdRef = useRef('');
   const lastTripSyncChatIdRef = useRef(null);
   const pendingDraftSessionResetRef = useRef(false);
   const festivalUiLocaleRef = useRef(i18n.language);
@@ -616,7 +624,23 @@ const ChatModal = ({
   }, [activeChatId, originInputOn]);
 
   useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+      festivalAskAbortRef.current?.abort();
+    };
+  }, []);
+
+  const watchedFestivalId = String(mooniPlaceContext?.festivalContext?.contentId || '');
+  useEffect(() => {
+    const asked = festivalAskIdRef.current;
+    if (!asked || watchedFestivalId === asked) return;
+    festivalAskAbortRef.current?.abort();
+  }, [watchedFestivalId]);
+
+  useEffect(() => {
     if (!isOpen) {
+      festivalAskAbortRef.current?.abort();
       setTopicDockParent(null);
       setMobileDockInputFocused(false);
       setAccessOriginSearchOpen(false);
@@ -1286,9 +1310,33 @@ const ChatModal = ({
       let mooniFestivalUpcomingFallback = [];
       // Open can capture the list row before tourapi detail. Poll the ref so this
       // single request sees overview/program that arrive while the chip is in flight.
+      // Close, unmount, or another festival cancels the wait and does not send.
+      const askedFestivalId = String(
+        mooniPlaceContextRef.current?.festivalContext?.contentId || '',
+      );
+      const askAbort = new AbortController();
+      festivalAskAbortRef.current = askAbort;
+      festivalAskIdRef.current = askedFestivalId;
+      const festivalAskStillCurrent = () => {
+        if (askAbort.signal.aborted || !mountedRef.current || !isOpenRef.current) return false;
+        if (!askedFestivalId) return true;
+        const liveId = String(mooniPlaceContextRef.current?.festivalContext?.contentId || '');
+        return liveId === askedFestivalId;
+      };
       const festivalContextForAsk = await readFestivalContextForAsk(
         () => mooniPlaceContextRef.current,
+        {
+          signal: askAbort.signal,
+          contentId: askedFestivalId,
+          isCancelled: () => !mountedRef.current || !isOpenRef.current,
+        },
       );
+      if (
+        isFestivalAskCancelled(festivalContextForAsk)
+        || (askedFestivalId && !festivalAskStillCurrent())
+      ) {
+        return false;
+      }
       const festivalSpot = mooniPlaceContextRef.current;
       const festivalContext = await loadFestivalAskContext(
         festivalContextForAsk,
@@ -1364,6 +1412,7 @@ const ChatModal = ({
       };
 
       const modelUserText = prepared.modelUserText;
+      if (askedFestivalId && !festivalAskStillCurrent()) return false;
       const geminiResult = await invokeMooniChatToleratingChip(
         (chatParams) => apiClient.invokeGeminiTask('mooni_chat', chatParams),
         {

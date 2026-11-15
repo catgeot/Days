@@ -7,6 +7,7 @@ import {
 } from '../../src/pages/Korea/lib/festivalMooniBoundSpot.js';
 import {
   festivalContextNeedsDetailWait,
+  isFestivalAskCancelled,
   readFestivalContextForAsk,
 } from '../../src/pages/Korea/lib/festivalDetailContextWait.js';
 import { buildMooniBoundFestivalSystemHint } from '../../src/shared/korea/mooniKoreaFestivalReplyPolish.js';
@@ -128,6 +129,103 @@ test('readFestivalContextForAsk continues with the list row after the timeout', 
   assert.ok(Date.now() - started >= 70);
   assert.equal(ctx.detailPending, true);
   assert.equal(String(ctx.program || ''), '');
+});
+
+test('readFestivalContextForAsk returns the list row when detail settles without narrative', async () => {
+  let spot = earlySpot();
+  const started = Date.now();
+  const pending = readFestivalContextForAsk(() => spot, {
+    timeoutMs: 500,
+    intervalMs: 20,
+    contentId: '2048902',
+  });
+  setTimeout(() => {
+    spot = {
+      ...spot,
+      festivalContext: {
+        ...spot.festivalContext,
+        detailPending: false,
+      },
+    };
+  }, 30);
+  const ctx = await pending;
+  assert.equal(isFestivalAskCancelled(ctx), false);
+  assert.ok(Date.now() - started < 400);
+  assert.equal(ctx.detailPending, false);
+  assert.equal(String(ctx.program || ''), '');
+  assert.equal(ctx.contentId, '2048902');
+});
+
+test('readFestivalContextForAsk cancels when the chat closes during the wait', async () => {
+  const spot = earlySpot();
+  const started = Date.now();
+  let closed = false;
+  const pending = readFestivalContextForAsk(() => spot, {
+    timeoutMs: 500,
+    intervalMs: 20,
+    contentId: '2048902',
+    isCancelled: () => closed,
+  });
+  setTimeout(() => {
+    closed = true;
+  }, 30);
+  const ctx = await pending;
+  assert.equal(isFestivalAskCancelled(ctx), true);
+  assert.ok(Date.now() - started < 400);
+});
+
+test('readFestivalContextForAsk cancels on abort without adopting a later festival', async () => {
+  let spot = earlySpot();
+  const controller = new AbortController();
+  const started = Date.now();
+  const pending = readFestivalContextForAsk(() => spot, {
+    timeoutMs: 500,
+    intervalMs: 20,
+    signal: controller.signal,
+    contentId: '2048902',
+  });
+  setTimeout(() => {
+    controller.abort();
+    spot = {
+      ...detailSpot(),
+      festivalContext: {
+        ...detailSpot().festivalContext,
+        contentId: '3610001',
+        title: '광안리 불꽃축제',
+      },
+    };
+  }, 30);
+  const ctx = await pending;
+  assert.equal(isFestivalAskCancelled(ctx), true);
+  assert.equal(ctx.program, undefined);
+  assert.ok(Date.now() - started < 400);
+});
+
+test('readFestivalContextForAsk cancels when contentId changes and does not return the new festival', async () => {
+  let spot = earlySpot();
+  const started = Date.now();
+  const pending = readFestivalContextForAsk(() => spot, {
+    timeoutMs: 500,
+    intervalMs: 20,
+    contentId: '2048902',
+  });
+  setTimeout(() => {
+    spot = buildFestivalMooniBoundSpot({
+      item: {
+        contentId: '3610001',
+        title: '광안리 불꽃축제',
+        eventStartDate: '20261128',
+        eventEndDate: '20270110',
+      },
+      detailPending: false,
+      program: '드론쇼',
+      overview: '광안대교 앞에서 드론쇼가 열려요.',
+    });
+  }, 30);
+  const ctx = await pending;
+  assert.equal(isFestivalAskCancelled(ctx), true);
+  assert.equal(ctx.program, undefined);
+  assert.ok(Date.now() - started < 400);
 });
 
 test('readFestivalContextForAsk does not wait when detail is already settled', async () => {
