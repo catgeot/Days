@@ -55,5 +55,15 @@ export default defineConfig({
         deviceScaleFactor: 1,
       },
     },
+    {
+      name: 'chromium-logbook-hub-nav-390',
+      use: {
+        ...devices['Desktop Chrome'],
+        viewport: { width: 390, height: 844 },
+        deviceScaleFactor: 1,
+        isMobile: true,
+        hasTouch: true,
+      },
+    },
   ],
 });

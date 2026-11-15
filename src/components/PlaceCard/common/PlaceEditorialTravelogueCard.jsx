@@ -1,7 +1,7 @@
 import React, { useId, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { BookOpen, ChevronDown } from 'lucide-react';
 import { usePlaceEditorialTravelogues } from '../hooks/usePlaceEditorialTravelogues';
+import { rememberLogbookDetailReturn } from '../../../shared/navigation/logbookDetailBack.js';
 import { publicLogbookDetailPath } from '../../../utils/logbookEditorial';
 import { resolveLogbookDek } from '../../../utils/logbookDek';
 import { logbookHeroImageUrl } from '../../../utils/logbookImageSrc';
@@ -53,12 +53,15 @@ function TravelogueRow({ report }) {
   const dek = resolveLogbookDek(report, { maxLeadLen: 120 });
   const href = publicLogbookDetailPath(report);
   return (
-    <Link
-      to={href}
+    <a
+      href={href}
       data-place-travelogue-item=""
       data-place-travelogue-slug={report.slug || undefined}
       className="flex gap-3 rounded-xl border border-white/10 bg-white/[0.04] p-3 text-left transition-colors hover:border-indigo-300/35 hover:bg-white/[0.06]"
-      onClick={(event) => event.stopPropagation()}
+      onClick={(event) => {
+        event.stopPropagation();
+        rememberLogbookDetailReturn(href);
+      }}
     >
       <TravelogueCover report={report} />
       <div className="min-w-0 flex-1">
@@ -68,7 +71,7 @@ function TravelogueRow({ report }) {
         ) : null}
         <p className="mt-1.5 text-[11px] font-medium text-indigo-200/80">기행문 읽기 ›</p>
       </div>
-    </Link>
+    </a>
   );
 }
 

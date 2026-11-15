@@ -1,0 +1,56 @@
+{
+  "editorialReport": {
+    "id": "e2e-rome-editorial-1",
+    "title": "석양 전의 콜로세움",
+    "dek": "콜로세움과 포로",
+    "content": "로마 E2E 기행문 본문입니다.",
+    "date": "2026-11-13",
+    "location": "로마",
+    "images": [
+      {
+        "url": "https://images.unsplash.com/photo-1509024644558-2f56ce76c490"
+      }
+    ],
+    "is_public": true,
+    "is_deleted": false,
+    "is_editorial": true,
+    "slug": "rome-travelogue",
+    "status": "published",
+    "place_slug": "rome",
+    "user_id": null,
+    "view_count": 3,
+    "like_count": 0,
+    "comment_count": 0
+  },
+  "placeSlugRows": [
+    {
+      "id": "e2e-rome-editorial-1",
+      "title": "석양 전의 콜로세움",
+      "dek": "콜로세움과 포로",
+      "date": "2026-11-13",
+      "location": "로마",
+      "images": [
+        {
+          "url": "https://images.unsplash.com/photo-1509024644558-2f56ce76c490"
+        }
+      ],
+      "created_at": "2026-11-13T00:00:00Z",
+      "user_id": null,
+      "is_editorial": true,
+      "slug": "rome-travelogue",
+      "status": "published",
+      "place_slug": "rome"
+    }
+  ],
+  "longReview": {
+    "id": "e2e-rome-review-expand",
+    "place_slug": "rome",
+    "content": "미식가 로마 리뷰 E2E 확장 테스트용 본문입니다. 미식가 로마 리뷰 E2E 확장 테스트용 본문입니다. 미식가 로마 리뷰 E2E 확장 테스트용 본문입니다. 미식가 로마 리뷰 E2E 확장 테스트용 본문입니다. 미식가 로마 리뷰 E2E 확장 테스트용 본문입니다. 미식가 로마 리뷰 E2E 확장 테스트용 본문입니다. 미식가 로마 리뷰 E2E 확장 테스트용 본문입니다. 미식가 로마 리뷰 E2E 확장 테스트용 본문입니다. 미식가 로마 리뷰 E2E 확장 테스트용 본문입니다. 미식가 로마 리뷰 E2E 확장 테스트용 본문입니다. 미식가 로마 리뷰 E2E 확장 테스트용 본문입니다. 미식가 로마 리뷰 E2E 확장 테스트용 본문입니다. 미식가 로마 리뷰 E2E 확장 테스트용 본문입니다. 미식가 로마 리뷰 E2E 확장 테스트용 본문입니다. 미식가 로마 리뷰 E2E 확장 테스트용 본문입니다. 미식가 로마 리뷰 E2E 확장 테스트용 본문입니다. 미식가 로마 리뷰 E2E 확장 테스트용 본문입니다. 미식가 로마 리뷰 E2E 확장 테스트용 본문입니다. 미식가 로마 리뷰 E2E 확장 테스트용 본문입니다. 미식가 로마 리뷰 E2E 확장 테스트용 본문입니다. 미식가 로마 리뷰 E2E 확장 테스트용 본문입니다. 미식가 로마 리뷰 E2E 확장 테스트용 본문입니다. 미식가 로마 리뷰 E2E 확장 테스트용 본문입니다. 미식가 로마 리뷰 E2E 확장 테스트용 본문입니다. 미식가 로마 리뷰 E2E 확장 테스트용 본문입니다. 미식가 로마 리뷰 E2E 확장 테스트용 본문입니다. 미식가 로마 리뷰 E2E 확장 테스트용 본문입니다. 미식가 로마 리뷰 E2E 확장 테스트용 본문입니다. 미식가 로마 리뷰 E2E 확장 테스트용 본문입니다. 미식가 로마 리뷰 E2E 확장 테스트용 본문입니다. 미식가 로마 리뷰 E2E 확장 테스트용 본문입니다. 미식가 로마 리뷰 E2E 확장 테스트용 본문입니다. 미식가 로마 리뷰 E2E 확장 테스트용 본문입니다. 미식가 로마 리뷰 E2E 확장 테스트용 본문입니다. 미식가 로마 리뷰 E2E 확장 테스트용 본문입니다. 미식가 로마 리뷰 E2E 확장 테스트용 본문입니다. 미식가 로마 리뷰 E2E 확장 테스트용 본문입니다. 미식가 로마 리뷰 E2E 확장 테스트용 본문입니다. 미식가 로마 리뷰 E2E 확장 테스트용 본문입니다. 미식가 로마 리뷰 E2E 확장 테스트용 본문입니다. ",
+    "created_at": "2026-11-14T00:00:00Z",
+    "user_id": "e2e-user",
+    "likes_count": 0,
+    "views_count": 1,
+    "is_editorial": false,
+    "images": []
+  }
+}

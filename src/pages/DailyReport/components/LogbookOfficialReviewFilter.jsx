@@ -43,12 +43,18 @@ export default function LogbookOfficialReviewFilter({
   domesticCount,
   overseasCount,
   cityChips,
+  cityOverflowOpen = false,
+  onCityOverflowOpenChange,
   onMajorChange,
   onCityChange,
 }) {
   const { t, i18n } = useTranslation();
   const lang = i18n.language?.startsWith('en') ? 'en' : 'ko';
-  const [otherExpanded, setOtherExpanded] = useState(false);
+  const [otherExpanded, setOtherExpanded] = useState(Boolean(cityOverflowOpen));
+  const commitOverflow = (value) => {
+    setOtherExpanded(value);
+    onCityOverflowOpenChange?.(value);
+  };
 
   const majorOptions = [
     {
@@ -101,7 +107,7 @@ export default function LogbookOfficialReviewFilter({
               aria-pressed={active}
               className={reviewFilterChipClass(active)}
               onClick={() => {
-                setOtherExpanded(false);
+                commitOverflow(false);
                 onMajorChange(opt.id);
               }}
             >
@@ -130,7 +136,7 @@ export default function LogbookOfficialReviewFilter({
                 lang={lang}
                 active={citySlug === chip.slug}
                 onCityChange={(slug) => {
-                  setOtherExpanded(false);
+                  commitOverflow(false);
                   onCityChange(slug);
                 }}
               />
@@ -141,7 +147,7 @@ export default function LogbookOfficialReviewFilter({
                 data-testid="logbook-review-filter-other-cities"
                 aria-pressed={otherExpanded}
                 className={reviewFilterChipClass(otherExpanded)}
-                onClick={() => setOtherExpanded((open) => !open)}
+                onClick={() => commitOverflow(!otherExpanded)}
               >
                 <span className="truncate">{otherLabel}</span>
               </button>
@@ -162,7 +168,7 @@ export default function LogbookOfficialReviewFilter({
                   active={citySlug === chip.slug}
                   onCityChange={(slug) => {
                     onCityChange(slug);
-                    setOtherExpanded(false);
+                    commitOverflow(false);
                   }}
                 />
               ))}

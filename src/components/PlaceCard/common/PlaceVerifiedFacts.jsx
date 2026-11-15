@@ -1,5 +1,6 @@
 import React, { useEffect, useId, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { rememberLogbookDetailReturn } from '../../../shared/navigation/logbookDetailBack.js';
 import { useTranslation } from 'react-i18next';
 import { ChevronDown, Compass, PenLine } from 'lucide-react';
 import { useLocale } from '../../../i18n/LocaleProvider';
@@ -725,7 +726,10 @@ export function PlaceVisitStories({
                   to={story.href}
                   data-visit-story-kind="logbook"
                   className={rowClass}
-                  onClick={(event) => event.stopPropagation()}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    rememberLogbookDetailReturn(story.href);
+                  }}
                 >
                   {body}
                 </Link>

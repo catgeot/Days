@@ -489,7 +489,7 @@ export function SearchSuggestionList({
                         : activateSearchSuggestion(event, item, query, onSelect)
                     }
                     onClick={(event) => {
-                      if (event.pointerType !== 'mouse') return;
+                      if (event.pointerType && event.pointerType !== 'mouse') return;
                       if (navigateHref) {
                         activateHrefSearchSuggestion(event, item, query, onSelect);
                         return;
@@ -739,7 +739,7 @@ export function SearchDisambiguationCards({
               type="button"
               onPointerDown={(event) => activateSearchSuggestion(event, hydrated, query, onSelect)}
               onClick={(event) => {
-                if (event.pointerType !== 'mouse') return;
+                if (event.pointerType && event.pointerType !== 'mouse') return;
                 activateSearchSuggestion(event, hydrated, query, onSelect);
               }}
               className="group flex w-full items-stretch gap-3 p-3 text-left"

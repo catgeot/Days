@@ -8,7 +8,11 @@ function isHelmetManagedNode(node) {
   return node?.getAttribute?.('data-rh') === 'true';
 }
 
-/** Drops static/index/middleware head tags only; never removes react-helmet-async nodes (data-rh="true"). */
+/**
+ * Drops static/index/middleware head tags only. Skips data-rh="true".
+ * React 19 hoists <title>/<meta>/<link> without data-rh — call this before those nodes exist
+ * (app boot, or a layout effect while <SEO> is unmounted). A render-time call races removeChild.
+ */
 export function stripHeadSeoBeforeHelmet(doc = typeof document !== 'undefined' ? document : null) {
   if (!doc?.head) return;
 

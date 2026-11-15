@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
@@ -13,7 +13,6 @@ import {
 } from '../../pages/Home/lib/placeSeoOg.js';
 import { buildTravelerAggregateRatingSchema } from '../../utils/placeReviewStats.js';
 import { isWikimediaOgImageUrl, resolveSocialShareImageUrl } from '../../shared/seo/socialOgImage.js';
-import { stripHeadSeoBeforeHelmet } from '../../shared/seo/stripHeadSeoBeforeHelmet.js';
 
 const SCHEMA_TYPES = {
   TOURIST_ATTRACTION: 'TouristAttraction',
@@ -81,7 +80,6 @@ const SEO = ({
   const hreflangAlternates = useMemo(() => buildHreflangAlternates(pagePath), [pagePath]);
   const ogLocale = locale === 'en' ? 'en_US' : 'ko_KR';
   const ogLocaleAlternate = locale === 'en' ? 'ko_KR' : 'en_US';
-  const strippedStaticHeadForPath = useRef('');
 
   const displayName = useMemo(() => {
     if (!location) return '';
@@ -183,11 +181,6 @@ const SEO = ({
       document.querySelector(`script[data-schema-type="${SCHEMA_TYPES.IMAGE_GALLERY}"]`)?.remove();
     };
   }, [gallerySchema]);
-
-  if (strippedStaticHeadForPath.current !== pagePath) {
-    strippedStaticHeadForPath.current = pagePath;
-    stripHeadSeoBeforeHelmet();
-  }
 
   return (
     <Helmet>

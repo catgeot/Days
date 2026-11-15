@@ -4,6 +4,10 @@ import './i18n/config.js'
 import './index.css'
 import App from './App.jsx'
 import { notifyStaleBundleBootSuccess } from './shared/lib/staleBundleRecovery.js'
+import { stripHeadSeoBeforeHelmet } from './shared/seo/stripHeadSeoBeforeHelmet.js'
+
+stripHeadSeoBeforeHelmet()
+window.__gateoHeadBootStripped = true
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

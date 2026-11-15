@@ -8,6 +8,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { isCrawlerSoft404Path, parseCrawlerPath } from '../src/edge/resolveCrawlerMeta.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const indexHtml = readFileSync(join(root, 'index.html'), 'utf8');
@@ -142,6 +143,172 @@ const kakaoEditorial = await runMiddleware(
 );
 assert.equal(kakaoEditorial.passThrough, false, 'kakao editorial injects');
 assert.ok(kakaoEditorial.hasCrawlerInject, 'kakao editorial crawler-meta marker');
+
+const middlewareSrc = readFileSync(join(root, 'middleware.js'), 'utf8');
+for (const pattern of ['/place/:slug/reviews', '/place/:slug/video', '/place/:slug/events']) {
+  assert.ok(middlewareSrc.includes(pattern), `middleware matcher includes ${pattern}`);
+}
+const vercelJson = readFileSync(join(root, 'vercel.json'), 'utf8');
+assert.equal(vercelJson.includes('/place/:slug/reviews'), false, 'vercel.json stays unchanged');
+
+const PLACE_TAB_SUFFIXES = ['', '/gallery', '/planner', '/wiki', '/reviews', '/video', '/events'];
+const CATALOG_SLUGS = [
+  ['bora-bora', '보라보라'],
+  ['kyoto', '교토'],
+  ['paris', '파리'],
+  ['cairo', '카이로'],
+  ['sapa', '사파'],
+  ['khao-lak', '카오락'],
+];
+const OUTSIDE_SLUG = 'hwaseong-fortress';
+const travelSpotSlugs = new Set(
+  JSON.parse(readFileSync(join(root, 'src/pages/Home/data/travelSpots-list.json'), 'utf8')).map(
+    (row) => row.slug,
+  ),
+);
+const scenicSlugs = new Set(
+  JSON.parse(readFileSync(join(root, 'src/pages/Home/data/koreaScenicSpots.json'), 'utf8')).spots.map(
+    (row) => row.placeSlug,
+  ),
+);
+for (const [slug] of CATALOG_SLUGS) {
+  assert.equal(travelSpotSlugs.has(slug), true, `${slug} is a TRAVEL_SPOTS slug`);
+}
+assert.equal(travelSpotSlugs.has(OUTSIDE_SLUG), false, `${OUTSIDE_SLUG} is outside TRAVEL_SPOTS`);
+assert.equal(scenicSlugs.has(OUTSIDE_SLUG), true, `${OUTSIDE_SLUG} is a real scenic place slug`);
+
+function headFields(html) {
+  const canonicals = [...html.matchAll(/<link rel="canonical" href="([^"]+)"/gi)].map((m) => m[1]);
+  const ogUrls = [...html.matchAll(/<meta property="og:url" content="([^"]*)"/gi)].map((m) => m[1]);
+  return {
+    canonicals,
+    ogUrls,
+    title: html.match(/<title>([^<]*)<\/title>/i)?.[1] || '',
+    description: html.match(/<meta name="description" content="([^"]*)"/i)?.[1] || '',
+  };
+}
+
+/** @type {string[]} */
+const tableLines = [
+  '| slug | tab | UA | result | canonical | og:url | head vs root |',
+  '|---|---|---|---|---|---|---|',
+];
+
+function cell(value) {
+  return String(value ?? '—').replace(/\|/g, '/').replace(/\s+/g, ' ').trim();
+}
+
+function recordRow(slug, tab, uaLabel, out, note) {
+  const tabLabel = tab || '(root)';
+  if (out.passThrough) {
+    tableLines.push(
+      `| ${cell(slug)} | ${cell(tabLabel)} | ${cell(uaLabel)} | pass-through | — | — | — |`,
+    );
+    return;
+  }
+  const head = headFields(out.body);
+  tableLines.push(
+    `| ${cell(slug)} | ${cell(tabLabel)} | ${cell(uaLabel)} | ${cell(`${out.status} ${out.xCrawlerMeta || ''}`)} | ${cell(head.canonicals.join(' '))} | ${cell(head.ogUrls.join(' '))} | ${cell(note)} |`,
+  );
+}
+
+for (const [slug, label] of CATALOG_SLUGS) {
+  const rootPath = `/place/${slug}`;
+  const rootBot = await runMiddleware(rootPath, GOOGLEBOT);
+  assert.equal(rootBot.passThrough, false, `${label} root injects`);
+  assert.equal(rootBot.status, 200, `${label} root 200`);
+  const rootHead = headFields(rootBot.body);
+  const rootCanonical = `https://www.gateo.kr/place/${slug}`;
+  assert.deepEqual(rootHead.canonicals, [rootCanonical], `${label} root canonical`);
+  assert.deepEqual(rootHead.ogUrls, [rootCanonical], `${label} root og:url`);
+  recordRow(slug, '', 'Googlebot', rootBot, 'root');
+
+  for (const suffix of PLACE_TAB_SUFFIXES) {
+    if (!suffix) continue;
+    const path = `${rootPath}${suffix}`;
+    const tab = suffix.slice(1);
+    const bot = await runMiddleware(path, GOOGLEBOT);
+    const browserHit = await runMiddleware(path, CHROME);
+    assert.equal(browserHit.passThrough, true, `${path} browser passes through`);
+    recordRow(slug, tab, 'browser', browserHit);
+    assert.equal(bot.passThrough, false, `${path} crawler injects`);
+    assert.equal(bot.status, 200, `${path} status 200`);
+    assert.notEqual(bot.status, 404, `${path} not 404`);
+    assert.ok(!bot.robots?.includes('noindex'), `${path} no noindex`);
+    const head = headFields(bot.body);
+    assert.equal(head.canonicals.length, 1, `${path} one canonical`);
+    assert.equal(head.ogUrls.length, 1, `${path} one og:url`);
+    assert.equal(head.ogUrls[0], head.canonicals[0], `${path} og:url matches canonical`);
+    assert.equal(head.canonicals[0].endsWith('/'), false, `${path} canonical has no trailing slash`);
+    if (tab === 'gallery' || tab === 'planner' || tab === 'wiki') {
+      assert.equal(head.canonicals[0], `https://www.gateo.kr/place/${slug}/${tab}`, `${path} keeps tab canonical`);
+      assert.equal(parseCrawlerPath(path)?.kind, 'place-tab', `${path} stays place-tab`);
+      assert.notEqual(head.title, rootHead.title, `${path} title stays tab-specific`);
+    } else {
+      assert.equal(head.canonicals[0], rootCanonical, `${path} canonical is place root`);
+      assert.equal(head.ogUrls[0], rootCanonical, `${path} og:url is place root`);
+      assert.equal(head.title, rootHead.title, `${path} title matches place root`);
+      assert.equal(head.description, rootHead.description, `${path} description matches place root`);
+      assert.equal(bot.xCrawlerMeta, rootBot.xCrawlerMeta, `${path} same crawler kind as root`);
+      assert.equal(parseCrawlerPath(path)?.kind, 'place-base', `${path} parsed as place root`);
+      assert.equal(isCrawlerSoft404Path(path), false, `${path} soft-404 policy unchanged`);
+    }
+    recordRow(
+      slug,
+      tab,
+      'Googlebot',
+      bot,
+      tab === 'gallery' || tab === 'planner' || tab === 'wiki' ? 'tab canonical kept' : 'title+description=root',
+    );
+  }
+
+  const browserRoot = await runMiddleware(rootPath, CHROME);
+  assert.equal(browserRoot.passThrough, true, `${rootPath} browser passes through`);
+  recordRow(slug, '', 'browser', browserRoot);
+}
+
+for (const suffix of PLACE_TAB_SUFFIXES) {
+  const path = `/place/${OUTSIDE_SLUG}${suffix}`;
+  const tab = suffix ? suffix.slice(1) : '';
+  for (const [ua, uaLabel] of [
+    [GOOGLEBOT, 'Googlebot'],
+    [CHROME, 'browser'],
+  ]) {
+    const out = await runMiddleware(path, ua);
+    assert.equal(out.passThrough, true, `${path} ${uaLabel} passes through (no 404)`);
+    recordRow(OUTSIDE_SLUG, tab, uaLabel, out);
+  }
+  assert.equal(isCrawlerSoft404Path(path), false, `${path} soft-404 flag stays off`);
+}
+
+for (const suffix of ['/reviews', '/video', '/events']) {
+  const path = `/place/this-slug-does-not-exist-zz${suffix}`;
+  const out = await runMiddleware(path, GOOGLEBOT);
+  assert.equal(out.passThrough, true, `${path} unknown place passes through`);
+  assert.equal(isCrawlerSoft404Path(path), false, `${path} not a soft 404`);
+}
+
+for (const suffix of ['', '/reviews', '/video', '/events']) {
+  const path = `/place/tour-127635${suffix}`;
+  const out = await runMiddleware(path, GOOGLEBOT);
+  assert.equal(out.passThrough, true, `${path} tour slug outside bundle passes through`);
+}
+
+const reviewQuery = await runMiddleware('/place/cairo/reviews?review=abc', GOOGLEBOT);
+const reviewQueryHead = headFields(reviewQuery.body);
+assert.deepEqual(reviewQueryHead.canonicals, ['https://www.gateo.kr/place/cairo'], 'review deeplink canonical drops query');
+assert.deepEqual(reviewQueryHead.ogUrls, ['https://www.gateo.kr/place/cairo'], 'review deeplink og:url drops query');
+
+const enAlias = await runMiddleware('/place/paris/reviews?lang=en', GOOGLEBOT);
+const enRoot = await runMiddleware('/place/paris?lang=en', GOOGLEBOT);
+const enAliasHead = headFields(enAlias.body);
+const enRootHead = headFields(enRoot.body);
+assert.deepEqual(enAliasHead.canonicals, ['https://www.gateo.kr/place/paris?lang=en'], 'en alias canonical matches root');
+assert.deepEqual(enAliasHead.ogUrls, enRootHead.ogUrls, 'en alias og:url matches root');
+assert.equal(enAliasHead.title, enRootHead.title, 'en alias title matches root');
+assert.equal(enAliasHead.description, enRootHead.description, 'en alias description matches root');
+
+console.log(tableLines.join('\n'));
 
 globalThis.fetch = prevFetch;
 process.env.VITE_SUPABASE_URL = prevUrl;

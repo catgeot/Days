@@ -1,16 +1,22 @@
-import React, { useCallback, useEffect, useId, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Link, useLocation, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ChevronDown, Sparkles } from 'lucide-react';
 import { LOGBOOK_OFFICIAL_REVIEW_CARD_TITLE } from '../../../logbookOfficialReviews/constants.js';
+import { rememberLogbookReviewHubRows } from '../../../logbookOfficialReviews/logbookReviewHubListCache.js';
 import {
   buildLogbookHubReturnTo,
-  readLogbookReviewHubSession,
+  readMatchingLogbookReviewHubSession,
 } from '../../../logbookOfficialReviews/logbookReviewHubSession.js';
 import { prepareLogbookReviewHubNavigation } from '../../../logbookOfficialReviews/logbookReviewHubNavigate.js';
 import {
+  captureLogbookHubScrollAnchor,
+  holdLogbookHubScrollAnchor,
+} from '../../../logbookOfficialReviews/logbookReviewHubScrollAnchor.js';
+import {
   applyLogbookHubScrollRestore,
   clearLogbookHubScrollRestored,
+  scheduleLogbookHubScrollRestore,
 } from '../../../logbookOfficialReviews/logbookReviewHubScrollRestore.js';
 import { useLogbookOfficialReviewHub } from '../../../logbookOfficialReviews/useLogbookOfficialReviewHub.js';
 import { formatLogbookDisplayDate } from '../../../utils/logbookDisplayDate';
@@ -48,6 +54,12 @@ const HUB_CARD_LAYOUT_CLASS =
 
 function hubPageSize(filterEnabled) {
   return filterEnabled ? LOGBOOK_OFFICIAL_REVIEW_HUB_CARD_PAGE_SIZE : LOGBOOK_OFFICIAL_REVIEW_HUB_PAGE_SIZE;
+}
+
+function initialVisibleCount(pathname, search, pageSize) {
+  const saved = readMatchingLogbookReviewHubSession(pathname, search)?.visibleCount;
+  if (typeof saved === 'number' && saved > 0) return Math.max(pageSize, saved);
+  return pageSize;
 }
 
 function editorialReviewListPreview(review) {
@@ -178,56 +190,90 @@ const LogbookOfficialReviewHubCard = () => {
   const [, setSearchParams] = useSearchParams();
   const location = useLocation();
   const panelId = useId();
-  const [expanded, setExpanded] = useState(false);
   const filterEnabled = isGateoLogbookReviewFilterEnabled();
   const pageSize = hubPageSize(filterEnabled);
   const countSuffix = t('logbook.officialReviewHub.countSuffix');
-  const [visibleCount, setVisibleCount] = useState(pageSize);
-  const [filterMajor, setFilterMajor] = useState(LOGBOOK_REVIEW_FILTER_MAJOR.ALL);
-  const [filterCitySlug, setFilterCitySlug] = useState('');
+  const [expanded, setExpanded] = useState(() =>
+    Boolean(readMatchingLogbookReviewHubSession(location.pathname, location.search)?.expanded),
+  );
+  const [visibleCount, setVisibleCount] = useState(() =>
+    initialVisibleCount(location.pathname, location.search, pageSize),
+  );
+  const [cityOverflowOpen, setCityOverflowOpen] = useState(() =>
+    Boolean(readMatchingLogbookReviewHubSession(location.pathname, location.search)?.cityOverflowOpen),
+  );
+  const parsedFilter = filterEnabled
+    ? parseLogbookReviewFilterFromSearch(location.search)
+    : { major: LOGBOOK_REVIEW_FILTER_MAJOR.ALL, citySlug: '' };
+  const [filterMajor, setFilterMajor] = useState(parsedFilter.major);
+  const [filterCitySlug, setFilterCitySlug] = useState(parsedFilter.citySlug);
   const { enabled, rows, isLoading, loadFailed, totalCount, retry } = useLogbookOfficialReviewHub();
+  const didRestoreScroll = useRef(false);
+  /** @type {React.MutableRefObject<import('../../../logbookOfficialReviews/logbookReviewHubScrollAnchor.js').LogbookHubScrollAnchor | null>} */
+  const scrollAnchorRef = useRef(null);
 
   useEffect(() => {
-    const session = readLogbookReviewHubSession();
+    const session = readMatchingLogbookReviewHubSession(location.pathname, location.search);
     if (!session) return;
-    const current = buildLogbookHubReturnTo(location.pathname, location.search);
-    if (session.returnTo && session.returnTo !== current) return;
     if (session.expanded) setExpanded(true);
     if (typeof session.visibleCount === 'number' && session.visibleCount > 0) {
       setVisibleCount(Math.max(pageSize, session.visibleCount));
     }
+    if (session.cityOverflowOpen) setCityOverflowOpen(true);
   }, [location.pathname, location.search, pageSize]);
 
-  useEffect(() => {
-    if (!expanded) return undefined;
-    const session = readLogbookReviewHubSession();
-    if (typeof session?.scrollY !== 'number' || session.scrollY <= 0) return undefined;
-    const current = buildLogbookHubReturnTo(location.pathname, location.search);
-    if (session.returnTo && session.returnTo !== current) return undefined;
-    if (isLoading) return undefined;
+  useLayoutEffect(() => {
+    if (typeof document === 'undefined') return undefined;
     const scrollRoot = document.querySelector('[data-logbook-main-scroll]');
-    if (!scrollRoot) return undefined;
-    const target = session.scrollY;
-    let cancelled = false;
-    let ticks = 0;
-    const tryRestore = () => {
-      if (cancelled) return;
-      if (applyLogbookHubScrollRestore(scrollRoot, target)) return;
-      ticks += 1;
-      if (ticks < 50) window.setTimeout(tryRestore, 100);
-    };
-    requestAnimationFrame(tryRestore);
+    if (!(scrollRoot instanceof HTMLElement)) return undefined;
+    const session = readMatchingLogbookReviewHubSession(location.pathname, location.search);
+    const target = Number(session?.scrollY);
+    const room = scrollRoot.scrollHeight - scrollRoot.clientHeight;
+    const canRestore =
+      expanded &&
+      rows.length > 0 &&
+      scrollRoot.clientHeight >= 20 &&
+      Number.isFinite(target) &&
+      target > 0 &&
+      room + 8 >= target &&
+      Boolean(scrollRoot.querySelector('[data-review-id]'));
+
+    // Seek must not start until the saved list can actually hold the offset.
+    // An early seek clamps to the top, and a wheel in that window abandons the return (#809).
+    if (canRestore && !didRestoreScroll.current) {
+      if (typeof history !== 'undefined') history.scrollRestoration = 'manual';
+      applyLogbookHubScrollRestore(scrollRoot, target);
+      if (session?.anchorReviewId) {
+        const beforeAlign = scrollRoot.scrollTop;
+        holdLogbookHubScrollAnchor(scrollRoot, {
+          reviewId: String(session.anchorReviewId),
+          offset: Number(session.anchorOffset) || 0,
+          scrollTop: target,
+        });
+        if (Math.abs(scrollRoot.scrollTop - target) > 80) scrollRoot.scrollTop = beforeAlign;
+      }
+      didRestoreScroll.current = true;
+      scrollAnchorRef.current = captureLogbookHubScrollAnchor(scrollRoot);
+      if (Array.isArray(window.__gateoHubScrollFrames)) {
+        // Hub-nav E2E reads the pre-paint value. The array exists only when that spec installed it.
+        window.__gateoHubScrollFrames.push(scrollRoot.scrollTop);
+      }
+      return scheduleLogbookHubScrollRestore(scrollRoot, target);
+    }
+
+    if (didRestoreScroll.current && scrollAnchorRef.current) {
+      holdLogbookHubScrollAnchor(scrollRoot, scrollAnchorRef.current);
+      scrollAnchorRef.current = captureLogbookHubScrollAnchor(scrollRoot);
+    }
+    return undefined;
+  });
+
+  useEffect(() => {
     return () => {
-      cancelled = true;
+      if (!didRestoreScroll.current || typeof history === 'undefined') return;
+      history.scrollRestoration = 'auto';
     };
-  }, [
-    expanded,
-    isLoading,
-    visibleCount,
-    rows.length,
-    location.pathname,
-    location.search,
-  ]);
+  }, []);
 
   const hubLinkState = useMemo(
     () => ({
@@ -241,14 +287,20 @@ const LogbookOfficialReviewHubCard = () => {
     const scrollRoot = document.querySelector('[data-logbook-main-scroll]');
     clearLogbookHubScrollRestored(scrollRoot);
     const scrollY = scrollRoot && 'scrollTop' in scrollRoot ? scrollRoot.scrollTop : 0;
+    const anchor =
+      scrollRoot instanceof HTMLElement ? captureLogbookHubScrollAnchor(scrollRoot) : null;
+    rememberLogbookReviewHubRows(rows);
     prepareLogbookReviewHubNavigation({
       pathname: location.pathname,
       search: location.search,
       expanded,
       visibleCount,
       scrollY,
+      anchorReviewId: anchor?.reviewId,
+      anchorOffset: anchor?.offset,
+      cityOverflowOpen,
     });
-  }, [location.pathname, location.search, expanded, visibleCount]);
+  }, [location.pathname, location.search, expanded, visibleCount, rows, cityOverflowOpen]);
 
   useEffect(() => {
     if (!filterEnabled) return;
@@ -396,6 +448,8 @@ const LogbookOfficialReviewHubCard = () => {
               domesticCount={grouped.domesticCount}
               overseasCount={grouped.overseasCount}
               cityChips={grouped.cities}
+              cityOverflowOpen={cityOverflowOpen}
+              onCityOverflowOpenChange={setCityOverflowOpen}
               onMajorChange={onMajorChange}
               onCityChange={onCityChange}
             />
