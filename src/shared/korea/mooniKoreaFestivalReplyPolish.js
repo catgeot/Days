@@ -40,6 +40,11 @@ import {
   isMooniKoreaFestivalQueryText,
   shouldMooniScopedFestivalReplaceEmptyCandidates,
 } from '../../pages/Home/lib/mooniKoreaFestivalTurn.js';
+import {
+  isMooniChipInstructionTurn,
+  isMooniInstructionFragment,
+  scrubMooniFestivalTemplatePlace,
+} from '../../pages/Home/lib/mooniChipInstruction.js';
 
 export {
   MOONI_KOREA_FESTIVAL_HINT_BUDGET,
@@ -3226,11 +3231,133 @@ function stripUnverifiedEveningClause(text) {
   }).filter(Boolean).join(' ');
 }
 
+function isScopedFestivalZeroTemplate(text) {
+  return /겹치는\s*행사(?:가|는)\s*없어요|no verified festivals overlapping/i.test(String(text || ''));
+}
+
+function isSightsChipTurn(options = {}) {
+  if (String(options.chipId || '') === 'festival_sights') return true;
+  if (isFestivalSightsAsk(options)) return true;
+  return /볼 수 있는 것과 현장 분위기|on-site feel/i.test(String(options.userText || ''));
+}
+
+function splitChipProgramNames(program) {
+  const names = [];
+  for (const piece of String(program || '').replace(/<[^>]+>/g, ' ').split(/[\n,/·]| 및 /)) {
+    let name = piece
+      .replace(/^\s*\d+[.)]\s*/, '')
+      .replace(/^[-•]\s*/, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+    const labeled = name.match(/^(.{1,24}?)\s*[:：]\s*(.+)$/);
+    if (labeled && /프로그램/.test(labeled[1])) name = labeled[2].replace(/\s+/g, ' ').trim();
+    if (!name || name.length < 2 || name.length > 24) continue;
+    if (isMooniInstructionFragment(name)) continue;
+    if (!/[가-힣A-Za-z]/.test(name)) continue;
+    if (!names.includes(name)) names.push(name);
+    if (names.length >= 4) break;
+  }
+  return names;
+}
+
+function joinKoProgramNames(names) {
+  if (names.length <= 1) return names[0] || '';
+  if (names.length === 2) {
+    const particle = syllableHasBatchim([...names[0]].pop()) ? '과' : '와';
+    return `${names[0]}${particle} ${names[1]}`;
+  }
+  return `${names.slice(0, -1).join(', ')}, ${names[names.length - 1]}`;
+}
+
+function festivalPageCloser(options = {}) {
+  const id = String(options.contentId || '').trim();
+  if (!/^\d+$/.test(id)) return '';
+  const isEn = String(options.locale || 'ko').slice(0, 2) === 'en';
+  const title = String(options.festivalTitle || '').trim();
+  const url = gateoKoreaFestivalDetailUrl(id);
+  const label = title
+    ? (isEn ? `${title} page` : `${title} 페이지`)
+    : (isEn ? 'festival page' : '축제 페이지');
+  return isEn
+    ? `Details are on the [${label}](${url}).`
+    : `자세한 내용은 [${label}](${url})에서 볼 수 있어요.`;
+}
+
+function firstAtmosphereSentence(options = {}) {
+  const isEn = String(options.locale || 'ko').slice(0, 2) === 'en';
+  const src = String(options.sceneOverview || options.overview || '').replace(/\s+/g, ' ').trim();
+  if (!src || isMooniInstructionFragment(src)) return '';
+  const sentence = src.split(/(?<=[.!?。])\s+/)[0].trim();
+  if (!sentence || sentence.length > 90 || isMooniInstructionFragment(sentence)) return '';
+  if (isEn && /[가-힣]/.test(sentence)) return '';
+  return /[.!?。]$/.test(sentence) ? sentence : `${sentence}.`;
+}
+
+function buildSightsAnswerFromProgram(options = {}) {
+  const isEn = String(options.locale || 'ko').slice(0, 2) === 'en';
+  const names = splitChipProgramNames(options.program);
+  const bits = [];
+  if (names.length) {
+    if (isEn) bits.push(`Confirmed programs include ${names.join(', ')}.`);
+    else {
+      const list = joinKoProgramNames(names);
+      const copula = syllableHasBatchim([...list].pop()) ? '이에요' : '예요';
+      bits.push(`볼 수 있는 프로그램은 ${list}${copula}.`);
+    }
+  }
+  const atmosphere = firstAtmosphereSentence(options);
+  if (atmosphere) bits.push(atmosphere);
+  const hours = String(options.timeText || '').replace(/\s+/g, ' ').trim();
+  if (hours && hours.length <= 40 && !isMooniInstructionFragment(hours)) {
+    bits.push(isEn
+      ? `Hours on record are ${hours}.`
+      : `확인된 시간은 ${hours}로 안내되어 있어요.`);
+  }
+  const closer = festivalPageCloser(options);
+  if (closer) bits.push(closer);
+  if (!bits.length) return closer;
+  return bits.join(' ').trim();
+}
+
+function buildChipIntentFallback(options = {}) {
+  if (isSightsChipTurn(options)) {
+    const sights = buildSightsAnswerFromProgram(options);
+    if (sights) return sights;
+  }
+  return festivalPageCloser(options);
+}
+
+function plainInstructionFallback(options = {}) {
+  return String(options.locale || 'ko').slice(0, 2) === 'en'
+    ? 'I can only answer with what is confirmed here.'
+    : '확인된 내용만 말할 수 있어요.';
+}
+
+/** Chip instructions and the zero-candidate template must not stay in the user reply. */
+export function repairFestivalChipInstructionLeak(text, options = {}) {
+  const original = String(text || '').trim();
+  const chipTurn = isMooniChipInstructionTurn(options.userText, options.chipId);
+  const leaked = isMooniInstructionFragment(original)
+    || (chipTurn && isScopedFestivalZeroTemplate(original));
+  if (!original) {
+    if (!chipTurn) return '';
+    return buildChipIntentFallback(options);
+  }
+  if (!leaked) return original;
+  const fallback = buildChipIntentFallback(options);
+  if (fallback) return fallback;
+  const stripped = filterPreservingBreaks(original, (part) => (
+    isMooniInstructionFragment(part)
+    || (chipTurn && isScopedFestivalZeroTemplate(part))
+  ));
+  return stripped || plainInstructionFallback(options);
+}
+
 /** Data-free polish for Edge + legacy clients (no TourAPI restaurant list required). */
 export function polishFestivalModelReplyBaseline(reply, options = {}) {
   const chipId = String(options.chipId || '');
   const locale = options.locale || 'ko';
-  let text = String(reply || '').trim();
+  let text = repairFestivalChipInstructionLeak(reply, options);
   text = stripMooniUiChipLabels(text);
   text = rewriteLeadingBareFestivalPeriod(text, options);
   if (!isFestivalLodgingAsk(options)) {
@@ -3261,11 +3388,11 @@ export function polishFestivalModelReplyBaseline(reply, options = {}) {
   }
   text = stripFestivalUnaskedRouteAndFood(text, options);
   text = stripMooniUiChipLabels(text);
-  return text;
+  return repairFestivalChipInstructionLeak(text, options);
 }
 
 export function polishFestivalModelReply(reply, options = {}) {
-  let text = String(reply || '').trim();
+  let text = repairFestivalChipInstructionLeak(reply, options);
   if (String(options.locale || 'ko').slice(0, 2) !== 'en') text = dropFestivalPlannerSentences(text);
   text = stripDisallowedFestivalLinks(text, options);
   text = stripMooniUiChipLabels(text);
@@ -3365,7 +3492,7 @@ export function polishFestivalModelReply(reply, options = {}) {
   }
   text = stripFestivalUnaskedRouteAndFood(text, options);
   text = stripMooniUiChipLabels(text);
-  return text;
+  return repairFestivalChipInstructionLeak(text, options);
 }
 
 function trimBoundFestivalHintForAccess(hint, locale = 'ko') {
@@ -4370,47 +4497,84 @@ export function selectMooniKoreaFestivalUpcomingFallback(items, opts) {
  *   upcoming?: { title: string, periodLabel: string, url: string }[],
  * }} input
  */
-export function buildMooniKoreaFestivalZeroCandidateUserReply(input = {}) {
-  const isEn = mooniReplyLocaleIsEn(input.locale);
-  const regionKo =
-    extractMooniFestivalLocationQuery(input.userText || '', input.boundPlaceName || '') ||
-    String(input.boundPlaceName || '').trim() ||
-    (isEn ? 'that area' : '해당 지역');
+const KNOWN_FESTIVAL_WINDOW_LABELS = new Set([
+  '이번 주',
+  '다음 주',
+  '다다음 주',
+  '이번 주말',
+  '이번 주 주말',
+  '다음 주 주말',
+  '다다음 주 주말',
+  '앞으로 30일',
+]);
+
+function safeFestivalWindowLabel(label, isEn) {
+  const text = String(label || '').trim();
+  const known = KNOWN_FESTIVAL_WINDOW_LABELS.has(text) && !isMooniInstructionFragment(text);
+  const windowKo = known ? text : '앞으로 30일';
+  return isEn ? englishMooniFestivalWindowLabel(windowKo) : windowKo;
+}
+
+function safeFestivalTemplateRegion(userText, boundPlaceName, isEn) {
+  const generic = isEn ? 'that area' : '해당 지역';
+  const bound = String(boundPlaceName || '').trim();
+  const boundSafe = scrubMooniFestivalTemplatePlace(bound, '') || '';
+  const extracted = extractMooniFestivalLocationQuery(userText || '', boundSafe);
+  let regionKo = scrubMooniFestivalTemplatePlace(
+    extracted || boundSafe,
+    boundSafe || generic,
+  ) || generic;
+  if (isMooniInstructionFragment(regionKo)) regionKo = generic;
   const region = isEn ? englishMooniFestivalRegionName(regionKo) : regionKo;
-  const windowKo = String(input.window?.label || (isEn ? 'this week' : '이번 주')).trim();
-  const windowLabel = isEn ? englishMooniFestivalWindowLabel(windowKo) : windowKo;
+  if (isMooniInstructionFragment(region)) return generic;
+  return region || generic;
+}
+
+export function buildMooniKoreaFestivalZeroCandidateUserReply(input = {}) {
+  if (isMooniChipInstructionTurn(input.userText, input.chipId)) return '';
+
+  const isEn = mooniReplyLocaleIsEn(input.locale);
+  const region = safeFestivalTemplateRegion(input.userText, input.boundPlaceName, isEn);
+  const windowLabel = safeFestivalWindowLabel(input.window?.label, isEn);
   const koreaUrl = GATEO_KOREA_FESTIVAL_BASE;
   const upcoming = Array.isArray(input.upcoming) ? input.upcoming : [];
+  const genericRegion = isEn ? 'that area' : '해당 지역';
 
-  if (isEn) {
+  const compose = (place) => {
+    if (isEn) {
+      let body =
+        `GATEO has no verified festivals overlapping ${place} for ${windowLabel}. ` +
+        `You can browse confirmed dates on [GATEO Korean festivals](${koreaUrl}).`;
+      if (upcoming.length) {
+        const lines = upcoming.map(
+          (c) => `- **[${c.title}](${c.url})** (${c.periodLabel})`,
+        );
+        body += `\n\nUpcoming verified festivals nearby:\n${lines.join('\n')}`;
+      }
+      return body.trim();
+    }
+
+    const otherEventsAsk = /(?:다른|또)\s*(?:축제|행사)/.test(String(input.userText || ''));
+    const regionPhrase = otherEventsAsk
+      ? '다른 행사와 '
+      : place
+        ? `${place}${koreanTopicWaOrGwa(place)} `
+        : '';
     let body =
-      `GATEO has no verified festivals overlapping ${region} for ${windowLabel}. ` +
-      `You can browse confirmed dates on [GATEO Korean festivals](${koreaUrl}).`;
+      `GATEO가 확인한 축제 중 ${windowLabel} ${regionPhrase}겹치는 행사는 없어요. ` +
+      `[GATEO 축제 목록](${koreaUrl})에서 날짜가 확인된 축제를 볼 수 있어요.`;
     if (upcoming.length) {
       const lines = upcoming.map(
         (c) => `- **[${c.title}](${c.url})** (${c.periodLabel})`,
       );
-      body += `\n\nUpcoming verified festivals nearby:\n${lines.join('\n')}`;
+      body += `\n\n가까운 날짜의 확인된 축제:\n${lines.join('\n')}`;
     }
     return body.trim();
-  }
+  };
 
-  const otherEventsAsk = /(?:다른|또)\s*(?:축제|행사)/.test(String(input.userText || ''));
-  const regionPhrase = otherEventsAsk
-    ? '다른 행사와 '
-    : region
-      ? `${region}${koreanTopicWaOrGwa(region)} `
-      : '';
-  let body =
-    `GATEO가 확인한 축제 중 ${windowLabel} ${regionPhrase}겹치는 행사는 없어요. ` +
-    `[GATEO 축제 목록](${koreaUrl})에서 날짜가 확인된 축제를 볼 수 있어요.`;
-  if (upcoming.length) {
-    const lines = upcoming.map(
-      (c) => `- **[${c.title}](${c.url})** (${c.periodLabel})`,
-    );
-    body += `\n\n가까운 날짜의 확인된 축제:\n${lines.join('\n')}`;
-  }
-  return body.trim();
+  const body = compose(region);
+  if (isMooniInstructionFragment(body)) return compose(genericRegion);
+  return body;
 }
 
 const NO_MATCH_KO = '매칭 없음';
@@ -4682,6 +4846,8 @@ export function buildMooniBoundFestivalSystemHint(festivalContext, locale = 'ko'
  * @returns {string}
  */
 export function buildMooniKoreaFestivalSystemHint(input) {
+  const boundTitle = String(input.festivalContext?.title || '').trim();
+  if (!boundTitle && isMooniChipInstructionTurn(input.userText, input.chipId)) return '';
   if (!isMooniKoreaFestivalQuery(input.userText)) return '';
 
   const boundCtx = input.festivalContext;
@@ -4700,14 +4866,17 @@ export function buildMooniKoreaFestivalSystemHint(input) {
   const locale = String(input.locale || 'ko').slice(0, 2);
   const isEn = locale === 'en';
   const scopedFestival = input.scopedFestivalEnabled === true;
-  const regionLabel =
+  const genericRegion = isEn ? 'the area' : '해당 지역';
+  const boundPlace = String(input.boundPlaceName || '').trim();
+  let regionLabel = scrubMooniFestivalTemplatePlace(
     extractMooniFestivalLocationQuery(
       input.userText,
-      input.boundPlaceName,
+      boundPlace,
       input.boundSpot ?? null,
-    ) ||
-    String(input.boundPlaceName || '').trim() ||
-    (isEn ? 'the area' : '해당 지역');
+    ) || boundPlace,
+    boundPlace || genericRegion,
+  ) || genericRegion;
+  if (isMooniInstructionFragment(regionLabel)) regionLabel = genericRegion;
   const regionWa = koreanTopicWaOrGwa(regionLabel);
 
   if (!candidates.length) {
@@ -4765,16 +4934,19 @@ export function mergeMooniKoreaFestivalReply(aiReply, ctx) {
     !candidates.length &&
     shouldMooniScopedFestivalReplaceEmptyCandidates(userText, {
       boundFestivalSession: ctx?.boundFestivalSession === true,
+      chipId: ctx?.chipId,
     })
   ) {
     const window = parseMooniFestivalTimeWindow(userText, ctx?.now);
-    return buildMooniKoreaFestivalZeroCandidateUserReply({
+    const replacement = buildMooniKoreaFestivalZeroCandidateUserReply({
       locale: ctx?.locale,
       userText,
+      chipId: ctx?.chipId,
       boundPlaceName: ctx?.boundPlaceName,
       window,
       upcoming: ctx?.upcomingFallback,
     });
+    if (String(replacement || '').trim()) return replacement;
   }
 
   if (!candidates.length) return aiReply ?? '';
@@ -4920,6 +5092,10 @@ export async function resolveMooniChatKoreaFestivalHint(input = {}) {
     };
   }
 
+  if (isMooniChipInstructionTurn(userText, input.chipId)) {
+    return { hint: '', candidates: [] };
+  }
+
   if (!isMooniKoreaFestivalQuery(userText)) {
     return { hint: '', candidates: [] };
   }
@@ -4955,6 +5131,7 @@ export async function resolveMooniChatKoreaFestivalHint(input = {}) {
 
   const hint = buildMooniKoreaFestivalSystemHint({
     userText,
+    chipId: input.chipId,
     boundPlaceName: input.boundPlaceName,
     boundSpot: input.boundSpot ?? null,
     items,

@@ -25,6 +25,7 @@ import {
 } from '../../../pages/Home/lib/mooniKoreaFestivalTurn.js';
 import { buildFestivalMooniPolishOptions } from '../../../pages/Home/lib/festivalMooniRequest.js';
 import { fitMooniKoreaFestivalHint } from '../../../shared/korea/mooniKoreaFestivalHintBudget.js';
+import { repairFestivalChipInstructionLeak } from '../../../shared/korea/mooniKoreaFestivalReplyPolish.js';
 import {
   buildMooniContinueUserText,
   buildMooniGeminiHistory,
@@ -148,7 +149,17 @@ export const usePlaceChat = (options = {}) => {
           userText,
         },
       );
-      const aiReply = geminiResult.text;
+      const aiReply = repairFestivalChipInstructionLeak(geminiResult.text, {
+        locale: params.locale || locale,
+        chipId: params.chipId,
+        userText,
+        contentId: params.festivalContext?.contentId,
+        festivalTitle: params.festivalContext?.title,
+        program: params.festivalContext?.program,
+        sceneOverview: params.festivalContext?.sceneOverview,
+        overview: params.festivalContext?.overview,
+        timeText: params.festivalContext?.timeText,
+      });
 
       const tripSession = mergeMooniTripSession(params.tripSession, extractMooniTripFacts(userText, {
         destinationName,
@@ -190,6 +201,8 @@ export const usePlaceChat = (options = {}) => {
           mooniTurnContext: {
             geminiParams,
             stripPhantomTicketMention,
+            userText,
+            chipId: params.chipId ?? null,
           },
           bookingActions: booking.show ? booking.actions : null,
           bookingMeta: booking.show
@@ -235,12 +248,22 @@ export const usePlaceChat = (options = {}) => {
           continuationText: geminiResult.text,
           stripPhantomTicketMention: ctx.stripPhantomTicketMention,
         });
+        const visibleText = repairFestivalChipInstructionLeak(displayText, {
+          locale: ctx.geminiParams.locale || locale,
+          chipId: ctx.chipId,
+          userText: ctx.userText,
+          contentId: ctx.geminiParams.festivalPolish?.contentId,
+          festivalTitle: ctx.geminiParams.festivalPolish?.festivalTitle,
+          program: ctx.geminiParams.festivalPolish?.program,
+          sceneOverview: ctx.geminiParams.festivalPolish?.sceneOverview,
+          timeText: ctx.geminiParams.festivalPolish?.timeText,
+        });
         setChatHistory((prev) =>
           prev.map((m, i) =>
             i === modelIdx
               ? {
                   ...m,
-                  text: displayText,
+                  text: visibleText,
                   mooniRawReply: mergedRaw,
                   truncated: geminiResult.truncated,
                   finishReason: geminiResult.finishReason,

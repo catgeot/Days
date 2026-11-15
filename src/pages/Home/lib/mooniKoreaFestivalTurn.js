@@ -4,6 +4,10 @@ import {
   isDomesticKoreaLocation,
 } from '../../../utils/tourApiMatch.js';
 import { isPlanItineraryIntentText } from '../../../utils/chatIntentClassifier.js';
+import {
+  isMooniChipInstructionTurn,
+  isMooniInstructionFragment,
+} from './mooniChipInstruction.js';
 
 const FESTIVAL_INTENT_RE = /축제|페스티벌|festival/i;
 
@@ -119,11 +123,22 @@ export function mooniKoreaFestivalQueryConflictsOverseasBound(
  * @param {string} [boundPlaceName]
  * @param {object | null | undefined} [boundSpot]
  */
+function safeBoundFestivalPlace(boundPlaceName) {
+  const bound = String(boundPlaceName || '').trim();
+  if (!bound || bound === 'MOONi') return '';
+  if (isMooniInstructionFragment(bound) || isMooniChipInstructionTurn(bound, '')) return '';
+  return bound;
+}
+
 export function extractMooniFestivalLocationQueryText(
   userText,
   boundPlaceName = '',
   boundSpot = null,
 ) {
+  if (isMooniChipInstructionTurn(userText, '')) {
+    return safeBoundFestivalPlace(boundPlaceName);
+  }
+
   let t = String(userText || '')
     .replace(FESTIVAL_INTENT_RE, ' ')
     .replace(FESTIVAL_TIME_STRIP_RE, ' ')
@@ -146,16 +161,15 @@ export function extractMooniFestivalLocationQueryText(
   if (q.length >= 2) {
     const trimmed = t.trim();
     if (JUNK_FESTIVAL_REGION_QUERY_RE.test(trimmed.replace(/\s+/g, ''))) {
-      const bound = String(boundPlaceName || '').trim();
-      if (bound && bound !== 'MOONi') return bound;
-      return '';
+      return safeBoundFestivalPlace(boundPlaceName);
+    }
+    if (isMooniInstructionFragment(trimmed) || isMooniChipInstructionTurn(trimmed, '')) {
+      return safeBoundFestivalPlace(boundPlaceName);
     }
     return trimmed;
   }
 
-  const bound = String(boundPlaceName || '').trim();
-  if (bound && bound !== 'MOONi') return bound;
-  return '';
+  return safeBoundFestivalPlace(boundPlaceName);
 }
 
 /**
@@ -188,7 +202,7 @@ export function shouldOmitMooniGeminiHistoryForKoreaFestivalTurn(
 }
 
 const BOUND_FESTIVAL_OTHER_EVENTS_RE =
-  /(?:다른|또|그\s*밖|비슷한)\s*(?:축제|행사)|(?:축제|행사).*(?:뭐\s*있|추천|알려)/;
+  /(?:다른|또|그\s*밖|비슷한)\s*(?:축제|행사)|(?:축제|행사)\s*(?:뭐\s*있|뭐있|추천|알려)/;
 
 const BOUND_FESTIVAL_SCHEDULE_IN_PERIOD_RE =
   /기간\s*중.*(?:일정|토요일|일요일|하루|당일)|(?:토요일|일요일|하루|당일).*(?:일정|코스|동선)/;
@@ -227,9 +241,10 @@ export function isFestivalOperatingScheduleAsk(userText, chipId = '') {
 /**
  * scoped festival «0건» 답으로 AI 본문을 덮어쓸지 — 축제 상세(바운드)에서 일정 질문은 제외.
  * @param {string} userText
- * @param {{ boundFestivalSession?: boolean }} [opts]
+ * @param {{ boundFestivalSession?: boolean, chipId?: string }} [opts]
  */
 export function shouldMooniScopedFestivalReplaceEmptyCandidates(userText, opts = {}) {
+  if (isMooniChipInstructionTurn(userText, opts.chipId)) return false;
   if (opts.boundFestivalSession !== true) return true;
   const text = String(userText || '');
   if (isPlanItineraryIntentText(text)) return false;

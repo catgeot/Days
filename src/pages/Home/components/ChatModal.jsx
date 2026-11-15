@@ -1399,6 +1399,7 @@ const ChatModal = ({
       const festivalMergedReply = mergeMooniKoreaFestivalReply(aiReply, {
         candidates: mooniFestivalCandidates,
         userText: cleanText,
+        chipId,
         boundPlaceName: festivalBoundPlaceName,
         locale: i18n.language,
         upcomingFallback: mooniFestivalUpcomingFallback,

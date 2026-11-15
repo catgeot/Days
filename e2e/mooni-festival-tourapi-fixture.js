@@ -54,6 +54,52 @@ const TRANSPORT_FESTIVAL_DETAIL_STUBS = {
       mapy: '37.7557770169',
     },
   },
+  '2048902': {
+    ok: true,
+    contentId: '2048902',
+    intro: {
+      contentId: '2048902',
+      contentTypeId: '15',
+      eventStartDate: '20261128',
+      eventEndDate: '20270110',
+      eventplace: '해운대해수욕장',
+      playtime: '18:00~23:00',
+      program: '크루즈게이트\n터널게이트',
+      mapx: '129.160384',
+      mapy: '35.158698',
+    },
+    common: {
+      contentId: '2048902',
+      title: '해운대 빛축제',
+      addr1: '부산광역시 해운대구 해운대해변로 264',
+      overview: '해운대 밤바다에 빛 조형이 이어져요.',
+      mapx: '129.160384',
+      mapy: '35.158698',
+    },
+  },
+  '1095732': {
+    ok: true,
+    contentId: '1095732',
+    intro: {
+      contentId: '1095732',
+      contentTypeId: '15',
+      eventStartDate: '20261211',
+      eventEndDate: '20270131',
+      eventplace: '청계천',
+      playtime: '17:30~22:30',
+      program: '청계천 등불\n빛 조형',
+      mapx: '126.988270',
+      mapy: '37.569000',
+    },
+    common: {
+      contentId: '1095732',
+      title: '서울빛초롱축제',
+      addr1: '서울특별시 중구 청계천로',
+      overview: '청계천을 따라 등이 켜져요.',
+      mapx: '126.988270',
+      mapy: '37.569000',
+    },
+  },
 };
 
 const CORS = {
