@@ -17,6 +17,7 @@ globalThis.__VITE_ENV__ = {
   VITE_GATEO_REELS_BASE_URL: process.env.VITE_GATEO_REELS_BASE_URL || '',
   VITE_GATEO_EXPLORE_SEARCH_SUBMIT_PARITY: process.env.VITE_GATEO_EXPLORE_SEARCH_SUBMIT_PARITY || '',
   VITE_GATEO_EXPLORE_V2: process.env.VITE_GATEO_EXPLORE_V2 || '',
+  VITE_GATEO_EXPLORE_CHOSEONG: process.env.VITE_GATEO_EXPLORE_CHOSEONG || '',
 };
 
 register('./src-resolve-loader.mjs', import.meta.url);

@@ -32,6 +32,8 @@ export const GATEO_ENV_FLAG_NAMES = {
   MOONI_SCOPED_FESTIVAL: 'VITE_GATEO_MOONI_SCOPED_FESTIVAL',
   /** Festival «가는 법» city input. Default on. Only `"0"` restores the old chip row. */
   MOONI_ORIGIN_INPUT: 'VITE_GATEO_MOONI_ORIGIN_INPUT',
+  /** Explore choseong suggestions. Default on. Only `"0"` keeps the pre-choseong matcher. */
+  EXPLORE_CHOSEONG: 'VITE_GATEO_EXPLORE_CHOSEONG',
   /** Explore page v2 (step 2+). Default off. Monthly picks row is code default ON and ignores this flag. */
   EXPLORE_V2: 'VITE_GATEO_EXPLORE_V2',
   /** SSOT 실문장 desc도 place_chat_intro로 요약 칸 표시. 기본 off. */
@@ -182,6 +184,12 @@ export function isGateoPlaceIntroOverSsotEnabled() {
 export function isGateoMooniOriginInputEnabled() {
   const name = GATEO_ENV_FLAG_NAMES.MOONI_ORIGIN_INPUT;
   const raw = import.meta.env?.[name] ?? globalThis.__VITE_ENV__?.[name];
+  return String(raw ?? '').trim() !== '0';
+}
+
+/** Explore choseong search. Unset is on. The string `"0"` is the only off switch. */
+export function isGateoExploreChoseongEnabled() {
+  const raw = import.meta.env?.VITE_GATEO_EXPLORE_CHOSEONG;
   return String(raw ?? '').trim() !== '0';
 }
 
