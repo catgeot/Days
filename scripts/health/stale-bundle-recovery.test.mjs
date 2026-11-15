@@ -3,6 +3,8 @@ import assert from 'node:assert/strict';
 import {
   STALE_BUNDLE_LEAVE_WINDOW_MS,
   STALE_BUNDLE_RELOAD_COOLDOWN_MS,
+  STALE_BUNDLE_BOOT_CLEAR_MS,
+  cancelStaleBundleBootClear,
   clearStaleBundleReloadGuard,
   decideStaleBundleRecoveryAction,
   getEntryBundleId,
@@ -10,8 +12,11 @@ import {
   installStaleBundleRecovery,
   markStaleBundleReloadAttempt,
   readStaleBundleReloadGuard,
+  resetLazyChunkTracking,
+  scheduleStaleBundleBootClear,
   shouldIgnoreStaleBundleSignal,
   staleBundleGuardKey,
+  trackLazyChunkLoad,
 } from '../../src/shared/lib/staleBundleRecovery.js';
 
 function mockStorage() {
@@ -191,6 +196,125 @@ describe('staleBundleRecovery guard', () => {
       assert.equal(reloads, 1, `persisted=${persisted}`);
       uninstall();
     }
+  });
+
+  it('boot success keeps the reload guard until the grace period runs', () => {
+    const storage = mockStorage();
+    const bundleId = '/assets/index-boot.js';
+    markStaleBundleReloadAttempt(storage, bundleId, 10);
+    let scheduledMs = 0;
+    let clearFn = null;
+    let cancelled = false;
+    scheduleStaleBundleBootClear({
+      storage,
+      bundleId,
+      schedule: (ms, fn) => {
+        scheduledMs = ms;
+        clearFn = fn;
+        return 7;
+      },
+      cancel: () => {
+        cancelled = true;
+      },
+    });
+    assert.equal(scheduledMs, STALE_BUNDLE_BOOT_CLEAR_MS);
+    assert.deepEqual(readStaleBundleReloadGuard(storage, bundleId), { at: 10 });
+
+    const clock = createLeaveClock();
+    let reloads = 0;
+    const uninstall = installStaleBundleRecovery({
+      window: clock.target,
+      storage,
+      getBundleId: () => bundleId,
+      now: clock.now,
+      schedule: clock.schedule,
+      cancel: clock.cancel,
+      reload: () => {
+        reloads += 1;
+      },
+    });
+    clock.dispatch('vite:preloadError', { preventDefault() {} });
+    assert.equal(reloads, 0);
+    assert.equal(cancelled, true);
+    assert.deepEqual(readStaleBundleReloadGuard(storage, bundleId), { at: 10 });
+
+    clearFn();
+    assert.equal(readStaleBundleReloadGuard(storage, bundleId), null);
+    clock.dispatch('vite:preloadError', { preventDefault() {} });
+    assert.equal(reloads, 1);
+    uninstall();
+    cancelStaleBundleBootClear();
+  });
+
+  it('leave window does not cancel the deferred guard clear', () => {
+    const storage = mockStorage();
+    const bundleId = '/assets/index-leave-boot.js';
+    let bootCancels = 0;
+    scheduleStaleBundleBootClear({
+      storage,
+      bundleId,
+      schedule: () => 42,
+      cancel: () => {
+        bootCancels += 1;
+      },
+    });
+    const clock = createLeaveClock();
+    const uninstall = installStaleBundleRecovery({
+      window: clock.target,
+      storage,
+      getBundleId: () => bundleId,
+      now: clock.now,
+      schedule: clock.schedule,
+      cancel: clock.cancel,
+      reload: () => {},
+    });
+    clock.dispatch('beforeunload');
+    clock.dispatch('vite:preloadError', { preventDefault() {} });
+    assert.equal(bootCancels, 0);
+    uninstall();
+    cancelStaleBundleBootClear();
+  });
+
+  it('a lazy chunk that never settles does not clear the reload guard', async () => {
+    resetLazyChunkTracking();
+    const storage = mockStorage();
+    const bundleId = '/assets/index-hang.js';
+    markStaleBundleReloadAttempt(storage, bundleId, 10);
+    let scheduled = false;
+    trackLazyChunkLoad(new Promise(() => {}), {
+      storage,
+      bundleId,
+      schedule: () => {
+        scheduled = true;
+        return 1;
+      },
+      cancel: () => {},
+    });
+    await new Promise((resolve) => setTimeout(resolve, 30));
+    assert.equal(scheduled, false);
+    assert.deepEqual(readStaleBundleReloadGuard(storage, bundleId), { at: 10 });
+    resetLazyChunkTracking();
+  });
+
+  it('a settled lazy chunk schedules the guard clear', async () => {
+    resetLazyChunkTracking();
+    const storage = mockStorage();
+    const bundleId = '/assets/index-settled.js';
+    markStaleBundleReloadAttempt(storage, bundleId, 10);
+    let scheduledMs = 0;
+    trackLazyChunkLoad(Promise.resolve({ default() {} }), {
+      storage,
+      bundleId,
+      schedule: (ms) => {
+        scheduledMs = ms;
+        return 1;
+      },
+      cancel: () => {},
+    });
+    await new Promise((resolve) => setTimeout(resolve, 20));
+    assert.equal(scheduledMs, STALE_BUNDLE_BOOT_CLEAR_MS);
+    assert.deepEqual(readStaleBundleReloadGuard(storage, bundleId), { at: 10 });
+    resetLazyChunkTracking();
   });
 
   it('clearStaleBundleReloadGuard allows a fresh reload decision', () => {

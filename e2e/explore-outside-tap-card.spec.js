@@ -79,7 +79,12 @@ async function openExploreReady(page) {
 }
 
 async function showRomeCard(page, input) {
-  await input.fill('로마');
+  // WebKit이 바쁠 때 fill 한 번이 검색어를 '로마로마'로 넣는다. 카드 탭의 전제는 검색어 로마다.
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    await input.fill('로마');
+    if ((await input.inputValue()) === '로마') break;
+  }
+  await expect(input).toHaveValue('로마');
   const card = page.locator(CARD).first();
   await expect(card).toBeVisible({ timeout: 30_000 });
   return card;
@@ -137,16 +142,15 @@ test.describe('explore outside tap then card', () => {
         window.__heldImport = import(`/assets/hold-probe-${Date.now()}.js`);
       });
       await expect.poll(() => hold.count, { timeout: 5_000 }).toBeGreaterThan(heldBefore);
+      // 바깥 탭과 카드 탭 사이 wall clock은 tap·evaluate·scrollIntoView를 포함한다.
+      // CI WebKit은 그 합이 685ms라 600ms에서 장소 이동 검사 전에 끊겼다. 레이스는 hold가 청크를 붙잡고 있는 동안의 탭이다.
       const outside = await outsideTapPoint(page);
-      const started = Date.now();
       await page.touchscreen.tap(outside[0], outside[1]);
       const closed = await page.evaluate(() => !document.querySelector('[data-search-popover]'));
       expect(closed, `iteration ${i} popover stayed open`).toBe(true);
       const cardAt = await cardTapPoint(page);
       const mark = docs.length;
       await page.touchscreen.tap(cardAt[0], cardAt[1]);
-      const gap = Date.now() - started;
-      expect(gap, `iteration ${i} gap ${gap}ms`).toBeLessThan(600);
       await expect(page).toHaveURL(PLACE, { timeout: 20_000 });
       await page.waitForTimeout(700);
       const after = docs.slice(mark).map((url) => new URL(url).pathname + new URL(url).search);

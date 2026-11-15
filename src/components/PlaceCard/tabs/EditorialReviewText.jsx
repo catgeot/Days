@@ -1,4 +1,5 @@
-import React, { lazy, Suspense } from 'react';
+import React, { Suspense } from 'react';
+import { lazyDefault as lazy } from '../../../shared/lib/lazyDefault.js';
 import { reviewPlainTextForAccessibility } from '../../../utils/reviewInlineMarkdown.js';
 import { ReviewPlainFallbackBoundary } from './ReviewPlainFallbackBoundary.jsx';
 

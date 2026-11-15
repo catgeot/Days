@@ -6,6 +6,9 @@ import { useRef, useCallback, useEffect } from 'react';
  * pointerdown 없는 키보드 click/Enter만 handleClick으로 연다.
  */
 let releaseAnywhereSuppressUntil = 0;
+let pendingCompatClicks = 0;
+let compatTimer = 0;
+const COMPAT_CLICK_MS = 1500;
 
 function blockFollowupClick(ms) {
   const until = Date.now() + ms;
@@ -14,6 +17,32 @@ function blockFollowupClick(ms) {
 
 function followupClickBlocked() {
   return Date.now() < releaseAnywhereSuppressUntil;
+}
+
+/** pointerup이 이미 연 제스처의 호환 click. 메인 스레드가 늦어도 한 번만 삼킨다. */
+export function noteCompatClick() {
+  pendingCompatClicks += 1;
+  if (compatTimer) clearTimeout(compatTimer);
+  compatTimer = setTimeout(() => {
+    pendingCompatClicks = 0;
+    compatTimer = 0;
+  }, COMPAT_CLICK_MS);
+}
+
+export function takeCompatClick() {
+  if (pendingCompatClicks <= 0) return false;
+  pendingCompatClicks -= 1;
+  if (pendingCompatClicks === 0 && compatTimer) {
+    clearTimeout(compatTimer);
+    compatTimer = 0;
+  }
+  return true;
+}
+
+export function resetCompatClicks() {
+  pendingCompatClicks = 0;
+  if (compatTimer) clearTimeout(compatTimer);
+  compatTimer = 0;
 }
 
 /**
@@ -128,6 +157,7 @@ const useClickWithDragPrevention = (onClick, options = {}) => {
       if (trackOnWindow && didMove) blockFollowupClick(1000);
       if (!didMove && duration >= minMs && duration < maxMs) {
         if (trackOnWindow) blockFollowupClick(400);
+        noteCompatClick();
         onClickRef.current?.(payload);
       }
     };
@@ -198,6 +228,7 @@ const useClickWithDragPrevention = (onClick, options = {}) => {
     const duration = Date.now() - startTime.current;
     const { minTime: minMs, timeThreshold: maxMs } = optsRef.current;
     if (!moved.current && duration >= minMs && duration < maxMs) {
+      noteCompatClick();
       onClickRef.current?.(data);
     }
     reset();
@@ -214,6 +245,7 @@ const useClickWithDragPrevention = (onClick, options = {}) => {
   }, [reset]);
 
   const handleClick = useCallback((e, data) => {
+    if (takeCompatClick()) return;
     if (followupClickBlocked()) return;
     const pointerType = e?.pointerType;
     if (pointerType === 'mouse' || pointerType === 'touch' || pointerType === 'pen') return;

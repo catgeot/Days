@@ -1,4 +1,5 @@
-import React, { lazy, Suspense } from 'react';
+import React, { Suspense } from 'react';
+import { lazyDefault as lazy } from '../../shared/lib/lazyDefault.js';
 import { useTranslation } from 'react-i18next';
 import {
   FESTIVAL_ROAD_MAP_MIN_POINTS,

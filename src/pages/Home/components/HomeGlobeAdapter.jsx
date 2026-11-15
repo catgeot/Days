@@ -1,6 +1,5 @@
 import React, {
   forwardRef,
-  lazy,
   Suspense,
   useCallback,
   useEffect,
@@ -10,6 +9,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import { lazyDefault as lazy } from '../../../shared/lib/lazyDefault.js';
 const HomeGlobeMapbox = lazy(() => import('./HomeGlobeMapbox'));
 const HomeGlobeLegacy = lazy(() => import('./HomeGlobe'));
 import { resolveHomeGlobeEngine } from './resolveHomeGlobeEngine';
