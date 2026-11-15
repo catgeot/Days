@@ -40,6 +40,69 @@ export function placeReviewFocusSearchWithoutReview(searchParams) {
   return next;
 }
 
+/** History state kept after `?review=` is replaced away, so Back restores the same review. */
+export const PLACE_REVIEW_FOCUS_STATE_ID = 'focusedPlaceReviewId';
+export const PLACE_REVIEW_FOCUS_STATE_SLUG = 'focusedPlaceReviewSlug';
+
+/**
+ * Move the deep-linked review to index 0. Date order stays for every other row.
+ * Same array reference when nothing changes.
+ * @param {Array<{ id?: string | number }> | null | undefined} reviews
+ * @param {string | number | null | undefined} focusId
+ */
+export function orderPlaceReviewsForDeepLink(reviews, focusId) {
+  if (!Array.isArray(reviews) || reviews.length < 2) return reviews;
+  const id = String(focusId ?? '').trim();
+  if (!id) return reviews;
+  const index = reviews.findIndex((review) => String(review?.id ?? '') === id);
+  if (index <= 0) return reviews;
+  return [reviews[index], ...reviews.slice(0, index), ...reviews.slice(index + 1)];
+}
+
+/**
+ * @param {unknown} prevState
+ * @param {string | number | null | undefined} reviewId
+ * @param {string | null | undefined} placeSlug
+ */
+export function withPlaceReviewFocusHistory(prevState, reviewId, placeSlug) {
+  const id = String(reviewId ?? '').trim();
+  const slug = String(placeSlug ?? '').trim();
+  const prev = prevState && typeof prevState === 'object' ? prevState : {};
+  if (!id || !slug) return prevState ?? null;
+  return {
+    ...prev,
+    [PLACE_REVIEW_FOCUS_STATE_ID]: id,
+    [PLACE_REVIEW_FOCUS_STATE_SLUG]: slug,
+  };
+}
+
+/**
+ * @param {unknown} state
+ * @param {string | null | undefined} placeSlug
+ * @returns {string | null}
+ */
+export function readPlaceReviewFocusIdFromHistory(state, placeSlug) {
+  if (!state || typeof state !== 'object') return null;
+  const slug = String(placeSlug ?? '').trim();
+  const stateSlug = String(state[PLACE_REVIEW_FOCUS_STATE_SLUG] ?? '').trim();
+  if (!slug || stateSlug !== slug) return null;
+  const id = String(state[PLACE_REVIEW_FOCUS_STATE_ID] ?? '').trim();
+  return id || null;
+}
+
+/** React Router keeps location state on `history.state.usr`. Back can restore it before the router does. */
+export function readBrowserHistoryUserState() {
+  if (typeof window === 'undefined' || !window.history) return null;
+  const raw = window.history.state;
+  if (!raw || typeof raw !== 'object') return null;
+  if (raw.usr && typeof raw.usr === 'object') return raw.usr;
+  return raw;
+}
+
+export function readPlaceReviewFocusIdFromBrowser(placeSlug) {
+  return readPlaceReviewFocusIdFromHistory(readBrowserHistoryUserState(), placeSlug);
+}
+
 /**
  * @param {string | null | undefined} placePath
  * @param {string | number | null | undefined} reviewId
@@ -58,16 +121,26 @@ export function buildPlaceReviewsHref(placePath, reviewId) {
  * @param {ParentNode} [root]
  * @returns {HTMLElement | null}
  */
+function reviewSelectorId(value) {
+  return String(value ?? '').replace(/"/g, '');
+}
+
 export function findPlaceReviewElement(reviewId, root = null) {
   const doc = root?.ownerDocument || root || globalThis.document;
   if (!doc) return null;
   const domId = placeReviewDomId(reviewId);
+  if (root && typeof root.querySelector === 'function') {
+    if (domId) {
+      const byId = root.querySelector(`[id="${reviewSelectorId(domId)}"]`);
+      if (byId) return byId;
+    }
+    return root.querySelector(`[data-review-id="${reviewSelectorId(reviewId)}"]`);
+  }
   if (domId && typeof doc.getElementById === 'function') {
     const byId = doc.getElementById(domId);
     if (byId) return byId;
   }
-  const scope = typeof root?.querySelector === 'function' ? root : doc;
-  return scope.querySelector?.(`[data-review-id="${reviewId}"]`) ?? null;
+  return doc.querySelector?.(`[data-review-id="${reviewSelectorId(reviewId)}"]`) ?? null;
 }
 
 export function prefersReducedMotionForReviewFocus() {
@@ -122,7 +195,9 @@ export function measurePlaceReviewScrollHeaderOffset(scrollRoot) {
  * @returns {boolean}
  */
 export function scrollPlaceReviewIntoView(scrollRoot, reviewId, options = {}) {
-  const el = findPlaceReviewElement(reviewId);
+  const el = scrollRoot
+    ? findPlaceReviewElement(reviewId, scrollRoot)
+    : findPlaceReviewElement(reviewId);
   if (!el) return false;
 
   const headerOffset = options.headerOffset ?? measurePlaceReviewScrollHeaderOffset(scrollRoot);
@@ -255,7 +330,9 @@ export function startPlaceReviewFocusSession(reviewId, scrollRoot, options = {})
     const attempt = () => {
       if (settled) return;
 
-      const el = findPlaceReviewElement(reviewId);
+      const el = scrollRoot
+        ? findPlaceReviewElement(reviewId, scrollRoot)
+        : findPlaceReviewElement(reviewId);
       const root = scrollRoot || el?.closest('[data-place-reviews-scroll-root]');
       const ready = el && root && root.clientHeight > 0 && el.offsetParent !== null;
 

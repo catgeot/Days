@@ -15,6 +15,14 @@ export function placePathSuffixForMediaMode(mode) {
   return `/${tab}`;
 }
 
+/** Browser path → media mode. Null when the path is not a place card. */
+export function mediaModeFromPathname(pathname) {
+  const path = String(pathname || '').split('?')[0].split('#')[0];
+  const parts = path.split('/').filter(Boolean);
+  if (parts[0] !== 'place' || !parts[1]) return null;
+  return mediaModeFromUrlTab(parts[2] || 'gallery');
+}
+
 /** @param {string | undefined} tab */
 export function mediaModeFromUrlTab(tab) {
   const key = String(tab || 'gallery').trim().toLowerCase();

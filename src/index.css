@@ -647,6 +647,11 @@ body {
   animation: place-review-focus-fade 1.5s ease-out forwards;
 }
 
+.place-review-focus-current {
+  outline: 2px solid rgba(59, 130, 246, 0.55);
+  outline-offset: 2px;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .place-review-focus-highlight {
     animation: none;

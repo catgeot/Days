@@ -3,13 +3,19 @@ import test from 'node:test';
 import { JSDOM } from 'jsdom';
 import {
   PLACE_REVIEW_ANCHOR_PREFIX,
+  PLACE_REVIEW_FOCUS_STATE_ID,
   buildPlaceReviewsHref,
+  orderPlaceReviewsForDeepLink,
   parsePlaceReviewFocusId,
   placeReviewDomId,
   placeReviewFocusSearchWithoutReview,
+  readPlaceReviewFocusIdFromBrowser,
+  readPlaceReviewFocusIdFromHistory,
   startPlaceReviewFocusSession,
+  withPlaceReviewFocusHistory,
 } from '../../src/utils/placeReviewFocus.js';
 import { EDITORIAL_REVIEW_DEEPLINK_QUERY_PARAM } from '../../src/logbookOfficialReviews/constants.js';
+import { mediaModeFromPathname } from '../../src/components/PlaceCard/common/placeMediaTabRoutes.js';
 import {
   clearPlaceGalleryScrollBack,
   peekGalleryScrollForPlaceBack,
@@ -32,6 +38,50 @@ test('parsePlaceReviewFocusId reads review query param', () => {
 test('buildPlaceReviewsHref encodes review deep link', () => {
   assert.equal(buildPlaceReviewsHref('/place/cairo', '99'), '/place/cairo/reviews?review=99');
   assert.equal(buildPlaceReviewsHref('/place/cairo', ''), '/place/cairo/reviews');
+});
+
+test('orderPlaceReviewsForDeepLink puts the linked review first and keeps the rest', () => {
+  const food = { id: 'food', persona_label: '미식갑니다', created_at: '2026-11-02T00:00:00Z' };
+  const walk = { id: 'walk', persona_label: '느린산책', created_at: '2026-10-01T00:00:00Z' };
+  const night = { id: 'night', persona_label: '야경렌즈', created_at: '2026-09-01T00:00:00Z' };
+  const byDate = [food, walk, night];
+  const ordered = orderPlaceReviewsForDeepLink(byDate, 'walk');
+  assert.deepEqual(ordered.map((row) => row.id), ['walk', 'food', 'night']);
+  assert.equal(orderPlaceReviewsForDeepLink(byDate, 'food'), byDate);
+  assert.equal(orderPlaceReviewsForDeepLink(byDate, 'missing'), byDate);
+  assert.equal(orderPlaceReviewsForDeepLink(byDate, ''), byDate);
+});
+
+test('review focus history is scoped to the place slug', () => {
+  const state = withPlaceReviewFocusHistory(
+    { returnTo: '/blog?tab=public&region=overseas', fromLogbookReviewHub: true },
+    'walk-id',
+    'rome',
+  );
+  assert.equal(state.returnTo, '/blog?tab=public&region=overseas');
+  assert.equal(state.fromLogbookReviewHub, true);
+  assert.equal(state[PLACE_REVIEW_FOCUS_STATE_ID], 'walk-id');
+  assert.equal(readPlaceReviewFocusIdFromHistory(state, 'rome'), 'walk-id');
+  assert.equal(readPlaceReviewFocusIdFromHistory(state, 'osaka'), null);
+  assert.equal(readPlaceReviewFocusIdFromHistory(null, 'rome'), null);
+});
+
+test('browser history still names the linked review after the router state is empty', () => {
+  const dom = new JSDOM('<!DOCTYPE html><html><body></body></html>', {
+    url: 'https://www.gateo.kr/place/rome/reviews',
+  });
+  globalThis.window = dom.window;
+  globalThis.history = dom.window.history;
+  dom.window.history.replaceState({
+    usr: withPlaceReviewFocusHistory(null, 'walk-id', 'rome'),
+    idx: 1,
+  }, '');
+  assert.equal(readPlaceReviewFocusIdFromBrowser('rome'), 'walk-id');
+  assert.equal(readPlaceReviewFocusIdFromBrowser('osaka'), null);
+  assert.equal(mediaModeFromPathname('/place/rome/reviews'), 'REVIEWS');
+  assert.equal(mediaModeFromPathname('/place/hwaseong-fortress'), 'GALLERY');
+  assert.equal(mediaModeFromPathname('/blog'), null);
+  dom.window.close();
 });
 
 test('placeReviewFocusSearchWithoutReview strips review param', () => {
