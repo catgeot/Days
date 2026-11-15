@@ -24,6 +24,11 @@ export const config = {
     '/place/:slug/gallery',
     '/place/:slug/planner',
     '/place/:slug/wiki',
+    // Matcher is what invokes this function. Without these, Googlebot gets index.html
+    // (no canonical, og:url = homepage) even though placeCanonicalPath already fixes the SPA.
+    '/place/:slug/reviews',
+    '/place/:slug/video',
+    '/place/:slug/events',
   ],
 };
 

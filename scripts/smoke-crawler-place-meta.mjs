@@ -75,6 +75,16 @@ assert(parisBaseKo?.title === '파리 여행 — 명소·플래너·AI 도슨트
 const parisGalleryKo = resolveCrawlerMeta('/place/paris/gallery', 'ko');
 assert(parisGalleryKo?.canonicalUrl === 'https://www.gateo.kr/place/paris/gallery', 'paris gallery canonical unchanged');
 assert(String(parisGalleryKo?.title || '').includes('갤러리'), 'paris gallery title unchanged');
+for (const tab of ['reviews', 'video', 'events']) {
+  const alias = resolveCrawlerMeta(`/place/paris/${tab}`, 'ko');
+  assert(alias?.canonicalUrl === parisBaseKo.canonicalUrl, `paris ${tab} canonical is place root`);
+  assert(alias?.title === parisBaseKo.title, `paris ${tab} title matches place root`);
+  assert(alias?.description === parisBaseKo.description, `paris ${tab} description matches place root`);
+  assert(parseCrawlerPath(`/place/paris/${tab}`)?.kind === 'place-base', `paris ${tab} parsed as place root`);
+}
+assert(resolveCrawlerMeta('/place/hwaseong-fortress/reviews', 'ko') == null, 'non-catalog alias has no bundled meta');
+assert(parseCrawlerPath('/place/hwaseong-fortress/reviews')?.kind === 'place-base', 'non-catalog alias still parsed');
+assert(parseCrawlerPath('/place/paris/not-a-tab') == null, 'unknown place tab stays out of crawler scope');
 
 const angkorPlanner = resolveCrawlerMeta('/place/angkor-wat/planner', 'en');
 assert(/Angkor Wat/i.test(angkorPlanner.title), 'angkor planner EN title');
@@ -113,7 +123,8 @@ const exploreEn = resolveCrawlerMeta('/explore', 'en');
 assert(/AI docent|3D/i.test(exploreEn.title), 'explore EN title');
 assert(exploreEn.canonicalUrl.includes('/explore?lang=en'), 'explore EN canonical');
 
-assert(parseCrawlerPlacePath('/place/tokyo/video') === null, 'video tab not in scope');
+assert(parseCrawlerPlacePath('/place/tokyo/video') === null, 'video is not an indexed place-tab');
+assert(parseCrawlerPath('/place/tokyo/video')?.kind === 'place-base', 'video alias parses as place root');
 const phuketGalleryKo = resolveCrawlerMeta('/place/phuket/gallery', 'ko');
 assert(Boolean(phuketGalleryKo?.title), 'phuket tier2 gallery KO meta resolved');
 assert(/푸켓|Phuket/i.test(phuketGalleryKo.title), 'phuket gallery KO title localized');
@@ -306,6 +317,9 @@ assert(middlewareSrc.includes('/blog/curation'), 'middleware matcher includes cu
 assert(middlewareSrc.includes('/blog'), 'middleware matcher includes blog hub');
 assert(middlewareSrc.includes('/place/:slug'), 'middleware matcher includes tier1 base');
 assert(middlewareSrc.includes('/place/:slug/wiki'), 'middleware matcher includes wiki tab');
+assert(middlewareSrc.includes('/place/:slug/reviews'), 'middleware matcher includes reviews alias');
+assert(middlewareSrc.includes('/place/:slug/video'), 'middleware matcher includes video alias');
+assert(middlewareSrc.includes('/place/:slug/events'), 'middleware matcher includes events alias');
 assert(middlewareSrc.includes('/blog/e/:editorialSlug'), 'middleware matcher includes editorial logbook');
 
 const parisEditorialKo = resolveCrawlerMeta('/blog/e/paris-travelogue', 'ko');
