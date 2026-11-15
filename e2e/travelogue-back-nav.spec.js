@@ -224,6 +224,44 @@ test.describe('travelogue back and in-body links', () => {
     expectErrorsClean(errors);
   });
 
+  test('browser back to the reader, then place ← does not return to the reader', async ({ page }) => {
+    const errors = attachDiagnostics(page);
+    await openPlace(page);
+    await page.locator('[data-place-travelogue-slug="rome-travelogue"]').click();
+    await expect(page).toHaveURL(/\/blog\/e\/rome-travelogue/, { timeout: 30_000 });
+    await page.locator('.logbook-body a', { hasText: INTERNAL_LABEL }).click();
+    await expect(page).toHaveURL(/\/place\/rome/, { timeout: 45_000 });
+    await page.goBack();
+    await expect(page).toHaveURL(/\/blog\/e\/rome-travelogue/, { timeout: 30_000 });
+    await expect.poll(() => page.evaluate(() => sessionStorage.getItem('gateo:logbook-reader-origin'))).toBeNull();
+    await clickScreenBack(page);
+    await expect(page).toHaveURL(/\/place\/rome/, { timeout: 30_000 });
+    await clickPlaceScreenBack(page);
+    await expect(page).toHaveURL(/\/($|\?)/, { timeout: 30_000 });
+    expect(new URL(page.url()).pathname).toBe('/');
+    expect(page.url()).not.toContain('/blog/e/');
+    expectErrorsClean(errors);
+  });
+
+  test('place screen ← from an internal link, then place ← does not return to the reader', async ({ page }) => {
+    const errors = attachDiagnostics(page);
+    await openPlace(page);
+    await page.locator('[data-place-travelogue-slug="rome-travelogue"]').click();
+    await expect(page).toHaveURL(/\/blog\/e\/rome-travelogue/, { timeout: 30_000 });
+    await page.locator('.logbook-body a', { hasText: INTERNAL_LABEL }).click();
+    await expect(page).toHaveURL(/\/place\/rome/, { timeout: 45_000 });
+    await clickPlaceScreenBack(page);
+    await expect(page).toHaveURL(/\/blog\/e\/rome-travelogue/, { timeout: 30_000 });
+    await expect.poll(() => page.evaluate(() => sessionStorage.getItem('gateo:logbook-reader-origin'))).toBeNull();
+    await clickScreenBack(page);
+    await expect(page).toHaveURL(/\/place\/rome/, { timeout: 30_000 });
+    await clickPlaceScreenBack(page);
+    await expect(page).toHaveURL(/\/($|\?)/, { timeout: 30_000 });
+    expect(new URL(page.url()).pathname).toBe('/');
+    expect(page.url()).not.toContain('/blog/e/');
+    expectErrorsClean(errors);
+  });
+
   test('direct reader load ← goes to /blog', async ({ page }) => {
     const errors = attachDiagnostics(page);
     await openReader(page);

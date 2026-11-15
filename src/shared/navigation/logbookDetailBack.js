@@ -4,6 +4,10 @@ const RETURN_KEY = 'gateo:logbook-detail-return';
 const ORIGIN_KEY = 'gateo:logbook-reader-origin';
 const SCROLL_KEY = 'gateo:logbook-detail-scroll';
 const EMPTY_REFERRER_MS = 15_000;
+const ORIGIN_TTL_MS = 30 * 60 * 1000;
+
+/** history.state / location.state field that binds one internal-link navigation. */
+export const LOGBOOK_READER_ORIGIN_NONCE = 'logbookReaderOriginNonce';
 
 export function isLogbookReaderPath(path) {
   if (typeof path !== 'string' || !path.startsWith('/')) return false;
@@ -194,21 +198,38 @@ export function readLogbookDetailReturn(currentPath) {
   });
 }
 
-/** Travelogue URL to restore when an internal link did a full document load of a place. */
-export function rememberLogbookReaderOrigin() {
-  if (typeof window === 'undefined') return;
-  const path = `${window.location.pathname}${window.location.search}`;
-  if (!isLogbookReaderPath(path)) return;
-  const scrollY = window.scrollY || document.documentElement?.scrollTop || 0;
-  writeJson(ORIGIN_KEY, { path, scrollY, savedAt: Date.now() });
-  writeJson(SCROLL_KEY, { path, scrollY, savedAt: Date.now() });
+/**
+ * Origin stored for one internal-link hop. The place page may use it only when
+ * its history entry carries the same nonce.
+ * @param {object | null} stored
+ * @param {unknown} nonce
+ * @param {number} [now]
+ */
+export function selectLogbookReaderOrigin(stored, nonce, now = Date.now()) {
+  if (typeof nonce !== 'string' || !nonce) return null;
+  if (!stored || stored.nonce !== nonce) return null;
+  if (typeof stored.path !== 'string' || !isLogbookReaderPath(stored.path)) return null;
+  if (now - (stored.savedAt || 0) > ORIGIN_TTL_MS) return null;
+  return stored.path;
 }
 
-export function readLogbookReaderOrigin() {
-  const data = readJson(ORIGIN_KEY);
-  if (!data || typeof data.path !== 'string' || !isLogbookReaderPath(data.path)) return null;
-  if (Date.now() - (data.savedAt || 0) > 30 * 60 * 1000) return null;
-  return data.path;
+/** @returns {string | null} nonce written into history.state for this hop */
+export function rememberLogbookReaderOrigin() {
+  if (typeof window === 'undefined') return null;
+  const path = `${window.location.pathname}${window.location.search}`;
+  if (!isLogbookReaderPath(path)) return null;
+  const scrollY = window.scrollY || document.documentElement?.scrollTop || 0;
+  const nonce = globalThis.crypto?.randomUUID?.()
+    || `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
+  const savedAt = Date.now();
+  writeJson(ORIGIN_KEY, { path, scrollY, nonce, savedAt });
+  writeJson(SCROLL_KEY, { path, scrollY, nonce, savedAt });
+  return nonce;
+}
+
+/** @param {unknown} nonce */
+export function readLogbookReaderOrigin(nonce) {
+  return selectLogbookReaderOrigin(readJson(ORIGIN_KEY), nonce);
 }
 
 export function takeLogbookDetailScroll(currentPath) {

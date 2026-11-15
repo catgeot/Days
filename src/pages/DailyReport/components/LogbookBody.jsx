@@ -1,8 +1,11 @@
 import React, { useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import rehypeSanitize, { defaultSchema } from 'rehype-sanitize';
-import { rememberLogbookReaderOrigin } from '../../../shared/navigation/logbookDetailBack.js';
+import {
+  LOGBOOK_READER_ORIGIN_NONCE,
+  rememberLogbookReaderOrigin,
+} from '../../../shared/navigation/logbookDetailBack.js';
 import { classifyLogbookMarkdownHref } from '../../../shared/navigation/logbookMarkdownHref.js';
 import { logbookRemarkPlugins } from '../utils/logbookMarkdownRemark.js';
 import { useTranslation } from 'react-i18next';
@@ -49,18 +52,33 @@ const MARKDOWN_LINK_CLASS =
   'text-blue-600 underline underline-offset-2 hover:text-blue-700 break-words';
 
 function LogbookMarkdownAnchor({ href, children }) {
+  const navigate = useNavigate();
   const classified = classifyLogbookMarkdownHref(href, typeof window !== 'undefined' ? window.location.href : undefined);
   if (classified.kind === 'internal') {
     return (
-      <Link
-        to={classified.to}
+      <a
+        href={classified.to}
         className={MARKDOWN_LINK_CLASS}
-        onClick={() => {
-          rememberLogbookReaderOrigin();
+        onClick={(event) => {
+          if (
+            event.defaultPrevented
+            || event.button !== 0
+            || event.metaKey
+            || event.altKey
+            || event.ctrlKey
+            || event.shiftKey
+          ) {
+            return;
+          }
+          event.preventDefault();
+          const nonce = rememberLogbookReaderOrigin();
+          navigate(classified.to, {
+            state: nonce ? { [LOGBOOK_READER_ORIGIN_NONCE]: nonce } : undefined,
+          });
         }}
       >
         {children}
-      </Link>
+      </a>
     );
   }
   if (classified.kind === 'external') {

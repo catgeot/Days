@@ -30,6 +30,8 @@ import { resolveLogbookFeedExcerpt } from '../../utils/logbookDek';
 import { getAppHistoryPath } from '../../shared/navigation/appHistoryPathIndex.js';
 import {
   clearLogbookDetailReturn,
+  clearLogbookReaderOrigin,
+  isLogbookReaderPath,
   performLogbookDetailBack,
   readLogbookDetailReturn,
   resolveLogbookDetailBack,
@@ -100,6 +102,7 @@ const PublicViewer = () => {
       fallback: logbookEditorialBackFallback(),
     });
     clearLogbookDetailReturn();
+    clearLogbookReaderOrigin();
     performLogbookDetailBack(action);
   }, [location.pathname, location.search]);
 
@@ -220,6 +223,20 @@ const PublicViewer = () => {
     id = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(id);
   }, [report, location.pathname, location.search]);
+
+  useEffect(() => {
+    const dropOrigin = () => {
+      const path = `${window.location.pathname}${window.location.search}`;
+      if (isLogbookReaderPath(path)) clearLogbookReaderOrigin();
+    };
+    dropOrigin();
+    window.addEventListener('popstate', dropOrigin);
+    window.addEventListener('pageshow', dropOrigin);
+    return () => {
+      window.removeEventListener('popstate', dropOrigin);
+      window.removeEventListener('pageshow', dropOrigin);
+    };
+  }, []);
 
   useEffect(() => {
     upsertEditorialJsonLd(editorialJsonLd);

@@ -6,6 +6,7 @@ import {
   resolveLogbookDetailBack,
   sameOriginAppPath,
   selectLogbookDetailReturn,
+  selectLogbookReaderOrigin,
 } from '../../src/shared/navigation/logbookDetailBack.js';
 import { classifyLogbookMarkdownHref } from '../../src/shared/navigation/logbookMarkdownHref.js';
 
@@ -217,5 +218,61 @@ test('classifyLogbookMarkdownHref keeps gateo links internal and external links 
   assert.equal(classifyLogbookMarkdownHref('https://www.gateo.kr.evil.com/place/rome').kind, 'external');
   assert.equal(classifyLogbookMarkdownHref('https://example.com/guide').kind, 'external');
   assert.equal(classifyLogbookMarkdownHref('mailto:a@gateo.kr').kind, 'plain');
+  assert.equal(classifyLogbookMarkdownHref('tel:+821012345678').kind, 'plain');
   assert.deepEqual(classifyLogbookMarkdownHref('#section'), { kind: 'plain', href: '#section' });
+});
+
+test('classifyLogbookMarkdownHref leaves static and non-routes as plain anchors', () => {
+  for (const href of [
+    '/api/health',
+    '/favicon.ico',
+    '/robots.txt',
+    '/assets/index.js',
+    '/sitemap.xml',
+    '/sitemap-core.xml',
+    '/rss.xml',
+    'rss.xml',
+  ]) {
+    const classified = classifyLogbookMarkdownHref(href);
+    assert.equal(classified.kind, 'plain', href);
+    assert.equal(classified.href, href);
+  }
+  assert.deepEqual(classifyLogbookMarkdownHref('https://www.gateo.kr/favicon.ico'), {
+    kind: 'plain',
+    href: '/favicon.ico',
+  });
+  assert.deepEqual(classifyLogbookMarkdownHref('https://www.gateo.kr/api/edge'), {
+    kind: 'plain',
+    href: '/api/edge',
+  });
+  assert.deepEqual(classifyLogbookMarkdownHref('https://gateo.kr/assets/logo.png'), {
+    kind: 'plain',
+    href: '/assets/logo.png',
+  });
+  assert.equal(classifyLogbookMarkdownHref('/explore?lang=ko').kind, 'internal');
+  assert.equal(classifyLogbookMarkdownHref('/korea/theme/scenic').kind, 'internal');
+});
+
+test('scheme-less look-alike hosts are not internal', () => {
+  const notGateo = classifyLogbookMarkdownHref('notgateo.kr/place/rome');
+  assert.equal(notGateo.kind, 'external');
+  assert.equal(notGateo.href, 'https://notgateo.kr/place/rome');
+  const evil = classifyLogbookMarkdownHref('gateo.kr.evil.com/place/rome');
+  assert.equal(evil.kind, 'external');
+  assert.equal(evil.href, 'https://gateo.kr.evil.com/place/rome');
+  assert.equal(classifyLogbookMarkdownHref('https://notgateo.kr/place/rome').kind, 'external');
+  assert.equal(classifyLogbookMarkdownHref('https://gateo.kr.evil.com/place/rome').kind, 'external');
+});
+
+test('reader origin is honored only for the matching nonce', () => {
+  const stored = {
+    path: '/blog/e/rome-travelogue?lang=ko',
+    nonce: 'hop-1',
+    savedAt: 1_000,
+  };
+  assert.equal(selectLogbookReaderOrigin(stored, 'hop-1', 2_000), stored.path);
+  assert.equal(selectLogbookReaderOrigin(stored, 'hop-2', 2_000), null);
+  assert.equal(selectLogbookReaderOrigin(stored, '', 2_000), null);
+  assert.equal(selectLogbookReaderOrigin(stored, null, 2_000), null);
+  assert.equal(selectLogbookReaderOrigin(stored, 'hop-1', 1_000 + 31 * 60 * 1000), null);
 });

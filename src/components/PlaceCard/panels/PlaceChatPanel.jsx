@@ -23,6 +23,7 @@ import { getAppHistoryPath } from '../../../shared/navigation/appHistoryPathInde
 import {
   clearLogbookReaderOrigin,
   isLogbookReaderPath,
+  LOGBOOK_READER_ORIGIN_NONCE,
   readLogbookReaderOrigin,
 } from '../../../shared/navigation/logbookDetailBack.js';
 import {
@@ -230,9 +231,10 @@ const PlaceChatPanel = React.memo(({
                       typeof idx === 'number' ? getAppHistoryPath(idx - 1) : null;
                     const historyIdx = typeof idx === 'number' ? idx : null;
                     const routeReturn = peekPlaceReturnTo(routeLocation.state);
+                    const originNonce = routeLocation.state?.[LOGBOOK_READER_ORIGIN_NONCE];
                     const readerOrigin =
                       !routeReturn && !(historyIdx != null && historyIdx > 0)
-                        ? readLogbookReaderOrigin()
+                        ? readLogbookReaderOrigin(originNonce)
                         : null;
                     const action = resolvePlaceCardBack({
                       historyIdx,
