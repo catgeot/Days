@@ -1,3 +1,9 @@
+import {
+  exactKoreaOriginCities,
+  koreaOriginCityForChip,
+  KOREA_PROVINCE_EN,
+} from './koreaOriginCityMatch.js';
+
 /**
  * One domestic departure chip per 시·도 (17).
  * Every label is a city. 도 names are not mixed with city names.
@@ -155,6 +161,9 @@ export const FESTIVAL_DOMESTIC_ORIGINS = [
 
 const PROVINCE_ONLY_LABELS = new Set(['경기', '강원', '충북', '충남', '전북', '전남', '경북', '경남']);
 
+/** Chips shown before «더 보기». The other 11 stay one tap away. */
+export const FESTIVAL_ORIGIN_DOCK_PRIMARY_IDS = ['seoul', 'busan', 'daegu', 'incheon', 'gwangju', 'daejeon'];
+
 function isEnglishLocale(locale) {
   return String(locale || '').slice(0, 2) === 'en';
 }
@@ -299,6 +308,30 @@ export function festivalOriginLabel(rowOrId, locale = 'ko') {
   return en ? row.en : row.ko;
 }
 
+/** Chip row or `{ askLabel, askLabelEn, cityId }` → one send payload. */
+export function festivalOriginSendRequest(origin) {
+  const row = origin && typeof origin === 'object'
+    ? origin
+    : findFestivalDomesticOrigin(origin);
+  if (!row) return null;
+  if (row.askLabel) {
+    return {
+      chipId: row.chipId || '',
+      cityId: row.cityId || '',
+      askKo: row.askLabel,
+      askEn: row.askLabelEn || row.askLabel,
+    };
+  }
+  if (!row.ko) return null;
+  const city = koreaOriginCityForChip(row.ko, row.province);
+  return {
+    chipId: row.id || '',
+    cityId: city?.id || '',
+    askKo: row.ko,
+    askEn: row.en || row.ko,
+  };
+}
+
 export function buildFestivalAccessAskText(rowOrId, locale = 'ko') {
   const row = typeof rowOrId === 'object' && rowOrId
     ? rowOrId
@@ -324,13 +357,46 @@ function originByLabel(label) {
   return null;
 }
 
+function groundOriginFromCity(city) {
+  if (!city) return null;
+  if (city.hubOriginId) {
+    const row = findFestivalDomesticOrigin(city.hubOriginId);
+    if (row) {
+      const sameAlt = city.hubRole === 'alt'
+        && row.alt
+        && normalizeFestivalCityToken(row.alt.ko) === normalizeFestivalCityToken(city.ko);
+      if (sameAlt) return withAlt(row);
+      if (city.hubRole === 'primary' || normalizeFestivalCityToken(row.ko) === normalizeFestivalCityToken(city.ko)) {
+        return row;
+      }
+    }
+  }
+  return {
+    id: city.id,
+    ko: city.ko,
+    en: city.en,
+    province: city.province,
+    provinceEn: KOREA_PROVINCE_EN[city.province] || city.province,
+    dictionaryOnly: true,
+  };
+}
+
+function resolveGroundOriginLabel(label) {
+  const text = String(label || '').trim();
+  if (!text) return null;
+  const exact = exactKoreaOriginCities(text);
+  if (exact.length === 1) return groundOriginFromCity(exact[0]);
+  if (exact.length > 1) return originByLabel(text) || null;
+  return originByLabel(text);
+}
+
 export function domesticFestivalGroundOrigin(text, explicitLabel = '') {
   const raw = String(text || '');
   if (/항공|비행|flight|공항|airport/i.test(raw)) return null;
-  const fromLabel = originByLabel(explicitLabel);
+  const fromLabel = resolveGroundOriginLabel(explicitLabel);
   if (fromLabel) return fromLabel;
-  const head = raw.match(/^(.{1,20}?)에서/u);
-  return originByLabel(head?.[1] || '') || null;
+  const head = raw.match(/^(.{1,30}?)에서/u);
+  return resolveGroundOriginLabel(head?.[1] || '') || null;
 }
 
 export function clearDomesticAirportDeparture(session) {
@@ -345,6 +411,12 @@ export function clearDomesticAirportDeparture(session) {
 
 export function domesticGroundModelSuffix(row, locale = 'ko') {
   if (!row) return '';
+  if (row.dictionaryOnly) {
+    const en = isEnglishLocale(locale);
+    const area = en ? row.en : row.ko;
+    const province = en ? (row.provinceEn || row.province) : row.province;
+    return en ? `Departure area: ${area} (${province}).` : `출발 지역은 ${area}(${province}).`;
+  }
   const guidance = formatOriginHubGuidance(row, locale);
   if (!guidance) return '';
   if (isEnglishLocale(locale)) {

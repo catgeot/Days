@@ -121,6 +121,7 @@ export {
   normalizeFestivalCityToken,
   visibleFestivalDomesticOrigins,
   festivalOriginLabel,
+  festivalOriginSendRequest,
   buildFestivalAccessAskText,
   domesticFestivalGroundOrigin,
   clearDomesticAirportDeparture,

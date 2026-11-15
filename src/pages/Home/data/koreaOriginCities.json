@@ -1,0 +1,2867 @@
+[
+  {
+    "id": "seoul",
+    "ko": "서울",
+    "province": "서울",
+    "en": "Seoul",
+    "aliases": [
+      "서울",
+      "Seoul",
+      "seoul",
+      "서울특별시",
+      "서울시"
+    ],
+    "choseong": "ㅅㅇ",
+    "lat": 37.5665,
+    "lng": 126.978,
+    "hubOriginId": "seoul",
+    "hubRole": "primary"
+  },
+  {
+    "id": "busan",
+    "ko": "부산",
+    "province": "부산",
+    "en": "Busan",
+    "aliases": [
+      "부산",
+      "Busan",
+      "busan",
+      "부산광역시",
+      "부산시"
+    ],
+    "choseong": "ㅂㅅ",
+    "lat": 35.1796,
+    "lng": 129.0756,
+    "hubOriginId": "busan",
+    "hubRole": "primary"
+  },
+  {
+    "id": "daegu",
+    "ko": "대구",
+    "province": "대구",
+    "en": "Daegu",
+    "aliases": [
+      "대구",
+      "Daegu",
+      "daegu",
+      "대구광역시",
+      "대구시"
+    ],
+    "choseong": "ㄷㄱ",
+    "lat": 35.8714,
+    "lng": 128.6014,
+    "hubOriginId": "daegu",
+    "hubRole": "primary"
+  },
+  {
+    "id": "incheon",
+    "ko": "인천",
+    "province": "인천",
+    "en": "Incheon",
+    "aliases": [
+      "인천",
+      "Incheon",
+      "incheon",
+      "인천광역시",
+      "인천시"
+    ],
+    "choseong": "ㅇㅊ",
+    "lat": 37.4563,
+    "lng": 126.7052,
+    "hubOriginId": "incheon",
+    "hubRole": "primary"
+  },
+  {
+    "id": "gwangju",
+    "ko": "광주",
+    "province": "광주",
+    "en": "Gwangju",
+    "aliases": [
+      "광주",
+      "Gwangju",
+      "gwangju",
+      "광주광역시"
+    ],
+    "choseong": "ㄱㅈ",
+    "lat": 35.1595,
+    "lng": 126.8526,
+    "hubOriginId": "gwangju",
+    "hubRole": "primary"
+  },
+  {
+    "id": "daejeon",
+    "ko": "대전",
+    "province": "대전",
+    "en": "Daejeon",
+    "aliases": [
+      "대전",
+      "Daejeon",
+      "daejeon",
+      "대전광역시",
+      "대전시"
+    ],
+    "choseong": "ㄷㅈ",
+    "lat": 36.3504,
+    "lng": 127.3845,
+    "hubOriginId": "daejeon",
+    "hubRole": "primary"
+  },
+  {
+    "id": "ulsan",
+    "ko": "울산",
+    "province": "울산",
+    "en": "Ulsan",
+    "aliases": [
+      "울산",
+      "Ulsan",
+      "ulsan",
+      "울산광역시",
+      "울산시"
+    ],
+    "choseong": "ㅇㅅ",
+    "lat": 35.5384,
+    "lng": 129.3114,
+    "hubOriginId": "ulsan",
+    "hubRole": "primary"
+  },
+  {
+    "id": "sejong",
+    "ko": "세종",
+    "province": "세종",
+    "en": "Sejong",
+    "aliases": [
+      "세종",
+      "Sejong",
+      "sejong",
+      "세종특별자치시",
+      "세종시"
+    ],
+    "choseong": "ㅅㅈ",
+    "lat": 36.48,
+    "lng": 127.289,
+    "hubOriginId": "sejong",
+    "hubRole": "primary"
+  },
+  {
+    "id": "suwon",
+    "ko": "수원",
+    "province": "경기",
+    "en": "Suwon",
+    "aliases": [
+      "수원",
+      "Suwon",
+      "suwon",
+      "수원시"
+    ],
+    "choseong": "ㅅㅇ",
+    "lat": 37.2636,
+    "lng": 127.0286,
+    "hubOriginId": "gyeonggi",
+    "hubRole": "primary"
+  },
+  {
+    "id": "seongnam",
+    "ko": "성남",
+    "province": "경기",
+    "en": "Seongnam",
+    "aliases": [
+      "성남",
+      "Seongnam",
+      "seongnam",
+      "성남시"
+    ],
+    "choseong": "ㅅㄴ",
+    "lat": 37.4201,
+    "lng": 127.1265,
+    "hubOriginId": "gyeonggi",
+    "hubRole": "alt"
+  },
+  {
+    "id": "uijeongbu",
+    "ko": "의정부",
+    "province": "경기",
+    "en": "Uijeongbu",
+    "aliases": [
+      "의정부",
+      "Uijeongbu",
+      "uijeongbu",
+      "의정부시"
+    ],
+    "choseong": "ㅇㅈㅂ",
+    "lat": 37.7381,
+    "lng": 127.0337,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "anyang",
+    "ko": "안양",
+    "province": "경기",
+    "en": "Anyang",
+    "aliases": [
+      "안양",
+      "Anyang",
+      "anyang",
+      "안양시"
+    ],
+    "choseong": "ㅇㅇ",
+    "lat": 37.3943,
+    "lng": 126.9568,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "bucheon",
+    "ko": "부천",
+    "province": "경기",
+    "en": "Bucheon",
+    "aliases": [
+      "부천",
+      "Bucheon",
+      "bucheon",
+      "부천시"
+    ],
+    "choseong": "ㅂㅊ",
+    "lat": 37.5034,
+    "lng": 126.766,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "gwangmyeong",
+    "ko": "광명",
+    "province": "경기",
+    "en": "Gwangmyeong",
+    "aliases": [
+      "광명",
+      "Gwangmyeong",
+      "gwangmyeong",
+      "광명시"
+    ],
+    "choseong": "ㄱㅁ",
+    "lat": 37.4419,
+    "lng": 126.8644,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "pyeongtaek",
+    "ko": "평택",
+    "province": "경기",
+    "en": "Pyeongtaek",
+    "aliases": [
+      "평택",
+      "Pyeongtaek",
+      "pyeongtaek",
+      "평택시"
+    ],
+    "choseong": "ㅍㅌ",
+    "lat": 36.9921,
+    "lng": 127.1129,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "dongducheon",
+    "ko": "동두천",
+    "province": "경기",
+    "en": "Dongducheon",
+    "aliases": [
+      "동두천",
+      "Dongducheon",
+      "dongducheon",
+      "동두천시"
+    ],
+    "choseong": "ㄷㄷㅊ",
+    "lat": 37.9036,
+    "lng": 127.0606,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "ansan",
+    "ko": "안산",
+    "province": "경기",
+    "en": "Ansan",
+    "aliases": [
+      "안산",
+      "Ansan",
+      "ansan",
+      "안산시"
+    ],
+    "choseong": "ㅇㅅ",
+    "lat": 37.3219,
+    "lng": 126.8309,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "goyang",
+    "ko": "고양",
+    "province": "경기",
+    "en": "Goyang",
+    "aliases": [
+      "고양",
+      "Goyang",
+      "goyang",
+      "고양시"
+    ],
+    "choseong": "ㄱㅇ",
+    "lat": 37.6584,
+    "lng": 126.832,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "gwacheon",
+    "ko": "과천",
+    "province": "경기",
+    "en": "Gwacheon",
+    "aliases": [
+      "과천",
+      "Gwacheon",
+      "gwacheon",
+      "과천시"
+    ],
+    "choseong": "ㄱㅊ",
+    "lat": 37.4292,
+    "lng": 126.9875,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "guri",
+    "ko": "구리",
+    "province": "경기",
+    "en": "Guri",
+    "aliases": [
+      "구리",
+      "Guri",
+      "guri",
+      "구리시"
+    ],
+    "choseong": "ㄱㄹ",
+    "lat": 37.5943,
+    "lng": 127.1295,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "namyangju",
+    "ko": "남양주",
+    "province": "경기",
+    "en": "Namyangju",
+    "aliases": [
+      "남양주",
+      "Namyangju",
+      "namyangju",
+      "남양주시"
+    ],
+    "choseong": "ㄴㅇㅈ",
+    "lat": 37.636,
+    "lng": 127.2165,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "osan",
+    "ko": "오산",
+    "province": "경기",
+    "en": "Osan",
+    "aliases": [
+      "오산",
+      "Osan",
+      "osan",
+      "오산시"
+    ],
+    "choseong": "ㅇㅅ",
+    "lat": 37.1498,
+    "lng": 127.0773,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "siheung",
+    "ko": "시흥",
+    "province": "경기",
+    "en": "Siheung",
+    "aliases": [
+      "시흥",
+      "Siheung",
+      "siheung",
+      "시흥시"
+    ],
+    "choseong": "ㅅㅎ",
+    "lat": 37.3799,
+    "lng": 126.8031,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "gunpo",
+    "ko": "군포",
+    "province": "경기",
+    "en": "Gunpo",
+    "aliases": [
+      "군포",
+      "Gunpo",
+      "gunpo",
+      "군포시"
+    ],
+    "choseong": "ㄱㅍ",
+    "lat": 37.3617,
+    "lng": 126.9352,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "uiwang",
+    "ko": "의왕",
+    "province": "경기",
+    "en": "Uiwang",
+    "aliases": [
+      "의왕",
+      "Uiwang",
+      "uiwang",
+      "의왕시"
+    ],
+    "choseong": "ㅇㅇ",
+    "lat": 37.3448,
+    "lng": 126.9683,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "hanam",
+    "ko": "하남",
+    "province": "경기",
+    "en": "Hanam",
+    "aliases": [
+      "하남",
+      "Hanam",
+      "hanam",
+      "하남시"
+    ],
+    "choseong": "ㅎㄴ",
+    "lat": 37.5392,
+    "lng": 127.2148,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "yongin",
+    "ko": "용인",
+    "province": "경기",
+    "en": "Yongin",
+    "aliases": [
+      "용인",
+      "Yongin",
+      "yongin",
+      "용인시"
+    ],
+    "choseong": "ㅇㅇ",
+    "lat": 37.2411,
+    "lng": 127.1776,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "paju",
+    "ko": "파주",
+    "province": "경기",
+    "en": "Paju",
+    "aliases": [
+      "파주",
+      "Paju",
+      "paju",
+      "파주시"
+    ],
+    "choseong": "ㅍㅈ",
+    "lat": 37.7599,
+    "lng": 126.78,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "icheon",
+    "ko": "이천",
+    "province": "경기",
+    "en": "Icheon",
+    "aliases": [
+      "이천",
+      "Icheon",
+      "icheon",
+      "이천시"
+    ],
+    "choseong": "ㅇㅊ",
+    "lat": 37.272,
+    "lng": 127.435,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "anseong",
+    "ko": "안성",
+    "province": "경기",
+    "en": "Anseong",
+    "aliases": [
+      "안성",
+      "Anseong",
+      "anseong",
+      "안성시"
+    ],
+    "choseong": "ㅇㅅ",
+    "lat": 37.0079,
+    "lng": 127.2797,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "gimpo",
+    "ko": "김포",
+    "province": "경기",
+    "en": "Gimpo",
+    "aliases": [
+      "김포",
+      "Gimpo",
+      "gimpo",
+      "김포시"
+    ],
+    "choseong": "ㄱㅍ",
+    "lat": 37.6153,
+    "lng": 126.7156,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "hwaseong",
+    "ko": "화성",
+    "province": "경기",
+    "en": "Hwaseong",
+    "aliases": [
+      "화성",
+      "Hwaseong",
+      "hwaseong",
+      "화성시"
+    ],
+    "choseong": "ㅎㅅ",
+    "lat": 37.1995,
+    "lng": 126.8314,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "gwangju-si",
+    "ko": "광주",
+    "province": "경기",
+    "en": "Gwangju",
+    "aliases": [
+      "광주",
+      "Gwangju",
+      "gwangju",
+      "광주시",
+      "경기도광주",
+      "경기광주",
+      "경기 광주",
+      "Gwangju-si",
+      "Gwangju, Gyeonggi"
+    ],
+    "choseong": "ㄱㅈ",
+    "lat": 37.4294,
+    "lng": 127.255,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "yangju",
+    "ko": "양주",
+    "province": "경기",
+    "en": "Yangju",
+    "aliases": [
+      "양주",
+      "Yangju",
+      "yangju",
+      "양주시"
+    ],
+    "choseong": "ㅇㅈ",
+    "lat": 37.7853,
+    "lng": 127.0458,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "pocheon",
+    "ko": "포천",
+    "province": "경기",
+    "en": "Pocheon",
+    "aliases": [
+      "포천",
+      "Pocheon",
+      "pocheon",
+      "포천시"
+    ],
+    "choseong": "ㅍㅊ",
+    "lat": 37.8949,
+    "lng": 127.2002,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "yeoju",
+    "ko": "여주",
+    "province": "경기",
+    "en": "Yeoju",
+    "aliases": [
+      "여주",
+      "Yeoju",
+      "yeoju",
+      "여주시"
+    ],
+    "choseong": "ㅇㅈ",
+    "lat": 37.2984,
+    "lng": 127.6375,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "yeoncheon",
+    "ko": "연천",
+    "province": "경기",
+    "en": "Yeoncheon",
+    "aliases": [
+      "연천",
+      "Yeoncheon",
+      "yeoncheon",
+      "연천군"
+    ],
+    "choseong": "ㅇㅊ",
+    "lat": 38.0964,
+    "lng": 127.0746,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "gapyeong",
+    "ko": "가평",
+    "province": "경기",
+    "en": "Gapyeong",
+    "aliases": [
+      "가평",
+      "Gapyeong",
+      "gapyeong",
+      "가평군"
+    ],
+    "choseong": "ㄱㅍ",
+    "lat": 37.8315,
+    "lng": 127.5109,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "yangpyeong",
+    "ko": "양평",
+    "province": "경기",
+    "en": "Yangpyeong",
+    "aliases": [
+      "양평",
+      "Yangpyeong",
+      "yangpyeong",
+      "양평군"
+    ],
+    "choseong": "ㅇㅍ",
+    "lat": 37.4914,
+    "lng": 127.4876,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "chuncheon",
+    "ko": "춘천",
+    "province": "강원",
+    "en": "Chuncheon",
+    "aliases": [
+      "춘천",
+      "Chuncheon",
+      "chuncheon",
+      "춘천시"
+    ],
+    "choseong": "ㅊㅊ",
+    "lat": 37.8811,
+    "lng": 127.7298,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "wonju",
+    "ko": "원주",
+    "province": "강원",
+    "en": "Wonju",
+    "aliases": [
+      "원주",
+      "Wonju",
+      "wonju",
+      "원주시"
+    ],
+    "choseong": "ㅇㅈ",
+    "lat": 37.3422,
+    "lng": 127.9202,
+    "hubOriginId": "gangwon",
+    "hubRole": "alt"
+  },
+  {
+    "id": "gangneung",
+    "ko": "강릉",
+    "province": "강원",
+    "en": "Gangneung",
+    "aliases": [
+      "강릉",
+      "Gangneung",
+      "gangneung",
+      "강릉시"
+    ],
+    "choseong": "ㄱㄹ",
+    "lat": 37.7519,
+    "lng": 128.8761,
+    "hubOriginId": "gangwon",
+    "hubRole": "primary"
+  },
+  {
+    "id": "donghae",
+    "ko": "동해",
+    "province": "강원",
+    "en": "Donghae",
+    "aliases": [
+      "동해",
+      "Donghae",
+      "donghae",
+      "동해시"
+    ],
+    "choseong": "ㄷㅎ",
+    "lat": 37.5247,
+    "lng": 129.1143,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "taebaek",
+    "ko": "태백",
+    "province": "강원",
+    "en": "Taebaek",
+    "aliases": [
+      "태백",
+      "Taebaek",
+      "taebaek",
+      "태백시"
+    ],
+    "choseong": "ㅌㅂ",
+    "lat": 37.1641,
+    "lng": 128.9856,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "sokcho",
+    "ko": "속초",
+    "province": "강원",
+    "en": "Sokcho",
+    "aliases": [
+      "속초",
+      "Sokcho",
+      "sokcho",
+      "속초시"
+    ],
+    "choseong": "ㅅㅊ",
+    "lat": 38.207,
+    "lng": 128.5918,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "samcheok",
+    "ko": "삼척",
+    "province": "강원",
+    "en": "Samcheok",
+    "aliases": [
+      "삼척",
+      "Samcheok",
+      "samcheok",
+      "삼척시"
+    ],
+    "choseong": "ㅅㅊ",
+    "lat": 37.4499,
+    "lng": 129.1652,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "hongcheon",
+    "ko": "홍천",
+    "province": "강원",
+    "en": "Hongcheon",
+    "aliases": [
+      "홍천",
+      "Hongcheon",
+      "hongcheon",
+      "홍천군"
+    ],
+    "choseong": "ㅎㅊ",
+    "lat": 37.6971,
+    "lng": 127.8887,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "hoengseong",
+    "ko": "횡성",
+    "province": "강원",
+    "en": "Hoengseong",
+    "aliases": [
+      "횡성",
+      "Hoengseong",
+      "hoengseong",
+      "횡성군"
+    ],
+    "choseong": "ㅎㅅ",
+    "lat": 37.4917,
+    "lng": 128.0019,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "yeongwol",
+    "ko": "영월",
+    "province": "강원",
+    "en": "Yeongwol",
+    "aliases": [
+      "영월",
+      "Yeongwol",
+      "yeongwol",
+      "영월군"
+    ],
+    "choseong": "ㅇㅇ",
+    "lat": 37.1836,
+    "lng": 128.4617,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "pyeongchang",
+    "ko": "평창",
+    "province": "강원",
+    "en": "Pyeongchang",
+    "aliases": [
+      "평창",
+      "Pyeongchang",
+      "pyeongchang",
+      "평창군"
+    ],
+    "choseong": "ㅍㅊ",
+    "lat": 37.3705,
+    "lng": 128.3901,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "jeongseon",
+    "ko": "정선",
+    "province": "강원",
+    "en": "Jeongseon",
+    "aliases": [
+      "정선",
+      "Jeongseon",
+      "jeongseon",
+      "정선군"
+    ],
+    "choseong": "ㅈㅅ",
+    "lat": 37.3806,
+    "lng": 128.6608,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "cheorwon",
+    "ko": "철원",
+    "province": "강원",
+    "en": "Cheorwon",
+    "aliases": [
+      "철원",
+      "Cheorwon",
+      "cheorwon",
+      "철원군"
+    ],
+    "choseong": "ㅊㅇ",
+    "lat": 38.1466,
+    "lng": 127.3135,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "hwacheon",
+    "ko": "화천",
+    "province": "강원",
+    "en": "Hwacheon",
+    "aliases": [
+      "화천",
+      "Hwacheon",
+      "hwacheon",
+      "화천군"
+    ],
+    "choseong": "ㅎㅊ",
+    "lat": 38.1063,
+    "lng": 127.7082,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "yanggu",
+    "ko": "양구",
+    "province": "강원",
+    "en": "Yanggu",
+    "aliases": [
+      "양구",
+      "Yanggu",
+      "yanggu",
+      "양구군"
+    ],
+    "choseong": "ㅇㄱ",
+    "lat": 38.1075,
+    "lng": 127.9897,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "inje",
+    "ko": "인제",
+    "province": "강원",
+    "en": "Inje",
+    "aliases": [
+      "인제",
+      "Inje",
+      "inje",
+      "인제군"
+    ],
+    "choseong": "ㅇㅈ",
+    "lat": 38.0695,
+    "lng": 128.1707,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "goseong-gw",
+    "ko": "고성",
+    "province": "강원",
+    "en": "Goseong",
+    "aliases": [
+      "고성",
+      "Goseong",
+      "goseong",
+      "고성군",
+      "강원고성",
+      "강원 고성",
+      "강원 고성군",
+      "Goseong, Gangwon"
+    ],
+    "choseong": "ㄱㅅ",
+    "lat": 38.3806,
+    "lng": 128.4676,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "yangyang",
+    "ko": "양양",
+    "province": "강원",
+    "en": "Yangyang",
+    "aliases": [
+      "양양",
+      "Yangyang",
+      "yangyang",
+      "양양군"
+    ],
+    "choseong": "ㅇㅇ",
+    "lat": 38.0754,
+    "lng": 128.619,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "cheongju",
+    "ko": "청주",
+    "province": "충북",
+    "en": "Cheongju",
+    "aliases": [
+      "청주",
+      "Cheongju",
+      "cheongju",
+      "청주시"
+    ],
+    "choseong": "ㅊㅈ",
+    "lat": 36.6424,
+    "lng": 127.489,
+    "hubOriginId": "chungbuk",
+    "hubRole": "primary"
+  },
+  {
+    "id": "chungju",
+    "ko": "충주",
+    "province": "충북",
+    "en": "Chungju",
+    "aliases": [
+      "충주",
+      "Chungju",
+      "chungju",
+      "충주시"
+    ],
+    "choseong": "ㅊㅈ",
+    "lat": 36.991,
+    "lng": 127.926,
+    "hubOriginId": "chungbuk",
+    "hubRole": "alt"
+  },
+  {
+    "id": "jecheon",
+    "ko": "제천",
+    "province": "충북",
+    "en": "Jecheon",
+    "aliases": [
+      "제천",
+      "Jecheon",
+      "jecheon",
+      "제천시"
+    ],
+    "choseong": "ㅈㅊ",
+    "lat": 37.1326,
+    "lng": 128.191,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "boeun",
+    "ko": "보은",
+    "province": "충북",
+    "en": "Boeun",
+    "aliases": [
+      "보은",
+      "Boeun",
+      "boeun",
+      "보은군"
+    ],
+    "choseong": "ㅂㅇ",
+    "lat": 36.4895,
+    "lng": 127.7292,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "okcheon",
+    "ko": "옥천",
+    "province": "충북",
+    "en": "Okcheon",
+    "aliases": [
+      "옥천",
+      "Okcheon",
+      "okcheon",
+      "옥천군"
+    ],
+    "choseong": "ㅇㅊ",
+    "lat": 36.3012,
+    "lng": 127.5686,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "yeongdong",
+    "ko": "영동",
+    "province": "충북",
+    "en": "Yeongdong",
+    "aliases": [
+      "영동",
+      "Yeongdong",
+      "yeongdong",
+      "영동군"
+    ],
+    "choseong": "ㅇㄷ",
+    "lat": 36.1755,
+    "lng": 127.7765,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "jeungpyeong",
+    "ko": "증평",
+    "province": "충북",
+    "en": "Jeungpyeong",
+    "aliases": [
+      "증평",
+      "Jeungpyeong",
+      "jeungpyeong",
+      "증평군"
+    ],
+    "choseong": "ㅈㅍ",
+    "lat": 36.785,
+    "lng": 127.581,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "jincheon",
+    "ko": "진천",
+    "province": "충북",
+    "en": "Jincheon",
+    "aliases": [
+      "진천",
+      "Jincheon",
+      "jincheon",
+      "진천군"
+    ],
+    "choseong": "ㅈㅊ",
+    "lat": 36.8554,
+    "lng": 127.4432,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "goesan",
+    "ko": "괴산",
+    "province": "충북",
+    "en": "Goesan",
+    "aliases": [
+      "괴산",
+      "Goesan",
+      "goesan",
+      "괴산군"
+    ],
+    "choseong": "ㄱㅅ",
+    "lat": 36.8154,
+    "lng": 127.7866,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "eumseong",
+    "ko": "음성",
+    "province": "충북",
+    "en": "Eumseong",
+    "aliases": [
+      "음성",
+      "Eumseong",
+      "eumseong",
+      "음성군"
+    ],
+    "choseong": "ㅇㅅ",
+    "lat": 36.94,
+    "lng": 127.6906,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "danyang",
+    "ko": "단양",
+    "province": "충북",
+    "en": "Danyang",
+    "aliases": [
+      "단양",
+      "Danyang",
+      "danyang",
+      "단양군"
+    ],
+    "choseong": "ㄷㅇ",
+    "lat": 36.9846,
+    "lng": 128.3655,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "cheonan",
+    "ko": "천안",
+    "province": "충남",
+    "en": "Cheonan",
+    "aliases": [
+      "천안",
+      "Cheonan",
+      "cheonan",
+      "천안시"
+    ],
+    "choseong": "ㅊㅇ",
+    "lat": 36.8151,
+    "lng": 127.1139,
+    "hubOriginId": "chungnam",
+    "hubRole": "primary"
+  },
+  {
+    "id": "gongju",
+    "ko": "공주",
+    "province": "충남",
+    "en": "Gongju",
+    "aliases": [
+      "공주",
+      "Gongju",
+      "gongju",
+      "공주시"
+    ],
+    "choseong": "ㄱㅈ",
+    "lat": 36.4465,
+    "lng": 127.119,
+    "hubOriginId": "chungnam",
+    "hubRole": "alt"
+  },
+  {
+    "id": "boryeong",
+    "ko": "보령",
+    "province": "충남",
+    "en": "Boryeong",
+    "aliases": [
+      "보령",
+      "Boryeong",
+      "boryeong",
+      "보령시"
+    ],
+    "choseong": "ㅂㄹ",
+    "lat": 36.3334,
+    "lng": 126.6129,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "asan",
+    "ko": "아산",
+    "province": "충남",
+    "en": "Asan",
+    "aliases": [
+      "아산",
+      "Asan",
+      "asan",
+      "아산시"
+    ],
+    "choseong": "ㅇㅅ",
+    "lat": 36.7898,
+    "lng": 127.0017,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "seosan",
+    "ko": "서산",
+    "province": "충남",
+    "en": "Seosan",
+    "aliases": [
+      "서산",
+      "Seosan",
+      "seosan",
+      "서산시"
+    ],
+    "choseong": "ㅅㅅ",
+    "lat": 36.7845,
+    "lng": 126.4503,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "nonsan",
+    "ko": "논산",
+    "province": "충남",
+    "en": "Nonsan",
+    "aliases": [
+      "논산",
+      "Nonsan",
+      "nonsan",
+      "논산시"
+    ],
+    "choseong": "ㄴㅅ",
+    "lat": 36.1871,
+    "lng": 127.0987,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "gyeryong",
+    "ko": "계룡",
+    "province": "충남",
+    "en": "Gyeryong",
+    "aliases": [
+      "계룡",
+      "Gyeryong",
+      "gyeryong",
+      "계룡시"
+    ],
+    "choseong": "ㄱㄹ",
+    "lat": 36.2745,
+    "lng": 127.2489,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "dangjin",
+    "ko": "당진",
+    "province": "충남",
+    "en": "Dangjin",
+    "aliases": [
+      "당진",
+      "Dangjin",
+      "dangjin",
+      "당진시"
+    ],
+    "choseong": "ㄷㅈ",
+    "lat": 36.8897,
+    "lng": 126.6458,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "geumsan",
+    "ko": "금산",
+    "province": "충남",
+    "en": "Geumsan",
+    "aliases": [
+      "금산",
+      "Geumsan",
+      "geumsan",
+      "금산군"
+    ],
+    "choseong": "ㄱㅅ",
+    "lat": 36.1087,
+    "lng": 127.4882,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "buyeo",
+    "ko": "부여",
+    "province": "충남",
+    "en": "Buyeo",
+    "aliases": [
+      "부여",
+      "Buyeo",
+      "buyeo",
+      "부여군"
+    ],
+    "choseong": "ㅂㅇ",
+    "lat": 36.275,
+    "lng": 126.91,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "seocheon",
+    "ko": "서천",
+    "province": "충남",
+    "en": "Seocheon",
+    "aliases": [
+      "서천",
+      "Seocheon",
+      "seocheon",
+      "서천군"
+    ],
+    "choseong": "ㅅㅊ",
+    "lat": 36.0803,
+    "lng": 126.6914,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "cheongyang",
+    "ko": "청양",
+    "province": "충남",
+    "en": "Cheongyang",
+    "aliases": [
+      "청양",
+      "Cheongyang",
+      "cheongyang",
+      "청양군"
+    ],
+    "choseong": "ㅊㅇ",
+    "lat": 36.4595,
+    "lng": 126.8025,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "hongseong",
+    "ko": "홍성",
+    "province": "충남",
+    "en": "Hongseong",
+    "aliases": [
+      "홍성",
+      "Hongseong",
+      "hongseong",
+      "홍성군"
+    ],
+    "choseong": "ㅎㅅ",
+    "lat": 36.6012,
+    "lng": 126.6608,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "yesan",
+    "ko": "예산",
+    "province": "충남",
+    "en": "Yesan",
+    "aliases": [
+      "예산",
+      "Yesan",
+      "yesan",
+      "예산군"
+    ],
+    "choseong": "ㅇㅅ",
+    "lat": 36.6795,
+    "lng": 126.8425,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "taean",
+    "ko": "태안",
+    "province": "충남",
+    "en": "Taean",
+    "aliases": [
+      "태안",
+      "Taean",
+      "taean",
+      "태안군"
+    ],
+    "choseong": "ㅌㅇ",
+    "lat": 36.7456,
+    "lng": 126.298,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "jeonju",
+    "ko": "전주",
+    "province": "전북",
+    "en": "Jeonju",
+    "aliases": [
+      "전주",
+      "Jeonju",
+      "jeonju",
+      "전주시"
+    ],
+    "choseong": "ㅈㅈ",
+    "lat": 35.8242,
+    "lng": 127.148,
+    "hubOriginId": "jeonbuk",
+    "hubRole": "primary"
+  },
+  {
+    "id": "gunsan",
+    "ko": "군산",
+    "province": "전북",
+    "en": "Gunsan",
+    "aliases": [
+      "군산",
+      "Gunsan",
+      "gunsan",
+      "군산시"
+    ],
+    "choseong": "ㄱㅅ",
+    "lat": 35.9677,
+    "lng": 126.7369,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "iksan",
+    "ko": "익산",
+    "province": "전북",
+    "en": "Iksan",
+    "aliases": [
+      "익산",
+      "Iksan",
+      "iksan",
+      "익산시"
+    ],
+    "choseong": "ㅇㅅ",
+    "lat": 35.9483,
+    "lng": 126.9576,
+    "hubOriginId": "jeonbuk",
+    "hubRole": "alt"
+  },
+  {
+    "id": "jeongeup",
+    "ko": "정읍",
+    "province": "전북",
+    "en": "Jeongeup",
+    "aliases": [
+      "정읍",
+      "Jeongeup",
+      "jeongeup",
+      "정읍시"
+    ],
+    "choseong": "ㅈㅇ",
+    "lat": 35.5699,
+    "lng": 126.856,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "namwon",
+    "ko": "남원",
+    "province": "전북",
+    "en": "Namwon",
+    "aliases": [
+      "남원",
+      "Namwon",
+      "namwon",
+      "남원시"
+    ],
+    "choseong": "ㄴㅇ",
+    "lat": 35.4164,
+    "lng": 127.3903,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "gimje",
+    "ko": "김제",
+    "province": "전북",
+    "en": "Gimje",
+    "aliases": [
+      "김제",
+      "Gimje",
+      "gimje",
+      "김제시"
+    ],
+    "choseong": "ㄱㅈ",
+    "lat": 35.8036,
+    "lng": 126.8808,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "wanju",
+    "ko": "완주",
+    "province": "전북",
+    "en": "Wanju",
+    "aliases": [
+      "완주",
+      "Wanju",
+      "wanju",
+      "완주군"
+    ],
+    "choseong": "ㅇㅈ",
+    "lat": 35.9046,
+    "lng": 127.1624,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "jinan",
+    "ko": "진안",
+    "province": "전북",
+    "en": "Jinan",
+    "aliases": [
+      "진안",
+      "Jinan",
+      "jinan",
+      "진안군"
+    ],
+    "choseong": "ㅈㅇ",
+    "lat": 35.7917,
+    "lng": 127.4253,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "muju",
+    "ko": "무주",
+    "province": "전북",
+    "en": "Muju",
+    "aliases": [
+      "무주",
+      "Muju",
+      "muju",
+      "무주군"
+    ],
+    "choseong": "ㅁㅈ",
+    "lat": 35.9103,
+    "lng": 127.6608,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "jangsu",
+    "ko": "장수",
+    "province": "전북",
+    "en": "Jangsu",
+    "aliases": [
+      "장수",
+      "Jangsu",
+      "jangsu",
+      "장수군"
+    ],
+    "choseong": "ㅈㅅ",
+    "lat": 35.6475,
+    "lng": 127.5211,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "imsil",
+    "ko": "임실",
+    "province": "전북",
+    "en": "Imsil",
+    "aliases": [
+      "임실",
+      "Imsil",
+      "imsil",
+      "임실군"
+    ],
+    "choseong": "ㅇㅅ",
+    "lat": 35.6131,
+    "lng": 127.2794,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "sunchang",
+    "ko": "순창",
+    "province": "전북",
+    "en": "Sunchang",
+    "aliases": [
+      "순창",
+      "Sunchang",
+      "sunchang",
+      "순창군"
+    ],
+    "choseong": "ㅅㅊ",
+    "lat": 35.3744,
+    "lng": 127.1375,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "gochang",
+    "ko": "고창",
+    "province": "전북",
+    "en": "Gochang",
+    "aliases": [
+      "고창",
+      "Gochang",
+      "gochang",
+      "고창군"
+    ],
+    "choseong": "ㄱㅊ",
+    "lat": 35.4358,
+    "lng": 126.702,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "buan",
+    "ko": "부안",
+    "province": "전북",
+    "en": "Buan",
+    "aliases": [
+      "부안",
+      "Buan",
+      "buan",
+      "부안군"
+    ],
+    "choseong": "ㅂㅇ",
+    "lat": 35.7316,
+    "lng": 126.733,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "mokpo",
+    "ko": "목포",
+    "province": "전남",
+    "en": "Mokpo",
+    "aliases": [
+      "목포",
+      "Mokpo",
+      "mokpo",
+      "목포시"
+    ],
+    "choseong": "ㅁㅍ",
+    "lat": 34.8118,
+    "lng": 126.3922,
+    "hubOriginId": "jeonnam",
+    "hubRole": "alt"
+  },
+  {
+    "id": "yeosu",
+    "ko": "여수",
+    "province": "전남",
+    "en": "Yeosu",
+    "aliases": [
+      "여수",
+      "Yeosu",
+      "yeosu",
+      "여수시"
+    ],
+    "choseong": "ㅇㅅ",
+    "lat": 34.7604,
+    "lng": 127.6622,
+    "hubOriginId": "jeonnam",
+    "hubRole": "primary"
+  },
+  {
+    "id": "suncheon",
+    "ko": "순천",
+    "province": "전남",
+    "en": "Suncheon",
+    "aliases": [
+      "순천",
+      "Suncheon",
+      "suncheon",
+      "순천시"
+    ],
+    "choseong": "ㅅㅊ",
+    "lat": 34.9506,
+    "lng": 127.4872,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "naju",
+    "ko": "나주",
+    "province": "전남",
+    "en": "Naju",
+    "aliases": [
+      "나주",
+      "Naju",
+      "naju",
+      "나주시"
+    ],
+    "choseong": "ㄴㅈ",
+    "lat": 35.016,
+    "lng": 126.711,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "gwangyang",
+    "ko": "광양",
+    "province": "전남",
+    "en": "Gwangyang",
+    "aliases": [
+      "광양",
+      "Gwangyang",
+      "gwangyang",
+      "광양시"
+    ],
+    "choseong": "ㄱㅇ",
+    "lat": 34.9404,
+    "lng": 127.6956,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "damyang",
+    "ko": "담양",
+    "province": "전남",
+    "en": "Damyang",
+    "aliases": [
+      "담양",
+      "Damyang",
+      "damyang",
+      "담양군"
+    ],
+    "choseong": "ㄷㅇ",
+    "lat": 35.3214,
+    "lng": 126.988,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "gokseong",
+    "ko": "곡성",
+    "province": "전남",
+    "en": "Gokseong",
+    "aliases": [
+      "곡성",
+      "Gokseong",
+      "gokseong",
+      "곡성군"
+    ],
+    "choseong": "ㄱㅅ",
+    "lat": 35.2819,
+    "lng": 127.2919,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "gurye",
+    "ko": "구례",
+    "province": "전남",
+    "en": "Gurye",
+    "aliases": [
+      "구례",
+      "Gurye",
+      "gurye",
+      "구례군"
+    ],
+    "choseong": "ㄱㄹ",
+    "lat": 35.2024,
+    "lng": 127.4627,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "goheung",
+    "ko": "고흥",
+    "province": "전남",
+    "en": "Goheung",
+    "aliases": [
+      "고흥",
+      "Goheung",
+      "goheung",
+      "고흥군"
+    ],
+    "choseong": "ㄱㅎ",
+    "lat": 34.6112,
+    "lng": 127.2847,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "boseong",
+    "ko": "보성",
+    "province": "전남",
+    "en": "Boseong",
+    "aliases": [
+      "보성",
+      "Boseong",
+      "boseong",
+      "보성군"
+    ],
+    "choseong": "ㅂㅅ",
+    "lat": 34.7714,
+    "lng": 127.0798,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "hwasun",
+    "ko": "화순",
+    "province": "전남",
+    "en": "Hwasun",
+    "aliases": [
+      "화순",
+      "Hwasun",
+      "hwasun",
+      "화순군"
+    ],
+    "choseong": "ㅎㅅ",
+    "lat": 35.0645,
+    "lng": 126.9867,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "jangheung",
+    "ko": "장흥",
+    "province": "전남",
+    "en": "Jangheung",
+    "aliases": [
+      "장흥",
+      "Jangheung",
+      "jangheung",
+      "장흥군"
+    ],
+    "choseong": "ㅈㅎ",
+    "lat": 34.6816,
+    "lng": 126.907,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "gangjin",
+    "ko": "강진",
+    "province": "전남",
+    "en": "Gangjin",
+    "aliases": [
+      "강진",
+      "Gangjin",
+      "gangjin",
+      "강진군"
+    ],
+    "choseong": "ㄱㅈ",
+    "lat": 34.642,
+    "lng": 126.7672,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "haenam",
+    "ko": "해남",
+    "province": "전남",
+    "en": "Haenam",
+    "aliases": [
+      "해남",
+      "Haenam",
+      "haenam",
+      "해남군"
+    ],
+    "choseong": "ㅎㄴ",
+    "lat": 34.5735,
+    "lng": 126.599,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "yeongam",
+    "ko": "영암",
+    "province": "전남",
+    "en": "Yeongam",
+    "aliases": [
+      "영암",
+      "Yeongam",
+      "yeongam",
+      "영암군"
+    ],
+    "choseong": "ㅇㅇ",
+    "lat": 34.8002,
+    "lng": 126.6967,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "muan",
+    "ko": "무안",
+    "province": "전남",
+    "en": "Muan",
+    "aliases": [
+      "무안",
+      "Muan",
+      "muan",
+      "무안군"
+    ],
+    "choseong": "ㅁㅇ",
+    "lat": 34.9904,
+    "lng": 126.4817,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "hampyeong",
+    "ko": "함평",
+    "province": "전남",
+    "en": "Hampyeong",
+    "aliases": [
+      "함평",
+      "Hampyeong",
+      "hampyeong",
+      "함평군"
+    ],
+    "choseong": "ㅎㅍ",
+    "lat": 35.0654,
+    "lng": 126.5166,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "yeonggwang",
+    "ko": "영광",
+    "province": "전남",
+    "en": "Yeonggwang",
+    "aliases": [
+      "영광",
+      "Yeonggwang",
+      "yeonggwang",
+      "영광군"
+    ],
+    "choseong": "ㅇㄱ",
+    "lat": 35.2772,
+    "lng": 126.5119,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "jangseong",
+    "ko": "장성",
+    "province": "전남",
+    "en": "Jangseong",
+    "aliases": [
+      "장성",
+      "Jangseong",
+      "jangseong",
+      "장성군"
+    ],
+    "choseong": "ㅈㅅ",
+    "lat": 35.3019,
+    "lng": 126.7848,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "wando",
+    "ko": "완도",
+    "province": "전남",
+    "en": "Wando",
+    "aliases": [
+      "완도",
+      "Wando",
+      "wando",
+      "완도군"
+    ],
+    "choseong": "ㅇㄷ",
+    "lat": 34.3118,
+    "lng": 126.755,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "jindo",
+    "ko": "진도",
+    "province": "전남",
+    "en": "Jindo",
+    "aliases": [
+      "진도",
+      "Jindo",
+      "jindo",
+      "진도군"
+    ],
+    "choseong": "ㅈㄷ",
+    "lat": 34.4868,
+    "lng": 126.2634,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "sinan",
+    "ko": "신안",
+    "province": "전남",
+    "en": "Sinan",
+    "aliases": [
+      "신안",
+      "Sinan",
+      "sinan",
+      "신안군"
+    ],
+    "choseong": "ㅅㅇ",
+    "lat": 34.833,
+    "lng": 126.108,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "pohang",
+    "ko": "포항",
+    "province": "경북",
+    "en": "Pohang",
+    "aliases": [
+      "포항",
+      "Pohang",
+      "pohang",
+      "포항시"
+    ],
+    "choseong": "ㅍㅎ",
+    "lat": 36.019,
+    "lng": 129.343,
+    "hubOriginId": "gyeongbuk",
+    "hubRole": "primary"
+  },
+  {
+    "id": "gyeongju",
+    "ko": "경주",
+    "province": "경북",
+    "en": "Gyeongju",
+    "aliases": [
+      "경주",
+      "Gyeongju",
+      "gyeongju",
+      "경주시"
+    ],
+    "choseong": "ㄱㅈ",
+    "lat": 35.8562,
+    "lng": 129.2247,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "gimcheon",
+    "ko": "김천",
+    "province": "경북",
+    "en": "Gimcheon",
+    "aliases": [
+      "김천",
+      "Gimcheon",
+      "gimcheon",
+      "김천시"
+    ],
+    "choseong": "ㄱㅊ",
+    "lat": 36.1398,
+    "lng": 128.1136,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "andong",
+    "ko": "안동",
+    "province": "경북",
+    "en": "Andong",
+    "aliases": [
+      "안동",
+      "Andong",
+      "andong",
+      "안동시"
+    ],
+    "choseong": "ㅇㄷ",
+    "lat": 36.5684,
+    "lng": 128.7294,
+    "hubOriginId": "gyeongbuk",
+    "hubRole": "alt"
+  },
+  {
+    "id": "gumi",
+    "ko": "구미",
+    "province": "경북",
+    "en": "Gumi",
+    "aliases": [
+      "구미",
+      "Gumi",
+      "gumi",
+      "구미시"
+    ],
+    "choseong": "ㄱㅁ",
+    "lat": 36.1195,
+    "lng": 128.3446,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "yeongju",
+    "ko": "영주",
+    "province": "경북",
+    "en": "Yeongju",
+    "aliases": [
+      "영주",
+      "Yeongju",
+      "yeongju",
+      "영주시"
+    ],
+    "choseong": "ㅇㅈ",
+    "lat": 36.8057,
+    "lng": 128.624,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "yeongcheon",
+    "ko": "영천",
+    "province": "경북",
+    "en": "Yeongcheon",
+    "aliases": [
+      "영천",
+      "Yeongcheon",
+      "yeongcheon",
+      "영천시"
+    ],
+    "choseong": "ㅇㅊ",
+    "lat": 35.973,
+    "lng": 128.938,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "sangju",
+    "ko": "상주",
+    "province": "경북",
+    "en": "Sangju",
+    "aliases": [
+      "상주",
+      "Sangju",
+      "sangju",
+      "상주시"
+    ],
+    "choseong": "ㅅㅈ",
+    "lat": 36.4109,
+    "lng": 128.1591,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "mungyeong",
+    "ko": "문경",
+    "province": "경북",
+    "en": "Mungyeong",
+    "aliases": [
+      "문경",
+      "Mungyeong",
+      "mungyeong",
+      "문경시"
+    ],
+    "choseong": "ㅁㄱ",
+    "lat": 36.5865,
+    "lng": 128.187,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "gyeongsan",
+    "ko": "경산",
+    "province": "경북",
+    "en": "Gyeongsan",
+    "aliases": [
+      "경산",
+      "Gyeongsan",
+      "gyeongsan",
+      "경산시"
+    ],
+    "choseong": "ㄱㅅ",
+    "lat": 35.8255,
+    "lng": 128.7415,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "uiseong",
+    "ko": "의성",
+    "province": "경북",
+    "en": "Uiseong",
+    "aliases": [
+      "의성",
+      "Uiseong",
+      "uiseong",
+      "의성군"
+    ],
+    "choseong": "ㅇㅅ",
+    "lat": 36.3527,
+    "lng": 128.697,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "cheongsong",
+    "ko": "청송",
+    "province": "경북",
+    "en": "Cheongsong",
+    "aliases": [
+      "청송",
+      "Cheongsong",
+      "cheongsong",
+      "청송군"
+    ],
+    "choseong": "ㅊㅅ",
+    "lat": 36.436,
+    "lng": 129.057,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "yeongyang",
+    "ko": "영양",
+    "province": "경북",
+    "en": "Yeongyang",
+    "aliases": [
+      "영양",
+      "Yeongyang",
+      "yeongyang",
+      "영양군"
+    ],
+    "choseong": "ㅇㅇ",
+    "lat": 36.6667,
+    "lng": 129.1124,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "yeongdeok",
+    "ko": "영덕",
+    "province": "경북",
+    "en": "Yeongdeok",
+    "aliases": [
+      "영덕",
+      "Yeongdeok",
+      "yeongdeok",
+      "영덕군"
+    ],
+    "choseong": "ㅇㄷ",
+    "lat": 36.4151,
+    "lng": 129.3655,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "cheongdo",
+    "ko": "청도",
+    "province": "경북",
+    "en": "Cheongdo",
+    "aliases": [
+      "청도",
+      "Cheongdo",
+      "cheongdo",
+      "청도군"
+    ],
+    "choseong": "ㅊㄷ",
+    "lat": 35.647,
+    "lng": 128.734,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "goryeong",
+    "ko": "고령",
+    "province": "경북",
+    "en": "Goryeong",
+    "aliases": [
+      "고령",
+      "Goryeong",
+      "goryeong",
+      "고령군"
+    ],
+    "choseong": "ㄱㄹ",
+    "lat": 35.7265,
+    "lng": 128.2635,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "seongju",
+    "ko": "성주",
+    "province": "경북",
+    "en": "Seongju",
+    "aliases": [
+      "성주",
+      "Seongju",
+      "seongju",
+      "성주군"
+    ],
+    "choseong": "ㅅㅈ",
+    "lat": 35.9195,
+    "lng": 128.2835,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "chilgok",
+    "ko": "칠곡",
+    "province": "경북",
+    "en": "Chilgok",
+    "aliases": [
+      "칠곡",
+      "Chilgok",
+      "chilgok",
+      "칠곡군"
+    ],
+    "choseong": "ㅊㄱ",
+    "lat": 35.9955,
+    "lng": 128.4015,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "yecheon",
+    "ko": "예천",
+    "province": "경북",
+    "en": "Yecheon",
+    "aliases": [
+      "예천",
+      "Yecheon",
+      "yecheon",
+      "예천군"
+    ],
+    "choseong": "ㅇㅊ",
+    "lat": 36.6567,
+    "lng": 128.4528,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "bonghwa",
+    "ko": "봉화",
+    "province": "경북",
+    "en": "Bonghwa",
+    "aliases": [
+      "봉화",
+      "Bonghwa",
+      "bonghwa",
+      "봉화군"
+    ],
+    "choseong": "ㅂㅎ",
+    "lat": 36.8931,
+    "lng": 128.7326,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "uljin",
+    "ko": "울진",
+    "province": "경북",
+    "en": "Uljin",
+    "aliases": [
+      "울진",
+      "Uljin",
+      "uljin",
+      "울진군"
+    ],
+    "choseong": "ㅇㅈ",
+    "lat": 36.9931,
+    "lng": 129.4004,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "ulleung",
+    "ko": "울릉",
+    "province": "경북",
+    "en": "Ulleung",
+    "aliases": [
+      "울릉",
+      "Ulleung",
+      "ulleung",
+      "울릉군"
+    ],
+    "choseong": "ㅇㄹ",
+    "lat": 37.4844,
+    "lng": 130.9057,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "changwon",
+    "ko": "창원",
+    "province": "경남",
+    "en": "Changwon",
+    "aliases": [
+      "창원",
+      "Changwon",
+      "changwon",
+      "창원시",
+      "마산",
+      "Masan",
+      "masan"
+    ],
+    "choseong": "ㅊㅇ",
+    "lat": 35.2281,
+    "lng": 128.6811,
+    "hubOriginId": "gyeongnam",
+    "hubRole": "primary"
+  },
+  {
+    "id": "jinju",
+    "ko": "진주",
+    "province": "경남",
+    "en": "Jinju",
+    "aliases": [
+      "진주",
+      "Jinju",
+      "jinju",
+      "진주시"
+    ],
+    "choseong": "ㅈㅈ",
+    "lat": 35.1803,
+    "lng": 128.1076,
+    "hubOriginId": "gyeongnam",
+    "hubRole": "alt"
+  },
+  {
+    "id": "tongyeong",
+    "ko": "통영",
+    "province": "경남",
+    "en": "Tongyeong",
+    "aliases": [
+      "통영",
+      "Tongyeong",
+      "tongyeong",
+      "통영시"
+    ],
+    "choseong": "ㅌㅇ",
+    "lat": 34.8544,
+    "lng": 128.4331,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "sacheon",
+    "ko": "사천",
+    "province": "경남",
+    "en": "Sacheon",
+    "aliases": [
+      "사천",
+      "Sacheon",
+      "sacheon",
+      "사천시"
+    ],
+    "choseong": "ㅅㅊ",
+    "lat": 34.9249,
+    "lng": 128.0681,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "gimhae",
+    "ko": "김해",
+    "province": "경남",
+    "en": "Gimhae",
+    "aliases": [
+      "김해",
+      "Gimhae",
+      "gimhae",
+      "김해시"
+    ],
+    "choseong": "ㄱㅎ",
+    "lat": 35.2284,
+    "lng": 128.8893,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "miryang",
+    "ko": "밀양",
+    "province": "경남",
+    "en": "Miryang",
+    "aliases": [
+      "밀양",
+      "Miryang",
+      "miryang",
+      "밀양시"
+    ],
+    "choseong": "ㅁㅇ",
+    "lat": 35.5038,
+    "lng": 128.7469,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "geoje",
+    "ko": "거제",
+    "province": "경남",
+    "en": "Geoje",
+    "aliases": [
+      "거제",
+      "Geoje",
+      "geoje",
+      "거제시"
+    ],
+    "choseong": "ㄱㅈ",
+    "lat": 34.8806,
+    "lng": 128.6211,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "yangsan",
+    "ko": "양산",
+    "province": "경남",
+    "en": "Yangsan",
+    "aliases": [
+      "양산",
+      "Yangsan",
+      "yangsan",
+      "양산시"
+    ],
+    "choseong": "ㅇㅅ",
+    "lat": 35.335,
+    "lng": 129.037,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "uiryeong",
+    "ko": "의령",
+    "province": "경남",
+    "en": "Uiryeong",
+    "aliases": [
+      "의령",
+      "Uiryeong",
+      "uiryeong",
+      "의령군"
+    ],
+    "choseong": "ㅇㄹ",
+    "lat": 35.3225,
+    "lng": 128.2615,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "haman",
+    "ko": "함안",
+    "province": "경남",
+    "en": "Haman",
+    "aliases": [
+      "함안",
+      "Haman",
+      "haman",
+      "함안군"
+    ],
+    "choseong": "ㅎㅇ",
+    "lat": 35.272,
+    "lng": 128.406,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "changnyeong",
+    "ko": "창녕",
+    "province": "경남",
+    "en": "Changnyeong",
+    "aliases": [
+      "창녕",
+      "Changnyeong",
+      "changnyeong",
+      "창녕군"
+    ],
+    "choseong": "ㅊㄴ",
+    "lat": 35.544,
+    "lng": 128.492,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "goseong-gn",
+    "ko": "고성",
+    "province": "경남",
+    "en": "Goseong",
+    "aliases": [
+      "고성",
+      "Goseong",
+      "goseong",
+      "고성군",
+      "경남고성",
+      "경남 고성",
+      "경남 고성군",
+      "Goseong, Gyeongnam"
+    ],
+    "choseong": "ㄱㅅ",
+    "lat": 34.973,
+    "lng": 128.3223,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "namhae",
+    "ko": "남해",
+    "province": "경남",
+    "en": "Namhae",
+    "aliases": [
+      "남해",
+      "Namhae",
+      "namhae",
+      "남해군"
+    ],
+    "choseong": "ㄴㅎ",
+    "lat": 34.8377,
+    "lng": 127.8925,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "hadong",
+    "ko": "하동",
+    "province": "경남",
+    "en": "Hadong",
+    "aliases": [
+      "하동",
+      "Hadong",
+      "hadong",
+      "하동군"
+    ],
+    "choseong": "ㅎㄷ",
+    "lat": 35.0672,
+    "lng": 127.7514,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "sancheong",
+    "ko": "산청",
+    "province": "경남",
+    "en": "Sancheong",
+    "aliases": [
+      "산청",
+      "Sancheong",
+      "sancheong",
+      "산청군"
+    ],
+    "choseong": "ㅅㅊ",
+    "lat": 35.4154,
+    "lng": 127.8735,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "hamyang",
+    "ko": "함양",
+    "province": "경남",
+    "en": "Hamyang",
+    "aliases": [
+      "함양",
+      "Hamyang",
+      "hamyang",
+      "함양군"
+    ],
+    "choseong": "ㅎㅇ",
+    "lat": 35.5204,
+    "lng": 127.7252,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "geochang",
+    "ko": "거창",
+    "province": "경남",
+    "en": "Geochang",
+    "aliases": [
+      "거창",
+      "Geochang",
+      "geochang",
+      "거창군"
+    ],
+    "choseong": "ㄱㅊ",
+    "lat": 35.6865,
+    "lng": 127.9095,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "hapcheon",
+    "ko": "합천",
+    "province": "경남",
+    "en": "Hapcheon",
+    "aliases": [
+      "합천",
+      "Hapcheon",
+      "hapcheon",
+      "합천군"
+    ],
+    "choseong": "ㅎㅊ",
+    "lat": 35.5666,
+    "lng": 128.1658,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "jeju",
+    "ko": "제주",
+    "province": "제주",
+    "en": "Jeju City",
+    "aliases": [
+      "제주",
+      "Jeju City",
+      "jeju city",
+      "jejucity",
+      "Jeju",
+      "jeju",
+      "제주시"
+    ],
+    "choseong": "ㅈㅈ",
+    "lat": 33.4996,
+    "lng": 126.5312,
+    "hubOriginId": "jeju",
+    "hubRole": "primary"
+  },
+  {
+    "id": "seogwipo",
+    "ko": "서귀포",
+    "province": "제주",
+    "en": "Seogwipo",
+    "aliases": [
+      "서귀포",
+      "Seogwipo",
+      "seogwipo",
+      "서귀포시"
+    ],
+    "choseong": "ㅅㄱㅍ",
+    "lat": 33.2541,
+    "lng": 126.56,
+    "hubOriginId": "jeju",
+    "hubRole": "alt"
+  },
+  {
+    "id": "gijang",
+    "ko": "기장",
+    "province": "부산",
+    "en": "Gijang",
+    "aliases": [
+      "기장",
+      "Gijang",
+      "gijang",
+      "기장군"
+    ],
+    "choseong": "ㄱㅈ",
+    "lat": 35.2444,
+    "lng": 129.2222,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "dalseong",
+    "ko": "달성",
+    "province": "대구",
+    "en": "Dalseong",
+    "aliases": [
+      "달성",
+      "Dalseong",
+      "dalseong",
+      "달성군"
+    ],
+    "choseong": "ㄷㅅ",
+    "lat": 35.7746,
+    "lng": 128.4312,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "gunwi",
+    "ko": "군위",
+    "province": "대구",
+    "en": "Gunwi",
+    "aliases": [
+      "군위",
+      "Gunwi",
+      "gunwi",
+      "군위군"
+    ],
+    "choseong": "ㄱㅇ",
+    "lat": 36.2425,
+    "lng": 128.5725,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "ganghwa",
+    "ko": "강화",
+    "province": "인천",
+    "en": "Ganghwa",
+    "aliases": [
+      "강화",
+      "Ganghwa",
+      "ganghwa",
+      "강화군"
+    ],
+    "choseong": "ㄱㅎ",
+    "lat": 37.7469,
+    "lng": 126.4877,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "ongjin",
+    "ko": "옹진",
+    "province": "인천",
+    "en": "Ongjin",
+    "aliases": [
+      "옹진",
+      "Ongjin",
+      "ongjin",
+      "옹진군"
+    ],
+    "choseong": "ㅇㅈ",
+    "lat": 37.446,
+    "lng": 126.637,
+    "hubOriginId": null,
+    "hubRole": null
+  },
+  {
+    "id": "ulju",
+    "ko": "울주",
+    "province": "울산",
+    "en": "Ulju",
+    "aliases": [
+      "울주",
+      "Ulju",
+      "ulju",
+      "울주군"
+    ],
+    "choseong": "ㅇㅈ",
+    "lat": 35.5222,
+    "lng": 129.2425,
+    "hubOriginId": null,
+    "hubRole": null
+  }
+]

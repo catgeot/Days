@@ -2827,7 +2827,18 @@
       "placeSummaryLoading": "Preparing place summary...",
       "placeIntroLoading": "Preparing place intro...",
       "truncatedNotice": "The answer was cut short.",
-      "continueReading": "Continue reading"
+      "continueReading": "Continue reading",
+      "originCityPlaceholder": "Departure city (e.g. Chuncheon)",
+      "originMore": "More",
+      "originCollapse": "Collapse",
+      "originGuHint": "Enter a city name (e.g. Busan)",
+      "originMissing": "That place is not on the list",
+      "originAskAnyway": "Ask from ‘{{name}}’",
+      "originTypo": "Did you mean {{name}}?",
+      "originRepeat": "Just answered from {{name}}",
+      "originLocate": "Find departure city from my location",
+      "originLocateFail": "Location is unavailable. Please type a departure city.",
+      "originLocated": "{{city}} · {{province}} (my location)"
     },
     "proxyError": {
       "rateLimitedSoon": "Lots of questions came in at once. Please try again in a bit.",

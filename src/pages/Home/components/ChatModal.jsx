@@ -6,7 +6,7 @@ import { useAccountProfile } from '../../../shared/Auth/useAccountProfile';
 import { X, Send, Loader2, MessageSquare, Trash2, Sparkles, ChevronLeft, Compass, Plus, ClipboardList } from 'lucide-react';
 import { PERSONA_TYPES } from '../lib/prompts';
 import { apiClient } from '../lib/apiClient';
-import { GeminiProxyError, getGeminiProxyErrorMessage } from '../lib/geminiProxyError';
+import { GeminiProxyError, getGeminiProxyErrorMessage, mooniConversationErrorMessage } from '../lib/geminiProxyError';
 import { tripHasPersistedDialogue } from '../lib/tripChatUtils';
 import { TRAVEL_SPOTS } from '../data/travelSpots.js';
 import {
@@ -52,7 +52,7 @@ import { loadFestivalLodgingForAsk } from '../../Korea/lib/festivalStayLoad.js';
 import { invokeMooniChatToleratingChip } from '../lib/mooniChipEdgeFallback.js';
 import { resolvePlaceChatKoreaFestivalHint } from '../lib/resolvePlaceChatKoreaFestivalHint.js';
 import { fitMooniKoreaFestivalHint } from '../../../shared/korea/mooniKoreaFestivalHintBudget.js';
-import { isGateoMooniScopedFestivalEnabled } from '../../../shared/gateoFeatureFlags.js';
+import { isGateoMooniOriginInputEnabled, isGateoMooniScopedFestivalEnabled } from '../../../shared/gateoFeatureFlags.js';
 import {
   resolveMooniFestivalBoundPlaceNameForHint,
   shouldOmitMooniGeminiHistoryForKoreaFestivalTurn,
@@ -100,11 +100,13 @@ import {
   getMooniL1ChipLabel,
   buildAccessRouteAskText,
   FESTIVAL_ACCESS_PARENT,
-  FESTIVAL_DOMESTIC_ORIGINS,
   festivalOriginLabel,
   buildFestivalAccessAskText,
+  festivalOriginSendRequest,
   visibleFestivalDomesticOrigins,
 } from '../lib/mooniQuickReplies';
+import { writeDomesticOriginCityId } from '../lib/koreaOriginCityMatch.js';
+import FestivalAccessOriginDock from './FestivalAccessOriginDock.jsx';
 import { resolveMooniChipDockMode } from '../lib/mooniChipDockMode';
 import { resolveMooniChatModel } from '../../../utils/mooniChatModel';
 import { GEMINI_MODELS } from '../../../utils/geminiModels';
@@ -218,7 +220,11 @@ const ChatModal = ({
   const [accessOriginIata, setAccessOriginIata] = useState(() =>
     resolveDefaultFlightOriginIataForLocation(mooniPlaceContext),
   );
-  const [festivalAccessId, setFestivalAccessId] = useState('incheon');
+  const originInputOn = isGateoMooniOriginInputEnabled();
+  const [festivalAccessId, setFestivalAccessId] = useState(() => (
+    isGateoMooniOriginInputEnabled() ? '' : 'incheon'
+  ));
+  const [originHoldUntil, setOriginHoldUntil] = useState(0);
   const [accessOriginSearchOpen, setAccessOriginSearchOpen] = useState(false);
   const [accessOriginSearchActive, setAccessOriginSearchActive] = useState(false);
 
@@ -233,6 +239,9 @@ const ChatModal = ({
   const tripSessionRef = useRef(null);
   const sendGateRef = useRef(null);
   if (!sendGateRef.current) sendGateRef.current = createMooniSendGate();
+  const messagesScrollRef = useRef(null);
+  const suppressMessageScrollRef = useRef(false);
+  const lastSentOriginRef = useRef('');
 
   const collapseMobileDockInput = useCallback(() => {
     if (mobileDockBlurTimerRef.current) {
@@ -592,11 +601,16 @@ const ChatModal = ({
     setAccessOriginSearchActive(false);
   }, [effectiveQuickReplySlug]);
 
+  const activeChatIdRef = useRef(activeChatId);
   useEffect(() => {
+    const previous = activeChatIdRef.current;
+    activeChatIdRef.current = activeChatId;
+    const promotedDraft = !previous && Boolean(activeChatId);
+    if (originInputOn && promotedDraft) return;
     setTopicDockParent(null);
     setAccessOriginSearchOpen(false);
     setAccessOriginSearchActive(false);
-  }, [activeChatId]);
+  }, [activeChatId, originInputOn]);
 
   useEffect(() => {
     if (!isOpen) {
@@ -731,16 +745,35 @@ const ChatModal = ({
   }, [isOpen]);
 
   useEffect(() => {
+    if (suppressMessageScrollRef.current) {
+      suppressMessageScrollRef.current = false;
+      return undefined;
+    }
     if (messages.length > 0) {
-      setTimeout(() => {
+      const timer = setTimeout(() => {
         if (lastQuestionRef.current) {
           lastQuestionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
         } else {
           messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
         }
       }, 100);
+      return () => clearTimeout(timer);
     }
+    return undefined;
   }, [messages, isLoading]);
+
+  useEffect(() => {
+    if (!originHoldUntil) return undefined;
+    const wait = originHoldUntil - Date.now();
+    if (wait <= 0) {
+      setOriginHoldUntil(0);
+      return undefined;
+    }
+    const timer = setTimeout(() => setOriginHoldUntil(0), wait);
+    return () => clearTimeout(timer);
+  }, [originHoldUntil]);
+
+  const originHeld = originHoldUntil > Date.now();
 
   useEffect(() => {
     if (!isOpen) {
@@ -982,8 +1015,8 @@ const ChatModal = ({
   ]);
 
   const handleSend = useCallback(async (text, personaOverride = null, sendOptions = null) => {
-    if (!text?.trim()) return;
-    if (!sendGateRef.current.tryBegin()) return;
+    if (!text?.trim()) return false;
+    if (!sendGateRef.current.tryBegin()) return false;
 
     let destinationPickExtras = null;
     try {
@@ -1424,10 +1457,25 @@ const ChatModal = ({
       setMessages(finalMessages);
 
       onUpdateChat(effectiveChatId, finalMessages, sessionExtras);
+      return true;
     } catch (error) {
-      const text = getGeminiProxyErrorMessage(error, i18n.language);
+      const text = isMooniUi
+        ? mooniConversationErrorMessage(error, i18n.language)
+        : getGeminiProxyErrorMessage(error, i18n.language);
       const role = error instanceof GeminiProxyError && error.kind === 'budget' ? 'model' : 'error';
       setMessages((prev) => [...prev, { role, text, ...destinationPickExtras }]);
+      if (
+        isMooniUi
+        && sendOptions?.chipId === MOONI_CHIP_IDS.FESTIVAL_ACCESS
+        && error instanceof GeminiProxyError
+        && error.httpStatus === 429
+      ) {
+        const retrySec = Number(error.retryAfter);
+        if (Number.isFinite(retrySec) && retrySec > 0) {
+          setOriginHoldUntil(Date.now() + retrySec * 1000);
+        }
+      }
+      return false;
     } finally {
       sendGateRef.current.end();
       setIsLoading(false);
@@ -1446,6 +1494,7 @@ const ChatModal = ({
     mooniPlaceContext,
     topicDockParent,
     i18n.language,
+    isMooniUi,
   ]);
 
   const handleMooniContinueReading = useCallback(
@@ -1533,19 +1582,39 @@ const ChatModal = ({
     handleSend(askText, PERSONA_TYPES.PLANNER, { chipId: MOONI_CHIP_IDS.ACCESS_ORIGIN });
   }, [accessOriginIata, handleSend]);
 
-  const handleFestivalAccessOrigin = useCallback((origin) => {
-    const row = typeof origin === 'string'
-      ? FESTIVAL_DOMESTIC_ORIGINS.find((item) => item.id === origin)
-      : origin;
-    if (!row) return;
-    setFestivalAccessId(row.id);
-    const label = festivalOriginLabel(row, i18n.language);
-    handleSend(
-      buildFestivalAccessAskText(row, i18n.language),
+  const handleFestivalAccessOrigin = useCallback(async (origin) => {
+    if (origin?.rememberOnly) {
+      if (origin.chipId) setFestivalAccessId(origin.chipId);
+      return;
+    }
+    const request = festivalOriginSendRequest(origin);
+    if (!request?.askKo) return;
+    const key = request.cityId || request.chipId || request.askKo;
+    const english = String(i18n.language || '').slice(0, 2) === 'en';
+    if (originInputOn && key && key === lastSentOriginRef.current) {
+      suppressMessageScrollRef.current = true;
+      const name = english ? request.askEn : request.askKo;
+      setMessages((prev) => [...prev, {
+        role: 'model',
+        text: t('mooni.chat.originRepeat', { name }),
+      }]);
+      return;
+    }
+    if (request.chipId) setFestivalAccessId(request.chipId);
+    else if (originInputOn) setFestivalAccessId('');
+    const ok = await handleSend(
+      buildFestivalAccessAskText({ ko: request.askKo, en: request.askEn }, i18n.language),
       PERSONA_TYPES.PLANNER,
-      { chipId: MOONI_CHIP_IDS.FESTIVAL_ACCESS, departureLabel: label },
+      {
+        chipId: MOONI_CHIP_IDS.FESTIVAL_ACCESS,
+        departureLabel: english ? request.askEn : request.askKo,
+      },
     );
-  }, [handleSend, i18n.language]);
+    if (ok) {
+      lastSentOriginRef.current = key;
+      if (request.cityId) writeDomesticOriginCityId(request.cityId);
+    }
+  }, [handleSend, i18n.language, originInputOn, t]);
 
   const topicDockChipsProps = useMemo(
     () => ({
@@ -1792,6 +1861,8 @@ const ChatModal = ({
             </div>
 
             <div
+              ref={messagesScrollRef}
+              data-testid="mooni-message-scroll"
               className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6 md:space-y-8 custom-scrollbar"
               onPointerDown={() => {
                 if (mobileDockInputFocused && !input.trim()) {
@@ -2145,6 +2216,26 @@ const ChatModal = ({
                     />
                   ) : null}
                 </div>
+              ) : showFestivalAccessDock && originInputOn ? (
+                <FestivalAccessOriginDock
+                  fresh={fresh}
+                  locale={i18n.language}
+                  hubLabel={festivalMooniContext?.hubLabel}
+                  address={festivalMooniContext?.address}
+                  selectedChipId={festivalAccessId}
+                  disabled={isLoading}
+                  held={originHeld}
+                  backLabel={(
+                    <>
+                      <ChevronLeft size={14} className="shrink-0 -ml-0.5" aria-hidden />
+                      {t('mooni.chat.backTopic')}
+                    </>
+                  )}
+                  title={getMooniL1ChipLabel(FESTIVAL_ACCESS_PARENT, { mobile: true })}
+                  onBack={() => setTopicDockParent(null)}
+                  messageScrollRef={messagesScrollRef}
+                  onConfirm={handleFestivalAccessOrigin}
+                />
               ) : showFestivalAccessDock ? (
                 <div
                   data-testid="mooni-festival-access-dock"
