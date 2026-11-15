@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 import { buildKoreaOriginCities } from '../generate-korea-origin-cities.mjs';
 import {
   KOREA_ORIGIN_CITIES,
+  koreaOriginOptionLabel,
   suggestKoreaOriginCities,
 } from '../../src/pages/Home/lib/koreaOriginCityMatch.js';
 import {
@@ -13,7 +14,7 @@ import {
   domesticFestivalGroundOrigin,
   domesticGroundModelSuffix,
 } from '../../src/pages/Home/lib/festivalDomesticOrigins.js';
-import { tryOriginKeyboardConfirm } from '../../src/pages/Home/lib/festivalOriginConfirm.js';
+import { shouldResendPinnedOrigin, tryOriginKeyboardConfirm } from '../../src/pages/Home/lib/festivalOriginConfirm.js';
 import { createMooniSendGate } from '../../src/pages/Korea/lib/festivalTransportCardCore.js';
 import {
   GeminiProxyError,
@@ -98,6 +99,62 @@ test('dictionary cities do not borrow a chip station sentence', () => {
   assert.equal(domesticFestivalGroundOrigin('서울에서 비행기로', '서울'), null);
 });
 
+test('same-name metros and Jeju are not labeled with the name twice', () => {
+  const expected = {
+    seoul: ['서울 · 특별시', 'Seoul · Special City'],
+    busan: ['부산 · 광역시', 'Busan · Metropolitan City'],
+    daegu: ['대구 · 광역시', 'Daegu · Metropolitan City'],
+    incheon: ['인천 · 광역시', 'Incheon · Metropolitan City'],
+    gwangju: ['광주 · 광역시', 'Gwangju · Metropolitan City'],
+    daejeon: ['대전 · 광역시', 'Daejeon · Metropolitan City'],
+    ulsan: ['울산 · 광역시', 'Ulsan · Metropolitan City'],
+    sejong: ['세종 · 특별자치시', 'Sejong · Special Self-Governing City'],
+    jeju: ['제주 · 특별자치도', 'Jeju City · Special Self-Governing Province'],
+  };
+  const sameName = KOREA_ORIGIN_CITIES.filter((city) => city.ko === city.province).map((city) => city.id).sort();
+  assert.deepEqual(sameName, Object.keys(expected).sort());
+  for (const [id, [ko, en]] of Object.entries(expected)) {
+    const city = KOREA_ORIGIN_CITIES.find((row) => row.id === id);
+    assert.equal(koreaOriginOptionLabel(city, 'ko'), ko);
+    assert.equal(koreaOriginOptionLabel(city, 'en'), en);
+    assert.notEqual(ko.split(' · ')[0], ko.split(' · ')[1]);
+    assert.notEqual(en.split(' · ')[0], en.split(' · ')[1]);
+  }
+  const gyeonggi = KOREA_ORIGIN_CITIES.find((city) => city.id === 'gwangju-si');
+  assert.equal(koreaOriginOptionLabel(gyeonggi, 'ko'), '광주 · 경기');
+  assert.equal(koreaOriginOptionLabel(gyeonggi, 'en'), 'Gwangju · Gyeonggi');
+  assert.deepEqual(
+    suggestKoreaOriginCities('광주').cities.map((city) => koreaOriginOptionLabel(city, 'ko')),
+    ['광주 · 광역시', '광주 · 경기'],
+  );
+  assert.deepEqual(
+    suggestKoreaOriginCities('Gwangju').cities.map((city) => koreaOriginOptionLabel(city, 'en')),
+    ['Gwangju · Metropolitan City', 'Gwangju · Gyeonggi'],
+  );
+  const gangwon = KOREA_ORIGIN_CITIES.find((city) => city.id === 'goseong-gw');
+  assert.equal(koreaOriginOptionLabel(gangwon, 'ko'), '고성 · 강원');
+  assert.equal(koreaOriginOptionLabel(gangwon, 'en'), 'Goseong · Gangwon');
+});
+
+test('ongjin uses the coastal ferry terminal and other island seats stay offshore', () => {
+  const byId = Object.fromEntries(KOREA_ORIGIN_CITIES.map((city) => [city.id, city]));
+  assert.equal(byId.ongjin.lat, 37.454263);
+  assert.equal(byId.ongjin.lng, 126.598981);
+  const hubs = JSON.parse(readFileSync(join(root, 'src/pages/Home/data/cityAttractionHubs.json'), 'utf8'));
+  const hub = hubs.find((row) => row.hubId === 'ongjin');
+  assert.equal(hub.lat, 37.446);
+  assert.equal(hub.lng, 126.637);
+  assert.ok(Math.abs(byId.ongjin.lat - hub.lat) > 0.005);
+  assert.ok(byId.ulleung.lng > 130.8 && byId.ulleung.lng < 131);
+  assert.ok(byId.ulleung.lat > 37.45 && byId.ulleung.lat < 37.55);
+  assert.ok(byId.ganghwa.lat > 37.7 && byId.ganghwa.lng < 126.55);
+  assert.ok(byId.sinan.lng < 126.3 && byId.sinan.lat > 34.7 && byId.sinan.lat < 35);
+  assert.ok(byId.wando.lat < 34.4 && byId.wando.lng > 126.6 && byId.wando.lng < 126.9);
+  assert.ok(byId.jindo.lat > 34.4 && byId.jindo.lat < 34.55 && byId.jindo.lng < 126.35);
+  assert.ok(byId.namhae.lng > 127.8 && byId.namhae.lng < 128 && byId.namhae.lat > 34.75 && byId.namhae.lat < 34.95);
+  assert.ok(byId.geoje.lng > 128.5 && byId.geoje.lng < 128.8 && byId.geoje.lat > 34.8 && byId.geoje.lat < 35);
+});
+
 test('choseong and composition cannot confirm, and a second tap is dropped', () => {
   const city = KOREA_ORIGIN_CITIES.find((row) => row.id === 'chuncheon');
   let sends = 0;
@@ -129,6 +186,26 @@ test('choseong and composition cannot confirm, and a second tap is dropped', () 
     },
   }), true);
   assert.equal(sends, 1);
+  assert.equal(shouldResendPinnedOrigin({
+    suggestionsOpen: false,
+    pinnedId: 'chuncheon',
+    submittedId: '',
+  }), true);
+  assert.equal(shouldResendPinnedOrigin({
+    suggestionsOpen: false,
+    pinnedId: 'chuncheon',
+    submittedId: 'chuncheon',
+  }), false);
+  assert.equal(shouldResendPinnedOrigin({
+    suggestionsOpen: true,
+    pinnedId: 'chuncheon',
+    submittedId: '',
+  }), false);
+  assert.equal(shouldResendPinnedOrigin({
+    suggestionsOpen: false,
+    pinnedId: '',
+    submittedId: '',
+  }), false);
   const gate = createMooniSendGate();
   assert.equal(gate.tryBegin(), true);
   assert.equal(gate.tryBegin(), false);

@@ -96,6 +96,10 @@ async function chipRowCount(page) {
   });
 }
 
+function shotBrowser(testInfo) {
+  return testInfo.project.name.includes('webkit') ? 'webkit' : 'chromium';
+}
+
 test.beforeAll(() => {
   mkdirSync(OUT_DIR, { recursive: true });
 });
@@ -154,28 +158,53 @@ test('typing 춘천 asks once, only after the candidate tap', async ({ page, con
   }
   await page.getByTestId('mooni-origin-option').first().click();
   await expect(page.getByText(/E2E-MOCK-9f3a/).first()).toBeVisible({ timeout: 30_000 });
+  await expect(page.getByTestId('mooni-origin-options')).toHaveCount(0);
+  await page.waitForTimeout(200);
+  await expect(page.getByTestId('mooni-origin-options')).toHaveCount(0);
+  expect(calls.filter((task) => task === 'mooni_chat')).toEqual(['mooni_chat']);
+  if (testInfo.project.name.includes('390')) {
+    await saveShot(page, `closed-390-${shotBrowser(testInfo)}.png`, 390);
+  }
+  await input.click();
+  await expect(page.getByTestId('mooni-origin-options')).toBeVisible();
   expect(calls.filter((task) => task === 'mooni_chat')).toEqual(['mooni_chat']);
 });
 
 test('광주 and ㅊㅊ show candidates without sending', async ({ page, context }, testInfo) => {
-  test.skip(!testInfo.project.name.includes('chromium-390'), 'screenshots are captured once');
+  test.skip(!testInfo.project.name.includes('390'), 'labels are checked on the 390 projects');
   const calls = [];
   await openOriginDock(page, context, { calls });
   const input = page.getByTestId('mooni-origin-input');
   await input.fill('광주');
   await expect(page.getByTestId('mooni-origin-option')).toHaveCount(2);
-  await saveShot(page, 'gwangju-390-chromium.png', 390);
+  await expect(page.getByTestId('mooni-origin-option').nth(0)).toHaveText('광주 · 광역시');
+  await expect(page.getByTestId('mooni-origin-option').nth(1)).toHaveText('광주 · 경기');
+  await saveShot(page, `gwangju-390-${shotBrowser(testInfo)}.png`, 390);
   await input.fill('ㅊㅊ');
   await expect(page.getByTestId('mooni-origin-option').first()).toContainText('춘천');
-  await saveShot(page, 'choseong-390-chromium.png', 390);
+  if (testInfo.project.name.includes('chromium')) {
+    await saveShot(page, 'choseong-390-chromium.png', 390);
+  }
   expect(calls.filter((task) => task === 'mooni_chat')).toEqual([]);
 });
 
 test('english dock uses the departure placeholder', async ({ page, context }, testInfo) => {
-  test.skip(!testInfo.project.name.includes('chromium-390'), 'english screenshot is captured once');
+  test.skip(!testInfo.project.name.includes('390'), 'english layout is checked on the 390 projects');
   await openOriginDock(page, context, { lang: 'en', calls: [] });
   await expect(page.getByTestId('mooni-origin-input')).toHaveAttribute('placeholder', /Departure city/);
-  await saveShot(page, 'en-390-chromium.png', 390);
+  await expect(page.locator('[data-festival-origin]')).toHaveCount(6);
+  expect(await chipRowCount(page)).toBe(1);
+  const chips = page.getByTestId('mooni-origin-chips');
+  const box = await chips.boundingBox();
+  expect(box?.width ?? 999).toBeLessThanOrEqual(390);
+  const metrics = await chips.evaluate((el) => ({ scroll: el.scrollWidth, client: el.clientWidth }));
+  expect(metrics.scroll, JSON.stringify(metrics)).toBeLessThanOrEqual(metrics.client + 1);
+  await expect(page.getByTestId('mooni-origin-more')).toBeVisible();
+  await saveShot(page, `en-chips-390-${shotBrowser(testInfo)}.png`, 390);
+  const input = page.getByTestId('mooni-origin-input');
+  await input.fill('Gwangju');
+  await expect(page.getByTestId('mooni-origin-option').nth(0)).toHaveText('Gwangju · Metropolitan City');
+  await expect(page.getByTestId('mooni-origin-option').nth(1)).toHaveText('Gwangju · Gyeonggi');
 });
 
 test('denied location fills nothing and asks nothing', async ({ page, context }, testInfo) => {
@@ -197,16 +226,58 @@ test('denied location fills nothing and asks nothing', async ({ page, context },
   expect(calls.filter((task) => task === 'mooni_chat')).toEqual([]);
 });
 
+test('enter, an unknown place, and a chip close the list without a second send', async ({ page, context }, testInfo) => {
+  test.skip(!testInfo.project.name.includes('390'), 'behavior is covered on the 390 projects');
+  const calls = [];
+  await openOriginDock(page, context, { calls });
+  const input = page.getByTestId('mooni-origin-input');
+  const sent = () => calls.filter((task) => task === 'mooni_chat');
+  await input.fill('춘천시');
+  await expect(page.getByTestId('mooni-origin-option')).toHaveCount(1);
+  await input.press('Enter');
+  await expect(page.getByTestId('mooni-origin-options')).toHaveCount(0);
+  await expect(page.getByText(/춘천에서 이 축제장까지/).first()).toBeVisible({ timeout: 30_000 });
+  expect(sent()).toEqual(['mooni_chat']);
+  await input.press('Enter');
+  await page.waitForTimeout(200);
+  expect(sent()).toEqual(['mooni_chat']);
+
+  await input.click();
+  await input.fill('화성시청');
+  await expect(page.getByTestId('mooni-origin-ask')).toContainText('화성시청');
+  await page.getByTestId('mooni-origin-ask').click();
+  await expect(page.getByTestId('mooni-origin-options')).toHaveCount(0);
+  await expect(page.getByText(/화성시청에서 이 축제장까지/).first()).toBeVisible({ timeout: 30_000 });
+  await expect.poll(() => sent().length).toBe(2);
+  await page.waitForTimeout(200);
+  expect(sent()).toEqual(['mooni_chat', 'mooni_chat']);
+
+  await input.click();
+  await input.fill('춘천');
+  await expect(page.getByTestId('mooni-origin-option').first()).toBeVisible();
+  await page.locator('[data-festival-origin="seoul"]').evaluate((el) => el.click());
+  await expect(page.getByTestId('mooni-origin-options')).toHaveCount(0);
+  await expect(page.getByText(/서울에서 이 축제장까지/).first()).toBeVisible({ timeout: 30_000 });
+  await expect.poll(() => sent().length).toBe(3);
+});
+
 test('a code-less 429 shows the busy line and does not send again', async ({ page, context }, testInfo) => {
-  test.skip(!testInfo.project.name.includes('chromium-390'), '429 is asserted once');
+  test.skip(!testInfo.project.name.includes('390'), '429 is asserted on the 390 projects');
   const calls = [];
   await openOriginDock(page, context, { calls, geminiStatus: 429 });
-  await page.getByTestId('mooni-origin-input').fill('춘천');
-  await page.getByTestId('mooni-origin-option').first().click();
+  const input = page.getByTestId('mooni-origin-input');
+  await input.fill('화성시청');
+  await expect(page.getByTestId('mooni-origin-ask')).toBeVisible();
+  await page.getByTestId('mooni-origin-ask').click();
   await expect(page.getByText('질문이 잠시 몰렸어요').first()).toBeVisible({ timeout: 30_000 });
+  await expect(page.getByTestId('mooni-origin-options')).toHaveCount(0);
   await page.waitForTimeout(600);
   expect(calls.filter((task) => task === 'mooni_chat')).toEqual(['mooni_chat']);
-  await expect(page.getByTestId('mooni-origin-input')).toHaveValue(/춘천/);
+  await expect(page.getByTestId('mooni-origin-options')).toHaveCount(0);
+  await expect(input).toHaveValue('화성시청');
+  await input.press('Enter');
+  await page.waitForTimeout(200);
+  expect(calls.filter((task) => task === 'mooni_chat')).toEqual(['mooni_chat']);
 });
 
 test('1280 default dock', async ({ page, context }, testInfo) => {

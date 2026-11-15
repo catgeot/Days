@@ -22,6 +22,16 @@ function hubKey(value) {
   return compactName(value).replace(/(?:특별자치시|특별시|광역시|시|군)$/u, '');
 }
 
+/**
+ * 옹진군청은 관내 섬이 아니라 인천 미추홀구 매소홀로 120이다.
+ * 출발 기점은 인천항만공사가 옹진행으로 안내하는 연안여객터미널
+ * (인천 중구 연안부두로 70). 한국관광공사 좌표를 소수 6자리로 둔다.
+ * 명소 허브 중심은 군청 그대로 두고, 이 사전만 바꾼다.
+ */
+const ORIGIN_DEPARTURE_POINT = {
+  ongjin: { lat: 37.454263, lng: 126.598981 },
+};
+
 function adminAlias(ko, level) {
   if (level === 'metro') {
     if (ko === '서울') return [`${ko}특별시`, `${ko}시`];
@@ -81,6 +91,11 @@ export function buildKoreaOriginCities(hubs, seed = KOREA_ORIGIN_CITY_SEED) {
     for (const alias of String(extra || '').split('|')) {
       const bit = alias.trim();
       if (bit) aliases.add(bit);
+    }
+    const departure = ORIGIN_DEPARTURE_POINT[id];
+    if (departure) {
+      lat = departure.lat;
+      lng = departure.lng;
     }
     return {
       id,
