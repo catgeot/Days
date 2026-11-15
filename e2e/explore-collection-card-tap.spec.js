@@ -137,3 +137,97 @@ test.describe('explore collection card → /place', () => {
     expectErrorsClean(errors);
   });
 });
+
+const MOUSE_DRAG_PROJECTS = ['chromium-explore-card-tap-1280', 'webkit-explore-card-tap-390'];
+const TOUCH_DRAG_PROJECT = 'chromium-explore-card-tap-390-touch';
+
+function skipUnless(testInfo, names) {
+  test.skip(!names.includes(testInfo.project.name), names.join(' · '));
+}
+
+async function dragCardHorizontally(page, card, dx) {
+  const box = await card.boundingBox();
+  expect(box).toBeTruthy();
+  const x = box.x + Math.min(28, box.width * 0.2);
+  const y = box.y + box.height * 0.72;
+  await page.mouse.move(x, y);
+  await page.mouse.down();
+  await page.mouse.move(x + dx, y, { steps: Math.max(8, Math.ceil(Math.abs(dx) / 8)) });
+  await page.mouse.up();
+}
+
+async function slowTouchDrag12(page, card) {
+  const box = await card.boundingBox();
+  expect(box).toBeTruthy();
+  const x = box.x + Math.min(28, box.width * 0.2);
+  const y = box.y + box.height * 0.72;
+  const client = await page.context().newCDPSession(page);
+  await client.send('Input.dispatchTouchEvent', {
+    type: 'touchStart',
+    touchPoints: [{ x, y, id: 0 }],
+  });
+  for (let i = 1; i <= 6; i += 1) {
+    await page.waitForTimeout(70);
+    await client.send('Input.dispatchTouchEvent', {
+      type: 'touchMove',
+      touchPoints: [{ x: x + i * 2, y, id: 0 }],
+    });
+  }
+  await client.send('Input.dispatchTouchEvent', {
+    type: 'touchEnd',
+    touchPoints: [],
+  });
+  await client.detach();
+}
+
+async function expectDragStaysOnExplore(page, gesture) {
+  const docs = [];
+  const onRequest = (req) => {
+    if (req.resourceType() === 'document') docs.push(req.url());
+  };
+  page.on('request', onRequest);
+  await gesture();
+  await page.waitForTimeout(800);
+  page.off('request', onRequest);
+  expect(docs, docs.join('\n')).toEqual([]);
+  await expect(page).toHaveURL(/\/explore/);
+  await expect(page).not.toHaveURL(/\/place\//);
+}
+
+test.describe('explore collection card drag does not open /place', () => {
+  test.beforeEach(async ({ context }) => {
+    await installDelayedExploreRoutes(context);
+  });
+
+  test('마우스 18px 드래그 뒤에는 /explore에 머무름', async ({ page }, testInfo) => {
+    skipUnless(testInfo, MOUSE_DRAG_PROJECTS);
+    const errors = attachPageErrors(page);
+    const { card } = await openRomeCollectionCard(page);
+    await expectDragStaysOnExplore(page, () => dragCardHorizontally(page, card, 18));
+    expectErrorsClean(errors);
+  });
+
+  test('마우스 220px 드래그 뒤에는 /explore에 머무름', async ({ page }, testInfo) => {
+    skipUnless(testInfo, MOUSE_DRAG_PROJECTS);
+    const errors = attachPageErrors(page);
+    const { card } = await openRomeCollectionCard(page);
+    await expectDragStaysOnExplore(page, () => dragCardHorizontally(page, card, 220));
+    expectErrorsClean(errors);
+  });
+
+  test('36px 가로 이동 뒤에는 /explore에 머무름', async ({ page }, testInfo) => {
+    skipUnless(testInfo, MOUSE_DRAG_PROJECTS);
+    const errors = attachPageErrors(page);
+    const { card } = await openRomeCollectionCard(page);
+    await expectDragStaysOnExplore(page, () => dragCardHorizontally(page, card, 36));
+    expectErrorsClean(errors);
+  });
+
+  test('느린 12px 터치 뒤에는 /explore에 머무름', async ({ page }, testInfo) => {
+    skipUnless(testInfo, [TOUCH_DRAG_PROJECT]);
+    const errors = attachPageErrors(page);
+    const { card } = await openRomeCollectionCard(page);
+    await expectDragStaysOnExplore(page, () => slowTouchDrag12(page, card));
+    expectErrorsClean(errors);
+  });
+});

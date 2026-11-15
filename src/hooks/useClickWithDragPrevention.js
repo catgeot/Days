@@ -1,16 +1,18 @@
 import { useRef, useCallback, useEffect } from 'react';
 
 /**
- * 같은 pointer 탭이 pointerup과 click으로 두 번 열리지 않게 한다.
- * 카드가 재렌더로 갈려도 인스턴스가 달라도 한 번만 연다.
+ * pointer 제스처 뒤 click을 막는다.
+ * reset()이 moved를 지운 뒤에도 남는다. 카드 인스턴스가 갈려도 같다.
+ * pointerdown 없는 키보드 click/Enter만 handleClick으로 연다.
  */
 let releaseAnywhereSuppressUntil = 0;
 
-function markReleaseAnywhereActivated() {
-  releaseAnywhereSuppressUntil = Date.now() + 400;
+function blockFollowupClick(ms) {
+  const until = Date.now() + ms;
+  if (until > releaseAnywhereSuppressUntil) releaseAnywhereSuppressUntil = until;
 }
 
-function releaseAnywhereJustActivated() {
+function followupClickBlocked() {
   return Date.now() < releaseAnywhereSuppressUntil;
 }
 
@@ -61,6 +63,7 @@ const useClickWithDragPrevention = (onClick, options = {}) => {
     startPos.current = null;
     startTime.current = null;
     moved.current = false;
+    // releaseAnywhereSuppressUntil 은 드래그·pointercancel 판정이다. 여기서 지우면 뒤 click이 열린다.
   }, [detachWindow]);
 
   useEffect(() => () => {
@@ -105,6 +108,7 @@ const useClickWithDragPrevention = (onClick, options = {}) => {
       if (distance > moveThreshold) {
         session.moved = true;
         moved.current = true;
+        if (trackOnWindow) blockFollowupClick(1000);
       }
     };
 
@@ -121,8 +125,9 @@ const useClickWithDragPrevention = (onClick, options = {}) => {
       sessionRef.current = null;
       startPos.current = null;
       startTime.current = null;
+      if (trackOnWindow && didMove) blockFollowupClick(1000);
       if (!didMove && duration >= minMs && duration < maxMs) {
-        if (trackOnWindow) markReleaseAnywhereActivated();
+        if (trackOnWindow) blockFollowupClick(400);
         onClickRef.current?.(payload);
       }
     };
@@ -135,6 +140,7 @@ const useClickWithDragPrevention = (onClick, options = {}) => {
       sessionRef.current = null;
       startPos.current = null;
       startTime.current = null;
+      if (trackOnWindow) blockFollowupClick(1000);
     };
 
     session.onMove = onMove;
@@ -208,10 +214,12 @@ const useClickWithDragPrevention = (onClick, options = {}) => {
   }, [reset]);
 
   const handleClick = useCallback((e, data) => {
-    if (releaseAnywhereJustActivated()) return;
+    if (followupClickBlocked()) return;
+    const pointerType = e?.pointerType;
+    if (pointerType === 'mouse' || pointerType === 'touch' || pointerType === 'pen') return;
     if (moved.current) return;
     const payload = data !== undefined ? data : sessionRef.current?.data;
-    markReleaseAnywhereActivated();
+    blockFollowupClick(400);
     onClickRef.current?.(payload);
   }, []);
 

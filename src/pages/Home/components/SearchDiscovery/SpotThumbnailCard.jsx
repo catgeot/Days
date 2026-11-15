@@ -61,8 +61,8 @@ const SpotThumbnailCard = ({ spot, onClick, isGrid = false }) => {
   const [inView, setInView] = useState(false);
   const ref = useRef(null);
 
-  // 50–500ms pointerup만 받으면 짧은 탭·로딩 중 재렌더가 버려진다.
-  // 브라우저 click과 window pointerup을 같이 쓰고, 드래그만 거른다.
+  // 짧은 탭·로딩 중 언마운트는 window pointerup으로 연다.
+  // 임계값을 넘긴 드래그·pointercancel 뒤 click은 열지 않는다. pointerdown 없는 Enter만 click으로 연다.
   const { handleStart, handleMove, handleEnd, handleCancel, handleClick } = useClickWithDragPrevention(onClick, {
     threshold: 5,
     timeThreshold: Number.POSITIVE_INFINITY,
