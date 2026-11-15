@@ -215,10 +215,18 @@ export function isGeminiFeatureLimitError(err) {
 }
 
 /**
+ * MOONi chat only. A 429 with no error code uses the same three rate-limit sentences.
+ * classifyGeminiProxyFailure stays on the quota path for other features.
  * @param {unknown} err
- * @param {string | undefined} [locale]
- * @returns {string}
+ * @param {string | undefined} locale
  */
+export function mooniConversationErrorMessage(err, locale) {
+  if (err instanceof GeminiProxyError && err.httpStatus === 429 && !err.errorCode) {
+    return formatMooniRateLimitedMessage(err.retryAfter, locale);
+  }
+  return getGeminiProxyErrorMessage(err, locale);
+}
+
 export function getGeminiProxyErrorMessage(err, locale) {
   if (err instanceof GeminiProxyError) {
     if (err.kind === GEMINI_PROXY_ERROR_KIND.RATE_LIMITED) {

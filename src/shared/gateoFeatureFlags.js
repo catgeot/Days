@@ -30,6 +30,8 @@ export const GATEO_ENV_FLAG_NAMES = {
   PLACE_GALLERY_OVERVIEW_FALLBACK: 'VITE_GATEO_PLACE_GALLERY_OVERVIEW_FALLBACK',
   /** MOONi scoped last-chat + verified festival list replies. Default on; `0`/`false`/`off` disables. */
   MOONI_SCOPED_FESTIVAL: 'VITE_GATEO_MOONI_SCOPED_FESTIVAL',
+  /** Festival «가는 법» city input. Default on. Only `"0"` restores the old chip row. */
+  MOONI_ORIGIN_INPUT: 'VITE_GATEO_MOONI_ORIGIN_INPUT',
   /** Explore page v2 (step 2+). Default off. Monthly picks row is code default ON and ignores this flag. */
   EXPLORE_V2: 'VITE_GATEO_EXPLORE_V2',
   /** SSOT 실문장 desc도 place_chat_intro로 요약 칸 표시. 기본 off. */
@@ -174,6 +176,13 @@ export function isGateoExploreV2Enabled() {
 /** travelSpots 실문장도 무니 intro로 요약 칸 교체. 기본 off. */
 export function isGateoPlaceIntroOverSsotEnabled() {
   return readGateoEnvFlag(GATEO_ENV_FLAG_NAMES.PLACE_INTRO_OVER_SSOT);
+}
+
+/** Festival departure-city field. Unset is on. The string `"0"` is the only off switch. */
+export function isGateoMooniOriginInputEnabled() {
+  const name = GATEO_ENV_FLAG_NAMES.MOONI_ORIGIN_INPUT;
+  const raw = import.meta.env?.[name] ?? globalThis.__VITE_ENV__?.[name];
+  return String(raw ?? '').trim() !== '0';
 }
 
 export function isGateoMooniScopedFestivalEnabled() {

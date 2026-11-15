@@ -5017,7 +5017,13 @@ export async function resolveMooniChatKoreaFestivalHint(input = {}) {
     if (isFestivalAccessAsk({ userText, chipId: input.chipId })) {
       hint = trimBoundFestivalHintForAccess(hint, input.locale);
       const originRow = domesticFestivalGroundOrigin(userText, input.departureLabel);
-      if (originRow) {
+      if (originRow?.dictionaryOnly) {
+        const area = enFood ? originRow.en : originRow.ko;
+        const province = enFood ? (originRow.provinceEn || originRow.province) : originRow.province;
+        hint += enFood
+          ? `\n- Departure area: ${area} (${province}). Do not invent station or terminal names.`
+          : `\n- 출발 지역은 ${area}(${province}). 역·터미널 이름은 만들지 마세요.`;
+      } else if (originRow) {
         const festId = String(festivalContext.contentId || '').trim();
         const gukhyangChip = festId === GUKHYANG_FESTIVAL_ID
           ? formatGukhyangAccessOriginGuidance(originRow, festivalContext.transport, input.locale)
@@ -5042,9 +5048,15 @@ export async function resolveMooniChatKoreaFestivalHint(input = {}) {
         ? '\n- This turn is only getting there. Do not repeat the festival welcome, overview, or program from the opening message — go straight from the chosen origin to the venue.'
         : '\n- 이번 답은 가는 법만이에요. 채팅 첫 인사·개요·프로그램 소개는 반복하지 말고, 고른 출발지에서 축제장까지 교통만 짧게 이어 주세요.';
       if (!festivalTransportHasTagoRows(festivalContext.transport)) {
-        hint += enFood
-          ? '\n- Getting there: when GATEO has no confirmed train or bus times for this departure, still describe real rail, express bus, and driving from the hubs above. Use only confirmed numbers; otherwise link [Korail](https://www.letskorail.com/), [BUSTAGO](https://www.bustago.or.kr/), [KOBUS](https://www.kobus.co.kr/), or [T-money express bus](https://txbus.t-money.co.kr/).'
-          : '\n- 가는 법: GATEO에 이 출발지의 확인된 열차·버스 시각이 없을 수 있어요. 그래도 위 출발 역·터미널에서 실제 열차·고속버스·차 경로를 이어서 안내해 주세요. 시각·요금은 확인된 숫자만 말하고, 없으면 [코레일](https://www.letskorail.com/)·[버스타고](https://www.bustago.or.kr/)·[고속버스](https://www.kobus.co.kr/)·[시외버스](https://txbus.t-money.co.kr/) 링크로 확인할 수 있다고 알려 주세요.';
+        if (originRow?.dictionaryOnly) {
+          hint += enFood
+            ? '\n- Getting there: GATEO may not have confirmed train or bus times for this departure. Use only confirmed numbers. Otherwise say they can check [Korail](https://www.letskorail.com/), [BUSTAGO](https://www.bustago.or.kr/), [KOBUS](https://www.kobus.co.kr/), or [T-money express bus](https://txbus.t-money.co.kr/). Do not invent station names.'
+            : '\n- 가는 법: 이 출발지의 확인된 열차·버스 시각이 없으면 숫자를 만들지 말고, [코레일](https://www.letskorail.com/)·[버스타고](https://www.bustago.or.kr/)·[고속버스](https://www.kobus.co.kr/)·[시외버스](https://txbus.t-money.co.kr/) 링크로 확인할 수 있다고 알려 주세요. 역 이름은 만들지 마세요.';
+        } else {
+          hint += enFood
+            ? '\n- Getting there: when GATEO has no confirmed train or bus times for this departure, still describe real rail, express bus, and driving from the hubs above. Use only confirmed numbers; otherwise link [Korail](https://www.letskorail.com/), [BUSTAGO](https://www.bustago.or.kr/), [KOBUS](https://www.kobus.co.kr/), or [T-money express bus](https://txbus.t-money.co.kr/).'
+            : '\n- 가는 법: GATEO에 이 출발지의 확인된 열차·버스 시각이 없을 수 있어요. 그래도 위 출발 역·터미널에서 실제 열차·고속버스·차 경로를 이어서 안내해 주세요. 시각·요금은 확인된 숫자만 말하고, 없으면 [코레일](https://www.letskorail.com/)·[버스타고](https://www.bustago.or.kr/)·[고속버스](https://www.kobus.co.kr/)·[시외버스](https://txbus.t-money.co.kr/) 링크로 확인할 수 있다고 알려 주세요.';
+        }
       }
     }
     const foodEntries = festivalFoodPlaceEntries(festivalContext.nearbyRestaurants, enFood ? 'en' : 'ko', 4);

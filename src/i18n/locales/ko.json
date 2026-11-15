@@ -2590,7 +2590,18 @@
       "placeSummaryLoading": "여행지 요약을 준비하고 있어요...",
       "placeIntroLoading": "여행지 소개를 준비하고 있어요...",
       "truncatedNotice": "답변이 길어 일부만 표시됐어요.",
-      "continueReading": "이어서 보기"
+      "continueReading": "이어서 보기",
+      "originCityPlaceholder": "출발 도시 입력 (예: 춘천)",
+      "originMore": "더 보기",
+      "originCollapse": "접기",
+      "originGuHint": "도시 이름으로 입력해 주세요 (예: 부산)",
+      "originMissing": "목록에 없는 곳이에요",
+      "originAskAnyway": "‘{{name}}’에서 출발로 물어보기",
+      "originTypo": "혹시 {{name}}?",
+      "originRepeat": "방금 {{name}} 기준으로 답했어요",
+      "originLocate": "내 위치로 출발 도시 찾기",
+      "originLocateFail": "위치를 쓸 수 없어요. 출발 도시를 입력해 주세요.",
+      "originLocated": "{{city}} · {{province}} (내 위치)"
     },
     "proxyError": {
       "rateLimitedSoon": "질문이 잠시 몰렸어요. 잠시 후에 다시 물어봐 주세요.",
