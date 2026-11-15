@@ -17,7 +17,11 @@ import {
 } from '../../../utils/placeGallerySectionFocus.js';
 import { usePlaceMediaScrollToTop } from '../common/usePlaceMediaScrollToTop';
 import { formatGateoReviewerBadge } from '../../../utils/placeReviewEditorial';
-import { rememberLogbookDetailReturn } from '../../../shared/navigation/logbookDetailBack.js';
+import {
+  consumeArticleNestedScroll,
+  peekArticleNestedScroll,
+  rememberLogbookDetailReturn,
+} from '../../../shared/navigation/logbookDetailBack.js';
 import { isEditorialLogbook, publicLogbookDetailPath } from '../../../utils/logbookEditorial';
 import { logbookHeroImageUrl } from '../../../utils/logbookImageSrc';
 import { collectUniqueEditorialReviewImageCredits, resolveEditorialReviewImageCredit } from '../../../utils/editorialReviewImageCredit';
@@ -277,9 +281,9 @@ const ReviewStatsBlock = ({ stats, layout = 'desktop' }) => {
 };
 
 // --- 추가: 긴 글 접기 및 이미지 썸네일 렌더링을 담당하는 단일 리뷰 카드 컴포넌트 ---
-export const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onToggleLike, onVisible, onRequireLogin, focused = false }) => {
+export const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onToggleLike, onVisible, onRequireLogin, focused = false, initialExpanded = false }) => {
   const { t, i18n } = useTranslation();
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(initialExpanded);
   const [hasViewed, setHasViewed] = useState(false);
   const hubDetailLayout =
     isGateoOfficialEditorialPlaceReview(review) && isLogbookEditorialReviewDetailLayoutActive();
@@ -585,6 +589,16 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null, isActiv
   const [cancelledFocusId, setCancelledFocusId] = useState(null);
   const scrollContainerRef = useRef(null);
   const focusSessionRef = useRef(null);
+  const articleScrollHoldRef = useRef(false);
+  const pendingNestedRef = useRef(null);
+  const articleScrollPath = `${routeLocation.pathname}${routeLocation.search}`;
+  if (!articleScrollHoldRef.current) {
+    const pending = peekArticleNestedScroll(articleScrollPath);
+    if (pending?.kind === 'place-reviews') {
+      articleScrollHoldRef.current = true;
+      pendingNestedRef.current = pending;
+    }
+  }
   const userCancelledDeepLinkRef = useRef(false);
   const consumedReviewDeepLinkRef = useRef(null);
   const [user, setUser] = useState(null);
@@ -623,6 +637,7 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null, isActiv
   useLayoutEffect(() => {
     const hadFocus = Boolean(prevFocusReviewIdRef.current);
     prevFocusReviewIdRef.current = activeFocusId;
+    if (articleScrollHoldRef.current) return;
     if (activeFocusId) return;
     if (hadFocus) return;
     resetPlaceMediaScrollInstant(scrollContainerRef.current);
@@ -639,6 +654,30 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null, isActiv
     incrementView,
     refetch
   } = usePlaceReviews(placeSlug, user);
+
+  useLayoutEffect(() => {
+    if (!articleScrollHoldRef.current) return undefined;
+    const nested = pendingNestedRef.current;
+    if (!nested || nested.kind !== 'place-reviews') return undefined;
+    let frame = 0;
+    let raf = 0;
+    const tick = () => {
+      const el = scrollContainerRef.current;
+      if (el) el.scrollTop = nested.top;
+      frame += 1;
+      if (frame < 12) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    const timer = window.setTimeout(() => {
+      const el = scrollContainerRef.current;
+      if (!el || el.scrollHeight < nested.top + 40) return;
+      consumeArticleNestedScroll(articleScrollPath);
+    }, 1500);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.clearTimeout(timer);
+    };
+  }, [articleScrollPath, isLoading, reviews.length]);
 
   const consumeReviewDeepLink = React.useCallback((options = {}) => {
     const reviewId = parsePlaceReviewFocusId(searchParams);
@@ -696,6 +735,7 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null, isActiv
   }, [isActive, queryFocusId, placeSlug]);
 
   useEffect(() => {
+    if (articleScrollHoldRef.current) return undefined;
     if (!isActive) {
       focusSessionRef.current?.abort();
       focusSessionRef.current = null;
@@ -762,6 +802,7 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null, isActiv
     && reviews.some((review) => String(review?.id) === String(activeFocusId));
 
   useLayoutEffect(() => {
+    if (articleScrollHoldRef.current) return undefined;
     if (!activeFocusId || !focusRowReady) return undefined;
     const align = () => {
       if (userCancelledDeepLinkRef.current) return;
@@ -1082,6 +1123,7 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null, isActiv
                   key={review.id}
                   review={review}
                   user={user}
+                  initialExpanded={pendingNestedRef.current?.reviewId === String(review.id)}
                   focused={String(review.id) === String(activeFocusId)}
                   onEdit={handleEditClick}
                   onDelete={handleDeleteClick}

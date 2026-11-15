@@ -22,6 +22,7 @@ import mooniChar from '../../../assets/MOONI_transparent.webp';
 import { getAppHistoryPath } from '../../../shared/navigation/appHistoryPathIndex';
 import {
   clearLogbookReaderOrigin,
+  isArticleReaderPath,
   isLogbookReaderPath,
   LOGBOOK_READER_ORIGIN_NONCE,
   readLogbookReaderOrigin,
@@ -256,7 +257,7 @@ const PlaceChatPanel = React.memo(({
                       return;
                     }
                     if (action.type === 'history') {
-                      if (isLogbookReaderPath(prevPath)) clearLogbookReaderOrigin();
+                      if (isArticleReaderPath(prevPath)) clearLogbookReaderOrigin();
                       navigate(-1);
                       return;
                     }

@@ -2,13 +2,19 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { resolvePlaceCardBack } from '../../src/pages/Home/lib/placeCardBack.js';
 import {
+  isArticleReaderPath,
+  isBlogOwnerArticlePath,
   isLogbookReaderPath,
+  isPlaceReviewReaderPath,
   resolveLogbookDetailBack,
   sameOriginAppPath,
   selectLogbookDetailReturn,
   selectLogbookReaderOrigin,
 } from '../../src/shared/navigation/logbookDetailBack.js';
-import { classifyLogbookMarkdownHref } from '../../src/shared/navigation/logbookMarkdownHref.js';
+import {
+  articleBodyPlaceOrFestivalTo,
+  classifyLogbookMarkdownHref,
+} from '../../src/shared/navigation/logbookMarkdownHref.js';
 
 const PLACE = '/place/taj-mahal?lang=ko';
 const READER = '/blog/e/taj-mahal-travelogue?lang=ko';
@@ -19,6 +25,23 @@ test('isLogbookReaderPath is editorial and public posts only', () => {
   assert.equal(isLogbookReaderPath('/blog?tab=public'), false);
   assert.equal(isLogbookReaderPath('/place/rome'), false);
   assert.equal(isLogbookReaderPath('/pricing'), false);
+});
+
+test('isArticleReaderPath includes owner posts and review articles', () => {
+  assert.equal(isArticleReaderPath(READER), true);
+  assert.equal(isArticleReaderPath('/p/abc'), true);
+  assert.equal(isArticleReaderPath('/blog/owner-post-1'), true);
+  assert.equal(isBlogOwnerArticlePath('/blog/owner-post-1?lang=ko'), true);
+  assert.equal(isPlaceReviewReaderPath('/place/rome/reviews?review=1'), true);
+  assert.equal(isArticleReaderPath('/place/rome/reviews?review=1'), true);
+  assert.equal(isArticleReaderPath('/blog'), false);
+  assert.equal(isArticleReaderPath('/blog?tab=public'), false);
+  assert.equal(isArticleReaderPath('/blog/write'), false);
+  assert.equal(isArticleReaderPath('/blog/curation'), false);
+  assert.equal(isArticleReaderPath('/blog/e'), false);
+  assert.equal(isArticleReaderPath('/place/rome'), false);
+  assert.equal(isArticleReaderPath('/explore'), false);
+  assert.equal(isArticleReaderPath('/korea/?festival=1'), false);
 });
 
 test('sameOriginAppPath keeps path and query', () => {
@@ -176,6 +199,39 @@ test('place ← pops to a reader and still pushes the blog hub', () => {
     }),
     { type: 'push', path: '/blog?tab=public&lang=ko', clearReturnTo: true },
   );
+  assert.deepEqual(
+    resolvePlaceCardBack({
+      historyIdx: 2,
+      prevPath: '/blog/owner-post-1',
+      returnTo: '/blog?tab=public',
+      exploreReturnPath: null,
+    }),
+    { type: 'history' },
+  );
+  assert.deepEqual(
+    resolvePlaceCardBack({
+      historyIdx: 2,
+      prevPath: '/place/rome/reviews?review=1',
+      returnTo: null,
+      exploreReturnPath: null,
+    }),
+    { type: 'history' },
+  );
+});
+
+test('article body links keep place and festival targets in-app', () => {
+  const base = 'https://www.gateo.kr/blog/e/short-20261111-week-festivals';
+  assert.equal(
+    articleBodyPlaceOrFestivalTo('https://www.gateo.kr/korea/?festival=3571001', base),
+    '/korea/?festival=3571001',
+  );
+  assert.equal(
+    articleBodyPlaceOrFestivalTo('/place/rome?lang=ko', base),
+    '/place/rome?lang=ko',
+  );
+  assert.equal(articleBodyPlaceOrFestivalTo('https://www.gateo.kr/korea/', base), '');
+  assert.equal(articleBodyPlaceOrFestivalTo('https://www.gateo.kr/blog?tab=public', base), '');
+  assert.equal(articleBodyPlaceOrFestivalTo('https://example.com/guide', base), '');
 });
 
 test('classifyLogbookMarkdownHref keeps gateo links internal and external links blank-eligible', () => {

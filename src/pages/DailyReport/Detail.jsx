@@ -3,7 +3,7 @@
 // 🚨 [New] Web Share API (navigator.share) 전면 도입으로 모바일 네이티브 공유 경험(카카오톡/인스타 연동) 최적화
 // 🚨 [Safe Path] Web Share 미지원 환경(PC 등)을 위한 Clipboard Fallback(대비책) 구축
 
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { supabase } from '../../shared/api/supabase';
 import { readSessionUser } from '../../shared/Auth/sessionUser.js';
 import { ArrowUp, Trash2, MapPin, Copy, CheckCircle2, Lock, Share2 } from 'lucide-react';
@@ -18,6 +18,11 @@ import { fetchSamePlaceCount, logbookPlaceKey, logbookReadingMinutes } from '../
 import LogbookReadFacts from './components/LogbookReadFacts';
 import AppOutlineBackButton from '../../shared/navigation/AppOutlineBackButton';
 import { hardNavigateAppBack } from '../../shared/navigation/hardAppBack';
+import {
+  ARTICLE_DASHBOARD_SCROLL_SELECTOR,
+  consumeArticleNestedScroll,
+  peekArticleNestedScroll,
+} from '../../shared/navigation/logbookDetailBack.js';
 
 function findScrollParent(el) {
   let node = el?.parentElement;
@@ -46,6 +51,36 @@ const Detail = () => {
   const [showScrollTop, setShowScrollTop] = useState(false);
   const rootRef = useRef(null);
   const scrollParentRef = useRef(null);
+  const articleScrollHoldRef = useRef(false);
+  if (typeof window !== 'undefined' && !articleScrollHoldRef.current) {
+    const articlePath = `${window.location.pathname}${window.location.search}`;
+    if (peekArticleNestedScroll(articlePath)?.kind === 'logbook-dashboard') {
+      articleScrollHoldRef.current = true;
+    }
+  }
+
+  useLayoutEffect(() => {
+    if (!report || !articleScrollHoldRef.current) return undefined;
+    const articlePath = `${window.location.pathname}${window.location.search}`;
+    const nested = peekArticleNestedScroll(articlePath);
+    if (!nested || nested.kind !== 'logbook-dashboard') return undefined;
+    let frame = 0;
+    let raf = 0;
+    const tick = () => {
+      const el = document.querySelector(ARTICLE_DASHBOARD_SCROLL_SELECTOR);
+      if (el instanceof HTMLElement) el.scrollTop = nested.top;
+      frame += 1;
+      if (frame < 8) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    const timer = window.setTimeout(() => {
+      consumeArticleNestedScroll(articlePath);
+    }, 1500);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.clearTimeout(timer);
+    };
+  }, [report]);
 
   const handleBack = useCallback(() => {
     hardNavigateAppBack({ fallback: '/blog' });
