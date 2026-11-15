@@ -148,7 +148,7 @@ test.describe('travelogue full-page navigation hotfix', () => {
 
     const back = page.locator('[data-logbook-detail-back]');
     await back.click();
-    await expect(page).toHaveURL(/\/blog(?:\?|$)/, { timeout: 30_000 });
+    await expect(page).toHaveURL(/\/place\/rome/, { timeout: 30_000 });
 
     await page.goto('/blog/e/rome-travelogue?lang=ko');
     await expect(page.getByRole('heading', { name: '석양 전의 콜로세움' })).toBeVisible({ timeout: 30_000 });

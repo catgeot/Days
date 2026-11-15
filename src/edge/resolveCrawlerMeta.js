@@ -5,6 +5,7 @@ import {
   isExploreSeoCategory,
   isExploreSeoContinent,
 } from '../pages/Home/lib/exploreCategorySeo.js';
+import { isPlaceRootAliasTab } from '../shared/seo/placeCanonicalPath.js';
 
 const SITE_ORIGIN = 'https://www.gateo.kr';
 
@@ -81,11 +82,14 @@ export function parseCrawlerPath(pathname) {
     return { kind: 'place-base', slug: baseMatch[1] };
   }
 
-  const tabMatch = path.match(/^\/place\/([^/]+)\/(gallery|planner|wiki)$/);
+  const tabMatch = path.match(/^\/place\/([^/]+)\/([^/]+)$/);
   if (tabMatch) {
     const [, slug, tab] = tabMatch;
-    if (!PLACE_TABS.has(tab)) return null;
-    return { kind: 'place-tab', slug, tab };
+    if (PLACE_TABS.has(tab)) return { kind: 'place-tab', slug, tab };
+    // Googlebot does not run placeCanonicalPath. These tabs are not sitemap URLs,
+    // so the pre-render is the place root (same title, description, canonical, og:url).
+    if (isPlaceRootAliasTab(tab)) return { kind: 'place-base', slug };
+    return null;
   }
 
   const editorialMatch = path.match(/^\/blog\/e\/([^/]+)$/);

@@ -7,6 +7,7 @@ import {
   useDeferredViewportSyncOnBlur,
 } from '../../../shared/hooks/useMobileInputViewport';
 import { resolveLogbookFeedExcerpt } from '../../../utils/logbookDek.js';
+import { rememberLogbookDetailReturn } from '../../../shared/navigation/logbookDetailBack.js';
 import { isEditorialLogbook, publicLogbookDetailPath } from '../../../utils/logbookEditorial';
 import { logbookFeedThumbImageProps } from '../../../utils/logbookImageSrc';
 import { useLogbookFeedViewMode } from '../hooks/useLogbookFeedViewMode';
@@ -269,7 +270,10 @@ const RecentList = ({ reports, loading, isPublicMode }) => {
               return (
               <div
                 key={report.id}
-                onClick={() => navigate(detailPath)}
+                onClick={() => {
+                  rememberLogbookDetailReturn(detailPath);
+                  navigate(detailPath);
+                }}
                 className={`
                   group bg-white border rounded-2xl transition-all cursor-pointer overflow-hidden hover:shadow-md
                   ${editorial ? 'border-indigo-200 hover:border-indigo-400 hover:bg-indigo-50/20' : 'border-gray-200 hover:border-blue-400 hover:bg-blue-50/30'}

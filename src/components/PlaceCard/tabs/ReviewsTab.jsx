@@ -17,6 +17,7 @@ import {
 } from '../../../utils/placeGallerySectionFocus.js';
 import { usePlaceMediaScrollToTop } from '../common/usePlaceMediaScrollToTop';
 import { formatGateoReviewerBadge } from '../../../utils/placeReviewEditorial';
+import { rememberLogbookDetailReturn } from '../../../shared/navigation/logbookDetailBack.js';
 import { isEditorialLogbook, publicLogbookDetailPath } from '../../../utils/logbookEditorial';
 import { logbookHeroImageUrl } from '../../../utils/logbookImageSrc';
 import { collectUniqueEditorialReviewImageCredits, resolveReviewThumbnailUnsplashCredit } from '../../../utils/editorialReviewImageCredit';
@@ -964,6 +965,7 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null, isActiv
                     key={blog.id}
                     href={publicLogbookDetailPath(blog)}
                     className={`shrink-0 w-56 bg-white border rounded-xl overflow-hidden shadow-sm hover:shadow-md hover:-translate-y-1 transition-all cursor-pointer snap-start flex flex-col group no-underline ${editorial ? 'border-indigo-100' : 'border-gray-100'}`}
+                    onClick={() => rememberLogbookDetailReturn(publicLogbookDetailPath(blog))}
                   >
                     <RelatedBlogCardThumbnail src={thumb} />
                     <div className="p-3 flex flex-col gap-1">

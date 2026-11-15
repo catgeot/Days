@@ -12,7 +12,7 @@ import SEO from '../../src/components/SEO/index.jsx';
 import { ensureI18n } from '../../src/i18n/config.js';
 import { LocaleProvider } from '../../src/i18n/LocaleProvider.jsx';
 import { LOCALE_STORAGE_KEY } from '../../src/i18n/constants.js';
-import { placeCanonicalPath } from '../../src/shared/seo/placeCanonicalPath.js';
+import { isPlaceRootAliasTab, placeCanonicalPath } from '../../src/shared/seo/placeCanonicalPath.js';
 import { buildLocalePageUrl } from '../../src/i18n/seoUrls.js';
 import { stripHeadSeoBeforeHelmet } from '../../src/shared/seo/stripHeadSeoBeforeHelmet.js';
 
@@ -29,6 +29,12 @@ test('place canonical follows the indexed tab, not the default gallery view', ()
   assert.equal(placeCanonicalPath('sapa', 'reviews'), '/place/sapa');
   assert.equal(placeCanonicalPath('hwaseong-fortress', 'video'), '/place/hwaseong-fortress');
   assert.equal(placeCanonicalPath('khao-lak', 'events'), '/place/khao-lak');
+  assert.equal(isPlaceRootAliasTab('reviews'), true);
+  assert.equal(isPlaceRootAliasTab('video'), true);
+  assert.equal(isPlaceRootAliasTab('events'), true);
+  assert.equal(isPlaceRootAliasTab('gallery'), false);
+  assert.equal(isPlaceRootAliasTab('planner'), false);
+  assert.equal(isPlaceRootAliasTab('wiki'), false);
   assert.equal(
     buildLocalePageUrl(placeCanonicalPath('bora-bora', undefined), 'ko'),
     'https://www.gateo.kr/place/bora-bora',
