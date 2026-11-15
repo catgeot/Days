@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import {
   buildLogbookHubReturnTo,
   readLogbookReviewHubSession,
@@ -45,7 +45,7 @@ const DailyLayout = () => {
     setProfileOpen(false);
   }, [location.pathname, location.search]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!location.pathname.startsWith('/blog')) return undefined;
     const session = readLogbookReviewHubSession();
     if (typeof session?.scrollY !== 'number' || session.scrollY <= 0) return undefined;
@@ -53,6 +53,10 @@ const DailyLayout = () => {
     if (session.returnTo && session.returnTo !== current) return undefined;
     const el = mainScrollRef.current;
     if (!el) return undefined;
+    // The hub list has to be mounted first. Scheduling before that clamps scroll
+    // to the top and lets the next wheel abandon the whole return.
+    if (!el.querySelector('[data-testid="logbook-official-review-hub-item"]')) return undefined;
+    if (el.scrollHeight - el.clientHeight + 8 < session.scrollY) return undefined;
     return scheduleLogbookHubScrollRestore(el, session.scrollY);
   }, [location.pathname, location.search]);
 
@@ -196,7 +200,7 @@ const DailyLayout = () => {
           <div
             ref={mainScrollRef}
             data-logbook-main-scroll
-            className="relative min-h-0 min-w-0 w-full flex-1 md:w-0 overflow-y-auto overflow-x-clip overscroll-y-contain"
+            className="relative min-h-0 min-w-0 w-full flex-1 md:w-0 overflow-y-auto overflow-x-clip overscroll-y-contain [overflow-anchor:none] [&_*]:[overflow-anchor:none]"
           >
             <Outlet />
           </div>

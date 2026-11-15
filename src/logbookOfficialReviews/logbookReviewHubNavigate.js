@@ -12,6 +12,9 @@ import {
  *   expanded: boolean,
  *   visibleCount: number,
  *   scrollY?: number,
+ *   anchorReviewId?: string,
+ *   anchorOffset?: number,
+ *   cityOverflowOpen?: boolean,
  * }} input
  */
 export function prepareLogbookReviewHubNavigation(input) {
@@ -22,6 +25,9 @@ export function prepareLogbookReviewHubNavigation(input) {
     expanded: input.expanded,
     visibleCount: input.visibleCount,
     scrollY: typeof input.scrollY === 'number' ? input.scrollY : undefined,
+    anchorReviewId: input.anchorReviewId || undefined,
+    anchorOffset: Number.isFinite(input.anchorOffset) ? input.anchorOffset : undefined,
+    cityOverflowOpen: Boolean(input.cityOverflowOpen),
   });
   return { returnTo, fromLogbookReviewHub: true };
 }
