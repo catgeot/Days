@@ -20,7 +20,7 @@ import {
 } from '../../../pages/Home/lib/placeSeoText.js';
 import { useLocale } from '../../../i18n/LocaleProvider';
 import { decodeHtmlEntities } from '../../../utils/decodeHtmlEntities';
-import { placePathSuffixForMediaMode, expandedMediaModesIncludingWorldEvents } from '../common/placeMediaTabRoutes';
+import { placePathSuffixForMediaMode, expandedMediaModesIncludingWorldEvents, mediaModeFromPathname } from '../common/placeMediaTabRoutes';
 import { isGateoPlaceWorldEventsTabEnabled } from '../../../shared/gateoFeatureFlags';
 import { isPlacePlannerEligible } from '../../../shared/place/placePlannerEligibility.js';
 
@@ -52,7 +52,9 @@ const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, onOpenM
   const worldEventsTabFlagOn = isGateoPlaceWorldEventsTabEnabled();
 
   useLayoutEffect(() => {
-      let tab = initialTab;
+      // Back can update the address bar before React Router's match. Prefer the real path.
+      const fromWindow = mediaModeFromPathname(window.location.pathname);
+      let tab = fromWindow && fromWindow !== initialTab ? fromWindow : initialTab;
       if (tab === 'PLANNER' && !isPlacePlannerEligible(location)) {
         tab = 'GALLERY';
       }
@@ -64,6 +66,16 @@ const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, onOpenM
         navigate(`/place/${slug}`, { replace: true });
       }
   }, [initialTab, worldEventsTabFlagOn, location, navigate]);
+
+  useLayoutEffect(() => {
+      const syncFromPop = () => {
+          const mode = mediaModeFromPathname(window.location.pathname);
+          if (!mode) return;
+          setMediaModeState(mode);
+      };
+      window.addEventListener('popstate', syncFromPop);
+      return () => window.removeEventListener('popstate', syncFromPop);
+  }, []);
 
   useLayoutEffect(() => {
     if (!worldEventsTabFlagOn) return;

@@ -37,11 +37,16 @@ import {
 import { shouldToggleReviewBodyFromClick } from '../../../utils/placeReviewExpandInteraction.js';
 import { reviewPlainTextForAccessibility } from '../../../utils/reviewInlineMarkdown.js';
 import {
+  orderPlaceReviewsForDeepLink,
   parsePlaceReviewFocusId,
   placeReviewDomId,
   placeReviewFocusSearchWithoutReview,
   PLACE_REVIEW_USER_INPUT_EVENTS,
+  readPlaceReviewFocusIdFromBrowser,
+  readPlaceReviewFocusIdFromHistory,
+  scrollPlaceReviewIntoView,
   startPlaceReviewFocusSession,
+  withPlaceReviewFocusHistory,
 } from '../../../utils/placeReviewFocus.js';
 import {
   clearPlaceGalleryScrollBack,
@@ -258,7 +263,7 @@ const ReviewStatsBlock = ({ stats, layout = 'desktop' }) => {
 };
 
 // --- 추가: 긴 글 접기 및 이미지 썸네일 렌더링을 담당하는 단일 리뷰 카드 컴포넌트 ---
-export const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onToggleLike, onVisible, onRequireLogin }) => {
+export const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onToggleLike, onVisible, onRequireLogin, focused = false }) => {
   const { t, i18n } = useTranslation();
   const [isExpanded, setIsExpanded] = useState(false);
   const [hasViewed, setHasViewed] = useState(false);
@@ -355,7 +360,7 @@ export const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onTog
   return (
     <div
       id={reviewAnchorId || undefined}
-      className="bg-white border border-gray-100 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow scroll-mt-4"
+      className={`bg-white border border-gray-100 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow scroll-mt-4${focused ? ' place-review-focus-current' : ''}`}
       data-review-id={review.id}
     >
       {hubDetailLayout ? (
@@ -561,14 +566,13 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null, isActiv
   const { t } = useTranslation();
   const navigate = useNavigate();
   const routeLocation = useLocation();
-  const [searchParams, setSearchParams] = useSearchParams();
-  const focusReviewId = parsePlaceReviewFocusId(searchParams);
+  const [searchParams] = useSearchParams();
+  const queryFocusId = parsePlaceReviewFocusId(searchParams);
+  const [cancelledFocusId, setCancelledFocusId] = useState(null);
   const scrollContainerRef = useRef(null);
   const focusSessionRef = useRef(null);
   const userCancelledDeepLinkRef = useRef(false);
-  const prevFocusReviewIdRef = useRef(focusReviewId);
   const consumedReviewDeepLinkRef = useRef(null);
-  usePlaceMediaScrollToTop('REVIEWS', scrollContainerRef, !focusReviewId);
   const [user, setUser] = useState(null);
 
   useEffect(() => {
@@ -581,6 +585,14 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null, isActiv
     idStr.startsWith('search-') || idStr.startsWith('loc-')
       ? idStr
       : (location.slug || idStr);
+
+  const historyFocusId = readPlaceReviewFocusIdFromHistory(routeLocation.state, placeSlug)
+    || readPlaceReviewFocusIdFromBrowser(placeSlug);
+  const queryBlocked = Boolean(queryFocusId) && cancelledFocusId === queryFocusId;
+  // Query wins on the shared-link load. History keeps that review first after replace and Back.
+  const activeFocusId = queryBlocked ? null : (queryFocusId || historyFocusId);
+  const prevFocusReviewIdRef = useRef(activeFocusId);
+  usePlaceMediaScrollToTop('REVIEWS', scrollContainerRef, !queryFocusId);
 
   useEffect(() => {
     if (!isActive || !placeSlug) return;
@@ -596,11 +608,11 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null, isActiv
 
   useLayoutEffect(() => {
     const hadFocus = Boolean(prevFocusReviewIdRef.current);
-    prevFocusReviewIdRef.current = focusReviewId;
-    if (focusReviewId) return;
+    prevFocusReviewIdRef.current = activeFocusId;
+    if (activeFocusId) return;
     if (hadFocus) return;
     resetPlaceMediaScrollInstant(scrollContainerRef.current);
-  }, [placeSlug, focusReviewId]);
+  }, [placeSlug, activeFocusId]);
 
   const {
     reviews,
@@ -614,12 +626,16 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null, isActiv
     refetch
   } = usePlaceReviews(placeSlug, user);
 
-  const consumeReviewDeepLink = React.useCallback(() => {
+  const consumeReviewDeepLink = React.useCallback((options = {}) => {
     const reviewId = parsePlaceReviewFocusId(searchParams);
     if (!reviewId || consumedReviewDeepLinkRef.current === reviewId) return;
     consumedReviewDeepLinkRef.current = reviewId;
     const next = placeReviewFocusSearchWithoutReview(searchParams);
     const search = next.toString();
+    const pin = options.pin === true;
+    const state = pin
+      ? withPlaceReviewFocusHistory(routeLocation.state, reviewId, placeSlug)
+      : routeLocation.state;
     navigate(
       {
         pathname: routeLocation.pathname,
@@ -629,18 +645,19 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null, isActiv
       {
         replace: true,
         preventScrollReset: true,
-        state: routeLocation.state,
+        state,
       },
     );
-  }, [navigate, routeLocation.hash, routeLocation.pathname, routeLocation.state, searchParams]);
+  }, [navigate, placeSlug, routeLocation.hash, routeLocation.pathname, routeLocation.state, searchParams]);
 
   useEffect(() => {
     userCancelledDeepLinkRef.current = false;
-    if (!isActive || !focusReviewId) return undefined;
+    if (!isActive || !queryFocusId) return undefined;
 
     const listeners = [];
     const cancelFromUser = () => {
       userCancelledDeepLinkRef.current = true;
+      setCancelledFocusId(queryFocusId);
       focusSessionRef.current?.abort();
     };
 
@@ -662,7 +679,7 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null, isActiv
         root.removeEventListener(type, handler);
       });
     };
-  }, [isActive, focusReviewId, placeSlug]);
+  }, [isActive, queryFocusId, placeSlug]);
 
   useEffect(() => {
     if (!isActive) {
@@ -670,27 +687,32 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null, isActiv
       focusSessionRef.current = null;
       return undefined;
     }
-    if (!focusReviewId) return undefined;
-    if (userCancelledDeepLinkRef.current) {
-      consumeReviewDeepLink();
+    const blocked = Boolean(queryFocusId) && (userCancelledDeepLinkRef.current || cancelledFocusId === queryFocusId);
+    if (blocked) {
+      consumeReviewDeepLink({ pin: false });
       return undefined;
     }
+    if (!activeFocusId) return undefined;
     if (isLoading) return undefined;
 
     const prev = focusSessionRef.current;
     if (prev) prev.abort();
 
     const session = startPlaceReviewFocusSession(
-      focusReviewId,
+      activeFocusId,
       scrollContainerRef.current,
+      { behavior: 'auto' },
     );
     focusSessionRef.current = session;
     let cancelled = false;
 
-    session.promise.then(() => {
-      if (cancelled) return;
+    session.promise.then((result) => {
+      if (cancelled || !queryFocusId) return;
+      if (result?.reason === 'aborted' && !userCancelledDeepLinkRef.current) return;
       requestAnimationFrame(() => {
-        if (!cancelled) consumeReviewDeepLink();
+        if (cancelled) return;
+        const pin = result?.reason === 'found' && result.ok && !userCancelledDeepLinkRef.current;
+        consumeReviewDeepLink({ pin });
       });
     });
 
@@ -706,11 +728,11 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null, isActiv
         focusSessionRef.current = null;
       }
     };
-  }, [isActive, focusReviewId, isLoading, reviews, placeSlug, consumeReviewDeepLink]);
+  }, [isActive, activeFocusId, queryFocusId, cancelledFocusId, isLoading, placeSlug, consumeReviewDeepLink]);
 
   useEffect(() => {
-    if (!focusReviewId) consumedReviewDeepLinkRef.current = null;
-  }, [focusReviewId]);
+    if (!queryFocusId) consumedReviewDeepLinkRef.current = null;
+  }, [queryFocusId]);
 
   useEffect(() => () => {
     focusSessionRef.current?.abort();
@@ -718,6 +740,25 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null, isActiv
   }, []);
 
   const { blogs, isLoading: blogsLoading } = useRelatedBlogs(location.name, placeSlug);
+  const orderedReviews = useMemo(
+    () => orderPlaceReviewsForDeepLink(reviews, activeFocusId),
+    [reviews, activeFocusId],
+  );
+  const focusRowReady = Boolean(activeFocusId)
+    && reviews.some((review) => String(review?.id) === String(activeFocusId));
+
+  useLayoutEffect(() => {
+    if (!activeFocusId || !focusRowReady) return undefined;
+    const align = () => {
+      if (userCancelledDeepLinkRef.current) return;
+      const root = scrollContainerRef.current;
+      if (!root) return;
+      scrollPlaceReviewIntoView(root, activeFocusId, { behavior: 'auto' });
+    };
+    align();
+    const timer = window.setTimeout(align, 200);
+    return () => clearTimeout(timer);
+  }, [activeFocusId, focusRowReady, blogs.length]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingReview, setEditingReview] = useState(null);
@@ -867,7 +908,7 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null, isActiv
       <div
         ref={scrollContainerRef}
         data-place-reviews-scroll-root=""
-        className={`flex-1 min-h-0 overflow-y-auto overflow-x-hidden custom-scrollbar ${placeScrollSurfaceClass} ${mobilePlaceReviewsFooterScrollPadding} lg:pb-4 lg:pt-0`}
+        className={`flex-1 min-h-0 overflow-y-auto overflow-x-hidden custom-scrollbar [overflow-anchor:none] [&_*]:[overflow-anchor:none] ${placeScrollSurfaceClass} ${mobilePlaceReviewsFooterScrollPadding} lg:pb-4 lg:pt-0`}
       >
         {mobileSecondaryNav && (
           <div
@@ -1022,11 +1063,12 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null, isActiv
             </div>
           ) : (
             <div className="space-y-6">
-              {reviews.map((review) => (
+              {orderedReviews.map((review) => (
                 <ReviewItem
                   key={review.id}
                   review={review}
                   user={user}
+                  focused={String(review.id) === String(activeFocusId)}
                   onEdit={handleEditClick}
                   onDelete={handleDeleteClick}
                   onImageClick={openLightbox}
