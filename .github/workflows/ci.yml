@@ -829,6 +829,35 @@ jobs:
           DEV_SSL: '0'
         run: npx playwright test -c playwright.config.explore-place-hard-back.js --reporter=line
 
+  explore-collection-card-tap-e2e:
+    name: Explore collection card tap E2E (Chromium 1280·1024 · WebKit 390)
+    runs-on: ubuntu-latest
+    needs: lint-and-build
+    timeout-minutes: 45
+    container:
+      image: mcr.microsoft.com/playwright:v1.60.0-jammy
+      options: --ipc=host
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Playwright — explore collection card tap
+        env:
+          VITE_SUPABASE_URL: https://example.supabase.co
+          VITE_SUPABASE_ANON_KEY: e2e-anon-placeholder
+          CI: true
+          DEV_SSL: '0'
+        run: npx playwright test -c playwright.config.explore-card-tap.js --reporter=line
+
   home-festival-quick-link-e2e:
     name: Home 축제 quick link E2E (WebKit 390 · Chromium 1280)
     runs-on: ubuntu-latest
