@@ -96,6 +96,12 @@ import {
 } from './joseonRoyalTombsSearch.js';
 import { stampExploreRestaurantSuggestion } from '../../../shared/search/exploreRestaurantStamp.js';
 import { isExploreRestaurantItem } from '../../../shared/search/tourRestaurantDetect.js';
+import {
+  appendChoseongSuggestions,
+  exploreTextIncludes,
+  isExploreChoseongQuery,
+  matchExploreChoseongSuggestions,
+} from './exploreChoseongMatch.js';
 
 const normalizeKey = (s) =>
   String(s ?? '')
@@ -551,15 +557,14 @@ export function buildLocalSearchSuggestions(query, opts = {}) {
   const spotHits = poiType
     ? []
     : TRAVEL_SPOTS.filter((spot) => {
-    const name = (spot.name || '').toLowerCase();
-    const nameEn = (spot.name_en || '').toLowerCase();
-    const country = (spot.country || '').toLowerCase();
+    const keyed = key
+      ? normalizeKey(spot?.name).startsWith(key) || normalizeKey(spot?.name_en).startsWith(key)
+      : false;
     return (
-      name.includes(lower) ||
-      nameEn.includes(lower) ||
-      country.includes(lower) ||
-      normalizeKey(spot.name).startsWith(key) ||
-      normalizeKey(spot.name_en).startsWith(key)
+      exploreTextIncludes(spot?.name, lower) ||
+      exploreTextIncludes(spot?.name_en, lower) ||
+      exploreTextIncludes(spot?.country, lower) ||
+      keyed
     );
   })
     .sort((a, b) => (b.popularity || 0) - (a.popularity || 0))
@@ -636,9 +641,13 @@ export function buildLocalSearchSuggestions(query, opts = {}) {
     }
   }
 
+  const withChoseong = isExploreChoseongQuery(innerQuery)
+    ? appendChoseongSuggestions(out, matchExploreChoseongSuggestions(innerQuery))
+    : out;
+
   return rankSiteSearchExploreCandidates(
     innerQuery,
-    out.slice(0, poiType ? 180 : 24).map(enrichSearchCandidateScenicMedia),
+    withChoseong.slice(0, poiType ? 180 : 24).map(enrichSearchCandidateScenicMedia),
   );
 }
 
@@ -726,7 +735,8 @@ export async function buildHybridSearchSuggestions(query, opts = {}) {
     local.some((item) => item?.source === 'monthly-pick') ||
     isJoseonRoyalTombsCollectiveQuery(q) ||
     shouldSkipGeocodeForMood(q) ||
-    shouldOfferKoreaHomonymDisambiguation(q)
+    shouldOfferKoreaHomonymDisambiguation(q) ||
+    isExploreChoseongQuery(q)
   ) {
     return finalizeHybridSuggestions(q, regional, applyScope(prependScopeSync(local)), 24, matchOpts);
   }

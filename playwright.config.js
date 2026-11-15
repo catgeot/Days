@@ -104,6 +104,7 @@ export default defineConfig({
         /stay-list-tripcom-footer\.spec\.js/,
         /travelogue-back-nav\.spec\.js/,
         /article-festival-place-back\.spec\.js/,
+        /explore-choseong-search\.spec\.js/,
       ],
       use: { ...devices['Desktop Chrome'], viewport: { width: 1280, height: 720 } },
     },

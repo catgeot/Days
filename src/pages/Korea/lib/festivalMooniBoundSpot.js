@@ -20,10 +20,11 @@ export {
  *   nearbyPlaces?: string[],
  *   nearbyRestaurants?: string[],
  *   info?: Array<{ infoname?: string, name?: string, infotext?: string, text?: string }>,
+ *   detailPending?: boolean,
  * }} input
  */
 export function buildFestivalMooniBoundSpot(input = {}) {
-  const { item, intro, location, homepage, summaryFields, overview, program, nearbyPlaces, nearbyRestaurants, nearbyParking, stayAreas, info, transport } = input;
+  const { item, intro, location, homepage, summaryFields, overview, program, nearbyPlaces, nearbyRestaurants, nearbyParking, stayAreas, info, transport, detailPending } = input;
   const festivalContext = buildFestivalMooniContext({
     item,
     intro,
@@ -38,6 +39,7 @@ export function buildFestivalMooniBoundSpot(input = {}) {
     stayAreas,
     info,
     transport,
+    detailPending,
   });
   const title = festivalContext?.title || '';
   const loc = location && typeof location === 'object' ? location : null;
@@ -68,15 +70,58 @@ function sameNameList(left, right) {
   return listKey(left) === listKey(right);
 }
 
-/** Keep an open chat, and copy 주변 맛집 names in when the sheet list arrives. */
+const DETAIL_TEXT_KEYS = [
+  'overview',
+  'sceneOverview',
+  'program',
+  'venue',
+  'timeText',
+  'feeText',
+  'homepage',
+  'tel',
+  'titleEn',
+  'eventStartDate',
+  'eventEndDate',
+  'dateLabel',
+];
+
+function keepRicherText(prevValue, nextValue) {
+  const next = String(nextValue ?? '').trim();
+  if (!next) return prevValue ?? '';
+  return nextValue;
+}
+
+function detailPendingOf(ctx, fallback) {
+  if (ctx && Object.prototype.hasOwnProperty.call(ctx, 'detailPending')) {
+    return Boolean(ctx.detailPending);
+  }
+  return Boolean(fallback);
+}
+
+/** Keep the open chat. Copy detail narrative and nearby lists when they arrive. */
 export function patchFestivalBoundSpot(prev, next) {
   if (!prev?.festivalContext || !next?.festivalContext) return prev;
+  const prevId = String(prev.festivalContext.contentId || '');
+  const nextId = String(next.festivalContext.contentId || '');
+  if (prevId && nextId && prevId !== nextId) return next;
+
+  const narrative = {};
+  for (const key of DETAIL_TEXT_KEYS) {
+    narrative[key] = keepRicherText(prev.festivalContext[key], next.festivalContext[key]);
+  }
+  const detailPending = detailPendingOf(next.festivalContext, prev.festivalContext.detailPending);
   const prevParking = String(prev.festivalContext.parking || '');
   const nextParking = String(next.festivalContext.parking || '');
   const prevTransport = JSON.stringify(prev.festivalContext.transport || null);
   const nextTransport = JSON.stringify(next.festivalContext.transport || null);
+  const narrativeSame = DETAIL_TEXT_KEYS.every(
+    (key) => String(narrative[key] ?? '') === String(prev.festivalContext[key] ?? ''),
+  );
+  const pendingSame = Boolean(prev.festivalContext.detailPending) === detailPending;
   if (
-    sameNameList(prev.festivalContext.nearbyRestaurants, next.festivalContext.nearbyRestaurants)
+    narrativeSame
+    && pendingSame
+    && sameNameList(prev.festivalContext.nearbyRestaurants, next.festivalContext.nearbyRestaurants)
     && sameNameList(prev.festivalContext.nearbyPlaces, next.festivalContext.nearbyPlaces)
     && sameNameList(prev.festivalContext.nearbyParking, next.festivalContext.nearbyParking)
     && prevParking === nextParking
@@ -86,6 +131,8 @@ export function patchFestivalBoundSpot(prev, next) {
     ...prev,
     festivalContext: {
       ...prev.festivalContext,
+      ...narrative,
+      detailPending,
       nearbyRestaurants: next.festivalContext.nearbyRestaurants || [],
       nearbyPlaces: next.festivalContext.nearbyPlaces || [],
       nearbyParking: next.festivalContext.nearbyParking || [],

@@ -10,18 +10,22 @@ import {
   findKoreaOriginCityById,
   koreaOriginAskLabel,
   koreaOriginOptionLabel,
-  KOREA_PROVINCE_EN,
+  koreaOriginRegionTag,
   readDomesticOriginCityId,
   suggestKoreaOriginCities,
 } from '../lib/koreaOriginCityMatch.js';
 import { locateNearestOriginCity } from '../lib/koreaOriginGeolocation.js';
-import { tryOriginKeyboardConfirm } from '../lib/festivalOriginConfirm.js';
+import { shouldResendPinnedOrigin, tryOriginKeyboardConfirm } from '../lib/festivalOriginConfirm.js';
 import { shouldConfirmHangulEntry } from '../../../utils/hangulSearch.js';
 
 const tone = (fresh, dark, light) => (fresh ? light : dark);
 
 function chipCityId(row) {
   return row?.id ? `${row.ko}|${row.province}` : '';
+}
+
+function keepOriginFieldFocus(event) {
+  event.preventDefault();
 }
 
 /**
@@ -45,11 +49,15 @@ export default function FestivalAccessOriginDock({
   const [expanded, setExpanded] = useState(false);
   const [text, setText] = useState('');
   const [pinnedId, setPinnedId] = useState('');
+  const [suggestionsOpen, setSuggestionsOpen] = useState(false);
   const [locateError, setLocateError] = useState('');
   const [locating, setLocating] = useState(false);
   const composingRef = useRef(false);
   const rememberedRef = useRef(false);
   const savedScrollTopRef = useRef(null);
+  const confirmFlightRef = useRef(false);
+  const submittedIdRef = useRef('');
+  const suppressOpenUntilRef = useRef(0);
 
   const visible = useMemo(
     () => visibleFestivalDomesticOrigins(hubLabel, address),
@@ -57,11 +65,36 @@ export default function FestivalAccessOriginDock({
   );
   const primary = visible.filter((row) => FESTIVAL_ORIGIN_DOCK_PRIMARY_IDS.includes(row.id));
   const shown = expanded ? visible : primary;
-  const suggestion = useMemo(
-    () => (pinnedId ? { kind: 'empty', cities: [], confirmOnEnter: false, askRaw: '' } : suggestKoreaOriginCities(text)),
-    [pinnedId, text],
-  );
+  const compactChips = !expanded && String(locale).slice(0, 2) === 'en';
+  const chipSize = compactChips ? 'px-1 text-[11px]' : 'px-2 text-xs';
+  const suggestion = useMemo(() => suggestKoreaOriginCities(text), [text]);
   const blocked = disabled || held;
+
+  const openSuggestions = () => {
+    if (Date.now() < suppressOpenUntilRef.current) return;
+    setSuggestionsOpen(true);
+  };
+
+  const closeSuggestions = () => {
+    // A confirm click can return focus to the field and would otherwise reopen the list.
+    suppressOpenUntilRef.current = Date.now() + 80;
+    setSuggestionsOpen(false);
+  };
+
+  const emitConfirm = (payload) => {
+    if (blocked || confirmFlightRef.current) return false;
+    confirmFlightRef.current = true;
+    closeSuggestions();
+    try {
+      const pending = onConfirm?.(payload);
+      Promise.resolve(pending).finally(() => {
+        confirmFlightRef.current = false;
+      });
+    } catch {
+      confirmFlightRef.current = false;
+    }
+    return true;
+  };
 
   useLayoutEffect(() => {
     if (savedScrollTopRef.current == null) return;
@@ -85,31 +118,37 @@ export default function FestivalAccessOriginDock({
   }, [locale, onConfirm, visible]);
 
   const confirmCity = (city) => {
-    if (!city || blocked) return;
-    setText(koreaOriginAskLabel(city, locale));
-    setPinnedId(city.id);
-    setLocateError('');
-    onConfirm?.({
+    if (!city) return;
+    const sent = emitConfirm({
       cityId: city.id,
       askLabel: koreaOriginAskLabel(city, 'ko'),
       askLabelEn: koreaOriginAskLabel(city, 'en'),
     });
+    if (!sent) return;
+    setText(koreaOriginAskLabel(city, locale));
+    setPinnedId(city.id);
+    setLocateError('');
+    submittedIdRef.current = city.id;
   };
 
   const onChip = (row) => {
-    if (blocked) return;
+    const sent = emitConfirm(row);
+    if (!sent) return;
     setText('');
     setPinnedId('');
     setLocateError('');
-    onConfirm?.(row);
+    submittedIdRef.current = `chip:${row.id}`;
   };
 
   const onAskAnyway = () => {
-    if (blocked || !suggestion.askRaw) return;
-    onConfirm?.({
-      askLabel: suggestion.askRaw,
-      askLabelEn: suggestion.askRaw,
+    if (!suggestion.askRaw) return;
+    const askRaw = suggestion.askRaw;
+    const sent = emitConfirm({
+      askLabel: askRaw,
+      askLabelEn: askRaw,
     });
+    if (!sent) return;
+    submittedIdRef.current = `ask:${askRaw}`;
   };
 
   const onLocate = async () => {
@@ -123,12 +162,11 @@ export default function FestivalAccessOriginDock({
         return;
       }
       const city = found.city;
-      const province = String(locale).slice(0, 2) === 'en'
-        ? (KOREA_PROVINCE_EN[city.province] || city.province)
-        : city.province;
       const name = String(locale).slice(0, 2) === 'en' ? city.en : city.ko;
-      setText(t('mooni.chat.originLocated', { city: name, province }));
+      setText(t('mooni.chat.originLocated', { city: name, province: koreaOriginRegionTag(city, locale) }));
       setPinnedId(city.id);
+      submittedIdRef.current = '';
+      closeSuggestions();
     } finally {
       setLocating(false);
     }
@@ -141,10 +179,18 @@ export default function FestivalAccessOriginDock({
       event.preventDefault();
       return;
     }
-    if (pinnedId) {
+    if (shouldResendPinnedOrigin({
+      suggestionsOpen,
+      pinnedId,
+      submittedId: submittedIdRef.current,
+    })) {
       event.preventDefault();
       if (!shouldConfirmHangulEntry({ composing, key: 'Enter' })) return;
       confirmCity(findKoreaOriginCityById(pinnedId));
+      return;
+    }
+    if (!suggestionsOpen) {
+      if (!composing) event.preventDefault();
       return;
     }
     const sent = tryOriginKeyboardConfirm({
@@ -156,9 +202,9 @@ export default function FestivalAccessOriginDock({
     if (sent || composing) event.preventDefault();
   };
 
-  const showList = !pinnedId && (suggestion.kind === 'typo' || suggestion.cities.length > 0);
-  const showGu = !pinnedId && suggestion.kind === 'gu';
-  const showMissing = !pinnedId && suggestion.kind === 'missing' && suggestion.askRaw;
+  const showList = suggestionsOpen && (suggestion.kind === 'typo' || suggestion.cities.length > 0);
+  const showGu = suggestionsOpen && suggestion.kind === 'gu';
+  const showMissing = suggestionsOpen && suggestion.kind === 'missing' && suggestion.askRaw;
 
   return (
     <div
@@ -184,7 +230,9 @@ export default function FestivalAccessOriginDock({
       </div>
       <div
         data-testid="mooni-origin-chips"
-        className="flex w-full max-w-full flex-wrap gap-1 max-h-[148px] overflow-y-auto overflow-x-hidden"
+        className={expanded
+          ? 'flex w-full max-w-full min-w-0 flex-wrap gap-1 max-h-[148px] overflow-y-auto overflow-x-hidden'
+          : `flex w-full max-w-full min-w-0 flex-nowrap ${compactChips ? 'gap-0.5' : 'gap-1'} overflow-x-auto overflow-y-hidden`}
       >
         {shown.map((row) => {
           const selected = selectedChipId === row.id && !text;
@@ -198,8 +246,8 @@ export default function FestivalAccessOriginDock({
               onClick={() => onChip(row)}
               className={tone(
                 fresh,
-                `inline-flex shrink-0 items-center justify-center min-h-11 rounded-full border px-2 py-1 text-xs font-medium touch-manipulation disabled:opacity-50 ${selected ? 'border-cyan-300 bg-cyan-500/30 text-cyan-50' : 'border-cyan-500/35 bg-cyan-950/30 text-cyan-100'}`,
-                `inline-flex shrink-0 items-center justify-center min-h-11 rounded-full border px-2 py-1 text-xs font-medium touch-manipulation disabled:opacity-50 ${selected ? 'border-cyan-400 bg-cyan-50 text-cyan-800' : 'border-cyan-200 bg-white text-cyan-700'}`,
+                `inline-flex shrink-0 items-center justify-center min-h-11 rounded-full border ${chipSize} py-1 font-medium touch-manipulation disabled:opacity-50 ${selected ? 'border-cyan-300 bg-cyan-500/30 text-cyan-50' : 'border-cyan-500/35 bg-cyan-950/30 text-cyan-100'}`,
+                `inline-flex shrink-0 items-center justify-center min-h-11 rounded-full border ${chipSize} py-1 font-medium touch-manipulation disabled:opacity-50 ${selected ? 'border-cyan-400 bg-cyan-50 text-cyan-800' : 'border-cyan-200 bg-white text-cyan-700'}`,
               )}
             >
               {festivalOriginLabel(row, locale)}
@@ -217,8 +265,8 @@ export default function FestivalAccessOriginDock({
           }}
           className={tone(
             fresh,
-            'inline-flex shrink-0 items-center justify-center min-h-11 rounded-full border border-gray-500/55 bg-gray-800/90 px-2 py-1 text-xs font-semibold text-gray-100 touch-manipulation disabled:opacity-50',
-            'inline-flex shrink-0 items-center justify-center min-h-11 rounded-full border border-cyan-200 bg-white px-2 py-1 text-xs font-semibold text-slate-600 touch-manipulation disabled:opacity-50',
+            `inline-flex shrink-0 items-center justify-center min-h-11 rounded-full border border-gray-500/55 bg-gray-800/90 ${chipSize} py-1 font-semibold text-gray-100 touch-manipulation disabled:opacity-50`,
+            `inline-flex shrink-0 items-center justify-center min-h-11 rounded-full border border-cyan-200 bg-white ${chipSize} py-1 font-semibold text-slate-600 touch-manipulation disabled:opacity-50`,
           )}
         >
           {expanded ? t('mooni.chat.originCollapse') : t('mooni.chat.originMore')}
@@ -246,6 +294,7 @@ export default function FestivalAccessOriginDock({
                   type="button"
                   data-testid="mooni-origin-ask"
                   disabled={blocked}
+                  onMouseDown={keepOriginFieldFocus}
                   onClick={onAskAnyway}
                   className={tone(
                     fresh,
@@ -262,6 +311,7 @@ export default function FestivalAccessOriginDock({
                 type="button"
                 data-testid="mooni-origin-option"
                 disabled={blocked}
+                onMouseDown={keepOriginFieldFocus}
                 onClick={() => confirmCity(suggestion.cities[0])}
                 className={tone(
                   fresh,
@@ -279,6 +329,7 @@ export default function FestivalAccessOriginDock({
                   type="button"
                   data-testid="mooni-origin-option"
                   disabled={blocked}
+                  onMouseDown={keepOriginFieldFocus}
                   onClick={() => confirmCity(city)}
                   className={tone(
                     fresh,
@@ -303,10 +354,13 @@ export default function FestivalAccessOriginDock({
             value={text}
             disabled={disabled}
             placeholder={t('mooni.chat.originCityPlaceholder')}
+            onFocus={openSuggestions}
+            onClick={openSuggestions}
             onChange={(event) => {
               setText(event.target.value);
               setPinnedId('');
               setLocateError('');
+              submittedIdRef.current = '';
             }}
             onCompositionStart={() => {
               composingRef.current = true;

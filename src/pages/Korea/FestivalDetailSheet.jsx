@@ -2222,6 +2222,7 @@ export default function FestivalDetailSheet({
     stayAreas: festivalCross?.stayAreas,
     info: infoItems,
     transportFacts: accessFacts,
+    detailPending: detailLoading,
     raised: showScrollTop && !lightboxOpen,
     inlineAnchorExpected: mooniSummaryCardWillRender,
     onOpenChange: (open) => {

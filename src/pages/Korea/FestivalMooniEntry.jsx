@@ -20,6 +20,7 @@ import { shouldShowFestivalMooniFab } from './lib/festivalMooniFabVisibility.js'
  *   stayAreas?: Array<string | { name?: string }>,
  *   info?: Array<{ infoname?: string, infotext?: string }>,
  *   transportFacts?: Record<string, unknown> | null,
+ *   detailPending?: boolean,
  *   raised?: boolean,
  *   inlineAnchorExpected?: boolean,
  *   onOpenChange?: (open: boolean) => void,
@@ -40,6 +41,7 @@ export function useFestivalMooniEntry({
   stayAreas,
   info,
   transportFacts = null,
+  detailPending = false,
   raised = false,
   inlineAnchorExpected,
   onOpenChange,
@@ -99,6 +101,7 @@ export function useFestivalMooniEntry({
           stayAreas,
           info,
           transport: transportFacts,
+          detailPending,
         });
         if (!spot) return;
         onOpenTrack?.(placement);
@@ -107,7 +110,7 @@ export function useFestivalMooniEntry({
         onOpenChange?.(true);
       };
     },
-    [item, intro, location, homepage, summaryFields, overview, program, nearbyPlaces, nearbyRestaurants, nearbyParking, stayAreas, info, transportFacts, onOpenChange, onOpenTrack],
+    [item, intro, location, homepage, summaryFields, overview, program, nearbyPlaces, nearbyRestaurants, nearbyParking, stayAreas, info, transportFacts, detailPending, onOpenChange, onOpenTrack],
   );
 
   useEffect(() => {
@@ -126,10 +129,11 @@ export function useFestivalMooniEntry({
       stayAreas,
       info,
       transport: transportFacts,
+      detailPending,
     });
     if (!next) return;
     setBoundSpot((prev) => patchFestivalBoundSpot(prev, next));
-  }, [open, item, intro, location, homepage, summaryFields, overview, program, nearbyPlaces, nearbyRestaurants, nearbyParking, stayAreas, info, transportFacts]);
+  }, [open, item, intro, location, homepage, summaryFields, overview, program, nearbyPlaces, nearbyRestaurants, nearbyParking, stayAreas, info, transportFacts, detailPending]);
 
   const closeMooni = useCallback(() => {
     setOpen(false);

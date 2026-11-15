@@ -648,6 +648,35 @@ jobs:
           CI: true
         run: npx playwright test -c playwright.config.mooni-chip-instruction.js --reporter=line
 
+  mooni-festival-detail-wait-e2e:
+    name: MOONi festival detail wait E2E (Chromium·WebKit 390·1280)
+    runs-on: ubuntu-latest
+    needs: lint-and-build
+    timeout-minutes: 45
+    container:
+      image: mcr.microsoft.com/playwright:v1.60.0-jammy
+      options: --ipc=host
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Playwright — festival detail wait before chip
+        env:
+          VITE_SUPABASE_URL: https://example.supabase.co
+          VITE_SUPABASE_ANON_KEY: e2e-anon-placeholder
+          DEV_SSL: '0'
+          CI: true
+        run: npm run test:e2e:mooni-festival-detail-wait -- --reporter=line --repeat-each=3
+
   place-header-locale-e2e:
     name: Place header locale toggle E2E (Chromium)
     runs-on: ubuntu-latest
@@ -1078,6 +1107,35 @@ jobs:
           CI: true
           DEV_SSL: '0'
         run: npx playwright test -c playwright.config.mooni-origin-input.js --reporter=line
+
+  explore-choseong-e2e:
+    name: Explore choseong search E2E (Chromium+WebKit 390)
+    runs-on: ubuntu-latest
+    needs: lint-and-build
+    timeout-minutes: 35
+    container:
+      image: mcr.microsoft.com/playwright:v1.60.0-jammy
+      options: --ipc=host
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Playwright — explore choseong
+        env:
+          VITE_SUPABASE_URL: https://example.supabase.co
+          VITE_SUPABASE_ANON_KEY: e2e-anon-placeholder
+          CI: true
+          DEV_SSL: '0'
+        run: npx playwright test -c playwright.config.explore-choseong.js --reporter=line
 
   editorial-blog-head-meta-e2e:
     name: Editorial blog head meta E2E
