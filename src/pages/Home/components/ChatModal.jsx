@@ -141,6 +141,7 @@ import {
 } from '../lib/mooniModelMessageText';
 import { MooniChatMarkdownBoundary } from '../../../components/chat/MooniChatMarkdownBoundary.jsx';
 import { mooniUserBubbleText } from '../lib/mooniChipBubbleText.js';
+import { isMooniChipInstructionTurn } from '../lib/mooniChipInstruction.js';
 
 const tone = (fresh, dark, light) => (fresh ? light : dark);
 
@@ -1093,7 +1094,19 @@ const ChatModal = ({
       : null;
     const departureLabel = airportDeparture || (festivalRouteAsk && stationAsk ? stationAsk : null);
 
-    let resolution = resolveDestinationFromChat(cleanText, messages, currentDest);
+    const chipId = sendOptions?.chipId ?? sendOptions?.chip?.id ?? null;
+    const chipInstructionTurn = isMooniChipInstructionTurn(cleanText, chipId);
+    let resolution = chipInstructionTurn
+      ? {
+          slug: null,
+          name: null,
+          lat: null,
+          lng: null,
+          confidence: 'none',
+          candidates: [],
+          source: null,
+        }
+      : resolveDestinationFromChat(cleanText, messages, currentDest);
 
     const placeBound = sessionBound;
     const effectiveBound = sessionBound;
@@ -1230,7 +1243,6 @@ const ChatModal = ({
           : destForPrompt);
       const essentialGuide = await ensureChatEssentialGuide(slug, destName);
 
-      const chipId = sendOptions?.chipId ?? sendOptions?.chip?.id ?? null;
       const prepared = prepareFestivalMooniChatPayload({
         baseSession: tripSessionRef.current,
         festivalContext: Boolean(mooniPlaceContext?.festivalContext),
@@ -1399,6 +1411,7 @@ const ChatModal = ({
       const festivalMergedReply = mergeMooniKoreaFestivalReply(aiReply, {
         candidates: mooniFestivalCandidates,
         userText: cleanText,
+        chipId,
         boundPlaceName: festivalBoundPlaceName,
         locale: i18n.language,
         upcomingFallback: mooniFestivalUpcomingFallback,

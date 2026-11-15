@@ -190,6 +190,8 @@ export const usePlaceChat = (options = {}) => {
           mooniTurnContext: {
             geminiParams,
             stripPhantomTicketMention,
+            userText,
+            chipId: params.chipId ?? null,
           },
           bookingActions: booking.show ? booking.actions : null,
           bookingMeta: booking.show

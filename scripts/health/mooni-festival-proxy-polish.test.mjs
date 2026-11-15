@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
 import { repairGeminiReplacementChars } from '../../supabase/functions/_shared/gemini/answerSanitize.mjs';
 import { polishMooniFestivalProxyText, parseFestivalPolishParams } from '../../supabase/functions/_shared/gemini/festivalMooniProxyPolish.mjs';
@@ -732,6 +733,101 @@ test('food polish uses at least three list shops when data has four', () => {
   const names = ['강릉 오금집', '만동제과', '이쉐프의돈까스'];
   const hit = names.filter((n) => out.includes(n)).length;
   assert.ok(hit >= 3);
+});
+
+test('parseFestivalPolishParams keeps program, sceneOverview, and timeText', () => {
+  const parsed = parseFestivalPolishParams({
+    chipId: 'festival_sights',
+    locale: 'ko',
+    userText: '이 축제에서 볼 수 있는 것과 현장 분위기를 알려줘. 확인된 프로그램과 시간만 말하고, 데이터에 없는 붐비는 시간은 지어내지 마.',
+    contentId: '2048902',
+    festivalTitle: '해운대 빛축제',
+    program: '크루즈게이트\n터널게이트',
+    sceneOverview: '해운대 밤바다에 빛 조형이 이어져요.',
+    timeText: '18:00~23:00',
+  });
+  assert.equal(parsed.program, '크루즈게이트\n터널게이트');
+  assert.equal(parsed.sceneOverview, '해운대 밤바다에 빛 조형이 이어져요.');
+  assert.equal(parsed.timeText, '18:00~23:00');
+});
+
+test('proxy repair restores a full leak from program fields and keeps a normal sentence', () => {
+  const polish = parseFestivalPolishParams({
+    chipId: 'festival_sights',
+    locale: 'ko',
+    userText: '이 축제에서 볼 수 있는 것과 현장 분위기를 알려줘. 확인된 프로그램과 시간만 말하고, 데이터에 없는 붐비는 시간은 지어내지 마.',
+    contentId: '2048902',
+    festivalTitle: '해운대 빛축제',
+    program: '크루즈게이트\n터널게이트',
+    sceneOverview: '해운대 밤바다에 빛 조형이 이어져요.',
+    timeText: '18:00~23:00',
+  });
+  const leak = 'GATEO가 확인한 축제 중 앞으로 30일 이 볼 수 것과 현장 분위기를 확인된 프로그램과 시간만 말하고 데이터에 없는 붐비는 시간은 지어내지 마와 겹치는 행사는 없어요.';
+  const restored = polishMooniFestivalProxyText(leak, polish);
+  assert.match(restored, /크루즈게이트/);
+  assert.match(restored, /터널게이트/);
+  assert.match(restored, /운영 시간은 18:00~23:00예요/);
+  assert.doesNotMatch(restored, /겹치는 행사/);
+
+  const kept = polishMooniFestivalProxyText(
+    '데이터에 없는 부스 이름은 빼고 크루즈게이트를 말해요. 밤바다에 조명이 이어져요.',
+    polish,
+  );
+  assert.match(kept, /데이터에 없는 부스 이름은 빼고/);
+  assert.match(kept, /밤바다에 조명이 이어져요/);
+  assert.doesNotMatch(kept, /볼 수 있는 프로그램은/);
+
+  const noProgram = parseFestivalPolishParams({
+    chipId: 'festival_sights',
+    locale: 'en',
+    userText: 'What can I actually see and do at this festival, and what is the on-site feel? Use only confirmed programs and hours. Do not invent crowd times.',
+    contentId: '2048902',
+    festivalTitle: 'Haeundae Light Festival',
+  });
+  const mixed = polishMooniFestivalProxyText(
+    'The on-site feel is a bright beach walk. GATEO has no verified festivals overlapping the instruction for the next 30 days.',
+    noProgram,
+  );
+  assert.match(mixed, /bright beach walk/);
+  assert.doesNotMatch(mixed, /no verified festivals overlapping/);
+  assert.doesNotMatch(mixed, /Confirmed programs include/);
+});
+
+test('proxy uses the shared instruction sentences and does not build the zero-candidate template', () => {
+  const polish = parseFestivalPolishParams({
+    chipId: 'festival_day',
+    locale: 'ko',
+    userText: '이 축제를 넣어 하루 동선을 짜줘. 확인된 일정과 장소만 쓰고, 없는 프로그램은 지어내지 마.',
+    contentId: '2048902',
+    festivalTitle: '해운대 빛축제',
+    program: '크루즈게이트\n터널게이트',
+    timeText: '18:00~23:00',
+  });
+  const leaked = polishMooniFestivalProxyText(
+    'GATEO가 확인한 축제 중 앞으로 30일 이 축제를 넣어 하루 동선을 짜줘.',
+    polish,
+  );
+  assert.doesNotMatch(leaked, /GATEO가 확인한 축제 중|하루 동선을 짜줘/);
+  assert.match(leaked, /자세한 내용은|크루즈게이트/);
+
+  const kept = polishMooniFestivalProxyText(
+    'How do I get from the airport to the hotel?',
+    parseFestivalPolishParams({
+      chipId: 'festival_overseas_airport',
+      locale: 'en',
+      userText: 'How do I get from the airport to this festival? Use airport codes. Do not invent shuttles.',
+      contentId: '2048902',
+      festivalTitle: 'Haeundae Light Festival',
+    }),
+  );
+  assert.match(kept, /How do I get from the airport to the hotel/);
+  assert.doesNotMatch(kept, /no verified festivals|Use airport codes/);
+
+  const proxy = readFileSync(new URL('../../supabase/functions/_shared/gemini/festivalMooniProxyPolish.mjs', import.meta.url), 'utf8');
+  const tasks = readFileSync(new URL('../../supabase/functions/_shared/gemini/tasks.ts', import.meta.url), 'utf8');
+  assert.doesNotMatch(proxy, /buildMooniKoreaFestivalZeroCandidateUserReply/);
+  assert.doesNotMatch(tasks, /buildMooniKoreaFestivalZeroCandidateUserReply/);
+  assert.match(proxy, /polishFestivalModelReply/);
 });
 
 test('proxy baseline removes 둘러보세요 page closer', () => {

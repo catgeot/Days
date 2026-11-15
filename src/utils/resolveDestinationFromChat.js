@@ -527,6 +527,10 @@ function textIncludesPlaceName(haystack, needle) {
   if (n.length < 2) return false;
 
   if (/^[a-z0-9\s-]+$/i.test(n)) {
+    const compact = n.replace(/[\s-]+/g, '');
+    if (compact.length <= 3) {
+      return new RegExp(`\\b${escapeRegExp(n)}\\b`, 'i').test(haystack);
+    }
     const re = new RegExp(`(?:^|[\\s,.!?])${escapeRegExp(n)}(?:$|[\\s,.!?])`, 'i');
     return re.test(haystack) || h.includes(n);
   }

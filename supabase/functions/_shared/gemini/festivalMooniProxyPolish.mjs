@@ -45,6 +45,13 @@ function nearbyRestaurants(raw) {
   return out;
 }
 
+function clippedText(raw, max) {
+  if (raw == null) return "";
+  const text = String(raw).replace(/\u0000/g, "").trim();
+  if (!text) return "";
+  return text.slice(0, max);
+}
+
 /** mooni_chat optional body — mirrors client `buildFestivalMooniPolishOptions`. */
 export function parseFestivalPolishParams(raw) {
   if (raw == null || raw === false) return null;
@@ -67,6 +74,10 @@ export function parseFestivalPolishParams(raw) {
     festivalTitle: raw.festivalTitle == null ? "" : String(raw.festivalTitle).slice(0, 120),
     homepage: raw.homepage == null ? "" : String(raw.homepage).slice(0, 400),
     tel: raw.tel == null ? "" : String(raw.tel).slice(0, 80),
+    program: clippedText(raw.program, 2000),
+    sceneOverview: clippedText(raw.sceneOverview, 800),
+    overview: clippedText(raw.overview, 800),
+    timeText: clippedText(raw.timeText, 80),
   };
 }
 
