@@ -6,6 +6,16 @@ import { readSessionUser } from '../../../shared/Auth/sessionUser.js';
 import { attachAuthorLabels } from '../utils/reportAuthor';
 import { sortLogbookFeedRows } from '../../../utils/logbookEditorial';
 import { filterPublicLogbookFeedRows } from '../../../utils/logbookPublicFeed';
+import { initialLogbookPublicMode } from './logbookPublicMode.js';
+
+function browserLocalStorage() {
+  if (typeof window === 'undefined') return null;
+  try {
+    return window.localStorage;
+  } catch {
+    return null;
+  }
+}
 
 export const useDashboardData = () => {
   const location = useLocation();
@@ -17,7 +27,9 @@ export const useDashboardData = () => {
   const [graphMode, setGraphMode] = useState('total');
   const [graphYear, setGraphYear] = useState(today.getFullYear());
   const [availableYears, setAvailableYears] = useState([today.getFullYear()]);
-  const [isPublicMode, setIsPublicMode] = useState(false);
+  const [isPublicMode, setIsPublicMode] = useState(() =>
+    initialLogbookPublicMode(location.search, browserLocalStorage()),
+  );
   const [user, setUser] = useState(null);
 
   // 데이터 로드

@@ -6,6 +6,16 @@ import {
   clearLogbookHubScrollRestored,
   scheduleLogbookHubScrollRestore,
 } from '../../src/logbookOfficialReviews/logbookReviewHubScrollRestore.js';
+import {
+  captureLogbookHubScrollAnchor,
+  holdLogbookHubScrollAnchor,
+} from '../../src/logbookOfficialReviews/logbookReviewHubScrollAnchor.js';
+import {
+  clearLogbookReviewHubListCache,
+  dropLogbookReviewHubRowsMemory,
+  readLogbookReviewHubRows,
+  rememberLogbookReviewHubRows,
+} from '../../src/logbookOfficialReviews/logbookReviewHubListCache.js';
 
 const dom = new JSDOM('<!doctype html><body></body>', { url: 'https://www.gateo.kr/blog' });
 const { window } = dom;
@@ -134,6 +144,60 @@ test('a zero-delta wheel does not abandon an in-progress restore', async () => {
   el.scrollTop = 0;
   await wait(120);
   assert.equal(el.scrollTop, 1000);
+});
+
+function rect(top, height) {
+  return {
+    top,
+    bottom: top + height,
+    left: 0,
+    right: 100,
+    width: 100,
+    height,
+    x: 0,
+    y: top,
+    toJSON() {},
+  };
+}
+
+test('anchor hold keeps the card and ignores scroll the reader already did', () => {
+  const el = scroller();
+  const card = document.createElement('a');
+  card.setAttribute('data-review-id', 'card-1');
+  el.appendChild(card);
+  let cardTop = 120;
+  el.getBoundingClientRect = () => rect(0, 800);
+  card.getBoundingClientRect = () => rect(cardTop, 200);
+  el.scrollTop = 1000;
+  const anchor = captureLogbookHubScrollAnchor(el);
+  assert.equal(anchor.reviewId, 'card-1');
+  assert.equal(anchor.offset, 120);
+  assert.equal(anchor.scrollTop, 1000);
+
+  el.scrollTop = 1600;
+  cardTop = 120 - 600;
+  assert.equal(holdLogbookHubScrollAnchor(el, anchor), true);
+  assert.equal(el.scrollTop, 1600);
+
+  cardTop = 120 - 600 + 200;
+  assert.equal(holdLogbookHubScrollAnchor(el, anchor), true);
+  assert.equal(el.scrollTop, 1800);
+});
+
+test('row cache is available again after a reload drops module memory', () => {
+  clearLogbookReviewHubListCache();
+  const rows = [
+    { id: 'r1', place_slug: 'paris', place_name: '파리', content: 'x'.repeat(800), images: ['a', 'b'] },
+  ];
+  rememberLogbookReviewHubRows(rows);
+  assert.equal(readLogbookReviewHubRows()[0].content.length, 800);
+  dropLogbookReviewHubRowsMemory();
+  const restored = readLogbookReviewHubRows();
+  assert.equal(restored[0].id, 'r1');
+  assert.equal(restored[0].place_slug, 'paris');
+  assert.ok(restored[0].content.length <= 480);
+  assert.equal(restored[0].images.length, 1);
+  clearLogbookReviewHubListCache();
 });
 
 test('clearing the session allows the next return to restore', async () => {

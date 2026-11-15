@@ -59,8 +59,7 @@ async function assertBlogHubVisible(page) {
   await expect(page.getByTestId('logbook-official-review-hub')).toBeVisible({ timeout: 30_000 });
   await expect(page.locator('[data-place-chrome-hit]')).toHaveCount(0);
   expect(new URL(page.url()).pathname).toBe('/blog');
-  const title = await page.title();
-  expect(title.length).toBeGreaterThan(3);
+  await expect.poll(async () => (await page.title()).length, { timeout: 5_000 }).toBeGreaterThan(3);
 }
 
 async function tapPlaceChromeBack(page) {
@@ -107,6 +106,106 @@ async function readHubScroll(page) {
   });
 }
 
+function isHubNavMatrix() {
+  return test.info().project.name.includes('logbook-hub-nav');
+}
+
+function installHubScrollFrameSampler() {
+  if (window.__gateoHubScrollSampler) return;
+  window.__gateoHubScrollSampler = true;
+  window.__gateoHubScrollFrames = [];
+  window.__gateoHubScrollAdds = 0;
+  const watch = (el) => {
+    if (!(el instanceof HTMLElement)) return;
+    if (!el.matches('[data-logbook-main-scroll]')) return;
+    window.__gateoHubScrollAdds += 1;
+    requestAnimationFrame(() => {
+      window.__gateoHubScrollFrames.push(el.scrollTop);
+    });
+  };
+  const scan = (node) => {
+    if (!(node instanceof HTMLElement)) return;
+    if (node.matches('[data-logbook-main-scroll]')) watch(node);
+    node.querySelectorAll('[data-logbook-main-scroll]').forEach(watch);
+  };
+  const obs = new MutationObserver((records) => {
+    for (const record of records) record.addedNodes.forEach(scan);
+  });
+  obs.observe(document, { childList: true, subtree: true });
+  const noteExisting = () => {
+    const el = document.querySelector('[data-logbook-main-scroll]');
+    if (!(el instanceof HTMLElement)) return;
+    requestAnimationFrame(() => {
+      window.__gateoHubScrollFrames.push(el.scrollTop);
+    });
+  };
+  window.addEventListener('pageshow', noteExisting);
+  window.addEventListener('popstate', () => {
+    requestAnimationFrame(noteExisting);
+  });
+  window.__gateoHubScrollObs = obs;
+}
+
+async function armHubScrollFrames(page) {
+  await page.addInitScript(installHubScrollFrameSampler);
+  await page.evaluate(installHubScrollFrameSampler);
+  await page.evaluate(() => {
+    window.__gateoHubScrollFrames = [];
+  });
+}
+
+async function readFirstHubScrollFrame(page) {
+  try {
+    await page.waitForFunction(
+      () => Array.isArray(window.__gateoHubScrollFrames) && window.__gateoHubScrollFrames.length > 0,
+      null,
+      { timeout: 15_000 },
+    );
+  } catch (error) {
+    const diag = await page.evaluate(() => {
+      const el = document.querySelector('[data-logbook-main-scroll]');
+      return {
+        href: location.href,
+        frames: window.__gateoHubScrollFrames ?? null,
+        adds: window.__gateoHubScrollAdds ?? null,
+        hasObs: Boolean(window.__gateoHubScrollObs),
+        scrollTop: el?.scrollTop ?? null,
+        items: document.querySelectorAll('[data-review-id]').length,
+        session: sessionStorage.getItem('gateo:logbook-review-hub-ui'),
+      };
+    });
+    throw new Error(`${error.message} ${JSON.stringify(diag)}`);
+  }
+  return page.evaluate(() => window.__gateoHubScrollFrames[0]);
+}
+
+async function readViewportAnchor(page) {
+  return page.evaluate(() => {
+    const root = document.querySelector('[data-logbook-main-scroll]');
+    if (!(root instanceof HTMLElement)) return null;
+    const rootTop = root.getBoundingClientRect().top;
+    const cards = root.querySelectorAll('[data-review-id]');
+    for (const card of cards) {
+      if (!(card instanceof HTMLElement)) continue;
+      const rect = card.getBoundingClientRect();
+      const offset = rect.top - rootTop;
+      if (offset + rect.height <= 8) continue;
+      return { id: card.getAttribute('data-review-id') || '', offset };
+    }
+    return null;
+  });
+}
+
+async function expectScrollHeldNear(page, target, ms = 10_000) {
+  const start = Date.now();
+  while (Date.now() - start < ms) {
+    const top = await readHubScroll(page);
+    expect(Math.abs(top - target), `scroll ${top} drifted from ${target}`).toBeLessThan(80);
+    expect(top).toBeGreaterThan(target - 80);
+    await page.waitForTimeout(400);
+  }
+}
+
 function pageErrorCount(page) {
   const errors = [];
   page.on('pageerror', (err) => {
@@ -126,11 +225,8 @@ async function hubScrollRoom(page) {
   });
 }
 
-async function ensureHubCanScrollTo(page, target, attempts = 4) {
-  let room = 0;
+async function ensureHubCanScrollTo(page, target, attempts = 6) {
   for (let i = 0; i < attempts; i += 1) {
-    room = await hubScrollRoom(page);
-    if (room >= target) return room;
     const more = page.getByTestId('logbook-official-review-hub-more');
     if (!(await more.isVisible().catch(() => false))) break;
     const beforeCount = await page.getByTestId('logbook-official-review-hub-item').count();
@@ -140,7 +236,7 @@ async function ensureHubCanScrollTo(page, target, attempts = 4) {
       .poll(() => page.getByTestId('logbook-official-review-hub-item').count(), { timeout: 8_000 })
       .toBeGreaterThan(beforeCount);
   }
-  room = await hubScrollRoom(page);
+  const room = await hubScrollRoom(page);
   expect(room, `hub scroll room ${room}`).toBeGreaterThanOrEqual(target);
   return room;
 }
@@ -228,8 +324,8 @@ async function wheelHubBy(page, delta, minMove = 400) {
     if (applied > 0) el.scrollBy(0, applied);
     return { before, immediate: el.scrollTop, applied, roomBelow };
   }, delta);
-  expect(trace).toBeTruthy();
-  expect(trace.immediate - trace.before).toBeGreaterThan(minMove);
+  expect(trace, JSON.stringify(trace)).toBeTruthy();
+  expect(trace.immediate - trace.before, JSON.stringify(trace)).toBeGreaterThan(minMove);
   return trace;
 }
 
@@ -310,14 +406,34 @@ test.describe('LogBook review hub navigation @mocked', () => {
     await expect(page.getByTestId('logbook-official-review-hub')).toBeVisible();
     await expect(page.locator('[data-place-chrome-hit]')).toHaveCount(0);
     expect((await page.title()).length).toBeGreaterThan(3);
+
+    await page.locator('[data-logbook-mobile-header]').getByRole('button', { name: 'GATEO' }).click();
+    await page.waitForURL((url) => new URL(url).pathname === '/', { timeout: 30_000 });
+    expect(countRemoveChild()).toBe(0);
+    await page.evaluate(() => {
+      sessionStorage.removeItem('gateo:logbook-review-hub-ui');
+    });
+    await page.goto(HUB_PATH, { waitUntil: 'domcontentloaded' });
+    await page.getByTestId('logbook-official-review-hub').waitFor({ state: 'visible', timeout: 90_000 });
+    const homePanel = page.getByTestId('logbook-official-review-hub-panel');
+    if (!(await homePanel.isVisible().catch(() => false))) {
+      await page.getByTestId('logbook-official-review-hub-toggle').click();
+    }
+    await homePanel.waitFor({ timeout: 30_000 });
+    const homeCard = page.getByTestId('logbook-official-review-hub-item').first();
+    await homeCard.tap();
+    await page.waitForURL(/\/place\/[^/]+\/reviews/, { timeout: 60_000 });
+    await expect(page.getByRole('button', { name: '홈으로 이동' })).toBeVisible({ timeout: 60_000 });
+    await page.getByRole('button', { name: '홈으로 이동' }).click();
+    await page.waitForURL((url) => new URL(url).pathname === '/', { timeout: 30_000 });
+    expect(countRemoveChild()).toBe(0);
   });
 
   test('hwaseong review deeplink — screen·browser back to /blog (prod path)', async ({
     page,
   }) => {
+    test.skip(!isHubNavMatrix(), 'hub nav matrix only');
     const isWebkit = test.info().project.name.includes('webkit');
-    const is1280 = test.info().project.name.includes('1280');
-    test.skip(!isWebkit && !is1280, '390 WebKit or 1280 Chromium only');
 
     const { card, scrollBefore: scrollTarget } = await openHwaseongReviewFromHub(page);
 
@@ -335,9 +451,7 @@ test.describe('LogBook review hub navigation @mocked', () => {
   });
 
   test('scroll 1000 — screen and browser back stay put after wheel', async ({ page }) => {
-    const isWebkit = test.info().project.name.includes('webkit');
-    const is1280 = test.info().project.name.includes('1280');
-    test.skip(!isWebkit && !is1280, 'WebKit 390 or Chromium 1280 only');
+    test.skip(!isHubNavMatrix(), 'hub nav matrix only');
 
     const pageErrors = pageErrorCount(page);
     const countRemoveChild = removeChildCount(page);
@@ -350,9 +464,11 @@ test.describe('LogBook review hub navigation @mocked', () => {
     );
 
     await setHubScroll(page, 1000);
+    await armHubScrollFrames(page);
     await openVisibleHubCard(page);
     await tapPlaceChromeBack(page);
     await assertBlogHubVisible(page);
+    expect(Math.abs((await readFirstHubScrollFrame(page)) - 1000)).toBeLessThan(80);
     await waitForHubScrollRestored(page, 1000);
     await expect.poll(() => hubScrollRoom(page), { timeout: 15_000 }).toBeGreaterThan(1600);
     const afterScreenBack = await readHubScroll(page);
@@ -368,9 +484,11 @@ test.describe('LogBook review hub navigation @mocked', () => {
     await expectWheelNotRepinned(page, afterScreenBack, screenWheel.immediate);
 
     await setHubScroll(page, 1000);
+    await armHubScrollFrames(page);
     await openVisibleHubCard(page);
     await page.goBack({ waitUntil: 'domcontentloaded' });
     await assertBlogHubVisible(page);
+    expect(Math.abs((await readFirstHubScrollFrame(page)) - 1000)).toBeLessThan(80);
     await waitForHubScrollRestored(page, 1000);
     await expect.poll(() => hubScrollRoom(page), { timeout: 15_000 }).toBeGreaterThan(1600);
     const afterBrowserBack = await readHubScroll(page);
@@ -383,9 +501,7 @@ test.describe('LogBook review hub navigation @mocked', () => {
   });
 
   test('opened from top — back does not pin scroll after wheel', async ({ page }) => {
-    const isWebkit = test.info().project.name.includes('webkit');
-    const is1280 = test.info().project.name.includes('1280');
-    test.skip(!isWebkit && !is1280, 'WebKit 390 or Chromium 1280 only');
+    test.skip(!isHubNavMatrix(), 'hub nav matrix only');
 
     const pageErrors = pageErrorCount(page);
     const countRemoveChild = removeChildCount(page);
@@ -410,9 +526,7 @@ test.describe('LogBook review hub navigation @mocked', () => {
   });
 
   test('deep scroll — screen and browser back restore the saved offset', async ({ page }) => {
-    const isWebkit = test.info().project.name.includes('webkit');
-    const is1280 = test.info().project.name.includes('1280');
-    test.skip(!isWebkit && !is1280, 'WebKit 390 or Chromium 1280 only');
+    test.skip(!isHubNavMatrix(), 'hub nav matrix only');
 
     const pageErrors = pageErrorCount(page);
     const countRemoveChild = removeChildCount(page);
@@ -451,10 +565,8 @@ test.describe('LogBook review hub navigation @mocked', () => {
     expect(countRemoveChild()).toBe(0);
   });
 
-  test('wheel 0.3s, 0.5s, and 1.5s after return is not pulled back to 1000', async ({ page }) => {
-    const isWebkit = test.info().project.name.includes('webkit');
-    const is1280 = test.info().project.name.includes('1280');
-    test.skip(!isWebkit && !is1280, 'WebKit 390 or Chromium 1280 only');
+  test('wheel 0.2s, 0.5s, and 1.5s after return continues from 1000', async ({ page }) => {
+    test.skip(!isHubNavMatrix(), 'hub nav matrix only');
     test.setTimeout(300_000);
 
     const pageErrors = pageErrorCount(page);
@@ -466,18 +578,86 @@ test.describe('LogBook review hub navigation @mocked', () => {
       'true',
     );
 
-    for (const delay of [300, 500, 1500]) {
+    for (const delay of [200, 500, 1500]) {
       for (const mode of ['screen', 'browser']) {
         await setHubScroll(page, 1000);
+        await armHubScrollFrames(page);
         await openVisibleHubCard(page);
         if (mode === 'screen') await tapPlaceChromeBack(page);
         else await page.goBack({ waitUntil: 'domcontentloaded' });
         await assertBlogHubVisible(page);
-        await page.locator('[data-logbook-main-scroll]').waitFor({ state: 'attached' });
+        const first = await readFirstHubScrollFrame(page);
+        expect(Math.abs(first - 1000), `${mode} ${delay}ms first frame`).toBeLessThan(80);
         await page.waitForTimeout(delay);
-        const wheel = await wheelHubBy(page, 600, 80);
+        const wheel = await wheelHubBy(page, 600, 400);
+        expect(Math.abs(wheel.before - 1000)).toBeLessThan(80);
+        expect(Math.abs(wheel.immediate - 1600)).toBeLessThan(120);
+        expect(wheel.immediate).toBeGreaterThan(1200);
         await expectWheelHeld(page, wheel.immediate);
       }
+    }
+
+    expect(pageErrors()).toEqual([]);
+    expect(countRemoveChild()).toBe(0);
+  });
+
+  test('no input after return keeps scroll at 1000', async ({ page }) => {
+    test.skip(!isHubNavMatrix(), 'hub nav matrix only');
+    test.setTimeout(180_000);
+
+    const pageErrors = pageErrorCount(page);
+    const countRemoveChild = removeChildCount(page);
+    await openHub(page, HUB_PATH);
+    await ensureHubCanScrollTo(page, 1700);
+
+    await setHubScroll(page, 1000);
+    await armHubScrollFrames(page);
+    await openVisibleHubCard(page);
+    await tapPlaceChromeBack(page);
+    await assertBlogHubVisible(page);
+    expect(Math.abs((await readFirstHubScrollFrame(page)) - 1000)).toBeLessThan(80);
+    await expectScrollHeldNear(page, 1000);
+
+    await setHubScroll(page, 1000);
+    await armHubScrollFrames(page);
+    await openVisibleHubCard(page);
+    await page.goBack({ waitUntil: 'domcontentloaded' });
+    await assertBlogHubVisible(page);
+    expect(Math.abs((await readFirstHubScrollFrame(page)) - 1000)).toBeLessThan(80);
+    await expectScrollHeldNear(page, 1000);
+    expect(pageErrors()).toEqual([]);
+    expect(countRemoveChild()).toBe(0);
+  });
+
+  test('list delayed 2.5s keeps the card that was in view', async ({ page }) => {
+    test.skip(!isHubNavMatrix(), 'hub nav matrix only');
+    test.setTimeout(180_000);
+
+    const pageErrors = pageErrorCount(page);
+    const countRemoveChild = removeChildCount(page);
+    await openHub(page, HUB_PATH);
+    await ensureHubCanScrollTo(page, 1700);
+    await page.evaluate(() => {
+      sessionStorage.setItem('gateo:e2e-logbook-hub-list-delay-ms', '2500');
+    });
+
+    for (const mode of ['screen', 'browser']) {
+      await setHubScroll(page, 1000);
+      const anchor = await readViewportAnchor(page);
+      expect(anchor?.id).toBeTruthy();
+      await armHubScrollFrames(page);
+      await openVisibleHubCard(page);
+      if (mode === 'screen') await tapPlaceChromeBack(page);
+      else await page.goBack({ waitUntil: 'domcontentloaded' });
+      await assertBlogHubVisible(page);
+      const first = await readFirstHubScrollFrame(page);
+      expect(Math.abs(first - 1000), `${mode} delayed first frame`).toBeLessThan(80);
+      await page.waitForTimeout(3200);
+      const after = await readHubScroll(page);
+      expect(Math.abs(after - 1000), `${mode} delayed scroll`).toBeLessThan(80);
+      const still = await readViewportAnchor(page);
+      expect(still?.id).toBe(anchor.id);
+      expect(Math.abs(still.offset - anchor.offset)).toBeLessThan(80);
     }
 
     expect(pageErrors()).toEqual([]);
