@@ -79,9 +79,10 @@ test.describe('MOONi chip instruction does not leak @390', () => {
     await shot(page, 'mooni-chip-haeundae-before');
 
     await page.getByRole('button', { name: /볼거리·분위기/ }).first().click({ force: true });
-    await expect(page.getByText('볼 수 있는 프로그램은')).toBeVisible({ timeout: 60_000 });
-    await expect(page.getByText('크루즈게이트')).toBeVisible();
-    await expect(page.getByText('터널게이트')).toBeVisible();
+    const sightsReply = page.getByTestId('mooni-model-reply').last();
+    await expect(sightsReply).toContainText('볼 수 있는 프로그램은', { timeout: 60_000 });
+    await expect(sightsReply).toContainText('크루즈게이트');
+    await expect(sightsReply).toContainText('터널게이트');
     await expect(page.getByText('지어내지 마')).toHaveCount(0);
     await expect(page.getByText('데이터에 없는')).toHaveCount(0);
     await expect(page.getByText('겹치는 행사는 없어요')).toHaveCount(0);
@@ -132,8 +133,9 @@ test.describe('MOONi chip instruction does not leak @390', () => {
     await expect(chip).toBeVisible({ timeout: 30_000 });
     await shot(page, 'mooni-chip-haeundae-en-before');
     await chip.click({ force: true });
-    await expect(page.getByText(/Confirmed programs include/)).toBeVisible({ timeout: 60_000 });
-    await expect(page.getByText('크루즈게이트')).toBeVisible();
+    const sightsReply = page.getByTestId('mooni-model-reply').last();
+    await expect(sightsReply).toContainText(/Confirmed programs include/, { timeout: 60_000 });
+    await expect(sightsReply).toContainText('크루즈게이트');
     await expect(page.getByText(/Do not invent/i)).toHaveCount(0);
     await expect(page.getByText(/on-site feel/i)).toHaveCount(0);
     await expect(page.getByText(/no verified festivals overlapping/i)).toHaveCount(0);

@@ -481,7 +481,8 @@ function englishTitleBits(ctx) {
   if (/[가-힣]/.test(stripParentheticals(en))) en = '';
   if (!en) en = CURATED_TITLE_EN.get(ko) || '';
   if (!en) en = fallbackEnglishLabel(ko);
-  if (!en) return { en: '', phrase: ko };
+  // No English name: Korean stays in parentheses so the sentence does not start with the Korean title.
+  if (!en || en === ko) return { en: '', phrase: ko ? `(${ko})` : '' };
   return { en, phrase: `${en} (${ko})` };
 }
 
@@ -891,8 +892,9 @@ export function buildFestivalMooniSentenceAnswer(festivalContext, options = {}) 
 
 function enClosingSentence(ctx, ended) {
   const url = ctx.gateoUrl;
-  const phrase = String(englishTitleBits(ctx).phrase || ctx.title || 'festival').replace(/\s+/g, ' ').trim();
-  const linked = url ? `[${phrase} page](${url})` : '';
+  const bits = englishTitleBits(ctx);
+  const label = String((bits.en ? bits.phrase : ctx.title) || 'festival').replace(/\s+/g, ' ').trim();
+  const linked = url ? `[${label} page](${url})` : '';
   if (!linked) return 'Details are on the festival page.';
   if (ended) return `Details are on ${linked}, and next you can look at nearby stops.`;
   return `Details are on ${linked}.`;

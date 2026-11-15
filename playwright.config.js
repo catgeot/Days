@@ -100,6 +100,7 @@ export default defineConfig({
         /logbook-detail-toolbar-layout\.spec\.js/,
         /mooni-destination-pick-reply\.spec\.js/,
         /mooni-open-gemini-budget\.spec\.js/,
+        /mooni-chip-instruction-leak\.spec\.js/,
         /stay-list-tripcom-footer\.spec\.js/,
         /travelogue-back-nav\.spec\.js/,
       ],
