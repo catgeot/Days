@@ -171,3 +171,38 @@ test('runExploreHybridSuggestUpdate skips late onPaint when requestId stale afte
   assert.equal(result.stale, true);
   assert.equal(painted.length, 1, 'firstPaint only; late paint dropped when stale');
 });
+
+test('late paint is dropped when the query key changed even if the request id matches', async () => {
+  let currentQuery = 'ㅅ';
+  const painted = [];
+  let releaseHybrid = null;
+  const hybridGate = new Promise((resolve) => {
+    releaseHybrid = resolve;
+  });
+
+  const runPromise = runExploreHybridSuggestUpdate(
+    'ㅅ',
+    4,
+    () => 4,
+    {
+      getCurrentQuery: () => currentQuery,
+      mergeStartedAt: Date.now() - 400,
+      onPaint: (items) => painted.push(items.map((row) => row.id)),
+    },
+    {
+      isSiteSearchEnabled: () => true,
+      buildHybrid: () => hybridGate.then(() => [{ id: 'old-place', name: '옛장소', kind: 'city' }]),
+      buildFest: async () => [{ id: 'old-fest', name: '옛축제', kind: 'festival' }],
+      applyMerge: async (_q, items) => ({
+        items,
+        late: async () => [...items, { id: 'old-fest', name: '옛축제', kind: 'festival' }],
+      }),
+    },
+  );
+
+  currentQuery = 'ㅅㅇ';
+  releaseHybrid?.();
+  const result = await runPromise;
+  assert.equal(result.stale, true);
+  assert.deepEqual(painted, []);
+});

@@ -137,14 +137,23 @@ function buildPlaceChoseongIndex() {
     });
   }
 
+  const cityPriorityByName = new Map();
+  for (const city of citiesData || []) {
+    if (!city || typeof city.name !== 'string') continue;
+    const key = nameKey(city.name);
+    if (!key) continue;
+    cityPriorityByName.set(key, Number(city.priority) || 0);
+  }
+
   for (const hub of listCityAttractionHubs()) {
     if (!hub?.hubId || typeof hub.name !== 'string') continue;
     const hubItem = hubToSuggestion(hub);
     const hubSeen = new Set();
+    const catalogPriority = cityPriorityByName.get(nameKey(hub.name)) || 0;
     pushChoseongName(rows, hubSeen, {
       id: hubItem.id,
       tier: TIER_HUB,
-      popularity: 0,
+      popularity: catalogPriority,
       label: hub.name,
       item: hubItem,
     });

@@ -33,20 +33,30 @@ export async function runExploreHybridSuggestUpdate(
   const locale = opts.locale || 'ko';
   const mergeStartedAt = opts.mergeStartedAt ?? Date.now();
   const onPaint = opts.onPaint;
+  const compactQuery = (value) =>
+    String(value ?? '')
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, '');
+  const isCurrent = () => {
+    if (getCurrentRequestId() !== requestId) return false;
+    if (typeof opts.getCurrentQuery !== 'function') return true;
+    return compactQuery(opts.getCurrentQuery()) === compactQuery(query);
+  };
 
   if (isKoreaGetbolCollectiveSearchQuery(query)) {
     const buildHybridForGetbol = deps.buildHybrid ?? ((q) => buildHybridSearchSuggestions(q, deps.hybridOpts));
     const painted = await buildHybridForGetbol(query);
-    if (getCurrentRequestId() === requestId) {
+    if (isCurrent()) {
       onPaint?.(painted);
     }
-    return { stale: getCurrentRequestId() !== requestId };
+    return { stale: !isCurrent() };
   }
   const isEnabled = deps.isSiteSearchEnabled ?? isGateoSiteSearchEnabled;
   const isParityEnabled = deps.isSubmitParityEnabled ?? isGateoExploreSearchSubmitParityEnabled;
   const parityOn = isParityEnabled();
   const publish = (paintItems) => {
-    if (getCurrentRequestId() !== requestId) return false;
+    if (!isCurrent()) return false;
     const painted = parityOn
       ? normalizeSearchSuggestions(query, paintItems, {
           hub: resolveExploreCityHubExact(query),
@@ -75,7 +85,7 @@ export async function runExploreHybridSuggestUpdate(
 
     const festPromise = isEnabled() ? buildFest(query, locale) : null;
     const items = await buildHybrid(query);
-    if (getCurrentRequestId() !== requestId) {
+    if (!isCurrent()) {
       return { stale: true };
     }
 
@@ -85,13 +95,13 @@ export async function runExploreHybridSuggestUpdate(
         startedAt: mergeStartedAt,
         festPromise,
       });
-      if (getCurrentRequestId() !== requestId) {
+      if (!isCurrent()) {
         return { stale: true };
       }
       tryPaintMain(firstPaint);
       if (late) {
         const merged = await late();
-        if (getCurrentRequestId() !== requestId) {
+        if (!isCurrent()) {
           return { stale: true };
         }
         tryPaintMain(merged);
@@ -116,7 +126,7 @@ export async function runExploreHybridSuggestUpdate(
 
   const festPromise = isEnabled() ? buildFest(query, locale) : null;
   const items = await buildHybrid(query);
-  if (getCurrentRequestId() !== requestId) {
+  if (!isCurrent()) {
     return { stale: true };
   }
 
@@ -127,13 +137,13 @@ export async function runExploreHybridSuggestUpdate(
       festPromise,
       maxItems: EXPLORE_SITE_SEARCH_HYBRID_MAX_ITEMS,
     });
-    if (getCurrentRequestId() !== requestId) {
+    if (!isCurrent()) {
       return { stale: true };
     }
     await paintMerged(firstPaint);
     if (late) {
       const merged = await late();
-      if (getCurrentRequestId() !== requestId) {
+      if (!isCurrent()) {
         return { stale: true };
       }
       await paintMerged(merged);

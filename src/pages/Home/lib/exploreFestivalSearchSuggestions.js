@@ -227,8 +227,9 @@ export async function loadExploreFestivalSearchPool(now = new Date()) {
 /**
  * @param {object} item
  * @param {string} [locale]
+ * @param {Date} [now]
  */
-export function festivalItemToExploreSuggestion(item, locale = 'ko') {
+export function festivalItemToExploreSuggestion(item, locale = 'ko', now = new Date()) {
   const contentId = String(item?.contentId || '').trim();
   const titleLines = festivalListDisplayTitleLines(item, locale) || {
     primary: String(item?.title || '').trim(),
@@ -263,6 +264,7 @@ export function festivalItemToExploreSuggestion(item, locale = 'ko') {
     country: '대한민국',
     country_en: 'South Korea',
     source: 'korea-festival',
+    festivalEnded: isFestivalEnded(item?.eventEndDate, now instanceof Date ? now : new Date()),
     ...(thumbUrl ? { thumbUrl, imageUrl: thumbUrl } : {}),
   };
 }
@@ -283,7 +285,7 @@ export function buildExploreFestivalSuggestionsFromPool(pool, query, opts = {}) 
     now,
     opts,
   );
-  return hits.map((item) => festivalItemToExploreSuggestion(item, locale));
+  return hits.map((item) => festivalItemToExploreSuggestion(item, locale, now));
 }
 
 /**
@@ -315,7 +317,9 @@ export function prependExploreFestivalSuggestions(festivals, items, opts = {}) {
 }
 
 /**
- * /explore typing list — anti layout-shift merge (300ms prepend window, else append below place block).
+ * /explore typing list — festivals stay below the place block.
+ * Ready within 300ms: include them in the first paint. Later: append on the late paint.
+ * Neither paint puts a festival above a destination or city that is already in the list.
  * @param {string} query
  * @param {object[]} hybridItems
  * @param {{ locale?: string, now?: Date, startedAt?: number, festPromise?: Promise<object[]>, maxItems?: number }} [opts]
@@ -342,7 +346,7 @@ export async function applyExploreFestivalMergeStrategy(query, hybridItems, opts
     ]);
     if (raced.settled && raced.festivals?.length) {
       return {
-        items: prependExploreFestivalSuggestions(raced.festivals, hybridItems, opts),
+        items: appendExploreFestivalBelowPlaceBlock(raced.festivals, hybridItems, opts),
         late: null,
       };
     }

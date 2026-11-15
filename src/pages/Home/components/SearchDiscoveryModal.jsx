@@ -121,6 +121,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, onAskMooni,
   const quickMenuRowRefPc = useRef(null);
   const quickMenuRowRefMobile = useRef(null);
   const suggestRequestIdRef = useRef(0);
+  const suggestQueryRef = useRef('');
   const exploreRestoreAppliedIdRef = useRef(null);
   const pendingExploreScrollRef = useRef(null);
   const suppressSearchHistoryRef = useRef(false);
@@ -273,6 +274,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, onAskMooni,
   useEffect(() => {
     if (!isOpen) return undefined;
     const q = query.trim();
+    suggestQueryRef.current = q;
     if (!q) {
       // 복원 setQuery 전 첫 렌더의 빈 검색어가 suppress를 지우면 팝오버가 다시 열린다.
       if (exploreRestorePendingRef.current || suppressSearchHistoryRef.current) {
@@ -318,8 +320,10 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, onAskMooni,
           {
             locale: i18n.language,
             mergeStartedAt,
+            getCurrentQuery: () => suggestQueryRef.current,
             onPaint: (paint) => {
               if (suggestRequestIdRef.current !== requestId) return;
+              if (suggestQueryRef.current !== q) return;
               setHybridSuggestions(paint);
             },
           },

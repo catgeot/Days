@@ -8,6 +8,7 @@ import {
   exploreFestivalSearchTokens,
 } from './exploreFestivalSearchSuggestions.js';
 import { normalizeFestivalQuery } from '../../Korea/festivalSearch.js';
+import { hangulChoseong, isChoseongQuery } from '../../../utils/hangulSearch.js';
 
 export const SEARCH_SUGGESTION_GROUP_ORDER = [
   'mooni',
@@ -64,6 +65,59 @@ export function resolveCanonicalHubId(item) {
 function groupSortIndex(group) {
   const idx = SEARCH_SUGGESTION_GROUP_ORDER.indexOf(group);
   return idx >= 0 ? idx : SEARCH_SUGGESTION_GROUP_ORDER.length;
+}
+
+function compactLabel(value) {
+  if (typeof value !== 'string') return '';
+  const text = value.trim().toLowerCase().replace(/\s+/g, '');
+  return text;
+}
+
+/**
+ * Lower is a closer name match.
+ * 0 exact completed · 1 prefix completed · 2 choseong exact length · 3 choseong prefix · 9 none.
+ * Empty needles and non-string labels match nothing (a1c43118).
+ * @param {unknown} query
+ * @param {object | null | undefined} item
+ */
+export function exploreSuggestionNameMatchRank(query, item) {
+  const raw = typeof query === 'string' ? query.trim() : '';
+  const q = compactLabel(raw);
+  if (!q || !item) return 9;
+  const labels = [item.name, item.name_en].map(compactLabel).filter(Boolean);
+  if (!labels.length) return 9;
+  if (!isChoseongQuery(raw)) {
+    if (labels.some((label) => label === q)) return 0;
+    if (labels.some((label) => label.startsWith(q))) return 1;
+    return 9;
+  }
+  let best = 9;
+  if (typeof item.name === 'string') {
+    const choseong = hangulChoseong(item.name);
+    if (choseong && choseong.startsWith(q)) best = choseong.length === q.length ? 2 : 3;
+  }
+  return best;
+}
+
+/** 제주 vs 제주시 — same hub, different label. 빈 vs 비엔나 is not an extension. */
+function cityNameExtendsDestination(cityRow, destRow) {
+  const city = compactLabel(cityRow?.name);
+  const dest = compactLabel(destRow?.name);
+  if (!city || !dest || city === dest) return false;
+  return city.startsWith(dest);
+}
+
+function sinkEndedFestivals(items) {
+  const rest = [];
+  const ended = [];
+  for (const item of items || []) {
+    if (item?.festivalEnded && (item.kind === 'festival' || item.source === 'korea-festival')) {
+      ended.push(item);
+    } else {
+      rest.push(item);
+    }
+  }
+  return ended.length ? [...rest, ...ended] : items || [];
 }
 
 function buildMergedHubAliasSubtitle(cityRow, destRow) {
@@ -123,11 +177,13 @@ function isPrimaryHubCityRow(item, hubId) {
 }
 
 /**
- * Hub-exact query: primary city first, hub attractions next, drop weak substring festivals, then rest.
+ * Hub-exact query: a strictly better destination name stays first, then the hub city,
+ * hub attractions, festivals, and the rest.
  * @param {object[]} items
  * @param {object} hub
+ * @param {string} [query]
  */
-export function reorderHubExactSuggestions(items, hub) {
+export function reorderHubExactSuggestions(items, hub, query = '') {
   const hubId = normalizeKey(hub?.hubId);
   if (!hubId) return items;
 
@@ -150,7 +206,24 @@ export function reorderHubExactSuggestions(items, hub) {
     }
   }
 
-  return [...primary, ...hubAttractions, ...festivals, ...rest];
+  const hubRank = exploreSuggestionNameMatchRank(query, {
+    name: hub?.name,
+    name_en: hub?.name_en,
+  });
+  const lead = [];
+  const tail = [];
+  for (const item of rest) {
+    if (
+      resolveSearchSuggestionGroup(item) === 'destination' &&
+      exploreSuggestionNameMatchRank(query, item) < hubRank
+    ) {
+      lead.push(item);
+    } else {
+      tail.push(item);
+    }
+  }
+
+  return [...lead, ...primary, ...hubAttractions, ...festivals, ...tail];
 }
 
 function ensurePrimaryHubCityRow(items, hub) {
@@ -188,6 +261,7 @@ export function mergeHubAliasSuggestions(items) {
         (normalizeKey(row.slug) === hubId || normalizeKey(row.hubId) === hubId),
     );
     if (!cityRow || !destRow) continue;
+    if (cityNameExtendsDestination(cityRow, destRow)) continue;
 
     const aliasLine = buildMergedHubAliasSubtitle(cityRow, destRow);
     if (aliasLine) {
@@ -246,12 +320,17 @@ export function normalizeSearchSuggestions(query, rawItems, opts = {}) {
   }
 
   if (!hub?.hubId) {
-    return deduped.map(({ _suggestOrder, suggestionGroup, ...item }) => item);
+    return sinkEndedFestivals(
+      deduped.map(({ _suggestOrder, suggestionGroup, ...item }) => item),
+    );
   }
 
-  return reorderHubExactSuggestions(
-    deduped.map(({ _suggestOrder, ...item }) => item),
-    hub,
+  return sinkEndedFestivals(
+    reorderHubExactSuggestions(
+      deduped.map(({ _suggestOrder, ...item }) => item),
+      hub,
+      query,
+    ),
   );
 }
 
