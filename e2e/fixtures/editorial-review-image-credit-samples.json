@@ -1,0 +1,169 @@
+{
+  "ktoVisitKorea": [
+    {
+      "id": "a9e7d546-7b70-47ce-bea1-362f36d12156",
+      "place_slug": "hwaseong-fortress",
+      "label": "수원화성",
+      "image": {
+        "url": "https://tong.visitkorea.or.kr/cms2/website/67/2711467.jpg",
+        "credit": "ⓒ한국관광공사-송재근 / 포토코리아 · 공공누리 제1유형",
+        "source": "한국관광공사 포토코리아 · 공공누리 제1유형",
+        "license": "KOGL Type 1",
+        "license_url": "https://www.kogl.or.kr/info/licenseType1.do",
+        "source_page": "https://phoko.visitkorea.or.kr/",
+        "photographer": "한국관광공사 송재근",
+        "photographer_url": "https://phoko.visitkorea.or.kr/"
+      }
+    },
+    {
+      "id": "c88f7609-850d-4c20-b05d-ba4e12b0d737",
+      "place_slug": "jeju",
+      "label": "제주 TourAPI",
+      "image": {
+        "url": "https://tong.visitkorea.or.kr/cms/resource/18/4072718_image2_1.jpg",
+        "credit": "한국관광공사 / 공공누리 제1유형",
+        "source": "한국관광공사 TourAPI · 공공누리 제1유형",
+        "license": "KOGL Type 1",
+        "license_url": "https://www.kogl.or.kr/info/licenseType1.do",
+        "photographer": "한국관광공사",
+        "photographer_url": "https://api.visitkorea.or.kr/"
+      }
+    },
+    {
+      "id": "f33526e5-c1fa-4875-928b-cd13b476974c",
+      "place_slug": "jeju",
+      "label": "제주 TourAPI 2",
+      "image": {
+        "url": "https://tong.visitkorea.or.kr/cms/resource/19/4110119_image2_1.jpeg",
+        "credit": "한국관광공사 / 공공누리 제1유형",
+        "source": "한국관광공사 TourAPI · 공공누리 제1유형",
+        "license": "KOGL Type 1",
+        "license_url": "https://www.kogl.or.kr/info/licenseType1.do",
+        "photographer": "한국관광공사",
+        "photographer_url": "https://api.visitkorea.or.kr/"
+      }
+    }
+  ],
+  "koglHeritage": [
+    {
+      "id": "c7cdcf9e-aa70-45ac-bdb4-148f2b485751",
+      "place_slug": "gochang-tidal-flat",
+      "label": "고창 갯벌 1",
+      "imageIndex": 0,
+      "image": {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/02/Gochang_tidal_flat_01.jpg/1280px-Gochang_tidal_flat_01.jpg",
+        "credit": "문화재청 / 공공누리 제1유형 · Wikimedia Commons",
+        "source": "Wikimedia Commons · 공공누리 제1유형",
+        "license": "KOGL Type 1",
+        "license_url": "http://www.kogl.or.kr/info/licenseType1.do",
+        "photographer": "문화재청",
+        "photographer_url": "https://commons.wikimedia.org/wiki/File:Gochang_tidal_flat_01.jpg"
+      }
+    },
+    {
+      "id": "c7cdcf9e-aa70-45ac-bdb4-148f2b485751",
+      "place_slug": "gochang-tidal-flat",
+      "label": "고창 갯벌 2",
+      "imageIndex": 1,
+      "image": {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5e/Gochang_tidal_flat_02.jpg/1280px-Gochang_tidal_flat_02.jpg",
+        "credit": "문화재청 / 공공누리 제1유형 · Wikimedia Commons",
+        "source": "Wikimedia Commons · 공공누리 제1유형",
+        "license": "KOGL Type 1",
+        "license_url": "http://www.kogl.or.kr/info/licenseType1.do",
+        "photographer": "문화재청",
+        "photographer_url": "https://commons.wikimedia.org/wiki/File:Gochang_tidal_flat_02.jpg"
+      }
+    },
+    {
+      "id": "3f7b4d94-1cc1-4c0b-8c73-18d54100e9ed",
+      "place_slug": "suncheon-bay-wetland",
+      "label": "순천만 2번째 사진",
+      "imageIndex": 1,
+      "image": {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/75/%EC%88%9C%EC%B2%9C%EB%A7%8C_2016%EB%85%84_%EC%B4%AC%EC%98%81%28%EC%B6%9C%EC%B2%98_%EB%AC%B8%ED%99%94%EC%9E%AC%EC%B2%AD_%EB%8C%80%EB%B3%80%EC%9D%B8%EC%8B%A4%29.jpg/1280px-%EC%88%9C%EC%B2%9C%EB%A7%8C_2016%EB%85%84_%EC%B4%AC%EC%98%81%28%EC%B6%9C%EC%B2%98_%EB%AC%B8%ED%99%94%EC%9E%AC%EC%B2%AD_%EB%8C%80%EB%B3%80%EC%9D%B8%EC%8B%A4%29.jpg",
+        "credit": "문화재청 / 공공누리 제1유형 · Wikimedia Commons",
+        "source": "Wikimedia Commons · 공공누리 제1유형",
+        "license": "KOGL Type 1",
+        "license_url": "http://www.kogl.or.kr/info/licenseType1.do",
+        "photographer": "문화재청",
+        "photographer_url": "https://commons.wikimedia.org/wiki/File:%EC%88%9C%EC%B2%9C%EB%A7%8C_2016%EB%85%84_%EC%B4%AC%EC%98%81(%EC%B6%9C%EC%B2%98_%EB%AC%B8%ED%99%94%EC%9E%AC%EC%B2%AD_%EB%8C%80%EB%B3%80%EC%9D%B8%EC%8B%A4).jpg"
+      }
+    }
+  ],
+  "wikimedia": [
+    {
+      "id": "43292c6e-8f0f-4fa1-97f8-59d3329e5b29",
+      "place_slug": "rome",
+      "label": "콜로세움",
+      "image": {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Colosseum_of_Rome%2C_Italy.jpg/1920px-Colosseum_of_Rome%2C_Italy.jpg",
+        "credit": "Photo by Wilfredor / Wikimedia Commons · CC0 1.0",
+        "source": "Wikimedia Commons",
+        "license": "CC0 1.0",
+        "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "photographer": "Wilfredor",
+        "photographer_url": "https://www.wikidata.org/wiki/Q115464159"
+      }
+    },
+    {
+      "id": "43292c6e-8f0f-4fa1-97f8-59d3329e5b29",
+      "place_slug": "rome",
+      "label": "콜로세움 일몰",
+      "imageIndex": 1,
+      "image": {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/d/d2/Colosseum_at_sunset-Rome.JPG",
+        "credit": "Photo by Gilbert Bochenek / Wikimedia Commons · CC BY 3.0",
+        "source": "Wikimedia Commons",
+        "license": "CC BY 3.0",
+        "license_url": "https://creativecommons.org/licenses/by/3.0",
+        "photographer": "Gilbert Bochenek",
+        "photographer_url": null
+      }
+    },
+    {
+      "id": "3f7b4d94-1cc1-4c0b-8c73-18d54100e9ed",
+      "place_slug": "suncheon-bay-wetland",
+      "label": "순천만 1번째 사진",
+      "imageIndex": 0,
+      "image": {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/96/Suncheon_Bay_Ecological_Park_-_Flickr_-_cc.photoshare_%284%29.jpg/1280px-Suncheon_Bay_Ecological_Park_-_Flickr_-_cc.photoshare_%284%29.jpg",
+        "credit": "Photo and Share CC / Wikimedia Commons / CC BY 2.0",
+        "source": "Wikimedia Commons",
+        "license": "CC BY 2.0",
+        "license_url": "https://creativecommons.org/licenses/by/2.0",
+        "photographer": "Photo and Share CC",
+        "photographer_url": "https://commons.wikimedia.org/wiki/File:Suncheon_Bay_Ecological_Park_-_Flickr_-_cc.photoshare_(4).jpg"
+      }
+    }
+  ],
+  "unsplash": [
+    {
+      "id": "62212ddb-749e-4ef6-9fda-fa0326a52122",
+      "place_slug": "rome",
+      "label": "로마 포로 로마노",
+      "image": {
+        "url": "https://images.unsplash.com/photo-1734132046083-413c154b8d85?auto=format&fit=crop&w=1600&q=80",
+        "credit": "Photo by Himmel S on Unsplash",
+        "source": "Unsplash",
+        "license": "Unsplash License",
+        "photographer": "Himmel S",
+        "photographer_url": "https://unsplash.com/@skyhung1228?utm_source=gateo&utm_medium=referral",
+        "unsplash_url": "https://unsplash.com/photos/a-view-of-a-cemetery-in-a-city-wkQyVJwHAzM?utm_source=gateo&utm_medium=referral"
+      }
+    },
+    {
+      "id": "61b4fde0-f1ed-48ab-8792-9334784b6105",
+      "place_slug": "jeju",
+      "label": "제주 Unsplash URL only",
+      "image": {
+        "url": "https://images.unsplash.com/photo-1688545365131-424b9ba769ae?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
+        "credit": "Photo by Red Shuheart on Unsplash",
+        "source": null,
+        "photographer": "Red Shuheart",
+        "photographer_url": "https://unsplash.com/@mirrors_are_more_fun?utm_source=gateo&utm_medium=referral",
+        "unsplash_url": "https://unsplash.com/photos/C1wOdgVRe1c?utm_source=gateo&utm_medium=referral"
+      }
+    }
+  ]
+}

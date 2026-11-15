@@ -18,13 +18,38 @@ export function appendGateoReferralUtm(url) {
   }
 }
 
-/** Thumbnail caption: Unsplash photographer / photo page metadata only (not plain credit lines). */
-export function hasUnsplashReviewImageAttribution(img) {
+function hostnameIsUnsplash(value) {
+  if (typeof value !== 'string') return false;
+  const trimmed = value.trim();
+  if (!trimmed) return false;
+  try {
+    const host = new URL(trimmed).hostname.toLowerCase();
+    return host === 'unsplash.com' || host.endsWith('.unsplash.com');
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Photographer name alone is not Unsplash. KTO, KOGL, and Wikimedia rows store a
+ * photographer plus the credit line that should be shown as written.
+ */
+export function isUnsplashReviewImage(img) {
   if (!img || typeof img !== 'object') return false;
-  const photographer = String(img.photographer || img.photographer_name || '').trim();
-  const unsplash = String(img.unsplash_url || img.html_link || '').trim();
-  const photographerUrl = String(img.photographer_url || '').trim();
-  return Boolean(photographer || unsplash || photographerUrl);
+  const source = String(img.source ?? '').trim().toLowerCase();
+  if (source === 'unsplash') return true;
+  return [
+    img.url,
+    img.publicUrl,
+    img.unsplash_url,
+    img.html_link,
+    img.photographer_url,
+  ].some(hostnameIsUnsplash);
+}
+
+/** Thumbnail caption: real Unsplash photo metadata only (not a stored KTO/KOGL/Wikimedia credit). */
+export function hasUnsplashReviewImageAttribution(img) {
+  return isUnsplashReviewImage(img);
 }
 
 /**
@@ -39,19 +64,14 @@ export function resolveEditorialReviewImageCredit(img) {
   const photographerHrefRaw = img.photographer_url;
   const unsplashHrefRaw = img.unsplash_url || img.html_link;
 
-  const photographerHref =
-    typeof photographerHrefRaw === 'string' && photographerHrefRaw.trim()
-      ? appendGateoReferralUtm(photographerHrefRaw)
-      : null;
-  const unsplashHref = appendGateoReferralUtm(
-    typeof unsplashHrefRaw === 'string' && unsplashHrefRaw.trim() ? unsplashHrefRaw : UNSPLASH_HOME,
-  );
-
-  const hasUnsplashUrls =
-    (typeof photographerHrefRaw === 'string' && photographerHrefRaw.trim()) ||
-    (typeof unsplashHrefRaw === 'string' && unsplashHrefRaw.trim());
-
-  if (photographerName || hasUnsplashUrls) {
+  if (isUnsplashReviewImage(img)) {
+    const photographerHref =
+      typeof photographerHrefRaw === 'string' && photographerHrefRaw.trim()
+        ? appendGateoReferralUtm(photographerHrefRaw)
+        : null;
+    const unsplashHref = appendGateoReferralUtm(
+      typeof unsplashHrefRaw === 'string' && unsplashHrefRaw.trim() ? unsplashHrefRaw : UNSPLASH_HOME,
+    );
     return {
       type: 'unsplash',
       photographerName: photographerName || 'Photographer',

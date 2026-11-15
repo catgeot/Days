@@ -52,6 +52,22 @@ assert.ok(prodThumb?.photographerHref && prodThumb?.unsplashHref);
 const userUpload = { url: 'https://cdn.example/user.jpg' };
 assert.equal(resolveReviewThumbnailUnsplashCredit(userUpload), null);
 
+const kto = resolveEditorialReviewImageCredit({
+  url: 'https://tong.visitkorea.or.kr/cms2/website/67/2711467.jpg',
+  credit: 'ⓒ한국관광공사-송재근 / 포토코리아 · 공공누리 제1유형',
+  source: '한국관광공사 포토코리아 · 공공누리 제1유형',
+  photographer: '한국관광공사 송재근',
+  photographer_url: 'https://phoko.visitkorea.or.kr/',
+});
+assert.deepEqual(kto, {
+  type: 'plain',
+  text: 'ⓒ한국관광공사-송재근 / 포토코리아 · 공공누리 제1유형',
+});
+assert.equal(resolveReviewThumbnailUnsplashCredit({
+  photographer: '한국관광공사 송재근',
+  credit: 'ⓒ한국관광공사-송재근 / 포토코리아 · 공공누리 제1유형',
+}), null);
+
 const deduped = collectUniqueEditorialReviewImageCredits([
   { photographer: 'Ada', photographer_url: 'https://unsplash.com/@ada' },
   { photographer: 'Ada', photographer_url: 'https://unsplash.com/@ada' },
