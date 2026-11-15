@@ -88,6 +88,13 @@ test('fetchEditorialReviewIndex uses is_editorial filter', async () => {
   assert.equal(rows.length, 1);
   assert.ok(calls.some((c) => c[0] === 'eq' && c[1] === 'is_editorial' && c[2] === true));
   assert.ok(calls.some((c) => c[0] === 'eq' && c[1] === 'is_public' && c[2] === true));
+  assert.deepEqual(
+    calls.filter((c) => c[0] === 'order'),
+    [
+      ['order', 'created_at', { ascending: false, nullsFirst: true }],
+      ['order', 'id', { ascending: true }],
+    ],
+  );
 });
 
 test('feature flags default off', () => {

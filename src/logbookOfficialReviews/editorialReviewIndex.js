@@ -1,5 +1,6 @@
 import { normalizePersonaLabel } from '../utils/placeReviewEditorial.js';
 import { LOGBOOK_OFFICIAL_REVIEWER_DROPDOWN_ORDER } from './constants.js';
+import { sortLogbookOfficialReviewRows } from './logbookReviewHubOrder.js';
 
 export const EDITORIAL_REVIEW_INDEX_SELECT =
   'id, place_slug, place_name, persona_label, content, images, created_at, is_public';
@@ -14,13 +15,14 @@ export async function fetchEditorialReviewIndex(client, { limit = 500 } = {}) {
     .select(EDITORIAL_REVIEW_INDEX_SELECT)
     .eq('is_editorial', true)
     .eq('is_public', true)
-    .order('created_at', { ascending: false })
+    .order('created_at', { ascending: false, nullsFirst: true })
+    .order('id', { ascending: true })
     .limit(limit);
 
   if (error) {
     throw error;
   }
-  return data ?? [];
+  return sortLogbookOfficialReviewRows(data ?? []);
 }
 
 /** @param {Iterable<string>} labelsFromData */

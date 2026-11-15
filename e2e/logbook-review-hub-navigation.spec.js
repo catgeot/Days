@@ -677,4 +677,69 @@ test.describe('LogBook review hub navigation @mocked', () => {
     const chipText = await cityChip.innerText();
     expect(chipText).not.toMatch(/^[가-힣]/);
   });
+
+  test('same-date hub cards keep id order after review back', async ({ page }) => {
+    test.skip(!isHubNavMatrix(), 'hub nav matrix only');
+
+    await page.addInitScript(() => {
+      const key = 'gateo:e2e-logbook-hub-tie-shuffle';
+      if (!sessionStorage.getItem(key)) sessionStorage.setItem(key, 'forward');
+    });
+    await openHub(page, HUB_PATH);
+
+    const tieIds = () =>
+      page.locator('[data-testid="logbook-official-review-hub-item"]').evaluateAll((nodes) =>
+        nodes
+          .map((node) => node.getAttribute('data-review-id'))
+          .filter((id) => id && id.startsWith('tie-')),
+      );
+    const expectedTies = ['tie-a', 'tie-b', 'tie-c'];
+
+    await expect.poll(tieIds).toEqual(expectedTies);
+    const visibleBefore = await page.getByTestId('logbook-official-review-hub-item').count();
+    await expect(page.getByTestId('logbook-review-filter-major-overseas')).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+
+    await page.evaluate(() => {
+      sessionStorage.setItem('gateo:e2e-logbook-hub-tie-shuffle', 'reverse');
+    });
+    const card = page.locator(
+      '[data-testid="logbook-official-review-hub-item"][data-review-id="tie-a"]',
+    );
+    await card.scrollIntoViewIfNeeded();
+    const isWebkit = test.info().project.name.includes('webkit');
+    if (isWebkit) await card.tap();
+    else await card.click();
+    await page.waitForURL(/\/place\/rome\/reviews/, { timeout: 60_000 });
+    await expect(page.getByTestId('place-card-route-loading')).toBeHidden({ timeout: 60_000 });
+
+    await page.goBack({ waitUntil: 'domcontentloaded' });
+    await assertBlogHubVisible(page);
+    await expect(page.getByTestId('logbook-official-review-hub-panel')).toBeVisible();
+    await expect.poll(tieIds).toEqual(expectedTies);
+    expect(await page.getByTestId('logbook-official-review-hub-item').count()).toBe(visibleBefore);
+    await expect(page.getByTestId('logbook-review-filter-major-overseas')).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await expect
+      .poll(() => page.evaluate(() => sessionStorage.getItem('gateo:e2e-logbook-hub-tie-shuffle')))
+      .toBe('reverse');
+    const panel = page.getByTestId('logbook-official-review-hub-panel');
+    await page.getByTestId('logbook-official-review-hub').waitFor({ state: 'visible', timeout: 90_000 });
+    if (!(await panel.isVisible().catch(() => false))) {
+      await page.getByTestId('logbook-official-review-hub-toggle').click();
+    }
+    await panel.waitFor({ timeout: 30_000 });
+    await page.waitForFunction(() => (window.__gateoHubListApplies || 0) >= 1);
+    await expect.poll(tieIds).toEqual(expectedTies);
+    await expect(page.getByTestId('logbook-review-filter-major-overseas')).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+  });
 });

@@ -35,6 +35,7 @@ import {
   groupLogbookOfficialReviews,
   LOGBOOK_REVIEW_FILTER_MAJOR,
 } from '../../../logbookOfficialReviews/groupLogbookOfficialReviews.js';
+import { pageLogbookOfficialReviewRows } from '../../../logbookOfficialReviews/logbookReviewHubOrder.js';
 import {
   applyLogbookReviewFilterToSearchParams,
   logbookReviewFilterUrlNeedsNormalize,
@@ -340,7 +341,7 @@ const LogbookOfficialReviewHubCard = () => {
   const filteredTotal = filteredRows.length;
 
   const visibleRows = useMemo(
-    () => filteredRows.slice(0, visibleCount),
+    () => pageLogbookOfficialReviewRows(filteredRows, 0, visibleCount),
     [filteredRows, visibleCount],
   );
 

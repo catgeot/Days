@@ -1,4 +1,7 @@
-const ROWS_KEY = 'gateo:logbook-review-hub-rows';
+import { sortLogbookOfficialReviewRows } from './logbookReviewHubOrder.js';
+
+export const LOGBOOK_REVIEW_HUB_ROWS_STORAGE_KEY = 'gateo:logbook-review-hub-rows';
+const ROWS_KEY = LOGBOOK_REVIEW_HUB_ROWS_STORAGE_KEY;
 const MAX_ROWS = 500;
 const MAX_JSON = 1_800_000;
 
@@ -53,20 +56,23 @@ function writeStored(rows) {
 export function rememberLogbookReviewHubRows(rows) {
   const list = asRows(rows);
   if (!list) return;
-  memoryRows = list;
-  writeStored(list.map((row) => slimRow(/** @type {Record<string, unknown>} */ (row))));
+  const sorted = sortLogbookOfficialReviewRows(list);
+  memoryRows = sorted;
+  writeStored(sorted.map((row) => slimRow(/** @type {Record<string, unknown>} */ (row))));
 }
 
 /** @returns {Array<Record<string, unknown>> | null} */
 export function readLogbookReviewHubRows() {
-  if (Array.isArray(memoryRows) && memoryRows.length > 0) return memoryRows;
+  if (Array.isArray(memoryRows) && memoryRows.length > 0) {
+    return sortLogbookOfficialReviewRows(memoryRows);
+  }
   const store = storage();
   if (!store) return null;
   try {
     const parsed = asRows(JSON.parse(store.getItem(ROWS_KEY) || 'null'));
     if (!parsed) return null;
-    memoryRows = parsed;
-    return parsed;
+    memoryRows = sortLogbookOfficialReviewRows(parsed);
+    return memoryRows;
   } catch {
     return null;
   }
