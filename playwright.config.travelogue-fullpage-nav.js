@@ -15,7 +15,7 @@ const previewEnv = {
 
 export default defineConfig({
   testDir: './e2e',
-  testMatch: /travelogue-fullpage-nav\.spec\.js/,
+  testMatch: /travelogue-(fullpage-nav|back-nav)\.spec\.js/,
   fullyParallel: false,
   forbidOnly: Boolean(process.env.CI),
   retries: process.env.CI ? 1 : 0,
@@ -42,6 +42,17 @@ export default defineConfig({
       name: 'webkit-travelogue-fullpage-390',
       use: {
         ...devices['iPhone 13'],
+        viewport: { width: 390, height: 844 },
+        deviceScaleFactor: 1,
+        isMobile: true,
+        hasTouch: true,
+      },
+    },
+    {
+      name: 'chromium-travelogue-back-390',
+      testMatch: /travelogue-back-nav\.spec\.js/,
+      use: {
+        ...devices['Desktop Chrome'],
         viewport: { width: 390, height: 844 },
         deviceScaleFactor: 1,
         isMobile: true,

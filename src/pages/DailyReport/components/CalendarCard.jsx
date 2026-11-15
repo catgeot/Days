@@ -1,6 +1,7 @@
 import React from 'react';
 import { ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { rememberLogbookDetailReturn } from '../../../shared/navigation/logbookDetailBack.js';
 import { useTranslation } from 'react-i18next';
 
 const CalendarCard = ({ viewYear, viewMonth, calendarDays, onPrevMonth, onNextMonth, isPublicMode }) => {
@@ -12,7 +13,9 @@ const CalendarCard = ({ viewYear, viewMonth, calendarDays, onPrevMonth, onNextMo
     const dateStr = `${viewYear}-${String(viewMonth + 1).padStart(2, '0')}-${String(dayItem.day).padStart(2, '0')}`;
 
     if (dayItem.active && dayItem.reportId) {
-      navigate(isPublicMode ? `/p/${dayItem.reportId}` : `/blog/${dayItem.reportId}`);
+      const detailPath = isPublicMode ? `/p/${dayItem.reportId}` : `/blog/${dayItem.reportId}`;
+      rememberLogbookDetailReturn(detailPath);
+      navigate(detailPath);
     } else {
       navigate(`/blog/write?date=${dateStr}`);
     }

@@ -1,6 +1,7 @@
 import React, { useId, useState } from 'react';
 import { BookOpen, ChevronDown } from 'lucide-react';
 import { usePlaceEditorialTravelogues } from '../hooks/usePlaceEditorialTravelogues';
+import { rememberLogbookDetailReturn } from '../../../shared/navigation/logbookDetailBack.js';
 import { publicLogbookDetailPath } from '../../../utils/logbookEditorial';
 import { resolveLogbookDek } from '../../../utils/logbookDek';
 import { logbookHeroImageUrl } from '../../../utils/logbookImageSrc';
@@ -57,7 +58,10 @@ function TravelogueRow({ report }) {
       data-place-travelogue-item=""
       data-place-travelogue-slug={report.slug || undefined}
       className="flex gap-3 rounded-xl border border-white/10 bg-white/[0.04] p-3 text-left transition-colors hover:border-indigo-300/35 hover:bg-white/[0.06]"
-      onClick={(event) => event.stopPropagation()}
+      onClick={(event) => {
+        event.stopPropagation();
+        rememberLogbookDetailReturn(href);
+      }}
     >
       <TravelogueCover report={report} />
       <div className="min-w-0 flex-1">
