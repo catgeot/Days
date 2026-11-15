@@ -7,6 +7,10 @@ import {
   readLogbookReviewHubRows,
   rememberLogbookReviewHubRows,
 } from './logbookReviewHubListCache.js';
+import {
+  logbookReviewHubE2eRows,
+  sortLogbookOfficialReviewRows,
+} from './logbookReviewHubOrder.js';
 
 const E2E_LIST_DELAY_KEY = 'gateo:e2e-logbook-hub-list-delay-ms';
 
@@ -74,7 +78,7 @@ export function useLogbookOfficialReviewHub() {
 
     const loadPromise = delayList(
       isLogbookReviewFilterE2eFixture()
-        ? Promise.resolve(LOGBOOK_REVIEW_FILTER_E2E_FIXTURE)
+        ? Promise.resolve(logbookReviewHubE2eRows(LOGBOOK_REVIEW_FILTER_E2E_FIXTURE))
         : fetchEditorialReviewIndex(supabase),
       e2eListDelayMs(),
     );
@@ -82,8 +86,12 @@ export function useLogbookOfficialReviewHub() {
     void loadPromise
       .then((data) => {
         if (cancelled) return;
-        rememberLogbookReviewHubRows(data);
-        setRows(data);
+        const next = sortLogbookOfficialReviewRows(data);
+        if (isLogbookReviewFilterE2eFixture() && typeof window !== 'undefined') {
+          window.__gateoHubListApplies = (window.__gateoHubListApplies || 0) + 1;
+        }
+        rememberLogbookReviewHubRows(next);
+        setRows(next);
         setLoadFailed(false);
       })
       .catch((error) => {
