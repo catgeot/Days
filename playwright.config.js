@@ -100,6 +100,7 @@ export default defineConfig({
         /logbook-detail-toolbar-layout\.spec\.js/,
         /mooni-destination-pick-reply\.spec\.js/,
         /stay-list-tripcom-footer\.spec\.js/,
+        /travelogue-back-nav\.spec\.js/,
       ],
       use: { ...devices['Desktop Chrome'], viewport: { width: 1280, height: 720 } },
     },

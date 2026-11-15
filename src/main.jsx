@@ -7,6 +7,7 @@ import { notifyStaleBundleBootSuccess } from './shared/lib/staleBundleRecovery.j
 import { stripHeadSeoBeforeHelmet } from './shared/seo/stripHeadSeoBeforeHelmet.js'
 
 stripHeadSeoBeforeHelmet()
+window.__gateoHeadBootStripped = true
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

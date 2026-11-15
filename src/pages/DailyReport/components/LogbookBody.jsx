@@ -1,6 +1,9 @@
 import React, { useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import rehypeSanitize, { defaultSchema } from 'rehype-sanitize';
+import { rememberLogbookReaderOrigin } from '../../../shared/navigation/logbookDetailBack.js';
+import { classifyLogbookMarkdownHref } from '../../../shared/navigation/logbookMarkdownHref.js';
 import { logbookRemarkPlugins } from '../utils/logbookMarkdownRemark.js';
 import { useTranslation } from 'react-i18next';
 import {
@@ -42,6 +45,38 @@ const sanitizeSchema = {
   },
 };
 
+const MARKDOWN_LINK_CLASS =
+  'text-blue-600 underline underline-offset-2 hover:text-blue-700 break-words';
+
+function LogbookMarkdownAnchor({ href, children }) {
+  const classified = classifyLogbookMarkdownHref(href, typeof window !== 'undefined' ? window.location.href : undefined);
+  if (classified.kind === 'internal') {
+    return (
+      <Link
+        to={classified.to}
+        className={MARKDOWN_LINK_CLASS}
+        onClick={() => {
+          rememberLogbookReaderOrigin();
+        }}
+      >
+        {children}
+      </Link>
+    );
+  }
+  if (classified.kind === 'external') {
+    return (
+      <a href={classified.href} target="_blank" rel="noopener noreferrer" className={MARKDOWN_LINK_CLASS}>
+        {children}
+      </a>
+    );
+  }
+  return (
+    <a href={classified.href} className={MARKDOWN_LINK_CLASS}>
+      {children}
+    </a>
+  );
+}
+
 function createMarkdownComponents(readerTypography) {
   if (readerTypography) {
     return {
@@ -63,16 +98,7 @@ function createMarkdownComponents(readerTypography) {
           {wrapTimeRanges(children)}
         </p>
       ),
-      a: ({ href, children }) => (
-        <a
-          href={href}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-blue-600 underline underline-offset-2 hover:text-blue-700 break-words"
-        >
-          {children}
-        </a>
-      ),
+      a: LogbookMarkdownAnchor,
       strong: ({ children }) => <strong className="font-semibold text-gray-900">{children}</strong>,
       em: ({ children }) => <em className="italic">{children}</em>,
       hr: () => <hr className="my-10 border-0 border-t border-gray-100" />,
@@ -130,16 +156,7 @@ function createMarkdownComponents(readerTypography) {
     p: ({ children }) => (
       <p className="text-lg leading-[1.8] text-gray-800 font-medium mb-6 last:mb-0 break-keep">{wrapTimeRanges(children)}</p>
     ),
-    a: ({ href, children }) => (
-      <a
-        href={href}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="text-blue-600 underline underline-offset-2 hover:text-blue-700 break-words"
-      >
-        {children}
-      </a>
-    ),
+    a: LogbookMarkdownAnchor,
     strong: ({ children }) => <strong className="font-bold text-gray-900">{children}</strong>,
     em: ({ children }) => <em className="italic">{children}</em>,
     hr: () => <hr className="my-8 border-0 border-t border-gray-200" />,

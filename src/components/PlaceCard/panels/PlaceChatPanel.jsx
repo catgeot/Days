@@ -21,6 +21,11 @@ import { mobileLandscapeChromeHidden } from '../common/mobilePlaceHeaderInset';
 import mooniChar from '../../../assets/MOONI_transparent.webp';
 import { getAppHistoryPath } from '../../../shared/navigation/appHistoryPathIndex';
 import {
+  clearLogbookReaderOrigin,
+  isLogbookReaderPath,
+  readLogbookReaderOrigin,
+} from '../../../shared/navigation/logbookDetailBack.js';
+import {
   hardNavigatePlaceExploreBack,
   placeBackShouldFullPageToExplore,
 } from '../../../shared/navigation/hardAppBack';
@@ -223,17 +228,33 @@ const PlaceChatPanel = React.memo(({
                     const idx = window.history.state?.idx;
                     const prevPath =
                       typeof idx === 'number' ? getAppHistoryPath(idx - 1) : null;
+                    const historyIdx = typeof idx === 'number' ? idx : null;
+                    const routeReturn = peekPlaceReturnTo(routeLocation.state);
+                    const readerOrigin =
+                      !routeReturn && !(historyIdx != null && historyIdx > 0)
+                        ? readLogbookReaderOrigin()
+                        : null;
                     const action = resolvePlaceCardBack({
-                      historyIdx: typeof idx === 'number' ? idx : null,
+                      historyIdx,
                       prevPath,
-                      returnTo: peekPlaceReturnTo(routeLocation.state),
+                      returnTo: routeReturn || readerOrigin,
                       exploreReturnPath: peekExploreReturn()?.path ?? null,
                     });
                     if (placeBackShouldFullPageToExplore(action, prevPath)) {
                       hardNavigatePlaceExploreBack(prevPath);
                       return;
                     }
+                    if (
+                      action.type === 'push' &&
+                      isLogbookReaderPath(action.path) &&
+                      !(historyIdx != null && historyIdx > 0)
+                    ) {
+                      clearLogbookReaderOrigin();
+                      window.location.assign(action.path);
+                      return;
+                    }
                     if (action.type === 'history') {
+                      if (isLogbookReaderPath(prevPath)) clearLogbookReaderOrigin();
                       navigate(-1);
                       return;
                     }

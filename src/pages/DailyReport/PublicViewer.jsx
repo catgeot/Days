@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { supabase } from '../../shared/api/supabase';
 import { MapPin, Home, Compass, PenTool, User } from 'lucide-react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import { publicProfilePhotos } from '../../shared/Auth/profileAvatar';
@@ -27,7 +27,15 @@ import { isLogbookReportOwner } from './utils/logbookReportOwner';
 import { buildEditorialLogbookJsonLd } from './lib/logbookEditorialJsonLd';
 import SEO from '../../components/SEO';
 import { resolveLogbookFeedExcerpt } from '../../utils/logbookDek';
-import { hardNavigateAppBack } from '../../shared/navigation/hardAppBack';
+import { getAppHistoryPath } from '../../shared/navigation/appHistoryPathIndex.js';
+import {
+  clearLogbookDetailReturn,
+  performLogbookDetailBack,
+  readLogbookDetailReturn,
+  resolveLogbookDetailBack,
+  takeLogbookDetailScroll,
+} from '../../shared/navigation/logbookDetailBack.js';
+import { logbookEditorialBackFallback } from '../../shared/navigation/hardAppBack';
 import AppOutlineBackButton from '../../shared/navigation/AppOutlineBackButton';
 import {
   isEditorialBlogSeoPath,
@@ -65,6 +73,7 @@ const PublicViewer = () => {
   const { t } = useTranslation();
   const { id, editorialSlug } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const [report, setReport] = useState(null);
   const [authorLabel, setAuthorLabel] = useState('');
   const [authorAvatar, setAuthorAvatar] = useState('');
@@ -79,8 +88,20 @@ const PublicViewer = () => {
   const { resolveLike, toggleLike } = useLogbookLikes(report ? [report] : [], reactionEnabled);
 
   const handleBack = useCallback(() => {
-    hardNavigateAppBack();
-  }, []);
+    const idx = window.history.state?.idx;
+    const currentPath = `${location.pathname}${location.search}`;
+    const action = resolveLogbookDetailBack({
+      historyIdx: typeof idx === 'number' ? idx : null,
+      prevPath: typeof idx === 'number' ? getAppHistoryPath(idx - 1) : null,
+      historyLength: window.history.length,
+      referrer: document.referrer,
+      origin: window.location.origin,
+      returnTo: readLogbookDetailReturn(currentPath),
+      fallback: logbookEditorialBackFallback(),
+    });
+    clearLogbookDetailReturn();
+    performLogbookDetailBack(action);
+  }, [location.pathname, location.search]);
 
   useEffect(() => {
     let cancelled = false;
@@ -186,6 +207,21 @@ const PublicViewer = () => {
   );
 
   useEffect(() => {
+    if (!report) return undefined;
+    const y = takeLogbookDetailScroll(`${location.pathname}${location.search}`);
+    if (!y) return undefined;
+    let frame = 0;
+    let id = 0;
+    const tick = () => {
+      window.scrollTo(0, y);
+      frame += 1;
+      if (frame < 3) id = requestAnimationFrame(tick);
+    };
+    id = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(id);
+  }, [report, location.pathname, location.search]);
+
+  useEffect(() => {
     upsertEditorialJsonLd(editorialJsonLd);
     return () => {
       document.querySelector(`script[data-schema-type="${SCHEMA_TYPE}"]`)?.remove();
@@ -200,6 +236,9 @@ const PublicViewer = () => {
     if (!isEditorialBlogSeoPath(path)) return;
     if (loadingHeadStripSlug.current === editorialSlug) return;
     loadingHeadStripSlug.current = editorialSlug;
+    // Boot already stripped index tags. A second strip during a client return
+    // removes nodes React 19 still owns (removeChild freeze, #803).
+    if (window.__gateoHeadBootStripped && document.getElementById('root')?.firstChild) return;
     stripHeadSeoBeforeHelmet();
   }, [editorialSlug, report]);
 
