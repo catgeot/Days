@@ -30,6 +30,19 @@ export const KOREA_PROVINCE_EN = {
   제주: 'Jeju',
 };
 
+/** 시·도 짧은 이름이 도시 이름과 같을 때 후보 줄에 쓰는 구분. */
+const SAME_NAME_REGION_KIND = {
+  서울: { ko: '특별시', en: 'Special City' },
+  부산: { ko: '광역시', en: 'Metropolitan City' },
+  대구: { ko: '광역시', en: 'Metropolitan City' },
+  인천: { ko: '광역시', en: 'Metropolitan City' },
+  광주: { ko: '광역시', en: 'Metropolitan City' },
+  대전: { ko: '광역시', en: 'Metropolitan City' },
+  울산: { ko: '광역시', en: 'Metropolitan City' },
+  세종: { ko: '특별자치시', en: 'Special Self-Governing City' },
+  제주: { ko: '특별자치도', en: 'Special Self-Governing Province' },
+};
+
 const PROVINCE_QUERIES = [
   { province: '경기', names: ['경기', '경기도'] },
   { province: '강원', names: ['강원', '강원도', '강원특별자치도'] },
@@ -202,12 +215,18 @@ export function koreaOriginAskLabel(city, locale = 'ko') {
   return en ? city.en : city.ko;
 }
 
-export function koreaOriginOptionLabel(city, locale = 'ko') {
+export function koreaOriginRegionTag(city, locale = 'ko') {
   if (!city) return '';
   const en = isEnLocale(locale);
-  const name = en ? city.en : city.ko;
-  const province = en ? (KOREA_PROVINCE_EN[city.province] || city.province) : city.province;
-  return `${name} · ${province}`;
+  const kind = city.ko === city.province ? SAME_NAME_REGION_KIND[city.ko] : null;
+  if (kind) return en ? kind.en : kind.ko;
+  return en ? (KOREA_PROVINCE_EN[city.province] || city.province) : city.province;
+}
+
+export function koreaOriginOptionLabel(city, locale = 'ko') {
+  if (!city) return '';
+  const name = isEnLocale(locale) ? city.en : city.ko;
+  return `${name} · ${koreaOriginRegionTag(city, locale)}`;
 }
 
 export function koreaOriginCityForChip(ko, province) {
