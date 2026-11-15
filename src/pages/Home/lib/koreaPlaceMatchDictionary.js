@@ -593,6 +593,32 @@ export const KO_EXPLORE_SEARCH_ALIASES = [
       also: ['공주 우금치'],
     },
   ],
+  // 125565 공식 제목은 «강화 고인돌 유적 [유네스코 세계유산]». 부근리·지석묘는 제목에 없다.
+  // «강화 고인돌»은 오상리(2765210)와 같이 나와야 해서 contentId 별칭으로 묶지 않는다.
+  [
+    '부근리 고인돌',
+    {
+      canonical: '강화 고인돌 유적',
+      contentId: '125565',
+      titleOmitsQuery: true,
+    },
+  ],
+  [
+    '부근리 지석묘',
+    {
+      canonical: '강화 고인돌 유적',
+      contentId: '125565',
+      titleOmitsQuery: true,
+    },
+  ],
+  [
+    '강화 지석묘',
+    {
+      canonical: '강화 고인돌 유적',
+      contentId: '125565',
+      titleOmitsQuery: true,
+    },
+  ],
   ...expandScenicNameVariants(),
 ];
 
