@@ -1,6 +1,6 @@
 /**
- * Shared Hangul search helpers for departure-city match, and later explore search.
- * useSearchEngine must not import this until that follow-up.
+ * Shared Hangul search helpers for departure-city match and explore choseong search.
+ * useSearchEngine must not import this module (health lock — the old home matcher stays removed).
  *
  * The old home search (a1c43118) crashed on missing name_en/country_en and treated
  * short or empty fragments as a match for every name (`includes('')` is true).
