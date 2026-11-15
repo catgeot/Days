@@ -87,6 +87,10 @@ import {
 } from './exploreKoreaGetbolCollectiveSearch.js';
 import { buildJoseonRoyalTombsCollectiveSearchSuggestions } from './exploreJoseonRoyalTombsCollectiveSearch.js';
 import {
+  buildKoreaTourTitleEnterDisambiguation,
+  collectKoreaTourTitleSearchCandidates,
+} from './exploreKoreaTourTitleCandidates.js';
+import {
   isJoseonRoyalTombsCollectiveQuery,
   shouldDemoteJoseonManagementOfficeSearchHit,
 } from './joseonRoyalTombsSearch.js';
@@ -227,7 +231,6 @@ async function prependKoreaTourTitleCandidates(query, regional, list, matchOpts)
   const typed = String(query || '').trim();
   if (/\s/.test(typed) && !regional?.placeQuery && !exploreAliasListedContentId(typed)) return list;
   try {
-    const { collectKoreaTourTitleSearchCandidates } = await import('./exploreKoreaTourTitleCandidates.js');
     const tourItems = await collectKoreaTourTitleSearchCandidates(
       regional ? `${regional.regionQuery} ${regional.placeQuery}`.trim() : typed,
       {
@@ -979,7 +982,6 @@ export async function buildCuratedEnterDisambiguation(query) {
   }
 
   try {
-    const { buildKoreaTourTitleEnterDisambiguation } = await import('./exploreKoreaTourTitleCandidates.js');
     const tourChoice = await buildKoreaTourTitleEnterDisambiguation(q);
     if (tourChoice) return tourChoice;
   } catch {

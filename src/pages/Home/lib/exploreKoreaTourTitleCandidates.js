@@ -5,6 +5,7 @@ import {
   canonicalizeExploreSearchQuery,
   exploreAliasListedContentId,
 } from './exploreSearchAliases.js';
+import { parseKoreaRegionalExploreQuery } from './exploreRegionalPlaceQuery.js';
 import { makeDisambiguationResult } from './cityAttractionHubs.js';
 import { enrichSearchCandidateScenicMedia } from './koreaLocalScenicLists.js';
 import { tourAttractionToPoiSuggestion } from './koreaPoiTypeSearch.js';
@@ -13,6 +14,10 @@ import {
   tourTitleHeritageLeadRank,
 } from './koreaTourAttractionTitleMatch.js';
 import { resolveCityAttractionHub } from './cityAttractionHubs.js';
+import {
+  fetchKoreaTourAttractionById,
+  lookupKoreaTourAttractionsMatchingTitle,
+} from './koreaTourAttractions.js';
 
 const HAS_HANGUL_RE = /[\uAC00-\uD7A3]/;
 
@@ -62,8 +67,7 @@ async function loadAliasContentRow(contentId, opts) {
   }
   if (typeof opts.lookupRows === 'function') return null;
   try {
-    const { fetchKoreaTourAttractionById } = await import('./koreaTourAttractions.js');
-    return fetchKoreaTourAttractionById(contentId);
+    return await fetchKoreaTourAttractionById(contentId);
   } catch {
     return null;
   }
@@ -105,7 +109,6 @@ export async function collectKoreaTourTitleSearchCandidates(query, opts = {}) {
   let skipBroad = false;
 
   if (/\s/.test(q)) {
-    const { parseKoreaRegionalExploreQuery } = await import('./exploreRegionalPlaceQuery.js');
     const regional = parseKoreaRegionalExploreQuery(q);
     if (!regional?.placeQuery) {
       if (!listedContentId) return [];
@@ -157,7 +160,6 @@ export async function collectKoreaTourTitleSearchCandidates(query, opts = {}) {
     if (typeof opts.lookupRows === 'function') {
       rows = await opts.lookupRows(lookupTitle);
     } else {
-      const { lookupKoreaTourAttractionsMatchingTitle } = await import('./koreaTourAttractions.js');
       rows = await lookupKoreaTourAttractionsMatchingTitle(lookupTitle, {
         limit: 40,
         hubId: hubId || undefined,
