@@ -1011,7 +1011,7 @@ test('English place names lead and Korean stays in parentheses', () => {
   assert.doesNotMatch(ko, /하나예요/);
   assert.match(en, /Hampyeong Expo Park \(함평엑스포공원\)/);
   assert.match(en, /Wolhwa Street \(월화거리\)/);
-  assert.match(en, /Near \(함평 나비축제\), you can walk to/);
+  assert.match(en, /Near this festival \(함평 나비축제\), you can walk to/);
   assert.doesNotMatch(en, /One nearby/);
   assert.doesNotMatch(en, /^함평 나비축제 /);
   assert.ok(countFestivalCardSentences(ko) <= 5);
@@ -1034,7 +1034,8 @@ test('English opening uses the list title, and Korean stays in parentheses witho
   const ko = buildFestivalMooniSentenceAnswer(ctx, { locale: 'ko', now: NOW });
   assert.match(ko, /크루즈게이트와 터널게이트가 있어요/);
   const bare = buildFestivalMooniSentenceAnswer(ctx, { locale: 'en', now: NOW });
-  assert.match(bare, /^\(해운대 빛축제\) runs 11\/28–1\/10 and starts in 50 days/);
+  assert.match(bare, /^This festival \(해운대 빛축제\) runs 11\/28–1\/10 and starts in 50 days/);
+  assert.doesNotMatch(bare, /^\(해운대 빛축제\) runs/);
   assert.doesNotMatch(bare, /^해운대 빛축제 runs/);
   assert.match(bare, /\[해운대 빛축제 page\]/);
 

@@ -481,8 +481,8 @@ function englishTitleBits(ctx) {
   if (/[가-힣]/.test(stripParentheticals(en))) en = '';
   if (!en) en = CURATED_TITLE_EN.get(ko) || '';
   if (!en) en = fallbackEnglishLabel(ko);
-  // No English name: Korean stays in parentheses so the sentence does not start with the Korean title.
-  if (!en || en === ko) return { en: '', phrase: ko ? `(${ko})` : '' };
+  // No English name: an English subject, with the Korean title only in parentheses.
+  if (!en || en === ko) return { en: '', phrase: ko ? `This festival (${ko})` : '' };
   return { en, phrase: `${en} (${ko})` };
 }
 
@@ -789,8 +789,9 @@ function enNearbySentence(names, phrase, leadWithTitle) {
     .filter(Boolean);
   if (!labels.length) return '';
   const list = enList(labels);
+  const near = phrase.replace(/^This festival /, 'this festival ');
   return leadWithTitle
-    ? `Near ${phrase}, you can walk to ${list}.`
+    ? `Near ${near}, you can walk to ${list}.`
     : `Nearby, you can walk to ${list}.`;
 }
 

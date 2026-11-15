@@ -22,7 +22,7 @@ function attachPageErrors(page) {
 
 function expectErrorsClean(errors) {
   const fatal = errors.filter(
-    (message) => !/access control checks|Fetch API cannot load|Load failed|cancelled|The operation was aborted|Importing a module script failed|Failed to fetch dynamically imported module|_result\.default/i.test(message),
+    (message) => !/access control checks|Fetch API cannot load|Load failed|cancelled|The operation was aborted|Importing a module script failed|Failed to fetch dynamically imported module/i.test(message),
   );
   expect(fatal, fatal.join('\n')).toEqual([]);
 }
