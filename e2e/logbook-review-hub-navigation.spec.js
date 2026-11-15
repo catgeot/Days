@@ -126,9 +126,9 @@ async function hubScrollRoom(page) {
   });
 }
 
-async function ensureHubCanScrollTo(page, target) {
+async function ensureHubCanScrollTo(page, target, attempts = 4) {
   let room = 0;
-  for (let i = 0; i < 4; i += 1) {
+  for (let i = 0; i < attempts; i += 1) {
     room = await hubScrollRoom(page);
     if (room >= target) return room;
     const more = page.getByTestId('logbook-official-review-hub-more');
@@ -156,6 +156,41 @@ async function setHubScroll(page, target) {
   return actual;
 }
 
+const KNOWN_HUB_PLACE_SLUGS = [
+  'paris',
+  'prague',
+  'bangkok',
+  'kyoto',
+  'rome',
+  'london',
+  'vienna',
+  'amsterdam',
+  'barcelona',
+  'osaka',
+  'madrid',
+  'bora-bora',
+  'cairo',
+  'sapa',
+  'khao-lak',
+];
+
+async function openKnownPlaceHubCard(page) {
+  const reviewId = await page.evaluate((slugs) => {
+    const cards = [...document.querySelectorAll('[data-testid="logbook-official-review-hub-item"]')];
+    const card = cards.find((item) => slugs.includes(item.getAttribute('data-hub-place-slug') || ''));
+    if (!card) return '';
+    card.dispatchEvent(
+      new PointerEvent('pointerdown', { bubbles: true, cancelable: true, button: 0, pointerId: 1 }),
+    );
+    card.click();
+    return card.getAttribute('data-review-id') || '';
+  }, KNOWN_HUB_PLACE_SLUGS);
+  expect(reviewId).not.toBe('');
+  await page.waitForURL(/\/place\/[^/]+\/reviews/, { timeout: 60_000 });
+  await expect(page.getByTestId('place-card-route-loading')).toBeHidden({ timeout: 60_000 });
+  await expect(page.locator('[data-place-chrome-hit]')).toBeVisible({ timeout: 20_000 });
+}
+
 async function openVisibleHubCard(page) {
   const reviewId = await page.evaluate(() => {
     const root = document.querySelector('[data-logbook-main-scroll]');
@@ -180,20 +215,34 @@ async function openVisibleHubCard(page) {
   await expect(page.getByTestId('place-card-route-loading')).toBeHidden({ timeout: 60_000 });
 }
 
-async function wheelHubBy(page, delta) {
+async function wheelHubBy(page, delta, minMove = 400) {
   const trace = await page.evaluate((distance) => {
     const el = document.querySelector('[data-logbook-main-scroll]');
     if (!el) return null;
+    const roomBelow = el.scrollHeight - el.clientHeight - el.scrollTop;
+    const applied = Math.min(distance, Math.max(0, Math.floor(roomBelow - 4)));
     el.dispatchEvent(
-      new WheelEvent('wheel', { deltaY: distance, bubbles: true, cancelable: true }),
+      new WheelEvent('wheel', { deltaY: applied, bubbles: true, cancelable: true }),
     );
     const before = el.scrollTop;
-    el.scrollBy(0, distance);
-    return { before, immediate: el.scrollTop };
+    if (applied > 0) el.scrollBy(0, applied);
+    return { before, immediate: el.scrollTop, applied, roomBelow };
   }, delta);
   expect(trace).toBeTruthy();
-  expect(trace.immediate - trace.before).toBeGreaterThan(400);
+  expect(trace.immediate - trace.before).toBeGreaterThan(minMove);
   return trace;
+}
+
+async function expectWheelHeld(page, movedTo) {
+  await page.waitForTimeout(120);
+  const at120 = await readHubScroll(page);
+  expect(Math.abs(at120 - movedTo)).toBeLessThan(80);
+  await page.waitForTimeout(1880);
+  const at2s = await readHubScroll(page);
+  expect(Math.abs(at2s - movedTo)).toBeLessThan(80);
+  await page.waitForTimeout(8000);
+  const at10 = await readHubScroll(page);
+  expect(Math.abs(at10 - movedTo)).toBeLessThan(80);
 }
 
 async function expectWheelNotRepinned(page, restored, movedTo) {
@@ -356,6 +405,81 @@ test.describe('LogBook review hub navigation @mocked', () => {
     await expect.poll(() => readHubScroll(page), { timeout: 8_000 }).toBeLessThan(40);
     const browserWheel = await wheelHubBy(page, 600);
     await expectWheelNotRepinned(page, 0, browserWheel.immediate);
+    expect(pageErrors()).toEqual([]);
+    expect(countRemoveChild()).toBe(0);
+  });
+
+  test('deep scroll — screen and browser back restore the saved offset', async ({ page }) => {
+    const isWebkit = test.info().project.name.includes('webkit');
+    const is1280 = test.info().project.name.includes('1280');
+    test.skip(!isWebkit && !is1280, 'WebKit 390 or Chromium 1280 only');
+
+    const pageErrors = pageErrorCount(page);
+    const countRemoveChild = removeChildCount(page);
+    await openHub(page, HUB_PATH);
+    await ensureHubCanScrollTo(page, 1700, 12);
+    const room = await hubScrollRoom(page);
+    const target = Math.min(2500, Math.floor(room - 40));
+    expect(target).toBeGreaterThanOrEqual(1700);
+    const visibleBefore = await page.getByTestId('logbook-official-review-hub-item').count();
+    await expect(page.getByTestId('logbook-review-filter-major-overseas')).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+
+    await setHubScroll(page, target);
+    await openKnownPlaceHubCard(page);
+    await tapPlaceChromeBack(page);
+    await assertBlogHubVisible(page);
+    await waitForHubScrollRestored(page, target);
+    expect(Math.abs((await readHubScroll(page)) - target)).toBeLessThan(80);
+    await expect(page.getByTestId('logbook-review-filter-major-overseas')).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+    expect(await page.getByTestId('logbook-official-review-hub-item').count()).toBeGreaterThanOrEqual(
+      visibleBefore,
+    );
+
+    await setHubScroll(page, target);
+    await openKnownPlaceHubCard(page);
+    await page.goBack({ waitUntil: 'domcontentloaded' });
+    await assertBlogHubVisible(page);
+    await waitForHubScrollRestored(page, target);
+    expect(Math.abs((await readHubScroll(page)) - target)).toBeLessThan(80);
+    expect(pageErrors()).toEqual([]);
+    expect(countRemoveChild()).toBe(0);
+  });
+
+  test('wheel 0.3s, 0.5s, and 1.5s after return is not pulled back to 1000', async ({ page }) => {
+    const isWebkit = test.info().project.name.includes('webkit');
+    const is1280 = test.info().project.name.includes('1280');
+    test.skip(!isWebkit && !is1280, 'WebKit 390 or Chromium 1280 only');
+    test.setTimeout(300_000);
+
+    const pageErrors = pageErrorCount(page);
+    const countRemoveChild = removeChildCount(page);
+    await openHub(page, HUB_PATH);
+    await ensureHubCanScrollTo(page, 1700);
+    await expect(page.getByTestId('logbook-review-filter-major-overseas')).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+
+    for (const delay of [300, 500, 1500]) {
+      for (const mode of ['screen', 'browser']) {
+        await setHubScroll(page, 1000);
+        await openVisibleHubCard(page);
+        if (mode === 'screen') await tapPlaceChromeBack(page);
+        else await page.goBack({ waitUntil: 'domcontentloaded' });
+        await assertBlogHubVisible(page);
+        await page.locator('[data-logbook-main-scroll]').waitFor({ state: 'attached' });
+        await page.waitForTimeout(delay);
+        const wheel = await wheelHubBy(page, 600, 80);
+        await expectWheelHeld(page, wheel.immediate);
+      }
+    }
+
     expect(pageErrors()).toEqual([]);
     expect(countRemoveChild()).toBe(0);
   });

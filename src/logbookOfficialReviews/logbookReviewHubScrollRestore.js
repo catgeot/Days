@@ -4,7 +4,17 @@ export function clearLogbookHubScrollRestored(el) {
     delete el.dataset.logbookHubScrollRestored;
     delete el.dataset.logbookHubScrollTarget;
   }
-  cancelActiveRestore();
+  epoch += 1;
+  abandonedEpoch = -1;
+  phase = 'idle';
+  landed = false;
+  seeks = 0;
+  seekStart = 0;
+  settleUntil = 0;
+  activeEl = null;
+  activeTarget = 0;
+  stopScheduled();
+  unlisten();
 }
 
 /**
@@ -24,87 +34,96 @@ export function applyLogbookHubScrollRestore(el, targetY) {
   return closeEnough;
 }
 
-const USER_INPUT_EVENTS = ['wheel', 'touchmove', 'keydown', 'pointerdown'];
+const USER_INPUT_EVENTS = ['wheel', 'touchstart', 'touchmove', 'keydown', 'pointerdown'];
 const SEEK_CAP_MS = 1800;
 const SETTLE_MS = 400;
 const TICK_MS = 50;
 const MAX_SEEKS = 2;
+const LISTEN_CAPTURE = true;
 
 let epoch = 0;
-let lockedEpoch = -1;
+let abandonedEpoch = -1;
 let phase = 'idle';
 let landed = false;
 let seeks = 0;
 let seekStart = 0;
 let settleUntil = 0;
-let timer = null;
-let listening = false;
-let refs = 0;
+let timer = 0;
+/** @type {EventTarget[]} */
+let bound = [];
+let pageShowBound = false;
 /** @type {HTMLElement | null} */
 let activeEl = null;
 let activeTarget = 0;
 
-function stopTimer() {
-  if (timer != null) {
-    window.clearTimeout(timer);
-    timer = null;
-  }
+function sessionAbandoned() {
+  return abandonedEpoch === epoch;
+}
+
+function stopScheduled() {
+  if (timer && typeof window !== 'undefined') window.clearTimeout(timer);
+  timer = 0;
 }
 
 function unlisten() {
-  if (!listening || typeof window === 'undefined') return;
-  listening = false;
-  for (const type of USER_INPUT_EVENTS) {
-    window.removeEventListener(type, onUserIntent, true);
+  for (const target of bound) {
+    for (const type of USER_INPUT_EVENTS) {
+      target.removeEventListener(type, onUserIntent, LISTEN_CAPTURE);
+    }
   }
-  window.removeEventListener('pageshow', onPageShow);
+  bound = [];
+  if (pageShowBound && typeof window !== 'undefined') {
+    window.removeEventListener('pageshow', onPageShow);
+    pageShowBound = false;
+  }
 }
 
-function cancelActiveRestore() {
-  epoch += 1;
-  lockedEpoch = -1;
-  phase = 'idle';
-  landed = false;
-  seeks = 0;
-  seekStart = 0;
-  settleUntil = 0;
-  activeEl = null;
-  activeTarget = 0;
-  stopTimer();
-  unlisten();
-}
-
-function finishRestore() {
+function abandonSession() {
+  abandonedEpoch = epoch;
   phase = 'done';
-  stopTimer();
+  stopScheduled();
   unlisten();
 }
 
 /** @param {Event} event */
 function onUserIntent(event) {
+  if (sessionAbandoned()) return;
   if (phase !== 'seeking' && phase !== 'settling') return;
   if (event.type === 'wheel') {
     const wheel = /** @type {WheelEvent} */ (event);
     if (!wheel.deltaY && !wheel.deltaX) return;
   }
-  lockedEpoch = epoch;
-  finishRestore();
+  abandonSession();
 }
 
 function onPageShow() {
-  if (phase !== 'seeking' && phase !== 'settling') return;
+  if (sessionAbandoned() || (phase !== 'seeking' && phase !== 'settling')) return;
   if (!activeEl || !activeEl.isConnected) return;
   const ok = applyLogbookHubScrollRestore(activeEl, activeTarget);
   if (ok && phase === 'seeking') beginSettle();
 }
 
-function ensureListeners() {
-  if (listening || typeof window === 'undefined') return;
-  listening = true;
+/** @param {EventTarget | null | undefined} target */
+function bindInput(target) {
+  if (!target || bound.includes(target)) return;
   for (const type of USER_INPUT_EVENTS) {
-    window.addEventListener(type, onUserIntent, { capture: true, passive: true });
+    target.addEventListener(type, onUserIntent, { capture: true, passive: true });
   }
-  window.addEventListener('pageshow', onPageShow);
+  bound.push(target);
+}
+
+/** @param {HTMLElement} el */
+function ensureListeners(el) {
+  if (typeof window === 'undefined') return;
+  bindInput(window);
+  if (typeof document !== 'undefined') bindInput(document);
+  bindInput(el);
+  const scroller = document.querySelector?.('[data-logbook-main-scroll]');
+  if (scroller instanceof HTMLElement) bindInput(scroller);
+  if (!pageShowBound) {
+    window.addEventListener('pageshow', onPageShow);
+    pageShowBound = true;
+  }
 }
 
 function beginSettle() {
@@ -113,47 +132,53 @@ function beginSettle() {
   settleUntil = performance.now() + SETTLE_MS;
 }
 
+function finishQuiet() {
+  phase = 'done';
+  stopScheduled();
+  unlisten();
+}
+
 /** @param {number} gen */
 function arm(gen) {
-  if (timer != null || typeof window === 'undefined') return;
+  if (timer || sessionAbandoned() || typeof window === 'undefined') return;
   timer = window.setTimeout(() => tick(gen), TICK_MS);
 }
 
 /** @param {number} gen */
 function tick(gen) {
-  timer = null;
-  if (gen !== epoch) return;
-  if (lockedEpoch === epoch || phase === 'done' || phase === 'idle') return;
+  timer = 0;
+  if (gen !== epoch || sessionAbandoned() || phase === 'done' || phase === 'idle') return;
   if (!activeEl || !activeEl.isConnected) {
-    stopTimer();
-    unlisten();
+    finishQuiet();
     return;
   }
   const ok = applyLogbookHubScrollRestore(activeEl, activeTarget);
   const now = performance.now();
   if (ok && phase === 'seeking') beginSettle();
   if (phase === 'settling' && now >= settleUntil) {
-    finishRestore();
+    finishQuiet();
     return;
   }
   if (phase === 'seeking' && now - seekStart >= SEEK_CAP_MS) {
-    finishRestore();
+    finishQuiet();
     return;
   }
   arm(gen);
 }
 
 /**
- * Restores hub scroll once. Late layout may re-align only inside a short seek/settle
- * window. wheel, touchmove, keydown, and pointerdown stop it immediately.
- * Scroll is not observed — a scroll listener re-pins the saved position after the user moves.
+ * Restores hub scroll inside a short seek/settle window.
+ * The first wheel, touchstart, touchmove, keydown, or pointerdown — on window,
+ * document, or the hub scroller, capture — abandons every queued tick for this
+ * return. Effect cleanup does not drop those listeners: a later list-height
+ * pass must not re-pin after the user has already moved.
  * @param {HTMLElement} el
  * @param {number} targetY
  * @returns {() => void}
  */
 export function scheduleLogbookHubScrollRestore(el, targetY) {
   if (!el || !(el instanceof HTMLElement) || !Number.isFinite(targetY)) return () => {};
-  if (lockedEpoch === epoch) return () => {};
+  if (sessionAbandoned()) return () => {};
   if (phase === 'done' && landed) return () => {};
   if (phase === 'done' && !landed) {
     if (seeks >= MAX_SEEKS) return () => {};
@@ -168,20 +193,11 @@ export function scheduleLogbookHubScrollRestore(el, targetY) {
     seekStart = performance.now();
     seeks += 1;
   }
-  ensureListeners();
+  ensureListeners(el);
+  if (sessionAbandoned()) return () => {};
   const ok = applyLogbookHubScrollRestore(el, targetY);
   if (ok && phase === 'seeking') beginSettle();
-  if (timer == null && (phase === 'seeking' || phase === 'settling')) arm(gen);
+  if (!timer && (phase === 'seeking' || phase === 'settling')) arm(gen);
 
-  refs += 1;
-  let released = false;
-  return () => {
-    if (released) return;
-    released = true;
-    refs = Math.max(0, refs - 1);
-    if (refs === 0 && phase !== 'done' && lockedEpoch !== epoch) {
-      stopTimer();
-      unlisten();
-    }
-  };
+  return () => {};
 }

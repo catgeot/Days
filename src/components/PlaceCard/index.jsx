@@ -13,6 +13,7 @@ import {
 } from '../../pages/Home/lib/placeSeoText.js';
 import { isGateoPlaceWorldEventsTabEnabled } from '../../shared/gateoFeatureFlags';
 import { mediaModeFromUrlTab } from './common/placeMediaTabRoutes';
+import { placeCanonicalPath } from '../../shared/seo/placeCanonicalPath.js';
 import { isPlacePlannerEligible } from '../../shared/place/placePlannerEligibility.js';
 import PlaceNotFoundView from './PlaceNotFoundView';
 import PlaceRouteErrorView from './PlaceRouteErrorView';
@@ -86,7 +87,7 @@ const PlaceCard = () => {
   const locationDesc = getPlaceTabSeoDescription(contextLocation, locale, tabKey, t);
   const seoTitle = getPlaceTabSeoTitle(contextLocation, locale, tabKey);
   const seoKeywords = getPlaceSeoKeywords(contextLocation, locale, tabKey);
-  const seoPath = `/place/${slug}/${tabKey}`;
+  const seoPath = placeCanonicalPath(slug, tab);
 
   return (
     <>
