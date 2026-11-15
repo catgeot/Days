@@ -285,6 +285,14 @@ test.describe('article festival and place back', () => {
     await shot(page, testInfo, 'webkit-article-festival-x');
 
     await openFestivalFrom(page, link);
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await expect(page.locator('#korea-festival-sheet-title')).toContainText(FESTIVAL_TITLE, { timeout: 30_000 });
+    await clickFestivalClose(page);
+    await expect(page).toHaveURL(/\/blog\/e\/rome-travelogue/, { timeout: 30_000 });
+    expect(urlKey(page.url())).toBe(articleKey);
+    await expectWindowScroll(page, before);
+
+    await openFestivalFrom(page, link);
     await page.goBack();
     await expect(page).toHaveURL(/\/blog\/e\/rome-travelogue/, { timeout: 30_000 });
     expect(urlKey(page.url())).toBe(articleKey);
@@ -384,6 +392,8 @@ test.describe('article festival and place back', () => {
     await shot(page, testInfo, 'webkit-korea-home-after-close');
 
     await page.goto(`/korea/?festival=${FESTIVAL_ID}`, { waitUntil: 'domcontentloaded' });
+    await expect(page.locator('#korea-festival-sheet-title')).toContainText(FESTIVAL_TITLE, { timeout: 30_000 });
+    await page.reload({ waitUntil: 'domcontentloaded' });
     await expect(page.locator('#korea-festival-sheet-title')).toContainText(FESTIVAL_TITLE, { timeout: 30_000 });
     await clickFestivalClose(page);
     await expect(page).toHaveURL(/\/korea\/?(?:\?|$)/, { timeout: 30_000 });
