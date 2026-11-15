@@ -126,6 +126,32 @@ export async function collectKoreaTourTitleSearchCandidates(query, opts = {}) {
   const paren = /\s/.test(q) || skipBroad ? null : splitParentheticalRegionTitle(title);
   const lookupTitle = paren ? paren.base : title;
 
+  const matchTitle = /\s/.test(q) && !skipBroad ? q : title;
+  const selectExact = (candidates) =>
+    skipBroad
+      ? []
+      : (candidates || []).filter((row) => {
+          if (tourRowTitleMatchesCompactQuery(row, matchTitle)) return true;
+          if (!paren) return false;
+          const baseKey = compactKey(paren.base);
+          const titleMatchesBase = [row?.title, row?.name]
+            .map(compactKey)
+            .some((k) => k === baseKey || k.startsWith(`${baseKey}(`));
+          return titleMatchesBase && tourRowInRegion(row, paren.region, hubId);
+        });
+
+  const emitPartial = (candidates) => {
+    if (typeof opts.onPartialTourItems !== 'function') return;
+    const partial = suggestionsFromTourRows(selectExact(candidates));
+    if (partial.length) {
+      try {
+        opts.onPartialTourItems(partial);
+      } catch {
+        // 첫 페인트 실패가 최종 목록을 막지 않음
+      }
+    }
+  };
+
   let rows = [];
   if (!skipBroad) {
     if (typeof opts.lookupRows === 'function') {
@@ -135,22 +161,12 @@ export async function collectKoreaTourTitleSearchCandidates(query, opts = {}) {
       rows = await lookupKoreaTourAttractionsMatchingTitle(lookupTitle, {
         limit: 40,
         hubId: hubId || undefined,
+        onDbRows: emitPartial,
       });
     }
   }
 
-  const matchTitle = /\s/.test(q) && !skipBroad ? q : title;
-  let exact = skipBroad
-    ? []
-    : (rows || []).filter((row) => {
-        if (tourRowTitleMatchesCompactQuery(row, matchTitle)) return true;
-        if (!paren) return false;
-        const baseKey = compactKey(paren.base);
-        const titleMatchesBase = [row?.title, row?.name]
-          .map(compactKey)
-          .some((k) => k === baseKey || k.startsWith(`${baseKey}(`));
-        return titleMatchesBase && tourRowInRegion(row, paren.region, hubId);
-      });
+  let exact = selectExact(rows);
 
   if (listedContentId && !exact.some((row) => rowContentId(row) === listedContentId)) {
     const extra = await loadAliasContentRow(listedContentId, opts);
@@ -159,9 +175,13 @@ export async function collectKoreaTourTitleSearchCandidates(query, opts = {}) {
 
   exact.sort((a, b) => tourTitleHeritageLeadRank(a, q) - tourTitleHeritageLeadRank(b, q));
   if (listedContentId) exact = pinContentRowFirst(exact, listedContentId);
+  return suggestionsFromTourRows(exact);
+}
+
+function suggestionsFromTourRows(rows) {
   const out = [];
   const seen = new Set();
-  for (const row of exact) {
+  for (const row of rows || []) {
     const item = tourAttractionToPoiSuggestion(row);
     if (!item?.name) continue;
     const k = compactKey(item.name);

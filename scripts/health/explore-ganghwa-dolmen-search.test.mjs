@@ -5,7 +5,11 @@ import { collectKoreaTourTitleSearchCandidates } from '../../src/pages/Home/lib/
 import { resolveSearchResultSelect } from '../../src/pages/Home/lib/exploreRecentHistory.js';
 import { resolveExploreSearchAlias } from '../../src/pages/Home/lib/exploreSearchAliases.js';
 import { tourRowTitleMatchesCompactQuery } from '../../src/pages/Home/lib/koreaTourAttractionTitleMatch.js';
-import { buildHybridSearchSuggestions } from '../../src/pages/Home/lib/searchSuggestions.js';
+import {
+  buildHybridSearchSuggestions,
+  dropMapboxShadowsOfTourSuggestions,
+  exploreHybridMapboxQueries,
+} from '../../src/pages/Home/lib/searchSuggestions.js';
 
 const UNESCO = {
   contentId: '125565',
@@ -142,6 +146,157 @@ test('부근리·지석묘 별칭 — 제목 검색 없이 125565', async () => 
     }
     const card = items.find((item) => item.contentId === '125565');
     assert.equal(resolveSearchResultSelect(card)?.param, 'tour-125565', query);
+  }
+});
+
+const UNESCO_SUGGESTION = {
+  id: 'tour-attr-125565',
+  source: 'tourapi',
+  contentId: '125565',
+  name: '강화 고인돌 유적 [유네스코 세계유산]',
+  lat: 37.7740846284,
+  lng: 126.4367939868,
+};
+
+const OSANG_SUGGESTION = {
+  id: 'tour-attr-2765210',
+  source: 'tourapi',
+  contentId: '2765210',
+  name: '강화 오상리 고인돌군',
+  lat: 37.7309554253,
+  lng: 126.4022107557,
+};
+
+test('Mapbox «강화 고인돌»은 125565와 같은 자리면 빠지고 오상리·점골은 남는다', () => {
+  const shadow = {
+    id: 'mapbox-ganghwa-dolmen',
+    source: 'mapbox',
+    name: '강화 고인돌',
+    lat: 37.77364886,
+    lng: 126.43732031,
+  };
+  const relicSite = {
+    id: 'mapbox-ganghwa-relic',
+    source: 'mapbox',
+    name: '강화 고인돌 유적지',
+    lat: 37.77358822,
+    lng: 126.43761379,
+  };
+  const doVariant = {
+    id: 'mapbox-ganghwa-do',
+    source: 'mapbox',
+    name: '강화도 고인돌 유적',
+    lat: 37.77323694,
+    lng: 126.43703643,
+  };
+  const jumgol = {
+    id: 'mapbox-jumgol',
+    source: 'mapbox',
+    name: '강화 부근리 점골 고인돌',
+    lat: 37.76611329,
+    lng: 126.42497355,
+  };
+  const osangMapbox = {
+    id: 'mapbox-osang',
+    source: 'mapbox',
+    name: '강화 내가 오상리 고인돌',
+    lat: 37.73084872,
+    lng: 126.40203439,
+  };
+  const kept = dropMapboxShadowsOfTourSuggestions([
+    UNESCO_SUGGESTION,
+    shadow,
+    relicSite,
+    doVariant,
+    jumgol,
+    OSANG_SUGGESTION,
+    osangMapbox,
+  ]);
+  const ids = kept.map((item) => item.id);
+  assert.deepEqual(ids, [
+    'tour-attr-125565',
+    'mapbox-jumgol',
+    'tour-attr-2765210',
+    'mapbox-osang',
+  ]);
+});
+
+test('부근리 고인돌 — canonical을 Mapbox에 넣지 않고, 느린 지오코딩보다 125565가 먼저', async (t) => {
+  assert.deepEqual(exploreHybridMapboxQueries('부근리 고인돌', '부근리 고인돌', 0), ['부근리 고인돌']);
+  const askedMapbox = [];
+  let releaseMapbox;
+  const gate = new Promise((resolve) => {
+    releaseMapbox = resolve;
+  });
+  const t0 = Date.now();
+  let tourReadyAt = 0;
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async () =>
+    new Response(JSON.stringify([]), {
+      status: 200,
+      headers: { 'content-type': 'application/json' },
+    });
+  const pending = buildHybridSearchSuggestions('부근리 고인돌', {
+    restaurantLookupItems: async () => [],
+    tourTitleLookupRows: async () => [],
+    tourTitleLookupByContentId: async (id) => (id === '125565' ? UNESCO : null),
+    onTourReady: (items) => {
+      tourReadyAt = Date.now() - t0;
+      assert.equal(items[0]?.contentId, '125565');
+    },
+    searchBoxForward: async (mq) => {
+      askedMapbox.push(mq);
+      await gate;
+      return [
+        {
+          id: 'mapbox-ganghwa-dolmen',
+          source: 'mapbox',
+          name: '강화 고인돌',
+          badge: '명소',
+          kind: 'attraction',
+          lat: 37.77364886,
+          lng: 126.43732031,
+          country: '대한민국',
+        },
+        {
+          id: 'mapbox-jumgol',
+          source: 'mapbox',
+          name: '강화 부근리 점골 고인돌',
+          badge: '명소',
+          kind: 'attraction',
+          lat: 37.76611329,
+          lng: 126.42497355,
+          country: '대한민국',
+        },
+      ];
+    },
+  });
+  try {
+    for (let i = 0; i < 40 && !tourReadyAt; i += 1) {
+      await new Promise((resolve) => setTimeout(resolve, 25));
+    }
+    assert.ok(tourReadyAt > 0, 'tour ready');
+    assert.ok(tourReadyAt < 1000, `tour ready ${tourReadyAt}ms`);
+    t.diagnostic(`tour-ready-ms=${tourReadyAt}`);
+    let settled = false;
+    pending.then(() => {
+      settled = true;
+    });
+    await new Promise((resolve) => setTimeout(resolve, 40));
+    assert.equal(settled, false, 'mapbox gate still holds the final list');
+    releaseMapbox();
+    const items = await pending;
+    const names = items.map((item) => item.name);
+    assert.equal(names.filter((name) => name === '강화 고인돌').length, 0);
+    assert.ok(names.includes('강화 고인돌 유적 [유네스코 세계유산]'));
+    assert.ok(names.includes('강화 부근리 점골 고인돌'));
+    assert.equal(names.includes('강화 오상리 고인돌군'), false);
+    assert.deepEqual(askedMapbox, ['부근리 고인돌']);
+    const card = items.find((item) => item.contentId === '125565');
+    assert.equal(resolveSearchResultSelect({ ...card, originalQuery: '부근리 고인돌' })?.param, 'tour-125565');
+  } finally {
+    globalThis.fetch = originalFetch;
+    releaseMapbox();
   }
 });
 

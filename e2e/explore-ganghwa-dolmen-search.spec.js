@@ -23,6 +23,15 @@ function unescoCard(page) {
     .filter({ hasText: /강화 고인돌 유적/ });
 }
 
+/** Mapbox POI «강화 고인돌». 유적·오상리·점골 카드는 다른 장소다. */
+function mapboxGanghwaDolmenShadow(page) {
+  return page
+    .locator('[data-search-popover] button')
+    .filter({ hasNotText: 'MOONi' })
+    .filter({ hasText: '강화 고인돌' })
+    .filter({ hasNotText: /유적|오상리|점골/ });
+}
+
 test.describe('강화 고인돌 유적 125565', () => {
   test.beforeEach(async ({ page }) => {
     await installExploreMocks(page);
@@ -36,6 +45,7 @@ test.describe('강화 고인돌 유적 125565', () => {
       await input.fill(query);
       const card = unescoCard(page).first();
       await expect(card).toBeVisible({ timeout: 30_000 });
+      await expect(mapboxGanghwaDolmenShadow(page)).toHaveCount(0);
       await card.click();
       await page.waitForURL(new RegExp(`${UNESCO_PATH.replace(/\//g, '\\/')}$`), { timeout: 60_000 });
       expect(new URL(page.url()).pathname).toBe(UNESCO_PATH);
@@ -55,6 +65,7 @@ test.describe('강화 고인돌 유적 125565', () => {
       .first();
     await expect(unesco).toBeVisible({ timeout: 30_000 });
     await expect(osang).toBeVisible({ timeout: 30_000 });
+    await expect(mapboxGanghwaDolmenShadow(page)).toHaveCount(0);
     const unescoBox = await unesco.boundingBox();
     const osangBox = await osang.boundingBox();
     expect(unescoBox.y).toBeLessThan(osangBox.y);

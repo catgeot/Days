@@ -1008,7 +1008,10 @@ export async function lookupKoreaTourAttractionFirstPass(title, opts = {}) {
  * @param {string} title
  * @param {{ limit?: number }} [opts]
  */
-export async function lookupKoreaTourAttractionsMatchingTitle(title, { limit = 80, hubId } = {}) {
+export async function lookupKoreaTourAttractionsMatchingTitle(
+  title,
+  { limit = 80, hubId, onDbRows } = {},
+) {
   const needles = tourTitleSearchNeedles(title);
   if (!needles.length) return [];
   const take = Math.min(Math.max(Number(limit) || 80, 1), 400);
@@ -1023,6 +1026,13 @@ export async function lookupKoreaTourAttractionsMatchingTitle(title, { limit = 8
     console.warn('[koreaTourAttractions] matchingTitle', error.message || error);
   }
   let rows = (data || []).map(mapTourAttractionRow).filter(Boolean);
+  if (rows.length && typeof onDbRows === 'function') {
+    try {
+      onDbRows(rows.slice());
+    } catch (err) {
+      console.warn('[koreaTourAttractions] onDbRows', err?.message || err);
+    }
+  }
   try {
     const live = await lookupKoreaTourAttractionsMatchingTitleLive(title, {
       hubId: hubId || '',
