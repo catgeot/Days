@@ -13,16 +13,16 @@ import { resolveLogbookReviewPlaceDisplayName } from '../../../logbookOfficialRe
 import { pickEditorialReviewHubThumb } from '../../../logbookOfficialReviews/editorialReviewHubThumb.js';
 import { LogbookOfficialReviewHubCardMedia } from '../../../logbookOfficialReviews/LogbookOfficialReviewHubCardMedia.jsx';
 
-const CARD_LINE_MAX = 96;
+const CARD_TITLE_MAX = 72;
 
-function editorialReviewCardLine(review) {
-  const titled = placeReviewVisitStoryDisplayTitle(review, CARD_LINE_MAX);
+function editorialReviewCardTitle(review) {
+  const titled = placeReviewVisitStoryDisplayTitle(review, CARD_TITLE_MAX);
   if (titled) return titled;
-  const raw = stripReviewInlineMarkdown(getCollapsedPreviewText(review))
-    .replace(/\s+/g, ' ')
-    .trim();
-  if (!raw) return '';
-  return raw.length <= CARD_LINE_MAX ? raw : `${raw.slice(0, CARD_LINE_MAX).trim()}…`;
+  const raw = getCollapsedPreviewText(review);
+  const plain = stripReviewInlineMarkdown(raw).replace(/\s+/g, ' ').trim();
+  if (!plain) return '';
+  if (plain.length <= CARD_TITLE_MAX) return plain;
+  return `${plain.slice(0, CARD_TITLE_MAX).trim()}…`;
 }
 
 export default function LogbookOfficialReviewCardGrid({
@@ -45,7 +45,7 @@ export default function LogbookOfficialReviewCardGrid({
         const href = placePath ? buildPlaceReviewsHref(placePath, review.id) : '#';
         const thumb = pickEditorialReviewHubThumb(review);
         const thumbSrc = thumb?.src ?? null;
-        const line = editorialReviewCardLine(review);
+        const title = editorialReviewCardTitle(review);
         const cityLabel = resolveLogbookReviewPlaceDisplayName(review, lang);
         const dateLabel = formatLogbookDisplayDate(review.created_at, {
           locale: lang === 'en' ? 'en' : 'ko',
@@ -96,12 +96,12 @@ export default function LogbookOfficialReviewCardGrid({
                     <span className="text-[11px] text-gray-400">{dateLabel}</span>
                   ) : null}
                 </div>
-                {line ? (
+                {title ? (
                   <p
-                    className="min-w-0 text-sm font-medium leading-snug text-gray-800 line-clamp-1 break-keep"
+                    className="min-w-0 text-sm font-medium leading-snug text-gray-800 line-clamp-2 break-keep"
                     data-testid="logbook-official-review-hub-card-title"
                   >
-                    {line}
+                    {title}
                   </p>
                 ) : null}
               </div>

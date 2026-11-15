@@ -37,6 +37,7 @@ async function assertHubCardTwoLines(page) {
   const item = page.getByTestId('logbook-official-review-hub-item').first();
   await expect(item).toBeVisible();
   await expect(item.getByTestId('logbook-official-review-hub-card-summary')).toHaveCount(0);
+  await expect(item.getByTestId('logbook-official-review-hub-card-title')).toHaveClass(/line-clamp-2/);
   const textRows = await item.evaluate((el) => {
     const body = el.querySelector('.flex.min-w-0.flex-1');
     if (!body) return null;
@@ -116,16 +117,17 @@ test.describe('LogBook review detail photo @mocked', () => {
         { timeout: 60_000 },
       )
       .toBeTruthy();
-    const layout = await hwaseongCard.getByTestId('logbook-editorial-review-detail-hero').evaluate((el) => {
-      const row = el.querySelector('.md\\:flex-row');
-      if (!row) return null;
-      const kids = [...row.children];
-      const rects = kids.map((c) => c.getBoundingClientRect());
-      if (rects.length < 2) return null;
-      return { sideBySide: rects[0].top === rects[1].top, photoLeft: rects[0].x < rects[1].x };
+    const hero = hwaseongCard.getByTestId('logbook-editorial-review-detail-hero');
+    await expect(hero.locator('.line-clamp-2, .line-clamp-3, .line-clamp-4')).toHaveCount(0);
+    const stacked = await hero.evaluate((el) => {
+      const media = el.querySelector('[data-testid="logbook-editorial-review-detail-hero-photo"], [data-testid="logbook-editorial-review-detail-hero-fallback"]');
+      const badge = el.querySelector('.text-indigo-800');
+      if (!media || !badge) return null;
+      const mediaBox = media.getBoundingClientRect();
+      const badgeBox = badge.getBoundingClientRect();
+      return badgeBox.top >= mediaBox.bottom - 1;
     });
-    expect(layout?.sideBySide).toBe(true);
-    expect(layout?.photoLeft).toBe(true);
+    expect(stacked).toBe(true);
   });
 
   test('1280 EN — hub card copy without missing keys', async ({ page }) => {

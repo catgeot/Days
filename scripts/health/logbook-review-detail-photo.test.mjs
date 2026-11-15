@@ -31,14 +31,21 @@ test('ReviewsTab wires editorial detail hero behind flag', () => {
   assert.match(layout, /markLogbookEditorialReviewDetailLayoutFromHub/);
 });
 
-test('hub cards — city/date + one summary line only', () => {
+test('hub cards — city/date + 2-line bold title, no faint excerpt', () => {
   const grid = readFileSync(
     join(healthRoot, 'src/pages/DailyReport/components/LogbookOfficialReviewCardGrid.jsx'),
     'utf8',
   );
-  assert.match(grid, /line-clamp-1/);
+  assert.match(grid, /line-clamp-2/);
+  assert.doesNotMatch(grid, /line-clamp-1/);
   assert.doesNotMatch(grid, /logbook-official-review-hub-card-summary/);
   assert.match(grid, /pickEditorialReviewHubThumb/);
+  const hero = readFileSync(
+    join(healthRoot, 'src/logbookOfficialReviews/LogbookEditorialReviewDetailHero.jsx'),
+    'utf8',
+  );
+  assert.doesNotMatch(hero, /editorialReviewDetailSummary/);
+  assert.doesNotMatch(hero, /line-clamp-3/);
 });
 
 test('shared thumb picks wikimedia 960', () => {

@@ -151,7 +151,8 @@ test('hub card wires filter flag without forced scroll', () => {
   assert.match(media, /setLoadState\('fail'\)/);
   assert.match(media, /loading: preferEager \? 'eager' : 'lazy'/);
   assert.doesNotMatch(grid, /logbook-official-review-hub-card-summary/);
-  assert.match(grid, /line-clamp-1/);
+  assert.match(grid, /line-clamp-2/);
+  assert.doesNotMatch(grid, /line-clamp-1/);
   assert.match(grid, /buildPlaceReviewsHref/);
   assert.doesNotMatch(hub, /scrollIntoView/);
   assert.doesNotMatch(filter, /scrollIntoView/);
