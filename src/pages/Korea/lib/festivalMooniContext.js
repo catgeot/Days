@@ -148,6 +148,7 @@ export function buildFestivalMooniContext(input = {}) {
     nearbyParking: Array.isArray(input.nearbyParking) ? input.nearbyParking : [],
     stayAreas: filterFestivalStayAreaNames(input.stayAreas, pt?.lat, pt?.lng),
     transport: input.transport || null,
+    detailPending: Boolean(input.detailPending),
   };
 }
 
