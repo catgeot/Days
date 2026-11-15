@@ -116,12 +116,24 @@ function isChunkLoadMessage(message) {
 }
 
 /**
- * WebKit fires vite:preloadError after beforeunload when location.assign aborts
- * an in-flight dynamic import. Reloading there cancels /place and reloads /explore.
- * @param {{ pageLeaving?: boolean }} [signal]
+ * WebKit emits vite:preloadError a few milliseconds after beforeunload when
+ * location.assign aborts an in-flight import. The measured gap was ~10ms.
+ * 2000ms covers that race, including a slow event loop, and still returns
+ * recovery quickly when the document stays (tel:/mailto:, a download, or a
+ * cancelled beforeunload prompt). An ignored signal is not replayed: at the
+ * deadline a slow assign can still be this document, and reloading then would
+ * cancel /place. The next failure after the window reloads.
+ */
+export const STALE_BUNDLE_LEAVE_WINDOW_MS = 2000;
+
+/**
+ * @param {{ now?: number, leavingUntil?: number }} [signal]
  */
 export function shouldIgnoreStaleBundleSignal(signal = {}) {
-  return signal.pageLeaving === true;
+  const until = signal.leavingUntil;
+  if (typeof until !== 'number' || until <= 0) return false;
+  const at = typeof signal.now === 'number' ? signal.now : 0;
+  return at < until;
 }
 
 /**
@@ -154,29 +166,51 @@ export function handleStaleBundleLoadFailure(reason, storage, bundleId, opts = {
  * }} [opts]
  */
 export function installStaleBundleRecovery(opts = {}) {
-  if (typeof window === 'undefined') return () => {};
-  const storage = opts.storage ?? window.sessionStorage;
-  const getBundleId = opts.getBundleId ?? (() => getEntryBundleId(document));
+  const target = opts.window ?? (typeof window !== 'undefined' ? window : undefined);
+  if (!target || typeof target.addEventListener !== 'function') return () => {};
+  const storage = opts.storage ?? target.sessionStorage;
+  const getBundleId = opts.getBundleId ?? (() => getEntryBundleId(target.document));
+  const now = opts.now ?? (() => Date.now());
+  const schedule = opts.schedule ?? ((ms, fn) => target.setTimeout(fn, ms));
+  const cancelTimer = opts.cancel ?? ((id) => target.clearTimeout(id));
   let handling = false;
-  let pageLeaving = false;
+  let leavingUntil = 0;
+  let leaveTimer = null;
 
-  const onPageLeaving = () => {
-    pageLeaving = true;
+  const clearLeave = () => {
+    leavingUntil = 0;
+    if (leaveTimer != null) {
+      cancelTimer(leaveTimer);
+      leaveTimer = null;
+    }
+  };
+
+  const armLeave = () => {
+    leavingUntil = now() + STALE_BUNDLE_LEAVE_WINDOW_MS;
+    if (leaveTimer != null) cancelTimer(leaveTimer);
+    leaveTimer = schedule(STALE_BUNDLE_LEAVE_WINDOW_MS, () => {
+      leaveTimer = null;
+      leavingUntil = 0;
+    });
   };
 
   const onFailure = (reason) => {
-    if (shouldIgnoreStaleBundleSignal({ pageLeaving })) return;
+    if (shouldIgnoreStaleBundleSignal({ now: now(), leavingUntil })) return;
     if (handling) return;
     handling = true;
     try {
       handleStaleBundleLoadFailure(reason, storage, getBundleId(), {
         reload: opts.reload,
+        now: now(),
       });
     } finally {
       handling = false;
     }
   };
 
+  // Vite reloads when vite:preloadError is not cancelled. Always cancel it and
+  // reload ourselves outside the leave window, so an abort during assign does
+  // not bounce /explore.
   const onPreloadError = (event) => {
     event?.preventDefault?.();
     onFailure(event?.payload ?? event);
@@ -195,16 +229,19 @@ export function installStaleBundleRecovery(opts = {}) {
     onFailure(event.error ?? event.message);
   };
 
-  window.addEventListener('beforeunload', onPageLeaving, true);
-  window.addEventListener('vite:preloadError', onPreloadError);
-  window.addEventListener('unhandledrejection', onUnhandledRejection);
-  window.addEventListener('error', onError, true);
+  target.addEventListener('beforeunload', armLeave, true);
+  target.addEventListener('pageshow', clearLeave, true);
+  target.addEventListener('vite:preloadError', onPreloadError);
+  target.addEventListener('unhandledrejection', onUnhandledRejection);
+  target.addEventListener('error', onError, true);
 
   return () => {
-    window.removeEventListener('beforeunload', onPageLeaving, true);
-    window.removeEventListener('vite:preloadError', onPreloadError);
-    window.removeEventListener('unhandledrejection', onUnhandledRejection);
-    window.removeEventListener('error', onError, true);
+    clearLeave();
+    target.removeEventListener('beforeunload', armLeave, true);
+    target.removeEventListener('pageshow', clearLeave, true);
+    target.removeEventListener('vite:preloadError', onPreloadError);
+    target.removeEventListener('unhandledrejection', onUnhandledRejection);
+    target.removeEventListener('error', onError, true);
   };
 }
 

@@ -1,11 +1,13 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import {
+  STALE_BUNDLE_LEAVE_WINDOW_MS,
   STALE_BUNDLE_RELOAD_COOLDOWN_MS,
   clearStaleBundleReloadGuard,
   decideStaleBundleRecoveryAction,
   getEntryBundleId,
   handleStaleBundleLoadFailure,
+  installStaleBundleRecovery,
   markStaleBundleReloadAttempt,
   readStaleBundleReloadGuard,
   shouldIgnoreStaleBundleSignal,
@@ -18,6 +20,59 @@ function mockStorage() {
     getItem: (k) => (map.has(k) ? map.get(k) : null),
     setItem: (k, v) => map.set(k, v),
     removeItem: (k) => map.delete(k),
+  };
+}
+
+function createLeaveClock() {
+  let at = 1_000_000;
+  let nextId = 1;
+  const timers = new Map();
+  const listeners = new Map();
+  const target = {
+    addEventListener(type, fn) {
+      const list = listeners.get(type) || [];
+      list.push(fn);
+      listeners.set(type, list);
+    },
+    removeEventListener(type, fn) {
+      listeners.set(type, (listeners.get(type) || []).filter((item) => item !== fn));
+    },
+  };
+  const dispatch = (type, event = {}) => {
+    for (const fn of [...(listeners.get(type) || [])]) fn(event);
+  };
+  const schedule = (ms, fn) => {
+    const id = nextId;
+    nextId += 1;
+    timers.set(id, { at: at + ms, fn });
+    return id;
+  };
+  const cancel = (id) => {
+    timers.delete(id);
+  };
+  const advance = (ms) => {
+    at += ms;
+    let progressed = true;
+    while (progressed) {
+      progressed = false;
+      const due = [...timers.entries()]
+        .filter(([, timer]) => timer.at <= at)
+        .sort((a, b) => a[1].at - b[1].at);
+      for (const [id, timer] of due) {
+        if (!timers.has(id)) continue;
+        timers.delete(id);
+        progressed = true;
+        timer.fn();
+      }
+    }
+  };
+  return {
+    target,
+    dispatch,
+    schedule,
+    cancel,
+    advance,
+    now: () => at,
   };
 }
 
@@ -72,10 +127,70 @@ describe('staleBundleRecovery guard', () => {
     assert.equal(reloadCount, 1);
   });
 
-  it('ignores chunk signals once the document has started leaving', () => {
-    assert.equal(shouldIgnoreStaleBundleSignal({ pageLeaving: true }), true);
-    assert.equal(shouldIgnoreStaleBundleSignal({ pageLeaving: false }), false);
+  it('ignores chunk signals only inside the leave window', () => {
+    const start = 5_000;
+    const until = start + STALE_BUNDLE_LEAVE_WINDOW_MS;
+    assert.equal(STALE_BUNDLE_LEAVE_WINDOW_MS, 2_000);
+    assert.equal(shouldIgnoreStaleBundleSignal({ now: start, leavingUntil: until }), true);
+    assert.equal(shouldIgnoreStaleBundleSignal({ now: until - 1, leavingUntil: until }), true);
+    assert.equal(shouldIgnoreStaleBundleSignal({ now: until, leavingUntil: until }), false);
+    assert.equal(shouldIgnoreStaleBundleSignal({ now: start, leavingUntil: 0 }), false);
     assert.equal(shouldIgnoreStaleBundleSignal(), false);
+  });
+
+  it('beforeunload then a document that stays reloads once the window ends', () => {
+    const clock = createLeaveClock();
+    let reloads = 0;
+    const uninstall = installStaleBundleRecovery({
+      window: clock.target,
+      storage: mockStorage(),
+      getBundleId: () => '/assets/index-leave.js',
+      now: clock.now,
+      schedule: clock.schedule,
+      cancel: clock.cancel,
+      reload: () => {
+        reloads += 1;
+      },
+    });
+
+    clock.dispatch('beforeunload');
+    clock.dispatch('vite:preloadError', { preventDefault() {} });
+    assert.equal(reloads, 0);
+
+    clock.advance(STALE_BUNDLE_LEAVE_WINDOW_MS - 1);
+    clock.dispatch('vite:preloadError', { preventDefault() {} });
+    assert.equal(reloads, 0);
+
+    clock.advance(1);
+    assert.equal(reloads, 0);
+    clock.dispatch('vite:preloadError', { preventDefault() {} });
+    assert.equal(reloads, 1);
+
+    uninstall();
+  });
+
+  it('pageshow clears the leave window for a bfcache or cancelled stay', () => {
+    for (const persisted of [true, false]) {
+      const clock = createLeaveClock();
+      let reloads = 0;
+      const uninstall = installStaleBundleRecovery({
+        window: clock.target,
+        storage: mockStorage(),
+        getBundleId: () => `/assets/index-show-${persisted}.js`,
+        now: clock.now,
+        schedule: clock.schedule,
+        cancel: clock.cancel,
+        reload: () => {
+          reloads += 1;
+        },
+      });
+
+      clock.dispatch('beforeunload');
+      clock.dispatch('pageshow', { persisted });
+      clock.dispatch('vite:preloadError', { preventDefault() {} });
+      assert.equal(reloads, 1, `persisted=${persisted}`);
+      uninstall();
+    }
   });
 
   it('clearStaleBundleReloadGuard allows a fresh reload decision', () => {

@@ -22,7 +22,7 @@ function attachPageErrors(page) {
 
 function expectErrorsClean(errors) {
   const fatal = errors.filter(
-    (message) => !/access control checks|Fetch API cannot load|Load failed|cancelled|The operation was aborted|Importing a module script failed/i.test(message),
+    (message) => !/access control checks|Fetch API cannot load|Load failed|cancelled|The operation was aborted|Importing a module script failed|Failed to fetch dynamically imported module/i.test(message),
   );
   expect(fatal, fatal.join('\n')).toEqual([]);
 }
@@ -129,9 +129,14 @@ test.describe('explore outside tap then card', () => {
     for (let i = 0; i < LOOPS; i += 1) {
       hold.on = false;
       const input = await openExploreReady(page);
-      hold.on = true;
       await showRomeCard(page, input);
       await expect(page.locator('[data-search-popover]')).toBeVisible();
+      hold.on = true;
+      const heldBefore = hold.count;
+      await page.evaluate(() => {
+        window.__heldImport = import(`/assets/hold-probe-${Date.now()}.js`);
+      });
+      await expect.poll(() => hold.count, { timeout: 5_000 }).toBeGreaterThan(heldBefore);
       const outside = await outsideTapPoint(page);
       const started = Date.now();
       await page.touchscreen.tap(outside[0], outside[1]);
@@ -195,6 +200,47 @@ test.describe('explore outside tap then card', () => {
     const restored = await page.evaluate(() => document.querySelector('.modal-scroll-area')?.scrollTop ?? 0);
     expect(Math.abs(restored - scrolled)).toBeLessThan(48);
     expectErrorsClean(errors);
+  });
+
+  test('취소된 beforeunload 뒤 창이 지나면 청크 오류는 다시 새로고침한다', async ({ page, context, browserName }) => {
+    test.skip(browserName !== 'chromium', 'Chromium beforeunload probe');
+    test.setTimeout(45_000);
+    const hold = holds.get(context);
+    hold.on = false;
+    const input = await openExploreReady(page);
+    await page.evaluate(() => {
+      window.__leaveProbe = 'alive';
+      window.__blockLeave = true;
+      window.addEventListener('beforeunload', (event) => {
+        if (!window.__blockLeave) return;
+        event.preventDefault();
+        event.returnValue = '';
+      });
+    });
+    page.on('dialog', (dialog) => dialog.dismiss());
+    await input.click();
+    const armedAt = Date.now();
+    await page.evaluate(() => {
+      window.location.assign('/place/rome');
+    });
+    await expect.poll(() => page.url(), { timeout: 5_000 }).toContain('/explore');
+    expect(await page.evaluate(() => window.__leaveProbe)).toBe('alive');
+
+    await page.evaluate(() => window.dispatchEvent(new Event('vite:preloadError')));
+    await page.waitForTimeout(400);
+    expect(page.url()).toContain('/explore');
+    expect(await page.evaluate(() => window.__leaveProbe)).toBe('alive');
+
+    const remain = 2_000 - (Date.now() - armedAt) + 300;
+    await page.waitForTimeout(Math.max(remain, 300));
+    await page.evaluate(() => {
+      window.__blockLeave = false;
+    });
+    const reloaded = page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 15_000 });
+    await page.evaluate(() => window.dispatchEvent(new Event('vite:preloadError'))).catch(() => {});
+    await reloaded;
+    await expect(page).toHaveURL(/\/explore/);
+    expect(await page.evaluate(() => window.__leaveProbe)).toBeUndefined();
   });
 
   test('브라우저 뒤로가기도 팝오버를 다시 열지 않는다', async ({ page, context }) => {
