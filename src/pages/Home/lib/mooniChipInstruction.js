@@ -173,6 +173,52 @@ export function isMooniChipInstructionTurn(userText, chipId = '') {
 }
 
 /**
+ * 18 in a row, or the whole sentence (16+) is itself a slice of an instruction.
+ * "Confirmed programs include …" shares only 17 characters with "confirmed programs and".
+ */
+const LEAK_SPAN_MIN = 18;
+const LEAK_SENTENCE_MIN = 16;
+
+const EXTRA_INSTRUCTION_SPANS = [
+  '에서 이 축제장까지 대중교통과 차로 가는 법을 알려줘',
+  'to this festival by public transit and by car',
+];
+
+function normalizedLeakKey(value) {
+  return String(value || '').toLowerCase().replace(/[^\p{L}\p{N}]+/gu, '');
+}
+
+let leakSpanCache = null;
+
+function instructionLeakSpans() {
+  if (leakSpanCache) return leakSpanCache;
+  const spans = [];
+  for (const raw of [...mooniFestivalChipSendTexts(), ...EXTRA_INSTRUCTION_SPANS]) {
+    const key = normalizedLeakKey(raw);
+    if (key.length >= LEAK_SENTENCE_MIN) spans.push(key);
+  }
+  leakSpanCache = spans;
+  return spans;
+}
+
+/**
+ * @param {string} sentence
+ */
+export function replySentenceLeaksChipInstruction(sentence) {
+  const key = normalizedLeakKey(sentence);
+  if (key.length < LEAK_SENTENCE_MIN) return false;
+  for (const span of instructionLeakSpans()) {
+    if (span.includes(key)) return true;
+    if (key.length < LEAK_SPAN_MIN || span.length < LEAK_SPAN_MIN) continue;
+    const last = span.length - LEAK_SPAN_MIN;
+    for (let i = 0; i <= last; i += 1) {
+      if (key.includes(span.slice(i, i + LEAK_SPAN_MIN))) return true;
+    }
+  }
+  return false;
+}
+
+/**
  * @param {string} place
  * @param {string} [fallback]
  */

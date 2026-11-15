@@ -137,7 +137,55 @@ test.describe('MOONi chip instruction does not leak @390', () => {
     await expect(page.getByText(/Do not invent/i)).toHaveCount(0);
     await expect(page.getByText(/on-site feel/i)).toHaveCount(0);
     await expect(page.getByText(/no verified festivals overlapping/i)).toHaveCount(0);
+    await expect(page.getByText(/Seattle|시애틀/)).toHaveCount(0);
     await shot(page, 'mooni-chip-haeundae-en-after-sights');
+  });
+
+  test('a normal sentence that shares one instruction word stays, and Seattle is not attached', async ({ page, context }) => {
+    await context.route(/\/functions\/v1\/gemini-proxy/i, async (route) => {
+      if (route.request().method() !== 'POST') {
+        await route.continue();
+        return;
+      }
+      let userText = '';
+      try {
+        userText = String(route.request().postDataJSON()?.params?.userText || '');
+      } catch {
+        userText = '';
+      }
+      const text = /on-site feel/i.test(userText)
+        ? 'The on-site feel is a bright beach walk. Cruise gate lights stay on until late.'
+        : '데이터에 없는 부스 이름은 빼고 크루즈게이트를 말해요. 밤바다에 조명이 이어져요.';
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(buildGeminiProxyMockBody(text, { modelUsed: 'mock-chip-keep' })),
+      });
+    });
+
+    await openFestivalMooni(page, '2048902');
+    await page.getByRole('button', { name: /볼거리·분위기/ }).first().click({ force: true });
+    await expect(page.getByText('데이터에 없는 부스 이름은 빼고 크루즈게이트를 말해요')).toBeVisible({ timeout: 60_000 });
+    await expect(page.getByText('밤바다에 조명이 이어져요')).toBeVisible();
+    await expect(page.getByText('볼 수 있는 프로그램은')).toHaveCount(0);
+    await shot(page, 'mooni-chip-haeundae-keep-ko');
+
+    await page.goto('/korea/?festival=2048902&lang=en', {
+      waitUntil: 'domcontentloaded',
+      timeout: 120_000,
+    });
+    const mooniBtn = page.locator('[data-festival-mooni-inline]').first();
+    await mooniBtn.waitFor({ state: 'attached', timeout: 90_000 });
+    await mooniBtn.click({ force: true, timeout: 15_000 });
+    await expect(page.getByTestId('mooni-festival-opening')).toBeVisible({ timeout: 120_000 });
+    const chip = page.getByRole('button', { name: /Sights & atmosphere/i }).first();
+    await expect(chip).toBeVisible({ timeout: 30_000 });
+    await chip.click({ force: true });
+    await expect(page.getByText('The on-site feel is a bright beach walk.')).toBeVisible({ timeout: 60_000 });
+    await expect(page.getByText('Cruise gate lights stay on until late.')).toBeVisible();
+    await expect(page.getByText(/Confirmed programs include/)).toHaveCount(0);
+    await expect(page.getByText(/Seattle|시애틀/)).toHaveCount(0);
+    await shot(page, 'mooni-chip-haeundae-keep-en');
   });
 
   test('경복궁·파리 장소 칩은 겹치는 행사 템플릿을 보여 주지 않는다', async ({ page }) => {

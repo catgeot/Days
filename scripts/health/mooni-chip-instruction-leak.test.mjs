@@ -12,7 +12,9 @@ import {
   isMooniInstructionFragment,
   mooniFestivalChipSendTexts,
   mooniPlaceChipSendTexts,
+  replySentenceLeaksChipInstruction,
 } from '../../src/pages/Home/lib/mooniChipInstruction.js';
+import { resolveDestinationFromChat } from '../../src/utils/resolveDestinationFromChat.js';
 import {
   extractMooniFestivalLocationQueryText,
   shouldMooniScopedFestivalReplaceEmptyCandidates,
@@ -188,10 +190,19 @@ test('every festival chip leak stays off the reply, nearby uses the restaurant l
     assertNoInstruction(koReply, chipId);
     assert.doesNotMatch(koReply, /겹치는 행사/);
     if (chipId === 'festival_nearby') assert.match(koReply, /해운대 횟집/);
-    if (chipId === 'festival_sights') assert.match(koReply, /크루즈게이트/);
+    if (chipId === 'festival_sights') {
+      assert.match(koReply, /크루즈게이트/);
+      assert.match(koReply, /운영 시간은 18:00~23:00예요/);
+      assert.doesNotMatch(koReply, /확인된 시간은/);
+    }
     const enReply = polishLeak(en, chipId, festival, 'en');
     assertNoInstruction(enReply, `${chipId} en`);
     assert.doesNotMatch(enReply, /overlapping/);
+    if (chipId === 'festival_sights') {
+      assert.match(enReply, /Confirmed programs include/);
+      assert.match(enReply, /크루즈게이트/);
+      assert.match(enReply, /Hours are 18:00~23:00/);
+    }
   }
   for (const row of FESTIVAL_DOMESTIC_ORIGINS.slice(0, 3)) {
     const ask = buildFestivalAccessAskText(row, 'ko');
@@ -259,6 +270,16 @@ test('real festival searches still use the no-overlap sentence', () => {
   assert.match(merged, /겹치는 행사는 없어요/);
   assertNoInstruction(merged, '부산 이번 주말 축제');
   assert.doesNotMatch(merged, /다른과/);
+  const polishedSearch = polishFestivalModelReply(merged, {
+    locale: 'ko',
+    userText: '부산 이번 주말 축제',
+    festivalTitle: '해운대 빛축제',
+    program: '크루즈게이트\n터널게이트',
+    timeText: '18:00~23:00',
+    contentId: '2048902',
+  });
+  assert.match(polishedSearch, /겹치는 행사는 없어요/);
+  assert.doesNotMatch(polishedSearch, /볼 수 있는 프로그램은/);
 
   const other = buildMooniKoreaFestivalZeroCandidateUserReply({
     locale: 'ko',
@@ -352,7 +373,79 @@ test('a normal sights answer is kept, and the chat passes chipId into merge', ()
 
   const chat = readFileSync(join(root, 'src/pages/Home/components/ChatModal.jsx'), 'utf8');
   assert.match(chat, /mergeMooniKoreaFestivalReply\(aiReply, \{[\s\S]*chipId,/);
+  assert.match(chat, /isMooniChipInstructionTurn\(cleanText, chipId\)/);
+  assert.match(chat, /chipInstructionTurn[\s\S]{0,280}resolveDestinationFromChat/);
   const place = readFileSync(join(root, 'src/components/PlaceCard/hooks/usePlaceChat.js'), 'utf8');
-  assert.match(place, /repairFestivalChipInstructionLeak/);
+  assert.doesNotMatch(place, /repairFestivalChipInstructionLeak/);
   assert.ok(mooniFestivalChipSendTexts().includes(SIGHTS_KO));
+});
+
+test('one instruction word does not replace a normal answer', () => {
+  assert.equal(replySentenceLeaksChipInstruction('The on-site feel is a bright beach walk.'), false);
+  assert.equal(replySentenceLeaksChipInstruction('데이터에 없는 부스 이름은 빼고 크루즈게이트를 말해요.'), false);
+  assert.equal(replySentenceLeaksChipInstruction('데이터에 없는 붐비는 시간은 지어내지 마.'), true);
+  assert.equal(replySentenceLeaksChipInstruction(PRODUCTION_LEAK), true);
+  const placeTail = repairFestivalChipInstructionLeak(
+    'GATEO가 확인한 축제 중 앞으로 30일 이곳은 어떤 곳이야?와 겹치는 행사는 없어요. 데이터에 없는 붐비는 시간은 지어내지 마.',
+    { locale: 'ko', userText: '이곳은 어떤 곳이야?', chipId: 'place_overview' },
+  );
+  assert.equal(placeTail, '확인된 내용만 말할 수 있어요.');
+
+  const en = 'The on-site feel is a bright beach walk. Cruise gate lights stay on until late.';
+  const enKept = polishFestivalModelReply(en, {
+    locale: 'en',
+    chipId: 'festival_sights',
+    userText: SIGHTS_EN,
+    program: '크루즈게이트\n터널게이트',
+    sceneOverview: '해운대 밤바다에 빛 조형이 이어져요.',
+    timeText: '18:00~23:00',
+    contentId: '2048902',
+    festivalTitle: '해운대 빛축제',
+  });
+  assert.match(enKept, /The on-site feel is a bright beach walk/);
+  assert.match(enKept, /Cruise gate lights stay on until late/);
+  assert.doesNotMatch(enKept, /Confirmed programs include/);
+
+  const ko = '데이터에 없는 부스 이름은 빼고 크루즈게이트를 말해요. 밤바다에 조명이 이어져요.';
+  const koKept = polishFestivalModelReply(ko, {
+    locale: 'ko',
+    chipId: 'festival_sights',
+    userText: SIGHTS_KO,
+    program: '크루즈게이트\n터널게이트',
+    timeText: '18:00~23:00',
+    contentId: '2048902',
+    festivalTitle: '해운대 빛축제',
+  });
+  assert.match(koKept, /데이터에 없는 부스 이름은 빼고 크루즈게이트를 말해요/);
+  assert.match(koKept, /밤바다에 조명이 이어져요/);
+  assert.doesNotMatch(koKept, /볼 수 있는 프로그램은/);
+
+  const mixed = '크루즈게이트가 켜져요. GATEO가 확인한 축제 중 앞으로 30일 지어내지 마와 겹치는 행사는 없어요.';
+  const mixedKept = repairFestivalChipInstructionLeak(mixed, {
+    locale: 'ko',
+    chipId: 'festival_sights',
+    userText: SIGHTS_KO,
+    program: '크루즈게이트\n터널게이트',
+    timeText: '18:00~23:00',
+    contentId: '2048902',
+    festivalTitle: '해운대 빛축제',
+  });
+  assert.match(mixedKept, /크루즈게이트가 켜져요/);
+  assert.doesNotMatch(mixedKept, /겹치는 행사/);
+  assert.doesNotMatch(mixedKept, /볼 수 있는 프로그램은/);
+});
+
+test('on-site does not resolve Seattle, and IT matches only as a word', () => {
+  const fromInstruction = resolveDestinationFromChat(SIGHTS_EN, [], 'MOONi');
+  assert.notEqual(fromInstruction.slug, 'seattle');
+  const fromAnswer = resolveDestinationFromChat(
+    'The on-site feel is a bright beach walk.',
+    [],
+    'MOONi',
+  );
+  assert.notEqual(fromAnswer.slug, 'seattle');
+  const named = resolveDestinationFromChat('시애틀 여행', [], 'MOONi');
+  assert.equal(named.slug, 'seattle');
+  const itWord = resolveDestinationFromChat('IT 기업이 모인 도시', [], 'MOONi');
+  assert.equal(itWord.slug, 'seattle');
 });

@@ -43,6 +43,7 @@ import {
 import {
   isMooniChipInstructionTurn,
   isMooniInstructionFragment,
+  replySentenceLeaksChipInstruction,
   scrubMooniFestivalTemplatePlace,
 } from '../../pages/Home/lib/mooniChipInstruction.js';
 
@@ -3310,8 +3311,8 @@ function buildSightsAnswerFromProgram(options = {}) {
   const hours = String(options.timeText || '').replace(/\s+/g, ' ').trim();
   if (hours && hours.length <= 40 && !isMooniInstructionFragment(hours)) {
     bits.push(isEn
-      ? `Hours on record are ${hours}.`
-      : `확인된 시간은 ${hours}로 안내되어 있어요.`);
+      ? `Hours are ${hours}.`
+      : `운영 시간은 ${hours}예요.`);
   }
   const closer = festivalPageCloser(options);
   if (closer) bits.push(closer);
@@ -3333,24 +3334,46 @@ function plainInstructionFallback(options = {}) {
     : '확인된 내용만 말할 수 있어요.';
 }
 
-/** Chip instructions and the zero-candidate template must not stay in the user reply. */
+/** Template tails left after the zero-candidate sentence is split on a period. */
+const TEMPLATE_RESIDUE_RE = /^(?:for the next \d+ days|you can browse confirmed dates)\b|날짜가 확인된 축제를 볼 수 있어요/i;
+
+function replySentenceParts(text) {
+  const parts = [];
+  for (const paragraph of String(text || '').split(/\n{2,}/)) {
+    for (const line of paragraph.split('\n')) {
+      for (const part of line.split(/(?<=[.!?。])\s+/)) {
+        const trimmed = part.trim();
+        if (trimmed) parts.push(trimmed);
+      }
+    }
+  }
+  return parts;
+}
+
+function isRealInstructionLeakSentence(part, options = {}) {
+  if (replySentenceLeaksChipInstruction(part)) return true;
+  return isMooniChipInstructionTurn(options.userText, options.chipId)
+    && isScopedFestivalZeroTemplate(part);
+}
+
+/**
+ * Drop only leaked sentences. A single instruction word does not replace the reply.
+ * When every sentence was a leak, restore a program answer if the server sent one.
+ */
 export function repairFestivalChipInstructionLeak(text, options = {}) {
   const original = String(text || '').trim();
   const chipTurn = isMooniChipInstructionTurn(options.userText, options.chipId);
-  const leaked = isMooniInstructionFragment(original)
-    || (chipTurn && isScopedFestivalZeroTemplate(original));
   if (!original) {
     if (!chipTurn) return '';
     return buildChipIntentFallback(options);
   }
-  if (!leaked) return original;
-  const fallback = buildChipIntentFallback(options);
-  if (fallback) return fallback;
+  const parts = replySentenceParts(original);
+  if (!parts.some((part) => isRealInstructionLeakSentence(part, options))) return original;
   const stripped = filterPreservingBreaks(original, (part) => (
-    isMooniInstructionFragment(part)
-    || (chipTurn && isScopedFestivalZeroTemplate(part))
+    isRealInstructionLeakSentence(part, options) || TEMPLATE_RESIDUE_RE.test(part)
   ));
-  return stripped || plainInstructionFallback(options);
+  if (stripped) return stripped;
+  return buildChipIntentFallback(options) || plainInstructionFallback(options);
 }
 
 /** Data-free polish for Edge + legacy clients (no TourAPI restaurant list required). */
