@@ -9,9 +9,14 @@
     "is_editorial": true,
     "images": [
       {
-        "url": "https://images.unsplash.com/photo-1609137144813-7d81c76720dd?w=400",
-        "photographer_name": "E2E Fixture",
-        "unsplash_url": "https://unsplash.com/photos/e2e-hwaseong"
+        "url": "https://tong.visitkorea.or.kr/cms2/website/67/2711467.jpg",
+        "credit": "ⓒ한국관광공사-송재근 / 포토코리아 · 공공누리 제1유형",
+        "source": "한국관광공사 포토코리아 · 공공누리 제1유형",
+        "license": "KOGL Type 1",
+        "license_url": "https://www.kogl.or.kr/info/licenseType1.do",
+        "source_page": "https://phoko.visitkorea.or.kr/",
+        "photographer": "한국관광공사 송재근",
+        "photographer_url": "https://phoko.visitkorea.or.kr/"
       }
     ],
     "created_at": "2026-11-12T08:00:00Z",
@@ -33,6 +38,31 @@
     "rating": 5,
     "user_id": "e2e-editorial-nophoto",
     "user": { "id": "e2e-editorial-nophoto", "display_name": "GATEO", "avatar_url": null },
+    "likes": []
+  },
+  {
+    "id": "e2e-hwaseong-unsplash",
+    "place_slug": "hwaseong-fortress",
+    "content": "Unsplash 크레딧이 유지되어야 하는 수원 화성 픽스처입니다.",
+    "content_blocks": null,
+    "persona_label": "야경렌즈",
+    "is_public": true,
+    "is_editorial": true,
+    "images": [
+      {
+        "url": "https://images.unsplash.com/photo-1734132046083-413c154b8d85?auto=format&fit=crop&w=1600&q=80",
+        "credit": "Photo by Himmel S on Unsplash",
+        "source": "Unsplash",
+        "license": "Unsplash License",
+        "photographer": "Himmel S",
+        "photographer_url": "https://unsplash.com/@skyhung1228?utm_source=gateo&utm_medium=referral",
+        "unsplash_url": "https://unsplash.com/photos/a-view-of-a-cemetery-in-a-city-wkQyVJwHAzM?utm_source=gateo&utm_medium=referral"
+      }
+    ],
+    "created_at": "2026-11-10T08:00:00Z",
+    "rating": 5,
+    "user_id": "e2e-editorial-unsplash",
+    "user": { "id": "e2e-editorial-unsplash", "display_name": "GATEO", "avatar_url": null },
     "likes": []
   }
 ]

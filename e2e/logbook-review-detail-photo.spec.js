@@ -12,6 +12,59 @@ const HUB_PATH =
   '/blog?tab=public&lang=ko&logbook_review_hub=1&logbook_filter=1&region=domestic';
 const HWASEONG_REVIEW_ID = 'a9e7d546-7b70-47ce-bea1-362f36d12156';
 const NO_PHOTO_ID = 'e2e-hwaseong-no-photo';
+const UNSPLASH_REVIEW_ID = 'e2e-hwaseong-unsplash';
+const HWASEONG_CREDIT = 'ⓒ한국관광공사-송재근 / 포토코리아 · 공공누리 제1유형';
+
+function reviewDetailPath(reviewId, lang) {
+  const params = new URLSearchParams({
+    review: reviewId,
+    logbook_review_hub: '1',
+    logbook_filter: '1',
+  });
+  if (lang) params.set('lang', lang);
+  return `/place/hwaseong-fortress/reviews?${params.toString()}`;
+}
+
+async function openReviewDetail(page, reviewId, lang) {
+  await page.goto(reviewDetailPath(reviewId, lang), { waitUntil: 'domcontentloaded' });
+  await expect(page.getByTestId('place-card-route-loading')).toBeHidden({ timeout: 60_000 });
+  const card = page.locator(`[data-review-id="${reviewId}"]`);
+  await expect(card.getByTestId('logbook-editorial-review-detail-hero')).toBeVisible({ timeout: 60_000 });
+  return card;
+}
+
+async function assertStoredHeroCredit(card) {
+  const credit = card.getByTestId('logbook-editorial-review-detail-hero-credit');
+  const photo = card.getByTestId('logbook-editorial-review-detail-hero-photo');
+  const fallback = card.getByTestId('logbook-editorial-review-detail-hero-fallback');
+  await expect(credit).toBeVisible();
+  await expect(credit).toHaveText(HWASEONG_CREDIT);
+  await expect(credit).not.toContainText('Unsplash');
+  await expect(credit.locator('a')).toHaveCount(0);
+  await expect
+    .poll(async () => (await photo.isVisible()) || (await fallback.isVisible()), { timeout: 20_000 })
+    .toBeTruthy();
+  const creditBox = await credit.boundingBox();
+  const heroBox = await card.getByTestId('logbook-editorial-review-detail-hero').boundingBox();
+  const anchor = (await photo.isVisible()) ? photo : fallback;
+  const anchorBox = await anchor.boundingBox();
+  expect(creditBox && heroBox && anchorBox).toBeTruthy();
+  expect(creditBox.y).toBeGreaterThan(heroBox.y);
+  expect(creditBox.y).toBeGreaterThanOrEqual(anchorBox.y + anchorBox.height - 1);
+}
+
+async function assertUnsplashHeroCredit(card) {
+  const credit = card.getByTestId('logbook-editorial-review-detail-hero-credit');
+  await expect(credit).toBeVisible();
+  await expect(credit).toContainText('Photo by');
+  await expect(credit).toContainText('Himmel S');
+  await expect(credit.getByRole('link', { name: 'Unsplash' })).toBeVisible();
+  await expect(credit.getByRole('link', { name: 'Himmel S' })).toHaveAttribute(
+    'href',
+    /unsplash\.com\/@skyhung1228/,
+  );
+  await expect(credit).not.toContainText('한국관광공사');
+}
 
 function fulfillPlaceReviews(route, rows = REVIEW_ROWS) {
   const url = new URL(route.request().url());
@@ -77,14 +130,32 @@ test.describe('LogBook review detail photo @mocked', () => {
       .poll(async () => (await photo.isVisible()) || (await fallback.isVisible()))
       .toBeTruthy();
 
-    const credit = reviewCard.getByTestId('logbook-editorial-review-detail-hero-credit');
-    await expect(credit).toBeVisible();
-    const creditBox = await credit.boundingBox();
-    const heroBox = await hero.boundingBox();
-    expect(creditBox && heroBox).toBeTruthy();
-    expect(creditBox.y).toBeGreaterThan(heroBox.y);
+    await assertStoredHeroCredit(reviewCard);
+    await expect(page.locator('html')).toHaveAttribute('lang', 'ko');
 
-    await expect(reviewCard.locator('p:has-text("Photo by")')).toHaveCount(1);
+    const englishCard = await openReviewDetail(page, HWASEONG_REVIEW_ID, 'en');
+    await expect(page.locator('html')).toHaveAttribute('lang', 'en');
+    await assertStoredHeroCredit(englishCard);
+
+    const unsplashCard = await openReviewDetail(page, UNSPLASH_REVIEW_ID, 'en');
+    await assertUnsplashHeroCredit(unsplashCard);
+  });
+
+  test('390 Chromium — stored hero credit, English text, Unsplash unchanged', async ({ page }) => {
+    test.skip(
+      test.info().project.name !== 'chromium-logbook-detail-photo-390',
+      'Chromium 390 matrix row',
+    );
+    await page.setViewportSize({ width: 390, height: 844 });
+    const card = await openReviewDetail(page, HWASEONG_REVIEW_ID, 'ko');
+    await assertStoredHeroCredit(card);
+
+    const englishCard = await openReviewDetail(page, HWASEONG_REVIEW_ID, 'en');
+    await expect(page.locator('html')).toHaveAttribute('lang', 'en');
+    await assertStoredHeroCredit(englishCard);
+
+    const unsplashCard = await openReviewDetail(page, UNSPLASH_REVIEW_ID, 'ko');
+    await assertUnsplashHeroCredit(unsplashCard);
   });
 
   test('1280 Chromium — hero layout + no-photo fallback', async ({ page }) => {
@@ -128,6 +199,7 @@ test.describe('LogBook review detail photo @mocked', () => {
       return badgeBox.top >= mediaBox.bottom - 1;
     });
     expect(stacked).toBe(true);
+    await assertStoredHeroCredit(hwaseongCard);
   });
 
   test('1280 EN — hub card copy without missing keys', async ({ page }) => {

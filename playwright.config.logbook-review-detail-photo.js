@@ -46,6 +46,16 @@ export default defineConfig({
       },
     },
     {
+      name: 'chromium-logbook-detail-photo-390',
+      use: {
+        ...devices['Desktop Chrome'],
+        viewport: { width: 390, height: 844 },
+        deviceScaleFactor: 1,
+        isMobile: true,
+        hasTouch: true,
+      },
+    },
+    {
       name: 'chromium-logbook-detail-photo-1280',
       use: {
         ...devices['Desktop Chrome'],
