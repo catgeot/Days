@@ -46,7 +46,11 @@ import { searchBoxForward, searchBoxTypesForQuery } from './mapboxSearchBox';
 import { lookupVisitedPlacesForSearch } from './visitedPlaceSearchLookup.js';
 import { dropFarHomonymBusinessHits } from './searchHomonymRegion.js';
 import { overlayGeoFieldsOnVisitedSpots } from './visitedPlaceSearch.js';
-import { buildMapboxSearchQueries, canonicalizeExploreSearchQuery } from './exploreSearchAliases';
+import {
+  buildMapboxSearchQueries,
+  canonicalizeExploreSearchQuery,
+  exploreAliasListedContentId,
+} from './exploreSearchAliases';
 import { resolveExploreAliasTourPlaceParam } from './koreaPlaceMatchDictionary.js';
 import {
   effectiveExploreSearchQuery,
@@ -140,7 +144,7 @@ function upsertRestaurantByName(out, seen, item) {
   out.push(stamped);
 }
 
-async function prependKoreaTourTitleCandidates(query, regional, list) {
+async function prependKoreaTourTitleCandidates(query, regional, list, matchOpts) {
   const titleQ = regional
     ? String(regional.placeQuery || '').trim()
     : canonicalizeExploreSearchQuery(effectiveExploreSearchQuery(query));
@@ -148,11 +152,16 @@ async function prependKoreaTourTitleCandidates(query, regional, list) {
     return list;
   }
   if (!titleQ || !/[\uAC00-\uD7A3]/.test(titleQ)) return list;
-  if (/\s/.test(String(query || '').trim()) && !regional?.placeQuery) return list;
+  const typed = String(query || '').trim();
+  if (/\s/.test(typed) && !regional?.placeQuery && !exploreAliasListedContentId(typed)) return list;
   try {
     const { collectKoreaTourTitleSearchCandidates } = await import('./exploreKoreaTourTitleCandidates.js');
     const tourItems = await collectKoreaTourTitleSearchCandidates(
-      regional ? `${regional.regionQuery} ${regional.placeQuery}`.trim() : String(query || '').trim(),
+      regional ? `${regional.regionQuery} ${regional.placeQuery}`.trim() : typed,
+      {
+        lookupRows: matchOpts?.tourTitleLookupRows,
+        lookupByContentId: matchOpts?.tourTitleLookupByContentId,
+      },
     );
     if (!tourItems.length) return list;
     const merged = [];
@@ -203,7 +212,7 @@ async function appendExploreRestaurantMatches(query, list, matchOpts) {
 
 async function finalizeHybridSuggestions(query, regional, list, max = 24, matchOpts) {
   const withRestaurants = await appendExploreRestaurantMatches(query, list, matchOpts);
-  const withTour = await prependKoreaTourTitleCandidates(query, regional, withRestaurants);
+  const withTour = await prependKoreaTourTitleCandidates(query, regional, withRestaurants, matchOpts);
   const policy = applyExploreAliasTourSuggestionPolicy(query, withTour);
   const enriched = policy
     .slice(0, max)
