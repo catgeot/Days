@@ -40,7 +40,11 @@ export const GATEO_ENV_FLAG_NAMES = {
 export function readGateoEnvFlag(name) {
   // ESM always has import.meta; Vite supplies import.meta.env. node --test rewrites env → __VITE_ENV__.
   const raw = import.meta.env?.[name] ?? globalThis.__VITE_ENV__?.[name];
-  return String(raw || '') === '1';
+  const normalized = String(raw ?? '').trim().toLowerCase();
+  if (!normalized || normalized === '0' || normalized === 'false' || normalized === 'off') {
+    return false;
+  }
+  return normalized === '1' || normalized === 'true' || normalized === 'yes';
 }
 
 export function isGateoPoiCountySlugSearchFixEnabled() {

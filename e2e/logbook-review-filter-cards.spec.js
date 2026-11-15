@@ -69,6 +69,8 @@ test.describe('LogBook review filter cards @mocked', () => {
     const grid = page.getByTestId('logbook-official-review-hub-card-grid');
     await expect(grid).toBeVisible();
     await expect(grid).toHaveClass(/grid-cols-2/);
+    await expect(page.getByTestId('logbook-official-review-hub-card-title').first()).toHaveClass(/line-clamp-2/);
+    await expect(page.getByTestId('logbook-official-review-hub-card-summary')).toHaveCount(0);
     const items = page.getByTestId('logbook-official-review-hub-item');
     await expect(items).toHaveCount(12);
     await expect(page.getByTestId('logbook-review-filter-other-cities')).toBeVisible();
@@ -135,18 +137,15 @@ test.describe('LogBook review filter cards @mocked', () => {
     );
   });
 
-  test('1280 — 3-column grid, title + summary lines', async ({ page }) => {
+  test('1280 — 3-column grid, city/date + 2-line bold summary', async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
     await openHub(page);
     const grid = page.getByTestId('logbook-official-review-hub-card-grid');
     await expect(grid).toHaveClass(/xl:grid-cols-3/);
     const title = page.getByTestId('logbook-official-review-hub-card-title').first();
     await expect(title).toBeVisible();
-    const summary = page.getByTestId('logbook-official-review-hub-card-summary').first();
-    if ((await summary.count()) > 0) {
-      await expect(summary).toBeVisible();
-      await assertTextLineCount(page, 'logbook-official-review-hub-card-summary', 1);
-    }
+    await expect(title).toHaveClass(/line-clamp-2/);
+    await expect(page.getByTestId('logbook-official-review-hub-card-summary')).toHaveCount(0);
     await assertTextLineCount(page, 'logbook-official-review-hub-card-title', 2);
     await assertCityRowSingleLine(page);
   });

@@ -1,0 +1,38 @@
+[
+  {
+    "id": "a9e7d546-7b70-47ce-bea1-362f36d12156",
+    "place_slug": "hwaseong-fortress",
+    "content": "수원 화성 성곽을 따라 걷는 공식 리뷰 픽스처입니다.",
+    "content_blocks": null,
+    "persona_label": "느린산책",
+    "is_public": true,
+    "is_editorial": true,
+    "images": [
+      {
+        "url": "https://images.unsplash.com/photo-1609137144813-7d81c76720dd?w=400",
+        "photographer_name": "E2E Fixture",
+        "unsplash_url": "https://unsplash.com/photos/e2e-hwaseong"
+      }
+    ],
+    "created_at": "2026-11-12T08:00:00Z",
+    "rating": 5,
+    "user_id": "e2e-editorial-hwaseong",
+    "user": { "id": "e2e-editorial-hwaseong", "display_name": "GATEO", "avatar_url": null },
+    "likes": []
+  },
+  {
+    "id": "e2e-hwaseong-no-photo",
+    "place_slug": "hwaseong-fortress",
+    "content": "사진 없는 수원 화성 에디토리얼 픽스처입니다.",
+    "content_blocks": null,
+    "persona_label": "가족나들이",
+    "is_public": true,
+    "is_editorial": true,
+    "images": [],
+    "created_at": "2026-11-11T08:00:00Z",
+    "rating": 5,
+    "user_id": "e2e-editorial-nophoto",
+    "user": { "id": "e2e-editorial-nophoto", "display_name": "GATEO", "avatar_url": null },
+    "likes": []
+  }
+]
