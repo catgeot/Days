@@ -8,6 +8,8 @@ import { festivalItemThumbSrc } from '../../Korea/festivalListThumb.js';
 import { isFestivalEnded } from '../../Korea/festivalDeepLinkItem.js';
 import { isGateoSiteSearchEnabled } from '../../../shared/gateoFeatureFlags.js';
 import { EXPLORE_BADGE_FESTIVAL } from '../../../i18n/exploreUi.js';
+import { hangulChoseong } from '../../../utils/hangulSearch.js';
+import { filterChoseongRows, isExploreChoseongQuery } from './exploreChoseongMatch.js';
 
 const MAX_ACTIVE = 5;
 const MAX_ENDED = 2;
@@ -44,6 +46,45 @@ export function appendExploreFestivalBelowPlaceBlock(festivals, items, opts = {}
 
 /** @type {Promise<object[]> | null} */
 let festivalSearchPoolPromise = null;
+
+/** @type {WeakMap<object, object[]>} */
+let festivalChoseongIndexes = new WeakMap();
+let festivalChoseongIndexBuilds = 0;
+
+export function exploreFestivalChoseongIndexBuildCount() {
+  return festivalChoseongIndexBuilds;
+}
+
+export function resetExploreFestivalChoseongIndexForTests() {
+  festivalChoseongIndexes = new WeakMap();
+  festivalChoseongIndexBuilds = 0;
+}
+
+function festivalChoseongRows(pool) {
+  if (!Array.isArray(pool)) return [];
+  const cached = festivalChoseongIndexes.get(pool);
+  if (cached) return cached;
+  festivalChoseongIndexBuilds += 1;
+  const rows = [];
+  for (const item of pool) {
+    const title = item?.title;
+    if (typeof title !== 'string') continue;
+    const choseong = hangulChoseong(title);
+    if (!choseong) continue;
+    const id = String(item?.contentId || title);
+    rows.push({
+      id,
+      choseong,
+      tier: 0,
+      popularity: 0,
+      nameLength: title.trim().length,
+      label: title.trim(),
+      item,
+    });
+  }
+  festivalChoseongIndexes.set(pool, rows);
+  return rows;
+}
 
 export function resetExploreFestivalSearchPoolForTests() {
   festivalSearchPoolPromise = null;
@@ -131,6 +172,11 @@ export function exploreFestivalSuggestionMatchesQuery(query, suggestion, locale 
 }
 
 export function filterExploreFestivalSearchQuery(items, query, opts = {}) {
+  const raw = String(query ?? '');
+  if (!raw.trim()) return [];
+  if (isExploreChoseongQuery(raw)) {
+    return filterChoseongRows(festivalChoseongRows(items), raw, Number.MAX_SAFE_INTEGER).filter(Boolean);
+  }
   const tokens = exploreFestivalSearchTokens(query);
   if (!tokens.length) return [];
   const locale = opts.locale || 'ko';
