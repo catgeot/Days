@@ -58,6 +58,7 @@ import {
   shouldOmitMooniGeminiHistoryForKoreaFestivalTurn,
 } from '../lib/mooniKoreaFestivalTurn.js';
 import { buildFestivalMooniChatOpening } from '../../Korea/lib/festivalMooniBoundSpot.js';
+import { readFestivalContextForAsk } from '../../Korea/lib/festivalDetailContextWait.js';
 import { festivalChatHeaderTitle } from '../../Korea/lib/festivalMooniContext.js';
 import {
   createMooniSendGate,
@@ -203,6 +204,8 @@ const ChatModal = ({
   const [messages, setMessages] = useState([]);
   const messagesRef = useRef(messages);
   messagesRef.current = messages;
+  const mooniPlaceContextRef = useRef(mooniPlaceContext);
+  mooniPlaceContextRef.current = mooniPlaceContext;
   const lastTripSyncChatIdRef = useRef(null);
   const pendingDraftSessionResetRef = useRef(false);
   const festivalUiLocaleRef = useRef(i18n.language);
@@ -1281,8 +1284,14 @@ const ChatModal = ({
       let koreaFestivalHint = '';
       let mooniFestivalCandidates = [];
       let mooniFestivalUpcomingFallback = [];
+      // Open can capture the list row before tourapi detail. Poll the ref so this
+      // single request sees overview/program that arrive while the chip is in flight.
+      const festivalContextForAsk = await readFestivalContextForAsk(
+        () => mooniPlaceContextRef.current,
+      );
+      const festivalSpot = mooniPlaceContextRef.current;
       const festivalContext = await loadFestivalAskContext(
-        mooniPlaceContext?.festivalContext ?? null,
+        festivalContextForAsk,
         { chipId, userText: cleanText },
       );
       try {
@@ -1291,7 +1300,7 @@ const ChatModal = ({
           chipId,
           festivalContext,
           boundPlaceName: festivalBoundPlaceName,
-          boundSpot: mooniPlaceContext,
+          boundSpot: festivalSpot,
           locale: i18n.language,
           departureLabel: explicitDeparture || departureLabel || '',
         });
