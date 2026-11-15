@@ -1,4 +1,5 @@
 export const STALE_BUNDLE_RELOAD_COOLDOWN_MS = 30_000;
+export const STALE_BUNDLE_BOOT_CLEAR_MS = 4_000;
 export const STALE_BUNDLE_GUARD_PREFIX = 'gateo:stale-bundle-reload:';
 
 export function staleBundleGuardKey(bundleId) {
@@ -79,7 +80,9 @@ export function showStaleBundleFallback(doc = typeof document !== 'undefined' ? 
   const existing = doc.getElementById('gateo-stale-bundle-fallback');
   if (existing) return;
 
-  const root = doc.getElementById('root') || doc.body;
+  // React가 #root를 비워도 안내가 남게 body에 붙인다.
+  const root = doc.body || doc.getElementById('root');
+  if (!root) return;
   const panel = doc.createElement('div');
   panel.id = 'gateo-stale-bundle-fallback';
   panel.setAttribute('role', 'alert');
@@ -125,6 +128,74 @@ function isChunkLoadMessage(message) {
  * cancel /place. The next failure after the window reloads.
  */
 export const STALE_BUNDLE_LEAVE_WINDOW_MS = 2000;
+
+let bootClearTimer = null;
+let lazyPending = 0;
+let lazyChunkSettled = false;
+
+/** Tests only. */
+export function resetLazyChunkTracking() {
+  lazyPending = 0;
+  lazyChunkSettled = false;
+  cancelStaleBundleBootClear();
+}
+
+/**
+ * A lazy import that never settles (Vite preventDefault → undefined module)
+ * must not clear the one-reload guard. Clearing on root mount made a failed
+ * place chunk reload /place forever.
+ * @param {Promise<unknown>} promise
+ * @param {Parameters<typeof scheduleStaleBundleBootClear>[0]} [opts]
+ */
+export function trackLazyChunkLoad(promise, opts = {}) {
+  lazyPending += 1;
+  cancelStaleBundleBootClear();
+  let settled = false;
+  const finish = (ok) => {
+    if (settled) return;
+    settled = true;
+    lazyPending = Math.max(0, lazyPending - 1);
+    if (!ok || lazyPending > 0) return;
+    lazyChunkSettled = true;
+    scheduleStaleBundleBootClear(opts);
+  };
+  Promise.resolve(promise).then(() => finish(true), () => finish(false));
+}
+
+/**
+ * Root mount is not "the place chunk loaded". Clearing the reload guard there
+ * makes a failed lazy route reload forever: boot clears the guard, the chunk
+ * fails, we reload, boot clears it again.
+ * @param {{
+ *   storage?: Storage,
+ *   bundleId?: string,
+ *   doc?: Document | null,
+ *   delayMs?: number,
+ *   schedule?: (ms: number, fn: () => void) => unknown,
+ *   cancel?: (id: unknown) => void,
+ * }} [opts]
+ */
+export function scheduleStaleBundleBootClear(opts = {}) {
+  const doc = opts.doc ?? (typeof document !== 'undefined' ? document : null);
+  const storage = opts.storage ?? (typeof window !== 'undefined' ? window.sessionStorage : null);
+  if (!storage) return;
+  const bundleId = opts.bundleId ?? getEntryBundleId(doc);
+  const delayMs = opts.delayMs ?? STALE_BUNDLE_BOOT_CLEAR_MS;
+  const schedule = opts.schedule ?? ((ms, fn) => setTimeout(fn, ms));
+  const cancel = opts.cancel ?? ((id) => clearTimeout(id));
+  if (bootClearTimer) cancel(bootClearTimer.id);
+  const id = schedule(delayMs, () => {
+    bootClearTimer = null;
+    clearStaleBundleReloadGuard(storage, bundleId);
+  });
+  bootClearTimer = { id, cancel };
+}
+
+export function cancelStaleBundleBootClear() {
+  if (!bootClearTimer) return;
+  bootClearTimer.cancel(bootClearTimer.id);
+  bootClearTimer = null;
+}
 
 /**
  * @param {{ now?: number, leavingUntil?: number }} [signal]
@@ -196,6 +267,8 @@ export function installStaleBundleRecovery(opts = {}) {
 
   const onFailure = (reason) => {
     if (shouldIgnoreStaleBundleSignal({ now: now(), leavingUntil })) return;
+    // A chunk failed before the boot grace elapsed. Keep the one-reload guard.
+    cancelStaleBundleBootClear();
     if (handling) return;
     handling = true;
     try {
@@ -208,9 +281,11 @@ export function installStaleBundleRecovery(opts = {}) {
     }
   };
 
-  // Vite reloads when vite:preloadError is not cancelled. Always cancel it and
-  // reload ourselves outside the leave window, so an abort during assign does
-  // not bounce /explore.
+  // Vite 7 rethrows inside __vitePreload when this event is not cancelled, and
+  // fulfills the import with undefined when it is. React.lazy then reads
+  // _result.default and WebKit reports y._result.default. lazyDefault keeps that
+  // undefined fulfillment pending. Cancel here and reload ourselves outside the
+  // leave window so an abort during assign does not bounce /explore.
   const onPreloadError = (event) => {
     event?.preventDefault?.();
     onFailure(event?.payload ?? event);
@@ -245,11 +320,12 @@ export function installStaleBundleRecovery(opts = {}) {
   };
 }
 
-/** Call after React root mounts successfully. */
+/** Call after React root mounts. The guard stays until tracked lazy chunks settle. */
 export function notifyStaleBundleBootSuccess(doc = typeof document !== 'undefined' ? document : null) {
   if (!doc || typeof window === 'undefined') return;
+  if (lazyPending > 0 || !lazyChunkSettled) return;
   try {
-    clearStaleBundleReloadGuard(window.sessionStorage, getEntryBundleId(doc));
+    scheduleStaleBundleBootClear({ doc, storage: window.sessionStorage });
   } catch {
     /* quota */
   }

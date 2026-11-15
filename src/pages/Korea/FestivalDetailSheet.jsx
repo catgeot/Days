@@ -1,5 +1,4 @@
 import React, {
-  lazy,
   Suspense,
   useCallback,
   useEffect,
@@ -8,6 +7,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import { lazyDefault as lazy } from '../../shared/lib/lazyDefault.js';
 import { flushSync } from 'react-dom';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';

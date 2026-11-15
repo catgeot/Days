@@ -1,4 +1,5 @@
-import React, { lazy, Suspense, useEffect } from 'react';
+import React, { Suspense, useEffect } from 'react';
+import { lazyDefault as lazy } from './shared/lib/lazyDefault.js';
 import { BrowserRouter, Routes, Route, Navigate, useLocation, useParams } from 'react-router-dom';
 import { Analytics } from '@vercel/analytics/react';
 import { HelmetProvider } from 'react-helmet-async';
