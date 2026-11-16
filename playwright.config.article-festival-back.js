@@ -63,5 +63,13 @@ export default defineConfig({
         deviceScaleFactor: 1,
       },
     },
+    {
+      name: 'webkit-article-back-1280',
+      use: {
+        ...devices['Desktop Safari'],
+        viewport: { width: 1280, height: 900 },
+        deviceScaleFactor: 1,
+      },
+    },
   ],
 });

@@ -4,6 +4,8 @@ import ReactMarkdown from 'react-markdown';
 import rehypeSanitize, { defaultSchema } from 'rehype-sanitize';
 import {
   LOGBOOK_READER_ORIGIN_NONCE,
+  holdManualScrollRestoration,
+  noteArticleLinkPointer,
   rememberLogbookReaderOrigin,
 } from '../../../shared/navigation/logbookDetailBack.js';
 import { classifyLogbookMarkdownHref } from '../../../shared/navigation/logbookMarkdownHref.js';
@@ -59,6 +61,10 @@ function LogbookMarkdownAnchor({ href, children }) {
       <a
         href={classified.to}
         className={MARKDOWN_LINK_CLASS}
+        onPointerDown={(event) => {
+          if (event.button !== 0) return;
+          noteArticleLinkPointer(event.currentTarget);
+        }}
         onClick={(event) => {
           if (
             event.defaultPrevented
@@ -71,7 +77,8 @@ function LogbookMarkdownAnchor({ href, children }) {
             return;
           }
           event.preventDefault();
-          const nonce = rememberLogbookReaderOrigin();
+          const nonce = rememberLogbookReaderOrigin(event.currentTarget);
+          holdManualScrollRestoration();
           navigate(classified.to, {
             state: nonce ? { [LOGBOOK_READER_ORIGIN_NONCE]: nonce } : undefined,
           });
