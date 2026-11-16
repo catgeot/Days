@@ -151,6 +151,50 @@ test('world event text is escaped and an unknown id does not throw', () => {
   assert.equal(resolveCrawlerMeta('/world-events/vienna-staatsoper-season-2026/extra', 'ko'), null);
 });
 
+function galleryJsonLd(html) {
+  const raw = html.match(/<script type="application\/ld\+json" data-schema-type="ImageGallery">([^<]*)<\/script>/);
+  return raw ? JSON.parse(raw[1]) : null;
+}
+
+test('injected crawler HTML has no undefined or null, and events omit ImageGallery', () => {
+  const placeSamples = [
+    ['/place/fez', 'ko', '페즈'],
+    ['/place/fez/gallery', 'ko', '페즈'],
+    ['/place/fez/gallery', 'en', 'Fez'],
+    ['/place/cape-verde', 'ko', '카보베르데'],
+    ['/place/cape-verde/video', 'ko', '카보베르데'],
+    ['/place/cape-verde/video', 'en', 'Cape Verde'],
+    ['/place/paris', 'ko', '파리'],
+    ['/place/paris/gallery', 'en', 'Paris'],
+    ['/place/paris/planner', 'ko', '파리'],
+    ['/place/paris/wiki', 'ko', '파리'],
+    ['/place/paris/reviews', 'en', 'Paris'],
+    ['/place/paris/events', 'ko', '파리'],
+  ];
+  for (const event of getAllWorldEvents()) {
+    for (const locale of ['ko', 'en']) {
+      const meta = resolveCrawlerMeta(`/world-events/${event.id}`, locale);
+      const html = injectCrawlerMetaIntoHtml(indexHtml, meta);
+      assert.equal(html.includes('undefined'), false, `${event.id} ${locale}`);
+      assert.equal(html.includes('null'), false, `${event.id} ${locale}`);
+      assert.equal(html.includes('ImageGallery'), false, event.id);
+      assert.equal(galleryJsonLd(html), null, event.id);
+    }
+  }
+  for (const [path, locale, placeName] of placeSamples) {
+    const meta = resolveCrawlerMeta(path, locale);
+    const html = injectCrawlerMetaIntoHtml(indexHtml, meta);
+    assert.equal(html.includes('undefined'), false, path);
+    assert.equal(html.includes('null'), false, path);
+    const schema = galleryJsonLd(html);
+    if (path.endsWith('/gallery') || path.split('/').length === 3) {
+      assert.equal(schema?.['@type'], 'ImageGallery', path);
+      assert.equal(schema.name, locale === 'en' ? `${placeName} travel photos` : `${placeName} 여행 사진`, path);
+      assert.equal(schema.name.includes(placeName), true, path);
+    }
+  }
+});
+
 test('browser user agent passes through and Googlebot receives the event head', async () => {
   const prev = globalThis.fetch;
   globalThis.fetch = async (input, init) => {

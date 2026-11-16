@@ -22,6 +22,18 @@ function escapeJsonForScript(value) {
   return JSON.stringify(value).replace(/</g, '\\u003c');
 }
 
+/** Place ImageGallery only. Event heroes stay on og:image; Event JSON-LD is a later change. */
+function galleryImagesForSchema(meta) {
+  if (meta?.worldEventId) return null;
+  const placeName = String(meta?.placeName || '').trim();
+  if (!placeName) return null;
+  if (Array.isArray(meta.galleryImages) && meta.galleryImages.length > 0) return meta.galleryImages;
+  if (Array.isArray(meta.galleryImages)) return null;
+  const ogImage = String(meta.ogImage || '').trim();
+  if (!ogImage) return null;
+  return [{ urls: { regular: ogImage } }];
+}
+
 function placeHref(slug, tab, locale) {
   const path = tab ? `/place/${slug}/${tab}` : `/place/${slug}`;
   return locale === 'en' ? `${path}?lang=en` : path;
@@ -144,7 +156,6 @@ export function buildCrawlerHeadTags(meta) {
     canonicalUrl,
     hreflangAlternates = [],
     ogImage,
-    galleryImages,
     robotsNoIndex,
   } = meta;
   const seoTitle = `${title} | ${SITE_NAME}`;
@@ -162,10 +173,10 @@ export function buildCrawlerHeadTags(meta) {
         )
         .join('\n');
 
-  const gallerySchema = buildCrawlerGalleryJsonLd({
-    ...meta,
-    galleryImages: galleryImages || (ogImage ? [{ urls: { regular: ogImage } }] : []),
-  });
+  const galleryPhotos = galleryImagesForSchema(meta);
+  const gallerySchema = galleryPhotos
+    ? buildCrawlerGalleryJsonLd({ ...meta, galleryImages: galleryPhotos })
+    : null;
   const jsonLdBlock = gallerySchema
     ? `\n    <script type="application/ld+json" data-schema-type="ImageGallery">${escapeJsonForScript(gallerySchema)}</script>`
     : '';
