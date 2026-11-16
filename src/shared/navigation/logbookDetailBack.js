@@ -15,6 +15,31 @@ export function isLogbookReaderPath(path) {
   return pathname.startsWith('/blog/e/') || /^\/p\/[^/]+$/.test(pathname);
 }
 
+const BLOG_OWNER_RESERVED = new Set(['curation', 'write', 'e']);
+
+/** Logged-in post at /blog/:id. List, write, and curation stay out. */
+export function isBlogOwnerArticlePath(path) {
+  const match = pathnameOf(path).match(/^\/blog\/([^/]+)$/);
+  if (!match) return false;
+  return !BLOG_OWNER_RESERVED.has(match[1]);
+}
+
+/** Place review article, including ?review= deep links. */
+export function isPlaceReviewReaderPath(path) {
+  return /^\/place\/[^/]+\/reviews$/.test(pathnameOf(path));
+}
+
+/**
+ * Body the reader was on before an in-body place or festival link.
+ * Public editorial, short /p/:id, owner /blog/:id, and /place/:slug/reviews.
+ */
+export function isArticleReaderPath(path) {
+  return isLogbookReaderPath(path) || isBlogOwnerArticlePath(path) || isPlaceReviewReaderPath(path);
+}
+
+export const ARTICLE_REVIEWS_SCROLL_SELECTOR = '[data-place-reviews-scroll-root]';
+export const ARTICLE_DASHBOARD_SCROLL_SELECTOR = '[data-logbook-main-scroll]';
+
 /**
  * Same-origin referrer path (no hash). Origin-only referrers count as in-app
  * so history.back() can restore the real previous entry.
@@ -208,7 +233,7 @@ export function readLogbookDetailReturn(currentPath) {
 export function selectLogbookReaderOrigin(stored, nonce, now = Date.now()) {
   if (typeof nonce !== 'string' || !nonce) return null;
   if (!stored || stored.nonce !== nonce) return null;
-  if (typeof stored.path !== 'string' || !isLogbookReaderPath(stored.path)) return null;
+  if (typeof stored.path !== 'string' || !isArticleReaderPath(stored.path)) return null;
   if (now - (stored.savedAt || 0) > ORIGIN_TTL_MS) return null;
   return stored.path;
 }
@@ -217,14 +242,71 @@ export function selectLogbookReaderOrigin(stored, nonce, now = Date.now()) {
 export function rememberLogbookReaderOrigin() {
   if (typeof window === 'undefined') return null;
   const path = `${window.location.pathname}${window.location.search}`;
-  if (!isLogbookReaderPath(path)) return null;
-  const scrollY = window.scrollY || document.documentElement?.scrollTop || 0;
+  if (!isArticleReaderPath(path)) return null;
+  const captured = captureArticleScroll();
   const nonce = globalThis.crypto?.randomUUID?.()
     || `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
   const savedAt = Date.now();
-  writeJson(ORIGIN_KEY, { path, scrollY, nonce, savedAt });
-  writeJson(SCROLL_KEY, { path, scrollY, nonce, savedAt });
+  writeJson(ORIGIN_KEY, { path, scrollY: captured.scrollY, nonce, savedAt });
+  writeJson(SCROLL_KEY, {
+    path,
+    scrollY: captured.scrollY,
+    nestedTop: captured.nestedTop,
+    nestedKind: captured.nestedKind,
+    reviewId: captured.reviewId || '',
+    nonce,
+    savedAt,
+  });
   return nonce;
+}
+
+function captureArticleScroll() {
+  const scrollY = window.scrollY || document.documentElement?.scrollTop || 0;
+  const reviews = [...document.querySelectorAll(ARTICLE_REVIEWS_SCROLL_SELECTOR)]
+    .filter((el) => el instanceof HTMLElement)
+    .sort((a, b) => b.scrollTop - a.scrollTop)[0];
+  if (reviews && reviews.scrollTop > 0) {
+    const toggle = reviews.querySelector('[data-review-expand-toggle][aria-expanded="true"]');
+    const reviewId = toggle?.closest('[data-review-id]')?.getAttribute('data-review-id') || '';
+    return { scrollY, nestedTop: reviews.scrollTop, nestedKind: 'place-reviews', reviewId };
+  }
+  const dashboard = [...document.querySelectorAll(ARTICLE_DASHBOARD_SCROLL_SELECTOR)]
+    .filter((el) => el instanceof HTMLElement)
+    .sort((a, b) => b.scrollTop - a.scrollTop)[0];
+  if (dashboard && dashboard.scrollTop > 0) {
+    return { scrollY, nestedTop: dashboard.scrollTop, nestedKind: 'logbook-dashboard', reviewId: '' };
+  }
+  return { scrollY, nestedTop: 0, nestedKind: '', reviewId: '' };
+}
+
+/**
+ * Nested scroller saved with the article hop. Does not consume.
+ * @param {string} currentPath
+ * @returns {{ kind: 'place-reviews' | 'logbook-dashboard', top: number, reviewId: string } | null}
+ */
+export function peekArticleNestedScroll(currentPath) {
+  const data = readJson(SCROLL_KEY);
+  if (!data) return null;
+  if (pathnameOf(data.path) !== pathnameOf(currentPath)) return null;
+  if (Date.now() - (data.savedAt || 0) > 30 * 60 * 1000) return null;
+  const kind = data.nestedKind === 'place-reviews' || data.nestedKind === 'logbook-dashboard'
+    ? data.nestedKind
+    : '';
+  const top = Number(data.nestedTop);
+  if (!kind || !Number.isFinite(top) || top <= 0) return null;
+  return { kind, top, reviewId: typeof data.reviewId === 'string' ? data.reviewId : '' };
+}
+
+/** @param {string} currentPath */
+export function consumeArticleNestedScroll(currentPath) {
+  const data = readJson(SCROLL_KEY);
+  if (!data) return;
+  if (pathnameOf(data.path) !== pathnameOf(currentPath)) return;
+  try {
+    sessionStorage.removeItem(SCROLL_KEY);
+  } catch {
+    /* ignore */
+  }
 }
 
 /** @param {unknown} nonce */

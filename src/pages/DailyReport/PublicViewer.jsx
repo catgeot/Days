@@ -218,7 +218,7 @@ const PublicViewer = () => {
     const tick = () => {
       window.scrollTo(0, y);
       frame += 1;
-      if (frame < 3) id = requestAnimationFrame(tick);
+      if (frame < 8) id = requestAnimationFrame(tick);
     };
     id = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(id);

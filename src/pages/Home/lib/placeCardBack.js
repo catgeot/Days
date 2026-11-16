@@ -1,4 +1,4 @@
-import { isLogbookReaderPath } from '../../../shared/navigation/logbookDetailBack.js';
+import { isArticleReaderPath } from '../../../shared/navigation/logbookDetailBack.js';
 import { isKoreaPlaceReturnPath, isLogbookPlaceReturnPath } from './placeReturnTo.js';
 
 function pathnameOf(path) {
@@ -32,8 +32,8 @@ export function resolvePlaceCardBack(input) {
     if (prevName.startsWith('/place/') || prevName.startsWith('/explore')) {
       return { type: 'history' };
     }
-    // Reader was the previous SPA entry. Pop so browser back and ← match, and scroll can restore.
-    if (isLogbookReaderPath(prevPath)) {
+    // Article was the previous SPA entry. Pop so ← and browser back match, and scroll can restore.
+    if (isArticleReaderPath(prevPath)) {
       return { type: 'history' };
     }
     if (prevName.startsWith('/blog')) {

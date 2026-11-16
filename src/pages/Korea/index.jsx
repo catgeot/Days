@@ -189,6 +189,8 @@ import {
   searchParamsWithFestival,
 } from './koreaFestivalDetailUrl';
 import { useFestivalSheetExternalReturnGuard } from './useFestivalSheetExternalReturnGuard.js';
+import { readFestivalArticleReturnFromWindow } from './lib/festivalArticleReturn.js';
+import { clearLogbookReaderOrigin } from '../../shared/navigation/logbookDetailBack.js';
 import {
   clearFestivalSheetExternalReturnMark,
   clearFestivalSheetPendingDeeplink,
@@ -1427,6 +1429,13 @@ export default function KoreaFestivalHub() {
     clearFestivalSheetExternalReturnMark();
     const pin = festivalItemForSessionPin(selected);
     if (pin) setSessionPinnedItem(pin);
+    // Reader history must pop. Clearing ?festival= would leave the festival home.
+    if (readFestivalArticleReturnFromWindow()) {
+      festivalDetailPushedRef.current = false;
+      clearLogbookReaderOrigin();
+      navigate(-1);
+      return;
+    }
     if (festivalDetailPushedRef.current) {
       festivalDetailPushedRef.current = false;
       navigate(-1);
@@ -1597,15 +1606,30 @@ export default function KoreaFestivalHub() {
 
   useEffect(() => {
     if (!festivalId || !festivalDeepLink.clearUrl) return undefined;
+    if (readFestivalArticleReturnFromWindow()) {
+      if (festivalDeepLinkSeededForRef.current !== '__article__') {
+        festivalDeepLinkSeededForRef.current = '__article__';
+        festivalDetailPushedRef.current = false;
+        clearLogbookReaderOrigin();
+        navigate(-1);
+      }
+      return undefined;
+    }
     if (festivalDeepLinkSeededForRef.current !== '__invalid__') {
       festivalDeepLinkSeededForRef.current = '__invalid__';
       setFestivalToast(t('korea.festival.notFound'));
       clearFestivalFromUrl();
     }
     return undefined;
-  }, [festivalId, festivalDeepLink.clearUrl, clearFestivalFromUrl, t]);
+  }, [festivalId, festivalDeepLink.clearUrl, clearFestivalFromUrl, navigate, t]);
 
   useLayoutEffect(() => {
+    if (festivalId && readFestivalArticleReturnFromWindow()) {
+      // Do not replace this entry with /korea and push the detail again.
+      // That extra list slot is what X and browser back land on.
+      festivalDetailPushedRef.current = true;
+      return undefined;
+    }
     if (loading) return undefined;
     if (!festivalId) return undefined;
 

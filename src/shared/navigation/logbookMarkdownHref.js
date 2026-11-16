@@ -114,3 +114,19 @@ function classifyAppPath(to, plainHref) {
   if (isLogbookSpaPath(pathname)) return { kind: 'internal', to };
   return { kind: 'plain', href: plainHref };
 }
+
+/**
+ * In-body place card or festival detail target. Empty when the link should stay a normal anchor.
+ * @param {unknown} href
+ * @param {string} [base]
+ * @returns {string}
+ */
+export function articleBodyPlaceOrFestivalTo(href, base) {
+  const classified = classifyLogbookMarkdownHref(href, base);
+  if (classified.kind !== 'internal') return '';
+  const to = classified.to;
+  const pathname = (to.split(/[?#]/)[0] || '/').replace(/\/+$/, '') || '/';
+  if (pathname === '/korea' && /[?&]festival=\d+/.test(to)) return to;
+  if (pathname === '/place' || pathname.startsWith('/place/')) return to;
+  return '';
+}

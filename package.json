@@ -113,6 +113,7 @@
     "smoke:trending-ranking-backoff": "node scripts/smoke-trending-ranking-backoff.mjs",
     "smoke:inbound-utm": "node scripts/smoke-inbound-utm.mjs",
     "smoke:festival-geolocation-tap": "node scripts/smoke-festival-geolocation-tap.mjs",
+    "test:e2e:article-festival-back": "DEV_SSL=0 playwright test --config=playwright.config.article-festival-back.js",
     "test:e2e:korea-festival-detail-url": "playwright test --config=playwright.config.festival-detail-url.js",
     "test:e2e:korea-festival-loc-hint": "playwright test --config=playwright.config.festival-loc-hint.js",
     "test:e2e:gangneung-festival-stay": "playwright test --config=playwright.config.gangneung-stay-strip.js",

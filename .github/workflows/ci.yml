@@ -1050,6 +1050,35 @@ jobs:
           DEV_SSL: '0'
         run: npx playwright test -c playwright.config.travelogue-fullpage-nav.js --reporter=line
 
+  article-festival-back-e2e:
+    name: Article festival/place back E2E (WebKit 390 · Chromium 390 · 1280)
+    runs-on: ubuntu-latest
+    needs: lint-and-build
+    timeout-minutes: 35
+    container:
+      image: mcr.microsoft.com/playwright:v1.60.0-jammy
+      options: --ipc=host
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Playwright — article festival and place back
+        env:
+          VITE_SUPABASE_URL: https://example.supabase.co
+          VITE_SUPABASE_ANON_KEY: e2e-anon-placeholder
+          CI: true
+          DEV_SSL: '0'
+        run: npx playwright test -c playwright.config.article-festival-back.js --reporter=line
+
   mooni-origin-input-e2e:
     name: MOONi origin city input E2E (Chromium+WebKit 390 · Chromium 1280)
     runs-on: ubuntu-latest

@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
+import { MemoryRouter } from 'react-router-dom';
 import ReviewInlineMarkdown, {
   ReviewInlineMarkdownBoundary,
 } from '../src/components/PlaceCard/tabs/ReviewInlineMarkdown.jsx';
@@ -17,7 +18,11 @@ import {
 
 function renderMd(text, props = {}) {
   return renderToStaticMarkup(
-    React.createElement(ReviewInlineMarkdown, { text, ...props }),
+    React.createElement(
+      MemoryRouter,
+      null,
+      React.createElement(ReviewInlineMarkdown, { text, ...props }),
+    ),
   );
 }
 
@@ -259,10 +264,14 @@ const collapsed = renderToStaticMarkup(
   React.createElement(
     'div',
     { className: 'whitespace-pre-wrap line-clamp-3' },
-    React.createElement(ReviewInlineMarkdown, {
-      text: '**미즈노** 한 줄\n둘째 줄\n\n다음 문단',
-      inline: true,
-    }),
+    React.createElement(
+      MemoryRouter,
+      null,
+      React.createElement(ReviewInlineMarkdown, {
+        text: '**미즈노** 한 줄\n둘째 줄\n\n다음 문단',
+        inline: true,
+      }),
+    ),
   ),
 );
 assert.match(collapsed, /class="whitespace-pre-wrap line-clamp-3"/);
