@@ -1142,7 +1142,7 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     primaryIatas: ['CMB'],
     preferredLinkIata: 'CMB',
     confidence: 'high',
-    rationale: '콜롬보 CMB — 행정 수도 코놈보 인접'
+    rationale: '콜롬보 CMB — 행정 수도 스리자야와르데나푸라 코테 인접'
   },
   venezuela: {
     primaryIatas: ['CCS'],

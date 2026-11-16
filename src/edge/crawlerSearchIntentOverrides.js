@@ -22,7 +22,7 @@ export const CRAWLER_SEARCH_INTENT_OVERRIDES = {
   },
   'place:tsushima:base:en': {
     title: 'Daemado island (대마도) travel',
-    descriptionLead: '대마도(Daemado island).',
+    descriptionLead: 'Daemado island (Tsushima).',
   },
   'place:santorini:base:ko': {
     title: '산토리니 여행 사진 — 명소·플래너·AI 도슨트',
@@ -51,7 +51,7 @@ export const CRAWLER_SEARCH_INTENT_OVERRIDES = {
     descriptionLead: 'scenic spots.',
   },
   'hub:/korea/theme/scenic:en': {
-    descriptionLead: '명승 (scenic spots).',
+    descriptionLead: 'Korea scenic spots.',
   },
   'place:cape-verde:video:ko': {
     title: '카보베르데 여행 영상',

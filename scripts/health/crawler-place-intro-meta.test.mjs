@@ -55,6 +55,9 @@ test('stripHtmlAndMarkdown removes tags, markdown, and entities', () => {
   assert.equal(stripHtmlAndMarkdown('<script>alert(1)</script><p>본문</p>'), '본문');
 });
 
+const SENTENCE_OR_ELLIPSIS = /[.!?。！？…]$/;
+const HANGUL_START = /^[\u1100-\u11ff\u3130-\u318f\uac00-\ud7a3]/;
+
 test('trim keeps text under the max and a sentence that ends inside the window', () => {
   assert.equal(trimMetaDescription('짧은 소개입니다.'), '짧은 소개입니다.');
   const first = `${'가'.repeat(130)}.`;
@@ -63,21 +66,39 @@ test('trim keeps text under the max and a sentence that ends inside the window',
   assert.ok(first.length >= 120 && first.length <= 155);
 });
 
+test('trim prefers a sentence end of at least 70 characters over a mid-sentence cut', () => {
+  const early = `${'가'.repeat(79)}.`;
+  assert.equal(early.length, 80);
+  const rest = ` ${'나'.repeat(100)} 이어서 계속됩니다.`;
+  assert.equal(trimMetaDescription(`${early}${rest}`), early);
+
+  const tooShort = `${'가'.repeat(40)}.`;
+  const longWord = ` ${'나'.repeat(20)}`.repeat(8);
+  const ellipsis = trimMetaDescription(`${tooShort}${longWord}`);
+  assert.match(ellipsis, /…$/);
+  assert.ok(ellipsis.length <= 155);
+  assert.ok(ellipsis.length > tooShort.length);
+});
+
 test('trim cuts on a word boundary and does not end mid-word', () => {
   const word = 'skyscraper';
   const text = Array.from({ length: 30 }, () => word).join(' ');
   const out = trimMetaDescription(text);
+  assert.match(out, /…$/);
   assert.ok(out.length >= 120 && out.length <= 155);
-  assert.ok(out.split(' ').every((part) => part === word));
-  assert.equal(text.startsWith(out), true);
-  assert.match(text[out.length], /\s/);
+  const body = out.slice(0, -1);
+  assert.ok(body.split(' ').every((part) => part === word));
+  assert.equal(text.startsWith(body), true);
+  assert.match(text[body.length], /\s/);
 
   const korean = '골목 '.repeat(80).trim();
   const koreanOut = trimMetaDescription(`<em>${korean}</em> [link](https://example.com/x)`);
+  assert.match(koreanOut, /…$/);
   assert.ok(koreanOut.length >= 120 && koreanOut.length <= 155);
   assert.equal(koreanOut.includes('<'), false);
   assert.equal(koreanOut.includes('http'), false);
-  assert.ok(koreanOut.split(' ').every((part) => part === '골목'));
+  const koreanBody = koreanOut.slice(0, -1);
+  assert.ok(koreanBody.split(' ').every((part) => part === '골목'));
 });
 
 test('place base description uses the gallery intro and falls back without one', () => {
@@ -180,12 +201,11 @@ test('place root descriptions use the intro, with the legacy template only as fa
 
   const jakartaEn = resolveCrawlerMeta('/place/jakarta', 'en');
   assert.equal(jakartaEn.title, 'Jakarta travel — sights, planner, and AI docent');
-  assert.equal(
-    jakartaEn.description,
-    'Explore Jakarta, Indonesia — a sprawling capital where colonial Kota Tua meets glittering skyscrapers, nasi goreng, satay, and rich multi-island Indonesian',
-  );
+  assert.match(jakartaEn.description, /^Explore Jakarta, Indonesia/);
+  assert.match(jakartaEn.description, /Kota Tua/);
   assert.ok(jakartaEn.description.length <= 155);
-  assert.equal(jakartaEn.description.endsWith('Indonesian'), true);
+  assert.match(jakartaEn.description, SENTENCE_OR_ELLIPSIS);
+  assert.equal(jakartaEn.description.endsWith('Indonesian'), false);
 
   const tsushimaKo = resolveCrawlerMeta('/place/tsushima', 'ko');
   assert.equal(tsushimaKo.title, '대마도(Daemado island) 여행 — 명소·플래너·AI 도슨트');
@@ -195,8 +215,9 @@ test('place root descriptions use the intro, with the legacy template only as fa
 
   const tsushimaEn = resolveCrawlerMeta('/place/tsushima', 'en');
   assert.equal(tsushimaEn.title, 'Daemado island (대마도) travel');
-  assert.match(tsushimaEn.description, /대마도/);
+  assert.match(tsushimaEn.description, /^Daemado island \(Tsushima\)\./);
   assert.match(tsushimaEn.description, /Daemado/);
+  assert.equal(HANGUL_START.test(tsushimaEn.description), false);
 
   const pitcairnKo = resolveCrawlerMeta('/place/pitcairn-islands', 'ko');
   assert.equal(pitcairnKo.title, '핏케언 제도 여행 — 명소·플래너·AI 도슨트');
@@ -235,7 +256,9 @@ test('place root descriptions use the intro, with the legacy template only as fa
 
   const sriKo = resolveCrawlerMeta('/place/sri-jayawardenapura', 'ko');
   assert.equal(sriKo.title, '스리랑카 수도권 여행 — 명소·플래너·AI 도슨트');
+  assert.match(sriKo.description, /스리자야와르데나푸라 코테/);
   assert.match(sriKo.description, /콜롬보/);
+  assert.equal(sriKo.description.includes('코놈보'), false);
 
   const sriEn = resolveCrawlerMeta('/place/sri-jayawardenapura', 'en');
   assert.equal(sriEn.title, 'Sri Jayawardenepura Kotte photos');
@@ -248,8 +271,9 @@ test('place root descriptions use the intro, with the legacy template only as fa
 
   const scenicEn = resolveCrawlerMeta('/korea/theme/scenic', 'en');
   assert.equal(scenicEn.title, 'Korea scenic spots');
-  assert.match(scenicEn.description, /명승/);
+  assert.match(scenicEn.description, /^Korea scenic spots\./);
   assert.match(scenicEn.description, /scenic spots/);
+  assert.equal(HANGUL_START.test(scenicEn.description), false);
 
   const videoKo = resolveCrawlerMeta('/place/cape-verde/video', 'ko');
   const baseKo = resolveCrawlerMeta('/place/cape-verde', 'ko');
@@ -301,6 +325,31 @@ test('every place root description is the intro snippet or the legacy template',
   }
 });
 
+test('every place description ends with punctuation and English does not start with Hangul', () => {
+  for (const slug of Object.keys(crawlerPlaceMeta)) {
+    for (const locale of ['ko', 'en']) {
+      const meta = resolveCrawlerMeta(`/place/${slug}`, locale);
+      assert.ok(meta, `${slug} ${locale}`);
+      assert.ok(
+        meta.description.length <= 155,
+        `${slug} ${locale} description is ${meta.description.length} chars`,
+      );
+      assert.match(
+        meta.description,
+        SENTENCE_OR_ELLIPSIS,
+        `${slug} ${locale} ends with ${JSON.stringify(meta.description.slice(-24))}`,
+      );
+      if (locale === 'en') {
+        assert.equal(
+          HANGUL_START.test(meta.description),
+          false,
+          `${slug} en starts with Hangul: ${meta.description.slice(0, 40)}`,
+        );
+      }
+    }
+  }
+});
+
 test('prerendered HTML serves the search-intent title and description', () => {
   const cases = [
     {
@@ -325,7 +374,7 @@ test('prerendered HTML serves the search-intent title and description', () => {
       path: '/place/tsushima',
       locale: 'en',
       title: 'Daemado island (대마도) travel | GATEO',
-      descriptionIncludes: ['대마도', 'Daemado'],
+      descriptionIncludes: ['Daemado island (Tsushima)', 'Daemado'],
     },
     {
       path: '/place/cape-verde/video',
@@ -349,7 +398,7 @@ test('prerendered HTML serves the search-intent title and description', () => {
       path: '/korea/theme/scenic',
       locale: 'en',
       title: 'Korea scenic spots | GATEO',
-      descriptionIncludes: ['명승', 'scenic spots'],
+      descriptionIncludes: ['Korea scenic spots'],
     },
   ];
 
