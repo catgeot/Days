@@ -2,6 +2,8 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { resolvePlaceCardBack } from '../../src/pages/Home/lib/placeCardBack.js';
 import {
+  articleClickedLinkScrollY,
+  articleLinkRestoreTarget,
   isArticleReaderPath,
   isBlogOwnerArticlePath,
   isLogbookReaderPath,
@@ -318,6 +320,37 @@ test('scheme-less look-alike hosts are not internal', () => {
   assert.equal(evil.href, 'https://gateo.kr.evil.com/place/rome');
   assert.equal(classifyLogbookMarkdownHref('https://notgateo.kr/place/rome').kind, 'external');
   assert.equal(classifyLogbookMarkdownHref('https://gateo.kr.evil.com/place/rome').kind, 'external');
+});
+
+test('duplicate festival links restore the pressed anchor, not the other copy', () => {
+  const upper = { href: '/korea?festival=2563387', docTop: 2800 };
+  const lower = { href: '/korea?festival=2563387', docTop: 3700 };
+  const pressedUpper = {
+    scrollY: 2586,
+    anchorDocTop: 2800,
+    linkHref: upper.href,
+    linkIndex: 0,
+  };
+  assert.equal(articleClickedLinkScrollY(pressedUpper, 2800), 2586);
+  assert.equal(articleLinkRestoreTarget(pressedUpper, [upper, lower]), 2586);
+  assert.equal(articleClickedLinkScrollY(pressedUpper, 3700), 3486);
+  assert.equal(
+    articleLinkRestoreTarget(pressedUpper, [
+      { href: upper.href, docTop: 3700 },
+      { href: lower.href, docTop: 4600 },
+    ]),
+    3486,
+  );
+
+  const pressedLower = {
+    scrollY: 3486,
+    anchorDocTop: 3700,
+    linkHref: lower.href,
+    linkIndex: 1,
+  };
+  assert.equal(articleLinkRestoreTarget(pressedLower, [upper, lower]), 3486);
+  assert.equal(articleLinkRestoreTarget({ scrollY: 956 }, [upper, lower]), 956);
+  assert.equal(articleClickedLinkScrollY({ scrollY: 400 }, Number.NaN), 400);
 });
 
 test('reader origin is honored only for the matching nonce', () => {

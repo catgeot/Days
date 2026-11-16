@@ -35,7 +35,8 @@ import {
   performLogbookDetailBack,
   readLogbookDetailReturn,
   resolveLogbookDetailBack,
-  takeLogbookDetailScroll,
+  restoreArticleClickedScroll,
+  takeArticleWindowScroll,
 } from '../../shared/navigation/logbookDetailBack.js';
 import { logbookEditorialBackFallback } from '../../shared/navigation/hardAppBack';
 import AppOutlineBackButton from '../../shared/navigation/AppOutlineBackButton';
@@ -211,17 +212,9 @@ const PublicViewer = () => {
 
   useEffect(() => {
     if (!report) return undefined;
-    const y = takeLogbookDetailScroll(`${location.pathname}${location.search}`);
-    if (!y) return undefined;
-    let frame = 0;
-    let id = 0;
-    const tick = () => {
-      window.scrollTo(0, y);
-      frame += 1;
-      if (frame < 8) id = requestAnimationFrame(tick);
-    };
-    id = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(id);
+    const saved = takeArticleWindowScroll(`${location.pathname}${location.search}`);
+    if (!saved.y) return undefined;
+    return restoreArticleClickedScroll(saved);
   }, [report, location.pathname, location.search]);
 
   useEffect(() => {
@@ -331,7 +324,7 @@ const PublicViewer = () => {
       <div
         className={`relative z-10 max-w-3xl mx-auto ${
           editorial
-            ? 'max-md:pt-[max(3rem,env(safe-area-inset-top,0px))] pt-6 sm:pt-12 px-5 sm:px-6'
+            ? 'pt-[calc(max(2rem,env(safe-area-inset-top,0px))+3.5rem)] md:pt-12 px-5 sm:px-6'
             : 'pt-12 px-4 sm:px-6'
         }`}
       >

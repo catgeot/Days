@@ -238,22 +238,115 @@ export function selectLogbookReaderOrigin(stored, nonce, now = Date.now()) {
   return stored.path;
 }
 
+const pendingLinkMeta = new WeakMap();
+let manualScrollHeld = false;
+let manualScrollGen = 0;
+
+function isDomElement(value) {
+  return typeof Element !== 'undefined' && value instanceof Element;
+}
+
+/**
+ * Scroll that keeps the clicked anchor at the same viewport offset.
+ * Falls back to the pre-click scrollY when that anchor is not available.
+ * @param {{ scrollY?: number, anchorDocTop?: number } | null | undefined} saved
+ * @param {number} anchorDocTop
+ */
+export function articleClickedLinkScrollY(saved, anchorDocTop) {
+  const y = Number(saved?.scrollY);
+  if (!Number.isFinite(y) || y < 0) return 0;
+  const savedDoc = Number(saved?.anchorDocTop);
+  const now = Number(anchorDocTop);
+  if (!Number.isFinite(savedDoc) || !Number.isFinite(now)) return y;
+  const target = now - (savedDoc - y);
+  if (!Number.isFinite(target)) return y;
+  return Math.max(0, Math.round(target));
+}
+
+/**
+ * @param {{ scrollY?: number, anchorDocTop?: number, linkHref?: string, linkIndex?: number } | null | undefined} saved
+ * @param {Array<{ href?: string, docTop?: number }> | null | undefined} anchors
+ */
+export function articleLinkRestoreTarget(saved, anchors) {
+  const y = Number(saved?.scrollY);
+  if (!Number.isFinite(y) || y < 0) return 0;
+  const href = typeof saved?.linkHref === 'string' ? saved.linkHref : '';
+  const index = Number.isInteger(saved?.linkIndex) ? saved.linkIndex : -1;
+  if (!href || index < 0 || !Array.isArray(anchors)) return y;
+  const row = anchors.filter((item) => item && item.href === href)[index];
+  if (!row || !Number.isFinite(Number(row.docTop))) return y;
+  return articleClickedLinkScrollY(saved, Number(row.docTop));
+}
+
+/** Pointer-down snapshot so restore prefers the anchor that was pressed. */
+export function noteArticleLinkPointer(anchor) {
+  if (!isDomElement(anchor) || typeof window === 'undefined') return;
+  const href = anchor.getAttribute('href') || '';
+  const root = anchor.closest('.logbook-body, [data-review-body]') || anchor.ownerDocument;
+  const matches = [...root.querySelectorAll('a[href]')]
+    .filter((el) => (el.getAttribute('href') || '') === href);
+  const scrollY = window.scrollY || document.documentElement?.scrollTop || 0;
+  pendingLinkMeta.set(anchor, {
+    notedAt: Date.now(),
+    scrollY,
+    linkHref: href,
+    linkIndex: matches.indexOf(anchor),
+    anchorDocTop: anchor.getBoundingClientRect().top + scrollY,
+  });
+}
+
+function takeArticleLinkPointer(anchor) {
+  if (!isDomElement(anchor)) return null;
+  const meta = pendingLinkMeta.get(anchor);
+  pendingLinkMeta.delete(anchor);
+  if (!meta || Date.now() - meta.notedAt > 2000) return null;
+  return meta;
+}
+
+/** Keep the browser from replaying a scroll captured on the page we leave. */
+export function holdManualScrollRestoration() {
+  if (typeof history === 'undefined') return;
+  manualScrollGen += 1;
+  if (manualScrollHeld) return;
+  try {
+    history.scrollRestoration = 'manual';
+    manualScrollHeld = true;
+  } catch {
+    manualScrollHeld = false;
+  }
+}
+
+export function releaseManualScrollRestoration() {
+  manualScrollHeld = false;
+  if (typeof history === 'undefined') return;
+  try {
+    history.scrollRestoration = 'auto';
+  } catch {
+    /* ignore */
+  }
+}
+
 /** @returns {string | null} nonce written into history.state for this hop */
-export function rememberLogbookReaderOrigin() {
+export function rememberLogbookReaderOrigin(source) {
   if (typeof window === 'undefined') return null;
   const path = `${window.location.pathname}${window.location.search}`;
   if (!isArticleReaderPath(path)) return null;
   const captured = captureArticleScroll();
+  const meta = takeArticleLinkPointer(source);
+  const scrollY = meta && Number.isFinite(meta.scrollY) ? meta.scrollY : captured.scrollY;
   const nonce = globalThis.crypto?.randomUUID?.()
     || `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
   const savedAt = Date.now();
-  writeJson(ORIGIN_KEY, { path, scrollY: captured.scrollY, nonce, savedAt });
+  writeJson(ORIGIN_KEY, { path, scrollY, nonce, savedAt });
   writeJson(SCROLL_KEY, {
     path,
-    scrollY: captured.scrollY,
+    scrollY,
     nestedTop: captured.nestedTop,
     nestedKind: captured.nestedKind,
     reviewId: captured.reviewId || '',
+    linkHref: meta?.linkHref || '',
+    linkIndex: Number.isInteger(meta?.linkIndex) ? meta.linkIndex : -1,
+    anchorDocTop: Number.isFinite(meta?.anchorDocTop) ? meta.anchorDocTop : 0,
     nonce,
     savedAt,
   });
@@ -314,17 +407,140 @@ export function readLogbookReaderOrigin(nonce) {
   return selectLogbookReaderOrigin(readJson(ORIGIN_KEY), nonce);
 }
 
-export function takeLogbookDetailScroll(currentPath) {
+function emptyArticleWindowScroll() {
+  return { y: 0, linkHref: '', linkIndex: -1, anchorDocTop: 0 };
+}
+
+/** Consumes the saved window scroll for this article, including which link was pressed. */
+export function takeArticleWindowScroll(currentPath) {
   const data = readJson(SCROLL_KEY);
-  if (!data) return 0;
+  if (!data) return emptyArticleWindowScroll();
   try {
     sessionStorage.removeItem(SCROLL_KEY);
   } catch {
     /* ignore */
   }
-  if (pathnameOf(data.path) !== pathnameOf(currentPath)) return 0;
+  if (pathnameOf(data.path) !== pathnameOf(currentPath)) return emptyArticleWindowScroll();
   const y = Number(data.scrollY);
-  if (!Number.isFinite(y) || y <= 0) return 0;
-  if (Date.now() - (data.savedAt || 0) > 30 * 60 * 1000) return 0;
-  return y;
+  if (!Number.isFinite(y) || y <= 0) return emptyArticleWindowScroll();
+  if (Date.now() - (data.savedAt || 0) > 30 * 60 * 1000) return emptyArticleWindowScroll();
+  const anchorDocTop = Number(data.anchorDocTop);
+  return {
+    y,
+    linkHref: typeof data.linkHref === 'string' ? data.linkHref : '',
+    linkIndex: Number.isInteger(data.linkIndex) ? data.linkIndex : -1,
+    anchorDocTop: Number.isFinite(anchorDocTop) ? anchorDocTop : 0,
+  };
+}
+
+export function takeLogbookDetailScroll(currentPath) {
+  return takeArticleWindowScroll(currentPath).y;
+}
+
+function readerAnchorRows() {
+  return [...document.querySelectorAll('.logbook-body a[href]')].map((el) => ({
+    href: el.getAttribute('href') || '',
+    docTop: el.getBoundingClientRect().top + (window.scrollY || document.documentElement?.scrollTop || 0),
+    el,
+  }));
+}
+
+/**
+ * Reapplies the clicked link's scroll until layout settles.
+ * A newer holdManualScrollRestoration() (the next hop) keeps manual restoration.
+ * @param {{ y?: number, linkHref?: string, linkIndex?: number, anchorDocTop?: number }} saved
+ */
+export function restoreArticleClickedScroll(saved) {
+  if (typeof window === 'undefined') return () => {};
+  const payload = {
+    scrollY: saved?.y,
+    linkHref: saved?.linkHref || '',
+    linkIndex: Number.isInteger(saved?.linkIndex) ? saved.linkIndex : -1,
+    anchorDocTop: saved?.anchorDocTop,
+  };
+  if (!payload.scrollY) return () => {};
+  const genAtRestore = manualScrollGen;
+  let userMoved = false;
+  const markUser = () => {
+    userMoved = true;
+  };
+  window.addEventListener('wheel', markUser, { passive: true });
+  window.addEventListener('touchmove', markUser, { passive: true });
+  window.addEventListener('keydown', markUser);
+
+  let applying = false;
+  const apply = () => {
+    if (userMoved || applying) return;
+    applying = true;
+    try {
+      const rows = readerAnchorRows();
+      const target = articleLinkRestoreTarget(payload, rows);
+      if (payload.linkHref && payload.linkIndex >= 0) {
+        const matches = rows.filter((row) => row.href === payload.linkHref);
+        const row = matches[payload.linkIndex];
+        const active = document.activeElement;
+        if (
+          row?.el
+          && active instanceof HTMLAnchorElement
+          && matches.some((item) => item.el === active)
+          && active !== row.el
+        ) {
+          row.el.focus({ preventScroll: true });
+        }
+      }
+      const current = window.scrollY || document.documentElement?.scrollTop || 0;
+      if (target > 0 && Math.abs(current - target) > 1) window.scrollTo(0, target);
+    } finally {
+      applying = false;
+    }
+  };
+
+  apply();
+  let frames = 0;
+  let raf = 0;
+  const tick = () => {
+    apply();
+    frames += 1;
+    if (frames < 12 && !userMoved) raf = requestAnimationFrame(tick);
+  };
+  raf = requestAnimationFrame(tick);
+  window.addEventListener('scroll', onScroll, { passive: true });
+  const root = document.querySelector('.logbook-body');
+  const onImg = () => apply();
+  const images = root ? [...root.querySelectorAll('img')] : [];
+  images.forEach((img) => {
+    if (!img.complete) img.addEventListener('load', onImg);
+  });
+  const ro = root && typeof ResizeObserver !== 'undefined'
+    ? new ResizeObserver(() => apply())
+    : null;
+  ro?.observe(root);
+
+  function onScroll() {
+    apply();
+  }
+
+  const releaseIfCurrent = () => {
+    if (manualScrollGen === genAtRestore) releaseManualScrollRestoration();
+  };
+  const timer = window.setTimeout(() => {
+    remove();
+    releaseIfCurrent();
+  }, 1500);
+
+  function remove() {
+    window.clearTimeout(timer);
+    cancelAnimationFrame(raf);
+    window.removeEventListener('wheel', markUser);
+    window.removeEventListener('touchmove', markUser);
+    window.removeEventListener('keydown', markUser);
+    window.removeEventListener('scroll', onScroll);
+    images.forEach((img) => img.removeEventListener('load', onImg));
+    ro?.disconnect();
+  }
+
+  return () => {
+    remove();
+    releaseIfCurrent();
+  };
 }

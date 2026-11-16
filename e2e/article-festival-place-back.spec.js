@@ -40,10 +40,30 @@ const BODY = [
   filler,
 ].join('\n');
 
+const DUP_LABEL = '단풍나무숲길 힐링축제';
+const dupBlock = '같은 축제 이름이 위와 아래에 있습니다. '.repeat(50);
+const DUP_BODY = [
+  dupBlock,
+  '',
+  `[${DUP_LABEL}](https://www.gateo.kr/korea/?festival=${FESTIVAL_ID})`,
+  '',
+  dupBlock,
+  '',
+  '**여행 팁**',
+  '',
+  `- [${DUP_LABEL}](https://www.gateo.kr/korea/?festival=${FESTIVAL_ID})`,
+  '',
+  dupBlock,
+].join('\n');
+
+const editorialState = { content: BODY };
+
 const EDITORIAL = {
   ...FX.editorialReport,
   images: [],
-  content: BODY,
+  get content() {
+    return editorialState.content;
+  },
 };
 
 const REVIEW_BODY = BODY.replace(
@@ -231,11 +251,41 @@ async function alignWindowLink(page, link) {
   return page.evaluate(() => window.scrollY || document.documentElement.scrollTop || 0);
 }
 
-async function expectWindowScroll(page, before) {
+async function expectWindowScroll(page, before, tolerance = 48) {
   await expect.poll(async () => {
     const y = await page.evaluate(() => window.scrollY || document.documentElement.scrollTop || 0);
     return Math.abs(y - before);
-  }, { timeout: 8_000 }).toBeLessThanOrEqual(48);
+  }, { timeout: 8_000 }).toBeLessThanOrEqual(tolerance);
+}
+
+async function expectWindowScrollHeld(page, before) {
+  await expectWindowScroll(page, before, 50);
+  await page.waitForTimeout(1700);
+  const y = await page.evaluate(() => window.scrollY || document.documentElement.scrollTop || 0);
+  expect(Math.abs(y - before), `scroll ${y} vs ${before}`).toBeLessThanOrEqual(50);
+}
+
+async function expectBackButtonClearsText(page) {
+  const hit = await page.evaluate(() => {
+    const button = document.querySelector('[data-logbook-detail-back]');
+    if (!button) return 'missing-button';
+    const b = button.getBoundingClientRect();
+    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    let node;
+    while ((node = walker.nextNode())) {
+      const text = node.textContent.replace(/\s+/g, ' ').trim();
+      if (!text) continue;
+      const range = document.createRange();
+      range.selectNodeContents(node);
+      for (const rect of range.getClientRects()) {
+        const h = Math.min(b.bottom, rect.bottom) - Math.max(b.top, rect.top);
+        const w = Math.min(b.right, rect.right) - Math.max(b.left, rect.left);
+        if (h > 1 && w > 1) return text.slice(0, 40);
+      }
+    }
+    return '';
+  });
+  expect(hit).toBe('');
 }
 
 async function openFestivalFrom(page, link) {
@@ -250,6 +300,7 @@ async function clickFestivalClose(page) {
 
 async function shot(page, testInfo, name) {
   if (!/webkit/i.test(testInfo.project.name)) return;
+  if (page.viewportSize()?.width !== 390) return;
   mkdirSync(SHOT_DIR, { recursive: true });
   await page.screenshot({
     path: join(SHOT_DIR, `${name}.png`),
@@ -259,6 +310,7 @@ async function shot(page, testInfo, name) {
 
 test.describe('article festival and place back', () => {
   test.beforeEach(async ({ context }) => {
+    editorialState.content = BODY;
     const gemini = { count: 0 };
     context._gemini = gemini;
     await installMocks(context, gemini);
@@ -271,6 +323,8 @@ test.describe('article festival and place back', () => {
   test('editorial festival X and browser back restore the article scroll', async ({ page }, testInfo) => {
     const errors = attachDiagnostics(page);
     await openReader(page);
+    await expectBackButtonClearsText(page);
+    await shot(page, testInfo, 'webkit-article-back-clearance');
     const link = page.locator('.logbook-body a', { hasText: FESTIVAL_LABEL });
     await expect(link).toBeVisible();
     const articleKey = urlKey(page.url());
@@ -298,6 +352,25 @@ test.describe('article festival and place back', () => {
     expect(urlKey(page.url())).toBe(articleKey);
     await expectWindowScroll(page, before);
     await shot(page, testInfo, 'webkit-article-festival-back');
+    expectErrorsClean(errors);
+  });
+
+  test('the same festival link restores the copy that was pressed', async ({ page }) => {
+    editorialState.content = DUP_BODY;
+    const errors = attachDiagnostics(page);
+    await openReader(page);
+    const links = page.locator('.logbook-body a', { hasText: DUP_LABEL });
+    await expect(links).toHaveCount(2);
+    for (const index of [0, 1]) {
+      const link = links.nth(index);
+      const before = await alignWindowLink(page, link);
+      expect(before).toBeGreaterThan(80);
+      await openFestivalFrom(page, link);
+      await clickFestivalClose(page);
+      await expect(page).toHaveURL(/\/blog\/e\/rome-travelogue/, { timeout: 30_000 });
+      await expect(page.getByRole('heading', { name: EDITORIAL.title })).toBeVisible();
+      await expectWindowScrollHeld(page, before);
+    }
     expectErrorsClean(errors);
   });
 
