@@ -13,7 +13,7 @@ concurrency:
 
 jobs:
   lint-and-build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
       - name: Checkout
@@ -68,7 +68,7 @@ jobs:
 
   festival-hero-credit-e2e:
     name: Festival hero credit E2E (WebKit)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: lint-and-build
     timeout-minutes: 30
     container:
@@ -113,7 +113,7 @@ jobs:
 
   festival-poster-prior-e2e:
     name: Festival prior-poster label E2E (WebKit 390)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: lint-and-build
     timeout-minutes: 20
     container:
@@ -158,7 +158,7 @@ jobs:
 
   festival-back-overview-e2e:
     name: Festival back to overview E2E (WebKit 390)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: lint-and-build
     timeout-minutes: 30
     container:
@@ -204,7 +204,7 @@ jobs:
 
   festival-region-chip-scroll-e2e:
     name: Festival region chip scroll E2E (WebKit 390, mocked)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: lint-and-build
     timeout-minutes: 30
     container:
@@ -233,7 +233,7 @@ jobs:
 
   festival-nearby-cards-e2e:
     name: Festival nearby cards E2E (Chromium 390)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: lint-and-build
     timeout-minutes: 25
     container:
@@ -264,7 +264,7 @@ jobs:
 
   festival-external-return-e2e:
     name: Festival external return E2E (WebKit 390)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: lint-and-build
     timeout-minutes: 30
     container:
@@ -310,7 +310,7 @@ jobs:
 
   festival-road-wonju-e2e:
     name: Festival road Wonju E2E (WebKit 390)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: lint-and-build
     timeout-minutes: 15
     steps:
@@ -369,7 +369,7 @@ jobs:
 
   place-travelogue-card-e2e:
     name: Place travelogue card E2E (WebKit 390, fixtures)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: lint-and-build
     timeout-minutes: 30
     container:
@@ -416,7 +416,7 @@ jobs:
 
   e2e-logbook-owner-edit:
     name: Logbook owner edit E2E (Chromium)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: lint-and-build
     timeout-minutes: 30
     container:
@@ -465,7 +465,7 @@ jobs:
 
   explore-search-bare-ko-e2e:
     name: Explore bare KO search E2E (390·1280)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: lint-and-build
     timeout-minutes: 25
     container:
@@ -518,7 +518,7 @@ jobs:
 
   place-gallery-overview-locale-e2e:
     name: Place gallery overview locale (390)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: lint-and-build
     timeout-minutes: 25
     container:
@@ -567,7 +567,7 @@ jobs:
 
   explore-v2-monthly-e2e:
     name: Explore v2 monthly picks E2E (390·1280, flag off/on)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: lint-and-build
     timeout-minutes: 30
     container:
@@ -613,7 +613,7 @@ jobs:
 
   mooni-destination-pick-e2e:
     name: MOONi destination pick reply E2E (Chromium 390·1280, mocked)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: lint-and-build
     timeout-minutes: 45
     container:
@@ -650,7 +650,7 @@ jobs:
 
   mooni-festival-detail-wait-e2e:
     name: MOONi festival detail wait E2E (Chromium·WebKit 390·1280)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: lint-and-build
     timeout-minutes: 45
     container:
@@ -679,7 +679,7 @@ jobs:
 
   place-header-locale-e2e:
     name: Place header locale toggle E2E (Chromium)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: lint-and-build
     timeout-minutes: 30
     container:
@@ -707,7 +707,7 @@ jobs:
 
   # YouTube 탭 세션(더 보기). 프로덕션 일일 헬스(e2e-health)에서는 제외.
   e2e-youtube-session:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     container:
       image: mcr.microsoft.com/playwright:v1.60.0-jammy
@@ -751,7 +751,7 @@ jobs:
 
   reels-locale-en-first-visit-e2e:
     name: Reels locale EN first visit E2E
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: lint-and-build
     timeout-minutes: 30
     container:
@@ -779,7 +779,7 @@ jobs:
 
   logbook-review-filter-e2e:
     name: LogBook review filter cards E2E (390·1280, mocked)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: lint-and-build
     timeout-minutes: 25
     container:
@@ -811,7 +811,7 @@ jobs:
 
   logbook-review-detail-photo-e2e:
     name: LogBook review detail photo E2E (WebKit 390·Chromium 390·1280)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: lint-and-build
     timeout-minutes: 35
     container:
@@ -843,7 +843,7 @@ jobs:
 
   place-review-deeplink-order-e2e:
     name: Place review deep link order E2E (WebKit 390·Chromium 390)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: lint-and-build
     timeout-minutes: 35
     container:
@@ -875,7 +875,7 @@ jobs:
 
   logbook-review-hub-nav-e2e:
     name: LogBook review hub navigation E2E (WebKit 390·Chromium 390·1280, prod build)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: lint-and-build
     timeout-minutes: 50
     container:
@@ -907,7 +907,7 @@ jobs:
 
   explore-place-hard-back-e2e:
     name: Explore place hard back E2E (Chromium 1280·1024 · WebKit 390)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: lint-and-build
     timeout-minutes: 40
     container:
@@ -936,7 +936,7 @@ jobs:
 
   explore-collection-card-tap-e2e:
     name: Explore collection card tap E2E (Chromium 1280·1024 · WebKit 390)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: lint-and-build
     timeout-minutes: 45
     container:
@@ -965,7 +965,7 @@ jobs:
 
   explore-outside-tap-card-e2e:
     name: Explore outside-tap card E2E (WebKit 390 · Chromium 390)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: lint-and-build
     timeout-minutes: 45
     container:
@@ -994,7 +994,7 @@ jobs:
 
   home-festival-quick-link-e2e:
     name: Home 축제 quick link E2E (WebKit 390 · Chromium 1280)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: lint-and-build
     timeout-minutes: 35
     container:
@@ -1023,7 +1023,7 @@ jobs:
 
   travelogue-fullpage-nav-e2e:
     name: Travelogue full-page nav E2E (Chromium 1280 · WebKit 390)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: lint-and-build
     timeout-minutes: 35
     container:
@@ -1052,7 +1052,7 @@ jobs:
 
   article-festival-back-e2e:
     name: Article festival/place back E2E (WebKit 390 · Chromium 390 · 1280)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: lint-and-build
     timeout-minutes: 35
     container:
@@ -1081,7 +1081,7 @@ jobs:
 
   mooni-origin-input-e2e:
     name: MOONi origin city input E2E (Chromium+WebKit 390 · Chromium 1280)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: lint-and-build
     timeout-minutes: 35
     container:
@@ -1110,7 +1110,7 @@ jobs:
 
   explore-choseong-e2e:
     name: Explore choseong search E2E (Chromium+WebKit 390)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: lint-and-build
     timeout-minutes: 35
     container:
@@ -1139,7 +1139,7 @@ jobs:
 
   explore-suggest-rank-e2e:
     name: Explore suggest rank E2E (Chromium+WebKit 390·1280)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: lint-and-build
     timeout-minutes: 45
     container:
@@ -1169,7 +1169,7 @@ jobs:
 
   editorial-blog-head-meta-e2e:
     name: Editorial blog head meta E2E
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: lint-and-build
     timeout-minutes: 30
     container:
@@ -1197,7 +1197,7 @@ jobs:
 
   mooni-open-gemini-budget-e2e:
     name: MOONi open gemini budget E2E (Chromium 390)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: lint-and-build
     timeout-minutes: 30
     container:
