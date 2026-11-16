@@ -97,11 +97,17 @@ test('paris rollout hides the money row and does not call ETIAS required', () =>
   assert.match(safety.value, /10\.31\(토\) 전국 3차 시위가 있었어요/);
   assert.match(safety.value, /11\.5\(목\) 전국 파업·시위가 있었어요/);
   assert.match(safety.value, /11\.7\(토\) 전국 4차 집회가 있었어요/);
+  assert.match(safety.value, /11\.14\(토\) 전국 5차 집회가 있었어요/);
+  assert.match(safety.value, /11\.17\(화\)/);
   assert.match(safety.value, /\+82-2-3210-0404/);
   assert.match(safety.value, /\+33-6-8028-5396/);
   assert.equal(/유로|환전|카드|통화|Banque/i.test(safety.value), false);
   assert.equal(/\beuro\b|currency|exchange|\bcard\b/i.test(enSafety.value), false);
-  assert.equal(safety.sources[0].url, 'https://www.0404.go.kr/bbs/safetyNtc/1335047/detail2?ntnCd=248');
+  assert.equal(safety.sources[0].url, 'https://www.0404.go.kr/bbs/safetyNtc/1335048/detail2?ntnCd=248');
+  assert.equal(
+    safety.sources.some((source) => source.url === 'https://www.0404.go.kr/bbs/safetyNtc/1335047/detail2?ntnCd=248'),
+    true,
+  );
   assert.equal(
     safety.sources.some((source) => source.url === 'https://www.0404.go.kr/bbs/safetyNtc/1335046/detail2?ntnCd=248'),
     true,
@@ -110,9 +116,9 @@ test('paris rollout hides the money row and does not call ETIAS required', () =>
     safety.sources.some((source) => source.url === 'https://www.0404.go.kr/bbs/safetyNtc/1335045/detail2?ntnCd=248'),
     true,
   );
-  assert.equal(safety.checkedAt, '2026-11-09');
+  assert.equal(safety.checkedAt, '2026-11-16');
   assert.equal(safety.kind, 'event');
-  assert.equal(safety.checkedOn, '2026-11-09');
+  assert.equal(safety.checkedOn, '2026-11-16');
   assert.equal(safety.endsAt, null);
   assert.equal(enSafety.sources[0].name, 'MOFA safety notice (Embassy of Korea in France)');
   assert.match(factValueForLocale('paris', enSafety, 'en'), /took place on 11\.5 \(Thu\)/i);
@@ -145,6 +151,8 @@ test('paris rollout hides the money row and does not call ETIAS required', () =>
     assert.equal(ko, slot.value);
     if (slot.id === 'safety') {
       assert.match(translated, /took place on 11\.5 \(Thu\)/i);
+      assert.match(translated, /took place on 11\.14 \(Sat\)/i);
+      assert.match(translated, /11\.17 \(Tue\)/i);
       assert.deepEqual(hangulOutsideEnglishProperNounParens(translated), []);
       continue;
     }
@@ -161,14 +169,33 @@ test('paris rollout hides the money row and does not call ETIAS required', () =>
   assert.equal(cairoMoney.checkedAt, '');
   assert.match(cairoMoney.value, /EGP/);
   assert.equal(cairoSafety.kind, 'standing');
-  assert.equal(cairoSafety.checkedOn, '2026-11-09');
+  assert.equal(cairoSafety.checkedOn, '2026-11-16');
+  assert.equal(cairoSafety.checkedAt, '2026-11-16');
   assert.match(cairoSafety.value, /여행유의/);
   assert.match(cairoSafety.value, /공수병\(광견병\)/);
+  assert.match(cairoSafety.value, /알아이야트/);
+  assert.match(cairoSafety.value, /2026-11-15/);
   assert.equal(
     cairoSafety.sources.some(
       (source) => source.url === 'https://www.0404.go.kr/bbs/embsyNtc/1345776/detail?ntnCd=178',
     ),
     true,
+  );
+  assert.equal(
+    cairoSafety.sources.some(
+      (source) => source.url === 'https://www.0404.go.kr/bbs/embsyNtc/1345777/detail?ntnCd=178',
+    ),
+    true,
+  );
+  assert.equal(
+    cairoSafety.sources.some(
+      (source) => source.url === 'https://www.0404.go.kr/bbs/embsyNtc/1345779/detail?ntnCd=178',
+    ),
+    true,
+  );
+  assert.equal(
+    cairoSafety.sources.some((source) => String(source.url || '').includes('1345775')),
+    false,
   );
   assert.equal(/EGP/.test(cairoSafety.value), false);
 });

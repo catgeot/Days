@@ -97,11 +97,11 @@ test('duplicate source links get distinct display labels from url ids', () => {
   assert.equal(new Set(parisEn).size, parisEn.length);
   assert.deepEqual(
     parisKo.map((label) => label.split(' · ').pop()),
-    ['1335047', '1335046', '1335045'],
+    ['1335048', '1335047', '1335046', '1335045'],
   );
   assert.deepEqual(
     parisEn.map((label) => label.split(' · ').pop()),
-    ['1335047', '1335046', '1335045'],
+    ['1335048', '1335047', '1335046', '1335045'],
   );
 
   const cairoSafety = CAIRO_CITY_FACTS.slots.find((slot) => slot.id === 'safety');
