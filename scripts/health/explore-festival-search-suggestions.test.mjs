@@ -159,8 +159,8 @@ test('appendExploreFestivalBelowPlaceBlock inserts after local place block', () 
   assert.equal(merged[merged.length - 1].id, 'map-1');
 });
 
-test('applyExploreFestivalMergeStrategy prepends when festivals resolve within 300ms', async () => {
-  const hybrid = [{ id: 'city-1', kind: 'city', source: 'ssot' }];
+test('applyExploreFestivalMergeStrategy keeps the place above festivals even when they resolve within 300ms', async () => {
+  const hybrid = [{ id: 'city-1', kind: 'city', name: '강릉', source: 'ssot' }];
   const festivals = buildExploreFestivalSuggestionsFromPool(FIXTURE_POOL, '강릉', { now: NOW });
   const festPromise = Promise.resolve(festivals);
   const { items, late } = await applyExploreFestivalMergeStrategy('강릉', hybrid, {
@@ -168,7 +168,11 @@ test('applyExploreFestivalMergeStrategy prepends when festivals resolve within 3
     festPromise,
   });
   assert.equal(late, null);
-  assert.equal(items[0]?.kind, 'festival');
+  assert.equal(items[0]?.id, 'city-1');
+  assert.equal(items.some((row) => row.kind === 'festival'), true);
+  const endedAt = items.findIndex((row) => row.festivalEnded);
+  const activeAt = items.findIndex((row) => row.kind === 'festival' && !row.festivalEnded);
+  if (endedAt >= 0 && activeAt >= 0) assert.ok(activeAt < endedAt);
 });
 
 test('applyExploreFestivalMergeStrategy appends when festivals resolve after wait window', async () => {
