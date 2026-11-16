@@ -175,6 +175,9 @@ test('paris rollout hides the money row and does not call ETIAS required', () =>
   assert.match(cairoSafety.value, /공수병\(광견병\)/);
   assert.match(cairoSafety.value, /알아이야트/);
   assert.match(cairoSafety.value, /2026-11-15/);
+  assert.match(cairoSafety.value, /입장권·호텔 숙박권·크루즈/);
+  assert.match(factValueForLocale('cairo', cairoSafety, 'en'), /entry tickets, hotel stays, and cruises/);
+  assert.equal(/2026-11-15[^\n]*(항공권|\bflight\b)/i.test(`${cairoSafety.value}\n${factValueForLocale('cairo', cairoSafety, 'en')}`), false);
   assert.equal(
     cairoSafety.sources.some(
       (source) => source.url === 'https://www.0404.go.kr/bbs/embsyNtc/1345776/detail?ntnCd=178',
