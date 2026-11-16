@@ -20,6 +20,7 @@ export const config = {
     '/blog/curation',
     '/blog/e/:editorialSlug',
     '/world-events',
+    '/world-events/:eventId',
     '/place/:slug',
     '/place/:slug/gallery',
     '/place/:slug/planner',

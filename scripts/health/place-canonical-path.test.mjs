@@ -26,9 +26,9 @@ test('place canonical follows the indexed tab, not the default gallery view', ()
   assert.equal(placeCanonicalPath('kyoto', 'gallery'), '/place/kyoto/gallery');
   assert.equal(placeCanonicalPath('paris', 'planner'), '/place/paris/planner');
   assert.equal(placeCanonicalPath('cairo', 'wiki'), '/place/cairo/wiki');
-  assert.equal(placeCanonicalPath('sapa', 'reviews'), '/place/sapa');
-  assert.equal(placeCanonicalPath('hwaseong-fortress', 'video'), '/place/hwaseong-fortress');
-  assert.equal(placeCanonicalPath('khao-lak', 'events'), '/place/khao-lak');
+  assert.equal(placeCanonicalPath('sapa', 'reviews'), '/place/sapa/reviews');
+  assert.equal(placeCanonicalPath('hwaseong-fortress', 'video'), '/place/hwaseong-fortress/video');
+  assert.equal(placeCanonicalPath('khao-lak', 'events'), '/place/khao-lak/events');
   assert.equal(isPlaceRootAliasTab('reviews'), true);
   assert.equal(isPlaceRootAliasTab('video'), true);
   assert.equal(isPlaceRootAliasTab('events'), true);
@@ -42,6 +42,14 @@ test('place canonical follows the indexed tab, not the default gallery view', ()
   assert.equal(
     buildLocalePageUrl(placeCanonicalPath('bora-bora', 'gallery'), 'en'),
     'https://www.gateo.kr/place/bora-bora/gallery?lang=en',
+  );
+  assert.equal(
+    buildLocalePageUrl(placeCanonicalPath('cape-verde', 'video'), 'en'),
+    'https://www.gateo.kr/place/cape-verde/video?lang=en',
+  );
+  assert.equal(
+    buildLocalePageUrl(placeCanonicalPath('cape-verde', 'video'), 'ko'),
+    'https://www.gateo.kr/place/cape-verde/video',
   );
 });
 
@@ -108,18 +116,21 @@ afterEach(async () => {
   }
 });
 
-test('base place canonical and og:url stay on the place root', async () => {
+test('place root canonical stays on /place/:slug and router tabs keep their own URL', async () => {
   const samples = [
-    ['bora-bora', undefined],
-    ['kyoto', ''],
-    ['paris', 'reviews'],
-    ['cairo', 'video'],
-    ['sapa', 'events'],
-    ['hwaseong-fortress', undefined],
-    ['khao-lak', ''],
+    ['/place/bora-bora', 'bora-bora'],
+    ['/place/kyoto', 'kyoto'],
+    ['/place/paris/reviews', 'paris'],
+    ['/place/cairo/video', 'cairo'],
+    ['/place/sapa/events', 'sapa'],
+    ['/place/hwaseong-fortress', 'hwaseong-fortress'],
+    ['/place/khao-lak', 'khao-lak'],
+    ['/place/cape-verde/video', 'cape-verde'],
+    ['/place/cape-verde/gallery', 'cape-verde'],
+    ['/place/cape-verde/wiki', 'cape-verde'],
+    ['/place/cape-verde/planner', 'cape-verde'],
   ];
-  for (const [slug, tab] of samples) {
-    const path = placeCanonicalPath(slug, tab);
+  for (const [path, slug] of samples) {
     await renderSeo(path, 'ko', {
       title: slug,
       description: `${slug} place`,
@@ -127,9 +138,9 @@ test('base place canonical and og:url stay on the place root', async () => {
       location: { slug, name: slug },
     });
     const expected = `https://www.gateo.kr${path}`;
-    assert.equal(headUrl('link[rel="canonical"]', 'href'), expected, slug);
-    assert.equal(headUrl('meta[property="og:url"]', 'content'), expected, slug);
-    assert.equal(document.head.querySelectorAll('link[rel="canonical"]').length, 1, slug);
+    assert.equal(headUrl('link[rel="canonical"]', 'href'), expected, path);
+    assert.equal(headUrl('meta[property="og:url"]', 'content'), expected, path);
+    assert.equal(document.head.querySelectorAll('link[rel="canonical"]').length, 1, path);
     await act(async () => {
       root.unmount();
     });

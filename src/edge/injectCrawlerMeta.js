@@ -99,6 +99,17 @@ export function buildCrawlerPlaceBodyHtml(meta) {
       </article>`;
 }
 
+export function buildCrawlerWorldEventBodyHtml(meta) {
+  const id = String(meta?.worldEventId || '').trim();
+  const headline = String(meta?.title || '').trim();
+  if (!id || !headline) return '';
+  return `      <!-- crawler-body-injected -->
+      <article id="crawler-world-event-body">
+        <h1>${escapeHtml(headline)}</h1>
+        <p>${escapeHtml(meta.description)}</p>
+      </article>`;
+}
+
 export function buildCrawlerEditorialBodyHtml(meta) {
   const slug = String(meta?.editorialSlug || '').trim();
   const headline = String(meta?.articleTitle || meta?.title || '').trim();
@@ -203,9 +214,11 @@ export function injectCrawlerMetaIntoHtml(html, meta) {
 
   out = out.replace(/<head>/i, `<head>\n${headTags}\n`);
 
-  const bodyHtml = meta?.editorialSlug
-    ? buildCrawlerEditorialBodyHtml(meta)
-    : buildCrawlerPlaceBodyHtml(meta);
+  const bodyHtml = meta?.worldEventId
+    ? buildCrawlerWorldEventBodyHtml(meta)
+    : meta?.editorialSlug
+      ? buildCrawlerEditorialBodyHtml(meta)
+      : buildCrawlerPlaceBodyHtml(meta);
   if (bodyHtml) {
     out = replaceRootInnerHtml(out, bodyHtml);
   }

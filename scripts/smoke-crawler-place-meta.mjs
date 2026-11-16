@@ -77,7 +77,7 @@ assert(parisGalleryKo?.canonicalUrl === 'https://www.gateo.kr/place/paris/galler
 assert(String(parisGalleryKo?.title || '').includes('갤러리'), 'paris gallery title unchanged');
 for (const tab of ['reviews', 'video', 'events']) {
   const alias = resolveCrawlerMeta(`/place/paris/${tab}`, 'ko');
-  assert(alias?.canonicalUrl === parisBaseKo.canonicalUrl, `paris ${tab} canonical is place root`);
+  assert(alias?.canonicalUrl === `https://www.gateo.kr/place/paris/${tab}`, `paris ${tab} canonical is the tab URL`);
   assert(alias?.title === parisBaseKo.title, `paris ${tab} title matches place root`);
   assert(alias?.description === parisBaseKo.description, `paris ${tab} description matches place root`);
   assert(parseCrawlerPath(`/place/paris/${tab}`)?.kind === 'place-base', `paris ${tab} parsed as place root`);

@@ -281,26 +281,28 @@ test('place root descriptions use the intro, with the legacy template only as fa
   assert.match(videoKo.description, /카보베르데/);
   assert.match(videoKo.description, /카포베르데/);
   assert.match(videoKo.description, /영상/);
-  assert.equal(videoKo.canonicalUrl, baseKo.canonicalUrl);
-  assert.equal(videoKo.canonicalUrl, 'https://www.gateo.kr/place/cape-verde');
+  assert.notEqual(videoKo.canonicalUrl, baseKo.canonicalUrl);
+  assert.equal(videoKo.canonicalUrl, 'https://www.gateo.kr/place/cape-verde/video');
   assert.notEqual(videoKo.description, baseKo.description);
 
   const videoEn = resolveCrawlerMeta('/place/cape-verde/video', 'en');
   assert.equal(videoEn.title, 'Cape Verde (카보베르데) travel video');
   assert.match(videoEn.description, /카포베르데/);
   assert.match(videoEn.description, /video/);
-  assert.equal(videoEn.canonicalUrl, 'https://www.gateo.kr/place/cape-verde?lang=en');
+  assert.equal(videoEn.canonicalUrl, 'https://www.gateo.kr/place/cape-verde/video?lang=en');
 
-  assert.equal(resolveCrawlerMeta('/world-events/vienna-staatsoper-season-2026', 'ko'), null);
+  assert.equal(resolveCrawlerMeta('/world-events', 'ko').canonicalUrl, 'https://www.gateo.kr/world-events');
+  assert.ok(resolveCrawlerMeta('/world-events/vienna-staatsoper-season-2026', 'ko'));
 });
 
-test('alias tabs keep the place root unless that slug has a video hint', () => {
+test('alias tabs keep the #833 title and description and canonicalize to the tab', () => {
   const base = resolveCrawlerMeta('/place/paris', 'ko');
   const video = resolveCrawlerMeta('/place/paris/video', 'ko');
   assert.equal(video.title, base.title);
   assert.equal(video.title, '파리 여행 — 명소·플래너·AI 도슨트');
   assert.equal(video.description, base.description);
-  assert.equal(video.canonicalUrl, base.canonicalUrl);
+  assert.equal(video.canonicalUrl, 'https://www.gateo.kr/place/paris/video');
+  assert.notEqual(video.canonicalUrl, base.canonicalUrl);
   assert.equal(parseCrawlerPath('/place/paris/video')?.kind, 'place-base');
   assert.equal(parseCrawlerPath('/place/paris/video')?.aliasTab, 'video');
 
@@ -417,12 +419,13 @@ test('prerendered HTML serves the search-intent title and description', () => {
     assert.equal(head.html.match(/<meta name="description"/gi).length, 1);
     if (row.path === '/place/cape-verde/video') {
       const canonical = head.html.match(/<link rel="canonical" href="([^"]+)"/i)?.[1];
-      assert.equal(
-        canonical,
+      const ogUrl = head.html.match(/<meta property="og:url" content="([^"]+)"/i)?.[1];
+      const expected =
         row.locale === 'en'
-          ? 'https://www.gateo.kr/place/cape-verde?lang=en'
-          : 'https://www.gateo.kr/place/cape-verde',
-      );
+          ? 'https://www.gateo.kr/place/cape-verde/video?lang=en'
+          : 'https://www.gateo.kr/place/cape-verde/video';
+      assert.equal(canonical, expected);
+      assert.equal(ogUrl, expected);
     }
   }
 });
