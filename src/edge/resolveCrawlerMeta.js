@@ -6,6 +6,8 @@ import {
   isExploreSeoContinent,
 } from '../pages/Home/lib/exploreCategorySeo.js';
 import { isPlaceRootAliasTab } from '../shared/seo/placeCanonicalPath.js';
+import { applyCrawlerSearchIntent } from './crawlerSearchIntentOverrides.js';
+import { buildPlaceBaseDescription } from './placeMetaDescription.js';
 
 const SITE_ORIGIN = 'https://www.gateo.kr';
 
@@ -87,8 +89,9 @@ export function parseCrawlerPath(pathname) {
     const [, slug, tab] = tabMatch;
     if (PLACE_TABS.has(tab)) return { kind: 'place-tab', slug, tab };
     // Googlebot does not run placeCanonicalPath. These tabs are not sitemap URLs,
-    // so the pre-render is the place root (same title, description, canonical, og:url).
-    if (isPlaceRootAliasTab(tab)) return { kind: 'place-base', slug };
+    // so canonical stays the place root. aliasTab only picks a search-intent
+    // title/description hint; it does not change canonical or og:url.
+    if (isPlaceRootAliasTab(tab)) return { kind: 'place-base', slug, aliasTab: tab.toLowerCase() };
     return null;
   }
 
@@ -112,20 +115,25 @@ export function resolveCrawlerMeta(pathname, locale = 'ko') {
   if (!parsed) return null;
 
   if (parsed.kind === 'hub' || parsed.kind === 'explore-category') {
-    return toCrawlerMetaRow(crawlerHubMeta?.[parsed.path]?.[locale], locale);
+    return applyCrawlerSearchIntent(toCrawlerMetaRow(crawlerHubMeta?.[parsed.path]?.[locale], locale), {
+      kind: 'hub',
+      path: parsed.path,
+      locale,
+    });
   }
 
   if (parsed.kind === 'place-base') {
     const gallery = crawlerPlaceMeta?.[parsed.slug]?.gallery?.[locale];
     if (!gallery) return null;
-    return toCrawlerMetaRow(
+    const row = toCrawlerMetaRow(
       {
         ...gallery,
         title: placeBaseTitle(gallery.placeName, locale),
-        description:
-          locale === 'en'
-            ? `Plan ${gallery.placeName}: sights, a trip planner, and an AI docent on GATEO.`
-            : `${gallery.placeName} 여행. 명소, 플래너, AI 도슨트를 GATEO에서 확인하세요.`,
+        description: buildPlaceBaseDescription({
+          placeName: gallery.placeName,
+          galleryDescription: gallery.description,
+          locale,
+        }),
         canonicalUrl: buildPlaceBaseUrl(parsed.slug, locale),
         hreflangAlternates: buildPlaceBaseHreflang(parsed.slug),
         tab: 'base',
@@ -133,11 +141,24 @@ export function resolveCrawlerMeta(pathname, locale = 'ko') {
       },
       locale,
     );
+    return applyCrawlerSearchIntent(row, {
+      kind: 'place',
+      slug: parsed.slug,
+      tab: parsed.aliasTab || 'base',
+      locale,
+      placeName: gallery.placeName,
+    });
   }
 
   if (parsed.kind === 'place-tab') {
-    const row = crawlerPlaceMeta?.[parsed.slug]?.[parsed.tab]?.[locale];
-    return toCrawlerMetaRow(row, locale);
+    const row = toCrawlerMetaRow(crawlerPlaceMeta?.[parsed.slug]?.[parsed.tab]?.[locale], locale);
+    return applyCrawlerSearchIntent(row, {
+      kind: 'place',
+      slug: parsed.slug,
+      tab: parsed.tab,
+      locale,
+      placeName: row?.placeName,
+    });
   }
 
   if (parsed.kind === 'editorial-logbook') {
