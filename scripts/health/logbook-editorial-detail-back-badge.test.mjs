@@ -14,7 +14,10 @@ const badge = readFileSync(
 test('PublicViewer editorial header clears fixed back on narrow viewports', () => {
   assert.match(publicViewer, /logbookDetailBack/);
   assert.match(publicViewer, /data-editorial-logbook-badge-header/);
-  assert.match(publicViewer, /max-md:pt-\[max\(3rem,env\(safe-area-inset-top/);
+  assert.match(
+    publicViewer,
+    /pt-\[calc\(max\(2rem,env\(safe-area-inset-top,0px\)\)\+3\.5rem\)\] md:pt-12/,
+  );
   assert.match(
     publicViewer,
     /max-md:pr-\[calc\(2\.75rem\+max\(1\.25rem,env\(safe-area-inset-right/,
