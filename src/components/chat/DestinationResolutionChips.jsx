@@ -21,7 +21,7 @@ export default function DestinationResolutionChips({
     const destLabel = localizeMooniPlaceLabel(confirmed, i18n.language);
     const departureLabel = localizeDepartureLabel(departure, i18n.language);
     return (
-      <div className="mt-3 flex flex-wrap items-center gap-2">
+      <div className="mt-3 flex flex-wrap items-center gap-2" data-testid="mooni-destination-resolution">
         {departureLabel && (
           <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-600/80 bg-slate-800/95 px-3 py-1.5 text-xs font-semibold text-slate-50">
             <PlaneTakeoff size={12} className="shrink-0 opacity-90" aria-hidden="true" />
@@ -48,7 +48,7 @@ export default function DestinationResolutionChips({
   if (!candidates?.length) return null;
 
   return (
-    <div className="mt-3 space-y-2">
+    <div className="mt-3 space-y-2" data-testid="mooni-destination-resolution">
       <p className="text-xs text-gray-400 px-0.5">{t('mooni.resolution.pickDestination')}</p>
       <div className="flex flex-wrap gap-2">
         {candidates.map((c) => (

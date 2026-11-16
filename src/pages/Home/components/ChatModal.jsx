@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useRef, useEffect, useLayoutEffect, useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -595,6 +595,26 @@ const ChatModal = ({
     !showFestivalAccessDock &&
     (mobileDockInputFocused || Boolean(input.trim()));
 
+  // Latest model turn is still asking which place. The mobile suggestion row must
+  // not mount over those buttons — at 390 it steals the click.
+  const awaitingDestinationPick = useMemo(() => {
+    for (let i = messages.length - 1; i >= 0; i -= 1) {
+      const msg = messages[i];
+      if (!msg || msg.role !== 'model') continue;
+      if (msg.confirmedDestination?.name) return false;
+      return Boolean(msg.destinationPrompt && msg.destinationCandidates?.length);
+    }
+    return false;
+  }, [messages]);
+
+  const suppressMobileSuggestionRow =
+    awaitingDestinationPick &&
+    showMooniChipDock &&
+    !showAccessOriginDock &&
+    !showFestivalAccessDock;
+
+  const mobileComposerExpanded = mobileDockInputExpanded || suppressMobileSuggestionRow;
+
   const topicDockPrompt =
     !topicDockParent && messages.length === 0 ? t('mooni.chat.topicPrompt') : null;
 
@@ -788,6 +808,18 @@ const ChatModal = ({
     }
     return undefined;
   }, [messages, isLoading]);
+
+  useLayoutEffect(() => {
+    if (!isOpen) return;
+    if (window.matchMedia('(min-width: 768px)').matches) return;
+    const scroller = messagesScrollRef.current;
+    if (!scroller) return;
+    const nodes = scroller.querySelectorAll('[data-testid="mooni-destination-resolution"]');
+    const el = nodes[nodes.length - 1];
+    if (!el) return;
+    const overflow = el.getBoundingClientRect().bottom - scroller.getBoundingClientRect().bottom;
+    if (overflow > 1) scroller.scrollTop += overflow + 12;
+  }, [isOpen, messages, isLoading, mobileComposerExpanded]);
 
   useEffect(() => {
     if (!originHoldUntil) return undefined;
@@ -2364,7 +2396,7 @@ const ChatModal = ({
               ) : showMooniChipDock ? (
                 <>
                   <div className="md:hidden px-3 pt-2 pb-1 flex flex-col gap-1.5">
-                    {showClearPlaceBinding && !mobileDockInputExpanded ? (
+                    {showClearPlaceBinding && !mobileComposerExpanded ? (
                       <button
                         type="button"
                         onClick={onClearPlaceBinding}
@@ -2379,7 +2411,7 @@ const ChatModal = ({
                         {t('mooni.chat.clearPlaceBinding')}
                       </button>
                     ) : null}
-                    {!mobileDockInputExpanded ? (
+                    {!mobileComposerExpanded ? (
                       <div className="min-w-0 w-full">
                         <MooniQuickReplyChips {...topicDockChipsProps} />
                       </div>
@@ -2412,13 +2444,13 @@ const ChatModal = ({
                           }, 120);
                         }}
                         placeholder={
-                          mobileDockInputExpanded
+                          mobileComposerExpanded
                             ? chatInputPlaceholder
                             : t('mooni.chat.placeholderDirect')
                         }
                         title={chatInputPlaceholder}
                         className={
-                          mobileDockInputExpanded
+                          mobileComposerExpanded
                             ? tone(
                                 fresh,
                                 'w-full bg-gray-800 text-white text-[16px] leading-normal pl-3.5 pr-10 py-2.5 rounded-full border border-gray-600 focus:outline-none focus:border-blue-500 placeholder:text-gray-500 transition-[padding] duration-150',
@@ -2438,7 +2470,7 @@ const ChatModal = ({
                         disabled={isLoading || !input.trim()}
                         onMouseDown={(e) => e.preventDefault()}
                         className={
-                          mobileDockInputExpanded
+                          mobileComposerExpanded
                             ? tone(
                                 fresh,
                                 'absolute right-1 top-1/2 -translate-y-1/2 p-1.5 bg-blue-600 rounded-full text-white disabled:opacity-40 touch-manipulation',
@@ -2452,7 +2484,7 @@ const ChatModal = ({
                         }
                         aria-label={t('mooni.chat.send')}
                       >
-                        <Send size={mobileDockInputExpanded ? 17 : 13} />
+                        <Send size={mobileComposerExpanded ? 17 : 13} />
                       </button>
                     </form>
                   </div>
