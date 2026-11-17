@@ -179,7 +179,9 @@ test.describe('festival detail city place link', () => {
 
     const width = page.viewportSize()?.width;
     const shotName = width === 1280 ? 'chromium-1280' : 'chromium-390';
-    const capture = /chromium/i.test(testInfo.project.name) && (width === 390 || width === 1280);
+    const capture = process.env.FESTIVAL_CITY_PLACE_SHOTS === '1'
+      && /chromium/i.test(testInfo.project.name)
+      && (width === 390 || width === 1280);
     if (capture) {
       mkdirSync(SHOT_DIR, { recursive: true });
       await link.scrollIntoViewIfNeeded();

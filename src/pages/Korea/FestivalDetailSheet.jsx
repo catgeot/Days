@@ -942,8 +942,8 @@ export default function FestivalDetailSheet({
     : '';
   const nearestHub = festivalCross?.nearbyHubs?.[0];
   const cityPlace = useMemo(
-    () => festivalCityPlaceFromCross(festivalCross),
-    [festivalCross],
+    () => festivalCityPlaceFromCross(festivalCross, item),
+    [festivalCross, item],
   );
   const cityPlaceHref = festivalCityPlaceHref(cityPlace?.slug, isEnglish);
   const openCityPlace = useCallback(
