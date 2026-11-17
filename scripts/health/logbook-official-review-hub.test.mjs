@@ -17,7 +17,10 @@ import {
   formatGateoReviewerBadge,
   normalizePersonaLabel,
 } from '../../src/utils/placeReviewEditorial.js';
-import { LOGBOOK_OFFICIAL_REVIEW_HUB_PAGE_SIZE } from '../../src/pages/DailyReport/components/LogbookOfficialReviewHubCard.jsx';
+import {
+  initialLogbookHubExpanded,
+  LOGBOOK_OFFICIAL_REVIEW_HUB_PAGE_SIZE,
+} from '../../src/pages/DailyReport/components/LogbookOfficialReviewHubCard.jsx';
 import {
   isGateoReviewDeeplinkEnabled,
   isLogbookOfficialReviewHubEnabled,
@@ -156,6 +159,13 @@ test('retry capture script asserts success and fail-again flows', () => {
 test('이틀컷 persona badge uses DB label (no rename to 문턱없이)', () => {
   assert.equal(formatGateoReviewerBadge('이틀컷'), 'GATEO 리뷰어 · 이틀컷');
   assert.equal(normalizePersonaLabel('이틀컷'), '이틀컷');
+});
+
+test('hub starts expanded unless the session stored a boolean', () => {
+  assert.equal(initialLogbookHubExpanded(undefined), true);
+  assert.equal(initialLogbookHubExpanded(null), true);
+  assert.equal(initialLogbookHubExpanded(true), true);
+  assert.equal(initialLogbookHubExpanded(false), false);
 });
 
 test('hub pagination reaches Paris editorial row at rank 28', () => {

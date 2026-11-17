@@ -7,6 +7,7 @@ import { rememberLogbookReviewHubRows } from '../../../logbookOfficialReviews/lo
 import {
   buildLogbookHubReturnTo,
   readMatchingLogbookReviewHubSession,
+  snapshotLogbookReviewHubSession,
 } from '../../../logbookOfficialReviews/logbookReviewHubSession.js';
 import { prepareLogbookReviewHubNavigation } from '../../../logbookOfficialReviews/logbookReviewHubNavigate.js';
 import {
@@ -61,6 +62,11 @@ function initialVisibleCount(pathname, search, pageSize) {
   const saved = readMatchingLogbookReviewHubSession(pathname, search)?.visibleCount;
   if (typeof saved === 'number' && saved > 0) return Math.max(pageSize, saved);
   return pageSize;
+}
+
+/** No saved choice → open. A boolean in the matching session wins, including collapsed. */
+export function initialLogbookHubExpanded(saved) {
+  return typeof saved === 'boolean' ? saved : true;
 }
 
 function editorialReviewListPreview(review) {
@@ -195,7 +201,9 @@ const LogbookOfficialReviewHubCard = () => {
   const pageSize = hubPageSize(filterEnabled);
   const countSuffix = t('logbook.officialReviewHub.countSuffix');
   const [expanded, setExpanded] = useState(() =>
-    Boolean(readMatchingLogbookReviewHubSession(location.pathname, location.search)?.expanded),
+    initialLogbookHubExpanded(
+      readMatchingLogbookReviewHubSession(location.pathname, location.search)?.expanded,
+    ),
   );
   const [visibleCount, setVisibleCount] = useState(() =>
     initialVisibleCount(location.pathname, location.search, pageSize),
@@ -210,13 +218,16 @@ const LogbookOfficialReviewHubCard = () => {
   const [filterCitySlug, setFilterCitySlug] = useState(parsedFilter.citySlug);
   const { enabled, rows, isLoading, loadFailed, totalCount, retry } = useLogbookOfficialReviewHub();
   const didRestoreScroll = useRef(false);
+  const skipExpandedPersist = useRef(true);
+  const locationRef = useRef(location);
+  locationRef.current = location;
   /** @type {React.MutableRefObject<import('../../../logbookOfficialReviews/logbookReviewHubScrollAnchor.js').LogbookHubScrollAnchor | null>} */
   const scrollAnchorRef = useRef(null);
 
   useEffect(() => {
     const session = readMatchingLogbookReviewHubSession(location.pathname, location.search);
     if (!session) return;
-    if (session.expanded) setExpanded(true);
+    if (typeof session.expanded === 'boolean') setExpanded(session.expanded);
     if (typeof session.visibleCount === 'number' && session.visibleCount > 0) {
       setVisibleCount(Math.max(pageSize, session.visibleCount));
     }
@@ -275,6 +286,18 @@ const LogbookOfficialReviewHubCard = () => {
       history.scrollRestoration = 'auto';
     };
   }, []);
+
+  useEffect(() => {
+    if (skipExpandedPersist.current) {
+      skipExpandedPersist.current = false;
+      return;
+    }
+    const { pathname, search } = locationRef.current;
+    snapshotLogbookReviewHubSession({
+      returnTo: buildLogbookHubReturnTo(pathname, search),
+      expanded,
+    });
+  }, [expanded]);
 
   const hubLinkState = useMemo(
     () => ({

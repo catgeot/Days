@@ -82,7 +82,10 @@ function fulfillPlaceReviews(route, rows = REVIEW_ROWS) {
 async function openHub(page) {
   await page.goto(HUB_PATH, { waitUntil: 'domcontentloaded' });
   await page.getByTestId('logbook-official-review-hub').waitFor({ state: 'visible', timeout: 60_000 });
-  await page.getByTestId('logbook-official-review-hub-toggle').click();
+  await expect(page.getByTestId('logbook-official-review-hub-toggle')).toHaveAttribute(
+    'aria-expanded',
+    'true',
+  );
   await page.getByTestId('logbook-official-review-hub-panel').waitFor({ timeout: 30_000 });
 }
 
@@ -209,8 +212,9 @@ test.describe('LogBook review detail photo @mocked', () => {
       { waitUntil: 'domcontentloaded' },
     );
     await page.getByTestId('logbook-official-review-hub').waitFor({ state: 'visible', timeout: 60_000 });
-    await page.getByTestId('logbook-official-review-hub-toggle').click();
-    const toggleText = await page.getByTestId('logbook-official-review-hub-toggle').innerText();
+    const toggle = page.getByTestId('logbook-official-review-hub-toggle');
+    await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+    const toggleText = await toggle.innerText();
     expect(toggleText).toMatch(/GATEO reviewer reviews/i);
     const err = page.locator('text=/missing.*translation|i18n key/i');
     await expect(err).toHaveCount(0);

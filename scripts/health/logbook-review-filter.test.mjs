@@ -153,6 +153,10 @@ test('hub card wires filter flag without forced scroll', () => {
   assert.doesNotMatch(grid, /logbook-official-review-hub-card-summary/);
   assert.match(grid, /line-clamp-2/);
   assert.doesNotMatch(grid, /line-clamp-1/);
+  assert.match(grid, /z-\[2\]/);
+  assert.match(grid, /logbook-official-review-hub-card-reviewer/);
+  assert.match(grid, /formatGateoReviewerBadge/);
+  assert.doesNotMatch(grid, /sr-only/);
   assert.match(grid, /buildPlaceReviewsHref/);
   assert.doesNotMatch(hub, /scrollIntoView/);
   assert.doesNotMatch(filter, /scrollIntoView/);
