@@ -1220,6 +1220,32 @@ AI 모델 #3, Preview OK면 PR 병합
 
 ---
 
+### 여행사 홈 링크
+
+| | |
+|--|--|
+| **상태** | **#1 draft** · tip `59e4fae7` · PR [#837](https://github.com/catgeot/Days/pull/837) |
+| **브랜치** | `cursor/agency-home-link-e918` |
+| **tip** | `59e4fae7` |
+| **PR** | [#837](https://github.com/catgeot/Days/pull/837) draft |
+| **일지** | [`2026-11-17-project-log.md`](./2026-11-17-project-log.md) |
+| **소유** | `TravelAgencyDirectory` · `travelAgencyVisits.js` · `TravelAgencyVisitCapture` |
+| **금지** | MRT «내 예약 확인» 직행 · 새 플래그 · `vercel.json` · 홈 클릭이 마지막 URL을 덮어쓰기 |
+| **VERIFY** | `npm run test:travel-agency-home-link` · `npm run smoke:travel-agencies` · `npm run test:e2e:agency-home-link` |
+
+**다음 제시어**:
+
+```
+여행사 홈 #1, draft
+@plans/feature-handoff-index.md
+@plans/2026-11-17-project-log.md
+브랜치 cursor/agency-home-link-e918 · PR #837 draft
+금지: 머지 · vercel.json · 새 플래그 · 내 예약 확인 직행 · 홈 클릭이 마지막 URL을 덮어쓰기
+작업: 추가 구현 없음. 사람 확인은 draft PR #837
+```
+
+---
+
 ### 여행사 목록
 
 | | |
