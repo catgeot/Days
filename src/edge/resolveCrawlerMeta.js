@@ -8,6 +8,7 @@ import {
 import { isPlaceRootAliasTab } from '../shared/seo/placeCanonicalPath.js';
 import { applyCrawlerSearchIntent } from './crawlerSearchIntentOverrides.js';
 import { buildPlaceBaseDescription } from './placeMetaDescription.js';
+import { resolveWorldEventCrawlerMeta } from './worldEventCrawlerMeta.js';
 
 const SITE_ORIGIN = 'https://www.gateo.kr';
 
@@ -25,6 +26,30 @@ function buildPlaceBaseHreflang(slug) {
     { hreflang: 'en', href: en },
     { hreflang: 'x-default', href: ko },
   ];
+}
+
+function buildPlaceTabUrl(slug, tab, locale) {
+  const path = `/place/${slug}/${tab}`;
+  if (locale === 'en') return `${SITE_ORIGIN}${path}?lang=en`;
+  return `${SITE_ORIGIN}${path}`;
+}
+
+function buildPlaceTabHreflang(slug, tab) {
+  const ko = buildPlaceTabUrl(slug, tab, 'ko');
+  const en = buildPlaceTabUrl(slug, tab, 'en');
+  return [
+    { hreflang: 'ko', href: ko },
+    { hreflang: 'en', href: en },
+    { hreflang: 'x-default', href: ko },
+  ];
+}
+
+function decodePathSegment(value) {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
 }
 
 function placeBaseTitle(placeName, locale) {
@@ -79,6 +104,11 @@ export function parseCrawlerPath(pathname) {
     }
   }
 
+  const worldEventMatch = path.match(/^\/world-events\/([^/]+)$/);
+  if (worldEventMatch) {
+    return { kind: 'world-event', id: decodePathSegment(worldEventMatch[1]) };
+  }
+
   const baseMatch = path.match(/^\/place\/([^/]+)$/);
   if (baseMatch) {
     return { kind: 'place-base', slug: baseMatch[1] };
@@ -88,9 +118,7 @@ export function parseCrawlerPath(pathname) {
   if (tabMatch) {
     const [, slug, tab] = tabMatch;
     if (PLACE_TABS.has(tab)) return { kind: 'place-tab', slug, tab };
-    // Googlebot does not run placeCanonicalPath. These tabs are not sitemap URLs,
-    // so canonical stays the place root. aliasTab only picks a search-intent
-    // title/description hint; it does not change canonical or og:url.
+    // aliasTab selects the #833 title/description. Canonical and og:url are the tab itself.
     if (isPlaceRootAliasTab(tab)) return { kind: 'place-base', slug, aliasTab: tab.toLowerCase() };
     return null;
   }
@@ -134,8 +162,12 @@ export function resolveCrawlerMeta(pathname, locale = 'ko') {
           galleryDescription: gallery.description,
           locale,
         }),
-        canonicalUrl: buildPlaceBaseUrl(parsed.slug, locale),
-        hreflangAlternates: buildPlaceBaseHreflang(parsed.slug),
+        canonicalUrl: parsed.aliasTab
+          ? buildPlaceTabUrl(parsed.slug, parsed.aliasTab, locale)
+          : buildPlaceBaseUrl(parsed.slug, locale),
+        hreflangAlternates: parsed.aliasTab
+          ? buildPlaceTabHreflang(parsed.slug, parsed.aliasTab)
+          : buildPlaceBaseHreflang(parsed.slug),
         tab: 'base',
         galleryImages: undefined,
       },
@@ -159,6 +191,10 @@ export function resolveCrawlerMeta(pathname, locale = 'ko') {
       locale,
       placeName: row?.placeName,
     });
+  }
+
+  if (parsed.kind === 'world-event') {
+    return resolveWorldEventCrawlerMeta(parsed.id, locale);
   }
 
   if (parsed.kind === 'editorial-logbook') {
@@ -213,6 +249,7 @@ export function getCrawlerMetaKind(pathname) {
     if (parsed.path === '/world-events') return 'world-events';
     return 'hub';
   }
+  if (parsed.kind === 'world-event') return 'world-event';
   if (parsed.kind === 'place-base') return 'tier1-place-base';
   if (parsed.kind === 'editorial-logbook') return 'editorial-logbook';
   return 'tier1-place';

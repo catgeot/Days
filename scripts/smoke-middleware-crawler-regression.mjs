@@ -245,12 +245,13 @@ for (const [slug, label] of CATALOG_SLUGS) {
       assert.equal(parseCrawlerPath(path)?.kind, 'place-tab', `${path} stays place-tab`);
       assert.notEqual(head.title, rootHead.title, `${path} title stays tab-specific`);
     } else {
-      assert.equal(head.canonicals[0], rootCanonical, `${path} canonical is place root`);
-      assert.equal(head.ogUrls[0], rootCanonical, `${path} og:url is place root`);
-      assert.equal(head.title, rootHead.title, `${path} title matches place root`);
-      assert.equal(head.description, rootHead.description, `${path} description matches place root`);
+      const selfCanonical = `https://www.gateo.kr/place/${slug}/${tab}`;
+      assert.equal(head.canonicals[0], selfCanonical, `${path} canonical is the tab URL`);
+      assert.equal(head.ogUrls[0], selfCanonical, `${path} og:url is the tab URL`);
+      assert.equal(head.title, rootHead.title, `${path} title stays the place copy`);
+      assert.equal(head.description, rootHead.description, `${path} description stays the place copy`);
       assert.equal(bot.xCrawlerMeta, rootBot.xCrawlerMeta, `${path} same crawler kind as root`);
-      assert.equal(parseCrawlerPath(path)?.kind, 'place-base', `${path} parsed as place root`);
+      assert.equal(parseCrawlerPath(path)?.kind, 'place-base', `${path} parsed as place-base`);
       assert.equal(isCrawlerSoft404Path(path), false, `${path} soft-404 policy unchanged`);
     }
     recordRow(
@@ -258,7 +259,7 @@ for (const [slug, label] of CATALOG_SLUGS) {
       tab,
       'Googlebot',
       bot,
-      tab === 'gallery' || tab === 'planner' || tab === 'wiki' ? 'tab canonical kept' : 'title+description=root',
+      tab === 'gallery' || tab === 'planner' || tab === 'wiki' ? 'tab canonical kept' : 'title+description kept; canonical=tab',
     );
   }
 
@@ -296,17 +297,52 @@ for (const suffix of ['', '/reviews', '/video', '/events']) {
 
 const reviewQuery = await runMiddleware('/place/cairo/reviews?review=abc', GOOGLEBOT);
 const reviewQueryHead = headFields(reviewQuery.body);
-assert.deepEqual(reviewQueryHead.canonicals, ['https://www.gateo.kr/place/cairo'], 'review deeplink canonical drops query');
-assert.deepEqual(reviewQueryHead.ogUrls, ['https://www.gateo.kr/place/cairo'], 'review deeplink og:url drops query');
+assert.deepEqual(reviewQueryHead.canonicals, ['https://www.gateo.kr/place/cairo/reviews'], 'review deeplink canonical drops extra query');
+assert.deepEqual(reviewQueryHead.ogUrls, ['https://www.gateo.kr/place/cairo/reviews'], 'review deeplink og:url drops extra query');
 
 const enAlias = await runMiddleware('/place/paris/reviews?lang=en', GOOGLEBOT);
 const enRoot = await runMiddleware('/place/paris?lang=en', GOOGLEBOT);
 const enAliasHead = headFields(enAlias.body);
 const enRootHead = headFields(enRoot.body);
-assert.deepEqual(enAliasHead.canonicals, ['https://www.gateo.kr/place/paris?lang=en'], 'en alias canonical matches root');
-assert.deepEqual(enAliasHead.ogUrls, enRootHead.ogUrls, 'en alias og:url matches root');
+assert.deepEqual(enAliasHead.canonicals, ['https://www.gateo.kr/place/paris/reviews?lang=en'], 'en alias canonical keeps lang and the tab');
+assert.deepEqual(enAliasHead.ogUrls, ['https://www.gateo.kr/place/paris/reviews?lang=en'], 'en alias og:url keeps lang and the tab');
 assert.equal(enAliasHead.title, enRootHead.title, 'en alias title matches root');
 assert.equal(enAliasHead.description, enRootHead.description, 'en alias description matches root');
+assert.deepEqual(enRootHead.canonicals, ['https://www.gateo.kr/place/paris?lang=en'], 'en place root canonical unchanged');
+
+const blog = await runMiddleware('/blog/e/paris-travelogue', GOOGLEBOT);
+assert.equal(headFields(blog.body).canonicals[0], 'https://www.gateo.kr/blog/e/paris-travelogue', 'blog canonical unchanged');
+
+const WORLD_EVENT_SAMPLES = [
+  '/world-events/vienna-staatsoper-season-2026',
+  '/world-events/edinburgh-fringe-2026',
+  '/world-events/munich-oktoberfest-2026',
+];
+for (const path of WORLD_EVENT_SAMPLES) {
+  const bot = await runMiddleware(path, GOOGLEBOT);
+  const browserHit = await runMiddleware(path, CHROME);
+  assert.equal(browserHit.passThrough, true, `${path} browser passes through`);
+  assert.equal(bot.passThrough, false, `${path} crawler injects`);
+  assert.equal(bot.status, 200, `${path} status 200`);
+  assert.equal(bot.xCrawlerMeta, 'world-event', `${path} kind`);
+  const head = headFields(bot.body);
+  assert.deepEqual(head.canonicals, [`https://www.gateo.kr${path}`], `${path} canonical`);
+  assert.deepEqual(head.ogUrls, [`https://www.gateo.kr${path}`], `${path} og:url`);
+  assert.equal(head.title.includes('AI 도슨트와 함께하는 3D'), false, `${path} is not the home title`);
+}
+const unknownEvent = await runMiddleware('/world-events/not-a-real-event', GOOGLEBOT);
+assert.equal(unknownEvent.passThrough, true, 'unknown world event passes through');
+const unknownBrowser = await runMiddleware('/world-events/not-a-real-event', CHROME);
+assert.equal(unknownBrowser.passThrough, true, 'unknown world event browser passes through');
+const worldHub = await runMiddleware('/world-events', GOOGLEBOT);
+assert.equal(headFields(worldHub.body).canonicals[0], 'https://www.gateo.kr/world-events', 'world-events hub canonical unchanged');
+const enEvent = await runMiddleware('/world-events/vienna-staatsoper-season-2026?lang=en', GOOGLEBOT);
+assert.equal(
+  headFields(enEvent.body).canonicals[0],
+  'https://www.gateo.kr/world-events/vienna-staatsoper-season-2026?lang=en',
+  'en world event canonical keeps lang',
+);
+assert.ok(middlewareSrc.includes('/world-events/:eventId'), 'middleware matcher includes world event detail');
 
 console.log(tableLines.join('\n'));
 
