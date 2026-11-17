@@ -12,6 +12,7 @@ import {
   normalizeWorldEventOverride,
   sortWorldEvents,
 } from './lib/world-event-schema.mjs';
+import { writeWorldEventCrawlerSources } from './generate-crawler-world-event-meta.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const OUTPUT_PATH = join(__dirname, '../src/pages/Home/data/worldEvents.json');
@@ -66,6 +67,7 @@ function main() {
   mkdirSync(dirname(OUTPUT_PATH), { recursive: true });
   writeFileSync(OUTPUT_PATH, `${JSON.stringify(output, null, 2)}\n`, 'utf8');
   console.log(`Wrote ${OUTPUT_PATH} (${output.meta.eventCount} events)`);
+  writeWorldEventCrawlerSources();
 }
 
 main();

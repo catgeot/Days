@@ -1,10 +1,8 @@
-import {
-  getWorldEventById,
-  getWorldEventDetailOverview,
-  getWorldEventPlaceLabel,
-  getWorldEventTitle,
-} from '../utils/worldEvents.js';
+import worldEventCrawlerSources from './worldEventCrawlerSources.generated.js';
 import { stripHtmlAndMarkdown, trimMetaDescription } from './placeMetaDescription.js';
+
+// Slim generated rows only. Importing worldEvents.js pulls JSON import syntax and the
+// full event plus travel-spot lists into the Vercel edge middleware bundle.
 
 const SITE_ORIGIN = 'https://www.gateo.kr';
 const HANGUL_START = /^[\u1100-\u11ff\u3130-\u318f\uac00-\ud7a3]/;
@@ -12,6 +10,26 @@ const EN_MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'
 
 function localeKey(locale) {
   return locale === 'en' ? 'en' : 'ko';
+}
+
+function eventTitleText(event, locale) {
+  if (!event) return '';
+  if (locale === 'en' && event.titleEn) return event.titleEn;
+  return event.title || event.titleEn || '';
+}
+
+function eventOverview(event, locale) {
+  if (!event) return '';
+  if (locale === 'en') return event.detailOverviewEn ? String(event.detailOverviewEn).trim() : '';
+  return event.detailOverview ? String(event.detailOverview).trim() : '';
+}
+
+function placeLabel(slug, locale) {
+  const key = String(slug || '').trim().toLowerCase();
+  const spot = worldEventCrawlerSources.places?.[key];
+  if (!spot) return key;
+  if (locale === 'en' && spot.name_en) return spot.name_en;
+  return spot.name || spot.name_en || key;
 }
 
 /** Fixed calendar text so Edge and Node emit the same crawler snippet. */
@@ -71,10 +89,10 @@ function englishLead(name, city, dates) {
 
 function buildDescription(event, locale) {
   const loc = localeKey(locale);
-  const name = getWorldEventTitle(event, loc);
-  const city = getWorldEventPlaceLabel(event?.slug, loc);
+  const name = eventTitleText(event, loc);
+  const city = placeLabel(event?.slug, loc);
   const dates = formatRange(event, loc);
-  const overview = getWorldEventDetailOverview(event, loc);
+  const overview = eventOverview(event, loc);
 
   if (loc === 'en') {
     const lead = englishLead(name, city, dates);
@@ -102,8 +120,8 @@ export function buildWorldEventCrawlerMetaFromEvent(event, locale = 'ko') {
   const id = String(event.id || '').trim();
   if (!id) return null;
   const loc = localeKey(locale);
-  const name = getWorldEventTitle(event, loc);
-  const city = getWorldEventPlaceLabel(event.slug, loc);
+  const name = eventTitleText(event, loc);
+  const city = placeLabel(event.slug, loc);
   const title = eventTitle(name, city);
   if (!title) return null;
   const description = buildDescription(event, loc);
@@ -129,7 +147,9 @@ export function buildWorldEventCrawlerMetaFromEvent(event, locale = 'ko') {
 }
 
 export function resolveWorldEventCrawlerMeta(eventId, locale = 'ko') {
-  const event = getWorldEventById(eventId);
+  const key = String(eventId || '').trim();
+  if (!key) return null;
+  const event = worldEventCrawlerSources.events?.[key];
   if (!event) return null;
   return buildWorldEventCrawlerMetaFromEvent(event, locale);
 }

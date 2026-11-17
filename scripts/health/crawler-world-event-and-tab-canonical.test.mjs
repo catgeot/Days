@@ -10,7 +10,7 @@ import { injectCrawlerMetaIntoHtml } from '../../src/edge/injectCrawlerMeta.js';
 import { parseCrawlerPath, resolveCrawlerMeta } from '../../src/edge/resolveCrawlerMeta.js';
 import { buildWorldEventCrawlerMetaFromEvent } from '../../src/edge/worldEventCrawlerMeta.js';
 import { buildLocalePageUrl } from '../../src/i18n/seoUrls.js';
-import { getAllWorldEvents } from '../../src/utils/worldEvents.js';
+import { getAllWorldEvents, getWorldEventPlaceLabel } from '../../src/utils/worldEvents.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const indexHtml = readFileSync(join(root, 'index.html'), 'utf8');
@@ -83,6 +83,12 @@ test('every world event description stays within 155 characters and English does
     for (const locale of ['ko', 'en']) {
       const meta = resolveCrawlerMeta(`/world-events/${event.id}`, locale);
       assert.ok(meta, `${event.id} ${locale}`);
+      assert.deepEqual(meta, buildWorldEventCrawlerMetaFromEvent(event, locale), `${event.id} ${locale}`);
+      const place = getWorldEventPlaceLabel(event.slug, locale);
+      assert.ok(
+        meta.title === place || meta.title.endsWith(`— ${place}`),
+        `${event.id} ${locale} title=${meta.title} place=${place}`,
+      );
       assert.equal(meta.title.includes('| GATEO'), false, event.id);
       assert.match(meta.title, / — /, event.id);
       assert.equal(meta.canonicalUrl, buildLocalePageUrl(`/world-events/${event.id}`, locale));
