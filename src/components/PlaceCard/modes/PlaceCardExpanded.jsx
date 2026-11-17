@@ -23,6 +23,7 @@ import { decodeHtmlEntities } from '../../../utils/decodeHtmlEntities';
 import { placePathSuffixForMediaMode, expandedMediaModesIncludingWorldEvents, mediaModeFromPathname } from '../common/placeMediaTabRoutes';
 import { isGateoPlaceWorldEventsTabEnabled } from '../../../shared/gateoFeatureFlags';
 import { isPlacePlannerEligible } from '../../../shared/place/placePlannerEligibility.js';
+import { usePlaceTabView } from '../../../shared/analytics/placeTabView.js';
 
 const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, onOpenMooni, onNavigateToPlace, onGoHome, isMooniChatOpen = false, galleryData, onToggleBookmark, initialTab = 'GALLERY' }) => {
   const navigate = useNavigate();
@@ -242,17 +243,7 @@ const PlaceCardExpanded = React.memo(({ location, isBookmarked, onClose, onOpenM
     queueMicrotask(() => setIsAiMode(false));
   }, [galleryData.selectedImg]);
 
-  // 탭 전환 이벤트 추적
-  useEffect(() => {
-    if (window.gtag && location) {
-      const slug = location.slug || (location.id ? String(location.id).toLowerCase() : 'unknown');
-      window.gtag('event', 'tab_view', {
-        tab_name: mediaMode.toLowerCase(),
-        place_slug: slug,
-        place_name: location.name || 'Unknown',
-      });
-    }
-  }, [mediaMode, location]);
+  usePlaceTabView(location, mediaMode);
 
   return (
     <div ref={containerRef} className="fixed inset-0 z-[100] bg-black/95 flex flex-col lg:flex-row p-0 lg:p-6 gap-0 lg:gap-6 animate-fade-in overflow-hidden font-sans overscroll-none">
