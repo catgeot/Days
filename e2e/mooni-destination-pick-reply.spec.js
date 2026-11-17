@@ -114,6 +114,33 @@ async function expectReplyPickChips(reply, mode) {
   await expect(prompt).toBeVisible();
 }
 
+/** 후보 버튼을 스크롤 하단 끝에 붙인 뒤 입력을 blur — 제안 줄이 그 위를 덮으면 실패 */
+async function expectCandidateStaysAboveSuggestionRow(page, button) {
+  await button.evaluate((btn) => {
+    const scroller = btn.closest('[data-testid="mooni-message-scroll"]');
+    if (!scroller) return;
+    const delta = btn.getBoundingClientRect().bottom - scroller.getBoundingClientRect().bottom;
+    scroller.scrollTop += delta + 1;
+  });
+  const input = page.getByRole('textbox', {
+    name: /메시지 입력|직접 입력|Type a message|Type directly/i,
+  });
+  await input.focus();
+  await input.blur();
+  // 모바일 제안 줄은 blur 후 120ms에 붙는다. 그 다음 프레임까지 본다.
+  await page.waitForTimeout(280);
+  const hit = await button.evaluate((btn) => {
+    const rect = btn.getBoundingClientRect();
+    if (rect.width < 1 || rect.height < 1) return 'no-box';
+    const el = document.elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2);
+    if (!el) return 'null';
+    if (btn === el || btn.contains(el)) return 'button';
+    if (el.closest('[data-testid="mooni-quick-replies"]')) return 'dock';
+    return el.tagName;
+  });
+  expect(hit, 'candidate button must stay the hit target when the suggestion row mounts').toBe('button');
+}
+
 test.describe('MOONi destination pick — AI reply first, chips below', () => {
   test.setTimeout(360_000);
 
@@ -146,7 +173,9 @@ test.describe('MOONi destination pick — AI reply first, chips below', () => {
       await expectNoDestinationChipInUserBubbles(page);
       if (n === 9) {
         await expect(reply.getByText(PICK_PROMPT, { exact: true })).toBeVisible();
-        await reply.getByRole('button', { name: '푸꾸옥' }).click();
+        const phuquoc = reply.getByRole('button', { name: '푸꾸옥' });
+        await expectCandidateStaysAboveSuggestionRow(page, phuquoc);
+        await phuquoc.click();
         await expect(reply.getByText(/목적지 · .*푸꾸옥/)).toBeVisible({ timeout: 60_000 });
       }
     }
