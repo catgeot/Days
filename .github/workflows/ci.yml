@@ -234,6 +234,42 @@ jobs:
         run: |
           npx playwright test -c playwright.config.festival-region-chip-scroll.js --project=webkit --reporter=line
 
+  festival-city-place-e2e:
+    name: Festival city place link E2E (Chromium 390·1280, WebKit 390)
+    runs-on: ubuntu-24.04
+    needs: lint-and-build
+    timeout-minutes: 30
+    container:
+      image: mcr.microsoft.com/playwright:v1.60.0-jammy
+      options: --ipc=host
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+        env:
+          VITE_SUPABASE_URL: https://example.supabase.co
+          VITE_SUPABASE_ANON_KEY: e2e-anon-placeholder
+          DEV_SSL: '0'
+
+      - name: Playwright — korea-festival-city-place
+        env:
+          VITE_SUPABASE_URL: https://example.supabase.co
+          VITE_SUPABASE_ANON_KEY: e2e-anon-placeholder
+          DEV_SSL: '0'
+        run: |
+          npx playwright test -c playwright.config.festival-city-place.js --reporter=line
+
   festival-nearby-cards-e2e:
     name: Festival nearby cards E2E (Chromium 390)
     runs-on: ubuntu-24.04

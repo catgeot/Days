@@ -4031,8 +4031,18 @@ export default function KoreaFestivalHub() {
           festivalPool={isGateoFestivalRoadEnabled() ? itemsWithSocialPromo : undefined}
           onOpenHub={(hubId) => {
             resetIosZoomAfterInput();
-            setPlaceReturnTo('/korea');
-            navigate(`/place/${hubId}`, { state: { returnTo: '/korea' } });
+            const slug = String(hubId || '').trim();
+            if (!slug) return;
+            const returnTo = `${location.pathname}${location.search}` || '/korea';
+            setPlaceReturnTo(returnTo);
+            const lang = new URLSearchParams(location.search).get('lang');
+            navigate(
+              {
+                pathname: `/place/${slug}`,
+                search: lang === 'en' ? '?lang=en' : '',
+              },
+              { state: { returnTo } },
+            );
           }}
         />
       )}
