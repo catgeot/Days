@@ -3694,6 +3694,62 @@
     ]
   },
   {
+    "hubId": "khao-lak",
+    "name": "카오락",
+    "name_en": "Khao Lak",
+    "country": "태국",
+    "country_en": "Thailand",
+    "lat": 8.6475,
+    "lng": 98.2483,
+    "aliases": [
+      "khaolak"
+    ],
+    "attractions": [
+      {
+        "name": "낭통 해변",
+        "name_en": "Nang Thong Beach",
+        "kind": "beach",
+        "lat": 8.648986,
+        "lng": 98.2462864
+      },
+      {
+        "name": "방삭 해변",
+        "name_en": "Bang Sak Beach",
+        "kind": "beach",
+        "lat": 8.7758131,
+        "lng": 98.2649843
+      },
+      {
+        "name": "방니앙 시장",
+        "name_en": "Bang Niang Market",
+        "kind": "market",
+        "lat": 8.6667805,
+        "lng": 98.2516164
+      },
+      {
+        "name": "똔총파 폭포",
+        "name_en": "Ton Chong Fa Waterfall",
+        "kind": "park",
+        "lat": 8.655164,
+        "lng": 98.284189
+      },
+      {
+        "name": "반남켐 쓰나미 추모공원",
+        "name_en": "Ban Nam Khem Tsunami Memorial Park",
+        "kind": "landmark",
+        "lat": 8.8591804,
+        "lng": 98.2652054
+      },
+      {
+        "name": "따꾸아빠 올드타운",
+        "name_en": "Takua Pa Old Town",
+        "kind": "neighborhood",
+        "lat": 8.8294942,
+        "lng": 98.3648267
+      }
+    ]
+  },
+  {
     "hubId": "chiang-mai",
     "name": "치앙마이",
     "name_en": "Chiang Mai",
