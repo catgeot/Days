@@ -11,7 +11,7 @@ import { lazyDefault as lazy } from '../../shared/lib/lazyDefault.js';
 import { flushSync } from 'react-dom';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   ArrowUp,
   ChevronLeft,
@@ -75,6 +75,18 @@ import {
   mergeNearbyRowWithLocalScenicDetail,
 } from '../Home/lib/koreaLocalScenicLists';
 import { resolveCityAttractionHub } from '../Home/lib/cityAttractionHubs.js';
+import { setPlaceReturnTo } from '../Home/lib/placeReturnTo.js';
+import {
+  festivalCityPlaceFromCross,
+  festivalCityPlaceHref,
+} from './lib/festivalCityPlaceLink.js';
+import {
+  applyFestivalSheetPlaceScroll,
+  clearFestivalSheetPlaceScroll,
+  festivalSheetPlaceScrollSettled,
+  peekFestivalSheetPlaceScroll,
+  rememberFestivalSheetPlaceScroll,
+} from './lib/festivalSheetPlaceScroll.js';
 import {
   mergeFestivalNearbySights,
   mergeNearbyTourAttractionSpots,
@@ -745,12 +757,13 @@ export default function FestivalDetailSheet({
   favorited = false,
   onToggleFavorite,
   onClose,
-  onOpenHub: _onOpenHub,
+  onOpenHub,
   festivalPool = undefined,
 }) {
   const { t } = useTranslation();
   useTrustBarOverlayLockEffect(true);
   const navigate = useNavigate();
+  const routeLocation = useLocation();
   const { isEnglish, locale } = useLocale();
   const koText = koreanApiTextProps(isEnglish);
   const festivalModuleLabel = t('korea.theme.nav.module.festival');
@@ -928,6 +941,33 @@ export default function FestivalDetailSheet({
     ? buildMrtTnaSearchMoreUrl(festivalCross.tna.keyword)
     : '';
   const nearestHub = festivalCross?.nearbyHubs?.[0];
+  const cityPlace = useMemo(
+    () => festivalCityPlaceFromCross(festivalCross),
+    [festivalCross],
+  );
+  const cityPlaceHref = festivalCityPlaceHref(cityPlace?.slug, isEnglish);
+  const openCityPlace = useCallback(
+    (event) => {
+      if (event.defaultPrevented) return;
+      if (
+        event.button !== 0
+        || event.metaKey
+        || event.ctrlKey
+        || event.shiftKey
+        || event.altKey
+      ) {
+        return;
+      }
+      const contentId = String(item?.contentId || '').trim();
+      if (contentId) rememberFestivalSheetPlaceScroll(sheetScrollRef.current, contentId);
+      const returnTo = `${routeLocation.pathname}${routeLocation.search}` || '/korea';
+      setPlaceReturnTo(returnTo);
+      if (typeof onOpenHub !== 'function' || !cityPlace?.slug) return;
+      event.preventDefault();
+      onOpenHub(cityPlace.slug);
+    },
+    [cityPlace?.slug, item?.contentId, onOpenHub, routeLocation.pathname, routeLocation.search],
+  );
   const nearbyGrouped = useMemo(() => {
     const pt = festivalLngLat(item?.mapx, item?.mapy);
     return groupNearbySpotsWithLocalScenic(nearbySpots, {
@@ -2421,16 +2461,42 @@ export default function FestivalDetailSheet({
 
   useEffect(() => {
     const el = sheetScrollRef.current;
-    if (!el || !item?.contentId) {
+    const contentId = String(item?.contentId || '').trim();
+    if (!el || !contentId) {
       setShowScrollTop(false);
       return undefined;
     }
-    el.scrollTo({ top: 0 });
-    setShowScrollTop(false);
-    const onScroll = () => setShowScrollTop(el.scrollTop > 180);
-    onScroll();
-    el.addEventListener('scroll', onScroll, { passive: true });
-    return () => el.removeEventListener('scroll', onScroll);
+    const savedTops = peekFestivalSheetPlaceScroll(contentId);
+    const restored = applyFestivalSheetPlaceScroll(el, contentId);
+    if (!restored) el.scrollTo({ top: 0 });
+    const syncTopButton = () => setShowScrollTop(el.scrollTop > 180);
+    syncTopButton();
+    el.addEventListener('scroll', syncTopButton, { passive: true });
+    let cancelled = false;
+    let raf = 0;
+    if (savedTops?.length) {
+      const started = performance.now();
+      const tick = () => {
+        if (cancelled) return;
+        applyFestivalSheetPlaceScroll(el, contentId);
+        syncTopButton();
+        raf = requestAnimationFrame(() => {
+          if (cancelled) return;
+          const settled = festivalSheetPlaceScrollSettled(el, contentId);
+          if (settled || performance.now() - started > 8000) {
+            clearFestivalSheetPlaceScroll(contentId);
+            return;
+          }
+          tick();
+        });
+      };
+      raf = requestAnimationFrame(tick);
+    }
+    return () => {
+      cancelled = true;
+      el.removeEventListener('scroll', syncTopButton);
+      if (raf) cancelAnimationFrame(raf);
+    };
   }, [item?.contentId]);
 
   useEffect(() => {
@@ -2735,7 +2801,7 @@ export default function FestivalDetailSheet({
 
         <div
           data-festival-sheet-content=""
-          className="min-w-0 shrink-0 overflow-visible px-5 pt-5 max-md:pb-[max(11.5rem,calc(env(safe-area-inset-bottom)+10.5rem))] md:min-h-0 md:flex-1 md:overflow-y-auto md:p-7 lg:p-8 md:pb-8 space-y-4 md:space-y-5 md:custom-scrollbar"
+          className="min-w-0 shrink-0 overflow-visible px-5 pt-5 max-md:pb-[max(11.5rem,calc(env(safe-area-inset-bottom)+10.5rem))] md:min-h-0 md:flex-1 md:overflow-y-auto md:[overflow-anchor:none] md:[&_*]:[overflow-anchor:none] md:p-7 lg:p-8 md:pb-8 space-y-4 md:space-y-5 md:custom-scrollbar"
         >
           <div className="space-y-1.5 pr-10">
             <div className="flex items-start justify-between gap-2">
@@ -3756,6 +3822,22 @@ export default function FestivalDetailSheet({
               </div>
             </div>
           )}
+
+          {cityPlaceHref ? (
+            <p className="pt-1 text-sm leading-snug">
+              <Link
+                to={cityPlaceHref}
+                state={{
+                  returnTo: `${routeLocation.pathname}${routeLocation.search}` || '/korea',
+                }}
+                data-festival-city-place=""
+                className="font-semibold text-amber-800 underline decoration-amber-800/40 underline-offset-4 hover:text-amber-950"
+                onClick={openCityPlace}
+              >
+                {t('korea.festival.detail.cityPlace')}
+              </Link>
+            </p>
+          ) : null}
 
           <button
             type="button"
