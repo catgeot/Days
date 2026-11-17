@@ -35,6 +35,8 @@
     "smoke:mrt-tna": "node scripts/smoke-mrt-tna-queries.mjs",
     "smoke:mrt-package": "node scripts/smoke-mrt-package-links.mjs",
     "smoke:travel-agencies": "node scripts/smoke-travel-agencies.mjs",
+    "test:travel-agency-home-link": "node --import ./scripts/register-src-esm.mjs --import ./scripts/register-jsx-hook.mjs --test scripts/health/travel-agency-home-link.test.mjs",
+    "test:e2e:agency-home-link": "DEV_SSL=0 playwright test --config=playwright.config.agency-home-link.js",
     "smoke:planner-empty-scroll": "node scripts/smoke-planner-empty-scroll.mjs",
     "smoke:planner-toolkit-error": "node --import ./scripts/register-jsx-hook.mjs scripts/smoke-planner-toolkit-error.mjs",
     "smoke:trust-disclosure": "node scripts/smoke-trust-disclosure.mjs",

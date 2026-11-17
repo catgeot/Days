@@ -106,6 +106,7 @@ export default defineConfig({
         /article-festival-place-back\.spec\.js/,
         /explore-choseong-search\.spec\.js/,
         /explore-suggest-rank\.spec\.js/,
+        /agency-home-link\.spec\.js/,
       ],
       use: { ...devices['Desktop Chrome'], viewport: { width: 1280, height: 720 } },
     },
