@@ -19,9 +19,46 @@ async function tapChip(page, testId) {
 async function openHub(page, path = HUB_PATH) {
   await page.goto(path, { waitUntil: 'domcontentloaded' });
   await page.getByTestId('logbook-official-review-hub').waitFor({ state: 'visible', timeout: 60_000 });
-  await page.getByTestId('logbook-official-review-hub-toggle').click();
+  const toggle = page.getByTestId('logbook-official-review-hub-toggle');
+  await expect(toggle).toHaveAttribute('aria-expanded', 'true');
   await page.getByTestId('logbook-official-review-hub-panel').waitFor({ timeout: 15_000 });
   await page.getByTestId('logbook-review-filter').waitFor({ timeout: 10_000 });
+}
+
+async function assertReviewerNameVisible(card, name) {
+  const reviewer = card.getByTestId('logbook-official-review-hub-card-reviewer');
+  await reviewer.scrollIntoViewIfNeeded();
+  await expect(reviewer).toBeVisible();
+  await expect(reviewer).toContainText(name);
+  const badge = await card.getAttribute('data-hub-persona-badge');
+  expect(badge).toContain(name);
+  await expect(reviewer).toHaveText(badge);
+  const metrics = await reviewer.evaluate((el) => {
+    const rect = el.getBoundingClientRect();
+    const x = Math.min(rect.right - 2, Math.max(rect.left + 2, rect.left + rect.width / 2));
+    const y = Math.min(rect.bottom - 2, Math.max(rect.top + 2, rect.top + rect.height / 2));
+    const node = document.elementFromPoint(x, y);
+    const cardEl = el.closest('[data-testid="logbook-official-review-hub-item"]');
+    const cardRect = cardEl.getBoundingClientRect();
+    const title = cardEl.querySelector('[data-testid="logbook-official-review-hub-card-title"]');
+    const titleRect = title?.getBoundingClientRect();
+    const overlapsTitle = titleRect
+      ? rect.bottom > titleRect.top + 1 && rect.top < titleRect.bottom - 1 && rect.right > titleRect.left && rect.left < titleRect.right
+      : false;
+    return {
+      hit: node === el || el.contains(node),
+      clipped: el.scrollWidth > el.clientWidth + 1 || el.scrollHeight > el.clientHeight + 1,
+      outside:
+        rect.left < cardRect.left - 1 ||
+        rect.right > cardRect.right + 1 ||
+        rect.bottom > cardRect.bottom + 1,
+      overlapsTitle,
+    };
+  });
+  expect(metrics.hit).toBe(true);
+  expect(metrics.clipped).toBe(false);
+  expect(metrics.outside).toBe(false);
+  expect(metrics.overlapsTitle).toBe(false);
 }
 
 async function assertTextLineCount(page, testId, maxLines, tolerance = 0.35) {
@@ -77,6 +114,19 @@ test.describe('LogBook review filter cards @mocked', () => {
     await assertCityRowSingleLine(page, { requireOverflow: true });
     const href = await items.first().evaluate((el) => el.getAttribute('href') || '');
     expect(href).toMatch(/review=/);
+    await assertReviewerNameVisible(page.locator('[data-hub-place-slug="paris"]').first(), '야경렌즈');
+    await assertReviewerNameVisible(page.locator('[data-hub-place-slug="prague"]').first(), '로컬하루');
+    const archive = page.getByRole('heading', { name: /기록 보관소/ });
+    await expect(archive).toBeVisible({ timeout: 15_000 });
+    const gap = await page.evaluate(() => {
+      const hub = document.querySelector('[data-testid="logbook-official-review-hub"]');
+      const heading = [...document.querySelectorAll('h3')].find((el) =>
+        /기록 보관소/.test(el.textContent || ''),
+      );
+      if (!hub || !heading) return null;
+      return heading.getBoundingClientRect().top - hub.getBoundingClientRect().bottom;
+    });
+    expect(gap).toBeGreaterThanOrEqual(-1);
   });
 
   test('390 — broken image shows persona fallback', async ({ page }) => {
@@ -145,6 +195,7 @@ test.describe('LogBook review filter cards @mocked', () => {
     const title = page.getByTestId('logbook-official-review-hub-card-title').first();
     await expect(title).toBeVisible();
     await expect(title).toHaveClass(/line-clamp-2/);
+    await expect(page.getByTestId('logbook-official-review-hub-card-reviewer').first()).toBeVisible();
     await expect(page.getByTestId('logbook-official-review-hub-card-summary')).toHaveCount(0);
     await assertTextLineCount(page, 'logbook-official-review-hub-card-title', 2);
     await assertCityRowSingleLine(page);
@@ -161,5 +212,24 @@ test.describe('LogBook review filter cards @mocked', () => {
     const after = await page.getByTestId('logbook-official-review-hub-item').count();
     expect(after).toBeGreaterThan(before);
     expect(after - before).toBeLessThanOrEqual(12);
+  });
+
+  test('collapsed hub stays collapsed for the session', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await openHub(page);
+    const toggle = page.getByTestId('logbook-official-review-hub-toggle');
+    await toggle.click();
+    await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+    await expect(page.getByTestId('logbook-official-review-hub-panel')).toHaveCount(0);
+    await expect
+      .poll(() => page.evaluate(() => sessionStorage.getItem('gateo:logbook-review-hub-ui')))
+      .toContain('"expanded":false');
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await page.getByTestId('logbook-official-review-hub').waitFor({ state: 'visible', timeout: 60_000 });
+    await expect(page.getByTestId('logbook-official-review-hub-toggle')).toHaveAttribute(
+      'aria-expanded',
+      'false',
+    );
+    await expect(page.getByTestId('logbook-official-review-hub-panel')).toHaveCount(0);
   });
 });

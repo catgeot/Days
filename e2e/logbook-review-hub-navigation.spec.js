@@ -20,7 +20,8 @@ function removeChildCount(page) {
 async function openHub(page, path = HUB_PATH) {
   await page.goto(path, { waitUntil: 'networkidle' });
   await page.getByTestId('logbook-official-review-hub').waitFor({ state: 'visible', timeout: 90_000 });
-  await page.getByTestId('logbook-official-review-hub-toggle').click();
+  const toggle = page.getByTestId('logbook-official-review-hub-toggle');
+  await expect(toggle).toHaveAttribute('aria-expanded', 'true');
   await page.getByTestId('logbook-official-review-hub-panel').waitFor({ timeout: 30_000 });
 }
 
@@ -670,6 +671,12 @@ test.describe('LogBook review hub navigation @mocked', () => {
     const hubToggle = page.getByTestId('logbook-official-review-hub-toggle');
     const hubText = await hubToggle.innerText();
     expect(hubText).toMatch(/GATEO reviewer reviews/i);
+    const card = page.getByTestId('logbook-official-review-hub-item').first();
+    const reviewer = card.getByTestId('logbook-official-review-hub-card-reviewer');
+    await expect(reviewer).toBeVisible();
+    const badge = await card.getAttribute('data-hub-persona-badge');
+    expect(badge).toBeTruthy();
+    await expect(reviewer).toHaveText(badge);
     const domestic = page.getByTestId('logbook-review-filter-major-domestic');
     await expect(domestic).toContainText('Korea');
     const cityChip = page.locator('[data-testid^="logbook-review-filter-city-"]').first();

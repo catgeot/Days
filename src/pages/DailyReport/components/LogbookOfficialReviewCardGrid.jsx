@@ -83,7 +83,11 @@ export default function LogbookOfficialReviewCardGrid({
                   preparingLabel={preparingLabel}
                   preferEager={index < 3}
                 />
-                <span className="absolute bottom-2 left-2 max-w-[calc(100%-1rem)] truncate rounded-full bg-black/55 px-2 py-0.5 text-[10px] font-bold text-white backdrop-blur-sm">
+                {/* Photo layer is z-[1], so this name stays under the image unless it stacks above. */}
+                <span
+                  className="absolute bottom-2 left-2 z-[2] max-w-[calc(100%-1rem)] rounded-md bg-black/55 px-2 py-0.5 text-[10px] font-bold leading-tight text-white line-clamp-2 break-keep"
+                  data-testid="logbook-official-review-hub-card-reviewer"
+                >
                   {badgeLabel}
                 </span>
               </div>
