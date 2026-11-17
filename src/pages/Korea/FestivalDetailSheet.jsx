@@ -3854,6 +3854,7 @@ export default function FestivalDetailSheet({
               ? t('korea.common.close')
               : t('korea.festival.detail.backToOverview')}
           </button>
+          <div className="hidden md:block h-24 shrink-0" data-festival-fab-clearance="" aria-hidden="true" />
         </div>
 
         {!nestedSpotModalOpen ? festivalMooni.fabNode : null}

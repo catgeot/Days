@@ -1,3 +1,4 @@
+import { hubAttractionOverview } from '../../../data/hubAttractionOverviews.js';
 import { isGateoPlaceIntroOverSsotEnabled } from '../../../shared/gateoFeatureFlags.js';
 import {
   isPlaceIntroCuratedCopyProtected,
@@ -66,6 +67,7 @@ export { shouldEnsurePlaceChatIntroForLocation } from '../../../shared/place/pla
  */
 export function shouldUsePlaceGalleryReadonlyOverview(location) {
   if (!location?.name) return false;
+  if (String(hubAttractionOverview(location?.slug)?.desc || '').trim()) return false;
   if (location.uiPlace && location.parentCity) return true;
   return isSyntheticOrEmptyPlaceDesc(location);
 }

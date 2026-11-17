@@ -32,6 +32,14 @@ const placeGalleryOverviewLocaleExternalPreview = Boolean(
   process.env.PLAYWRIGHT_BASE_URL?.includes(`127.0.0.1:${placeGalleryOverviewLocalePort}`),
 );
 
+const khaoLakPlaceQaE2e =
+  process.env.KHAO_LAK_PLACE_QA_E2E === '1' || /khao-lak-place-qa/.test(playwrightArgv);
+const khaoLakPlaceQaPort = 5194;
+const khaoLakPlaceQaLocalBase = `http://127.0.0.1:${khaoLakPlaceQaPort}`;
+const khaoLakPlaceQaExternalPreview = Boolean(
+  process.env.PLAYWRIGHT_BASE_URL?.includes(`127.0.0.1:${khaoLakPlaceQaPort}`),
+);
+
 
 export default defineConfig({
   testDir: './e2e',
@@ -42,7 +50,17 @@ export default defineConfig({
   timeout: 120_000,
   expect: { timeout: 45_000 },
   reporter: process.env.CI ? [['line']] : [['list']],
-  ...(placeIntroOverSsotE2e
+  ...(khaoLakPlaceQaE2e && !khaoLakPlaceQaExternalPreview
+    ? {
+        webServer: {
+          command: `BROWSER=none DEV_SSL=0 npx vite --host 127.0.0.1 --port ${khaoLakPlaceQaPort}`,
+          url: `${khaoLakPlaceQaLocalBase}/`,
+          reuseExistingServer: !process.env.CI,
+          timeout: 120_000,
+        },
+        use: { baseURL: khaoLakPlaceQaLocalBase },
+      }
+    : placeIntroOverSsotE2e
     ? {
         webServer: {
           command: `BROWSER=none DEV_SSL=0 VITE_GATEO_PLACE_INTRO_OVER_SSOT=1 npx vite --host 127.0.0.1 --port ${placeIntroOverSsotPort}`,
@@ -72,11 +90,13 @@ export default defineConfig({
         }
       : {}),
   use: {
-    baseURL: placeGalleryOverviewLocaleE2e
-      ? placeGalleryOverviewLocaleLocalBase
-      : placeIntroOverSsotE2e
-        ? placeIntroOverSsotLocalBase
-        : siteUrl,
+    baseURL: khaoLakPlaceQaE2e
+      ? khaoLakPlaceQaLocalBase
+      : placeGalleryOverviewLocaleE2e
+        ? placeGalleryOverviewLocaleLocalBase
+        : placeIntroOverSsotE2e
+          ? placeIntroOverSsotLocalBase
+          : siteUrl,
     trace: process.env.CI ? 'off' : 'on-first-retry',
     screenshot: process.env.CI ? 'off' : 'only-on-failure',
     video: process.env.CI ? 'off' : 'retain-on-failure',
@@ -107,6 +127,7 @@ export default defineConfig({
         /explore-choseong-search\.spec\.js/,
         /explore-suggest-rank\.spec\.js/,
         /agency-home-link\.spec\.js/,
+        /khao-lak-place-qa\.spec\.js/,
       ],
       use: { ...devices['Desktop Chrome'], viewport: { width: 1280, height: 720 } },
     },
@@ -482,6 +503,18 @@ export default defineConfig({
         deviceScaleFactor: 1,
         ignoreHTTPSErrors: true,
         ...(placeIntroOverSsotE2e ? { baseURL: placeIntroOverSsotLocalBase } : {}),
+      },
+    },
+    {
+      name: 'chromium-khao-lak-place-qa',
+      testMatch: /khao-lak-place-qa\.spec\.js/,
+      timeout: 120_000,
+      use: {
+        ...devices['Desktop Chrome'],
+        viewport: { width: 1280, height: 800 },
+        deviceScaleFactor: 1,
+        ignoreHTTPSErrors: true,
+        ...(khaoLakPlaceQaE2e ? { baseURL: khaoLakPlaceQaLocalBase } : {}),
       },
     },
     {

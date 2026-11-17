@@ -311,6 +311,47 @@ const HomeUI = React.memo(({
     )
   );
 
+  const globeChromeButtons = (
+    <>
+      <button
+        type="button"
+        onClick={onThemeToggle}
+        className={`w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border flex items-center justify-center transition-all shadow-lg group ${getThemeConfig().color} ${getThemeConfig().border}`}
+        title={t('home.globe.themeToggle')}
+        aria-label={t('home.globe.themeToggle')}
+      >
+        <ThemeIcon size={16} className="group-hover:scale-110 transition-transform" />
+      </button>
+      <button
+        type="button"
+        onClick={onToggleZenMode}
+        className={`w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center transition-all shadow-lg group hover:bg-emerald-500/20 hover:border-emerald-500/30 ${isZenMode ? 'text-emerald-400 border-emerald-500/30' : 'text-emerald-400'}`}
+        title={t('home.globe.zenMode')}
+        aria-label={t('home.globe.zenMode')}
+      >
+        <Leaf size={16} className="group-hover:scale-110 transition-transform" />
+      </button>
+      <button
+        type="button"
+        onClick={onTogglePinVisibility}
+        className={`w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center transition-all shadow-lg group ${isPinVisible ? 'text-blue-400 border-blue-500/30' : 'text-gray-500'}`}
+        title={isPinVisible ? t('home.globe.pinsHide') : t('home.globe.pinsShow')}
+        aria-label={isPinVisible ? t('home.globe.pinsHide') : t('home.globe.pinsShow')}
+      >
+        {isPinVisible ? <Eye size={16} className="group-hover:scale-110 transition-transform" /> : <EyeOff size={16} className="group-hover:scale-110 transition-transform" />}
+      </button>
+      <button
+        type="button"
+        onClick={onClearScouts}
+        className="w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center text-gray-400 hover:bg-red-500/20 hover:text-red-400 hover:border-red-500/30 transition-all shadow-lg group"
+        title={t('home.globe.clearScouts')}
+        aria-label={t('home.globe.clearScouts')}
+      >
+        <Trash2 size={16} className="group-hover:scale-110 transition-transform" />
+      </button>
+    </>
+  );
+
   return (
     <>
       <div className="fixed top-0 left-0 right-0 z-[100] p-4 md:p-6 flex flex-col gap-2 md:grid md:grid-cols-12 md:items-start md:gap-3 pointer-events-none w-full max-md:overflow-x-clip">
@@ -402,45 +443,8 @@ const HomeUI = React.memo(({
           </div>
         </div>
 
-        <div className="hidden md:flex md:col-span-1 justify-center gap-3 lg:gap-4 pt-3 animate-fade-in-down delay-75 pointer-events-auto relative z-50">
-           <button
-             type="button"
-             onClick={onThemeToggle}
-             className={`w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border flex items-center justify-center transition-all shadow-lg group ${getThemeConfig().color} ${getThemeConfig().border}`}
-             title={t('home.globe.themeToggle')}
-             aria-label={t('home.globe.themeToggle')}
-           >
-              <ThemeIcon size={16} className="group-hover:scale-110 transition-transform" />
-           </button>
-
-           <button
-             type="button"
-             onClick={onToggleZenMode}
-             className={`w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center transition-all shadow-lg group hover:bg-emerald-500/20 hover:border-emerald-500/30 ${isZenMode ? 'text-emerald-400 border-emerald-500/30' : 'text-emerald-400'}`}
-             title={t('home.globe.zenMode')}
-             aria-label={t('home.globe.zenMode')}
-           >
-              <Leaf size={16} className="group-hover:scale-110 transition-transform" />
-           </button>
-
-           <button
-             type="button"
-             onClick={onTogglePinVisibility}
-             className={`w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center transition-all shadow-lg group ${isPinVisible ? 'text-blue-400 border-blue-500/30' : 'text-gray-500'}`}
-             title={isPinVisible ? t('home.globe.pinsHide') : t('home.globe.pinsShow')}
-             aria-label={isPinVisible ? t('home.globe.pinsHide') : t('home.globe.pinsShow')}
-           >
-              {isPinVisible ? <Eye size={16} className="group-hover:scale-110 transition-transform" /> : <EyeOff size={16} className="group-hover:scale-110 transition-transform" />}
-           </button>
-           <button
-             type="button"
-             onClick={onClearScouts}
-             className="w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center text-gray-400 hover:bg-red-500/20 hover:text-red-400 hover:border-red-500/30 transition-all shadow-lg group"
-             title={t('home.globe.clearScouts')}
-             aria-label={t('home.globe.clearScouts')}
-           >
-             <Trash2 size={16} className="group-hover:scale-110 transition-transform" />
-           </button>
+        <div className={`hidden md:flex md:col-span-1 justify-center gap-3 lg:gap-4 pt-3 animate-fade-in-down delay-75 relative z-50 ${isPlaceCardVisible ? 'pointer-events-none' : 'pointer-events-auto'}`}>
+          {isPlaceCardVisible ? null : globeChromeButtons}
         </div>
 
         {isTourCinema && tourLocation ? (
@@ -478,6 +482,12 @@ const HomeUI = React.memo(({
           </div>
         </div>
       </div>
+
+      {isPlaceCardVisible ? (
+        <div className="hidden md:flex fixed top-5 right-6 z-[140] items-center gap-3 pointer-events-auto">
+          {globeChromeButtons}
+        </div>
+      ) : null}
 
       {/* 모바일 하단 스택 — 나라/세부칩/카테고리 (중분류 바는 뷰포트 폭) */}
       {!isTourCinema && (

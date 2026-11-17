@@ -8,6 +8,7 @@ import { rankStayPointDisambiguationCandidates } from '../../../utils/mrtStayQue
 import { inferPlaceMatchCategory } from './placeMatchCategory.js';
 import { hubNameMatchesPrefixQuery } from './koreaPoiTypeQuery.js';
 import { isHiddenHubScenicAttraction } from './koreaScenicSpotVisibility.js';
+import { hubAttractionOverview } from '../../../data/hubAttractionOverviews.js';
 
 const KIND_LABELS = {
   beach: '해변',
@@ -323,9 +324,11 @@ export function attractionToPlacePin(hub, attraction) {
     name: attraction.name,
     name_ko: attraction.name,
   });
+  const slug = placeUrlSlug(attraction.name_en, attraction.name);
+  const catalogDesc = String(hubAttractionOverview(slug)?.desc || '').trim();
   return {
     id: `hub-attr-${hub.hubId}-${normalizeKey(attraction.name)}`,
-    slug: placeUrlSlug(attraction.name_en, attraction.name),
+    slug,
     name: attraction.name,
     name_en: attraction.name_en || attraction.name,
     name_ko: attraction.name,
@@ -338,7 +341,7 @@ export function attractionToPlacePin(hub, attraction) {
     uiPlace: true,
     hubId: hub.hubId,
     parentCity: hub.name,
-    desc: `${hub.name}의 ${kindLabel} · ${attraction.name}`,
+    desc: catalogDesc || `${hub.name}의 ${kindLabel} · ${attraction.name}`,
     ...(contentId ? { contentId } : {}),
     ...(placeCategory
       ? { tourCategory: placeCategory, placeCategory }

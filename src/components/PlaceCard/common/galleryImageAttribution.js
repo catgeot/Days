@@ -5,6 +5,8 @@ export function getGalleryImageSource(image) {
   if (String(image.id ?? '').startsWith('tourapi')) return 'tourapi';
   if (image.source === 'pexels') return 'pexels';
   if (String(image.id ?? '').startsWith('pexels')) return 'pexels';
+  if (image.source === 'wikimedia') return 'wikimedia';
+  if (String(image.id ?? '').startsWith('commons-')) return 'wikimedia';
   if (String(image.id ?? '').startsWith('fallback')) return 'default';
   return 'unsplash';
 }
@@ -39,6 +41,22 @@ export function getGalleryImageAttribution(image) {
       providerHref: 'https://www.pexels.com/',
       title: `Photo by ${authorName} on Pexels`,
       providerLabel: 'on Pexels',
+    };
+  }
+
+  if (source === 'wikimedia') {
+    const href = image?.links?.html || 'https://commons.wikimedia.org/';
+    const license = String(image?.license || '').trim();
+    const licenseSuffix = license ? ` (${license})` : '';
+    return {
+      source,
+      authorName,
+      providerName: 'Wikimedia Commons',
+      href,
+      photographerHref: href,
+      providerHref: image?.providerHome || 'https://commons.wikimedia.org/',
+      title: `Photo by ${authorName} on Wikimedia Commons${licenseSuffix}`,
+      providerLabel: 'on Wikimedia Commons',
     };
   }
 

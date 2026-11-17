@@ -42,7 +42,12 @@ export default function GalleryGridPhotoCredit({ image, location, locale }) {
     );
   }
 
-  const providerName = credit.provider === 'pexels' ? 'Pexels' : 'Unsplash';
+  const providerName =
+    credit.provider === 'pexels'
+      ? 'Pexels'
+      : credit.provider === 'wikimedia'
+        ? 'Wikimedia Commons'
+        : 'Unsplash';
 
   return (
     <p data-gallery-photo-credit="" className={creditShellClass}>

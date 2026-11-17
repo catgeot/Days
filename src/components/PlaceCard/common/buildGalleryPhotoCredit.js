@@ -55,6 +55,21 @@ export function buildGalleryPhotoCredit(image, locale = 'ko') {
     };
   }
 
+  if (source === 'wikimedia') {
+    if (!authorName) return null;
+    const photoPage =
+      typeof image?.links?.html === 'string' && image.links.html.trim()
+        ? image.links.html
+        : 'https://commons.wikimedia.org/';
+    return {
+      kind: 'stock',
+      authorName,
+      photographerHref: photoPage,
+      providerHref: 'https://commons.wikimedia.org/',
+      provider: 'wikimedia',
+    };
+  }
+
   if (source === 'unsplash') {
     if (!authorName) return null;
     const profile =
