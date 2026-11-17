@@ -3,6 +3,7 @@ import { peekCachedPlaceChatIntroEn } from './placeChatIntroDisplay.js';
 import { isPlaceIntroLocked } from './placeIntroProtection.js';
 import { isGateoPlaceIntroOverSsotEnabled } from '../../../shared/gateoFeatureFlags.js';
 import { PLACE_SEO_EN_OVERRIDES } from '../../../data/placeSeoEnOverrides.js';
+import { hubAttractionOverview } from '../../../data/hubAttractionOverviews.js';
 import {
   getPlaceSearchQuerySuffixes,
   getPlaceSearchTabDescLead,
@@ -15,6 +16,10 @@ import {
 } from './placeFlightRouteSeo.js';
 
 const HANGUL_REGEX = /[\u3131-\u318e\uac00-\ud7a3]/;
+
+function catalogDescEn(slug) {
+  return String(hubAttractionOverview(slug)?.desc_en || '').trim();
+}
 
 const CATEGORY_LABEL_EN = {
   paradise: 'beach and island getaway',
@@ -85,6 +90,9 @@ export function getLocalizedPlaceDesc(location, locale = 'ko') {
     return override.desc_en.trim();
   }
 
+  const catalogEn = catalogDescEn(slug);
+  if (catalogEn) return catalogEn;
+
   if (koDesc && !hasHangul(koDesc)) {
     return koDesc;
   }
@@ -117,6 +125,9 @@ export function getPlaceOverviewDescForDisplay(location, locale = 'ko') {
     return override.desc_en.trim();
   }
 
+  const catalogEn = catalogDescEn(slug);
+  if (catalogEn) return catalogEn;
+
   if (koDesc && !hasHangul(koDesc)) {
     return koDesc;
   }
@@ -133,7 +144,8 @@ export function isPlaceDescKoreanOnly(location) {
   const koDesc = String(location?.desc || location?.description || '').trim();
   if (!koDesc || !hasHangul(koDesc)) return false;
   const override = slug ? PLACE_SEO_EN_OVERRIDES[slug] : null;
-  return !override?.desc_en;
+  if (override?.desc_en) return false;
+  return !catalogDescEn(slug);
 }
 
 /** EN UI — 개요 본문이 한글만일 때( Tour · intro ) */

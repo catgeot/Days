@@ -60,6 +60,7 @@ import {
 import { isLegacyMishealPlaceStatsId } from '../../../pages/Home/lib/legacyMishealPlaceSlugs.js';
 import { KO_GALLERY_QUERY_OVERRIDES } from '../../../pages/Home/lib/koreaPlaceMatchDictionary.js';
 import { isJoseonRoyalTombGallerySlug } from '../../../pages/Home/lib/joseonRoyalTombsSearch.js';
+import { curatedPlaceGallery } from '../../../data/curatedPlaceGalleries.js';
 import {
   GALLERY_SWR_TTL_MS,
   addGalleryHiddenId,
@@ -617,6 +618,21 @@ export const usePlaceGallery = (locationSource, options = {}) => {
       typeof targetSpot === 'object' && targetSpot?.slug
         ? String(targetSpot.slug).trim().toLowerCase()
         : '';
+    const curatedSlug =
+      spotSlugForDb ||
+      (typeof locationSource === 'object' && locationSource?.slug
+        ? String(locationSource.slug).trim().toLowerCase()
+        : '');
+    const curatedImages = curatedPlaceGallery(curatedSlug);
+    if (curatedImages) {
+      currentPlaceKeyRef.current = curatedSlug;
+      processAndSetImages(curatedImages);
+      lastFetchKeyRef.current = `curated|${curatedSlug}`;
+      setIsImgLoading(false);
+      setIsRefreshing(false);
+      setLoadFailed(false);
+      return;
+    }
     const joseonTombGallery = isJoseonRoyalTombGallerySlug(spotSlugForDb);
     if (slugOverride) {
       primaryQuery = slugOverride.primary;

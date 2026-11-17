@@ -313,7 +313,7 @@ const HomeUI = React.memo(({
 
   return (
     <>
-      <div className="fixed top-0 left-0 right-0 z-[100] p-4 md:p-6 flex flex-col gap-2 md:grid md:grid-cols-12 md:items-start md:gap-3 pointer-events-none w-full max-md:overflow-x-clip">
+      <div className={`fixed top-0 left-0 right-0 p-4 md:p-6 flex flex-col gap-2 md:grid md:grid-cols-12 md:items-start md:gap-3 pointer-events-none w-full max-md:overflow-x-clip ${isPlaceCardVisible ? 'z-[100] md:z-[140]' : 'z-[100]'}`}>
         <div
           data-site-notice-anchor-mobile
           className="md:hidden absolute inset-x-0 bottom-0 h-px pointer-events-none"
@@ -363,7 +363,7 @@ const HomeUI = React.memo(({
 
         <div
           key={`${homeChromeEpoch}-desktop`}
-          className="hidden md:block md:col-span-2 flex-shrink-0 relative z-[110] pointer-events-auto pt-2 md:pl-2 animate-fade-in-down"
+          className={`hidden md:block md:col-span-2 flex-shrink-0 relative pt-2 md:pl-2 animate-fade-in-down ${isPlaceCardVisible ? 'z-10 md:invisible md:pointer-events-none' : 'pointer-events-auto z-[110]'}`}
           data-home-chrome-hit
           onPointerDown={(e) => e.stopPropagation()}
           onClick={(e) => e.stopPropagation()}
@@ -402,7 +402,7 @@ const HomeUI = React.memo(({
           </div>
         </div>
 
-        <div className="hidden md:flex md:col-span-1 justify-center gap-3 lg:gap-4 pt-3 animate-fade-in-down delay-75 pointer-events-auto relative z-50">
+        <div className="hidden md:flex md:col-span-1 justify-center gap-3 lg:gap-4 pt-3 animate-fade-in-down delay-75 pointer-events-auto relative z-[130]">
            <button
              type="button"
              onClick={onThemeToggle}
@@ -459,7 +459,7 @@ const HomeUI = React.memo(({
         ) : !isTourCinema ? (
           <div
             data-site-notice-anchor
-            className="group pointer-events-auto min-w-0 hidden md:flex md:col-span-5 md:relative md:z-50 md:flex-col md:items-center md:pt-2 md:animate-fade-in-down md:delay-100"
+            className={`group min-w-0 hidden md:flex md:col-span-5 md:relative md:z-50 md:flex-col md:items-center md:pt-2 md:animate-fade-in-down md:delay-100 ${isPlaceCardVisible ? 'md:invisible md:pointer-events-none' : 'pointer-events-auto'}`}
           >
             {renderSearchPill()}
           </div>
@@ -467,7 +467,7 @@ const HomeUI = React.memo(({
 
         <div className="hidden md:block md:col-span-1" />
 
-        <div className="hidden md:flex md:col-span-3 justify-end animate-fade-in-down pr-24 pointer-events-none relative z-50">
+        <div className={`hidden md:flex md:col-span-3 justify-end animate-fade-in-down pr-24 pointer-events-none relative z-50 ${isPlaceCardVisible ? 'md:invisible' : ''}`}>
           <div className="pointer-events-auto">
             <TravelTicker
               data={trendingData}
