@@ -2,8 +2,10 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { formatLogbookDisplayDate } from '../../../utils/logbookDisplayDate';
+import { trackEvent } from '../../../shared/analytics/trackEvent.js';
 import {
   formatGateoReviewerBadge,
+  normalizePersonaLabel,
   placeReviewVisitStoryDisplayTitle,
 } from '../../../utils/placeReviewEditorial';
 import { getCollapsedPreviewText } from '../../../utils/placeReviewContentBlocks.js';
@@ -65,7 +67,14 @@ export default function LogbookOfficialReviewCardGrid({
                 if (event.button !== 0) return;
                 onHubReviewNavigate?.();
               }}
-              onClick={() => onHubReviewNavigate?.()}
+              onClick={() => {
+                onHubReviewNavigate?.();
+                trackEvent('logbook_review_card_click', {
+                  reviewer: normalizePersonaLabel(review.persona_label),
+                  place_slug: slug,
+                  position: index + 1,
+                });
+              }}
               className="group flex h-full flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-colors hover:border-indigo-100 hover:bg-gray-50/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
               data-testid="logbook-official-review-hub-item"
               data-hub-place-slug={slug || undefined}

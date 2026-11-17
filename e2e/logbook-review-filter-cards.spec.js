@@ -214,6 +214,77 @@ test.describe('LogBook review filter cards @mocked', () => {
     expect(after - before).toBeLessThanOrEqual(12);
   });
 
+  test('GA — default open once, user toggle, review card click', async ({ page }) => {
+    await page.route('https://www.googletagmanager.com/**', (route) => route.abort());
+    await page.addInitScript(() => {
+      window.dataLayer = window.dataLayer || [];
+    });
+    await page.setViewportSize({ width: 390, height: 844 });
+    await openHub(page);
+
+    const readLogbookGa = () =>
+      page.evaluate(() =>
+        Array.from(window.dataLayer || []).flatMap((entry) => {
+          const name = entry?.[1];
+          if (entry?.[0] !== 'event' || typeof name !== 'string' || !name.startsWith('logbook_review_')) {
+            return [];
+          }
+          const raw = entry[2];
+          const params = raw && typeof raw === 'object' ? { ...raw } : {};
+          return [{ name, params }];
+        }),
+      );
+
+    const opened = await readLogbookGa();
+    expect(
+      opened.filter(
+        (event) => event.name === 'logbook_review_hub_toggle' && event.params.source === 'default',
+      ),
+    ).toEqual([
+      {
+        name: 'logbook_review_hub_toggle',
+        params: { expanded: true, source: 'default' },
+      },
+    ]);
+
+    const toggle = page.getByTestId('logbook-official-review-hub-toggle');
+    await toggle.click();
+    await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+    await toggle.click();
+    await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+
+    const prague = page.locator('[data-hub-place-slug="prague"]').first();
+    const position = await prague.evaluate((el) => {
+      const items = [...document.querySelectorAll('[data-testid="logbook-official-review-hub-item"]')];
+      return items.indexOf(el) + 1;
+    });
+    expect(position).toBeGreaterThanOrEqual(1);
+    await prague.click();
+    await expect(page).toHaveURL(/\/place\/prague\/reviews/);
+
+    const events = await readLogbookGa();
+    expect(events.filter((event) => event.name === 'logbook_review_hub_toggle')).toEqual([
+      {
+        name: 'logbook_review_hub_toggle',
+        params: { expanded: true, source: 'default' },
+      },
+      {
+        name: 'logbook_review_hub_toggle',
+        params: { expanded: false, source: 'user' },
+      },
+      {
+        name: 'logbook_review_hub_toggle',
+        params: { expanded: true, source: 'user' },
+      },
+    ]);
+    expect(events.filter((event) => event.name === 'logbook_review_card_click')).toEqual([
+      {
+        name: 'logbook_review_card_click',
+        params: { reviewer: '로컬하루', place_slug: 'prague', position },
+      },
+    ]);
+  });
+
   test('collapsed hub stays collapsed for the session', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await openHub(page);

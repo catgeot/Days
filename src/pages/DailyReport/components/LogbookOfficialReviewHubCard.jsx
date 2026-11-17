@@ -43,6 +43,7 @@ import {
   parseLogbookReviewFilterFromSearch,
 } from '../../../logbookOfficialReviews/logbookReviewFilterUrl.js';
 import { isGateoLogbookReviewFilterEnabled } from '../../../utils/logbookReviewFilterFlag.js';
+import { trackEvent } from '../../../shared/analytics/trackEvent.js';
 import LogbookOfficialReviewFilter from './LogbookOfficialReviewFilter.jsx';
 import LogbookOfficialReviewCardGrid from './LogbookOfficialReviewCardGrid.jsx';
 
@@ -219,10 +220,37 @@ const LogbookOfficialReviewHubCard = () => {
   const { enabled, rows, isLoading, loadFailed, totalCount, retry } = useLogbookOfficialReviewHub();
   const didRestoreScroll = useRef(false);
   const skipExpandedPersist = useRef(true);
+  const expandedRef = useRef(expanded);
+  const defaultHubToggleSent = useRef(false);
+  const openedByDefault = useRef(null);
+  if (openedByDefault.current == null) {
+    const saved = readMatchingLogbookReviewHubSession(location.pathname, location.search)?.expanded;
+    openedByDefault.current = typeof saved !== 'boolean';
+  }
+  expandedRef.current = expanded;
   const locationRef = useRef(location);
   locationRef.current = location;
   /** @type {React.MutableRefObject<import('../../../logbookOfficialReviews/logbookReviewHubScrollAnchor.js').LogbookHubScrollAnchor | null>} */
   const scrollAnchorRef = useRef(null);
+
+  // #840 default open has no stored boolean. One event per mount; rerenders must not send it again.
+  useEffect(() => {
+    if (defaultHubToggleSent.current) return;
+    if (!openedByDefault.current) {
+      defaultHubToggleSent.current = true;
+      return;
+    }
+    if (!enabled || loadFailed || totalCount === 0 || !expanded) return;
+    defaultHubToggleSent.current = true;
+    trackEvent('logbook_review_hub_toggle', { expanded: true, source: 'default' });
+  }, [enabled, loadFailed, totalCount, expanded]);
+
+  const onHubToggle = useCallback(() => {
+    const next = !expandedRef.current;
+    expandedRef.current = next;
+    setExpanded(next);
+    trackEvent('logbook_review_hub_toggle', { expanded: next, source: 'user' });
+  }, []);
 
   useEffect(() => {
     const session = readMatchingLogbookReviewHubSession(location.pathname, location.search);
@@ -455,7 +483,7 @@ const LogbookOfficialReviewHubCard = () => {
         headerRound={headerRound}
         countSuffix={countSuffix}
         title={hubTitle}
-        onToggle={() => setExpanded((open) => !open)}
+        onToggle={onHubToggle}
       />
 
       {expanded ? (
