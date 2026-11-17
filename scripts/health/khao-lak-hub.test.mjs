@@ -15,7 +15,7 @@ const EXPECTED = [
   ['낭통 해변', 'Nang Thong Beach', 'beach', 'nang-thong-beach'],
   ['방삭 해변', 'Bang Sak Beach', 'beach', 'bang-sak-beach'],
   ['방니앙 시장', 'Bang Niang Market', 'market', 'bang-niang-market'],
-  ['뚝총파 폭포', 'Ton Chong Fa Waterfall', 'park', 'ton-chong-fa-waterfall'],
+  ['똔총파 폭포', 'Ton Chong Fa Waterfall', 'park', 'ton-chong-fa-waterfall'],
   ['반남켐 쓰나미 추모공원', 'Ban Nam Khem Tsunami Memorial Park', 'landmark', 'ban-nam-khem-tsunami-memorial-park'],
   ['따꾸아빠 올드타운', 'Takua Pa Old Town', 'neighborhood', 'takua-pa-old-town'],
 ];
