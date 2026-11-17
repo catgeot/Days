@@ -143,6 +143,7 @@ assert.doesNotMatch(list[0].href, /widget\.getyourguide/);
 const capture = readFileSync(join(root, 'src/components/travelAgencies/TravelAgencyVisitCapture.jsx'), 'utf8');
 assert.match(capture, /recordTravelAgencyEmbedVisit/, 'iframe 위젯 방문 기록');
 assert.match(capture, /HTMLIFrameElement/, 'iframe 포커스 포착');
+assert.match(capture, /applyTravelAgencyAnchorClick/, '홈 클릭은 마지막 URL을 덮어쓰지 않는 분기');
 
 const gygWidget = readFileSync(
   join(root, 'src/components/PlaceCard/tabs/planner/components/GetYourGuideActivitiesWidget.jsx'),
@@ -166,6 +167,9 @@ assert.doesNotMatch(
   /<details[^>]*\bopen\b/,
   '여행사 목록 기본 펼침 금지',
 );
+assert.match(directory, /data-gateo-agency-home|TRAVEL_AGENCY_HOME_LINK_ATTR/, '방문 줄 홈 링크');
+assert.match(directory, /min-h-\[44px\] min-w-\[44px\]/, '홈 링크 터치 44px');
+assert.doesNotMatch(directory, /visitedIds/, '연결된 여행사에서 방문 여행사를 빼지 않음');
 
 const explore = readFileSync(join(root, 'src/pages/Home/components/SearchDiscoveryModal.jsx'), 'utf8');
 assert.match(explore, /activeQuickSection === 'agencies'/, '탐색 여행사 칩');
@@ -195,7 +199,7 @@ assert.match(qa, /branch:\s*'cursor\/agencies-85ab'/, 'qa share branch');
 
 const ko = JSON.parse(readFileSync(join(root, 'src/i18n/locales/ko.json'), 'utf8'));
 const en = JSON.parse(readFileSync(join(root, 'src/i18n/locales/en.json'), 'utf8'));
-for (const key of ['title', 'visitedTitle', 'catalogTitle', 'hint', 'clearVisits']) {
+for (const key of ['title', 'visitedTitle', 'catalogTitle', 'hint', 'clearVisits', 'openHome', 'openHomeAria']) {
   assert.equal(typeof ko.home.agencies[key], 'string', `ko home.agencies.${key}`);
   assert.equal(typeof en.home.agencies[key], 'string', `en home.agencies.${key}`);
   assert.ok(ko.home.agencies[key].length > 0);
@@ -205,6 +209,10 @@ assert.equal(typeof ko.home.explore.agenciesVisitedCount, 'string');
 assert.equal(typeof en.home.explore.agenciesVisitedCount, 'string');
 assert.equal(ko.home.agencies.title, '방문한 여행사');
 assert.equal(en.home.agencies.title, 'Visited agencies');
+assert.equal(ko.home.agencies.openHome, '홈');
+assert.equal(en.home.agencies.openHome, 'Home');
+assert.equal(ko.home.agencies.openHomeAria, '{{name}} 홈 열기');
+assert.equal(en.home.agencies.openHomeAria, 'Open {{name}} home');
 assert.match(ko.home.explore.agenciesVisitedCount, /방문한 여행사/);
 assert.ok(ko.home.agencies.kind.stay);
 assert.ok(en.home.agencies.kind.stay);

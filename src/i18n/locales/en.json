@@ -745,6 +745,8 @@
       "hint": "Even if you did not bookmark the booking site, you can return to agencies opened from GATEO. You may need to sign in on that site to see reservations.",
       "clearVisits": "Clear visit history",
       "removeVisit": "Remove {{name}} from visit history",
+      "openHome": "Home",
+      "openHomeAria": "Open {{name}} home",
       "kind": {
         "stay": "Stays",
         "tour": "Tours",

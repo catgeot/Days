@@ -1,15 +1,8 @@
 import { useEffect } from 'react';
 import {
+  applyTravelAgencyAnchorClick,
   recordTravelAgencyEmbedVisit,
-  recordTravelAgencyVisit,
 } from '../../utils/travelAgencyVisits.js';
-
-function hrefFromAnchor(anchor) {
-  if (!anchor) return '';
-  const raw = anchor.getAttribute('href') || anchor.href || '';
-  if (!raw || raw.startsWith('#') || raw.startsWith('javascript:')) return '';
-  return raw;
-}
 
 function embedFromIframe(iframe) {
   if (!(iframe instanceof HTMLIFrameElement)) return null;
@@ -47,10 +40,7 @@ export default function TravelAgencyVisitCapture() {
       if (!(target instanceof Element)) return;
       const anchor = target.closest('a[href]');
       if (!anchor) return;
-      const href = hrefFromAnchor(anchor);
-      if (!href) return;
-      const placeLabel = anchor.getAttribute('data-gateo-place') || '';
-      recordTravelAgencyVisit({ href, placeLabel });
+      applyTravelAgencyAnchorClick(anchor);
     };
 
     const onPointerDown = (event) => {

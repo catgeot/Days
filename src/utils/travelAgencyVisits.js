@@ -9,6 +9,8 @@ import { buildGygSearchUrl, getGygHomeUrl } from './gygAffiliateLinks.js';
 export const TRAVEL_AGENCY_VISITS_KEY = 'gateo:travel-agencies:v1:visits';
 export const TRAVEL_AGENCY_VISITS_EVENT = 'gateo:travel-agency-visits';
 export const MAX_TRAVEL_AGENCY_VISITS = 12;
+/** 방문 줄 «홈» — 이 속성이 있으면 저장된 마지막 URL을 바꾸지 않는다. */
+export const TRAVEL_AGENCY_HOME_LINK_ATTR = 'data-gateo-agency-home';
 
 const KIND_FROM_PATH = [
   [/accommodation|\/hotels?|\/hotel\b|숙소/, 'stay'],
@@ -224,6 +226,47 @@ export function recordTravelAgencyVisit(input) {
 
   const prev = loadTravelAgencyVisits().filter((item) => item.agencyId !== agency.id);
   return persistVisits([nextItem, ...prev].slice(0, MAX_TRAVEL_AGENCY_VISITS));
+}
+
+/**
+ * 홈 클릭 — 이미 있는 방문의 href·종류·장소는 유지하고 시각만 갱신.
+ * 기록이 없으면 홈 URL로 새 줄을 만들지 않는다.
+ * @param {string} agencyId
+ * @returns {object[]}
+ */
+export function touchTravelAgencyVisit(agencyId) {
+  const id = String(agencyId || '').trim();
+  if (!getTravelAgencyById(id)) return loadTravelAgencyVisits();
+  const prev = loadTravelAgencyVisits();
+  const current = prev.find((item) => item.agencyId === id);
+  if (!current) return prev;
+  const nextItem = {
+    agencyId: current.agencyId,
+    href: current.href,
+    kind: current.kind,
+    placeLabel: current.placeLabel,
+    visitedAt: Date.now(),
+  };
+  const rest = prev.filter((item) => item.agencyId !== id);
+  return persistVisits([nextItem, ...rest]);
+}
+
+/**
+ * 문서 클릭 캡처가 `<a>`를 기록할 때의 분기.
+ * 홈 링크는 {@link touchTravelAgencyVisit}만 호출한다.
+ * @param {{ getAttribute: (name: string) => string | null, href?: string }} anchor
+ * @returns {object[]}
+ */
+export function applyTravelAgencyAnchorClick(anchor) {
+  if (!anchor || typeof anchor.getAttribute !== 'function') return loadTravelAgencyVisits();
+  const homeId = anchor.getAttribute(TRAVEL_AGENCY_HOME_LINK_ATTR);
+  if (homeId != null) return touchTravelAgencyVisit(homeId);
+  const raw = anchor.getAttribute('href') || anchor.href || '';
+  if (!raw || raw.startsWith('#') || String(raw).startsWith('javascript:')) {
+    return loadTravelAgencyVisits();
+  }
+  const placeLabel = anchor.getAttribute('data-gateo-place') || '';
+  return recordTravelAgencyVisit({ href: raw, placeLabel });
 }
 
 /**

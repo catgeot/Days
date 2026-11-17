@@ -3,7 +3,10 @@ import { ExternalLink, Building2, ChevronRight, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { TRAVEL_AGENCIES, getTravelAgencyById } from '../../data/travelAgencies.js';
 import { getTravelAgencyHomeUrl, resolveTravelAgencyOpenUrl } from '../../utils/travelAgencyHome.js';
-import { recordTravelAgencyVisit } from '../../utils/travelAgencyVisits.js';
+import {
+  recordTravelAgencyVisit,
+  TRAVEL_AGENCY_HOME_LINK_ATTR,
+} from '../../utils/travelAgencyVisits.js';
 import { useTravelAgencyVisits } from '../../hooks/useTravelAgencyVisits.js';
 import {
   getPartnerLinkRel,
@@ -33,6 +36,9 @@ function formatVisitedAt(visitedAt, lang) {
   }
 }
 
+const HOME_LINK_CLASS =
+  'inline-flex items-center justify-center shrink-0 min-h-[44px] min-w-[44px] px-1.5 rounded-lg text-[11px] font-bold';
+
 const VARIANT = {
   panel: {
     wrap: 'space-y-4',
@@ -44,6 +50,7 @@ const VARIANT = {
     name: 'text-sm font-bold text-white truncate',
     meta: 'text-[10px] text-gray-400 truncate',
     kind: 'text-[9px] font-bold uppercase tracking-wider text-blue-300',
+    home: `${HOME_LINK_CLASS} text-blue-300 hover:bg-white/10`,
     remove: 'p-1.5 text-gray-500 hover:text-red-300 rounded-full hover:bg-white/5',
     catalogGrid: 'grid grid-cols-1 gap-2',
     sectionLabel: 'text-xs text-gray-500 font-bold uppercase tracking-widest px-1',
@@ -59,6 +66,7 @@ const VARIANT = {
     name: 'text-xs font-bold text-white truncate',
     meta: 'text-[10px] text-gray-400 truncate',
     kind: 'text-[9px] font-bold text-blue-300',
+    home: `${HOME_LINK_CLASS} text-blue-300 hover:bg-white/10`,
     remove: 'p-1 text-gray-500 hover:text-red-300 rounded-full',
     catalogGrid: 'grid grid-cols-1 sm:grid-cols-2 gap-1.5',
     sectionLabel: 'text-[11px] text-gray-400',
@@ -74,6 +82,7 @@ const VARIANT = {
     name: 'text-sm font-bold text-gray-900 truncate',
     meta: 'text-[11px] text-gray-500 truncate',
     kind: 'text-[10px] font-bold text-blue-600',
+    home: `${HOME_LINK_CLASS} text-blue-600 hover:bg-gray-100`,
     remove: 'p-1.5 text-gray-400 hover:text-red-500 rounded-full hover:bg-gray-100',
     catalogGrid: 'grid grid-cols-1 sm:grid-cols-2 gap-2',
     sectionLabel: 'text-xs font-bold text-gray-500',
@@ -84,6 +93,7 @@ const VARIANT = {
 function AgencyRow({
   agency,
   href,
+  homeHref = '',
   kind,
   placeLabel,
   visitedAt,
@@ -99,6 +109,8 @@ function AgencyRow({
   });
   const when = formatVisitedAt(visitedAt, lang);
   const metaParts = [placeLabel, when].filter(Boolean);
+  const homeUrl = String(homeHref || '').trim();
+  const displayName = agencyDisplayName(agency, lang);
 
   const handleClick = () => {
     recordTravelAgencyVisit({ href, placeLabel, kind });
@@ -114,9 +126,9 @@ function AgencyRow({
         className={`${styles.row} min-w-0 flex-1`}
       >
         <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2">
-            <span className={styles.name}>{agencyDisplayName(agency, lang)}</span>
-            <span className={styles.kind}>{kindLabel}</span>
+          <div className="flex items-center gap-2 min-w-0">
+            <span className={`${styles.name} min-w-0`}>{displayName}</span>
+            <span className={`${styles.kind} shrink-0`}>{kindLabel}</span>
           </div>
           {metaParts.length > 0 ? (
             <p className={styles.meta}>{metaParts.join(' · ')}</p>
@@ -124,12 +136,24 @@ function AgencyRow({
         </div>
         <ExternalLink size={14} className="shrink-0 opacity-60" />
       </a>
+      {homeUrl ? (
+        <a
+          href={homeUrl}
+          target={target}
+          rel={rel}
+          {...{ [TRAVEL_AGENCY_HOME_LINK_ATTR]: agency.id }}
+          className={styles.home}
+          aria-label={t('home.agencies.openHomeAria', { name: displayName })}
+        >
+          {t('home.agencies.openHome')}
+        </a>
+      ) : null}
       {onRemove ? (
         <button
           type="button"
           onClick={() => onRemove(agency.id)}
           className={styles.remove}
-          aria-label={t('home.agencies.removeVisit', { name: agencyDisplayName(agency, lang) })}
+          aria-label={t('home.agencies.removeVisit', { name: displayName })}
         >
           <X size={12} />
         </button>
@@ -171,8 +195,7 @@ const TravelAgencyDirectory = ({ variant = 'panel', className = '', children = n
   const { visits, removeVisit, clearVisits } = useTravelAgencyVisits();
   const styles = VARIANT[variant] || VARIANT.panel;
   const lang = i18n.language;
-  const visitedIds = new Set(visits.map((item) => item.agencyId));
-  const catalog = TRAVEL_AGENCIES.filter((agency) => !visitedIds.has(agency.id));
+  const catalog = TRAVEL_AGENCIES;
 
   const catalogRows = catalog.map((agency) => {
     const href = getTravelAgencyHomeUrl(agency.id);
@@ -217,6 +240,7 @@ const TravelAgencyDirectory = ({ variant = 'panel', className = '', children = n
                   kind={item.kind}
                   placeLabel={item.placeLabel}
                   visitedAt={item.visitedAt}
+                  homeHref={getTravelAgencyHomeUrl(agency.id)}
                   styles={styles}
                   t={t}
                   lang={lang}
