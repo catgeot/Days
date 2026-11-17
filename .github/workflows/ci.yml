@@ -47,6 +47,9 @@ jobs:
       - name: Place video allowlist matches /place sources
         run: npm run check:place-video-catalog
 
+      - name: Edge middleware bundle (no import attributes)
+        run: npm run verify:edge-middleware-bundle
+
       - name: Build
         run: npm run build
 
