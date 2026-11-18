@@ -28,11 +28,40 @@ async function stubReviewPhotos(page) {
   );
 }
 
+async function installGtagProbe(page) {
+  await page.addInitScript(() => {
+    window.__GATEO_GTAG_CALLS__ = [];
+  });
+}
+
+async function wrapGtagForProbe(page) {
+  await page.evaluate(() => {
+    const calls = window.__GATEO_GTAG_CALLS__;
+    if (!Array.isArray(calls)) return;
+    const native = window.gtag;
+    window.gtag = (...args) => {
+      calls.push(args);
+      if (typeof native === 'function') native(...args);
+    };
+  });
+}
+
+function gaEvents(page, name) {
+  return page.evaluate((eventName) => {
+    const calls = Array.isArray(window.__GATEO_GTAG_CALLS__) ? window.__GATEO_GTAG_CALLS__ : [];
+    return calls
+      .filter((args) => args[0] === 'event' && (!eventName || args[1] === eventName))
+      .map((args) => ({ name: args[1], params: args[2] }));
+  }, name);
+}
+
 async function openLoggedInBlog(page) {
+  await installGtagProbe(page);
   await seedAuthSession(page, OWNER_ID);
   await installLogbookReportRoutes(page, OWNER_ID);
   await stubReviewPhotos(page);
   await page.goto('/blog', { waitUntil: 'domcontentloaded' });
+  await wrapGtagForProbe(page);
 }
 
 function shotName(page, name) {
@@ -80,6 +109,18 @@ test.describe('logbook default explore feed', () => {
     expect(tabLabels.map((label) => label.replace(/\s+/g, ' ').trim())).toEqual(['탐험 피드', '내 기록']);
 
     await expect(page.getByTestId('logbook-official-review-hub-card-photo').first()).toBeVisible();
+
+    const writeCta = page.getByTestId('logbook-write-cta');
+    await expect(writeCta).toBeVisible();
+    await expect(writeCta).toHaveClass(/border-gray-200/);
+    await expect(writeCta).toHaveClass(/bg-white/);
+    await expect(writeCta).not.toHaveClass(/from-blue-600/);
+    const writeBox = await writeCta.boundingBox();
+    expect(writeBox?.height ?? 0).toBeGreaterThanOrEqual(44);
+
+    expect(await gaEvents(page, 'logbook_tab_select')).toEqual([]);
+    expect(await gaEvents(page, 'logbook_write_click')).toEqual([]);
+
     await shot(page, 'feed');
 
     if (page.viewportSize()?.width === 390) {
@@ -120,6 +161,36 @@ test.describe('logbook default explore feed', () => {
     await expect.poll(() => new URL(page.url()).searchParams.get('tab')).toBe(null);
     await expect(page.getByRole('button', { name: '탐험 피드' })).toHaveClass(/text-blue-600/);
     await expect(page.getByTestId('logbook-official-review-hub-toggle')).toHaveAttribute('aria-expanded', 'true');
+  });
+
+  test('GA4 logbook_tab_select and logbook_write_click fire once per click, not on load', async ({ page }) => {
+    await openLoggedInBlog(page);
+    await expect(page.getByTestId('logbook-official-review-hub-toggle')).toBeVisible({ timeout: 30_000 });
+
+    const writeCta = page.getByTestId('logbook-write-cta');
+    const feed = page.getByRole('button', { name: '탐험 피드' });
+    const mine = page.getByRole('button', { name: '내 기록' });
+
+    expect(await gaEvents(page, 'logbook_tab_select')).toEqual([]);
+    expect(await gaEvents(page, 'logbook_write_click')).toEqual([]);
+
+    await mine.click();
+    await expect(page).toHaveURL(/[?&]tab=mine(?:&|$)/);
+    expect(await gaEvents(page, 'logbook_tab_select')).toEqual([
+      { name: 'logbook_tab_select', params: { tab: 'mine', logged_in: true } },
+    ]);
+
+    await feed.click();
+    expect(await gaEvents(page, 'logbook_tab_select')).toEqual([
+      { name: 'logbook_tab_select', params: { tab: 'mine', logged_in: true } },
+      { name: 'logbook_tab_select', params: { tab: 'public', logged_in: true } },
+    ]);
+
+    await writeCta.click();
+    await expect.poll(() => new URL(page.url()).pathname).toBe('/blog/write');
+    expect(await gaEvents(page, 'logbook_write_click')).toEqual([
+      { name: 'logbook_write_click', params: { tab: 'public' } },
+    ]);
   });
 
   test('owner detail back lands on tab=mine', async ({ page }) => {
