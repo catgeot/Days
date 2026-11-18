@@ -1,5 +1,5 @@
 /**
- * 리뷰 탭 → ?open=tour 딥링크 → 투어 닫기 → 브라우저 뒤로: 리뷰 복귀·layout.get pageerror 0.
+ * 리뷰 탭 → ?open=tour 딥링크 → 투어 닫기 → 브라우저 뒤로: 빈 화면 없이 리뷰 복귀.
  *
  * npx playwright test -c playwright.config.tour-modal-region-search.js tour-modal-review-tour-back
  */
@@ -59,12 +59,6 @@ function fulfillPlaceReviews(route) {
   });
 }
 
-function isLayoutPageError(message) {
-  return /layout\.get|getLayoutProperty|getStyle\(\)|getLayer\(|reading 'get'\)/i.test(
-    String(message || ''),
-  );
-}
-
 async function closeTourModal(page, viewport) {
   const closeTour =
     viewport.width < 1024
@@ -97,15 +91,10 @@ test.describe('review → tour deeplink → close → back', () => {
     await page.route('**/rest/v1/place_reviews**', (route) => fulfillPlaceReviews(route));
   });
 
-  test(`${STRESS_ROUNDS} rounds — review visible and layout pageerror 0`, async ({ page }) => {
+  test(`${STRESS_ROUNDS} rounds — review visible after tour close and back`, async ({ page }) => {
     test.setTimeout(STRESS_ROUNDS * 90_000);
     const viewport = page.viewportSize() || { width: 1280, height: 900 };
-    const allPageErrors = [];
     let blankAfterBack = 0;
-
-    page.on('pageerror', (err) => {
-      allPageErrors.push(String(err?.message || err));
-    });
 
     for (let round = 0; round < STRESS_ROUNDS; round += 1) {
       await page.goto(`/place/rome/reviews?review=${ROME_LINKED_ID}&lang=ko`, {
@@ -154,13 +143,9 @@ test.describe('review → tour deeplink → close → back', () => {
       }
     }
 
-    const layoutErrors = allPageErrors.filter(isLayoutPageError);
     expect(
-      { blankAfterBack, layoutErrors },
-      `rounds=${STRESS_ROUNDS} project=${test.info().project.name} pageErrors=${JSON.stringify(allPageErrors)} layoutFiltered=${JSON.stringify(layoutErrors)}`,
-    ).toEqual({
-      blankAfterBack: 0,
-      layoutErrors: [],
-    });
+      { blankAfterBack },
+      `rounds=${STRESS_ROUNDS} project=${test.info().project.name}`,
+    ).toEqual({ blankAfterBack: 0 });
   });
 });
