@@ -2,7 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { supabase } from '../../shared/api/supabase';
 import { readSessionUser } from '../../shared/Auth/sessionUser.js';
 import { Save, ArrowLeft, MapPin, Loader2, Image as ImageIcon, X, Sparkles, Undo2, Calendar, UserRoundPen } from 'lucide-react';
-import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams, useLocation } from 'react-router-dom';
+import { sanitizeAuthPostLoginPath } from '../../shared/Auth/authPostLoginPath.js';
+import { stashAuthOAuthPostLoginPath } from '../../shared/Auth/authOAuthPostLoginStorage.js';
 import { useTranslation } from 'react-i18next';
 
 import { useLogbookMedia } from './hooks/useLogbookMedia';
@@ -18,6 +20,7 @@ const Write = () => {
   const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams] = useSearchParams();
 
   const isEditMode = Boolean(id);
@@ -61,8 +64,12 @@ const Write = () => {
 
       if (!user) {
         alert(t('logbook.common.loginRequired'));
-        // 무한루프 방지를 위해 from 경로가 현재 경로(/blog/write)인 경우 기본적으로 /blog 나 / 로 이동하도록 Fallback 추가
-        navigate('/auth/login', { replace: true, state: { from: '/blog' } });
+        const returnTo = sanitizeAuthPostLoginPath(
+          `${location.pathname}${location.search}`,
+          '/blog/write',
+        );
+        stashAuthOAuthPostLoginPath(returnTo);
+        navigate('/auth/login', { replace: true, state: { from: returnTo } });
         return;
       }
 

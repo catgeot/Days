@@ -6,14 +6,21 @@ import { Mail, Lock, Loader2, ArrowRight, Check, X } from 'lucide-react';
 import Logo from '../../pages/Home/components/Logo';
 import AuthBenefits from './AuthBenefits';
 import { resetIosZoomAfterInput } from '../lib/mobileViewport';
+import { sanitizeAuthPostLoginPath } from './authPostLoginPath.js';
+import {
+  clearAuthOAuthPostLoginPath,
+  hasValidAuthOAuthPostLoginPending,
+  LOGBOOK_OAUTH_REDIRECT_PATH,
+} from './authOAuthPostLoginStorage.js';
 
 const Login = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
+  const rawFrom = location.state?.from;
   const from =
-    location.state?.from && location.state.from !== '/auth/update-password'
-      ? location.state.from
+    rawFrom && rawFrom !== '/auth/update-password'
+      ? sanitizeAuthPostLoginPath(rawFrom, '/')
       : '/';
   const passwordUpdated = Boolean(location.state?.passwordUpdated);
 
@@ -33,10 +40,11 @@ const Login = () => {
   const handleSocialLogin = async (provider) => {
     setLoading(true);
     try {
+      const oauthLanding = hasValidAuthOAuthPostLoginPending() ? LOGBOOK_OAUTH_REDIRECT_PATH : from;
       const { error } = await supabase.auth.signInWithOAuth({
         provider,
         options: {
-          redirectTo: window.location.origin + from,
+          redirectTo: window.location.origin + oauthLanding,
         }
       });
       if (error) throw error;
@@ -64,6 +72,7 @@ const Login = () => {
       });
 
       if (error) throw error;
+      clearAuthOAuthPostLoginPath();
       sessionStorage.setItem('gateo_reset_viewport', '1');
       resetIosZoomAfterInput();
       navigate(from);
