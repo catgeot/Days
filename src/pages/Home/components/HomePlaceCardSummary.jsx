@@ -114,7 +114,7 @@ export default function HomePlaceCardSummary({
 
   useEffect(() => {
     if (!pendingServiceModalOpen) return undefined;
-    const { service, ref, slug: deeplinkSlug } = pendingServiceModalOpen;
+    const { service } = pendingServiceModalOpen;
     let cancelled = false;
     let opened = false;
 
