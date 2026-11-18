@@ -644,7 +644,11 @@ function Home() {
       placeServiceModalUiAppliedRef.current = null;
       releasePlaceServiceModalDeeplinkEmit();
       const summaryRequest = readPlaceServiceModalSummaryRequest();
-      if (summaryRequest?.slug && summaryRequest.slug !== routeSlug) {
+      if (
+        summaryRequest &&
+        (summaryRequest.slug !== routeSlug ||
+          (summaryRequest.pathname && summaryRequest.pathname !== pathname))
+      ) {
         clearPlaceServiceModalSummaryRequest();
         setServiceModalSummaryActive(false);
       }
@@ -712,17 +716,18 @@ function Home() {
       ref: deeplink.from,
       slug: slugKey || routeSlug,
     };
-    rememberPlaceServiceModalSummary(routeSlug, deeplink.open);
+    const strippedPath = buildPlacePathWithStrippedServiceModalDeeplink(routeSlug, {
+      tab: match?.params?.tab,
+      search: routeLocation.search,
+    });
+    const summaryPath = (strippedPath || pathname).split('?')[0];
+    rememberPlaceServiceModalSummary(routeSlug, deeplink.open, summaryPath);
     setServiceModalSummaryActive(true);
     setPendingServiceModalOpen(pendingOpen);
     pendingGlobeHomeFocusRef.current = focusTarget;
     rememberGlobeFocus(focusTarget);
     setSelectedLocation(focusTarget);
     setIsCardExpanded(false);
-    const strippedPath = buildPlacePathWithStrippedServiceModalDeeplink(routeSlug, {
-      tab: match?.params?.tab,
-      search: routeLocation.search,
-    });
     if (strippedPath) navigate(strippedPath, { replace: true });
     if (claimPlaceServiceModalDeeplinkEmit(consumeKey)) {
       const ga = buildServiceModalOpenEvent({

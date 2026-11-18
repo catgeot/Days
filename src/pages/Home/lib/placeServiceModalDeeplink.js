@@ -110,10 +110,11 @@ export function releasePlaceServiceModalDeeplinkEmit() {
   lastDeeplinkEmitKey = null;
 }
 
-export function rememberPlaceServiceModalSummary(slug, service) {
+export function rememberPlaceServiceModalSummary(slug, service, pathname) {
   serviceModalSummaryRequest = {
     slug: String(slug || '').trim().toLowerCase(),
     service: service === 'stay' ? 'stay' : 'tour',
+    pathname: String(pathname || '').split('?')[0] || null,
   };
 }
 
@@ -140,7 +141,9 @@ export function readServiceModalSummaryFromLocation(pathname, search) {
 export function initialServiceModalSummaryActive() {
   if (typeof window === 'undefined') return false;
   const req = readPlaceServiceModalSummaryRequest();
-  if (req?.slug && window.location.pathname.startsWith(`/place/${req.slug}`)) return true;
+  if (req?.slug && window.location.pathname.startsWith(`/place/${req.slug}`)) {
+    if (!req.pathname || window.location.pathname === req.pathname) return true;
+  }
   return readServiceModalSummaryFromLocation(window.location.pathname, window.location.search);
 }
 
@@ -149,6 +152,7 @@ export function initialDeeplinkStripSignals() {
   if (typeof window === 'undefined') return empty;
   const req = readPlaceServiceModalSummaryRequest();
   if (!req?.slug || !window.location.pathname.startsWith(`/place/${req.slug}`)) return empty;
+  if (req.pathname && window.location.pathname !== req.pathname) return empty;
   return {
     tour: req.service === 'tour' ? 1 : 0,
     stay: req.service === 'stay' ? 1 : 0,
