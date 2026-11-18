@@ -161,6 +161,47 @@ test('credit renderers use shared stock line helper', () => {
   assert.match(readFileSync(join(root, 'src/components/PlaceCard/common/GalleryGridPhotoCredit.jsx'), 'utf8'), /StockPhotoCreditLine/);
 });
 
+test('pexels editorial rows link 출처 to the photo page when source_page is stored', () => {
+  const resolved = resolveEditorialReviewImageCredit({
+    source: 'Pexels',
+    photographer: 'Vietnam Hidden Light',
+    photographer_url: 'https://www.pexels.com/@vietnamhiddenlight/',
+    source_page: 'https://www.pexels.com/photo/deliciously-braised-pork-belly-in-rich-sauce-34474143/',
+    credit: 'Vietnam Hidden Light / Pexels · 같은 종류',
+  });
+  assert.equal(resolved?.type, 'pexels');
+  assert.match(resolved.providerHref, /pexels\.com\/photo\/deliciously-braised-pork-belly/);
+  assert.doesNotMatch(resolved.providerHref, /pexels\.com\/?$/);
+  assert.match(resolved.photographerHref, /vietnamhiddenlight/);
+});
+
+test('wikimedia Stephen Kennedy — author link only when URL is a user page', () => {
+  const resolved = resolveEditorialReviewImageCredit({
+    source: 'Wikimedia Commons',
+    photographer: 'Stephen Kennedy',
+    photographer_url: 'https://commons.wikimedia.org/wiki/File:The_tsunami_left_this_boat.jpg',
+    source_page: 'https://commons.wikimedia.org/wiki/File:The_tsunami_left_this_boat.jpg',
+    license: 'CC BY 2.0',
+    license_url: 'https://creativecommons.org/licenses/by/2.0/',
+  });
+  assert.equal(resolved?.type, 'wikimedia');
+  assert.equal(resolved.photographerHref, null);
+  assert.match(resolved.filePageHref, /wiki\/File:The_tsunami_left_this_boat/);
+});
+
+test('wikimedia Karelj — photographer user page is linked', () => {
+  const resolved = resolveEditorialReviewImageCredit({
+    source: 'Wikimedia Commons',
+    photographer: 'Karelj',
+    photographer_url: 'https://commons.wikimedia.org/wiki/User:Karelj',
+    source_page: 'https://commons.wikimedia.org/wiki/File:Street_fast_food_Patong_Thajsko_2018_1.jpg',
+    license: 'CC BY 4.0',
+    license_url: 'https://creativecommons.org/licenses/by/4.0/',
+  });
+  assert.equal(resolved?.type, 'wikimedia');
+  assert.match(resolved.photographerHref, /wiki\/User:Karelj/);
+});
+
 test('hub detail layout still renders per-image credits in ReviewsTab', () => {
   const reviews = readFileSync(join(root, 'src/components/PlaceCard/tabs/ReviewsTab.jsx'), 'utf8');
   assert.equal(reviews.includes('!hubDetailLayout ? <EditorialReviewImageCredits'), false);

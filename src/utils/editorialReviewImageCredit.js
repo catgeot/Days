@@ -65,7 +65,7 @@ export function isPexelsReviewImage(img) {
   if (!img || typeof img !== 'object') return false;
   const source = String(img.source ?? '').trim().toLowerCase();
   if (source === 'pexels') return true;
-  return [img.url, img.publicUrl, img.html_link, img.pexels_url, img.photographer_url].some(
+  return [img.url, img.publicUrl, img.html_link, img.pexels_url, img.photographer_url, img.source_page].some(
     hostnameIsPexels,
   );
 }
@@ -81,7 +81,7 @@ export function isWikimediaStockReviewImage(img) {
   if (isHeritageStoredCreditLine(img)) return false;
   const source = String(img.source ?? '').trim().toLowerCase();
   const isWikiSource = source.includes('wikimedia') || source.includes('commons');
-  const isWikiUrl = [img.url, img.publicUrl, img.source_page, img.photographer_url].some(
+  const isWikiUrl = [img.url, img.publicUrl, img.source_page, img.photographer_url, img.html_link].some(
     hostnameIsWikimedia,
   );
   if (!isWikiSource && !isWikiUrl) return false;
@@ -111,7 +111,11 @@ export function resolveEditorialReviewImageCredit(img) {
   const photographerName = String(img.photographer || img.photographer_name || '').trim();
   const photographerHrefRaw = img.photographer_url;
   const unsplashHrefRaw = img.unsplash_url || img.html_link;
-  const pexelsHrefRaw = img.pexels_url || (isPexelsReviewImage(img) ? img.html_link : null);
+    const pexelsHrefRaw =
+      img.pexels_url ||
+      img.source_page ||
+      img.html_link ||
+      (typeof img.url === 'string' && hostnameIsPexels(img.url) ? img.url : null);
   const filePageRaw = img.source_page || img.file_page_url;
 
   if (isUnsplashReviewImage(img)) {

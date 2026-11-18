@@ -26,6 +26,8 @@ import { isEditorialLogbook, publicLogbookDetailPath } from '../../../utils/logb
 import { logbookHeroImageUrl } from '../../../utils/logbookImageSrc';
 import { collectUniqueEditorialReviewImageCredits } from '../../../utils/editorialReviewImageCredit';
 import { EditorialStockPhotoCreditLine } from '../common/StockPhotoCreditLine';
+import { EditorialReviewPhotoNote } from '../common/EditorialReviewPhotoNote';
+import { resolveEditorialReviewPhotoNoteText } from '../../../utils/editorialReviewPhotoNote';
 import {
   getCollapsedPreviewText,
   getGalleryImageEntries,
@@ -114,9 +116,14 @@ const EditorialReviewImageCredits = ({ images, compact = false }) => {
   );
 };
 
-const ReviewPerImageCredit = ({ img, variant = 'thumbnail' }) => (
-  <EditorialReviewImageCredits images={[img]} compact={variant === 'thumbnail'} />
+const ReviewPerImageAttribution = ({ img, variant = 'thumbnail' }) => (
+  <div className={variant === 'thumbnail' ? 'min-w-0 w-full' : ''}>
+    <EditorialReviewPhotoNote image={img} variant={variant === 'thumbnail' ? 'thumbnail' : 'inline'} />
+    <EditorialReviewImageCredits images={[img]} compact={variant === 'thumbnail'} />
+  </div>
 );
+
+const ReviewPerImageCredit = ReviewPerImageAttribution;
 
 const ReviewLightboxImageCredit = ({ img }) => {
   const credits = collectUniqueEditorialReviewImageCredits([img]);
@@ -1112,17 +1119,27 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null, isActiv
           className="fixed inset-0 z-[9999] bg-black flex flex-col items-center justify-center"
           onClick={closeLightbox}
         >
-          {/* 상단 닫기 버튼 및 카운터 */}
-          <div className="absolute top-0 left-0 w-full flex justify-between items-center px-4 pt-10 pb-6 sm:pt-6 text-white z-[10000] bg-gradient-to-b from-black/80 to-transparent pointer-events-none">
-            <div className="text-base font-bold tracking-widest pl-2 mt-2">
-              {viewerIndex + 1} / {viewerImages.length}
+          {/* 상단 닫기 버튼·카운터·사진 노트 */}
+          <div className="absolute top-0 left-0 w-full z-[10000] bg-gradient-to-b from-black/80 to-transparent pointer-events-none">
+            <div className="flex items-start gap-3 px-4 pb-4 pt-10 sm:pt-6 text-white">
+              <div className="text-base font-bold tracking-widest pl-2 mt-2 shrink-0">
+                {viewerIndex + 1} / {viewerImages.length}
+              </div>
+              {resolveEditorialReviewPhotoNoteText(viewerImages[viewerIndex]) ? (
+                <div className="min-w-0 flex-1 pointer-events-auto">
+                  <EditorialReviewPhotoNote image={viewerImages[viewerIndex]} variant="lightbox" />
+                </div>
+              ) : (
+                <div className="min-w-0 flex-1" aria-hidden />
+              )}
+              <button
+                onClick={closeLightbox}
+                className="shrink-0 p-3 bg-white/20 hover:bg-white/30 rounded-full active:scale-95 transition-transform pointer-events-auto"
+                aria-label={t('place.gallery.close')}
+              >
+                <X className="w-7 h-7" />
+              </button>
             </div>
-            <button
-              onClick={closeLightbox}
-              className="p-3 bg-white/20 hover:bg-white/30 rounded-full active:scale-95 transition-transform pointer-events-auto"
-            >
-              <X className="w-7 h-7" />
-            </button>
           </div>
 
           {/* 메인 이미지 */}

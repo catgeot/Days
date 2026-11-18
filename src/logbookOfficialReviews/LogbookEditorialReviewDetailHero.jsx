@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { formatGateoReviewerBadge } from '../utils/placeReviewEditorial';
 import { collectUniqueEditorialReviewImageCredits } from '../utils/editorialReviewImageCredit';
 import { EditorialStockPhotoCreditLine } from '../components/PlaceCard/common/StockPhotoCreditLine';
+import { EditorialReviewPhotoNote } from '../components/PlaceCard/common/EditorialReviewPhotoNote';
 import { formatLogbookDisplayDate } from '../utils/logbookDisplayDate';
 import { resolveLogbookReviewPlaceDisplayName } from './logbookReviewPlaceLabel.js';
 import { pickEditorialReviewHubThumbPair } from './editorialReviewHubThumb.js';
@@ -81,7 +82,12 @@ export default function LogbookEditorialReviewDetailHero({ review, onImageClick 
         ) : (
           photoFrame
         )}
-        {heroImage ? <HeroImageCredits images={[heroImage]} /> : null}
+        {heroImage ? (
+          <>
+            <EditorialReviewPhotoNote image={heroImage} variant="hero" className="mt-1.5" />
+            <HeroImageCredits images={[heroImage]} />
+          </>
+        ) : null}
         <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1">
           <span className="text-[11px] font-semibold text-indigo-800 bg-indigo-50 border border-indigo-100 px-2 py-0.5 rounded-md">
             {badgeLabel}
