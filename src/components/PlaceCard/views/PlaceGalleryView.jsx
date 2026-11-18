@@ -1147,7 +1147,10 @@ const PlaceGalleryView = React.memo(({
                   <ImageIcon size={11} className="shrink-0 opacity-90" aria-hidden />
                   {t('place.gallery.photoNote')}
                 </p>
-                <p className="max-h-[2.75rem] overflow-y-auto text-sm leading-snug text-gray-100/95 whitespace-pre-line landscape:max-h-none landscape:overflow-hidden landscape:text-xs landscape:truncate">
+                <p
+                  data-place-lightbox-caption=""
+                  className="max-h-[2.75rem] overflow-y-auto text-sm leading-snug text-gray-100/95 whitespace-pre-line landscape:max-h-none landscape:overflow-hidden landscape:text-xs landscape:truncate"
+                >
                   {photoCaption}
                 </p>
               </div>
@@ -1432,7 +1435,7 @@ const PlaceGalleryView = React.memo(({
 
       {photoCaption && (
         <div
-          className={`lg:hidden absolute left-0 right-0 top-16 z-[205] px-4 transition-opacity duration-300 ${isUIHidden ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+          className={`absolute left-0 right-0 top-16 z-[205] px-4 pr-20 md:pr-24 transition-opacity duration-300 ${isUIHidden ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
           onClick={(e) => e.stopPropagation()}
         >
           <div className="max-h-[30vh] overflow-y-auto rounded-2xl border border-white/10 bg-black/55 px-3.5 py-3 backdrop-blur-md shadow-lg">
@@ -1440,7 +1443,9 @@ const PlaceGalleryView = React.memo(({
               <ImageIcon size={12} className="shrink-0 opacity-90" aria-hidden />
               {t('place.gallery.photoNote')}
             </p>
-            <p className="text-sm text-gray-100/95 leading-relaxed whitespace-pre-line">{photoCaption}</p>
+            <p data-place-lightbox-caption="" className="text-sm text-gray-100/95 leading-relaxed whitespace-pre-line">
+              {photoCaption}
+            </p>
           </div>
         </div>
       )}
