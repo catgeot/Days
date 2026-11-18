@@ -448,7 +448,7 @@ export default function GlobeTourStrip({
             if (!String(prev.activityKeyword || '').trim()) return prev;
             return {
               ...prev,
-              keywordSearchFallback: meta?.keywordMatched === false,
+              keywordSearchFallback: Boolean(meta?.usedFallbackListing),
             };
           });
         }}
