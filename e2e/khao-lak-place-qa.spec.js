@@ -215,6 +215,61 @@ test.describe('khao lak place qa', () => {
   });
 });
 
+const NANG_THONG_CAPTION = 'Khao Lak lighthouse on the rock off Nang Thong Beach';
+
+async function openNangThongGalleryLightbox(page, viewport) {
+  await page.setViewportSize(viewport);
+  await page.goto('/place/nang-thong-beach/gallery?lang=en', { waitUntil: 'domcontentloaded' });
+  const scroller = page.locator('[data-place-gallery-scroll]');
+  await expect(scroller).toBeVisible({ timeout: 60_000 });
+  const tile = scroller.locator('img').first();
+  await expect(tile).toBeVisible({ timeout: 30_000 });
+  await expect.poll(async () => tile.evaluate((img) => (
+    img.complete && img.naturalWidth > 10 ? img.naturalWidth : 0
+  ))).toBeGreaterThan(10);
+  await tile.click();
+  const lightbox = page.locator('[data-place-lightbox]');
+  await expect(lightbox).toBeVisible({ timeout: 15_000 });
+  return lightbox;
+}
+
+test.describe('place gallery lightbox caption — mock @390 @1280', () => {
+  test.beforeEach(async ({ page }) => {
+    await blockLiveApis(page);
+  });
+
+  for (const viewport of [
+    { label: '390', width: 390, height: 844 },
+    { label: '1280', width: 1280, height: 800 },
+  ]) {
+    test(`${viewport.label}: photo note visible; top-right hit target is lightbox`, async ({ page }) => {
+      const lightbox = await openNangThongGalleryLightbox(page, viewport);
+      await expect(lightbox.locator('[data-place-lightbox-caption]')).toContainText(NANG_THONG_CAPTION);
+
+      const close = lightbox.getByRole('button', { name: /close/i });
+      await expect(close).toBeVisible();
+      const closeBox = await close.boundingBox();
+      expect(closeBox).toBeTruthy();
+
+      const hit = await page.evaluate(({ x, y }) => {
+        const el = document.elementFromPoint(x, y);
+        return {
+          inLightbox: Boolean(el?.closest?.('[data-place-lightbox]')),
+          inHomeChrome: Boolean(el?.closest?.('[data-testid="place-header-chrome-actions"]')),
+        };
+      }, { x: closeBox.x + closeBox.width / 2, y: closeBox.y + closeBox.height / 2 });
+      expect(hit.inLightbox).toBe(true);
+      expect(hit.inHomeChrome).toBe(false);
+
+      await expect(lightbox.locator('[data-gallery-wikimedia-credit]').first()).toBeVisible();
+
+      await page.screenshot({
+        path: `/opt/cursor/artifacts/place-gallery-lightbox-caption-${viewport.label}.png`,
+      });
+    });
+  }
+});
+
 test.describe('festival ask mooni vs close', () => {
   test.beforeEach(async ({ context }) => {
     await installFestivalIds(context);
