@@ -31,14 +31,18 @@ export function getGalleryImageAttribution(image) {
   }
 
   if (source === 'pexels') {
-    const href = image?.links?.html || 'https://www.pexels.com/photo/';
+    const photoPage = image?.links?.html || 'https://www.pexels.com/photo/';
+    const profile =
+      typeof image?.user?.links?.html === 'string' && image.user.links.html.trim()
+        ? image.user.links.html.trim()
+        : photoPage;
     return {
       source,
       authorName,
       providerName: 'Pexels',
-      href,
-      photographerHref: href,
-      providerHref: 'https://www.pexels.com/',
+      href: photoPage,
+      photographerHref: profile,
+      providerHref: photoPage,
       title: `Photo by ${authorName} on Pexels`,
       providerLabel: 'on Pexels',
     };
@@ -64,11 +68,14 @@ export function getGalleryImageAttribution(image) {
     };
   }
 
-  const baseHref =
-    image?.user?.links?.html || image?.links?.html || 'https://unsplash.com';
-  const separator = baseHref.includes('?') ? '&' : '?';
-  const photographerHref = `${baseHref}${separator}utm_source=GATEO&utm_medium=referral`;
-  const providerHref = 'https://unsplash.com/?utm_source=GATEO&utm_medium=referral';
+  const photoPage = image?.links?.html || 'https://unsplash.com';
+  const profile = image?.user?.links?.html || photoPage;
+  const withUtm = (href) => {
+    const separator = href.includes('?') ? '&' : '?';
+    return `${href}${separator}utm_source=GATEO&utm_medium=referral`;
+  };
+  const photographerHref = withUtm(profile);
+  const providerHref = withUtm(photoPage);
 
   return {
     source,

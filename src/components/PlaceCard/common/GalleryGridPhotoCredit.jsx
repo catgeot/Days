@@ -1,110 +1,50 @@
 import React, { useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
 import GalleryAttributionLink from './GalleryAttributionLink';
 import { buildGalleryPhotoCredit } from './buildGalleryPhotoCredit';
+import StockPhotoCreditLine from './StockPhotoCreditLine';
 
 const creditShellClass =
   'pointer-events-none absolute inset-x-0 bottom-0 z-[2] bg-gradient-to-t from-black/80 via-black/45 to-transparent px-2 pb-1.5 pt-6';
 
-const creditRowClass =
-  'pointer-events-none flex min-w-0 items-center gap-x-0.5 text-[10px] leading-snug text-white/90 [text-shadow:0_1px_2px_rgba(0,0,0,0.85)]';
-
-const linkClass =
-  'pointer-events-auto inline-flex min-h-6 max-w-full items-center justify-center px-0.5 py-1 font-semibold underline decoration-white/50 underline-offset-2 hover:text-white';
-
-const photographerLinkClass = `${linkClass} min-w-0 flex-1 truncate`;
-
-const providerLinkClass = `${linkClass} shrink-0`;
+function GalleryCreditLink({ href, className, children, location, image, context, title, onClick }) {
+  if (!href) {
+    return <span className={className}>{children}</span>;
+  }
+  return (
+    <GalleryAttributionLink
+      href={href}
+      location={location}
+      image={image}
+      context={context}
+      className={className}
+      title={title}
+      onClick={onClick}
+    >
+      {children}
+    </GalleryAttributionLink>
+  );
+}
 
 export default function GalleryGridPhotoCredit({ image, location, locale }) {
-  const { t, i18n } = useTranslation();
   const credit = useMemo(() => buildGalleryPhotoCredit(image, locale), [image, locale]);
-  const isKo = i18n.language?.startsWith('ko');
 
   if (!credit) return null;
 
-  if (credit.kind === 'wikimedia') {
-    return (
-      <p data-gallery-photo-credit="" data-gallery-wikimedia-credit="" className={creditShellClass}>
-        <span className={`${creditRowClass} flex-wrap`}>
-          <span className="shrink-0">{t('place.gallery.photoCreditBy')}</span>
-          <span className="min-w-0 max-w-full truncate font-semibold">{credit.authorName}</span>
-          <span className="shrink-0" aria-hidden="true">·</span>
-          <GalleryAttributionLink
-            href={credit.licenseHref}
-            location={location}
-            image={image}
-            context="gallery-grid"
-            className={providerLinkClass}
-          >
-            {credit.licenseName}
-          </GalleryAttributionLink>
-          <span className="shrink-0" aria-hidden="true">·</span>
-          <GalleryAttributionLink
-            href={credit.filePageHref}
-            location={location}
-            image={image}
-            context="gallery-grid"
-            className={providerLinkClass}
-            title={t('place.gallery.photoCreditFilePageTitle')}
-          >
-            {t('place.gallery.photoCreditFilePage')}
-          </GalleryAttributionLink>
-        </span>
-      </p>
-    );
-  }
-
-  if (credit.kind === 'kto') {
-    return (
-      <p data-gallery-photo-credit="" className={creditShellClass}>
-        <span className={creditRowClass}>
-          <span className="shrink-0">{t('place.gallery.photoCreditKtoPrefix')}</span>
-          <GalleryAttributionLink
-            href={credit.providerHref}
-            location={location}
-            image={image}
-            context="gallery-grid"
-            className={providerLinkClass}
-          >
-            {credit.providerLabel}
-          </GalleryAttributionLink>
-        </span>
-      </p>
-    );
-  }
-
-  const providerName =
-    credit.provider === 'pexels'
-      ? 'Pexels'
-      : credit.provider === 'wikimedia'
-        ? 'Wikimedia Commons'
-        : 'Unsplash';
+  const wikimedia = credit.kind === 'wikimedia';
 
   return (
-    <p data-gallery-photo-credit="" className={creditShellClass}>
-      <span className={creditRowClass}>
-        <span className="shrink-0">{t('place.gallery.photoCreditBy')}</span>
-        <GalleryAttributionLink
-          href={credit.photographerHref}
-          location={location}
-          image={image}
-          context="gallery-grid"
-          className={photographerLinkClass}
-        >
-          {credit.authorName}
-        </GalleryAttributionLink>
-        <span className="shrink-0">{isKo ? '·' : t('place.gallery.photoCreditOn')}</span>
-        <GalleryAttributionLink
-          href={credit.providerHref}
-          location={location}
-          image={image}
-          context="gallery-grid"
-          className={providerLinkClass}
-        >
-          {providerName}
-        </GalleryAttributionLink>
-      </span>
+    <p
+      data-gallery-photo-credit=""
+      data-gallery-wikimedia-credit={wikimedia ? '' : undefined}
+      className={creditShellClass}
+    >
+      <StockPhotoCreditLine
+        credit={credit}
+        tone="gallery-overlay"
+        allowAuthorWrap
+        LinkComponent={GalleryCreditLink}
+        linkExtraProps={{ location, image, context: 'gallery-grid' }}
+      />
     </p>
   );
 }

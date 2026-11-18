@@ -36,6 +36,7 @@ import {
 import GalleryGridPhotoCredit from '../common/GalleryGridPhotoCredit';
 import { buildGalleryPhotoCredit } from '../common/buildGalleryPhotoCredit';
 import GalleryAttributionLink from '../common/GalleryAttributionLink';
+import StockPhotoCreditLine from '../common/StockPhotoCreditLine';
 import { isPlaceGalleryPhotoCreditEnabled } from '../../../utils/placeGalleryPhotoCreditFlag';
 import { usePlaceGalleryOverviewHydration } from '../hooks/usePlaceGalleryOverviewHydration';
 import { shouldShowMobileGalleryOverviewSection } from '../common/galleryOverviewLocaleNotices.js';
@@ -1071,64 +1072,36 @@ const PlaceGalleryView = React.memo(({
   );
 
   const renderAttributionLinks = (wrapperClassName, linkClassName = '') => {
-    if (!selectedImg) return null;
-    if (selectedPhotoCredit?.kind === 'wikimedia') {
+    if (!selectedImg || !selectedPhotoCredit) return null;
+
+    const GalleryLink = ({ href, className, children, title }) => {
+      if (!href) {
+        return <span className={className}>{children}</span>;
+      }
       return (
-        <span
-          className={`${wrapperClassName} flex-wrap`}
-          data-gallery-wikimedia-credit=""
+        <GalleryAttributionLink
+          href={href}
+          location={location}
+          image={selectedImg}
+          context="gallery"
+          className={className}
+          title={title}
         >
-          <span className="shrink-0">{t('place.gallery.photoCreditBy')}</span>
-          <span className={`min-w-0 truncate font-semibold text-white ${linkClassName}`}>
-            {selectedPhotoCredit.authorName}
-          </span>
-          <span className="shrink-0" aria-hidden="true">·</span>
-          <GalleryAttributionLink
-            href={selectedPhotoCredit.licenseHref}
-            location={location}
-            image={selectedImg}
-            context="gallery"
-            className={`shrink-0 font-semibold text-white underline decoration-white/50 underline-offset-2 hover:text-white ${linkClassName}`}
-          >
-            {selectedPhotoCredit.licenseName}
-          </GalleryAttributionLink>
-          <span className="shrink-0" aria-hidden="true">·</span>
-          <GalleryAttributionLink
-            href={selectedPhotoCredit.filePageHref}
-            location={location}
-            image={selectedImg}
-            context="gallery"
-            title={t('place.gallery.photoCreditFilePageTitle')}
-            className={`shrink-0 font-semibold text-white underline decoration-white/50 underline-offset-2 hover:text-white ${linkClassName}`}
-          >
-            {t('place.gallery.photoCreditFilePage')}
-          </GalleryAttributionLink>
-        </span>
+          {children}
+        </GalleryAttributionLink>
       );
-    }
-    if (!photoAttribution) return null;
+    };
+
     return (
-      <span className={wrapperClassName} title={photoAttribution.title}>
-        <span>Photo by</span>
-        <GalleryAttributionLink
-          href={photoAttribution.photographerHref || photoAttribution.href}
-          location={location}
-          image={selectedImg}
-          context="gallery"
-          className={`truncate font-semibold text-white hover:underline ${linkClassName}`}
-        >
-          {photoAttribution.authorName}
-        </GalleryAttributionLink>
-        <span>on</span>
-        <GalleryAttributionLink
-          href={photoAttribution.providerHref}
-          location={location}
-          image={selectedImg}
-          context="gallery"
-          className={`shrink-0 font-semibold text-white hover:underline ${linkClassName}`}
-        >
-          {photoAttribution.providerName}
-        </GalleryAttributionLink>
+      <span className={wrapperClassName} title={photoAttribution?.title}>
+        <StockPhotoCreditLine
+          credit={selectedPhotoCredit}
+          tone="gallery-overlay"
+          allowAuthorWrap
+          providerLinkClassName={linkClassName}
+          authorLinkClassName={linkClassName}
+          LinkComponent={GalleryLink}
+        />
       </span>
     );
   };

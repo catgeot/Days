@@ -2,6 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { formatGateoReviewerBadge } from '../utils/placeReviewEditorial';
 import { collectUniqueEditorialReviewImageCredits } from '../utils/editorialReviewImageCredit';
+import { EditorialStockPhotoCreditLine } from '../components/PlaceCard/common/StockPhotoCreditLine';
 import { formatLogbookDisplayDate } from '../utils/logbookDisplayDate';
 import { resolveLogbookReviewPlaceDisplayName } from './logbookReviewPlaceLabel.js';
 import { pickEditorialReviewHubThumbPair } from './editorialReviewHubThumb.js';
@@ -20,33 +21,10 @@ function HeroImageCredits({ images }) {
       {credits.map((credit, index) => (
         <React.Fragment key={`${credit.type}-${index}`}>
           {index > 0 ? <span className="text-gray-300"> · </span> : null}
-          {credit.type === 'unsplash' ? (
-            <>
-              Photo by{' '}
-              {credit.photographerHref ? (
-                <a
-                  href={credit.photographerHref}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="underline decoration-gray-300 underline-offset-2 hover:text-gray-600"
-                >
-                  {credit.photographerName}
-                </a>
-              ) : (
-                credit.photographerName
-              )}
-              {' on '}
-              <a
-                href={credit.unsplashHref}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline decoration-gray-300 underline-offset-2 hover:text-gray-600"
-              >
-                Unsplash
-              </a>
-            </>
-          ) : (
+          {credit.type === 'plain' ? (
             credit.text
+          ) : (
+            <EditorialStockPhotoCreditLine credit={credit} allowAuthorWrap />
           )}
         </React.Fragment>
       ))}

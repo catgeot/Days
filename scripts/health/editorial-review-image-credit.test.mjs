@@ -61,20 +61,26 @@ test('KOGL / 문화재청 credits stay the stored line', () => {
   );
 });
 
-test('Wikimedia credits keep the stored author and license', () => {
+test('Wikimedia CC stock rows resolve linked credits; heritage lines stay plain', () => {
   assert.ok(samples.wikimedia.length >= 3);
   for (const sample of samples.wikimedia) {
-    assertStoredCredit(sample.image);
-    assert.match(sample.image.credit, new RegExp(sample.image.photographer.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
-    assert.match(sample.image.credit, new RegExp(sample.image.license.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+    const resolved = resolveEditorialReviewImageCredit(sample.image);
+    assert.equal(resolved?.type, 'wikimedia');
+    assert.equal(resolved.photographerName, sample.image.photographer);
+    if (sample.image.license) {
+      assert.equal(resolved.licenseName, sample.image.license);
+    }
+    if (sample.image.license_url) {
+      assert.equal(resolved.licenseHref, sample.image.license_url);
+    }
   }
-  const suncheon = samples.wikimedia.find((sample) => sample.place_slug === 'suncheon-bay-wetland').image;
+  const suncheonWiki = samples.wikimedia.find((sample) => sample.place_slug === 'suncheon-bay-wetland').image;
   const heritage = samples.koglHeritage.find((sample) => sample.place_slug === 'suncheon-bay-wetland').image;
-  const lines = collectUniqueEditorialReviewImageCredits([suncheon, heritage]);
-  assert.deepEqual(
-    lines.map((line) => line.text),
-    [suncheon.credit, heritage.credit],
-  );
+  const lines = collectUniqueEditorialReviewImageCredits([suncheonWiki, heritage]);
+  assert.equal(lines.length, 2);
+  assert.equal(lines[0].type, 'wikimedia');
+  assert.equal(lines[1].type, 'plain');
+  assert.equal(lines[1].text, heritage.credit);
 });
 
 test('real Unsplash rows keep photographer links and are not rewritten', () => {
@@ -126,29 +132,33 @@ test('a photographer without an Unsplash URL is not labeled Unsplash', () => {
   assert.equal(namedOnly?.type, 'plain');
   assert.equal(namedOnly.text, HWASEONG_CREDIT);
 
-  const wikiFilename = resolveEditorialReviewImageCredit({
+  const wikiImg = {
     url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Northern_Lights_above_Iceland_%28Unsplash%29.jpg/1280px-Northern_Lights_above_Iceland_%28Unsplash%29.jpg',
     source: 'Wikimedia Commons',
     credit: 'Example / Wikimedia Commons · CC BY 4.0',
     photographer: 'Example',
     license: 'CC BY 4.0',
-  });
-  assert.equal(wikiFilename?.type, 'plain');
-  assert.equal(wikiFilename.text, 'Example / Wikimedia Commons · CC BY 4.0');
+    license_url: 'https://creativecommons.org/licenses/by/4.0/',
+  };
+  assert.equal(isUnsplashReviewImage(wikiImg), false);
+  const wikiFilename = resolveEditorialReviewImageCredit(wikiImg);
+  assert.equal(wikiFilename?.type, 'wikimedia');
+  assert.equal(wikiFilename.photographerName, 'Example');
+  assert.equal(wikiFilename.licenseName, 'CC BY 4.0');
 });
 
-test('credit renderers show the stored line unless the image is Unsplash', () => {
+test('credit renderers use shared stock line helper', () => {
   const hero = readFileSync(join(root, 'src/logbookOfficialReviews/LogbookEditorialReviewDetailHero.jsx'), 'utf8');
   const logbook = readFileSync(join(root, 'src/pages/DailyReport/components/EditorialLogbookImageCredits.jsx'), 'utf8');
   const reviews = readFileSync(join(root, 'src/components/PlaceCard/tabs/ReviewsTab.jsx'), 'utf8');
   for (const source of [hero, logbook, reviews]) {
-    assert.match(source, /credit\.type === 'unsplash'/);
+    assert.match(source, /EditorialStockPhotoCreditLine/);
     assert.match(source, /translate="no"/);
     assert.equal(source.includes('formatFestivalPhotoCreditLine'), false);
-    assert.ok(source.indexOf("credit.type === 'unsplash'") < source.indexOf('Photo by'));
   }
   assert.match(reviews, /editorial-review-image-credit/);
   assert.match(hero, /logbook-editorial-review-detail-hero-credit/);
+  assert.match(readFileSync(join(root, 'src/components/PlaceCard/common/GalleryGridPhotoCredit.jsx'), 'utf8'), /StockPhotoCreditLine/);
 });
 
 test('hub detail layout still renders per-image credits in ReviewsTab', () => {
