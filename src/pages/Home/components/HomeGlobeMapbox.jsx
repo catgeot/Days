@@ -478,6 +478,10 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
    * 폴링 UI가 「준비 중」으로 깜박이지 않게 한다. 테마 전환 시에만 해제.
    */
   const flightCinemaLayersLatchedRef = useRef(false);
+  /** styledata 안의 레이어 변경은 현재 _render의 placement 뒤로 미룬다. */
+  const styleDataFlushQueuedRef = useRef(false);
+  const globeMapAliveRef = useRef(true);
+  const flushStyleDataRef = useRef(() => {});
   const hasRaisedFatalRef = useRef(false);
   const suppressClickUntilRef = useRef(0);
   const markerClickGuardUntilRef = useRef(0);
@@ -2829,6 +2833,39 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     interactionRef.current = false;
   }, []);
 
+  useEffect(() => () => {
+    globeMapAliveRef.current = false;
+    styleDataFlushQueuedRef.current = false;
+  }, []);
+
+  flushStyleDataRef.current = () => {
+    const map = mapRef.current?.getMap();
+    if (!map || map._removed) return;
+
+    applyEarlyMapboxGlobeLabelSuppress(map, globeTheme);
+
+    const cameraBusy =
+      cameraAnimatingRef.current || isGlobeCameraBusy(map)
+      || (typeof map.isMoving === 'function' && map.isMoving());
+
+    if (map.isStyleLoaded?.() && globeTheme !== 'bright') {
+      refreshPlaceLabelLayers();
+      applySatelliteBasemapLabels({ force: true });
+    }
+
+    if (cameraBusy) return;
+
+    tryRevealGlobeOverlays();
+
+    if (!map.isStyleLoaded?.()) return;
+
+    ensureInteractionReady();
+    applyWaterPaint();
+    resetAndApplyPlaceLabelVisibility();
+    syncGateoMarkerLayers();
+    tryRevealGlobe();
+  };
+
   if (!MAPBOX_TOKEN) return null;
 
   const globePaused = pauseRender && !isFlightCinemaActive;
@@ -2965,35 +3002,22 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
         }}
         onStyleData={() => {
           const map = mapRef.current?.getMap();
-          if (!map) return;
+          if (!map || map._removed) return;
 
           if (!map.isStyleLoaded?.()) {
             flightCinemaLayersLatchedRef.current = false;
           }
 
-          applyEarlyMapboxGlobeLabelSuppress(map, globeTheme);
-
-          const cameraBusy =
-            cameraAnimatingRef.current || isGlobeCameraBusy(map)
-            || (typeof map.isMoving === 'function' && map.isMoving());
-
-          // satellite: locale text-field 유지. setLanguage는 쓰지 않음(이중 깜박임).
-          if (map.isStyleLoaded?.() && globeTheme !== 'bright') {
-            refreshPlaceLabelLayers();
-            applySatelliteBasemapLabels({ force: true });
-          }
-
-          if (cameraBusy) return;
-
-          tryRevealGlobeOverlays();
-
-          if (!map.isStyleLoaded?.()) return;
-
-          ensureInteractionReady();
-          applyWaterPaint();
-          resetAndApplyPlaceLabelVisibility();
-          syncGateoMarkerLayers();
-          tryRevealGlobe();
+          // Style.update가 recalculate 직후, symbol placement 전에 styledata를 동기 fire 한다.
+          // 그 턴의 addLayer/setLayoutProperty는 visibility만 바꾸고 layout은 비운 채
+          // PauseablePlacement.continuePlacement의 layout.get으로 넘어간다.
+          if (styleDataFlushQueuedRef.current) return;
+          styleDataFlushQueuedRef.current = true;
+          queueMicrotask(() => {
+            styleDataFlushQueuedRef.current = false;
+            if (!globeMapAliveRef.current) return;
+            flushStyleDataRef.current();
+          });
         }}
         onIdle={() => {
           if (import.meta.env.DEV && !globeIdleMarkedRef.current) {
