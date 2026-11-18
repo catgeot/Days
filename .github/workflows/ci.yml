@@ -1325,3 +1325,32 @@ jobs:
             exit 1
           fi
           SMOKE_SITE_URL=http://127.0.0.1:5173 npx playwright test e2e/mooni-open-gemini-budget.spec.js --project=chromium-mooni-open-budget-390 --reporter=line
+
+  tour-modal-region-search-e2e:
+    name: Tour modal region search E2E
+    runs-on: ubuntu-24.04
+    needs: lint-and-build
+    timeout-minutes: 30
+    container:
+      image: mcr.microsoft.com/playwright:v1.60.0-jammy
+      options: --ipc=host
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Playwright — tour modal region search
+        env:
+          VITE_SUPABASE_URL: https://example.supabase.co
+          VITE_SUPABASE_ANON_KEY: e2e-anon-placeholder
+          CI: true
+          DEV_SSL: '0'
+        run: npx playwright test -c playwright.config.tour-modal-region-search.js --reporter=line

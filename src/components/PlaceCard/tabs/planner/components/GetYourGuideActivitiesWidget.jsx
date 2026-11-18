@@ -70,6 +70,8 @@ export function GygHomeMoreLink({
  * @param {number|null} [frameWidth] — open일 때 공식 폭(px). null이면 부모 폭
  * @param {boolean} [showMoreLink] — 하단 제휴 홈 CTA (iframe 로드 후에만)
  * @param {boolean} [linkSponsoredLabel] — Sponsored·GetYourGuide 라벨을 제휴 홈 링크로
+ * @param {import('react').ReactNode} [regionSearch] — 투어 모달 검색. 있으면 복사 칩 자리를 대체
+ * @param {boolean} [omitQueryChip] — 검색이 헤더 아래에 있을 때 복사 칩을 비움
  */
 const GetYourGuideActivitiesWidget = ({
   location,
@@ -79,6 +81,8 @@ const GetYourGuideActivitiesWidget = ({
   frameWidth = null,
   showMoreLink = false,
   linkSponsoredLabel = false,
+  regionSearch = null,
+  omitQueryChip = false,
   className = '',
 }) => {
   const { t, i18n } = useTranslation();
@@ -246,13 +250,11 @@ const GetYourGuideActivitiesWidget = ({
     <div className="inline-flex items-center">{sponsoredText}</div>
   );
 
-  const chrome = (
-    <div
-      className={`flex flex-wrap items-center justify-between gap-2 ${
-        isBoxed ? 'mb-2' : 'mb-4 px-0.5'
-      }`}
-    >
-      {sponsoredLabel}
+  let querySlot = null;
+  if (regionSearch) {
+    querySlot = <div className="min-w-0">{regionSearch}</div>;
+  } else if (!omitQueryChip) {
+    querySlot = (
       <button
         type="button"
         onClick={copyQuery}
@@ -265,6 +267,17 @@ const GetYourGuideActivitiesWidget = ({
       >
         {copied ? t('place.planner.banners.gyg.copied') : t('place.planner.banners.gyg.queryLabel', { query })}
       </button>
+    );
+  }
+
+  const chrome = (
+    <div
+      className={`flex flex-wrap items-center justify-between gap-2 ${
+        isBoxed ? 'mb-2' : 'mb-4 px-0.5'
+      }`}
+    >
+      {sponsoredLabel}
+      {querySlot}
     </div>
   );
 
