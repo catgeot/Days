@@ -1056,11 +1056,10 @@ const PlaceGalleryView = React.memo(({
     [selectedImg, t],
   );
   const desktopLightboxPhotoMaxClass = useMemo(() => {
-    const heightClass = photoCaption
-      ? 'max-h-[min(58vh,calc(100dvh-19rem))] md:max-h-[min(62vh,calc(100dvh-17rem))]'
-      : 'max-h-[min(72vh,calc(100dvh-14rem))] md:max-h-[min(78vh,calc(100dvh-12rem))]';
+    const heightClass =
+      'max-h-[min(58vh,calc(100dvh-19rem))] md:max-h-[min(62vh,calc(100dvh-17rem))]';
     return `${heightClass} ${isFullScreen ? 'scale-105' : 'scale-100'}`;
-  }, [photoCaption, isFullScreen]);
+  }, [isFullScreen]);
 
   const photoAttribution = useMemo(
     () => (selectedImg ? getGalleryImageAttribution(selectedImg) : null),
@@ -1326,28 +1325,28 @@ const PlaceGalleryView = React.memo(({
       aria-modal="true"
       aria-label={t('place.gallery.zoomView')}
     >
-      <div
-        className="relative flex min-h-0 flex-1 w-full flex-col items-center justify-center px-4 pb-2 pt-[max(4.25rem,env(safe-area-inset-top,0px)+3.25rem)] md:px-6 md:pt-[max(4.5rem,env(safe-area-inset-top,0px)+3.5rem)] md:pb-4"
-        onClick={(e) => {
-          e.stopPropagation();
-          if (suppressOpenClickRef.current) return;
-          if (e.ctrlKey || e.metaKey) return;
-          setIsMobileUIHidden((prev) => !prev);
-        }}
-        onDoubleClick={(e) => {
-          if (e.ctrlKey || e.metaKey) {
+      {photoCaption ? (
+        <div
+          className="relative flex min-h-0 flex-1 w-full flex-col items-center justify-center px-4 pb-2 pt-[max(4.25rem,env(safe-area-inset-top,0px)+3.25rem)] md:px-6 md:pt-[max(4.5rem,env(safe-area-inset-top,0px)+3.5rem)] md:pb-4"
+          onClick={(e) => {
             e.stopPropagation();
-            if (galleryManageEnabled && selectedImg) {
-              openManageSheet(selectedImg);
+            if (suppressOpenClickRef.current) return;
+            if (e.ctrlKey || e.metaKey) return;
+            setIsMobileUIHidden((prev) => !prev);
+          }}
+          onDoubleClick={(e) => {
+            if (e.ctrlKey || e.metaKey) {
+              e.stopPropagation();
+              if (galleryManageEnabled && selectedImg) {
+                openManageSheet(selectedImg);
+              }
             }
-          }
-        }}
-      >
-        <div className="flex w-full max-w-2xl min-h-0 flex-col items-center gap-2 md:gap-3">
-          {photoCaption ? (
+          }}
+        >
+          <div className="flex w-full max-w-[min(90vw,42rem)] min-h-0 flex-col items-stretch gap-2 md:gap-3">
             <div
               data-place-lightbox-note=""
-              className={`w-full max-w-full shrink-0 rounded-2xl border border-white/10 bg-black/55 px-3.5 py-3 backdrop-blur-md shadow-lg transition-opacity duration-300 ${isUIHidden ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+              className={`w-full shrink-0 rounded-2xl border border-white/10 bg-black/55 px-3.5 py-3 backdrop-blur-md shadow-lg transition-opacity duration-300 ${isUIHidden ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
               onClick={(e) => e.stopPropagation()}
             >
               <p className="mb-1.5 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-blue-300/90">
@@ -1361,20 +1360,48 @@ const PlaceGalleryView = React.memo(({
                 {photoCaption}
               </p>
             </div>
-          ) : null}
-          <div className="flex min-h-0 w-full flex-1 items-center justify-center">
-            <img
-              src={selectedImg.urls.regular}
-              data-place-lightbox-photo=""
-              className={`relative w-full max-w-[min(90vw,42rem)] ${desktopLightboxPhotoMaxClass} object-contain shadow-2xl rounded-lg select-none animate-fade-in`}
-              alt={lightboxImageAlt}
-              referrerPolicy="no-referrer"
-              draggable={false}
-              onError={() => handleDropBrokenImage?.(selectedImg)}
-            />
+            <div className="flex min-h-0 w-full flex-1 items-center justify-center">
+              <img
+                src={selectedImg.urls.regular}
+                data-place-lightbox-photo=""
+                className={`relative w-full max-w-full ${desktopLightboxPhotoMaxClass} object-contain shadow-2xl rounded-lg select-none animate-fade-in`}
+                alt={lightboxImageAlt}
+                referrerPolicy="no-referrer"
+                draggable={false}
+                onError={() => handleDropBrokenImage?.(selectedImg)}
+              />
+            </div>
           </div>
         </div>
-      </div>
+      ) : (
+        <div
+          className="relative flex h-full w-full items-center justify-center px-4"
+          onClick={(e) => {
+            e.stopPropagation();
+            if (suppressOpenClickRef.current) return;
+            if (e.ctrlKey || e.metaKey) return;
+            setIsMobileUIHidden((prev) => !prev);
+          }}
+          onDoubleClick={(e) => {
+            if (e.ctrlKey || e.metaKey) {
+              e.stopPropagation();
+              if (galleryManageEnabled && selectedImg) {
+                openManageSheet(selectedImg);
+              }
+            }
+          }}
+        >
+          <img
+            src={selectedImg.urls.regular}
+            data-place-lightbox-photo=""
+            className={`relative max-h-[90%] max-w-[90%] select-none rounded-lg object-contain shadow-2xl animate-fade-in ${isFullScreen ? 'scale-105' : 'scale-100'}`}
+            alt={lightboxImageAlt}
+            referrerPolicy="no-referrer"
+            draggable={false}
+            onError={() => handleDropBrokenImage?.(selectedImg)}
+          />
+        </div>
+      )}
 
       {showNavControls && (
         <div
@@ -1441,7 +1468,7 @@ const PlaceGalleryView = React.memo(({
         </div>
       )}
 
-      {(isFullScreen || selectedPhotoCredit?.kind === 'wikimedia') && photoAttribution && (
+      {photoAttribution && (
         <div
           className={`absolute z-[220] max-w-[min(calc(100%-7.5rem),38rem)] transition-opacity duration-300 top-4 left-4 md:top-[max(0.5rem,env(safe-area-inset-top,0px))] md:left-[max(0.75rem,5%)] ${isUIHidden ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
           onClick={(e) => e.stopPropagation()}
