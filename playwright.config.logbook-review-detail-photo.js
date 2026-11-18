@@ -14,7 +14,7 @@ const previewEnv = {
 
 export default defineConfig({
   testDir: './e2e',
-  testMatch: /logbook-review-detail-photo\.spec\.js/,
+  testMatch: /(logbook-review-detail-photo|place-review-three-image-credits(-capture)?)\.spec\.js/,
   fullyParallel: false,
   forbidOnly: Boolean(process.env.CI),
   retries: process.env.CI ? 1 : 0,

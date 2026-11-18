@@ -1,0 +1,85 @@
+[
+  {
+    "id": "e2e-khao-lak-three-photos",
+    "place_slug": "khao-lak",
+    "persona_label": "느린산책",
+    "is_public": true,
+    "is_editorial": true,
+    "content": "",
+    "content_blocks": [
+      { "type": "text", "text": "카오락 해변 산책 코스입니다." },
+      { "type": "image", "image_index": 0 },
+      { "type": "text", "text": "두 번째 사진도 출처가 보여야 합니다." },
+      { "type": "image", "image_index": 1 },
+      { "type": "text", "text": "세 번째 사진 출처 확인." },
+      { "type": "image", "image_index": 2 }
+    ],
+    "images": [
+      {
+        "url": "https://example.invalid/review-khao-lak-1.jpg",
+        "credit": "ⓒ한국관광공사-송재근 / 포토코리아 · 공공누리 제1유형",
+        "source": "한국관광공사",
+        "photographer": "한국관광공사 송재근"
+      },
+      {
+        "url": "https://example.invalid/review-khao-lak-2.jpg",
+        "credit": "문화재청 / 공공누리 제1유형 · Wikimedia Commons",
+        "source": "Wikimedia Commons",
+        "photographer": "문화재청"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1734132046083-413c154b8d85?auto=format&fit=crop&w=400&q=60",
+        "credit": "Photo by Himmel S on Unsplash",
+        "source": "Unsplash",
+        "photographer": "Himmel S",
+        "photographer_url": "https://unsplash.com/@skyhung1228?utm_source=gateo&utm_medium=referral",
+        "unsplash_url": "https://unsplash.com/photos/a-view-of-a-cemetery-in-a-city-wkQyVJwHAzM?utm_source=gateo&utm_medium=referral"
+      }
+    ],
+    "created_at": "2026-11-18T08:00:00Z",
+    "rating": 5,
+    "user_id": "e2e-editorial-khao-lak",
+    "user": { "id": "e2e-editorial-khao-lak", "display_name": "GATEO", "avatar_url": null },
+    "likes": [],
+    "likes_count": 0,
+    "views_count": 0
+  },
+  {
+    "id": "e2e-khao-lak-food-thumbs",
+    "place_slug": "khao-lak",
+    "persona_label": "미식갑니다",
+    "is_public": true,
+    "is_editorial": true,
+    "content": "접힌 카드에서는 썸네일 아래 출처가 보여야 합니다.",
+    "content_blocks": null,
+    "images": [
+      {
+        "url": "https://example.invalid/review-food-1.jpg",
+        "credit": "Photo by Red Shuheart on Unsplash",
+        "source": "Unsplash",
+        "photographer": "Red Shuheart",
+        "photographer_url": "https://unsplash.com/@mirrors_are_more_fun?utm_source=gateo&utm_medium=referral",
+        "unsplash_url": "https://unsplash.com/photos/xYZ?utm_source=gateo&utm_medium=referral"
+      },
+      {
+        "url": "https://example.invalid/review-food-2.jpg",
+        "credit": "생선구이 · 현지 촬영 (테스트 credit 2)",
+        "source": "GATEO test",
+        "photographer": "현지 촬영"
+      },
+      {
+        "url": "https://example.invalid/review-food-3.jpg",
+        "credit": "무홍 · 현지 촬영 (테스트 credit 3)",
+        "source": "GATEO test",
+        "photographer": "현지 촬영"
+      }
+    ],
+    "created_at": "2026-11-17T08:00:00Z",
+    "rating": 5,
+    "user_id": "e2e-editorial-khao-lak-food",
+    "user": { "id": "e2e-editorial-khao-lak-food", "display_name": "GATEO", "avatar_url": null },
+    "likes": [],
+    "likes_count": 0,
+    "views_count": 0
+  }
+]
