@@ -38,7 +38,7 @@ export default defineConfig({
       name: 'chromium-logbook-default-feed-1280',
       use: {
         ...devices['Desktop Chrome'],
-        viewport: { width: 1280, height: 844 },
+        viewport: { width: 1280, height: 800 },
         deviceScaleFactor: 1,
       },
     },

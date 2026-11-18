@@ -11,6 +11,7 @@ import LogbookOfficialReviewHubCard from './components/LogbookOfficialReviewHubC
 import { useDashboardData } from './hooks/useDashboardData';
 import { reportMatchesLogbookPlace } from '../../utils/logbookReadingMeta';
 import { isLogbookOfficialReviewHubActive } from '../../utils/logbookReviewFilterFlag.js';
+import { trackEvent } from '../../shared/analytics/trackEvent.js';
 
 const Dashboard = () => {
   const { t } = useTranslation();
@@ -49,20 +50,25 @@ const Dashboard = () => {
   const filteredReports = (reports || []).filter((report) => reportMatchesLogbookPlace(report, locationFilter));
 
   const handleWriteClick = () => {
-    // !user 체크 시, Dashboard 마운트 초기에는 user가 null일 수 있으므로 localStorage의 토큰 등으로 교차 검증하거나
-    // 혹은 Dashboard의 user 객체가 완전히 로드될 때까지 대기하지 않는다면 단순히 /blog/write로 보내서 Write.jsx에서 처리하게 하는 것이 안전합니다.
-    // 기존에 user === null 이라서 두번 클릭해야 동작했을 수 있습니다.
+    trackEvent('logbook_write_click', {
+      tab: isPublicMode ? 'public' : 'mine',
+    });
     navigate('/blog/write');
   };
 
   const handleTabChange = (tab) => {
     const newParams = new URLSearchParams(searchParams);
+    const analyticsTab = tab === 'mine' ? 'mine' : 'public';
     if (tab === 'mine') {
       newParams.set('tab', 'mine');
     } else {
       newParams.set('tab', 'public');
     }
     setSearchParams(newParams);
+    trackEvent('logbook_tab_select', {
+      tab: analyticsTab,
+      logged_in: Boolean(user),
+    });
   };
 
   return (
@@ -119,12 +125,13 @@ const Dashboard = () => {
 
           <div className="flex flex-nowrap items-center gap-1.5 sm:gap-3 w-full lg:w-auto min-w-0">
             <button
+              type="button"
+              data-testid="logbook-write-cta"
               onClick={handleWriteClick}
-              className="group relative flex shrink-0 items-center justify-center gap-1.5 sm:gap-3 px-3.5 sm:px-8 py-2.5 sm:py-3 bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-600 text-white font-black rounded-full transition-all hover:scale-105 active:scale-95 overflow-hidden shadow-lg hover:shadow-blue-500/50"
+              className="flex shrink-0 items-center justify-center gap-1.5 sm:gap-2 min-h-11 px-3.5 sm:px-6 py-2.5 rounded-full text-sm font-semibold border border-gray-200 bg-white text-gray-700 hover:bg-gray-50 hover:text-gray-900 hover:border-gray-300 transition-colors active:scale-[0.98]"
             >
-              <div className="absolute top-0 -left-full w-full h-full bg-gradient-to-r from-transparent via-white/30 to-transparent skew-x-12 transition-all duration-700 group-hover:left-full"></div>
-              <PenTool size={16} className="relative z-10 shrink-0 drop-shadow-md sm:w-[18px] sm:h-[18px]" />
-              <span className="relative z-10 tracking-tight text-xs sm:text-sm drop-shadow-md whitespace-nowrap">
+              <PenTool size={16} className="shrink-0 sm:w-[18px] sm:h-[18px]" aria-hidden />
+              <span className="tracking-tight text-xs sm:text-sm whitespace-nowrap">
                 {t('logbook.dashboard.write')}
               </span>
             </button>
