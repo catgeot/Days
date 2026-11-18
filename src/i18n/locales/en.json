@@ -676,6 +676,17 @@
       "scrollTopAria": "Scroll to top",
       "scrollTop": "Top"
     },
+    "serviceRegion": {
+      "placeholder": "Search a region",
+      "recent": "Recent regions",
+      "recommended": "Suggested regions",
+      "tour": {
+        "inputAria": "Search tour region",
+        "noList": "No tour list",
+        "noPartner": "Tour partners do not list this region yet",
+        "backTo": "← Back to {{name}} tours"
+      }
+    },
     "stayDate": {
       "pickDate": "Select dates",
       "monthTitle": "{{month}} {{year}}",

@@ -266,7 +266,7 @@ function OpenTourToolbar({
 
 /**
  * 국내 TNA 투어·티켓 목록 — Edge fetch-mrt-tnas.
- * @param {{ location: object, variant?: 'open'|'planner', itemCount?: number, showMoreLink?: boolean, linkSponsoredLabel?: boolean }} props
+ * @param {{ location: object, variant?: 'open'|'planner', itemCount?: number, showMoreLink?: boolean, linkSponsoredLabel?: boolean, regionSearch?: import('react').ReactNode }} props
  */
 export default function MrtTnaActivitiesWidget({
   location,
@@ -274,6 +274,7 @@ export default function MrtTnaActivitiesWidget({
   itemCount,
   showMoreLink = true,
   linkSponsoredLabel = false,
+  regionSearch = null,
 }) {
   const { t, i18n } = useTranslation();
   const planner = variant === 'planner';
@@ -535,9 +536,13 @@ export default function MrtTnaActivitiesWidget({
     </>
   );
 
+  const searchSlot =
+    regionSearch && !planner ? <div className="mb-3 min-w-0 px-0.5">{regionSearch}</div> : null;
+
   if (status === 'loading' || status === 'idle') {
     return (
       <div>
+        {searchSlot}
         {openToolbar}
         <div
           className={`flex items-center justify-center gap-2 ${
@@ -554,6 +559,7 @@ export default function MrtTnaActivitiesWidget({
   if (status === 'error' || empty) {
     return (
       <div>
+        {searchSlot}
         {openToolbar}
         <div
           className={`flex flex-col items-center justify-center gap-3 text-center ${
@@ -608,6 +614,7 @@ export default function MrtTnaActivitiesWidget({
           : 'space-y-4 max-lg:flex max-lg:min-h-[calc(100dvh-8rem)] max-lg:flex-col max-lg:bg-black'
       }
     >
+      {searchSlot}
       {openToolbar}
       <StayListPartnerNotice theme={planner ? 'light' : 'dark'} />
       <div className="space-y-8">

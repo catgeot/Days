@@ -5,6 +5,15 @@ import { ArrowUp, BedDouble, ChevronRight, ExternalLink, Luggage, MapPin, Ticket
 import GetYourGuideActivitiesWidget from '../../../components/PlaceCard/tabs/planner/components/GetYourGuideActivitiesWidget';
 import MrtTnaActivitiesWidget from '../../../components/PlaceCard/tabs/planner/components/MrtTnaActivitiesWidget';
 import { buildGygActivitiesSearchQuery } from '../../../components/PlaceCard/tabs/planner/locationRules';
+import ServiceRegionSearch from '../../../shared/serviceRegion/ServiceRegionSearch.jsx';
+import {
+  confirmTourRegion,
+  createTourRegionState,
+  isTourRegionChanged,
+  resetTourRegion,
+  resolveTourWidgetTarget,
+  tourRegionLocation,
+} from '../../../shared/serviceRegion/serviceRegionSearchModel.js';
 import {
   buildMrtPkcUrlForLocation,
   formatMrtPackageProductCtaLabel,
@@ -170,6 +179,8 @@ export default function GlobeTourStrip({
   const [listFullscreen, setListFullscreen] = useState(false);
   const [showDesktopScrollTop, setShowDesktopScrollTop] = useState(false);
   const [showMobileScrollTop, setShowMobileScrollTop] = useState(false);
+  const [regionState, setRegionState] = useState(() => createTourRegionState(location));
+  const searchOpenedRef = useRef(false);
   const desktopListScrollRef = useRef(null);
   const mobileListScrollRef = useRef(null);
 
@@ -221,7 +232,15 @@ export default function GlobeTourStrip({
   useEffect(() => {
     setExpanded(false);
     setListFullscreen(false);
+    setRegionState(createTourRegionState(location));
+    searchOpenedRef.current = false;
   }, [placeKey]);
+
+  useEffect(() => {
+    if (expanded) return;
+    setRegionState(createTourRegionState(location));
+    searchOpenedRef.current = false;
+  }, [expanded, placeKey]);
 
   useEffect(() => {
     if (!expanded) setListFullscreen(false);
@@ -310,6 +329,8 @@ export default function GlobeTourStrip({
   };
 
   const close = () => {
+    setRegionState(createTourRegionState(location));
+    searchOpenedRef.current = false;
     setListFullscreen(false);
     setExpanded(false);
   };
@@ -356,23 +377,49 @@ export default function GlobeTourStrip({
     </button>
   );
 
-  const widget = useMrtTna ? (
-    <MrtTnaActivitiesWidget
-      key={placeKey}
-      location={location}
-      variant="open"
-      showMoreLink
-      linkSponsoredLabel
-    />
-  ) : (
-    <GetYourGuideActivitiesWidget
-      location={location}
-      query={gygQuery}
-      variant="open"
-      showMoreLink
-      linkSponsoredLabel
+  const activeLocation = tourRegionLocation(regionState);
+  const activeTarget = resolveTourWidgetTarget(activeLocation);
+  const activeName =
+    getLocalizedPlaceName(activeLocation, i18n.language) || activeLocation?.name || name;
+  const regionSearch = (
+    <ServiceRegionSearch
+      service="tour"
+      tone="dark"
+      layout={isLg ? 'inline' : 'block'}
+      originalLocation={location}
+      activeLocation={activeLocation}
+      changed={isTourRegionChanged(regionState)}
+      notice={regionState.notice}
+      onCommit={(region) => setRegionState((prev) => confirmTourRegion(prev, region))}
+      onReset={() => setRegionState((prev) => resetTourRegion(prev))}
+      onSearchOpen={() => {
+        if (searchOpenedRef.current) return false;
+        searchOpenedRef.current = true;
+        return true;
+      }}
     />
   );
+  const widget =
+    activeTarget.kind === 'mrt' ? (
+      <MrtTnaActivitiesWidget
+        key={placeKey}
+        location={activeLocation}
+        variant="open"
+        showMoreLink
+        linkSponsoredLabel
+        regionSearch={isLg ? regionSearch : null}
+      />
+    ) : (
+      <GetYourGuideActivitiesWidget
+        location={activeLocation}
+        query={activeTarget.query || gygQuery}
+        variant="open"
+        showMoreLink
+        linkSponsoredLabel
+        regionSearch={isLg ? regionSearch : null}
+        omitQueryChip
+      />
+    );
 
   const tourScrollCss = `
       .globe-tour-strip-scroll {
@@ -403,7 +450,7 @@ export default function GlobeTourStrip({
             onMouseDown={(e) => e.stopPropagation()}
             className="fixed z-[61] left-0 top-0 bottom-0 right-[calc(2rem+400px+0.75rem)] xl:right-[calc(2rem+440px+0.75rem)] flex flex-col overflow-hidden border-2 border-orange-200/35 bg-black shadow-[0_0_28px_rgba(249,115,22,0.16)]"
           >
-            <TourPanelHeader placeName={name} onClose={close} density="desktop" />
+            <TourPanelHeader placeName={activeName} onClose={close} density="desktop" />
             <div
               ref={desktopListScrollRef}
               className="globe-tour-strip-scroll min-h-0 flex-1 overflow-y-auto overscroll-contain bg-black px-3 py-3 pb-16"
@@ -452,7 +499,10 @@ export default function GlobeTourStrip({
             onClick={(e) => e.stopPropagation()}
             onMouseDown={(e) => e.stopPropagation()}
           >
-            <TourPanelHeader placeName={name} onClose={close} density="mobile" />
+            <TourPanelHeader placeName={activeName} onClose={close} density="mobile" />
+            <div className="relative z-20 shrink-0 border-b border-white/10 bg-black px-3 py-2">
+              {regionSearch}
+            </div>
             <div
               ref={mobileListScrollRef}
               className="globe-tour-strip-scroll min-h-0 flex-1 overflow-y-auto overscroll-contain bg-black px-3 py-3 pb-[max(5.5rem,calc(env(safe-area-inset-bottom)+3.75rem))]"

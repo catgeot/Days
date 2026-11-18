@@ -446,6 +446,17 @@
       "scrollTopAria": "맨 위로",
       "scrollTop": "맨 위"
     },
+    "serviceRegion": {
+      "placeholder": "지역 검색",
+      "recent": "최근 본 지역",
+      "recommended": "추천 지역",
+      "tour": {
+        "inputAria": "투어 지역 검색",
+        "noList": "투어 목록 없음",
+        "noPartner": "이 지역은 투어 제휴 목록이 아직 없어요",
+        "backTo": "← {{name}} 투어로 돌아가기"
+      }
+    },
     "stayDate": {
       "pickDate": "날짜 선택",
       "monthTitle": "{{year}}년 {{month}}월",

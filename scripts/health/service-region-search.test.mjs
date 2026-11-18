@@ -1,0 +1,416 @@
+import assert from 'node:assert/strict';
+import { afterEach, test } from 'node:test';
+import { readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { JSDOM } from 'jsdom';
+import React, { act, useState } from 'react';
+
+const rootDir = join(dirname(fileURLToPath(import.meta.url)), '../..');
+const dom = new JSDOM('<!doctype html><html><body></body></html>', {
+  url: 'https://www.gateo.kr/',
+});
+const { window } = dom;
+
+function setGlobal(name, value) {
+  Object.defineProperty(globalThis, name, {
+    value,
+    configurable: true,
+    writable: true,
+  });
+}
+
+const {
+  buildServiceModalRegionResetEvent,
+  buildServiceModalSearchEvent,
+  buildServiceModalSearchOpenEvent,
+  collectRecentServiceRegions,
+  confirmTourRegion,
+  createTourRegionState,
+  filterServiceRegions,
+  isTourRegionChanged,
+  isTourRegionSupported,
+  listKnownServiceRegions,
+  listRecommendedServiceRegions,
+  loadRecentServiceRegions,
+  resetTourRegion,
+  resolveTourWidgetTarget,
+  tourRegionLocation,
+} = await import('../../src/shared/serviceRegion/serviceRegionSearchModel.js');
+const { RECENT_SEARCH_KEY, RECENT_VISITED_KEY } = await import(
+  '../../src/pages/Home/lib/exploreRecentHistory.js'
+);
+const { TRAVEL_AGENCY_VISITS_KEY, loadTravelAgencyVisits } = await import(
+  '../../src/utils/travelAgencyVisits.js'
+);
+const { i18n } = await import('../../src/i18n/config.js');
+const { default: ServiceRegionSearch } = await import(
+  '../../src/shared/serviceRegion/ServiceRegionSearch.jsx'
+);
+const { default: GetYourGuideActivitiesWidget } = await import(
+  '../../src/components/PlaceCard/tabs/planner/components/GetYourGuideActivitiesWidget.jsx'
+);
+
+setGlobal('window', window);
+setGlobal('document', window.document);
+setGlobal('navigator', window.navigator);
+setGlobal('localStorage', window.localStorage);
+setGlobal('HTMLElement', window.HTMLElement);
+setGlobal('Element', window.Element);
+setGlobal('Node', window.Node);
+setGlobal('HTMLInputElement', window.HTMLInputElement);
+setGlobal('HTMLIFrameElement', window.HTMLIFrameElement);
+setGlobal('MouseEvent', window.MouseEvent);
+setGlobal('KeyboardEvent', window.KeyboardEvent);
+setGlobal('FocusEvent', window.FocusEvent);
+setGlobal('Event', window.Event);
+setGlobal('CustomEvent', window.CustomEvent);
+setGlobal('MutationObserver', window.MutationObserver);
+setGlobal('getComputedStyle', window.getComputedStyle);
+setGlobal('IS_REACT_ACT_ENVIRONMENT', true);
+const { createRoot } = await import('react-dom/client');
+setGlobal('requestAnimationFrame', (cb) => setTimeout(cb, 0));
+setGlobal('cancelAnimationFrame', (id) => clearTimeout(id));
+window.localStorage.setItem('gateo.locale', 'ko');
+await i18n.changeLanguage('ko');
+
+const events = [];
+window.gtag = (type, name, params) => {
+  if (type === 'event') events.push({ name, params: { ...params } });
+};
+
+function regionBySlug(slug) {
+  const found = listKnownServiceRegions().find((region) => region.slug === slug);
+  assert.ok(found, slug);
+  return found;
+}
+
+const khaoLak = regionBySlug('khao-lak');
+const phuket = regionBySlug('phuket');
+const jeju = regionBySlug('jeju');
+const kyoto = regionBySlug('kyoto');
+const unsupported = {
+  slug: 'atlantis-test',
+  name: '아틀란티스',
+  name_en: '',
+  country: '아틀란티스',
+  country_en: '',
+};
+
+function searchRegions(query) {
+  const text = String(query || '').trim();
+  if (text === '푸켓' || text === 'ㅍㅋ') return [phuket];
+  if (text === '제주') return [jeju];
+  if (text === '없음') return [unsupported];
+  if (text === '태국') return [phuket, kyoto];
+  return [];
+}
+
+function TourHarness() {
+  const [state, setState] = useState(() => createTourRegionState(khaoLak));
+  const active = tourRegionLocation(state);
+  const target = resolveTourWidgetTarget(active);
+  const search = React.createElement(ServiceRegionSearch, {
+    service: 'tour',
+    originalLocation: state.original,
+    activeLocation: active,
+    changed: isTourRegionChanged(state),
+    notice: state.notice,
+    onCommit: (region) => setState((prev) => confirmTourRegion(prev, region)),
+    onReset: () => setState((prev) => resetTourRegion(prev)),
+    loadRecent: () => [phuket],
+    loadRecommended: () => [kyoto],
+    searchRegions,
+    now: () => new Date('2026-11-17T04:00:00Z'),
+  });
+  if (target.kind === 'mrt') {
+    return React.createElement(
+      'div',
+      null,
+      search,
+      React.createElement('div', {
+        'data-tour-widget': 'mrt',
+        'data-mrt-keyword': target.query,
+      }),
+    );
+  }
+  return React.createElement(GetYourGuideActivitiesWidget, {
+    location: active,
+    query: target.query,
+    variant: 'open',
+    linkSponsoredLabel: true,
+    regionSearch: search,
+  });
+}
+
+let root;
+let container;
+
+function widgetQuery() {
+  return container.querySelector('[data-gyg-q]')?.getAttribute('data-gyg-q') || '';
+}
+
+function inputEl() {
+  const input = container.querySelector('[data-service-region-search="tour"]');
+  assert.ok(input);
+  return input;
+}
+
+async function typeQuery(value) {
+  const input = inputEl();
+  await act(async () => {
+    const previous = input.value;
+    const setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
+    setter.call(input, value);
+    const tracker = input._valueTracker;
+    if (tracker) tracker.setValue(previous);
+    input.dispatchEvent(new window.Event('input', { bubbles: true }));
+  });
+}
+
+async function pressEnter() {
+  const input = inputEl();
+  await act(async () => {
+    input.dispatchEvent(new window.KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+  });
+}
+
+afterEach(async () => {
+  if (root) {
+    await act(async () => {
+      root.unmount();
+    });
+    root = null;
+  }
+  container = null;
+  events.length = 0;
+});
+
+test('choseong adapter matches 푸켓 and does not use the retired search engine', () => {
+  const files = [
+    'src/shared/serviceRegion/serviceRegionSearchModel.js',
+    'src/shared/serviceRegion/ServiceRegionSearch.jsx',
+    'src/pages/Home/components/GlobeTourStrip.jsx',
+  ];
+  for (const file of files) {
+    const source = readFileSync(join(rootDir, file), 'utf8');
+    assert.doesNotMatch(source, /useSearchEngine\.js/);
+    assert.doesNotMatch(source, /from\s+['"][^'"]*useSearchEngine['"]/);
+  }
+  const model = readFileSync(join(rootDir, files[0]), 'utf8');
+  assert.match(model, /hangulSearch/);
+  assert.match(model, /exploreChoseongMatch/);
+  assert.match(model, /normalizeSearchSuggestions/);
+  const stay = readFileSync(join(rootDir, 'src/pages/Home/components/GlobeStayStrip.jsx'), 'utf8');
+  assert.doesNotMatch(stay, /ServiceRegionSearch/);
+
+  const hits = filterServiceRegions('ㅍㅋ');
+  assert.ok(hits.some((region) => region.slug === 'phuket'));
+  assert.equal(filterServiceRegions('').length, 0);
+  assert.equal(isTourRegionSupported(unsupported), false);
+  assert.equal(isTourRegionSupported(phuket), true);
+  assert.equal(resolveTourWidgetTarget(jeju).kind, 'mrt');
+});
+
+test('recent regions stay read-only and this month recommends two or three', () => {
+  const november = new Date('2026-11-17T04:00:00Z');
+  const recommended = listRecommendedServiceRegions({ now: november, limit: 3 });
+  assert.ok(recommended.length >= 2 && recommended.length <= 3);
+  assert.deepEqual(
+    recommended.map((region) => region.slug),
+    ['kyoto', 'chiang-mai', 'phu-quoc'],
+  );
+
+  window.localStorage.setItem(
+    RECENT_VISITED_KEY,
+    JSON.stringify([{ name: '교토', slug: 'kyoto', name_en: 'Kyoto' }]),
+  );
+  window.localStorage.setItem(RECENT_SEARCH_KEY, JSON.stringify(['푸켓', '카오락']));
+  window.localStorage.setItem(TRAVEL_AGENCY_VISITS_KEY, JSON.stringify([]));
+  const before = {
+    visited: window.localStorage.getItem(RECENT_VISITED_KEY),
+    searches: window.localStorage.getItem(RECENT_SEARCH_KEY),
+    visits: window.localStorage.getItem(TRAVEL_AGENCY_VISITS_KEY),
+  };
+  const loaded = loadRecentServiceRegions(3);
+  assert.deepEqual(
+    loaded.map((region) => region.slug),
+    ['kyoto', 'phuket', 'khao-lak'],
+  );
+  assert.deepEqual(
+    {
+      visited: window.localStorage.getItem(RECENT_VISITED_KEY),
+      searches: window.localStorage.getItem(RECENT_SEARCH_KEY),
+      visits: window.localStorage.getItem(TRAVEL_AGENCY_VISITS_KEY),
+    },
+    before,
+  );
+
+  const merged = collectRecentServiceRegions({
+    visited: [{ slug: 'kyoto', name: '교토' }],
+    agencyVisits: [{ placeLabel: 'Phuket' }],
+    searches: ['카오락', '교토'],
+  });
+  assert.deepEqual(
+    merged.map((region) => region.slug),
+    ['kyoto', 'phuket', 'khao-lak'],
+  );
+});
+
+test('widget query waits for confirm, reset restores, and affiliate fields follow the new region', async () => {
+  container = document.createElement('div');
+  document.body.appendChild(container);
+  root = createRoot(container);
+  await act(async () => {
+    root.render(React.createElement(TourHarness));
+  });
+
+  assert.equal(widgetQuery(), 'Khao Lak');
+  assert.equal(container.querySelector('[data-gyg-partner-id]')?.getAttribute('data-gyg-partner-id'), 'LRKVVU4');
+  assert.equal(container.querySelector('[data-gyg-cmp]')?.getAttribute('data-gyg-cmp'), 'gateo_planer_khao-lak');
+  assert.equal(container.querySelector('[data-service-region-reset]'), null);
+  assert.equal(container.textContent.includes('검색어 ·'), false);
+
+  const input = inputEl();
+  await act(async () => {
+    input.focus();
+    input.dispatchEvent(new window.FocusEvent('focus', { bubbles: false }));
+    input.dispatchEvent(new window.FocusEvent('focusin', { bubbles: true }));
+  });
+  assert.equal(events.filter((event) => event.name === 'service_modal_search_open').length, 1);
+  assert.deepEqual(events[0], {
+    name: 'service_modal_search_open',
+    params: { service: 'tour', has_recent: 1 },
+  });
+
+  await typeQuery('푸');
+  assert.equal(widgetQuery(), 'Khao Lak');
+  await pressEnter();
+  assert.equal(widgetQuery(), 'Khao Lak');
+  assert.equal(events.some((event) => event.name === 'service_modal_search'), false);
+
+  await typeQuery('태국');
+  await pressEnter();
+  assert.equal(widgetQuery(), 'Khao Lak');
+
+  await typeQuery('푸켓');
+  assert.equal(widgetQuery(), 'Khao Lak');
+  await pressEnter();
+  assert.equal(widgetQuery(), 'Phuket');
+  assert.equal(container.querySelector('[data-gyg-cmp]')?.getAttribute('data-gyg-cmp'), 'gateo_planer_phuket');
+  assert.equal(container.querySelector('[data-gyg-partner-id]')?.getAttribute('data-gyg-partner-id'), 'LRKVVU4');
+  const sponsored = container.querySelector('a[rel]');
+  assert.ok(sponsored);
+  assert.match(sponsored.getAttribute('rel'), /noopener/);
+  assert.match(sponsored.getAttribute('rel'), /noreferrer/);
+  assert.match(sponsored.getAttribute('rel'), /sponsored/);
+  assert.equal(sponsored.getAttribute('data-gateo-place'), 'Phuket');
+
+  await act(async () => {
+    sponsored.dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
+  });
+  const visits = loadTravelAgencyVisits();
+  assert.equal(visits[0]?.placeLabel, 'Phuket');
+  assert.equal(visits[0]?.kind, 'tour');
+
+  const searchEvent = events.find((event) => event.name === 'service_modal_search');
+  assert.deepEqual(searchEvent, {
+    name: 'service_modal_search',
+    params: {
+      service: 'tour',
+      from: 'khao-lak',
+      to: 'phuket',
+      method: 'typed',
+      result: 'ok',
+      chars: 2,
+    },
+  });
+  assert.equal(JSON.stringify(searchEvent).includes('푸켓'), false);
+
+  const reset = container.querySelector('[data-service-region-reset]');
+  assert.ok(reset);
+  assert.match(reset.textContent, /카오락 투어로 돌아가기/);
+  await act(async () => {
+    reset.dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
+  });
+  assert.equal(widgetQuery(), 'Khao Lak');
+  assert.equal(container.querySelector('[data-gyg-cmp]')?.getAttribute('data-gyg-cmp'), 'gateo_planer_khao-lak');
+  const resetEvent = events.find((event) => event.name === 'service_modal_region_reset');
+  assert.deepEqual(resetEvent, {
+    name: 'service_modal_region_reset',
+    params: { service: 'tour', to: 'khao-lak' },
+  });
+
+  await typeQuery('없음');
+  await pressEnter();
+  assert.equal(widgetQuery(), 'Khao Lak');
+  assert.match(container.querySelector('[data-service-region-notice]')?.textContent || '', /투어 제휴 목록이 아직 없어요/);
+  const rejected = events.filter((event) => event.name === 'service_modal_search').at(-1);
+  assert.equal(rejected.params.result, 'no_partner');
+  assert.equal(rejected.params.to, 'atlantis-test');
+  assert.equal(rejected.params.chars, 2);
+
+  await act(async () => {
+    inputEl().blur();
+  });
+  await act(async () => {
+    inputEl().focus();
+    inputEl().dispatchEvent(new window.FocusEvent('focusin', { bubbles: true }));
+  });
+  assert.equal(events.filter((event) => event.name === 'service_modal_search_open').length, 1);
+
+  const option = container.querySelector('[data-region-slug="kyoto"]');
+  assert.ok(option);
+  await act(async () => {
+    option.dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
+  });
+  assert.equal(widgetQuery(), 'Kyoto');
+  const recommendedEvent = events.filter((event) => event.name === 'service_modal_search').at(-1);
+  assert.equal(recommendedEvent.params.method, 'recommended');
+  assert.equal(recommendedEvent.params.chars, 0);
+
+  await typeQuery('제주');
+  await pressEnter();
+  assert.equal(container.querySelector('[data-tour-widget="mrt"]')?.getAttribute('data-mrt-keyword'), '제주');
+  assert.equal(container.querySelector('[data-gyg-q]'), null);
+
+  let restored = confirmTourRegion(createTourRegionState(khaoLak), phuket);
+  assert.equal(isTourRegionChanged(restored), true);
+  restored = resetTourRegion(restored);
+  assert.equal(tourRegionLocation(restored).slug, 'khao-lak');
+  restored = createTourRegionState(jeju);
+  assert.equal(tourRegionLocation(restored).slug, 'jeju');
+  assert.equal(isTourRegionChanged(restored), false);
+});
+
+test('event payloads carry length and slugs only', () => {
+  assert.deepEqual(
+    buildServiceModalSearchEvent({
+      service: 'tour',
+      from: 'khao-lak',
+      to: 'phuket',
+      method: 'recent',
+      result: 'ok',
+      chars: 4,
+    }),
+    {
+      name: 'service_modal_search',
+      params: {
+        service: 'tour',
+        from: 'khao-lak',
+        to: 'phuket',
+        method: 'recent',
+        result: 'ok',
+        chars: 4,
+      },
+    },
+  );
+  assert.deepEqual(buildServiceModalSearchOpenEvent({ service: 'tour', hasRecent: false }), {
+    name: 'service_modal_search_open',
+    params: { service: 'tour', has_recent: 0 },
+  });
+  assert.deepEqual(buildServiceModalRegionResetEvent({ service: 'tour', to: 'khao-lak' }), {
+    name: 'service_modal_region_reset',
+    params: { service: 'tour', to: 'khao-lak' },
+  });
+});
