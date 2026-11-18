@@ -45,16 +45,20 @@ export function getGalleryImageAttribution(image) {
   }
 
   if (source === 'wikimedia') {
-    const href = image?.links?.html || 'https://commons.wikimedia.org/';
-    const license = String(image?.license || '').trim();
-    const licenseSuffix = license ? ` (${license})` : '';
+    const href = image?.sourceUrl || image?.links?.html || 'https://commons.wikimedia.org/';
+    const licenseName = String(image?.license || '').trim();
+    const licenseHref = String(image?.licenseUrl || '').trim();
+    const licenseSuffix = licenseName ? ` (${licenseName})` : '';
     return {
       source,
       authorName,
       providerName: 'Wikimedia Commons',
       href,
       photographerHref: href,
-      providerHref: image?.providerHome || 'https://commons.wikimedia.org/',
+      providerHref: href,
+      licenseName,
+      licenseHref,
+      filePageHref: href,
       title: `Photo by ${authorName} on Wikimedia Commons${licenseSuffix}`,
       providerLabel: 'on Wikimedia Commons',
     };

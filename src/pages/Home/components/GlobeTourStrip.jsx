@@ -14,16 +14,8 @@ import {
   resolveTourWidgetTarget,
   tourRegionLocation,
 } from '../../../shared/serviceRegion/serviceRegionSearchModel.js';
-import {
-  buildMrtPkcUrlForLocation,
-  formatMrtPackageProductCtaLabel,
-} from '../../../utils/mrtPackageLinks';
+import { resolveVisibleTourPackageMoreLink } from '../../../utils/mrtPackageLinks';
 import { canShowMrtStayStrip } from '../../../utils/mrtStayQuery';
-import {
-  canShowMrtPackageStrip,
-  resolveMrtPackageDisplayKeyword,
-  resolveMrtPackageSearchKeyword,
-} from '../../../utils/mrtPackageQuery';
 import { canShowMrtTnaStrip } from '../../../utils/mrtTnaQuery';
 import { getLocalizedPlaceName } from '../../../components/PlaceCard/common/locationDisplay';
 import Logo from './Logo';
@@ -133,27 +125,19 @@ function TourSwitchToStayFooter({ onSwitch }) {
 }
 
 /** 투어 모달 하단 — 패키지 /pkc 검색 (목록 API 없음 · 새 탭) */
-function TourPackageMoreFooter({ location }) {
-  const { i18n } = useTranslation();
-  if (!canShowMrtPackageStrip(location)) return null;
-  const keyword = resolveMrtPackageSearchKeyword(location);
-  const displayKeyword = resolveMrtPackageDisplayKeyword(location, i18n.language);
-  const href = buildMrtPkcUrlForLocation(location, {
-    utmContent: 'tour-package-more',
-  });
-  if (!href) return null;
+function TourPackageMoreFooter({ href, label }) {
+  if (!href || !label) return null;
   return (
     <a
       href={href}
       target="_blank"
       rel="noopener noreferrer sponsored"
+      data-tour-package-more=""
       onClick={(e) => e.stopPropagation()}
       className="inline-flex max-w-full items-center justify-center gap-2 rounded-xl border border-teal-300/40 bg-teal-500/15 px-4 py-3 text-[13px] font-semibold text-teal-50 shadow-[0_2px_12px_rgba(20,184,166,0.12)] backdrop-blur-sm transition-colors hover:border-teal-200/55 hover:bg-teal-500/25 active:scale-[0.98]"
     >
       <Luggage size={16} className="shrink-0 text-teal-200/90" strokeWidth={2.25} aria-hidden />
-      <span className="break-keep">
-        {formatMrtPackageProductCtaLabel(keyword, { displayKeyword })}
-      </span>
+      <span className="break-keep">{label}</span>
       <ExternalLink size={14} className="shrink-0 opacity-80" aria-hidden />
     </a>
   );
@@ -222,8 +206,6 @@ export default function GlobeTourStrip({
     ]
   );
   const showPeerStayCta = Boolean(onSwitchToStay) && peerStayEligible;
-  const showPackageMore = canShowMrtPackageStrip(location);
-  const showTourFooter = showPackageMore || showPeerStayCta;
   const name = getLocalizedPlaceName(location, i18n.language) || location?.name || '';
   const placeKey = `${location?.slug || ''}|${name}|${location?.lat}|${location?.lng}|${useMrtTna ? 'mrt' : 'gyg'}`;
   const mobileOpen = !isLg && listFullscreen;
@@ -379,6 +361,14 @@ export default function GlobeTourStrip({
 
   const activeLocation = tourRegionLocation(regionState);
   const activeTarget = resolveTourWidgetTarget(activeLocation);
+  const packageLink = resolveVisibleTourPackageMoreLink({
+    original: location,
+    active: activeLocation,
+    changed: isTourRegionChanged(regionState),
+    locale: i18n.language,
+  });
+  const showPackageMore = Boolean(packageLink);
+  const showTourFooter = showPackageMore || showPeerStayCta;
   const activeName =
     getLocalizedPlaceName(activeLocation, i18n.language) || activeLocation?.name || name;
   const regionSearch = (
@@ -460,7 +450,9 @@ export default function GlobeTourStrip({
               {widget}
               {showTourFooter ? (
                 <div className="mt-6 flex w-full flex-col items-center gap-3 border-t border-white/10 pt-5">
-                  {showPackageMore ? <TourPackageMoreFooter location={location} /> : null}
+                  {showPackageMore ? (
+                    <TourPackageMoreFooter href={packageLink.href} label={packageLink.label} />
+                  ) : null}
                   {showPeerStayCta ? (
                     <TourSwitchToStayFooter onSwitch={onSwitchToStay} />
                   ) : null}
@@ -512,7 +504,9 @@ export default function GlobeTourStrip({
               {widget}
               {showTourFooter ? (
                 <div className="mt-6 flex w-full flex-col items-center gap-3 border-t border-white/10 pt-5">
-                  {showPackageMore ? <TourPackageMoreFooter location={location} /> : null}
+                  {showPackageMore ? (
+                    <TourPackageMoreFooter href={packageLink.href} label={packageLink.label} />
+                  ) : null}
                   {showPeerStayCta ? (
                     <TourSwitchToStayFooter onSwitch={onSwitchToStay} />
                   ) : null}

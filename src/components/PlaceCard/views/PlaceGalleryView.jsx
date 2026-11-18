@@ -30,6 +30,7 @@ import {
   getGalleryImageAttribution,
 } from '../common/galleryImageAttribution';
 import GalleryGridPhotoCredit from '../common/GalleryGridPhotoCredit';
+import { buildGalleryPhotoCredit } from '../common/buildGalleryPhotoCredit';
 import GalleryAttributionLink from '../common/GalleryAttributionLink';
 import { isPlaceGalleryPhotoCreditEnabled } from '../../../utils/placeGalleryPhotoCreditFlag';
 import { usePlaceGalleryOverviewHydration } from '../hooks/usePlaceGalleryOverviewHydration';
@@ -220,7 +221,7 @@ const GalleryGridTile = React.memo(function GalleryGridTile({
         size={20}
         aria-hidden
       />
-      {showPhotoCredit ? (
+      {showPhotoCredit || img?.source === 'wikimedia' || String(img?.id || '').startsWith('commons-') ? (
         <GalleryGridPhotoCredit
           image={img}
           location={photoCreditLocation}
@@ -1049,9 +1050,48 @@ const PlaceGalleryView = React.memo(({
     () => (selectedImg ? getGalleryImageAttribution(selectedImg) : null),
     [selectedImg],
   );
+  const selectedPhotoCredit = useMemo(
+    () => (selectedImg ? buildGalleryPhotoCredit(selectedImg, locale) : null),
+    [selectedImg, locale],
+  );
 
   const renderAttributionLinks = (wrapperClassName, linkClassName = '') => {
-    if (!photoAttribution || !selectedImg) return null;
+    if (!selectedImg) return null;
+    if (selectedPhotoCredit?.kind === 'wikimedia') {
+      return (
+        <span
+          className={`${wrapperClassName} flex-wrap`}
+          data-gallery-wikimedia-credit=""
+        >
+          <span className="shrink-0">{t('place.gallery.photoCreditBy')}</span>
+          <span className={`min-w-0 truncate font-semibold text-white ${linkClassName}`}>
+            {selectedPhotoCredit.authorName}
+          </span>
+          <span className="shrink-0" aria-hidden="true">·</span>
+          <GalleryAttributionLink
+            href={selectedPhotoCredit.licenseHref}
+            location={location}
+            image={selectedImg}
+            context="gallery"
+            className={`shrink-0 font-semibold text-white underline decoration-white/50 underline-offset-2 hover:text-white ${linkClassName}`}
+          >
+            {selectedPhotoCredit.licenseName}
+          </GalleryAttributionLink>
+          <span className="shrink-0" aria-hidden="true">·</span>
+          <GalleryAttributionLink
+            href={selectedPhotoCredit.filePageHref}
+            location={location}
+            image={selectedImg}
+            context="gallery"
+            title={t('place.gallery.photoCreditFilePageTitle')}
+            className={`shrink-0 font-semibold text-white underline decoration-white/50 underline-offset-2 hover:text-white ${linkClassName}`}
+          >
+            {t('place.gallery.photoCreditFilePage')}
+          </GalleryAttributionLink>
+        </span>
+      );
+    }
+    if (!photoAttribution) return null;
     return (
       <span className={wrapperClassName} title={photoAttribution.title}>
         <span>Photo by</span>
@@ -1351,7 +1391,7 @@ const PlaceGalleryView = React.memo(({
         </div>
       )}
 
-      {isFullScreen && photoAttribution && (
+      {(isFullScreen || selectedPhotoCredit?.kind === 'wikimedia') && photoAttribution && (
         <div
           className={`absolute z-[220] max-w-[min(calc(100%-7.5rem),38rem)] transition-opacity duration-300 top-4 left-4 md:top-[max(0.5rem,env(safe-area-inset-top,0px))] md:left-[max(0.75rem,5%)] ${isUIHidden ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
           onClick={(e) => e.stopPropagation()}

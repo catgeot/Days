@@ -1366,6 +1366,8 @@
       "photoCreditKtoPrefix": "Photos:",
       "photoCreditBy": "Photo by",
       "photoCreditOn": "on",
+      "photoCreditFilePage": "File",
+      "photoCreditFilePageTitle": "Wikimedia Commons file page",
       "photoCreditUnsplash": "Photo by <photographer>{{name}}</photographer> on <provider>Unsplash</provider>",
       "photoCreditPexels": "Photo by <photographer>{{name}}</photographer> on <provider>Pexels</provider>",
       "enlargeImage": "Enlarge {{alt}}",

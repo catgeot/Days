@@ -608,6 +608,41 @@ const PlaceWikiDetailsView = ({
 
   const renderLightboxAttribution = (wrapperClassName, linkClassName = '') => {
     if (!lightboxAttribution || !lightboxImg) return null;
+    if (lightboxAttribution.source === 'wikimedia' && lightboxAttribution.licenseName && lightboxAttribution.licenseHref) {
+      return (
+        <span className={`${wrapperClassName} flex-wrap`} data-gallery-wikimedia-credit="">
+          <span className="shrink-0">{t('place.gallery.photoCreditBy')}</span>
+          <span className={`min-w-0 truncate font-semibold text-white ${linkClassName}`}>
+            {lightboxAttribution.authorName}
+          </span>
+          <span className="shrink-0" aria-hidden="true">·</span>
+          <GalleryAttributionLink
+            href={lightboxAttribution.licenseHref}
+            location={location}
+            image={lightboxImg}
+            context="wiki"
+            lightboxIndex={lightboxIndex}
+            className={`shrink-0 font-semibold text-white underline decoration-white/50 underline-offset-2 hover:text-white ${linkClassName}`}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {lightboxAttribution.licenseName}
+          </GalleryAttributionLink>
+          <span className="shrink-0" aria-hidden="true">·</span>
+          <GalleryAttributionLink
+            href={lightboxAttribution.filePageHref || lightboxAttribution.href}
+            location={location}
+            image={lightboxImg}
+            context="wiki"
+            lightboxIndex={lightboxIndex}
+            title={t('place.gallery.photoCreditFilePageTitle')}
+            className={`shrink-0 font-semibold text-white underline decoration-white/50 underline-offset-2 hover:text-white ${linkClassName}`}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {t('place.gallery.photoCreditFilePage')}
+          </GalleryAttributionLink>
+        </span>
+      );
+    }
     return (
       <span className={wrapperClassName} title={lightboxAttribution.title}>
         <span>Photo by</span>

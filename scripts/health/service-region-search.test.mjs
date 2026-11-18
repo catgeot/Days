@@ -37,6 +37,7 @@ const {
   resolveTourWidgetTarget,
   tourRegionLocation,
 } = await import('../../src/shared/serviceRegion/serviceRegionSearchModel.js');
+const { resolveVisibleTourPackageMoreLink } = await import('../../src/utils/mrtPackageLinks.js');
 const { RECENT_SEARCH_KEY, RECENT_VISITED_KEY } = await import(
   '../../src/pages/Home/lib/exploreRecentHistory.js'
 );
@@ -413,4 +414,134 @@ test('event payloads carry length and slugs only', () => {
     name: 'service_modal_region_reset',
     params: { service: 'tour', to: 'khao-lak' },
   });
+});
+
+test('package link follows the confirmed region and hides when that region cannot build one', () => {
+  const khao = resolveVisibleTourPackageMoreLink({
+    original: khaoLak,
+    active: khaoLak,
+    changed: false,
+    locale: 'ko',
+  });
+  const switched = resolveVisibleTourPackageMoreLink({
+    original: khaoLak,
+    active: phuket,
+    changed: true,
+    locale: 'ko',
+  });
+  assert.ok(khao?.href);
+  assert.match(khao.label, /카오락 패키지 상품보기/);
+  assert.match(decodeURIComponent(khao.href), /카오락/);
+  assert.ok(switched?.href);
+  assert.match(switched.label, /푸켓 패키지 상품보기/);
+  assert.match(decodeURIComponent(switched.href), /푸켓/);
+  assert.equal(decodeURIComponent(switched.href).includes('카오락'), false);
+  assert.notEqual(switched.href, khao.href);
+
+  const unbuildable = {
+    slug: 'sokcho-test',
+    name: '속초',
+    name_ko: '속초',
+    country: '한국',
+    country_en: 'South Korea',
+  };
+  assert.equal(
+    resolveVisibleTourPackageMoreLink({
+      original: khaoLak,
+      active: unbuildable,
+      changed: true,
+      locale: 'ko',
+    }),
+    null,
+  );
+  const restored = resolveVisibleTourPackageMoreLink({
+    original: khaoLak,
+    active: null,
+    changed: false,
+    locale: 'ko',
+  });
+  assert.match(restored.label, /카오락 패키지 상품보기/);
+  assert.equal(restored.href, khao.href);
+});
+
+test('confirmed region is recorded on confirm and the next open reports has_recent', async () => {
+  window.localStorage.removeItem(RECENT_VISITED_KEY);
+  window.localStorage.removeItem(RECENT_SEARCH_KEY);
+  window.localStorage.removeItem(TRAVEL_AGENCY_VISITS_KEY);
+  const keysBefore = new Set(Object.keys(window.localStorage));
+  events.length = 0;
+
+  function Harness() {
+    const [state, setState] = useState(() => createTourRegionState(khaoLak));
+    const active = tourRegionLocation(state);
+    return React.createElement(ServiceRegionSearch, {
+      service: 'tour',
+      originalLocation: state.original,
+      activeLocation: active,
+      changed: isTourRegionChanged(state),
+      notice: state.notice,
+      onCommit: (region) => setState((prev) => confirmTourRegion(prev, region)),
+      onReset: () => setState((prev) => resetTourRegion(prev)),
+    });
+  }
+
+  container = document.createElement('div');
+  document.body.appendChild(container);
+  root = createRoot(container);
+  await act(async () => {
+    root.render(React.createElement(Harness));
+  });
+
+  await act(async () => {
+    inputEl().focus();
+    inputEl().dispatchEvent(new window.FocusEvent('focusin', { bubbles: true }));
+  });
+  assert.equal(
+    events.find((event) => event.name === 'service_modal_search_open')?.params.has_recent,
+    0,
+  );
+  assert.equal(container.querySelector('[data-region-slug="phuket"]'), null);
+
+  await typeQuery('푸켓');
+  const option = container.querySelector('[data-region-method="typed"][data-region-slug="phuket"]');
+  assert.ok(option);
+  await act(async () => {
+    option.dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
+  });
+
+  const visits = loadTravelAgencyVisits();
+  assert.equal(visits[0]?.placeLabel, 'Phuket');
+  assert.equal(visits[0]?.kind, 'tour');
+  assert.match(visits[0]?.href || '', /getyourguide\.com/);
+  assert.ok(loadRecentServiceRegions(3).some((region) => region.slug === 'phuket'));
+  const added = Object.keys(window.localStorage).filter((key) => !keysBefore.has(key));
+  assert.deepEqual(added, [TRAVEL_AGENCY_VISITS_KEY]);
+  assert.equal(window.localStorage.getItem(RECENT_VISITED_KEY), null);
+  assert.equal(window.localStorage.getItem(RECENT_SEARCH_KEY), null);
+
+  await act(async () => {
+    inputEl().dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
+  });
+  assert.ok(container.querySelector('[data-region-method="recent"][data-region-slug="phuket"]'));
+
+  await act(async () => {
+    root.unmount();
+  });
+  root = null;
+  events.length = 0;
+  container = document.createElement('div');
+  document.body.appendChild(container);
+  root = createRoot(container);
+  await act(async () => {
+    root.render(React.createElement(Harness));
+  });
+  await act(async () => {
+    inputEl().focus();
+    inputEl().dispatchEvent(new window.FocusEvent('focusin', { bubbles: true }));
+  });
+  assert.equal(
+    events.find((event) => event.name === 'service_modal_search_open')?.params.has_recent,
+    1,
+  );
+  assert.ok(container.querySelector('[data-region-method="recent"][data-region-slug="phuket"]'));
 });

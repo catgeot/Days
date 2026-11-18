@@ -17,6 +17,7 @@ import {
   listRecommendedServiceRegions,
   loadRecentServiceRegions,
   pickTypedServiceRegion,
+  recordConfirmedTourRegionVisit,
 } from './serviceRegionSearchModel.js';
 
 /**
@@ -110,6 +111,9 @@ export default function ServiceRegionSearch({
       chars,
     });
     trackEvent(event.name, event.params);
+    if (supported && service === 'tour') {
+      recordConfirmedTourRegionVisit(region, i18n.language);
+    }
     onCommit?.(region);
     setDirty(false);
     setDraft('');
@@ -202,6 +206,9 @@ export default function ServiceRegionSearch({
         placeholder={t('home.serviceRegion.placeholder')}
         value={inputValue}
         onFocus={handleFocus}
+        onClick={() => {
+          if (!open) handleFocus();
+        }}
         onCompositionStart={() => setComposing(true)}
         onCompositionEnd={() => setComposing(false)}
         onChange={(event) => {

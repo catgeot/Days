@@ -8,6 +8,8 @@ import {
   MRT_PKC_HOME_URL,
 } from '../pages/Home/data/mrtPackageThemeLinks.js';
 import {
+  canShowMrtPackageStrip,
+  resolveMrtPackageDisplayKeyword,
   resolveMrtPackageSearchKeyword,
   resolveMrtPackageThemeKey,
 } from './mrtPackageQuery.js';
@@ -114,6 +116,53 @@ export function resolveMrtPackageThemeForLocation(location, options = {}) {
   const key = resolveMrtPackageThemeKey(location);
   if (!key) return null;
   return resolveMrtPackageThemeHref(key, options);
+}
+
+/**
+ * 투어 모달 «패키지 상품보기». 검색 q가 있는 제휴 URL만 반환해요.
+ * 키워드·노출 조건이 없으면 null (확정 지역을 원래 장소 URL로 되돌리지 않아요).
+ * @param {object|null|undefined} location
+ * @param {{ locale?: string, utmContent?: string }} [options]
+ * @returns {{ href: string, keyword: string, label: string } | null}
+ */
+export function resolveTourPackageMoreLink(location, options = {}) {
+  if (!canShowMrtPackageStrip(location)) return null;
+  const keyword = resolveMrtPackageSearchKeyword(location);
+  if (!keyword) return null;
+  const href = buildMrtPkcUrlForLocation(location, {
+    utmContent: options.utmContent || 'tour-package-more',
+  });
+  if (!href) return null;
+  let query = '';
+  try {
+    query = new URL(href).searchParams.get('q') || '';
+  } catch {
+    query = '';
+  }
+  if (query !== keyword) return null;
+  const displayKeyword = resolveMrtPackageDisplayKeyword(
+    location,
+    options.locale || i18n.language,
+  );
+  return {
+    href,
+    keyword,
+    label: formatMrtPackageProductCtaLabel(keyword, { displayKeyword }),
+  };
+}
+
+/**
+ * 지역을 바꾼 동안에는 확정 지역 링크만 보여요. 만들 수 없으면 null.
+ * 되돌리면 원래 장소 링크로 돌아와요.
+ */
+export function resolveVisibleTourPackageMoreLink({
+  original = null,
+  active = null,
+  changed = false,
+  locale,
+  utmContent,
+} = {}) {
+  return resolveTourPackageMoreLink(changed ? active : original, { locale, utmContent });
 }
 
 /** 숙소·투어 모달 CTA 문구 — 예: `View Timbuktu package deals` */
