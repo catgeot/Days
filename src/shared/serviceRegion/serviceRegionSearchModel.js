@@ -24,6 +24,11 @@ import { buildGygPlannerCmp, getGygHomeUrl, getMrtSearchUrl } from '../../utils/
 import { GYG_PARTNER_ID } from '../../utils/gygAffiliateLinks.js';
 import { loadTravelAgencyVisits, recordTravelAgencyVisit } from '../../utils/travelAgencyVisits.js';
 import { isChoseongQuery } from '../../utils/hangulSearch.js';
+import {
+  filterTourServiceRegions,
+  listTourServiceRegionSuggestionHits,
+  tourActivityKeywordLikelyMatches,
+} from './tourActivityListing.js';
 
 export const RECENT_REGION_LIMIT = 3;
 export const RECOMMENDED_REGION_LIMIT = 3;
@@ -153,6 +158,8 @@ export function createTourRegionState(originalLocation) {
     active: null,
     notice: null,
     activityKeyword: '',
+    committedSearchText: '',
+    keywordSearchFallback: false,
   };
 }
 
@@ -199,9 +206,22 @@ export function recordConfirmedTourRegionVisit(region, locale = 'ko') {
 export function confirmTourRegion(state, region) {
   if (!state || !region) return state;
   if (!isTourRegionSupported(region)) {
-    return { ...state, notice: region, activityKeyword: '' };
+    return {
+      ...state,
+      notice: region,
+      activityKeyword: '',
+      committedSearchText: '',
+      keywordSearchFallback: false,
+    };
   }
-  return { ...state, active: region, notice: null, activityKeyword: '' };
+  return {
+    ...state,
+    active: region,
+    notice: null,
+    activityKeyword: '',
+    committedSearchText: '',
+    keywordSearchFallback: false,
+  };
 }
 
 /**
@@ -212,23 +232,57 @@ export function confirmTourSearch(state, payload = {}) {
   if (!state) return state;
   const region = payload?.region || null;
   const keyword = String(payload?.activityKeyword || '').trim();
+  const searchText = String(payload?.searchText || '').trim();
+  const keywordSearchFallback = Boolean(payload?.keywordSearchFallback);
   if (region) {
     if (!isTourRegionSupported(region)) {
-      return { ...state, notice: region, activityKeyword: '' };
+      return {
+        ...state,
+        notice: region,
+        activityKeyword: '',
+        committedSearchText: '',
+        keywordSearchFallback: false,
+      };
     }
-    return { ...state, active: region, notice: null, activityKeyword: keyword };
+    const keepText = keyword ? searchText || keyword : '';
+    return {
+      ...state,
+      active: region,
+      notice: null,
+      activityKeyword: keyword,
+      committedSearchText: keepText,
+      keywordSearchFallback: keyword ? keywordSearchFallback : false,
+    };
   }
   if (!keyword) {
-    return { ...state, activityKeyword: '' };
+    return {
+      ...state,
+      activityKeyword: '',
+      committedSearchText: '',
+      keywordSearchFallback: false,
+    };
   }
   const base = tourRegionLocation(state);
   if (!base || !isTourRegionSupported(base)) return state;
-  return { ...state, notice: null, activityKeyword: keyword };
+  return {
+    ...state,
+    notice: null,
+    activityKeyword: keyword,
+    committedSearchText: searchText || keyword,
+    keywordSearchFallback,
+  };
 }
 
 export function resetTourRegion(state) {
   if (!state) return state;
-  return { ...state, active: null, notice: null, activityKeyword: '' };
+  return {
+    ...state,
+    active: null,
+    notice: null,
+    activityKeyword: '',
+    committedSearchText: '',
+    keywordSearchFallback: false,
+  };
 }
 
 /**
@@ -434,24 +488,42 @@ export function parseTourServiceSearchInput(raw, activeLocation = null) {
 export function listTourSearchRegionHits(draft, regions = listKnownServiceRegions()) {
   const raw = String(draft || '').trim();
   if (!raw) return [];
-  const direct = filterServiceRegions(raw, regions);
-  if (direct.length) return direct;
-  const parsed = parseTourServiceSearchInput(raw);
-  const out = [];
-  const seen = new Set();
-  const push = (region) => {
-    if (!region) return;
-    const key = regionIdentity(region);
-    if (!key || seen.has(key)) return;
-    seen.add(key);
-    out.push(region);
-  };
-  if (parsed.region) push(parsed.region);
-  const head = tokensFirst(raw);
-  if (head) {
-    for (const row of filterServiceRegions(head, regions)) push(row);
+  if (isChoseongQuery(raw)) {
+    return filterServiceRegions(raw, regions);
   }
-  return out.slice(0, SERVICE_REGION_RESULT_LIMIT);
+  const parsed = parseTourServiceSearchInput(raw);
+  if (parsed.region) {
+    const merged = [];
+    const seen = new Set();
+    const push = (region) => {
+      if (!region) return;
+      const id = regionIdentity(region);
+      if (!id || seen.has(id)) return;
+      seen.add(id);
+      merged.push(region);
+    };
+    push(parsed.region);
+    for (const label of [parsed.region.name_en, parsed.region.name, parsed.region.name_ko]) {
+      const text = String(label || '').trim();
+      if (!text) continue;
+      for (const row of filterTourServiceRegions(text, regions)) {
+        push(row);
+      }
+    }
+    return merged.slice(0, SERVICE_REGION_RESULT_LIMIT);
+  }
+  const hits = listTourServiceRegionSuggestionHits(raw, regions);
+  return hits.slice(0, SERVICE_REGION_RESULT_LIMIT);
+}
+
+export function resolveTourActivitySearchCommitMeta(activityKeyword, location) {
+  const keyword = String(activityKeyword || '').trim();
+  if (!keyword) {
+    return { keywordSearchFallback: false };
+  }
+  return {
+    keywordSearchFallback: !tourActivityKeywordLikelyMatches(location, keyword),
+  };
 }
 
 function tokensFirst(raw) {

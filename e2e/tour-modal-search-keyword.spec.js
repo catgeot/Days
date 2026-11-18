@@ -79,6 +79,7 @@ test('combo search, activity-only, no results, single clear control', async ({ p
   await input.fill('island hopping');
   await input.press('Enter');
   await expect(host).toHaveAttribute('data-gyg-q', 'Khao Lak Phang Nga island hopping');
+  await expect(input).toHaveValue('island hopping');
 
   await input.fill('카오락');
   await input.press('Enter');
@@ -87,6 +88,12 @@ test('combo search, activity-only, no results, single clear control', async ({ p
   await input.fill('없는말');
   await expect(page.getByText('검색 결과가 없어요')).toBeVisible();
   await expect(page.locator('[data-tour-search-no-results]')).toBeVisible();
+
+  await input.fill('zzqx');
+  await input.press('Enter');
+  await expect(input).toHaveValue('zzqx');
+  await expect(page.locator('[data-tour-search-list-fallback]')).toBeVisible();
+  await expect(page.locator('[data-tour-search-list-fallback]')).toContainText('zzqx');
 
   await page.screenshot({
     path: `/opt/cursor/artifacts/${shotEmpty}`,

@@ -459,7 +459,8 @@
         "backTo": "← {{name}} 투어로 돌아가기",
         "noResults": "검색 결과가 없어요",
         "noResultsHint": "지역 이름만 입력하거나 목록에서 지역을 선택해 주세요",
-        "searchInRegion": "현재 지역에서 «{{keyword}}» 검색 (Enter)"
+        "searchInRegion": "현재 지역에서 «{{keyword}}» 검색 (Enter)",
+        "listKeywordFallback": "‘{{keyword}}’ 검색 결과가 없어 {{region}} 투어를 보여 드려요"
       }
     },
     "stayDate": {

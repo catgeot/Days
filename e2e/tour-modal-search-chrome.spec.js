@@ -116,4 +116,9 @@ test('search chrome — icon, label, placeholder, clear, layout', async ({ page 
   await searchRoot.screenshot({
     path: `/opt/cursor/artifacts/tour-modal-search-field-${viewport.width}.png`,
   });
+
+  await input.fill('El Nido island hopping');
+  await expect(page.locator('[data-region-slug="el-nido"]')).toBeVisible();
+  await expect(page.locator('[data-region-slug="dublin"]')).toHaveCount(0);
+  await expect(page.locator('[data-region-slug="delhi"]')).toHaveCount(0);
 });

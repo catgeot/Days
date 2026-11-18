@@ -23,6 +23,7 @@ import {
   pickTypedServiceRegion,
   recordConfirmedTourRegionVisit,
   regionIdentity,
+  resolveTourActivitySearchCommitMeta,
   resolveTourSearchCommit,
 } from './serviceRegionSearchModel.js';
 
@@ -44,6 +45,8 @@ export default function ServiceRegionSearch({
   loadRecent = loadRecentServiceRegions,
   loadRecommended = listRecommendedServiceRegions,
   searchRegions = filterServiceRegions,
+  appliedSearchText = '',
+  onSearchClear,
   now = () => new Date(),
 }) {
   const { t, i18n } = useTranslation();
@@ -68,7 +71,7 @@ export default function ServiceRegionSearch({
     originalLocation?.name ||
     originalLocation?.name_en ||
     '';
-  const inputValue = dirty ? draft : '';
+  const inputValue = dirty ? draft : String(appliedSearchText || '');
   const showClear = Boolean(String(inputValue || '').trim());
   const parsedDraft =
     dirty && draft ? parseTourServiceSearchInput(draft, activeLocation) : { kind: 'empty' };
@@ -136,7 +139,17 @@ export default function ServiceRegionSearch({
     if (supported && service === 'tour') {
       recordConfirmedTourRegionVisit(region, i18n.language);
     }
-    onCommit?.(region, { activityKeyword, method });
+    const searchText = String(draft || '').trim();
+    const listingMeta =
+      service === 'tour' && activityKeyword
+        ? resolveTourActivitySearchCommitMeta(activityKeyword, region || activeLocation)
+        : { keywordSearchFallback: false };
+    onCommit?.(region, {
+      activityKeyword,
+      method,
+      searchText,
+      keywordSearchFallback: listingMeta.keywordSearchFallback,
+    });
     setDirty(false);
     setDraft('');
     setOpen(false);
@@ -169,6 +182,7 @@ export default function ServiceRegionSearch({
     setDraft('');
     setOpen(true);
     refreshQuiet();
+    onSearchClear?.();
     inputRef.current?.focus();
   };
 
@@ -302,8 +316,10 @@ export default function ServiceRegionSearch({
             if (!root || !root.isConnected) return;
             if (root.contains(document.activeElement)) return;
             setOpen(false);
-            setDirty(false);
-            setDraft('');
+            if (!String(appliedSearchText || '').trim()) {
+              setDirty(false);
+              setDraft('');
+            }
             syncViewport();
           }, 120);
         }}
