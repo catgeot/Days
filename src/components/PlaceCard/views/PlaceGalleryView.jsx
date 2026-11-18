@@ -1375,7 +1375,7 @@ const PlaceGalleryView = React.memo(({
         </div>
       ) : (
         <div
-          className="relative flex h-full w-full items-center justify-center px-4"
+          className="relative flex h-full w-full min-h-0 flex-col px-4 pb-2 pt-[max(3.25rem,env(safe-area-inset-top,0px)+2.5rem)] md:px-6 md:pb-4 md:pt-[max(3.5rem,env(safe-area-inset-top,0px)+2.75rem)]"
           onClick={(e) => {
             e.stopPropagation();
             if (suppressOpenClickRef.current) return;
@@ -1391,15 +1391,28 @@ const PlaceGalleryView = React.memo(({
             }
           }}
         >
-          <img
-            src={selectedImg.urls.regular}
-            data-place-lightbox-photo=""
-            className={`relative max-h-[90%] max-w-[90%] select-none rounded-lg object-contain shadow-2xl animate-fade-in ${isFullScreen ? 'scale-105' : 'scale-100'}`}
-            alt={lightboxImageAlt}
-            referrerPolicy="no-referrer"
-            draggable={false}
-            onError={() => handleDropBrokenImage?.(selectedImg)}
-          />
+          {photoAttribution ? (
+            <div
+              data-place-lightbox-credit=""
+              className={`mb-2 shrink-0 self-start transition-opacity duration-300 md:mb-3 ${isUIHidden ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {renderAttributionLinks(
+                'inline-flex max-w-full items-center gap-1.5 rounded-full border border-white/10 bg-black/50 px-3 py-1.5 text-xs text-white/80 backdrop-blur-md transition-all hover:bg-white/20 hover:text-white md:px-4 md:py-2 md:text-sm',
+              )}
+            </div>
+          ) : null}
+          <div className="flex min-h-0 w-full flex-1 items-center justify-center">
+            <img
+              src={selectedImg.urls.regular}
+              data-place-lightbox-photo=""
+              className={`relative max-h-full max-w-full select-none rounded-lg object-contain shadow-2xl animate-fade-in ${isFullScreen ? 'scale-105' : 'scale-100'}`}
+              alt={lightboxImageAlt}
+              referrerPolicy="no-referrer"
+              draggable={false}
+              onError={() => handleDropBrokenImage?.(selectedImg)}
+            />
+          </div>
         </div>
       )}
 
@@ -1468,8 +1481,9 @@ const PlaceGalleryView = React.memo(({
         </div>
       )}
 
-      {photoAttribution && (
+      {photoAttribution && photoCaption ? (
         <div
+          data-place-lightbox-credit=""
           className={`absolute z-[220] max-w-[min(calc(100%-7.5rem),38rem)] transition-opacity duration-300 top-4 left-4 md:top-[max(0.5rem,env(safe-area-inset-top,0px))] md:left-[max(0.75rem,5%)] ${isUIHidden ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
           onClick={(e) => e.stopPropagation()}
         >
@@ -1477,7 +1491,7 @@ const PlaceGalleryView = React.memo(({
             'inline-flex max-w-full items-center gap-1.5 rounded-full border border-white/10 bg-black/50 px-3 py-1.5 text-xs text-white/80 backdrop-blur-md transition-all hover:bg-white/20 hover:text-white md:px-4 md:py-2 md:text-sm'
           )}
         </div>
-      )}
+      ) : null}
 
       <div
         className={`absolute z-[220] flex items-start gap-3 transition-opacity duration-300 top-4 right-4 md:top-[max(0.5rem,env(safe-area-inset-top,0px))] md:right-3 justify-end ${isUIHidden ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}

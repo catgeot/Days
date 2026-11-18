@@ -61,10 +61,10 @@ function playwrightBoxToIntersect(box) {
   return { x: box.x, y: box.y, w: box.width, h: box.height };
 }
 
-/** Desktop portal no-note layout (#847): max-h/max-w 90% of the lightbox viewport. */
+/** Desktop portal no-note: flex photo below inline credit + top chrome (not 90% box overlap). */
 function expectedNoNotePhotoMinSize(viewport) {
   return {
-    minHeight: Math.floor(viewport.height * 0.85),
+    minHeight: Math.floor(viewport.height * 0.82),
     minWidth: Math.floor(viewport.width * 0.55),
   };
 }
@@ -390,6 +390,23 @@ async function openNangThongGalleryLightbox(page, viewport) {
   return lightbox;
 }
 
+async function assertCreditDoesNotOverlapPhoto(lightbox, viewport) {
+  const credit = lightbox.locator('[data-place-lightbox-credit]').first();
+  await expect(credit).toBeVisible();
+  const photo = lightbox.locator('[data-place-lightbox-photo]');
+  await expect(photo).toBeVisible();
+  const creditBox = await credit.boundingBox();
+  const photoBox = await photo.boundingBox();
+  expect(creditBox).toBeTruthy();
+  expect(photoBox).toBeTruthy();
+  expect(boxesIntersect(playwrightBoxToIntersect(creditBox), playwrightBoxToIntersect(photoBox))).toBe(
+    false,
+  );
+  if (viewport.width >= 1280) {
+    expect(creditBox.y + creditBox.height).toBeLessThanOrEqual(photoBox.y + 2);
+  }
+}
+
 async function openBangkokStockGalleryLightbox(page, viewport) {
   await page.setViewportSize(viewport);
   await page.addInitScript(() => {
@@ -448,12 +465,35 @@ test.describe('place gallery lightbox stock note — mock @390 @1280', () => {
         await expect(
           lightbox.getByRole('link', { name: /Pexels|Unsplash/i }).first(),
         ).toBeVisible();
+        if (viewport.height >= 720) {
+          await assertCreditDoesNotOverlapPhoto(lightbox, viewport);
+        }
       }
       await page.screenshot({
         path: `/opt/cursor/artifacts/place-gallery-lightbox-stock-auto-alt-${viewport.label}.png`,
       });
     });
   }
+
+  test('1280x720 en: close then reopen desktop lightbox', async ({ page }) => {
+    const viewport = { width: 1280, height: 720 };
+    const lightbox = await openBangkokStockGalleryLightbox(page, viewport);
+    const close = lightbox.getByRole('button', { name: /close/i });
+    await expect(close).toBeVisible();
+    await close.click();
+    await expect(lightbox).toHaveCount(0, { timeout: 15_000 });
+    const scroller = page.locator('[data-place-gallery-scroll]');
+    const tile = scroller.locator('img').first();
+    await expect(tile).toBeVisible({ timeout: 15_000 });
+    await tile.click();
+    const reopened = page.locator('[data-place-lightbox]');
+    await expect(reopened).toBeVisible({ timeout: 15_000 });
+    await expect(reopened.locator('[data-place-lightbox-photo]')).toBeVisible();
+    await assertCreditDoesNotOverlapPhoto(reopened, viewport);
+    await page.screenshot({
+      path: '/opt/cursor/artifacts/place-gallery-lightbox-stock-reopen-1280x720-en.png',
+    });
+  });
 });
 
 test.describe('place gallery lightbox caption — mock @390 @1280', () => {
@@ -502,6 +542,13 @@ test.describe('place gallery lightbox caption — mock @390 @1280', () => {
       if (viewport.width >= 1280) {
         expect(Math.abs(noteBox.width - photoBox.width)).toBeLessThanOrEqual(4);
         expect(noteBox.y + noteBox.height).toBeLessThanOrEqual(photoBox.y + 2);
+        const credit = lightbox.locator('[data-place-lightbox-credit]').first();
+        await expect(credit).toBeVisible();
+        const creditBox = await credit.boundingBox();
+        expect(creditBox).toBeTruthy();
+        expect(boxesIntersect(playwrightBoxToIntersect(creditBox), playwrightBoxToIntersect(photoBox))).toBe(
+          false,
+        );
       }
 
       await page.screenshot({
