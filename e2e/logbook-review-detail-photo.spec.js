@@ -56,7 +56,9 @@ async function assertStoredHeroCredit(card) {
 async function assertUnsplashHeroCredit(card) {
   const credit = card.getByTestId('logbook-editorial-review-detail-hero-credit');
   await expect(credit).toBeVisible();
-  await expect(credit).toContainText('Photo by');
+  const pageLang = await card.page().locator('html').getAttribute('lang');
+  const isEn = pageLang?.toLowerCase().startsWith('en');
+  await expect(credit).toContainText(isEn ? 'Photo by' : '사진');
   await expect(credit).toContainText('Himmel S');
   await expect(credit.getByRole('link', { name: 'Unsplash' })).toBeVisible();
   await expect(credit.getByRole('link', { name: 'Himmel S' })).toHaveAttribute(

@@ -45,13 +45,17 @@ export function buildGalleryPhotoCredit(image, locale = 'ko') {
     if (!authorName) return null;
     const photoPage =
       typeof image?.links?.html === 'string' && image.links.html.trim()
-        ? image.links.html
+        ? image.links.html.trim()
         : PEXELS_HOME;
+    const profile =
+      typeof image?.user?.links?.html === 'string' && image.user.links.html.trim()
+        ? image.user.links.html.trim()
+        : '';
     return {
       kind: 'stock',
       authorName,
-      photographerHref: appendGateoReferralUtm(photoPage) || PEXELS_HOME,
-      providerHref: appendGateoReferralUtm(PEXELS_HOME) || PEXELS_HOME,
+      photographerHref: appendGateoReferralUtm(profile || photoPage) || PEXELS_HOME,
+      providerHref: appendGateoReferralUtm(photoPage) || PEXELS_HOME,
       provider: 'pexels',
     };
   }
@@ -65,33 +69,39 @@ export function buildGalleryPhotoCredit(image, locale = 'ko') {
           ? image.links.html.trim()
           : '';
     const licenseName = String(image?.license || '').trim();
-    const licenseHref = String(image?.licenseUrl || '').trim();
-    if (!filePageHref || !licenseName || !licenseHref) return null;
+    const licenseHref = String(image?.licenseUrl || image?.license_url || '').trim();
+    const authorPage =
+      typeof image?.user?.links?.html === 'string' && image.user.links.html.trim()
+        ? image.user.links.html.trim()
+        : '';
+    if (!filePageHref && !licenseName && !authorPage) return null;
     return {
       kind: 'wikimedia',
       authorName,
-      photographerHref: filePageHref,
-      providerHref: filePageHref,
+      photographerHref: authorPage || filePageHref || null,
+      providerHref: filePageHref || null,
       provider: 'wikimedia',
-      licenseName,
-      licenseHref,
-      filePageHref,
+      licenseName: licenseName || null,
+      licenseHref: licenseHref || null,
+      filePageHref: filePageHref || null,
     };
   }
 
   if (source === 'unsplash') {
     if (!authorName) return null;
+    const photoPage =
+      typeof image?.links?.html === 'string' && image.links.html.trim()
+        ? image.links.html.trim()
+        : UNSPLASH_HOME;
     const profile =
       typeof image?.user?.links?.html === 'string' && image.user.links.html.trim()
-        ? image.user.links.html
-        : typeof image?.links?.html === 'string' && image.links.html.trim()
-          ? image.links.html
-          : UNSPLASH_HOME;
+        ? image.user.links.html.trim()
+        : photoPage;
     return {
       kind: 'stock',
       authorName,
       photographerHref: appendGateoReferralUtm(profile) || UNSPLASH_HOME,
-      providerHref: appendGateoReferralUtm(UNSPLASH_HOME) || UNSPLASH_HOME,
+      providerHref: appendGateoReferralUtm(photoPage) || UNSPLASH_HOME,
       provider: 'unsplash',
     };
   }

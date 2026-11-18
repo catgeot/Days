@@ -29,11 +29,13 @@ import { placeScrollSurfaceClass } from '../common/placeScrollSurface';
 import { usePlaceMediaScrollToTop } from '../common/usePlaceMediaScrollToTop';
 import { useGateoPhotoLightboxA11y } from '../../../shared/useGateoPhotoLightboxA11y';
 import { getGalleryImageAttribution } from '../common/galleryImageAttribution';
+import { buildGalleryPhotoCredit } from '../common/buildGalleryPhotoCredit';
+import StockPhotoCreditLine from '../common/StockPhotoCreditLine';
+import GalleryAttributionLink from '../common/GalleryAttributionLink';
 import {
   resolveGalleryImageAltText,
   resolveGalleryPhotoNoteText,
 } from '../common/galleryPhotoNote';
-import GalleryAttributionLink from '../common/GalleryAttributionLink';
 import {
   clearGalleryAttributionReturnState,
   consumeGalleryAttributionReturnState,
@@ -97,6 +99,11 @@ const PlaceWikiDetailsView = ({
     () => (lightboxImg ? getGalleryImageAttribution(lightboxImg) : null),
     [lightboxImg],
   );
+  const lightboxPhotoCredit = useMemo(() => {
+    if (!lightboxImg) return null;
+    const locale = i18n.language?.startsWith('en') ? 'en' : 'ko';
+    return buildGalleryPhotoCredit(lightboxImg, locale);
+  }, [lightboxImg, i18n.language]);
 
   const lightboxCaption = useMemo(
     () => (lightboxImg ? resolveGalleryPhotoNoteText(lightboxImg) : ''),
@@ -613,68 +620,40 @@ const PlaceWikiDetailsView = ({
   });
 
   const renderLightboxAttribution = (wrapperClassName, linkClassName = '') => {
-    if (!lightboxAttribution || !lightboxImg) return null;
-    if (lightboxAttribution.source === 'wikimedia' && lightboxAttribution.licenseName && lightboxAttribution.licenseHref) {
+    if (!lightboxPhotoCredit || !lightboxImg) return null;
+
+    const WikiGalleryLink = ({ href, className, children, title, onClick }) => {
+      if (!href) {
+        return <span className={className}>{children}</span>;
+      }
       return (
-        <span className={`${wrapperClassName} flex-wrap`} data-gallery-wikimedia-credit="">
-          <span className="shrink-0">{t('place.gallery.photoCreditBy')}</span>
-          <span className={`min-w-0 truncate font-semibold text-white ${linkClassName}`}>
-            {lightboxAttribution.authorName}
-          </span>
-          <span className="shrink-0" aria-hidden="true">·</span>
-          <GalleryAttributionLink
-            href={lightboxAttribution.licenseHref}
-            location={location}
-            image={lightboxImg}
-            context="wiki"
-            lightboxIndex={lightboxIndex}
-            className={`shrink-0 font-semibold text-white underline decoration-white/50 underline-offset-2 hover:text-white ${linkClassName}`}
-            onClick={(e) => e.stopPropagation()}
-          >
-            {lightboxAttribution.licenseName}
-          </GalleryAttributionLink>
-          <span className="shrink-0" aria-hidden="true">·</span>
-          <GalleryAttributionLink
-            href={lightboxAttribution.filePageHref || lightboxAttribution.href}
-            location={location}
-            image={lightboxImg}
-            context="wiki"
-            lightboxIndex={lightboxIndex}
-            title={t('place.gallery.photoCreditFilePageTitle')}
-            className={`shrink-0 font-semibold text-white underline decoration-white/50 underline-offset-2 hover:text-white ${linkClassName}`}
-            onClick={(e) => e.stopPropagation()}
-          >
-            {t('place.gallery.photoCreditFilePage')}
-          </GalleryAttributionLink>
-        </span>
+        <GalleryAttributionLink
+          href={href}
+          location={location}
+          image={lightboxImg}
+          context="wiki"
+          lightboxIndex={lightboxIndex}
+          className={className}
+          title={title}
+          onClick={onClick || ((e) => e.stopPropagation())}
+        >
+          {children}
+        </GalleryAttributionLink>
       );
-    }
+    };
+
     return (
-      <span className={wrapperClassName} title={lightboxAttribution.title}>
-        <span>Photo by</span>
-        <GalleryAttributionLink
-          href={lightboxAttribution.photographerHref || lightboxAttribution.href}
-          location={location}
-          image={lightboxImg}
-          context="wiki"
-          lightboxIndex={lightboxIndex}
-          className={`truncate font-semibold text-white hover:underline ${linkClassName}`}
-          onClick={(e) => e.stopPropagation()}
-        >
-          {lightboxAttribution.authorName}
-        </GalleryAttributionLink>
-        <span>on</span>
-        <GalleryAttributionLink
-          href={lightboxAttribution.providerHref}
-          location={location}
-          image={lightboxImg}
-          context="wiki"
-          lightboxIndex={lightboxIndex}
-          className={`shrink-0 font-semibold text-white hover:underline ${linkClassName}`}
-          onClick={(e) => e.stopPropagation()}
-        >
-          {lightboxAttribution.providerName}
-        </GalleryAttributionLink>
+      <span className={wrapperClassName} title={lightboxAttribution?.title}>
+        <StockPhotoCreditLine
+          credit={lightboxPhotoCredit}
+          tone="lightbox"
+          interactiveLinks
+          allowAuthorWrap={false}
+          authorLinkClassName={linkClassName}
+          providerLinkClassName={linkClassName}
+          LinkComponent={WikiGalleryLink}
+          linkExtraProps={{ onClick: (e) => e.stopPropagation() }}
+        />
       </span>
     );
   };
