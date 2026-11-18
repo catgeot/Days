@@ -100,7 +100,9 @@ test('search chrome — icon, label, placeholder, clear, layout', async ({ page 
   assertNoHorizontalOverlap(layout.search, layout.header, 0);
   expect(layout.search.top).toBeGreaterThanOrEqual(layout.header.bottom - 1);
 
+  await expect(input).toHaveAttribute('type', 'text');
   await input.fill('방');
+  await expect(page.locator('[data-service-region-clear]')).toHaveCount(1);
   await expect(page.locator('[data-service-region-clear]')).toBeVisible();
   await page.locator('[data-service-region-clear]').click();
   await expect(input).toHaveValue('');

@@ -67,6 +67,14 @@ const timbuktu = {
   country_en: 'Mali',
 };
 
+const khaoLak = {
+  slug: 'khao-lak',
+  name: '카오락',
+  name_en: 'Khao Lak',
+  country: '태국',
+  country_en: 'Thailand',
+};
+
 const tbilisi = {
   slug: 'tbilisi',
   name: '트빌리시',
@@ -101,6 +109,13 @@ assert(
   buildGygActivitiesSearchQuery(tbilisi) === 'Tbilisi',
   'tbilisi q stays city-only Tbilisi'
 );
+
+const khaoQ = buildGygActivitiesSearchQuery(khaoLak);
+assert(khaoQ === 'Khao Lak Phang Nga', 'khao-lak q → Khao Lak Phang Nga');
+assert(!/^Khao Lak$/.test(String(khaoQ)), 'khao-lak q ≠ bare Khao Lak');
+const khaoSearch = buildGygSearchUrl(khaoQ, { locale: 'en', cmp: 'gateo_planer_khao-lak' });
+assert(khaoSearch.includes('q=Khao'), 'khao-lak GYG search URL carries disambiguated q');
+assert(/Phang/i.test(decodeURIComponent(khaoSearch)), 'khao-lak search URL includes Phang Nga');
 
 assert(resolveGygLocale('en') === 'en-US', 'GYG locale en → en-US');
 assert(resolveGygLocale('ko') === 'ko-KR', 'GYG locale ko → ko-KR');

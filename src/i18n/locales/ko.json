@@ -456,7 +456,10 @@
         "clearAria": "검색어 지우기",
         "noList": "투어 목록 없음",
         "noPartner": "이 지역은 투어 제휴 목록이 아직 없어요",
-        "backTo": "← {{name}} 투어로 돌아가기"
+        "backTo": "← {{name}} 투어로 돌아가기",
+        "noResults": "검색 결과가 없어요",
+        "noResultsHint": "지역 이름만 입력하거나 목록에서 지역을 선택해 주세요",
+        "searchInRegion": "현재 지역에서 «{{keyword}}» 검색 (Enter)"
       }
     },
     "stayDate": {

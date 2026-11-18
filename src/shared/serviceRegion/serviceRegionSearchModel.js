@@ -152,6 +152,7 @@ export function createTourRegionState(originalLocation) {
     original: originalLocation || null,
     active: null,
     notice: null,
+    activityKeyword: '',
   };
 }
 
@@ -198,14 +199,36 @@ export function recordConfirmedTourRegionVisit(region, locale = 'ko') {
 export function confirmTourRegion(state, region) {
   if (!state || !region) return state;
   if (!isTourRegionSupported(region)) {
-    return { ...state, notice: region };
+    return { ...state, notice: region, activityKeyword: '' };
   }
-  return { ...state, active: region, notice: null };
+  return { ...state, active: region, notice: null, activityKeyword: '' };
+}
+
+/**
+ * @param {object | null | undefined} state
+ * @param {{ region?: object | null, activityKeyword?: string }} payload
+ */
+export function confirmTourSearch(state, payload = {}) {
+  if (!state) return state;
+  const region = payload?.region || null;
+  const keyword = String(payload?.activityKeyword || '').trim();
+  if (region) {
+    if (!isTourRegionSupported(region)) {
+      return { ...state, notice: region, activityKeyword: '' };
+    }
+    return { ...state, active: region, notice: null, activityKeyword: keyword };
+  }
+  if (!keyword) {
+    return { ...state, activityKeyword: '' };
+  }
+  const base = tourRegionLocation(state);
+  if (!base || !isTourRegionSupported(base)) return state;
+  return { ...state, notice: null, activityKeyword: keyword };
 }
 
 export function resetTourRegion(state) {
   if (!state) return state;
-  return { ...state, active: null, notice: null };
+  return { ...state, active: null, notice: null, activityKeyword: '' };
 }
 
 /**
@@ -325,6 +348,208 @@ export function pickTypedServiceRegion(query, hits) {
   if (exact.length === 1) return exact[0];
   if (hits.length === 1) return hits[0];
   return null;
+}
+
+function resolveServiceRegionFromPhrase(phrase) {
+  const raw = String(phrase || '').trim();
+  if (!raw) return null;
+  if (isChoseongQuery(raw)) {
+    const hits = filterServiceRegions(raw);
+    return hits.length === 1 ? hits[0] : hits[0] || null;
+  }
+  const direct = resolveKnownServiceRegion(raw);
+  if (direct) {
+    const rank = exploreSuggestionNameMatchRank(raw, direct);
+    if (rank <= 1) return direct;
+  }
+  const hits = filterServiceRegions(raw);
+  const picked = pickTypedServiceRegion(raw, hits);
+  if (picked) return picked;
+  if (hits.length === 1 && exploreSuggestionNameMatchRank(raw, hits[0]) <= 3) {
+    return hits[0];
+  }
+  return null;
+}
+
+/**
+ * @param {unknown} raw
+ * @param {object | null | undefined} [activeLocation]
+ * @returns {{ kind: 'empty'|'region_only'|'region_activity'|'activity_only'|'no_match', region?: object, activityKeyword?: string }}
+ */
+export function parseTourServiceSearchInput(raw, activeLocation = null) {
+  const text = String(raw || '').trim();
+  if (!text) return { kind: 'empty' };
+  if (isChoseongQuery(text)) {
+    return { kind: 'region_only', activityKeyword: '' };
+  }
+
+  const tokens = text.split(/\s+/).filter(Boolean);
+  if (tokens.length <= 1) {
+    const region = resolveServiceRegionFromPhrase(text);
+    if (region) return { kind: 'region_only', region, activityKeyword: '' };
+    if (isActivityOnlyQuery(text, activeLocation)) {
+      return { kind: 'activity_only', activityKeyword: text };
+    }
+    return { kind: 'no_match' };
+  }
+
+  let best = null;
+  for (let start = 0; start < tokens.length; start += 1) {
+    for (let end = tokens.length - 1; end >= start; end -= 1) {
+      const phrase = tokens.slice(start, end + 1).join(' ');
+      const region = resolveServiceRegionFromPhrase(phrase);
+      if (!region) continue;
+      const before = tokens.slice(0, start).join(' ').trim();
+      const after = tokens.slice(end + 1).join(' ').trim();
+      const activityKeyword = [before, after].filter(Boolean).join(' ').trim();
+      const spanLen = end - start + 1;
+      const score = spanLen * 100 - start;
+      if (!best || score > best.score) {
+        best = { region, activityKeyword, score };
+      }
+    }
+  }
+
+  if (best) {
+    if (!best.activityKeyword) {
+      return { kind: 'region_only', region: best.region, activityKeyword: '' };
+    }
+    return {
+      kind: 'region_activity',
+      region: best.region,
+      activityKeyword: best.activityKeyword,
+    };
+  }
+
+  if (isActivityOnlyQuery(text, activeLocation)) {
+    return { kind: 'activity_only', activityKeyword: text };
+  }
+  return { kind: 'no_match' };
+}
+
+/**
+ * @param {unknown} draft
+ * @param {object[]} [regions]
+ */
+export function listTourSearchRegionHits(draft, regions = listKnownServiceRegions()) {
+  const raw = String(draft || '').trim();
+  if (!raw) return [];
+  const direct = filterServiceRegions(raw, regions);
+  if (direct.length) return direct;
+  const parsed = parseTourServiceSearchInput(raw);
+  const out = [];
+  const seen = new Set();
+  const push = (region) => {
+    if (!region) return;
+    const key = regionIdentity(region);
+    if (!key || seen.has(key)) return;
+    seen.add(key);
+    out.push(region);
+  };
+  if (parsed.region) push(parsed.region);
+  const head = tokensFirst(raw);
+  if (head) {
+    for (const row of filterServiceRegions(head, regions)) push(row);
+  }
+  return out.slice(0, SERVICE_REGION_RESULT_LIMIT);
+}
+
+function tokensFirst(raw) {
+  return String(raw || '').trim().split(/\s+/).filter(Boolean)[0] || '';
+}
+
+const TOUR_KEYWORD_HINT_RE =
+  /(스노클|다이빙|호핑|투어|티켓|패키지|market|tour|hop|diving|snorkel|cruise|ticket|island|kayak|rafting)/i;
+
+function queryContainsResolvableRegion(text) {
+  const raw = String(text || '').trim();
+  if (!raw) return false;
+  if (resolveServiceRegionFromPhrase(raw)) return true;
+  const tokens = raw.split(/\s+/).filter(Boolean);
+  for (let start = 0; start < tokens.length; start += 1) {
+    for (let end = tokens.length - 1; end >= start; end -= 1) {
+      const phrase = tokens.slice(start, end + 1).join(' ');
+      if (resolveServiceRegionFromPhrase(phrase)) return true;
+    }
+  }
+  return false;
+}
+
+function isActivityOnlyQuery(text, activeLocation) {
+  if (!activeLocation || !isTourRegionSupported(activeLocation)) return false;
+  const raw = String(text || '').trim();
+  if (!raw || isChoseongQuery(raw)) return false;
+  if (queryContainsResolvableRegion(raw)) return false;
+  const tokens = raw.split(/\s+/).filter(Boolean);
+  if (tokens.length >= 2) return true;
+  const one = tokens[0] || '';
+  if (/^[a-zA-Z][a-zA-Z\s-]{0,}$/.test(one) && one.length >= 4) return true;
+  return TOUR_KEYWORD_HINT_RE.test(one);
+}
+
+/**
+ * @param {unknown} draft
+ * @param {object[]} hits
+ * @param {object | null | undefined} activeLocation
+ */
+export function resolveTourSearchCommit(draft, hits, activeLocation = null) {
+  const raw = String(draft || '').trim();
+  if (!raw) return null;
+
+  const parsed = parseTourServiceSearchInput(raw, activeLocation);
+  const picked = pickTypedServiceRegion(raw, hits);
+  if (picked) {
+    let activityKeyword = '';
+    if (
+      parsed.kind === 'region_activity' &&
+      regionIdentity(parsed.region) === regionIdentity(picked)
+    ) {
+      activityKeyword = parsed.activityKeyword || '';
+    } else if (parsed.kind === 'activity_only') {
+      activityKeyword = parsed.activityKeyword || '';
+    }
+    return { region: picked, activityKeyword, method: 'typed' };
+  }
+
+  if (parsed.kind === 'region_only' && parsed.region) {
+    return { region: parsed.region, activityKeyword: '', method: 'typed' };
+  }
+  if (parsed.kind === 'region_activity' && parsed.region) {
+    return {
+      region: parsed.region,
+      activityKeyword: parsed.activityKeyword || '',
+      method: 'typed',
+    };
+  }
+  if (parsed.kind === 'activity_only') {
+    if (!activeLocation || !isTourRegionSupported(activeLocation)) {
+      return { noMatch: true };
+    }
+    return {
+      region: activeLocation,
+      activityKeyword: parsed.activityKeyword || '',
+      method: 'typed',
+    };
+  }
+  return { noMatch: true };
+}
+
+/**
+ * GYG Manual Activities q — 기본 지역 쿼리에 투어 키워드를 붙인다.
+ * @param {object | null | undefined} location
+ * @param {unknown} [activityKeyword]
+ */
+export function buildTourActivitiesWidgetQuery(location, activityKeyword = '') {
+  const target = resolveTourWidgetTarget(location);
+  const kw = String(activityKeyword || '').trim();
+  if (!kw) return target;
+  if (target.kind === 'gyg' && target.query) {
+    return { ...target, query: `${target.query} ${kw}`.trim() };
+  }
+  if (target.kind === 'mrt' && target.query) {
+    return { ...target, query: kw, activityKeyword: kw };
+  }
+  return target;
 }
 
 export function buildServiceModalSearchEvent({

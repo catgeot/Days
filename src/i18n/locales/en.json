@@ -686,7 +686,10 @@
         "clearAria": "Clear search",
         "noList": "No tour list",
         "noPartner": "Tour partners do not list this region yet",
-        "backTo": "← Back to {{name}} tours"
+        "backTo": "← Back to {{name}} tours",
+        "noResults": "No results",
+        "noResultsHint": "Try a destination name, or pick a region from the list",
+        "searchInRegion": "Search «{{keyword}}» in this region (Enter)"
       }
     },
     "stayDate": {
