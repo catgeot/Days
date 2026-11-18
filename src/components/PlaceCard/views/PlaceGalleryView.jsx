@@ -29,6 +29,10 @@ import {
   formatGalleryDisplaySourcesAttribution,
   getGalleryImageAttribution,
 } from '../common/galleryImageAttribution';
+import {
+  resolveGalleryImageAltText,
+  resolveGalleryPhotoNoteText,
+} from '../common/galleryPhotoNote';
 import GalleryGridPhotoCredit from '../common/GalleryGridPhotoCredit';
 import { buildGalleryPhotoCredit } from '../common/buildGalleryPhotoCredit';
 import GalleryAttributionLink from '../common/GalleryAttributionLink';
@@ -1043,12 +1047,20 @@ const PlaceGalleryView = React.memo(({
   const hasPlaceOverview = Boolean(curationOverview || fixedOverview);
   const { mountInGallery } = usePlaceDesktopLeftInfoLayout();
 
-  const photoCaption = useMemo(() => {
-    if (!selectedImg) return '';
-    const raw = (selectedImg.alt_description || selectedImg.description || '').trim();
-    if (!raw) return '';
-    return raw.charAt(0).toUpperCase() + raw.slice(1);
-  }, [selectedImg]);
+  const photoCaption = useMemo(
+    () => (selectedImg ? resolveGalleryPhotoNoteText(selectedImg) : ''),
+    [selectedImg],
+  );
+  const lightboxImageAlt = useMemo(
+    () => resolveGalleryImageAltText(selectedImg) || t('place.gallery.imageFallback'),
+    [selectedImg, t],
+  );
+  const desktopLightboxPhotoMaxClass = useMemo(() => {
+    const heightClass = photoCaption
+      ? 'max-h-[min(58vh,calc(100dvh-19rem))] md:max-h-[min(62vh,calc(100dvh-17rem))]'
+      : 'max-h-[min(72vh,calc(100dvh-14rem))] md:max-h-[min(78vh,calc(100dvh-12rem))]';
+    return `${heightClass} ${isFullScreen ? 'scale-105' : 'scale-100'}`;
+  }, [photoCaption, isFullScreen]);
 
   const photoAttribution = useMemo(
     () => (selectedImg ? getGalleryImageAttribution(selectedImg) : null),
@@ -1142,7 +1154,10 @@ const PlaceGalleryView = React.memo(({
             onClick={(e) => e.stopPropagation()}
           >
             {photoCaption ? (
-              <div className="min-w-0 flex-1 rounded-2xl border border-white/10 bg-black/55 px-3 py-2.5 backdrop-blur-md shadow-lg landscape:rounded-xl landscape:border-white/10 landscape:bg-black/45 landscape:px-2.5 landscape:py-1.5">
+              <div
+                data-place-lightbox-note=""
+                className="min-w-0 flex-1 rounded-2xl border border-white/10 bg-black/55 px-3 py-2.5 backdrop-blur-md shadow-lg landscape:rounded-xl landscape:border-white/10 landscape:bg-black/45 landscape:px-2.5 landscape:py-1.5"
+              >
                 <p className="mb-1 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-blue-300/90 landscape:sr-only">
                   <ImageIcon size={11} className="shrink-0 opacity-90" aria-hidden />
                   {t('place.gallery.photoNote')}
@@ -1198,9 +1213,10 @@ const PlaceGalleryView = React.memo(({
           >
             <img
               src={selectedImg.urls.regular}
+              data-place-lightbox-photo=""
               className="max-h-full max-w-full select-none rounded-lg object-contain shadow-2xl animate-fade-in landscape:h-full landscape:w-full landscape:max-h-[100dvh] landscape:max-w-[100vw] landscape:rounded-none landscape:shadow-none"
               style={{ ...transformStyle, WebkitTouchCallout: 'none' }}
-              alt="full-view"
+              alt={lightboxImageAlt}
               referrerPolicy="no-referrer"
               draggable={false}
               onError={() => handleDropBrokenImage?.(selectedImg)}
@@ -1310,27 +1326,54 @@ const PlaceGalleryView = React.memo(({
       aria-modal="true"
       aria-label={t('place.gallery.zoomView')}
     >
-      <div className="relative w-full h-full flex items-center justify-center cursor-pointer" onClick={(e) => {
+      <div
+        className="relative flex min-h-0 flex-1 w-full flex-col items-center justify-center px-4 pb-2 pt-[max(4.25rem,env(safe-area-inset-top,0px)+3.25rem)] md:px-6 md:pt-[max(4.5rem,env(safe-area-inset-top,0px)+3.5rem)] md:pb-4"
+        onClick={(e) => {
           e.stopPropagation();
           if (suppressOpenClickRef.current) return;
           if (e.ctrlKey || e.metaKey) return;
           setIsMobileUIHidden((prev) => !prev);
-      }}
-      onDoubleClick={(e) => {
+        }}
+        onDoubleClick={(e) => {
           if (e.ctrlKey || e.metaKey) {
-              e.stopPropagation();
-              if (galleryManageEnabled && selectedImg) {
-                  openManageSheet(selectedImg);
-              }
+            e.stopPropagation();
+            if (galleryManageEnabled && selectedImg) {
+              openManageSheet(selectedImg);
+            }
           }
-      }}>
-          <img
-            src={selectedImg.urls.regular}
-            className={`relative max-w-[90%] max-h-[90%] object-contain shadow-2xl rounded-lg select-none animate-fade-in ${isFullScreen ? 'scale-105' : 'scale-100'}`}
-            alt="full-view"
-            referrerPolicy="no-referrer"
-            onError={() => handleDropBrokenImage?.(selectedImg)}
-          />
+        }}
+      >
+        <div className="flex w-full max-w-2xl min-h-0 flex-col items-center gap-2 md:gap-3">
+          {photoCaption ? (
+            <div
+              data-place-lightbox-note=""
+              className={`w-full max-w-full shrink-0 rounded-2xl border border-white/10 bg-black/55 px-3.5 py-3 backdrop-blur-md shadow-lg transition-opacity duration-300 ${isUIHidden ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <p className="mb-1.5 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-blue-300/90">
+                <ImageIcon size={12} className="shrink-0 opacity-90" aria-hidden />
+                {t('place.gallery.photoNote')}
+              </p>
+              <p
+                data-place-lightbox-caption=""
+                className="text-sm leading-relaxed text-gray-100/95 whitespace-pre-line"
+              >
+                {photoCaption}
+              </p>
+            </div>
+          ) : null}
+          <div className="flex min-h-0 w-full flex-1 items-center justify-center">
+            <img
+              src={selectedImg.urls.regular}
+              data-place-lightbox-photo=""
+              className={`relative w-full max-w-[min(90vw,42rem)] ${desktopLightboxPhotoMaxClass} object-contain shadow-2xl rounded-lg select-none animate-fade-in`}
+              alt={lightboxImageAlt}
+              referrerPolicy="no-referrer"
+              draggable={false}
+              onError={() => handleDropBrokenImage?.(selectedImg)}
+            />
+          </div>
+        </div>
       </div>
 
       {showNavControls && (
@@ -1432,23 +1475,6 @@ const PlaceGalleryView = React.memo(({
         </button>
         </div>
       </div>
-
-      {photoCaption && (
-        <div
-          className={`absolute left-0 right-0 top-16 z-[205] px-4 pr-20 md:pr-24 transition-opacity duration-300 ${isUIHidden ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
-          onClick={(e) => e.stopPropagation()}
-        >
-          <div className="max-h-[30vh] overflow-y-auto rounded-2xl border border-white/10 bg-black/55 px-3.5 py-3 backdrop-blur-md shadow-lg">
-            <p className="text-[11px] font-semibold uppercase tracking-wider text-blue-300/90 mb-1.5 flex items-center gap-1.5">
-              <ImageIcon size={12} className="shrink-0 opacity-90" aria-hidden />
-              {t('place.gallery.photoNote')}
-            </p>
-            <p data-place-lightbox-caption="" className="text-sm text-gray-100/95 leading-relaxed whitespace-pre-line">
-              {photoCaption}
-            </p>
-          </div>
-        </div>
-      )}
 
       {!showNavControls && (
       <div className={`absolute bottom-4 right-4 z-[220] transition-opacity duration-300 ${isFullScreen ? 'md:bottom-0 md:right-3 md:mb-[max(0.75rem,env(safe-area-inset-bottom,0px))]' : 'md:bottom-8 md:right-8'} ${isUIHidden ? 'opacity-0 pointer-events-none' : 'opacity-100'}`} onClick={(e) => e.stopPropagation()}>
@@ -1645,7 +1671,7 @@ const PlaceGalleryView = React.memo(({
             renderPhotoViewer(
               shouldUseMobilePortal
                 ? null
-                : 'fixed inset-0 z-[9999] h-[100dvh] min-h-[100svh] w-screen touch-none overscroll-none overflow-hidden bg-black animate-fade-in flex items-center justify-center',
+                : 'fixed inset-0 z-[9999] h-[100dvh] min-h-[100svh] w-screen touch-none overscroll-none overflow-hidden bg-black animate-fade-in flex flex-col',
               { mobilePortal: shouldUseMobilePortal },
             ),
             document.body,

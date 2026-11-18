@@ -29,6 +29,10 @@ import { placeScrollSurfaceClass } from '../common/placeScrollSurface';
 import { usePlaceMediaScrollToTop } from '../common/usePlaceMediaScrollToTop';
 import { useGateoPhotoLightboxA11y } from '../../../shared/useGateoPhotoLightboxA11y';
 import { getGalleryImageAttribution } from '../common/galleryImageAttribution';
+import {
+  resolveGalleryImageAltText,
+  resolveGalleryPhotoNoteText,
+} from '../common/galleryPhotoNote';
 import GalleryAttributionLink from '../common/GalleryAttributionLink';
 import {
   clearGalleryAttributionReturnState,
@@ -94,12 +98,14 @@ const PlaceWikiDetailsView = ({
     [lightboxImg],
   );
 
-  const lightboxCaption = useMemo(() => {
-    if (!lightboxImg) return '';
-    const raw = (lightboxImg.alt_description || lightboxImg.description || '').trim();
-    if (!raw) return '';
-    return raw.charAt(0).toUpperCase() + raw.slice(1);
-  }, [lightboxImg]);
+  const lightboxCaption = useMemo(
+    () => (lightboxImg ? resolveGalleryPhotoNoteText(lightboxImg) : ''),
+    [lightboxImg],
+  );
+  const lightboxImageAlt = useMemo(
+    () => resolveGalleryImageAltText(lightboxImg) || t('place.gallery.imageFallback'),
+    [lightboxImg, t],
+  );
 
   const handleLightboxDownload = galleryData?.handleDownload;
 
@@ -1225,7 +1231,7 @@ const PlaceWikiDetailsView = ({
                     <div className="absolute inset-0 z-10 flex items-center justify-center overflow-hidden">
                         <img
                             src={lightboxImg.urls?.regular || lightboxImg.urls?.small}
-                            alt={lightboxImg.alt_description || 'Gallery image'}
+                            alt={lightboxImageAlt}
                             className="relative max-w-[90%] max-h-[90%] object-contain shadow-2xl rounded-lg select-none animate-fade-in"
                         />
                     </div>
