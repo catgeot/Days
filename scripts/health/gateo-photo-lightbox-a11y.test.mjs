@@ -44,6 +44,18 @@ test('theme spot modal portals lightbox to document body', () => {
   assert.match(theme, /createPortal\([\s\S]*data-theme-spot-lightbox[\s\S]*document\.body/);
 });
 
+test('place gallery portals enlarged photos to document body', () => {
+  const gallery = readFileSync(
+    join(root, 'src/components/PlaceCard/views/PlaceGalleryView.jsx'),
+    'utf8',
+  );
+  assert.match(gallery, /shouldPortalLightbox/);
+  assert.match(
+    gallery,
+    /createPortal\([\s\S]*renderPhotoViewer[\s\S]*document\.body/,
+  );
+});
+
 test('layer stack respects registration order', () => {
   registerGateoPhotoLightboxLayer('a');
   registerGateoPhotoLightboxLayer('b');

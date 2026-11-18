@@ -1927,10 +1927,17 @@ export default function KoreaFestivalHub() {
     [timedItems, areaCode],
   );
 
+  const afterSidoForCityChips = useMemo(
+    () => filterByTaste(afterSido, tasteId),
+    [afterSido, tasteId],
+  );
+
   const cityChips = useMemo(
     () =>
-      areaCode === 'all' ? [] : buildCityTags(afterSido, { areaCode }),
-    [areaCode, afterSido],
+      areaCode === 'all'
+        ? []
+        : buildCityTags(afterSidoForCityChips, { areaCode }),
+    [areaCode, afterSidoForCityChips],
   );
 
   useEffect(() => {
@@ -2033,13 +2040,15 @@ export default function KoreaFestivalHub() {
     if (!visiblePromoContentIds.size) return cityChips;
     const timed = filterItemsByTime(timeTab, itemsForChipCounts);
     const after = filterByRegion(timed, { areaCode });
-    return areaCode === 'all' ? [] : buildCityTags(after, { areaCode });
+    const tasted = filterByTaste(after, tasteId);
+    return areaCode === 'all' ? [] : buildCityTags(tasted, { areaCode });
   }, [
     visiblePromoContentIds,
     cityChips,
     timeTab,
     itemsForChipCounts,
     areaCode,
+    tasteId,
     filterItemsByTime,
   ]);
 

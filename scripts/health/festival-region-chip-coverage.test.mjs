@@ -4,12 +4,19 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { test } from 'node:test';
 import { resolveFestivalItemSidoCode, normalizeTourApiSidoAreaCode } from '../../src/pages/Korea/koreaAreaFilter.js';
-import { filterByRegion, buildSidoTags, REGION_MIN_COUNT, LIST_SIDO_CHIP_MIN_COUNT } from '../../src/pages/Korea/festivalRegionTags.js';
+import {
+  filterByRegion,
+  buildSidoTags,
+  buildCityTags,
+  REGION_MIN_COUNT,
+  LIST_SIDO_CHIP_MIN_COUNT,
+} from '../../src/pages/Korea/festivalRegionTags.js';
 import {
   auditNationwideSidoChipsMatchList,
   auditAllSidoCityChipSumsMatchList,
 } from '../../src/pages/Korea/festivalListChipGroupSync.js';
 import { filterByTimeTab, seasonRangeById } from '../../src/pages/Korea/festivalTimeFilter.js';
+import { filterByTaste } from '../../src/pages/Korea/festivalTasteTags.js';
 import { filterFestivalsByYmdRange } from '../../src/pages/Korea/festivalDateFilter.js';
 import { festivalHubFlagOnRangeYmd } from '../../src/pages/Korea/festivalHubDefaultPeriod.js';
 
@@ -153,3 +160,33 @@ function assertAuditClean(audit, label) {
   assert.equal(audit.unmapped ?? 0, 0, `${label} unmapped: ${JSON.stringify(audit)}`);
   assert.equal(audit.ok, true, `${label}: ${JSON.stringify(audit)}`);
 }
+
+test('city chip counts use the same taste filter as the festival list', () => {
+  const panel = [
+    {
+      contentId: 'm1',
+      title: '무안 해변축제',
+      addr1: '전라남도 무안군 일로읍',
+      eventStartDate: '20261020',
+      eventEndDate: '20261022',
+    },
+    {
+      contentId: 'm2',
+      title: '무안 클래식 나이트',
+      addr1: '전라남도 무안군 무안읍',
+      eventStartDate: '20261020',
+      eventEndDate: '20261022',
+    },
+  ];
+  const afterSido = filterByRegion(panel, { areaCode: '38' });
+  const beachPool = filterByTaste(afterSido, 'beach');
+  const chipsBeach = buildCityTags(beachPool, { areaCode: '38' });
+  const muanChip = chipsBeach.find((c) => c.label.includes('무안'));
+  const listInMuan = filterByRegion(beachPool, {
+    areaCode: '38',
+    cityName: muanChip?.id,
+  });
+  assert.equal(beachPool.length, 1);
+  assert.equal(muanChip?.count, 1);
+  assert.equal(listInMuan.length, muanChip?.count);
+});
