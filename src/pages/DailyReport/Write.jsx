@@ -77,7 +77,7 @@ const Write = () => {
           setExistingImages(data.images || []);
         } else {
           alert(t('logbook.write.notFound'));
-          navigate('/blog', { replace: true });
+          navigate('/blog?tab=mine', { replace: true });
         }
       }
 
@@ -174,7 +174,7 @@ const Write = () => {
         navigate(`/blog/${id}`);
       } else {
         await supabase.from('reports').insert([reportData]);
-        navigate('/blog');
+        navigate('/blog?tab=mine');
       }
     } catch (error) {
       console.error("저장 실패:", error);

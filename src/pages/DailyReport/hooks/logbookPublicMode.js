@@ -1,15 +1,15 @@
 /**
- * Public logbook is `tab=public` or a signed-out visitor.
- * The session check is async, so the first paint has to decide without it.
- * Otherwise the review hub mounts late and the return scroll lands after
- * the first frame.
+ * First paint for /blog. Default, `tab=public`, and unknown tabs are the explore feed.
+ * `tab=mine` is the private logbook only when an auth session is already stored.
+ * The session read is sync localStorage so the review hub can mount on the first frame.
  * @param {string} search
  * @param {{ length: number, key: (index: number) => string | null, getItem: (key: string) => string | null } | null | undefined} storage
  */
 export function initialLogbookPublicMode(search, storage) {
   const query = String(search || '').replace(/^\?/, '');
-  if (new URLSearchParams(query).get('tab') === 'public') return true;
-  return !storageHasAuthSession(storage);
+  const tab = new URLSearchParams(query).get('tab');
+  if (tab === 'mine' && storageHasAuthSession(storage)) return false;
+  return true;
 }
 
 /**

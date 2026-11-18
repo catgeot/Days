@@ -118,6 +118,7 @@ export default defineConfig({
         /tinian-search-planner-390\.spec\.js/,
         /logbook-public-owner-edit-390\.spec\.js/,
         /logbook-detail-toolbar-layout\.spec\.js/,
+        /logbook-default-feed\.spec\.js/,
         /mooni-destination-pick-reply\.spec\.js/,
         /mooni-open-gemini-budget\.spec\.js/,
         /mooni-chip-instruction-leak\.spec\.js/,
