@@ -38,13 +38,11 @@ export const useDashboardData = () => {
     const user = await readSessionUser();
     setUser(user);
 
-    // 로그인 상태라도 url 파라미터나 상태로 제어할 수 있게 됨
-    // 여기서는 기본적으로 user가 없거나 URL에 특정 플래그가 있으면 isPublicMode를 true로 설정
+    // Explore feed unless a signed-in user opened ?tab=mine.
+    // Do not read a record count before choosing the tab.
     const searchParams = new URLSearchParams(location.search);
-    const isPublicParam = searchParams.get('tab') === 'public';
-
-    // 사용자가 로그인했지만 탭이 public이거나, 아예 로그인하지 않은 경우 publicMode
-    const shouldBePublic = !user || isPublicParam;
+    const tab = searchParams.get('tab');
+    const shouldBePublic = !user || tab !== 'mine';
 
     setIsPublicMode(shouldBePublic);
 
