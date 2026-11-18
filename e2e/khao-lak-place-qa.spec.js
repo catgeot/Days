@@ -57,6 +57,10 @@ function boxesIntersect(a, b) {
   return a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
 }
 
+function playwrightBoxToIntersect(box) {
+  return { x: box.x, y: box.y, w: box.width, h: box.height };
+}
+
 async function scrollFestivalSheetToEnd(page) {
   const content = page.locator('[data-festival-sheet-content]');
   await expect(content).toBeVisible();
@@ -216,6 +220,89 @@ test.describe('khao lak place qa', () => {
 });
 
 const NANG_THONG_CAPTION = 'Khao Lak lighthouse on the rock off Nang Thong Beach';
+const STOCK_AUTO_ALT = 'A large body of water surrounded by trees';
+const MOCK_PNG = Buffer.from(
+  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
+  'base64',
+);
+
+async function blockLiveApisWithPexelsStock(page) {
+  const stockThumb =
+    'https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Khao_Lak_light_beacon.JPG/960px-Khao_Lak_light_beacon.JPG';
+  const stockGalleryRow = [{
+    place_id: 'Bangkok',
+    gallery_urls: [{
+      id: 'pexels-e2e-auto-alt',
+      source: 'pexels',
+      width: 960,
+      height: 720,
+      alt_description: STOCK_AUTO_ALT,
+      alt: STOCK_AUTO_ALT,
+      urls: {
+        regular: stockThumb,
+        small: stockThumb,
+      },
+      user: { name: 'E2E' },
+      links: { html: 'https://www.pexels.com/photo/e2e-auto-alt/' },
+    }],
+  }];
+  await page.route(/\/rest\/v1\//i, (route) => {
+    const url = route.request().url();
+    if (/place_stats/.test(url)) {
+      return route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(stockGalleryRow),
+      });
+    }
+    return route.fulfill({ status: 200, contentType: 'application/json', body: '[]' });
+  });
+  await page.route(/generativelanguage|googleapis.*gemini|functions\/v1\/gemini/i, (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ results: [], photos: [] }),
+    }),
+  );
+  await page.route(/unsplash|api\.unsplash\.com/i, (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ results: [], photos: [] }),
+    }),
+  );
+  await page.route(/\/functions\/v1\/pexels-proxy/i, (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        success: true,
+        images: [
+          {
+            id: 'pexels-e2e-auto-alt',
+            source: 'pexels',
+            width: 1200,
+            height: 800,
+            alt_description: STOCK_AUTO_ALT,
+            alt: STOCK_AUTO_ALT,
+            urls: {
+              regular: 'https://images.pexels.com/photos/e2e-auto-alt/large.jpeg',
+              small: 'https://images.pexels.com/photos/e2e-auto-alt/small.jpeg',
+            },
+            user: { name: 'E2E' },
+            links: { html: 'https://www.pexels.com/photo/e2e-auto-alt/' },
+          },
+        ],
+      }),
+    }),
+  );
+  await page.route(/images\.pexels\.com/i, (route) =>
+    route.fulfill({ status: 200, contentType: 'image/png', body: MOCK_PNG }),
+  );
+  await page.route(/tourapi-proxy/i, (route) =>
+    route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ ok: true, items: [] }) }),
+  );
+}
 
 async function openNangThongGalleryLightbox(page, viewport) {
   await page.setViewportSize(viewport);
@@ -263,8 +350,49 @@ test.describe('place gallery lightbox caption — mock @390 @1280', () => {
 
       await expect(lightbox.locator('[data-gallery-wikimedia-credit]').first()).toBeVisible();
 
+      const note = lightbox.locator('[data-place-lightbox-note]').first();
+      const photo = lightbox.locator('[data-place-lightbox-photo]');
+      await expect(note).toBeVisible();
+      await expect(photo).toBeVisible();
+      const noteBox = await note.boundingBox();
+      const photoBox = await photo.boundingBox();
+      expect(noteBox).toBeTruthy();
+      expect(photoBox).toBeTruthy();
+      expect(boxesIntersect(playwrightBoxToIntersect(noteBox), playwrightBoxToIntersect(photoBox))).toBe(
+        false,
+      );
+      expect(noteBox.width).toBeLessThan(viewport.width);
+
       await page.screenshot({
         path: `/opt/cursor/artifacts/place-gallery-lightbox-caption-${viewport.label}.png`,
+      });
+    });
+  }
+
+  for (const viewport of [
+    { label: '390', width: 390, height: 844 },
+    { label: '1280', width: 1280, height: 800 },
+  ]) {
+    test(`${viewport.label}: stock auto alt only — no photo note`, async ({ page }) => {
+      await blockLiveApisWithPexelsStock(page);
+      await page.setViewportSize(viewport);
+      await page.goto('/place/bangkok/gallery?lang=en', { waitUntil: 'domcontentloaded' });
+      const scroller = page.locator('[data-place-gallery-scroll]');
+      await expect(scroller).toBeVisible({ timeout: 60_000 });
+      const tile = scroller.locator('img').first();
+      await expect(tile).toBeVisible({ timeout: 60_000 });
+      await expect.poll(async () => tile.evaluate((img) => (
+        img.complete && img.naturalWidth > 10 ? img.naturalWidth : 0
+      ))).toBeGreaterThan(10);
+      await tile.click();
+      const lightbox = page.locator('[data-place-lightbox]');
+      await expect(lightbox).toBeVisible({ timeout: 15_000 });
+      await expect(lightbox.locator('[data-place-lightbox-caption]')).toHaveCount(0);
+      await expect(lightbox.locator('[data-place-lightbox-note]')).toHaveCount(0);
+      const photo = lightbox.locator('[data-place-lightbox-photo]');
+      await expect(photo).toHaveAttribute('alt', new RegExp(STOCK_AUTO_ALT, 'i'));
+      await page.screenshot({
+        path: `/opt/cursor/artifacts/place-gallery-lightbox-stock-auto-alt-${viewport.label}.png`,
       });
     });
   }
