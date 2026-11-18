@@ -21,6 +21,7 @@ import {
 import { getLocalizedPlaceName } from '../../../components/PlaceCard/common/locationDisplay';
 import { trackEvent } from '../../../shared/analytics/trackEvent.js';
 import { buildServiceModalOpenEvent } from '../../../shared/serviceRegion/serviceRegionSearchModel.js';
+import { useServiceModalEscapeClose } from '../../../shared/serviceRegion/useServiceModalEscapeClose.js';
 import { getPlaceStayLodgingGuidance } from '../../../data/placeStayLodgingGuidance.js';
 import { buildGygActivitiesSearchQuery } from '../../../components/PlaceCard/tabs/planner/locationRules';
 import {
@@ -382,17 +383,20 @@ function StayDateBar({
   useEffect(() => {
     if (!open) return undefined;
     const onKey = (e) => {
-      if (e.key === 'Escape') closeCalendar();
+      if (e.key !== 'Escape') return;
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      closeCalendar();
     };
     const onPointer = (e) => {
       if (!rootRef.current || rootRef.current.contains(e.target)) return;
       closeCalendar();
     };
-    window.addEventListener('keydown', onKey);
+    window.addEventListener('keydown', onKey, true);
     document.addEventListener('mousedown', onPointer);
     document.addEventListener('touchstart', onPointer, { passive: true });
     return () => {
-      window.removeEventListener('keydown', onKey);
+      window.removeEventListener('keydown', onKey, true);
       document.removeEventListener('mousedown', onPointer);
       document.removeEventListener('touchstart', onPointer);
     };
@@ -1508,10 +1512,12 @@ export default function GlobeStayStrip({
     setListFullscreen(true);
   }, []);
 
-  const closeMobileFullscreen = useCallback(() => {
+  const closeStayModal = useCallback(() => {
     setListFullscreen(false);
     setExpanded(false);
   }, []);
+
+  useServiceModalEscapeClose(Boolean(eligible && (expanded || listFullscreen)), closeStayModal);
 
   const stayOrigin = useMemo(
     () => resolveMrtStayOrigin(location, name),
@@ -1571,7 +1577,7 @@ export default function GlobeStayStrip({
       childCount={guests.childCount}
       onApply={applyStayFilters}
       showClose={Boolean(opts.showClose)}
-      onClose={() => setExpanded(false)}
+      onClose={closeStayModal}
       embedInPanel={Boolean(opts.embedInPanel)}
       flightCta={stayFlightCta}
     />
@@ -1889,7 +1895,7 @@ export default function GlobeStayStrip({
           trackEvent(name, params);
         }
         if (!isLg) {
-          if (mobileOpen) closeMobileFullscreen();
+          if (mobileOpen) closeStayModal();
           else openMobileFullscreen();
           return;
         }
@@ -1936,7 +1942,7 @@ export default function GlobeStayStrip({
           >
             <StayPanelHeader
               placeName={name}
-              onClose={() => setExpanded(false)}
+              onClose={closeStayModal}
               density="desktop"
             />
             {desktopPanelBody}
@@ -1974,7 +1980,7 @@ export default function GlobeStayStrip({
           >
             <StayPanelHeader
               placeName={name}
-              onClose={closeMobileFullscreen}
+              onClose={closeStayModal}
               loading={status === 'loading'}
               density="mobile"
             />
@@ -2100,10 +2106,7 @@ export default function GlobeStayStrip({
           mobilePanel,
           eligible: true,
           expanded,
-          close: () => {
-            setExpanded(false);
-            setListFullscreen(false);
-          },
+          close: closeStayModal,
         })}
         {desktopPortal}
         {fullscreenPortal}

@@ -96,10 +96,20 @@ test('combo search, activity-only, no results, single clear control', async ({ p
   await expect(page.locator('[data-tour-search-list-fallback]')).toBeVisible();
   await expect(page.locator('[data-tour-search-list-fallback]')).toContainText('zzqx');
 
+  await input.fill('zzqx 투어');
+  await input.press('Enter');
+  await expect(input).toHaveValue('zzqx 투어');
+  await expect(page.locator('[data-tour-search-list-fallback]')).toBeVisible();
+  await expect(page.locator('[data-tour-search-list-fallback]')).toContainText('zzqx');
+
   await page.screenshot({
     path: `/opt/cursor/artifacts/${shotEmpty}`,
     clip: { x: 0, y: 0, width: viewport.width, height: Math.min(844, viewport.height) },
   });
+
+  await input.fill('snorkeling');
+  await input.press('Enter');
+  await expect(page.locator('[data-tour-search-list-fallback]')).toHaveCount(0);
 
   await input.fill('방콕 수상시장');
   await input.press('Enter');

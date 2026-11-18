@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { ArrowUp, BedDouble, ChevronRight, ExternalLink, Luggage, MapPin, Ticket, X } from 'lucide-react';
@@ -21,6 +21,7 @@ import { getLocalizedPlaceName } from '../../../components/PlaceCard/common/loca
 import Logo from './Logo';
 import { trackEvent } from '../../../shared/analytics/trackEvent.js';
 import { buildServiceModalOpenEvent } from '../../../shared/serviceRegion/serviceRegionSearchModel.js';
+import { useServiceModalEscapeClose } from '../../../shared/serviceRegion/useServiceModalEscapeClose.js';
 
 const LG_MQ = '(min-width: 1024px)';
 
@@ -291,6 +292,15 @@ export default function GlobeTourStrip({
     return () => el.removeEventListener('scroll', onScroll);
   }, [mobileOpen, placeKey]);
 
+  const close = useCallback(() => {
+    setRegionState(createTourRegionState(location));
+    searchOpenedRef.current = false;
+    setListFullscreen(false);
+    setExpanded(false);
+  }, [location]);
+
+  useServiceModalEscapeClose(Boolean(eligible && (expanded || listFullscreen)), close);
+
   if (!eligible) {
     if (typeof children === 'function') {
       return children({
@@ -313,13 +323,6 @@ export default function GlobeTourStrip({
       return;
     }
     setExpanded(true);
-  };
-
-  const close = () => {
-    setRegionState(createTourRegionState(location));
-    searchOpenedRef.current = false;
-    setListFullscreen(false);
-    setExpanded(false);
   };
 
   const toggleOpen = () => {

@@ -2,10 +2,14 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
   buildPlacePathWithStrippedServiceModalDeeplink,
+  claimPlaceServiceModalDeeplinkEmit,
   hasRawPlaceServiceModalOpenQuery,
   parsePlaceServiceModalDeeplink,
   preserveServiceModalDeeplinkSearch,
   PLACE_SERVICE_MODAL_OPEN_VALUES,
+  readServiceModalSummaryFromLocation,
+  releasePlaceServiceModalDeeplinkEmit,
+  resetPlaceServiceModalDeeplinkSession,
   stripPlaceServiceModalDeeplinkSearch,
   syncPlaceServiceModalDeeplinkDisplayUrl,
 } from '../../src/pages/Home/lib/placeServiceModalDeeplink.js';
@@ -85,6 +89,22 @@ test('syncPlaceServiceModalDeeplinkDisplayUrl updates address bar only', () => {
   assert.equal(window.location.pathname, '/place/kyoto');
   assert.equal(window.location.search, '?lang=ko');
   syncPlaceServiceModalDeeplinkDisplayUrl(prevPath || '/');
+});
+
+test('deeplink emit claim is once until the open query is gone', () => {
+  resetPlaceServiceModalDeeplinkSession();
+  const key = 'kyoto|tour|review';
+  assert.equal(claimPlaceServiceModalDeeplinkEmit(key), true);
+  assert.equal(claimPlaceServiceModalDeeplinkEmit(key), false);
+  releasePlaceServiceModalDeeplinkEmit();
+  assert.equal(claimPlaceServiceModalDeeplinkEmit(key), true);
+  resetPlaceServiceModalDeeplinkSession();
+});
+
+test('service modal summary is active only for a place deeplink', () => {
+  assert.equal(readServiceModalSummaryFromLocation('/place/kyoto', '?open=tour&from=review'), true);
+  assert.equal(readServiceModalSummaryFromLocation('/place/kyoto', '?lang=ko'), false);
+  assert.equal(readServiceModalSummaryFromLocation('/', '?open=tour&from=review'), false);
 });
 
 test('service_modal_open deeplink GA payload', () => {

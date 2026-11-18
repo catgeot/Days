@@ -366,6 +366,8 @@ test('Home gallery PR drift guard; MOONi session wiring line allowlist', () => {
       ((/tourContentMatch/.test(diff) && /fetchKoreaTourAttractionById/.test(diff)) ||
         (/buildPlacePathWithStrippedServiceModalDeeplink/.test(diff) &&
           /syncPlaceServiceModalDeeplinkDisplayUrl/.test(diff)) ||
+        (/serviceModalSummaryActive/.test(diff) &&
+          /claimPlaceServiceModalDeeplinkEmit/.test(diff)) ||
         /enrichJoseonRoyalTombsPromoPin/.test(diff) ||
         /preserveSearchCoordUrl/.test(diff) ||
         (/window\.location\.assign\(placeHref\)/.test(diff) &&

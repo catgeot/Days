@@ -66,7 +66,10 @@ export function buildPlacePathWithStrippedServiceModalDeeplink(slug, opts = {}) 
   return `${path}${tab}${nextSearch}`;
 }
 
-/** Deeplink 소비 후 주소창만 /place SSOT로 맞춤 — React Router는 홈 써머리(/) 유지. */
+/**
+ * 주소창만 바꾸는 레거시. 딥링크 소비는 navigate(replace)로 라우터와 주소를 같이 맞춘다.
+ * 이 함수를 딥링크 경로에서 다시 호출하면 라우터는 / 인데 주소만 /place 가 된다.
+ */
 export function syncPlaceServiceModalDeeplinkDisplayUrl(strippedPath) {
   if (!strippedPath || typeof window === 'undefined') return;
   try {
@@ -86,4 +89,68 @@ export function isPlaceServiceModalOpenEligible(location, service) {
   const useMrtTna = canShowMrtTnaStrip(location);
   const gygQuery = useMrtTna ? null : buildGygActivitiesSearchQuery(location);
   return useMrtTna || Boolean(gygQuery);
+}
+
+const deeplinkEmitted = new Set();
+let lastDeeplinkEmitKey = null;
+let serviceModalSummaryRequest = null;
+
+export function claimPlaceServiceModalDeeplinkEmit(consumeKey) {
+  const key = String(consumeKey || '');
+  if (!key || deeplinkEmitted.has(key)) return false;
+  deeplinkEmitted.add(key);
+  lastDeeplinkEmitKey = key;
+  return true;
+}
+
+/** open 쿼리가 사라진 뒤 같은 키의 다음 방문이 다시 1회 기록되게 한다. */
+export function releasePlaceServiceModalDeeplinkEmit() {
+  if (!lastDeeplinkEmitKey) return;
+  deeplinkEmitted.delete(lastDeeplinkEmitKey);
+  lastDeeplinkEmitKey = null;
+}
+
+export function rememberPlaceServiceModalSummary(slug, service) {
+  serviceModalSummaryRequest = {
+    slug: String(slug || '').trim().toLowerCase(),
+    service: service === 'stay' ? 'stay' : 'tour',
+  };
+}
+
+export function readPlaceServiceModalSummaryRequest() {
+  return serviceModalSummaryRequest;
+}
+
+export function clearPlaceServiceModalSummaryRequest() {
+  serviceModalSummaryRequest = null;
+}
+
+export function resetPlaceServiceModalDeeplinkSession() {
+  deeplinkEmitted.clear();
+  lastDeeplinkEmitKey = null;
+  serviceModalSummaryRequest = null;
+}
+
+export function readServiceModalSummaryFromLocation(pathname, search) {
+  const path = String(pathname || '');
+  if (!path.startsWith('/place/')) return false;
+  return Boolean(parsePlaceServiceModalDeeplink(search).open);
+}
+
+export function initialServiceModalSummaryActive() {
+  if (typeof window === 'undefined') return false;
+  const req = readPlaceServiceModalSummaryRequest();
+  if (req?.slug && window.location.pathname.startsWith(`/place/${req.slug}`)) return true;
+  return readServiceModalSummaryFromLocation(window.location.pathname, window.location.search);
+}
+
+export function initialDeeplinkStripSignals() {
+  const empty = { tour: 0, stay: 0 };
+  if (typeof window === 'undefined') return empty;
+  const req = readPlaceServiceModalSummaryRequest();
+  if (!req?.slug || !window.location.pathname.startsWith(`/place/${req.slug}`)) return empty;
+  return {
+    tour: req.service === 'tour' ? 1 : 0,
+    stay: req.service === 'stay' ? 1 : 0,
+  };
 }

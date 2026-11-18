@@ -666,6 +666,16 @@ test('activity keyword listing — fallback vs match flags', () => {
   assert.equal(tourActivityKeywordLikelyMatches(khaoLak, '시미란'), true);
   assert.equal(tourActivityKeywordLikelyMatches(khaoLak, 'Similan'), true);
   assert.equal(resolveTourActivitySearchCommitMeta('zzqx', khaoLak).keywordSearchFallback, true);
+  assert.equal(
+    resolveTourActivitySearchCommitMeta('zzqx 투어', khaoLak, null, 'zzqx 투어').keywordSearchFallback,
+    true,
+  );
+  assert.equal(
+    resolveTourActivitySearchCommitMeta('zzqx snorkeling', khaoLak, null, 'zzqx snorkeling')
+      .keywordSearchFallback,
+    false,
+  );
+  assert.equal(resolveTourActivitySearchCommitMeta('투어', khaoLak, null, '투어').keywordSearchFallback, false);
   assert.equal(resolveTourActivitySearchCommitMeta('시미란', khaoLak).keywordSearchFallback, false);
   assert.equal(resolveTourActivitySearchCommitMeta('코끼리', khaoLak).keywordSearchFallback, false);
   assert.equal(resolveTourActivitySearchCommitMeta('snorkeling', khaoLak).keywordSearchFallback, false);

@@ -66,6 +66,8 @@ const PlaceCard = () => {
     }
   }, [contextLocation, slug, tabKey, navigate]);
 
+  if (context?.serviceModalSummaryActive) return null;
+
   const normalizedSlug = String(slug ?? '').trim().toLowerCase();
   const resolveForSlug =
     placeRouteResolve &&
