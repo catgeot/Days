@@ -147,6 +147,15 @@ test('credit renderers show the stored line unless the image is Unsplash', () =>
     assert.equal(source.includes('formatFestivalPhotoCreditLine'), false);
     assert.ok(source.indexOf("credit.type === 'unsplash'") < source.indexOf('Photo by'));
   }
-  assert.match(reviews, /resolveEditorialReviewImageCredit/);
+  assert.match(reviews, /editorial-review-image-credit/);
   assert.match(hero, /logbook-editorial-review-detail-hero-credit/);
+});
+
+test('hub detail layout still renders per-image credits in ReviewsTab', () => {
+  const reviews = readFileSync(join(root, 'src/components/PlaceCard/tabs/ReviewsTab.jsx'), 'utf8');
+  assert.equal(reviews.includes('!hubDetailLayout ? <EditorialReviewImageCredits'), false);
+  assert.equal(reviews.includes('!hubDetailLayout ? <ReviewPerImageCredit'), false);
+  assert.match(reviews, /gateo-review-lightbox-credit/);
+  assert.match(reviews, /resolveEditorialReviewHubHeroImageIndex/);
+  assert.match(reviews, /hubHeroImageIndex === imageIndex/);
 });

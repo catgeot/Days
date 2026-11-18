@@ -25,6 +25,16 @@ export function pickEditorialReviewHubThumb(review) {
   return null;
 }
 
+/** Hub detail hero image index in `review.images`, or null. */
+export function resolveEditorialReviewHubHeroImageIndex(review) {
+  const heroImage = pickEditorialReviewHubThumbPair(review)?.img;
+  if (!heroImage) return null;
+  const images = review?.images;
+  if (!Array.isArray(images)) return null;
+  const idx = images.indexOf(heroImage);
+  return idx >= 0 ? idx : null;
+}
+
 /** @returns {{ thumb: ReturnType<typeof optimizeLogbookReviewCardThumbUrl>, img: unknown } | null} */
 export function pickEditorialReviewHubThumbPair(review) {
   for (const img of editorialReviewHubThumbCandidates(review)) {

@@ -24,7 +24,7 @@ import {
 } from '../../../shared/navigation/logbookDetailBack.js';
 import { isEditorialLogbook, publicLogbookDetailPath } from '../../../utils/logbookEditorial';
 import { logbookHeroImageUrl } from '../../../utils/logbookImageSrc';
-import { collectUniqueEditorialReviewImageCredits, resolveEditorialReviewImageCredit } from '../../../utils/editorialReviewImageCredit';
+import { collectUniqueEditorialReviewImageCredits } from '../../../utils/editorialReviewImageCredit';
 import {
   getCollapsedPreviewText,
   getGalleryImageEntries,
@@ -63,6 +63,7 @@ import { useGateoPhotoLightboxA11y } from '../../../shared/useGateoPhotoLightbox
 import { isGateoOfficialEditorialPlaceReview } from '../../../logbookOfficialReviews/gateoOfficialEditorialPlaceReview.js';
 import { isLogbookEditorialReviewDetailLayoutActive } from '../../../utils/logbookReviewFilterFlag.js';
 import LogbookEditorialReviewDetailHero from '../../../logbookOfficialReviews/LogbookEditorialReviewDetailHero.jsx';
+import { resolveEditorialReviewHubHeroImageIndex } from '../../../logbookOfficialReviews/editorialReviewHubThumb.js';
 
 const RelatedBlogCardThumbnail = ({ src }) => {
   const [failed, setFailed] = useState(false);
@@ -97,7 +98,7 @@ const EditorialReviewImageCredits = ({ images, compact = false }) => {
     : 'mt-1.5 text-[10px] text-gray-400 leading-snug';
 
   return (
-    <p className={className} translate="no">
+    <p className={className} translate="no" data-testid="editorial-review-image-credit">
       {credits.map((credit, index) => (
         <React.Fragment key={`${credit.type}-${index}`}>
           {index > 0 ? <span className="text-gray-300"> · </span> : null}
@@ -160,48 +161,54 @@ const EditorialReviewImageCredits = ({ images, compact = false }) => {
   );
 };
 
-const ReviewThumbnailUnsplashCredit = ({ img }) => {
-  const credit = resolveEditorialReviewImageCredit(img);
-  if (!credit) return null;
+const ReviewPerImageCredit = ({ img, variant = 'thumbnail' }) => (
+  <EditorialReviewImageCredits images={[img]} compact={variant === 'thumbnail'} />
+);
 
-  if (credit.type !== 'unsplash') {
-    return (
-      <p
-        className="mt-0.5 text-[9px] text-gray-400 leading-none text-right w-full min-w-0 truncate whitespace-nowrap overflow-hidden"
-        translate="no"
-      >
-        {credit.text}
-      </p>
-    );
-  }
+const ReviewLightboxImageCredit = ({ img }) => {
+  const credits = collectUniqueEditorialReviewImageCredits([img]);
+  if (credits.length === 0) return null;
 
   return (
     <p
-      className="mt-0.5 text-[9px] text-gray-400 leading-none text-right w-full min-w-0 truncate whitespace-nowrap overflow-hidden"
+      className="pointer-events-auto max-w-[min(100%,40rem)] px-3 text-center text-xs leading-snug text-white/85"
+      data-testid="gateo-review-lightbox-credit"
       translate="no"
+      onClick={(event) => event.stopPropagation()}
     >
-      Photo:{' '}
-      {credit.photographerHref ? (
-        <a
-          href={credit.photographerHref}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="underline decoration-gray-300 underline-offset-2 hover:text-gray-600"
-        >
-          {credit.photographerName || 'Photographer'}
-        </a>
-      ) : (
-        credit.photographerName
-      )}
-      {' / '}
-      <a
-        href={credit.unsplashHref}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="underline decoration-gray-300 underline-offset-2 hover:text-gray-600"
-      >
-        Unsplash
-      </a>
+      {credits.map((credit, index) => (
+        <React.Fragment key={`${credit.type}-${index}`}>
+          {index > 0 ? <span className="text-white/40"> · </span> : null}
+          {credit.type === 'unsplash' ? (
+            <>
+              Photo by{' '}
+              {credit.photographerHref ? (
+                <a
+                  href={credit.photographerHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline decoration-white/30 underline-offset-2 hover:text-white"
+                >
+                  {credit.photographerName}
+                </a>
+              ) : (
+                credit.photographerName
+              )}
+              {' on '}
+              <a
+                href={credit.unsplashHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline decoration-white/30 underline-offset-2 hover:text-white"
+              >
+                Unsplash
+              </a>
+            </>
+          ) : (
+            credit.text
+          )}
+        </React.Fragment>
+      ))}
     </p>
   );
 };
@@ -237,7 +244,7 @@ const CollapsedReviewLeadThumbnail = ({ review, onImageClick }) => {
           }}
         />
       </button>
-      <ReviewThumbnailUnsplashCredit img={leadImg} />
+      <ReviewPerImageCredit img={leadImg} variant="thumbnail" />
     </div>
   );
 };
@@ -335,6 +342,10 @@ export const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onTog
   const showExpandToggle = shouldShowReviewExpandToggle(review);
   const showBottomGallery = shouldShowReviewBottomGallery(review, isExpanded);
   const leadThumbnailIndex = getReviewLeadThumbnailImageIndex(review);
+  const hubHeroImageIndex = useMemo(() => {
+    if (!hubDetailLayout) return null;
+    return resolveEditorialReviewHubHeroImageIndex(review);
+  }, [hubDetailLayout, review]);
 
   const toggleExpanded = () => setIsExpanded((value) => !value);
 
@@ -368,7 +379,10 @@ export const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onTog
             }}
           />
         </button>
-        {review.is_editorial && !hubDetailLayout ? <EditorialReviewImageCredits images={[img]} /> : null}
+        {review.is_editorial &&
+        !(hubDetailLayout && hubHeroImageIndex != null && hubHeroImageIndex === imageIndex) ? (
+          <ReviewPerImageCredit img={img} variant="inline" />
+        ) : null}
       </div>
     );
   };
@@ -536,28 +550,28 @@ export const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onTog
               if (!imgSrc) return null;
 
               return (
-                <div
-                  key={idx}
-                  onClick={() => onImageClick(review.images, idx)}
-                  className="relative shrink-0 w-24 h-24 min-w-[6rem] rounded-lg overflow-hidden snap-start bg-gray-100 border border-gray-200 cursor-pointer hover:opacity-90 transition-opacity"
-                >
-                  <img
-                    src={imgSrc}
-                    alt={`review img ${idx}`}
-                    className="w-full h-full object-cover"
-                    loading="lazy"
-                    onError={(e) => {
-                      e.target.onerror = null;
-                      e.target.src = 'https://placehold.co/100x100?text=Error';
-                    }}
-                  />
+                <div key={idx} className="shrink-0 flex w-24 min-w-[6rem] flex-col gap-0.5 snap-start">
+                  <button
+                    type="button"
+                    onClick={() => onImageClick(review.images, idx)}
+                    className="relative h-24 w-full overflow-hidden rounded-lg border border-gray-200 bg-gray-100 cursor-pointer hover:opacity-90 transition-opacity"
+                  >
+                    <img
+                      src={imgSrc}
+                      alt={`review img ${idx}`}
+                      className="h-full w-full object-cover"
+                      loading="lazy"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = 'https://placehold.co/100x100?text=Error';
+                      }}
+                    />
+                  </button>
+                  {review.is_editorial ? <ReviewPerImageCredit img={img} variant="thumbnail" /> : null}
                 </div>
               );
             })}
           </div>
-          {review.is_editorial && !hubDetailLayout ? (
-            <EditorialReviewImageCredits images={galleryEntries.map((entry) => entry.img)} />
-          ) : null}
         </div>
       )}
 
@@ -1216,6 +1230,13 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null, isActiv
                 </button>
               </>
             )}
+          </div>
+
+          <div
+            className="pointer-events-none absolute inset-x-0 bottom-0 z-[10000] flex justify-center bg-gradient-to-t from-black/80 to-transparent px-4 pb-[max(1rem,env(safe-area-inset-bottom,0px))] pt-8"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <ReviewLightboxImageCredit key={viewerIndex} img={viewerImages[viewerIndex]} />
           </div>
         </div>,
         document.body
