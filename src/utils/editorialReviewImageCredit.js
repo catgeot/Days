@@ -44,6 +44,20 @@ function hostnameIsWikimedia(value) {
   return hostnameMatches(value, ['wikimedia.org', 'wikipedia.org']);
 }
 
+/** Wikimedia author link only for /wiki/User:… on a Wikimedia/Wikipedia host. */
+function resolveWikimediaPhotographerHref(photographerHrefRaw) {
+  if (typeof photographerHrefRaw !== 'string') return null;
+  const trimmed = photographerHrefRaw.trim();
+  if (!trimmed) return null;
+  if (!hostnameIsWikimedia(trimmed)) return null;
+  try {
+    const path = decodeURIComponent(new URL(trimmed).pathname);
+    return /\/wiki\/User:/i.test(path) ? trimmed : null;
+  } catch {
+    return null;
+  }
+}
+
 /**
  * Photographer name alone is not Unsplash. KTO, KOGL, and Wikimedia rows store a
  * photographer plus the credit line that should be shown as written.
@@ -111,11 +125,11 @@ export function resolveEditorialReviewImageCredit(img) {
   const photographerName = String(img.photographer || img.photographer_name || '').trim();
   const photographerHrefRaw = img.photographer_url;
   const unsplashHrefRaw = img.unsplash_url || img.html_link;
-    const pexelsHrefRaw =
-      img.pexels_url ||
-      img.source_page ||
-      img.html_link ||
-      (typeof img.url === 'string' && hostnameIsPexels(img.url) ? img.url : null);
+  const pexelsHrefRaw =
+    img.pexels_url ||
+    img.source_page ||
+    img.html_link ||
+    (typeof img.url === 'string' && hostnameIsPexels(img.url) ? img.url : null);
   const filePageRaw = img.source_page || img.file_page_url;
 
   if (isUnsplashReviewImage(img)) {
@@ -162,12 +176,7 @@ export function resolveEditorialReviewImageCredit(img) {
             photographerHrefRaw.includes('commons.wikimedia.org/wiki/File:')
           ? photographerHrefRaw.trim()
           : null;
-    const photographerHref =
-      typeof photographerHrefRaw === 'string' &&
-      photographerHrefRaw.trim() &&
-      !photographerHrefRaw.includes('commons.wikimedia.org/wiki/File:')
-        ? photographerHrefRaw.trim()
-        : null;
+    const photographerHref = resolveWikimediaPhotographerHref(photographerHrefRaw);
     return {
       type: 'wikimedia',
       photographerName,

@@ -202,6 +202,45 @@ test('wikimedia Karelj — photographer user page is linked', () => {
   assert.match(resolved.photographerHref, /wiki\/User:Karelj/);
 });
 
+test('wikimedia File:, Category:, and other wiki paths never get author links', () => {
+  const fileOnly = resolveEditorialReviewImageCredit({
+    source: 'Wikimedia Commons',
+    photographer: 'Stephen Kennedy',
+    photographer_url: 'https://commons.wikimedia.org/wiki/File:The_tsunami_left_this_boat.jpg',
+    source_page: 'https://commons.wikimedia.org/wiki/File:The_tsunami_left_this_boat.jpg',
+    license: 'CC BY 2.0',
+  });
+  assert.equal(fileOnly?.photographerHref, null);
+
+  const category = resolveEditorialReviewImageCredit({
+    source: 'Wikimedia Commons',
+    photographer: 'Curator',
+    photographer_url: 'https://commons.wikimedia.org/wiki/Category:Thailand_photographs',
+    source_page: 'https://commons.wikimedia.org/wiki/File:Example.jpg',
+    license: 'CC BY 4.0',
+  });
+  assert.equal(category?.photographerHref, null);
+  assert.equal(category?.photographerName, 'Curator');
+
+  const helpPage = resolveEditorialReviewImageCredit({
+    source: 'Wikimedia Commons',
+    photographer: 'Volunteer',
+    photographer_url: 'https://commons.wikimedia.org/wiki/Help:Contents',
+    source_page: 'https://commons.wikimedia.org/wiki/File:Volunteer_shot.jpg',
+    license: 'CC BY-SA 4.0',
+  });
+  assert.equal(helpPage?.photographerHref, null);
+
+  const nonWikiHost = resolveEditorialReviewImageCredit({
+    source: 'Wikimedia Commons',
+    photographer: 'Ada',
+    photographer_url: 'https://example.com/wiki/User:Ada',
+    source_page: 'https://commons.wikimedia.org/wiki/File:Ada.jpg',
+    license: 'CC BY 4.0',
+  });
+  assert.equal(nonWikiHost?.photographerHref, null);
+});
+
 test('hub detail layout still renders per-image credits in ReviewsTab', () => {
   const reviews = readFileSync(join(root, 'src/components/PlaceCard/tabs/ReviewsTab.jsx'), 'utf8');
   assert.equal(reviews.includes('!hubDetailLayout ? <EditorialReviewImageCredits'), false);
