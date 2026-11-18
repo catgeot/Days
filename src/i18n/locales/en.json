@@ -677,11 +677,13 @@
       "scrollTop": "Top"
     },
     "serviceRegion": {
-      "placeholder": "Search a region",
+      "placeholder": "City or region (e.g. Bangkok)",
       "recent": "Recent regions",
       "recommended": "Suggested regions",
       "tour": {
+        "fieldLabel": "Find tours in another region",
         "inputAria": "Search tour region",
+        "clearAria": "Clear search",
         "noList": "No tour list",
         "noPartner": "Tour partners do not list this region yet",
         "backTo": "← Back to {{name}} tours"

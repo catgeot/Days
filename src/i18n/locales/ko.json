@@ -447,11 +447,13 @@
       "scrollTop": "맨 위"
     },
     "serviceRegion": {
-      "placeholder": "지역 검색",
+      "placeholder": "도시·지역 이름 입력 (예: 방콕)",
       "recent": "최근 본 지역",
       "recommended": "추천 지역",
       "tour": {
+        "fieldLabel": "다른 지역 투어 찾기",
         "inputAria": "투어 지역 검색",
+        "clearAria": "검색어 지우기",
         "noList": "투어 목록 없음",
         "noPartner": "이 지역은 투어 제휴 목록이 아직 없어요",
         "backTo": "← {{name}} 투어로 돌아가기"
