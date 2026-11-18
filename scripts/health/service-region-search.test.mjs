@@ -38,10 +38,17 @@ const {
   parseTourServiceSearchInput,
   resetKnownServiceRegionCacheForTests,
   resetTourRegion,
+  listTourSearchRegionHits,
+  resolveTourActivitySearchCommitMeta,
   resolveTourSearchCommit,
   resolveTourWidgetTarget,
   tourRegionLocation,
 } = await import('../../src/shared/serviceRegion/serviceRegionSearchModel.js');
+const {
+  filterTourServiceRegions,
+  resolveTourActivityListing,
+  tourActivityKeywordLikelyMatches,
+} = await import('../../src/shared/serviceRegion/tourActivityListing.js');
 const { resolveVisibleTourPackageMoreLink } = await import('../../src/utils/mrtPackageLinks.js');
 const { RECENT_SEARCH_KEY, RECENT_VISITED_KEY } = await import(
   '../../src/pages/Home/lib/exploreRecentHistory.js'
@@ -123,9 +130,23 @@ function TourHarness() {
     activeLocation: active,
     changed: isTourRegionChanged(state),
     notice: state.notice,
+    appliedSearchText: state.committedSearchText,
+    onSearchClear: () =>
+      setState((prev) =>
+        confirmTourSearch(prev, {
+          activityKeyword: '',
+          searchText: '',
+          keywordSearchFallback: false,
+        }),
+      ),
     onCommit: (region, meta) =>
       setState((prev) =>
-        confirmTourSearch(prev, { region, activityKeyword: meta?.activityKeyword }),
+        confirmTourSearch(prev, {
+          region,
+          activityKeyword: meta?.activityKeyword,
+          searchText: meta?.searchText,
+          keywordSearchFallback: meta?.keywordSearchFallback,
+        }),
       ),
     onReset: () => setState((prev) => resetTourRegion(prev)),
     loadRecent: () => [phuket],
@@ -602,4 +623,52 @@ test('widget query updates on region+keyword commit and Enter', async () => {
   const resolved = resolveTourSearchCommit('방콕 수상시장', [], khaoLak);
   assert.equal(resolved?.region?.slug, 'bangkok');
   assert.equal(resolved?.activityKeyword, '수상시장');
+
+  await typeQuery('island hopping');
+  await pressEnter();
+  assert.equal(inputEl().value, 'island hopping');
+  assert.equal(widgetQuery().toLowerCase().includes('island hopping'), true);
+
+  const clear = container.querySelector('[data-service-region-clear]');
+  assert.ok(clear);
+  await act(async () => {
+    clear.dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
+  });
+  assert.equal(inputEl().value, '');
+  assert.equal(widgetQuery(), KHAO_LAK_GYG_Q);
+});
+
+test('region suggestions — El Nido phrase without substring cities', () => {
+  resetKnownServiceRegionCacheForTests();
+  const hits = listTourSearchRegionHits('El Nido island hopping', listKnownServiceRegions());
+  assert.ok(hits.some((region) => region.slug === 'el-nido'));
+  assert.equal(
+    hits.some((region) => ['dublin', 'delhi', 'el-calafate'].includes(region.slug)),
+    false,
+  );
+  assert.equal(filterTourServiceRegions('El', listKnownServiceRegions()).length, 0);
+  assert.ok(filterTourServiceRegions('카오락', listKnownServiceRegions()).some((r) => r.slug === 'khao-lak'));
+  assert.ok(filterTourServiceRegions('Khao Lak', listKnownServiceRegions()).some((r) => r.slug === 'khao-lak'));
+  assert.ok(filterTourServiceRegions('푸켓', listKnownServiceRegions()).some((r) => r.slug === 'phuket'));
+});
+
+test('activity keyword listing — fallback vs match flags', () => {
+  assert.equal(tourActivityKeywordLikelyMatches(khaoLak, 'zzqx'), false);
+  assert.equal(tourActivityKeywordLikelyMatches(khaoLak, 'zzqx 투어'), false);
+  assert.equal(tourActivityKeywordLikelyMatches(khaoLak, '시미란'), true);
+  assert.equal(tourActivityKeywordLikelyMatches(khaoLak, 'Similan'), true);
+  assert.equal(resolveTourActivitySearchCommitMeta('zzqx', khaoLak).keywordSearchFallback, true);
+  assert.equal(resolveTourActivitySearchCommitMeta('시미란', khaoLak).keywordSearchFallback, false);
+  const relevant = resolveTourActivityListing(
+    'zzqx',
+    khaoLak,
+    [{ itemName: '부산 시티투어' }, { itemName: '제주 렌트카' }],
+  );
+  assert.equal(relevant.keywordMatched, false);
+  assert.equal(relevant.usedFallbackListing, true);
+  const matched = resolveTourActivityListing('시미란', khaoLak, [
+    { itemName: '카오락 출발 시미란 국립공원 스노클링' },
+  ]);
+  assert.equal(matched.keywordMatched, true);
+  assert.equal(matched.items.length, 1);
 });

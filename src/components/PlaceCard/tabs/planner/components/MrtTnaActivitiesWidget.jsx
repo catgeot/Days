@@ -17,6 +17,7 @@ import {
 
 import StayListPartnerNotice from '../../../../../shared/affiliate/StayListPartnerNotice.jsx';
 import TourCardBookingLink from '../../../../../shared/affiliate/TourCardBookingLink.jsx';
+import { resolveTourActivityListing } from '../../../../../shared/serviceRegion/tourActivityListing.js';
 
 const LG_MQ = '(min-width: 1024px)';
 
@@ -277,6 +278,7 @@ export default function MrtTnaActivitiesWidget({
   linkSponsoredLabel = false,
   regionSearch = null,
   activityKeyword = '',
+  onActivityListingResolved = null,
 }) {
   const { t, i18n } = useTranslation();
   const planner = variant === 'planner';
@@ -320,22 +322,42 @@ export default function MrtTnaActivitiesWidget({
 
     (async () => {
       let result = null;
+      let usedFallbackListing = false;
+      let keywordMatched = !tourKeyword;
       if (tourKeyword) {
         result = await fetchMrtTnas({ keyword: tourKeyword, size: limit });
+        if (cancelled) return;
+        if (result) {
+          const listed = Array.isArray(result.items) ? result.items : [];
+          const resolved = resolveTourActivityListing(tourKeyword, location, listed);
+          keywordMatched = resolved.keywordMatched;
+          if (!resolved.keywordMatched) {
+            usedFallbackListing = true;
+            const fallback = await fetchMrtTnasForLocation(location, { size: limit });
+            if (cancelled) return;
+            result = fallback || { ...result, items: [] };
+          } else {
+            result = { ...result, items: resolved.items.slice(0, limit) };
+          }
+        }
       } else {
         result = await fetchMrtTnasForLocation(location, { size: limit });
       }
       if (cancelled) return;
       if (!result) {
         setStatus('error');
+        onActivityListingResolved?.({ keywordMatched: false, usedFallbackListing: false });
         return;
       }
-      const used = result.keywordUsed || query.keyword;
+      const used = usedFallbackListing
+        ? query.keyword
+        : result.keywordUsed || query.keyword;
       const expanded = Boolean(result.nearbyExpanded);
       const listed = Array.isArray(result.items)
         ? result.items.slice(0, limit)
         : [];
-      const isNearby = expanded || isMrtTnaNearbyKeyword(location, used);
+      const isNearby =
+        !usedFallbackListing && (expanded || isMrtTnaNearbyKeyword(location, used));
       setSections([
         {
           id: `sec-0-${used}`,
@@ -346,12 +368,16 @@ export default function MrtTnaActivitiesWidget({
       ]);
       setKeywordUsed(used);
       setStatus('ok');
+      onActivityListingResolved?.({
+        keywordMatched: tourKeyword ? keywordMatched : true,
+        usedFallbackListing: tourKeyword ? usedFallbackListing : false,
+      });
     })();
 
     return () => {
       cancelled = true;
     };
-  }, [placeKey, limit, tourKeyword]);
+  }, [placeKey, limit, tourKeyword, location, onActivityListingResolved, query.keyword]);
 
   const loadedNearbyKws = useMemo(
     () =>
