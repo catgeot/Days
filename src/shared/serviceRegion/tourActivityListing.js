@@ -197,6 +197,72 @@ export function tourActivityKeywordLikelyMatches(location, keyword) {
   return false;
 }
 
+function tourSearchTokens(text) {
+  return String(text || '')
+    .trim()
+    .split(/\s+/)
+    .map((t) => t.trim())
+    .filter(Boolean);
+}
+
+/** 한글 2자+ 또는 라틴 활동/장소형 토큰 — 무의미 fallback 억제 */
+function tourActivitySearchTokenLooksPlausible(token) {
+  const t = String(token || '').trim();
+  if (!t) return false;
+  if (TOUR_KEYWORD_HINT_RE.test(t)) return true;
+  if (/^[가-힣]{2,}$/.test(t)) return true;
+  if (/^[a-zA-Z]{3,}$/.test(t) && /[aeiouAEIOU]/.test(t)) return true;
+  if (/^[a-zA-Z]{5,}$/.test(t)) return true;
+  return false;
+}
+
+function tourActivitySearchTextLooksPlausible(text) {
+  const raw = String(text || '').trim();
+  if (!raw) return false;
+  if (TOUR_KEYWORD_HINT_RE.test(raw)) return true;
+  for (const token of tourSearchTokens(raw)) {
+    if (tourActivitySearchTokenLooksPlausible(token)) return true;
+  }
+  return false;
+}
+
+/** zzqx 등 — 라틴 자음 덩어리·너무 짧은 영문 잡음 */
+function tourActivitySearchTokenLooksMeaningless(token) {
+  const t = String(token || '').trim();
+  if (!t) return false;
+  if (/^[a-zA-Z]+$/.test(t)) {
+    if (t.length < 3) return true;
+    return !/[aeiouAEIOU]/.test(t);
+  }
+  return false;
+}
+
+function tourActivitySearchTextLooksMeaningless(text) {
+  const tokens = tourSearchTokens(text);
+  if (!tokens.length) return false;
+  return tokens.every(tourActivitySearchTokenLooksMeaningless);
+}
+
+/**
+ * GYG 커밋(items 없음): 실제 결과를 알 수 없을 때 fallback은 **무의미 입력만**.
+ * MRT는 items·fetch 후 resolveTourActivityListing이 우선.
+ */
+export function tourActivityKeywordShouldShowListingFallback(
+  location,
+  keyword,
+  searchText = '',
+) {
+  const kw = String(keyword || '').trim();
+  if (!kw) return false;
+  const full = String(searchText || '').trim();
+  const candidates = full && full !== kw ? [kw, full] : [kw];
+  for (const text of candidates) {
+    if (tourActivityKeywordLikelyMatches(location, text)) return false;
+    if (tourActivitySearchTextLooksPlausible(text)) return false;
+  }
+  return candidates.some((text) => tourActivitySearchTextLooksMeaningless(text));
+}
+
 /**
  * @param {unknown} query
  * @param {object | null | undefined} region

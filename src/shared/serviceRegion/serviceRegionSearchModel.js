@@ -28,7 +28,7 @@ import {
   filterTourServiceRegions,
   listTourServiceRegionSuggestionHits,
   resolveTourActivityListing,
-  tourActivityKeywordLikelyMatches,
+  tourActivityKeywordShouldShowListingFallback,
 } from './tourActivityListing.js';
 
 export const RECENT_REGION_LIMIT = 3;
@@ -532,12 +532,13 @@ export function resolveTourActivitySearchCommitMeta(
     return { keywordSearchFallback: Boolean(resolved.usedFallbackListing) };
   }
   const full = String(searchText || '').trim();
-  const likelyMatches =
-    tourActivityKeywordLikelyMatches(location, keyword) ||
-    (full.length > 0 &&
-      full !== keyword &&
-      tourActivityKeywordLikelyMatches(location, full));
-  return { keywordSearchFallback: !likelyMatches };
+  return {
+    keywordSearchFallback: tourActivityKeywordShouldShowListingFallback(
+      location,
+      keyword,
+      full,
+    ),
+  };
 }
 
 /** Dropdown only — too-short draft must not show bold no-results while default cards remain. */

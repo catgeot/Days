@@ -667,6 +667,18 @@ test('activity keyword listing — fallback vs match flags', () => {
   assert.equal(tourActivityKeywordLikelyMatches(khaoLak, 'Similan'), true);
   assert.equal(resolveTourActivitySearchCommitMeta('zzqx', khaoLak).keywordSearchFallback, true);
   assert.equal(resolveTourActivitySearchCommitMeta('시미란', khaoLak).keywordSearchFallback, false);
+  assert.equal(resolveTourActivitySearchCommitMeta('코끼리', khaoLak).keywordSearchFallback, false);
+  assert.equal(resolveTourActivitySearchCommitMeta('snorkeling', khaoLak).keywordSearchFallback, false);
+  assert.equal(
+    resolveTourActivitySearchCommitMeta('시미란 스노클링', khaoLak, null, '시미란 스노클링')
+      .keywordSearchFallback,
+    false,
+  );
+  assert.equal(resolveTourActivitySearchCommitMeta('수상시장', regionBySlug('bangkok')).keywordSearchFallback, false);
+  const paris = regionBySlug('paris');
+  assert.equal(resolveTourActivitySearchCommitMeta('루브르', paris).keywordSearchFallback, false);
+  assert.equal(resolveTourActivitySearchCommitMeta('louvre', paris).keywordSearchFallback, false);
+  assert.equal(resolveTourActivitySearchCommitMeta('zzqx', paris).keywordSearchFallback, true);
   const bangkok = regionBySlug('bangkok');
   const floatingMarketItems = [
     { itemName: 'Bangkok Damnoen Saduak Floating Market Tour' },
