@@ -1,0 +1,341 @@
+[
+  {
+    "id": "5f9cc144-1af2-432f-8dc9-05353bfb8bd8",
+    "place_slug": "khao-lak",
+    "persona_label": "느린산책",
+    "images": [
+      {
+        "url": "https://images.unsplash.com/photo-1691222691453-b32eba6f451e?auto=format&fit=crop&w=1600&q=80",
+        "credit": "Photo by Kir Shu on Unsplash",
+        "source": "Unsplash",
+        "caption": "방삭 해변, 사람 없는 물가로 밀려드는 물결",
+        "license": "Unsplash License",
+        "photographer": "Kir Shu",
+        "unsplash_url": "https://unsplash.com/photos/a-sandy-beach-with-waves-coming-in-to-the-shore-YzVgQrgV20Q?utm_source=gateo&utm_medium=referral",
+        "photographer_url": "https://unsplash.com/@kirshu?utm_source=gateo&utm_medium=referral"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1691222458932-64666888d479?auto=format&fit=crop&w=1600&q=80",
+        "credit": "Photo by Kir Shu on Unsplash",
+        "source": "Unsplash",
+        "caption": "방삭 해변 앞바다, 해 질 녘 구름이 번지는 수평선",
+        "license": "Unsplash License",
+        "photographer": "Kir Shu",
+        "unsplash_url": "https://unsplash.com/photos/a-large-body-of-water-under-a-cloudy-sky-ZVGikw9Ufd4?utm_source=gateo&utm_medium=referral",
+        "photographer_url": "https://unsplash.com/@kirshu?utm_source=gateo&utm_medium=referral"
+      }
+    ],
+    "content_blocks": [
+      {
+        "text": "**방삭 해변**(Bang Sak Beach)과 **팍윕 해변**(Pak Weep Beach)은 카오락에서 한적한 쪽 해안이에요. 모래 위에 자리를 잡고 책을 펴 보세요. 물가를 느린 걸음으로 걷다가, 해가 기우는 때에 수평선 쪽으로 자리를 옮겨 앉아도 좋아요([관광청 안내](https://www.thailandtravel.or.jp/areainfo/khaolak/)).\n\n카오락-람루 국립공원 안에는 카오락에서 약 9km 떨어진 **똔총파 폭포**(Ton Chong Fa Waterfall)가 있어요. 다섯 단으로 바위를 타고 내려온 물이 큰 웅덩이에 고여요. 입구에서 폭포까지 길이 비교적 쉬워서 서두를 이유가 없어요. 웅덩이 곁 바위에 앉아 물소리를 오래 들어 보세요. 오른쪽 윗단 길은 좁고 가파르고 미끄러워 아래에서 머물러도 충분해요([폭포 안내](https://news.cision.com/tourism-authority-of-thailand/r/7-best-things-to-do-in-khao-lak,c3416503)).\n\n카오락에서 약 40분 거리의 **반남켐 쓰나미 추모공원**(Ban Nam Khem Tsunami Memorial Park)에는 파도 모양으로 휜 콘크리트 벽이 옛 어선과 마주 서 있어요. 흙벽을 따라 1,400명이 넘는 이름이 새겨진 길이 이어져요. 말을 아끼고 걸음을 한 칸씩 늦춰 이름 앞을 지나 보세요. 공원과 해변은 08:00~20:00, 박물관은 수~일 08:30~16:30에 열어요([추모공원 안내](https://www.thailandtravel.or.jp/bannamkhemtsunamimemorialpark/)).\n\n**따꾸아빠 올드타운**(Takua Pa Old Town)에는 시노-포르투갈풍 건물이 줄지어 서 있고 벽에 거리 그림이 많이 그려져 있어요. 그림 하나 앞에서 한참 서 있다가 다음 골목은 천천히 걸어 보세요. 카페로 쓰는 건물에 들어가 잠시 앉아 쉬어도 좋아요([올드타운 안내](https://www.thailandtravel.or.jp/takua-pa/)).\n\n정보 확인일 2026-11-18 · 운영시간·메뉴는 현지 사정에 따라 바뀔 수 있어요\n\n이 리뷰는 공개된 정보(공식 안내·여행 자료)를 바탕으로 GATEO 리뷰어가 정리했어요.",
+        "type": "text"
+      },
+      {
+        "type": "links",
+        "items": [
+          {
+            "url": "https://www.google.com/maps/search/?api=1&query=Bang%20Sak%20Beach%2C%20Takua%20Pa%2C%20Phang%20Nga",
+            "kind": "map",
+            "label": "방삭·팍윕 해변 지도"
+          },
+          {
+            "url": "https://www.google.com/maps/search/?api=1&query=Ton%20Chong%20Fa%20Waterfall%2C%20Khao%20Lak-Lam%20Ru%20National%20Park%2C%20Phang%20Nga",
+            "kind": "map",
+            "label": "똔총파 폭포 지도"
+          },
+          {
+            "url": "https://www.google.com/maps/search/?api=1&query=Ban%20Nam%20Khem%20Tsunami%20Memorial%20Park%2C%20Bang%20Muang%2C%20Takua%20Pa%2C%20Phang%20Nga",
+            "kind": "map",
+            "label": "반남켐 쓰나미 추모공원 지도"
+          },
+          {
+            "url": "https://www.google.com/maps/search/?api=1&query=Takua%20Pa%20Old%20Town%2C%20Takua%20Pa%2C%20Phang%20Nga",
+            "kind": "map",
+            "label": "따꾸아빠 올드타운 지도"
+          }
+        ]
+      }
+    ],
+    "content": "\n**방삭 해변**(Bang Sak Beach)과 **팍윕 해변**(Pak Weep Beach)은 카오락에서 한적한 쪽 해안이에요. 모래 위에 자리를 잡고 책을 펴 보세요. 물가를 느린 걸음으로 걷다가, 해가 기우는 때에 수평선 쪽으로 자리를 옮겨 앉아도 좋아요([관광청 안내](https://www.thailandtravel.or.jp/areainfo/khaolak/)).\n\n카오락-람루 국립공원 안에는 카오락에서 약 9km 떨어진 **똔총파 폭포**(Ton Chong Fa Waterfall)가 있어요. 다섯 단으로 바위를 타고 내려온 물이 큰 웅덩이에 고여요. 입구에서 폭포까지 길이 비교적 쉬워서 서두를 이유가 없어요. 웅덩이 곁 바위에 앉아 물소리를 오래 들어 보세요. 오른쪽 윗단 길은 좁고 가파르고 미끄러워 아래에서 머물러도 충분해요([폭포 안내](https://news.cision.com/tourism-authority-of-thailand/r/7-best-things-to-do-in-khao-lak,c3416503)).\n\n카오락에서 약 40분 거리의 **반남켐 쓰나미 추모공원**(Ban Nam Khem Tsunami Memorial Park)에는 파도 모양으로 휜 콘크리트 벽이 옛 어선과 마주 서 있어요. 흙벽을 따라 1,400명이 넘는 이름이 새겨진 길이 이어져요. 말을 아끼고 걸음을 한 칸씩 늦춰 이름 앞을 지나 보세요. 공원과 해변은 08:00~20:00, 박물관은 수~일 08:30~16:30에 열어요([추모공원 안내](https://www.thailandtravel.or.jp/bannamkhemtsunamimemorialpark/)).\n\n**따꾸아빠 올드타운**(Takua Pa Old Town)에는 시노-포르투갈풍 건물이 줄지어 서 있고 벽에 거리 그림이 많이 그려져 있어요. 그림 하나 앞에서 한참 서 있다가 다음 골목은 천천히 걸어 보세요. 카페로 쓰는 건물에 들어가 잠시 앉아 쉬어도 좋아요([올드타운 안내](https://www.thailandtravel.or.jp/takua-pa/)).\n\n정보 확인일 2026-11-18 · 운영시간·메뉴는 현지 사정에 따라 바뀔 수 있어요\n\n이 리뷰는 공개된 정보(공식 안내·여행 자료)를 바탕으로 GATEO 리뷰어가 정리했어요.\n",
+    "is_editorial": true,
+    "is_public": true,
+    "created_at": "2026-11-10T22:42:00+00:00",
+    "rating": null,
+    "user_id": "a1bbc0fe-8301-47c5-841a-65a30f49c8bd",
+    "disclosure": "GATEO 편집 리뷰 · AI 보조 작성 · 공개 정보 기반 · 실제 방문 후기가 아닙니다.",
+    "user": {
+      "id": "e2e-editorial",
+      "display_name": "GATEO",
+      "avatar_url": null
+    },
+    "likes": [],
+    "likes_count": 0,
+    "views_count": 0
+  },
+  {
+    "id": "bf8d3588-fbf4-4869-8ba4-52d9279cd4ff",
+    "place_slug": "khao-lak",
+    "persona_label": "미식갑니다",
+    "images": [
+      {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/Street_fast_food_Patong_Thajsko_2018_1.jpg/1920px-Street_fast_food_Patong_Thajsko_2018_1.jpg",
+        "credit": "Karelj / Wikimedia Commons, CC BY 4.0 · 푸켓 빠통 노점 음식 사진(방니앙 시장 촬영 아님)",
+        "source": "Wikimedia Commons",
+        "caption": "방니앙 시장 길거리 음식 구역에 나오는 것과 같은 종류인 꼬치·해산물 노점 사진이에요. 촬영지는 푸켓 빠통의 노점이고, 방니앙 시장이 아니에요.",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0",
+        "source_page": "https://commons.wikimedia.org/wiki/File:Street_fast_food_Patong_Thajsko_2018_1.jpg",
+        "photographer": "Karelj",
+        "photographer_url": "https://commons.wikimedia.org/wiki/User:Karelj"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1661939252817-ebb73304f4c7?auto=format&fit=crop&w=1600&q=80",
+        "credit": "Design4business / Unsplash · 같은 종류의 음식 사진(리뷰 속 식당 촬영 아님)",
+        "source": "Unsplash",
+        "caption": "끄라창 카오락의 강황 트레발리 구이와 같은 종류인 생선 구이 사진이에요. 리뷰 속 식당에서 찍은 사진이 아니에요.",
+        "license": "Unsplash License",
+        "license_url": "https://unsplash.com/license",
+        "photographer": "Design4business",
+        "unsplash_url": "https://unsplash.com/photos/a-fish-on-a-leaf-xnxS_he76E4?utm_source=gateo&utm_medium=referral",
+        "photographer_url": "https://unsplash.com/@design4business?utm_source=gateo&utm_medium=referral"
+      },
+      {
+        "url": "https://images.pexels.com/photos/34474143/pexels-photo-34474143.jpeg?auto=compress&cs=tinysrgb&w=1600",
+        "credit": "Vietnam Hidden Light / Pexels · 같은 종류의 음식 사진(리뷰 속 식당 촬영 아님)",
+        "source": "Pexels",
+        "caption": "완안칸의 푸켓식 돼지고기 조림 무홍과 같은 종류인 삼겹 조림 사진이에요. 리뷰 속 식당에서 찍은 사진이 아니에요.",
+        "license": "Pexels License",
+        "license_url": "https://www.pexels.com/license/",
+        "source_page": "https://www.pexels.com/photo/deliciously-braised-pork-belly-in-rich-sauce-34474143/",
+        "photographer": "Vietnam Hidden Light",
+        "photographer_url": "https://www.pexels.com/@vietnamhiddenlight/"
+      }
+    ],
+    "content_blocks": [
+      {
+        "text": "**완안칸**(Waankarn, [관광청 소개](https://www.thailandtravel.or.jp/waankarn/))은 카오락 중심 끅칵의 남부 태국 요리점이에요. 10:00~22:00에 열고, 따꾸아빠의 역사와 문화에서 착안한 메뉴를 내요. 먼저 고를 접시는 푸켓식 돼지고기 조림 무홍, 그리고 나콘시탐마랏산 포멜로와 푸켓산 파인애플이 들어간 완안칸 샐러드예요.\n\n타이므앙군 람깬의 **끄라창 카오락**(Krachang Khao Lak, [미쉐린 가이드](https://guide.michelin.com/th/en/th-phang-nga-region/th-phang-nga/restaurant/krachang-khao-lak))은 빕구르망에 오른 해산물 식당이에요. 매일 12:00~20:00에 열고, 대부분 살아 있는 해산물을 단품으로 조리해요. 대표 접시로는 멜린조 잎 새우 코코넛 수프와 강황에 재운 자이언트 트레발리 구이가 나오고, 그날의 추천은 스페셜 보드에 적혀 있어요. 예약은 식당에 직접 [전화 예약](tel:+66956560862)으로 해요.\n\n**방니앙 시장**(Bang Niang Market, [공식 누리집](https://bangniangmarket.com/))은 방니앙 한가운데서 월·수·목·토 14:00~22:00에 서요. 상인 300곳이 넘고, 길거리 음식 구역에는 꼬치·스프링롤·해산물이, 농산물 구역에는 태국 과일과 채소가 놓여요. 운영 측은 이른 저녁을 가장 활기찬 때로 꼽아요.\n\n장이 서는 저녁에는 해 질 무렵 방니앙에서 꼬치로 시작하고, 화·금·일 저녁은 22:00까지 여는 완안칸으로 옮기면 돼요. 끄라창은 20:00에 닫으니 해산물은 점심이나 이른 저녁에 넣어요.\n\n정보 확인일 2026-11-11 · 운영시간·메뉴는 현지 사정에 따라 바뀔 수 있어요\n\n이 리뷰는 공개된 정보(공식 안내·여행 자료)를 바탕으로 GATEO 리뷰어가 정리했어요.",
+        "type": "text"
+      },
+      {
+        "type": "links",
+        "items": [
+          {
+            "url": "https://www.google.com/maps/search/?api=1&query=Waankarn%2C%20Khuekkhak%2C%20Takua%20Pa%20District%2C%20Phang%20Nga%2082190",
+            "kind": "map",
+            "label": "완안칸 지도"
+          },
+          {
+            "url": "https://www.google.com/maps/search/?api=1&query=Krachang%20Khao%20Lak%2C%2078%2F155%20Moo%205%2C%20Lam%20Kaen%2C%20Thai%20Mueang%2C%20Phang%20Nga%2082210",
+            "kind": "map",
+            "label": "끄라창 카오락 지도"
+          },
+          {
+            "url": "https://www.google.com/maps/search/?api=1&query=Bang%20Niang%20Market%2C%20Khao%20Lak%2C%20Phang%20Nga",
+            "kind": "map",
+            "label": "방니앙 시장 지도"
+          }
+        ]
+      }
+    ],
+    "content": "\n**완안칸**(Waankarn, [관광청 소개](https://www.thailandtravel.or.jp/waankarn/))은 카오락 중심 끅칵의 남부 태국 요리점이에요. 10:00~22:00에 열고, 따꾸아빠의 역사와 문화에서 착안한 메뉴를 내요. 먼저 고를 접시는 푸켓식 돼지고기 조림 무홍, 그리고 나콘시탐마랏산 포멜로와 푸켓산 파인애플이 들어간 완안칸 샐러드예요.\n\n타이므앙군 람깬의 **끄라창 카오락**(Krachang Khao Lak, [미쉐린 가이드](https://guide.michelin.com/th/en/th-phang-nga-region/th-phang-nga/restaurant/krachang-khao-lak))은 빕구르망에 오른 해산물 식당이에요. 매일 12:00~20:00에 열고, 대부분 살아 있는 해산물을 단품으로 조리해요. 대표 접시로는 멜린조 잎 새우 코코넛 수프와 강황에 재운 자이언트 트레발리 구이가 나오고, 그날의 추천은 스페셜 보드에 적혀 있어요. 예약은 식당에 직접 [전화 예약](tel:+66956560862)으로 해요.\n\n**방니앙 시장**(Bang Niang Market, [공식 누리집](https://bangniangmarket.com/))은 방니앙 한가운데서 월·수·목·토 14:00~22:00에 서요. 상인 300곳이 넘고, 길거리 음식 구역에는 꼬치·스프링롤·해산물이, 농산물 구역에는 태국 과일과 채소가 놓여요. 운영 측은 이른 저녁을 가장 활기찬 때로 꼽아요.\n\n장이 서는 저녁에는 해 질 무렵 방니앙에서 꼬치로 시작하고, 화·금·일 저녁은 22:00까지 여는 완안칸으로 옮기면 돼요. 끄라창은 20:00에 닫으니 해산물은 점심이나 이른 저녁에 넣어요.\n\n정보 확인일 2026-11-11 · 운영시간·메뉴는 현지 사정에 따라 바뀔 수 있어요\n\n이 리뷰는 공개된 정보(공식 안내·여행 자료)를 바탕으로 GATEO 리뷰어가 정리했어요.\n",
+    "is_editorial": true,
+    "is_public": true,
+    "created_at": "2026-11-10T22:34:00+00:00",
+    "rating": null,
+    "user_id": "a1bbc0fe-8301-47c5-841a-65a30f49c8bd",
+    "disclosure": "GATEO 편집 리뷰 · AI 보조 작성 · 공개 정보 기반 · 실제 방문 후기가 아닙니다.",
+    "user": {
+      "id": "e2e-editorial",
+      "display_name": "GATEO",
+      "avatar_url": null
+    },
+    "likes": [],
+    "likes_count": 0,
+    "views_count": 0
+  },
+  {
+    "id": "dc2a621f-493d-438e-a4fb-f6758014dbb4",
+    "place_slug": "copenhagen",
+    "persona_label": "미식갑니다",
+    "images": [
+      {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/2/24/Sm%C3%B8rrebr%C3%B8d._Rejemad_p%C3%A5_franskbr%C3%B8d_fra_Hallernes_Sm%C3%B8rrebr%C3%B8d._Torvehallerne_i_K%C3%B8benhavn._Foto_Hans_Christian_Hansen.jpg",
+        "credit": "Hans Christian Hansen / Wikimedia Commons, CC0 1.0",
+        "source": "Wikimedia Commons",
+        "caption": "할레르네스 스뫼레브뢰의 새우 스뫼레브뢰",
+        "license": "CC0 1.0",
+        "license_url": "https://creativecommons.org/publicdomain/zero/1.0/"
+      }
+    ],
+    "content_blocks": [
+      {
+        "text": "**토르베할레르네**(Torvehallerne, [공식 누리집](https://torvehallernekbh.dk/op-set/opening-hours/))는 프레데릭스보르가데 21번에 두 채의 홀로 서 있어요. 공식 시간은 월~금 10:00~19:00, 토·일 10:00~18:00이고, 아침 커피와 빵은 7시부터 나와요. 시 관광 안내 [비시트코펜하겐](https://www.visitcopenhagen.com/copenhagen/planning/torvehallerne-gdk545401)은 이 장을 뇌레포트 역 옆으로 적어요.\n\n홀 안의 **할레르네스 스뫼레브뢰**(Hallernes Smørrebrød, [가판 안내](https://torvehallernekbh.dk/stade/hallernes-smorrebrod/))는 시장의 생선·고기·채소를 올려 두툼한 스뫼레브뢰를 만들어요. 감자, 갓 구운 프리카델레, 갓 훈제한 연어가 기본 토핑으로 나와요. 가판 시간도 월~금 10:00~19:00, 토·일 10:00~18:00이고, 바 좌석 16개와 바깥 공용 자리가 있어요.\n\n같은 장의 **하브**(Hav, [생선 가판](https://torvehallernekbh.dk/stade/hav/))는 생선 가게와 오픈 키친을 함께 둬요. 피시 타파스, 갓 삶은 조개·갑각류, 식초에 재운 갓 구운 청어, 피시 프리카델레가 나와요.\n\n7시에 빵을 먼저 사고, 홀이 열리는 10시 이후 스뫼레브뢰로 이어가는 순서가 맞아요.\n\n정보 확인일 2026-11-10 · 운영시간·메뉴는 현지 사정에 따라 바뀔 수 있어요\n\n이 리뷰는 공개된 정보(공식 안내·여행 자료)를 바탕으로 GATEO 리뷰어가 정리했어요.",
+        "type": "text"
+      },
+      {
+        "type": "links",
+        "items": [
+          {
+            "url": "https://www.google.com/maps/search/?api=1&query=Torvehallerne+Frederiksborggade+21+Copenhagen",
+            "kind": "map",
+            "label": "토르베할레르네 지도"
+          },
+          {
+            "url": "https://www.google.com/maps/search/?api=1&query=Hallernes+Smorrebrod+Torvehallerne+Copenhagen",
+            "kind": "map",
+            "label": "할레르네스 스뫼레브뢰 지도"
+          },
+          {
+            "url": "https://www.google.com/maps/search/?api=1&query=HAV+Torvehallerne+Copenhagen",
+            "kind": "map",
+            "label": "하브 지도"
+          }
+        ]
+      }
+    ],
+    "content": "\n**토르베할레르네**(Torvehallerne, [공식 누리집](https://torvehallernekbh.dk/op-set/opening-hours/))는 프레데릭스보르가데 21번에 두 채의 홀로 서 있어요. 공식 시간은 월~금 10:00~19:00, 토·일 10:00~18:00이고, 아침 커피와 빵은 7시부터 나와요. 시 관광 안내 [비시트코펜하겐](https://www.visitcopenhagen.com/copenhagen/planning/torvehallerne-gdk545401)은 이 장을 뇌레포트 역 옆으로 적어요.\n\n홀 안의 **할레르네스 스뫼레브뢰**(Hallernes Smørrebrød, [가판 안내](https://torvehallernekbh.dk/stade/hallernes-smorrebrod/))는 시장의 생선·고기·채소를 올려 두툼한 스뫼레브뢰를 만들어요. 감자, 갓 구운 프리카델레, 갓 훈제한 연어가 기본 토핑으로 나와요. 가판 시간도 월~금 10:00~19:00, 토·일 10:00~18:00이고, 바 좌석 16개와 바깥 공용 자리가 있어요.\n\n같은 장의 **하브**(Hav, [생선 가판](https://torvehallernekbh.dk/stade/hav/))는 생선 가게와 오픈 키친을 함께 둬요. 피시 타파스, 갓 삶은 조개·갑각류, 식초에 재운 갓 구운 청어, 피시 프리카델레가 나와요.\n\n7시에 빵을 먼저 사고, 홀이 열리는 10시 이후 스뫼레브뢰로 이어가는 순서가 맞아요.\n\n정보 확인일 2026-11-10 · 운영시간·메뉴는 현지 사정에 따라 바뀔 수 있어요\n\n이 리뷰는 공개된 정보(공식 안내·여행 자료)를 바탕으로 GATEO 리뷰어가 정리했어요.\n",
+    "is_editorial": true,
+    "is_public": true,
+    "created_at": "2026-10-30T12:28:23+00:00",
+    "rating": null,
+    "user_id": "a1bbc0fe-8301-47c5-841a-65a30f49c8bd",
+    "disclosure": "GATEO 편집 리뷰 · AI 보조 작성 · 공개 정보 기반 · 실제 방문 후기가 아닙니다.",
+    "user": {
+      "id": "e2e-editorial",
+      "display_name": "GATEO",
+      "avatar_url": null
+    },
+    "likes": [],
+    "likes_count": 0,
+    "views_count": 0
+  },
+  {
+    "id": "45fcae82-f643-4155-a7d9-ea3e9f18fe70",
+    "place_slug": "seville",
+    "persona_label": "미식갑니다",
+    "images": [
+      {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/Mercado_de_Triana_%281%29.jpg/1920px-Mercado_de_Triana_%281%29.jpg",
+        "credit": "Alberto-g-rovi / Wikimedia Commons, CC BY 4.0",
+        "source": "Wikimedia Commons",
+        "caption": "세비야 트리아나 시장의 식재료 가판(2025)",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0/"
+      }
+    ],
+    "content_blocks": [
+      {
+        "text": "**트리아나 시장**(Mercado de Triana, [공식 누리집](https://mercadodetrianasevilla.com/horarios/))은 알토사노 광장, 산호르헤 거리 6번에 있어요. 공식 시간표는 식재료 점포를 월~토 9:00~14:30로 적고, 일·공휴일에는 점포가 쉬어요. 바·식당은 월~토 9:00~17:00와 18:00~0시, 일·공휴일 10:00~17:00에 열려요.\n\n같은 장의 **바 라 무랄라**(Bar La Muralla, [가판 안내](https://mercadodetrianasevilla.com/comercio/bar-la-muralla/))는 72번 가판이에요. 시장에서 받은 재료로 이베리코 챠시나와 플랑차 생선, 여러 가지 튀김, 가정식 스튜와 레부엘토를 내요.\n\n하몬을 고르면 **하모네리아 호세 루이스 로메로**(Jamonería José Luis Romero, [하몬 안내](https://mercadodetrianasevilla.com/comercio/jamoneria-jose-luis-romero/))가 50·57~59번 가판이에요. 판매 공간과 시식 공간이 나뉘고, 벨요타 이베리코 하몬을 그 자리에서 썰어 줘요. 시식 메뉴에는 이베리코 하몬 타르타르와, 훈제 정어리 살코기에 살모레호를 곁들인 접시가 있고, 하몬 카르투초를 받아 장 안에서 먹을 수도 있어요.\n\n점포가 닫힌 뒤에도 바 영업이 이어지니, 오전에 하몬을 보고 18시 이후 타파스 바로 넘어가는 순서가 맞아요.\n\n정보 확인일 2026-11-10 · 운영시간·메뉴는 현지 사정에 따라 바뀔 수 있어요\n\n이 리뷰는 공개된 정보(공식 안내·여행 자료)를 바탕으로 GATEO 리뷰어가 정리했어요.",
+        "type": "text"
+      },
+      {
+        "type": "links",
+        "items": [
+          {
+            "url": "https://www.google.com/maps/search/?api=1&query=Mercado+de+Triana+Plaza+del+Altozano+Sevilla",
+            "kind": "map",
+            "label": "트리아나 시장 지도"
+          },
+          {
+            "url": "https://www.google.com/maps/search/?api=1&query=Bar+La+Muralla+Mercado+de+Triana+Sevilla",
+            "kind": "map",
+            "label": "바 라 무랄라 지도"
+          },
+          {
+            "url": "https://www.google.com/maps/search/?api=1&query=Jamoneria+Jose+Luis+Romero+Mercado+de+Triana+Sevilla",
+            "kind": "map",
+            "label": "하모네리아 호세 루이스 로메로 지도"
+          }
+        ]
+      }
+    ],
+    "content": "\n**트리아나 시장**(Mercado de Triana, [공식 누리집](https://mercadodetrianasevilla.com/horarios/))은 알토사노 광장, 산호르헤 거리 6번에 있어요. 공식 시간표는 식재료 점포를 월~토 9:00~14:30로 적고, 일·공휴일에는 점포가 쉬어요. 바·식당은 월~토 9:00~17:00와 18:00~0시, 일·공휴일 10:00~17:00에 열려요.\n\n같은 장의 **바 라 무랄라**(Bar La Muralla, [가판 안내](https://mercadodetrianasevilla.com/comercio/bar-la-muralla/))는 72번 가판이에요. 시장에서 받은 재료로 이베리코 챠시나와 플랑차 생선, 여러 가지 튀김, 가정식 스튜와 레부엘토를 내요.\n\n하몬을 고르면 **하모네리아 호세 루이스 로메로**(Jamonería José Luis Romero, [하몬 안내](https://mercadodetrianasevilla.com/comercio/jamoneria-jose-luis-romero/))가 50·57~59번 가판이에요. 판매 공간과 시식 공간이 나뉘고, 벨요타 이베리코 하몬을 그 자리에서 썰어 줘요. 시식 메뉴에는 이베리코 하몬 타르타르와, 훈제 정어리 살코기에 살모레호를 곁들인 접시가 있고, 하몬 카르투초를 받아 장 안에서 먹을 수도 있어요.\n\n점포가 닫힌 뒤에도 바 영업이 이어지니, 오전에 하몬을 보고 18시 이후 타파스 바로 넘어가는 순서가 맞아요.\n\n정보 확인일 2026-11-10 · 운영시간·메뉴는 현지 사정에 따라 바뀔 수 있어요\n\n이 리뷰는 공개된 정보(공식 안내·여행 자료)를 바탕으로 GATEO 리뷰어가 정리했어요.\n",
+    "is_editorial": true,
+    "is_public": true,
+    "created_at": "2026-10-23T11:32:36+00:00",
+    "rating": null,
+    "user_id": "a1bbc0fe-8301-47c5-841a-65a30f49c8bd",
+    "disclosure": "GATEO 편집 리뷰 · AI 보조 작성 · 공개 정보 기반 · 실제 방문 후기가 아닙니다.",
+    "user": {
+      "id": "e2e-editorial",
+      "display_name": "GATEO",
+      "avatar_url": null
+    },
+    "likes": [],
+    "likes_count": 0,
+    "views_count": 0
+  },
+  {
+    "id": "e2e-khao-lak-slow-walk-emma-fixed",
+    "place_slug": "khao-lak",
+    "persona_label": "느린산책",
+    "images": [
+      {
+        "url": "https://images.unsplash.com/photo-1691222691453-b32eba6f451e?auto=format&fit=crop&w=1600&q=80",
+        "credit": "Photo by Kir Shu on Unsplash",
+        "source": "Unsplash",
+        "caption": "방삭 해변, 사람 없는 물가로 밀려드는 물결",
+        "license": "Unsplash License",
+        "photographer": "Kir Shu",
+        "unsplash_url": "https://unsplash.com/photos/a-sandy-beach-with-waves-coming-in-to-the-shore-YzVgQrgV20Q?utm_source=gateo&utm_medium=referral",
+        "photographer_url": "https://unsplash.com/@kirshu?utm_source=gateo&utm_medium=referral"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1691222458932-64666888d479?auto=format&fit=crop&w=1600&q=80",
+        "credit": "Photo by Emma Hynnä on Unsplash",
+        "source": "Unsplash",
+        "caption": "방삭 해변 앞바다, 해 질 녘 구름이 번지는 수평선",
+        "license": "Unsplash License",
+        "photographer": "Emma Hynnä",
+        "unsplash_url": "https://unsplash.com/photos/a-large-body-of-water-under-a-cloudy-sky-ZVGikw9Ufd4?utm_source=gateo&utm_medium=referral",
+        "photographer_url": "https://unsplash.com/@emma_hyp?utm_source=gateo&utm_medium=referral"
+      }
+    ],
+    "content_blocks": [
+      {
+        "text": "**방삭 해변**(Bang Sak Beach)과 **팍윕 해변**(Pak Weep Beach)은 카오락에서 한적한 쪽 해안이에요. 모래 위에 자리를 잡고 책을 펴 보세요. 물가를 느린 걸음으로 걷다가, 해가 기우는 때에 수평선 쪽으로 자리를 옮겨 앉아도 좋아요([관광청 안내](https://www.thailandtravel.or.jp/areainfo/khaolak/)).\n\n카오락-람루 국립공원 안에는 카오락에서 약 9km 떨어진 **똔총파 폭포**(Ton Chong Fa Waterfall)가 있어요. 다섯 단으로 바위를 타고 내려온 물이 큰 웅덩이에 고여요. 입구에서 폭포까지 길이 비교적 쉬워서 서두를 이유가 없어요. 웅덩이 곁 바위에 앉아 물소리를 오래 들어 보세요. 오른쪽 윗단 길은 좁고 가파르고 미끄러워 아래에서 머물러도 충분해요([폭포 안내](https://news.cision.com/tourism-authority-of-thailand/r/7-best-things-to-do-in-khao-lak,c3416503)).\n\n카오락에서 약 40분 거리의 **반남켐 쓰나미 추모공원**(Ban Nam Khem Tsunami Memorial Park)에는 파도 모양으로 휜 콘크리트 벽이 옛 어선과 마주 서 있어요. 흙벽을 따라 1,400명이 넘는 이름이 새겨진 길이 이어져요. 말을 아끼고 걸음을 한 칸씩 늦춰 이름 앞을 지나 보세요. 공원과 해변은 08:00~20:00, 박물관은 수~일 08:30~16:30에 열어요([추모공원 안내](https://www.thailandtravel.or.jp/bannamkhemtsunamimemorialpark/)).\n\n**따꾸아빠 올드타운**(Takua Pa Old Town)에는 시노-포르투갈풍 건물이 줄지어 서 있고 벽에 거리 그림이 많이 그려져 있어요. 그림 하나 앞에서 한참 서 있다가 다음 골목은 천천히 걸어 보세요. 카페로 쓰는 건물에 들어가 잠시 앉아 쉬어도 좋아요([올드타운 안내](https://www.thailandtravel.or.jp/takua-pa/)).\n\n정보 확인일 2026-11-18 · 운영시간·메뉴는 현지 사정에 따라 바뀔 수 있어요\n\n이 리뷰는 공개된 정보(공식 안내·여행 자료)를 바탕으로 GATEO 리뷰어가 정리했어요.",
+        "type": "text"
+      },
+      {
+        "type": "links",
+        "items": [
+          {
+            "url": "https://www.google.com/maps/search/?api=1&query=Bang%20Sak%20Beach%2C%20Takua%20Pa%2C%20Phang%20Nga",
+            "kind": "map",
+            "label": "방삭·팍윕 해변 지도"
+          },
+          {
+            "url": "https://www.google.com/maps/search/?api=1&query=Ton%20Chong%20Fa%20Waterfall%2C%20Khao%20Lak-Lam%20Ru%20National%20Park%2C%20Phang%20Nga",
+            "kind": "map",
+            "label": "똔총파 폭포 지도"
+          },
+          {
+            "url": "https://www.google.com/maps/search/?api=1&query=Ban%20Nam%20Khem%20Tsunami%20Memorial%20Park%2C%20Bang%20Muang%2C%20Takua%20Pa%2C%20Phang%20Nga",
+            "kind": "map",
+            "label": "반남켐 쓰나미 추모공원 지도"
+          },
+          {
+            "url": "https://www.google.com/maps/search/?api=1&query=Takua%20Pa%20Old%20Town%2C%20Takua%20Pa%2C%20Phang%20Nga",
+            "kind": "map",
+            "label": "따꾸아빠 올드타운 지도"
+          }
+        ]
+      }
+    ],
+    "content": "\n**방삭 해변**(Bang Sak Beach)과 **팍윕 해변**(Pak Weep Beach)은 카오락에서 한적한 쪽 해안이에요. 모래 위에 자리를 잡고 책을 펴 보세요. 물가를 느린 걸음으로 걷다가, 해가 기우는 때에 수평선 쪽으로 자리를 옮겨 앉아도 좋아요([관광청 안내](https://www.thailandtravel.or.jp/areainfo/khaolak/)).\n\n카오락-람루 국립공원 안에는 카오락에서 약 9km 떨어진 **똔총파 폭포**(Ton Chong Fa Waterfall)가 있어요. 다섯 단으로 바위를 타고 내려온 물이 큰 웅덩이에 고여요. 입구에서 폭포까지 길이 비교적 쉬워서 서두를 이유가 없어요. 웅덩이 곁 바위에 앉아 물소리를 오래 들어 보세요. 오른쪽 윗단 길은 좁고 가파르고 미끄러워 아래에서 머물러도 충분해요([폭포 안내](https://news.cision.com/tourism-authority-of-thailand/r/7-best-things-to-do-in-khao-lak,c3416503)).\n\n카오락에서 약 40분 거리의 **반남켐 쓰나미 추모공원**(Ban Nam Khem Tsunami Memorial Park)에는 파도 모양으로 휜 콘크리트 벽이 옛 어선과 마주 서 있어요. 흙벽을 따라 1,400명이 넘는 이름이 새겨진 길이 이어져요. 말을 아끼고 걸음을 한 칸씩 늦춰 이름 앞을 지나 보세요. 공원과 해변은 08:00~20:00, 박물관은 수~일 08:30~16:30에 열어요([추모공원 안내](https://www.thailandtravel.or.jp/bannamkhemtsunamimemorialpark/)).\n\n**따꾸아빠 올드타운**(Takua Pa Old Town)에는 시노-포르투갈풍 건물이 줄지어 서 있고 벽에 거리 그림이 많이 그려져 있어요. 그림 하나 앞에서 한참 서 있다가 다음 골목은 천천히 걸어 보세요. 카페로 쓰는 건물에 들어가 잠시 앉아 쉬어도 좋아요([올드타운 안내](https://www.thailandtravel.or.jp/takua-pa/)).\n\n정보 확인일 2026-11-18 · 운영시간·메뉴는 현지 사정에 따라 바뀔 수 있어요\n\n이 리뷰는 공개된 정보(공식 안내·여행 자료)를 바탕으로 GATEO 리뷰어가 정리했어요.\n",
+    "is_editorial": true,
+    "is_public": true,
+    "created_at": "2026-11-10T22:42:00+00:00",
+    "rating": null,
+    "user_id": "a1bbc0fe-8301-47c5-841a-65a30f49c8bd",
+    "disclosure": "GATEO 편집 리뷰 · AI 보조 작성 · 공개 정보 기반 · 실제 방문 후기가 아닙니다.",
+    "user": {
+      "id": "e2e-editorial",
+      "display_name": "GATEO",
+      "avatar_url": null
+    },
+    "likes": [],
+    "likes_count": 0,
+    "views_count": 0
+  }
+]

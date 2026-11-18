@@ -52,12 +52,74 @@ export function hasUnsplashReviewImageAttribution(img) {
   return isUnsplashReviewImage(img);
 }
 
+/** Stable per-file key so duplicate credit rows on different assets are detectable. */
+export function extractReviewImageAssetKey(img) {
+  if (!img || typeof img !== 'object') return '';
+  const candidates = [img.unsplash_url, img.html_link, img.url, img.publicUrl];
+  for (const raw of candidates) {
+    if (typeof raw !== 'string' || !raw.trim()) continue;
+    const trimmed = raw.trim();
+    const photoSlug = trimmed.match(/photos\/[^/?#]+-([A-Za-z0-9_-]+)/);
+    if (photoSlug) return `unsplash:${photoSlug[1]}`;
+    const cdnId = trimmed.match(/photo-\d+-([a-f0-9]+)/i);
+    if (cdnId) return `unsplash-cdn:${cdnId[1]}`;
+    try {
+      return `path:${new URL(trimmed).pathname}`;
+    } catch {
+      /* ignore */
+    }
+  }
+  return '';
+}
+
+function reviewImageCreditFingerprint(img) {
+  if (!img || typeof img !== 'object') return '';
+  const credit = String(img.credit || img.attribution || '').trim();
+  const photographer = String(img.photographer || img.photographer_name || '').trim();
+  const photographerUrl = String(img.photographer_url || '')
+    .trim()
+    .replace(/\?.*$/, '');
+  if (!credit && !photographer && !photographerUrl) return '';
+  return `${credit}||${photographer}||${photographerUrl}`;
+}
+
+/**
+ * Later images sometimes copy the first row's credit while pointing at another file (publish slip).
+ * Do not show another photo's attribution on the wrong asset.
+ */
+export function isBorrowedEditorialReviewImageCredit(img, images, imageIndex) {
+  if (!img || imageIndex == null || imageIndex <= 0 || !Array.isArray(images)) return false;
+  const selfKey = extractReviewImageAssetKey(img);
+  const selfFp = reviewImageCreditFingerprint(img);
+  if (!selfKey || !selfFp) return false;
+
+  for (let i = 0; i < imageIndex; i += 1) {
+    const other = images[i];
+    if (!other || other === img) continue;
+    if (extractReviewImageAssetKey(other) === selfKey) continue;
+    if (reviewImageCreditFingerprint(other) === selfFp) {
+      return true;
+    }
+  }
+  return false;
+}
+
 /**
  * @param {string|Record<string, unknown>|null|undefined} img
+ * @param {{ images?: unknown[], imageIndex?: number }} [context]
  * @returns {{ type: 'plain', text: string } | { type: 'unsplash', photographerName: string, photographerHref: string|null, unsplashHref: string } | null}
  */
-export function resolveEditorialReviewImageCredit(img) {
+export function resolveEditorialReviewImageCredit(img, context = {}) {
   if (!img || typeof img !== 'object') return null;
+
+  const { images, imageIndex } = context;
+  if (
+    Array.isArray(images) &&
+    typeof imageIndex === 'number' &&
+    isBorrowedEditorialReviewImageCredit(img, images, imageIndex)
+  ) {
+    return null;
+  }
 
   const creditText = String(img.credit || img.attribution || '').trim();
   const photographerName = String(img.photographer || img.photographer_name || '').trim();
@@ -94,14 +156,18 @@ export function resolveReviewThumbnailUnsplashCredit(img) {
   return credit?.type === 'unsplash' ? credit : null;
 }
 
-export function collectUniqueEditorialReviewImageCredits(images) {
+export function collectUniqueEditorialReviewImageCredits(images, context = {}) {
   if (!Array.isArray(images) || images.length === 0) return [];
 
   const seen = new Set();
   const credits = [];
 
-  for (const img of images) {
-    const credit = resolveEditorialReviewImageCredit(img);
+  for (let index = 0; index < images.length; index += 1) {
+    const img = images[index];
+    const credit = resolveEditorialReviewImageCredit(img, {
+      images: context.images ?? images,
+      imageIndex: context.imageIndex ?? index,
+    });
     if (!credit) continue;
 
     const key =

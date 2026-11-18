@@ -5,6 +5,8 @@ import { fileURLToPath } from 'node:url';
 import { test } from 'node:test';
 import {
   collectUniqueEditorialReviewImageCredits,
+  extractReviewImageAssetKey,
+  isBorrowedEditorialReviewImageCredit,
   isUnsplashReviewImage,
   resolveEditorialReviewImageCredit,
   resolveReviewThumbnailUnsplashCredit,
@@ -16,6 +18,9 @@ const samples = JSON.parse(
 );
 const detailReviews = JSON.parse(
   readFileSync(join(root, 'e2e/fixtures/logbook-review-detail-photo-reviews.json'), 'utf8'),
+);
+const liveRegression = JSON.parse(
+  readFileSync(join(root, 'e2e/fixtures/place-review-live-credit-regression.json'), 'utf8'),
 );
 
 const HWASEONG_CREDIT = 'ⓒ한국관광공사-송재근 / 포토코리아 · 공공누리 제1유형';
@@ -149,6 +154,25 @@ test('credit renderers show the stored line unless the image is Unsplash', () =>
   }
   assert.match(reviews, /editorial-review-image-credit/);
   assert.match(hero, /logbook-editorial-review-detail-hero-credit/);
+});
+
+test('borrowed Unsplash credit rows on a different asset resolve to null', () => {
+  const slowWalk = liveRegression.find((row) => row.id.startsWith('5f9cc144'));
+  assert.ok(slowWalk?.images?.length >= 2);
+  const [first, second] = slowWalk.images;
+  assert.notEqual(extractReviewImageAssetKey(first), extractReviewImageAssetKey(second));
+  assert.equal(isBorrowedEditorialReviewImageCredit(second, slowWalk.images, 1), true);
+  assert.equal(resolveEditorialReviewImageCredit(first, { images: slowWalk.images, imageIndex: 0 })?.photographerName, 'Kir Shu');
+  assert.equal(resolveEditorialReviewImageCredit(second, { images: slowWalk.images, imageIndex: 1 }), null);
+
+  const food = liveRegression.find((row) => row.id.startsWith('bf8d3588'));
+  for (let i = 0; i < food.images.length; i += 1) {
+    assert.equal(
+      isBorrowedEditorialReviewImageCredit(food.images[i], food.images, i),
+      false,
+      `image ${i} must not be treated as borrowed`,
+    );
+  }
 });
 
 test('hub detail layout still renders per-image credits in ReviewsTab', () => {

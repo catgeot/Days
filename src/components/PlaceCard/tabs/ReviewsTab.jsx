@@ -89,8 +89,8 @@ const RelatedBlogCardThumbnail = ({ src }) => {
   );
 };
 
-const EditorialReviewImageCredits = ({ images, compact = false }) => {
-  const credits = collectUniqueEditorialReviewImageCredits(images);
+const EditorialReviewImageCredits = ({ images, compact = false, imageContext = {} }) => {
+  const credits = collectUniqueEditorialReviewImageCredits(images, imageContext);
   if (credits.length === 0) return null;
 
   const className = compact
@@ -161,12 +161,16 @@ const EditorialReviewImageCredits = ({ images, compact = false }) => {
   );
 };
 
-const ReviewPerImageCredit = ({ img, variant = 'thumbnail' }) => (
-  <EditorialReviewImageCredits images={[img]} compact={variant === 'thumbnail'} />
+const ReviewPerImageCredit = ({ img, images, imageIndex, variant = 'thumbnail' }) => (
+  <EditorialReviewImageCredits
+    images={[img]}
+    compact={variant === 'thumbnail'}
+    imageContext={{ images, imageIndex }}
+  />
 );
 
-const ReviewLightboxImageCredit = ({ img }) => {
-  const credits = collectUniqueEditorialReviewImageCredits([img]);
+const ReviewLightboxImageCredit = ({ img, images, imageIndex }) => {
+  const credits = collectUniqueEditorialReviewImageCredits([img], { images, imageIndex });
   if (credits.length === 0) return null;
 
   return (
@@ -244,7 +248,12 @@ const CollapsedReviewLeadThumbnail = ({ review, onImageClick }) => {
           }}
         />
       </button>
-      <ReviewPerImageCredit img={leadImg} variant="thumbnail" />
+      <ReviewPerImageCredit
+        img={leadImg}
+        images={images}
+        imageIndex={leadIndex}
+        variant="thumbnail"
+      />
     </div>
   );
 };
@@ -381,7 +390,12 @@ export const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onTog
         </button>
         {review.is_editorial &&
         !(hubDetailLayout && hubHeroImageIndex != null && hubHeroImageIndex === imageIndex) ? (
-          <ReviewPerImageCredit img={img} variant="inline" />
+          <ReviewPerImageCredit
+            img={img}
+            images={images}
+            imageIndex={imageIndex}
+            variant="inline"
+          />
         ) : null}
       </div>
     );
@@ -567,7 +581,17 @@ export const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onTog
                       }}
                     />
                   </button>
-                  {review.is_editorial ? <ReviewPerImageCredit img={img} variant="thumbnail" /> : null}
+                  {review.is_editorial &&
+                  !(
+                    hubDetailLayout && hubHeroImageIndex != null && hubHeroImageIndex === idx
+                  ) ? (
+                    <ReviewPerImageCredit
+                      img={img}
+                      images={review.images}
+                      imageIndex={idx}
+                      variant="thumbnail"
+                    />
+                  ) : null}
                 </div>
               );
             })}
@@ -1236,7 +1260,12 @@ const ReviewsTab = ({ location, setMediaMode, mobileSecondaryNav = null, isActiv
             className="pointer-events-none absolute inset-x-0 bottom-0 z-[10000] flex justify-center bg-gradient-to-t from-black/80 to-transparent px-4 pb-[max(1rem,env(safe-area-inset-bottom,0px))] pt-8"
             onClick={(e) => e.stopPropagation()}
           >
-            <ReviewLightboxImageCredit key={viewerIndex} img={viewerImages[viewerIndex]} />
+            <ReviewLightboxImageCredit
+              key={viewerIndex}
+              img={viewerImages[viewerIndex]}
+              images={viewerImages}
+              imageIndex={viewerIndex}
+            />
           </div>
         </div>,
         document.body

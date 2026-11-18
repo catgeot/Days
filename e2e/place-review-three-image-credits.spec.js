@@ -82,11 +82,11 @@ test.describe('Place review per-image credits @mocked', () => {
     const card = page.locator(`[data-review-id="${FOOD_THUMBS_ID}"]`);
     await expect(card).toBeVisible({ timeout: 60_000 });
 
+    await expect(card.getByTestId('logbook-editorial-review-detail-hero-credit')).toContainText('Red Shuheart');
     await card.getByRole('button', { name: '더보기', exact: true }).click();
     const credits = card.getByTestId('editorial-review-image-credit');
-    await expect(credits).toHaveCount(3);
-    await expect(credits.nth(0)).toContainText('Red Shuheart');
-    await expect(credits.nth(1)).toContainText('생선구이');
-    await expect(credits.nth(2)).toContainText('무홍');
+    await expect(credits).toHaveCount(2);
+    await expect(credits.nth(0)).toContainText('생선구이');
+    await expect(credits.nth(1)).toContainText('무홍');
   });
 });
