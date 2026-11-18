@@ -116,7 +116,7 @@ export function resolveTourActivityListing(requestedKeyword, location, items = n
     return { keywordMatched: true, usedFallbackListing: false, items: items || [] };
   }
   if (Array.isArray(items)) {
-    const relevant = filterRelevantMrtTnas(items, keyword);
+    const relevant = filterRelevantMrtTnas(items, keyword, location);
     if (relevant.length > 0) {
       return {
         keywordMatched: true,

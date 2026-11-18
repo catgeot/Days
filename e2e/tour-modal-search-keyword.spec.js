@@ -4,6 +4,7 @@
  * npx playwright test -c playwright.config.tour-modal-region-search.js tour-modal-search-keyword
  */
 import { test, expect } from '@playwright/test';
+import { MRT_TNA_HAEUNDAE_CONTRACT_FIXTURE } from './fixtures/mrtTnaHaeundaeContract.fixture.mjs';
 
 const GYG_STUB = `(() => {
   const mount = () => {
@@ -92,8 +93,7 @@ test('combo search, activity-only, no results, single clear control', async ({ p
   await input.fill('zzqx');
   await input.press('Enter');
   await expect(input).toHaveValue('zzqx');
-  await expect(page.locator('[data-tour-search-list-fallback]')).toBeVisible();
-  await expect(page.locator('[data-tour-search-list-fallback]')).toContainText('zzqx');
+  await expect(page.locator('[data-tour-search-list-fallback]')).toHaveCount(0);
 
   await page.screenshot({
     path: `/opt/cursor/artifacts/${shotEmpty}`,
@@ -103,9 +103,74 @@ test('combo search, activity-only, no results, single clear control', async ({ p
   await input.fill('방콕 수상시장');
   await input.press('Enter');
   await expect(host).toHaveAttribute('data-gyg-q', 'Bangkok 수상시장');
+  await expect(page.locator('[data-tour-search-list-fallback]')).toHaveCount(0);
 
   await page.screenshot({
     path: `/opt/cursor/artifacts/${shotCombo}`,
     clip: { x: 0, y: 0, width: viewport.width, height: Math.min(844, viewport.height) },
   });
+});
+
+async function installMrtTnaMock(page) {
+  await page.route('**/functions/v1/fetch-mrt-tnas', async (route) => {
+    let keyword = '';
+    try {
+      const body = route.request().postDataJSON();
+      keyword = String(body?.keyword || '').trim();
+    } catch {
+      keyword = '';
+    }
+    if (keyword === 'zzqx') {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          ok: true,
+          keywordUsed: 'zzqx',
+          items: [
+            {
+              gid: 'mrt-zzqx-1',
+              itemName: '제주 시티투어 (무관)',
+              productUrl: 'https://experiences.myrealtrip.com/products/mrt-zzqx-1',
+            },
+          ],
+        }),
+      });
+      return;
+    }
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify(MRT_TNA_HAEUNDAE_CONTRACT_FIXTURE),
+    });
+  });
+}
+
+async function openJejuTourModal(page) {
+  await page.goto('/place/jeju?lang=ko', { waitUntil: 'domcontentloaded' });
+  await page.getByRole('button', { name: '홈으로 이동' }).first().click();
+  await expect(page).toHaveURL(/\/(\?|$)/, { timeout: 60_000 });
+  const tourButton = page.getByRole('button', { name: '투어 찾기' }).first();
+  await expect(tourButton).toBeVisible({ timeout: 60_000 });
+  await tourButton.click();
+  const viewport = page.viewportSize() || { width: 1280, height: 900 };
+  if (viewport.width < 1024) {
+    await expect(page.getByRole('dialog', { name: '투어 전체 목록' })).toBeVisible({
+      timeout: 60_000,
+    });
+  } else {
+    await expect(page.getByRole('region', { name: '투어 목록' })).toBeVisible({ timeout: 60_000 });
+  }
+}
+
+test('mrt listing — irrelevant keyword shows fallback notice', async ({ page }) => {
+  await installMrtTnaMock(page);
+  await installGygMock(page);
+  await openJejuTourModal(page);
+  const input = page.getByRole('combobox', { name: '투어 지역 검색' });
+  await input.fill('zzqx');
+  await input.press('Enter');
+  await expect(input).toHaveValue('zzqx');
+  await expect(page.locator('[data-tour-search-list-fallback]')).toBeVisible({ timeout: 60_000 });
+  await expect(page.locator('[data-tour-search-list-fallback]')).toContainText('zzqx');
 });

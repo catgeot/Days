@@ -1,5 +1,6 @@
 import React from 'react';
 import { collectUniqueEditorialReviewImageCredits } from '../../../utils/editorialReviewImageCredit';
+import { EditorialStockPhotoCreditLine } from '../../../components/PlaceCard/common/StockPhotoCreditLine';
 
 export default function EditorialLogbookImageCredits({ images, className = '' }) {
   const credits = collectUniqueEditorialReviewImageCredits(images);
@@ -10,33 +11,10 @@ export default function EditorialLogbookImageCredits({ images, className = '' })
       {credits.map((credit, index) => (
         <React.Fragment key={`${credit.type}-${index}`}>
           {index > 0 ? <span className="text-gray-300"> · </span> : null}
-          {credit.type === 'unsplash' ? (
-            <>
-              Photo by{' '}
-              {credit.photographerHref ? (
-                <a
-                  href={credit.photographerHref}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="underline decoration-gray-300 underline-offset-2 hover:text-gray-600"
-                >
-                  {credit.photographerName}
-                </a>
-              ) : (
-                credit.photographerName
-              )}
-              {' on '}
-              <a
-                href={credit.unsplashHref}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline decoration-gray-300 underline-offset-2 hover:text-gray-600"
-              >
-                Unsplash
-              </a>
-            </>
-          ) : (
+          {credit.type === 'plain' ? (
             credit.text
+          ) : (
+            <EditorialStockPhotoCreditLine credit={credit} allowAuthorWrap />
           )}
         </React.Fragment>
       ))}

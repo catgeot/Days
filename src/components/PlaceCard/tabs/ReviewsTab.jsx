@@ -25,6 +25,7 @@ import {
 import { isEditorialLogbook, publicLogbookDetailPath } from '../../../utils/logbookEditorial';
 import { logbookHeroImageUrl } from '../../../utils/logbookImageSrc';
 import { collectUniqueEditorialReviewImageCredits } from '../../../utils/editorialReviewImageCredit';
+import { EditorialStockPhotoCreditLine } from '../common/StockPhotoCreditLine';
 import {
   getCollapsedPreviewText,
   getGalleryImageEntries,
@@ -94,7 +95,7 @@ const EditorialReviewImageCredits = ({ images, compact = false }) => {
   if (credits.length === 0) return null;
 
   const className = compact
-    ? 'mt-0.5 text-[9px] text-gray-400 leading-none text-right w-full min-w-0 truncate whitespace-nowrap overflow-hidden'
+    ? 'mt-0.5 text-[9px] text-gray-400 leading-snug text-right w-full min-w-0 flex flex-wrap justify-end gap-x-0.5'
     : 'mt-1.5 text-[10px] text-gray-400 leading-snug';
 
   return (
@@ -102,58 +103,10 @@ const EditorialReviewImageCredits = ({ images, compact = false }) => {
       {credits.map((credit, index) => (
         <React.Fragment key={`${credit.type}-${index}`}>
           {index > 0 ? <span className="text-gray-300"> · </span> : null}
-          {credit.type === 'unsplash' && compact ? (
-            <>
-              Photo:{' '}
-              {credit.photographerHref ? (
-                <a
-                  href={credit.photographerHref}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="underline decoration-gray-300 underline-offset-2 hover:text-gray-600"
-                >
-                  {credit.photographerName}
-                </a>
-              ) : (
-                credit.photographerName
-              )}
-              {' / '}
-              <a
-                href={credit.unsplashHref}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline decoration-gray-300 underline-offset-2 hover:text-gray-600"
-              >
-                Unsplash
-              </a>
-            </>
-          ) : credit.type === 'unsplash' ? (
-            <>
-              Photo by{' '}
-              {credit.photographerHref ? (
-                <a
-                  href={credit.photographerHref}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="underline decoration-gray-300 underline-offset-2 hover:text-gray-600"
-                >
-                  {credit.photographerName}
-                </a>
-              ) : (
-                credit.photographerName
-              )}
-              {' on '}
-              <a
-                href={credit.unsplashHref}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline decoration-gray-300 underline-offset-2 hover:text-gray-600"
-              >
-                Unsplash
-              </a>
-            </>
-          ) : (
+          {credit.type === 'plain' ? (
             credit.text
+          ) : (
+            <EditorialStockPhotoCreditLine credit={credit} allowAuthorWrap />
           )}
         </React.Fragment>
       ))}
@@ -179,33 +132,10 @@ const ReviewLightboxImageCredit = ({ img }) => {
       {credits.map((credit, index) => (
         <React.Fragment key={`${credit.type}-${index}`}>
           {index > 0 ? <span className="text-white/40"> · </span> : null}
-          {credit.type === 'unsplash' ? (
-            <>
-              Photo by{' '}
-              {credit.photographerHref ? (
-                <a
-                  href={credit.photographerHref}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="underline decoration-white/30 underline-offset-2 hover:text-white"
-                >
-                  {credit.photographerName}
-                </a>
-              ) : (
-                credit.photographerName
-              )}
-              {' on '}
-              <a
-                href={credit.unsplashHref}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline decoration-white/30 underline-offset-2 hover:text-white"
-              >
-                Unsplash
-              </a>
-            </>
-          ) : (
+          {credit.type === 'plain' ? (
             credit.text
+          ) : (
+            <EditorialStockPhotoCreditLine credit={credit} tone="lightbox" allowAuthorWrap />
           )}
         </React.Fragment>
       ))}
