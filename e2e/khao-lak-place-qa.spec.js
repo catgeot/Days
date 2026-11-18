@@ -250,42 +250,41 @@ function buildBangkokStockGalleryRow() {
   }];
 }
 
-async function blockLiveApisWithPexelsStock(page) {
+async function blockLiveApisWithPexelsStock(target) {
   const stockGalleryRow = buildBangkokStockGalleryRow();
+  const stockPexelsImages = stockGalleryRow[0].gallery_urls;
 
-  await page.route(/generativelanguage|googleapis.*gemini|functions\/v1\/gemini/i, (route) =>
+  await target.route(/generativelanguage|googleapis.*gemini|functions\/v1\/gemini/i, (route) =>
     route.fulfill({
       status: 200,
       contentType: 'application/json',
       body: JSON.stringify({ results: [], photos: [] }),
     }),
   );
-  await page.route(/api\.unsplash\.com/i, (route) =>
+  await target.route(/api\.unsplash\.com/i, (route) =>
     route.fulfill({
       status: 200,
       contentType: 'application/json',
       body: JSON.stringify({ results: [], photos: [] }),
     }),
   );
-  await page.route(/api\.pexels\.com/i, (route) =>
+  await target.route(/api\.pexels\.com/i, (route) =>
     route.fulfill({
       status: 200,
       contentType: 'application/json',
       body: JSON.stringify({ photos: [], results: [] }),
     }),
   );
-  await page.route(/images\.pexels\.com/i, (route) => route.abort('failed'));
-  await page.route(/\/functions\/v1\/(pexels-proxy|tourapi-proxy)/i, (route) =>
+  await target.route(/images\.pexels\.com/i, (route) => route.abort('failed'));
+  await target.route(/\/functions\/v1\/tourapi-proxy/i, (route) =>
     route.fulfill({
       status: 200,
       contentType: 'application/json',
-      body: JSON.stringify(route.request().url().includes('pexels')
-        ? { success: true, images: [] }
-        : { ok: true, items: [] }),
+      body: JSON.stringify({ ok: true, items: [] }),
     }),
   );
 
-  await page.route(/\/rest\/v1\/(?!place_stats)/i, (route) => {
+  await target.route(/\/rest\/v1\/(?!place_stats)/i, (route) => {
     const url = route.request().url();
     if (/gallery_active_exclusion_keys|am_i_app_admin/.test(url)) {
       const method = route.request().method();
@@ -302,9 +301,9 @@ async function blockLiveApisWithPexelsStock(page) {
     return route.fallback();
   });
 
-  await page.route(/supabase\.co|\/rest\/v1\//i, (route) => {
+  await target.route(/supabase\.co|\/rest\/v1\//i, (route) => {
     const url = route.request().url();
-    if (/place_stats|gallery_active_exclusion_keys|am_i_app_admin/.test(url)) {
+    if (/place_stats|gallery_active_exclusion_keys|am_i_app_admin|pexels-proxy/.test(url)) {
       return route.fallback();
     }
     const method = route.request().method();
@@ -320,7 +319,7 @@ async function blockLiveApisWithPexelsStock(page) {
   });
 
   // Playwright: later handlers run first — register place_stats last so it wins over abort/catch-all.
-  await page.route('**/rest/v1/place_stats**', async (route) => {
+  await target.route('**/rest/v1/place_stats**', async (route) => {
     const method = route.request().method();
     if (method === 'OPTIONS') {
       return route.fulfill({ status: 204, headers: SUPABASE_E2E_CORS, body: '' });
@@ -333,16 +332,14 @@ async function blockLiveApisWithPexelsStock(page) {
         body: '[]',
       });
     }
-    const url = decodeURIComponent(route.request().url());
-    const rows = /bangkok/i.test(url) ? stockGalleryRow : [];
     await route.fulfill({
       status: 200,
       headers: { ...SUPABASE_E2E_CORS, 'content-type': 'application/json' },
-      body: JSON.stringify(rows),
+      body: JSON.stringify(stockGalleryRow),
     });
   });
 
-  await page.route('**/rest/v1/rpc/gallery_active_exclusion_keys**', async (route) => {
+  await target.route('**/rest/v1/rpc/gallery_active_exclusion_keys**', async (route) => {
     const method = route.request().method();
     if (method === 'OPTIONS') {
       return route.fulfill({ status: 204, headers: SUPABASE_E2E_CORS, body: '' });
@@ -352,6 +349,19 @@ async function blockLiveApisWithPexelsStock(page) {
       headers: SUPABASE_E2E_CORS,
       contentType: 'application/json',
       body: '[]',
+    });
+  });
+
+  await target.route('**/functions/v1/pexels-proxy**', async (route) => {
+    const method = route.request().method();
+    if (method === 'OPTIONS') {
+      return route.fulfill({ status: 204, headers: SUPABASE_E2E_CORS, body: '' });
+    }
+    await route.fulfill({
+      status: 200,
+      headers: SUPABASE_E2E_CORS,
+      contentType: 'application/json',
+      body: JSON.stringify({ success: true, images: stockPexelsImages }),
     });
   });
 }
@@ -395,7 +405,8 @@ async function openBangkokStockGalleryLightbox(page, viewport) {
 }
 
 test.describe('place gallery lightbox stock note — mock @390 @1280', () => {
-  test.beforeEach(async ({ page }) => {
+  test.beforeEach(async ({ context, page }) => {
+    await blockLiveApisWithPexelsStock(context);
     await blockLiveApisWithPexelsStock(page);
   });
 
