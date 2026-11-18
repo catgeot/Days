@@ -102,10 +102,16 @@ import {
 import { getGlobeApi, subscribeGlobeApi } from './lib/globeApiRegistry.js';
 import {
   buildPlacePathWithStrippedServiceModalDeeplink,
+  claimPlaceServiceModalDeeplinkEmit,
+  clearPlaceServiceModalSummaryRequest,
   hasRawPlaceServiceModalOpenQuery,
+  initialDeeplinkStripSignals,
+  initialServiceModalSummaryActive,
   parsePlaceServiceModalDeeplink,
   preserveServiceModalDeeplinkSearch,
-  syncPlaceServiceModalDeeplinkDisplayUrl,
+  readPlaceServiceModalSummaryRequest,
+  releasePlaceServiceModalDeeplinkEmit,
+  rememberPlaceServiceModalSummary,
 } from './lib/placeServiceModalDeeplink.js';
 
 const DEFAULT_GLOBE_THEME = 'deep';
@@ -332,11 +338,18 @@ function Home() {
   const [flightCinemaActive, setFlightCinemaActive] = useState(false);
   const [flightCinemaLaunchPending, setFlightCinemaLaunchPending] = useState(false);
   const [tourLaunchPending, setTourLaunchPending] = useState(false);
+  const [serviceModalSummaryActive, setServiceModalSummaryActive] = useState(
+    initialServiceModalSummaryActive,
+  );
   const isTourActive = isTourMode(globeMode);
   /** 모바일 투어 UI — TourMobileBar·써머리 숨김 (globeMode 동기화 전 launch pending 포함) */
   const isTourCinema = isMobileViewport && (isTourActive || tourLaunchPending);
   const isPlaceCardSummaryVisible = Boolean(
-    selectedLocation && routeLocation.pathname === '/' && !isTourCinema && !flightCinemaActive
+    selectedLocation &&
+      !isTourCinema &&
+      !flightCinemaActive &&
+      (routeLocation.pathname === '/' ||
+        (serviceModalSummaryActive && routeLocation.pathname.startsWith('/place/'))),
   );
   const mobilePlaceScrim = isMobileViewport && isPlaceCardSummaryVisible && !isPlaceImmersed;
   const mobileStayScrimStrong = mobilePlaceScrim && isStayStripExpanded;
@@ -556,8 +569,9 @@ function Home() {
   /** /place X 닫기 등 — 홈 복귀 시 써머리 재오픈 생략(핀 flyTo는 유지) */
   const skipHomeSummaryRestoreRef = useRef(false);
   const [pendingServiceModalOpen, setPendingServiceModalOpen] = useState(null);
-  const [deeplinkStripSignals, setDeeplinkStripSignals] = useState({ tour: 0, stay: 0 });
+  const [deeplinkStripSignals, setDeeplinkStripSignals] = useState(initialDeeplinkStripSignals);
   const placeServiceModalDeeplinkConsumedRef = useRef(null);
+  const placeServiceModalUiAppliedRef = useRef(null);
   const placeRouteSyncRef = useRef(0);
   const [placeRouteResolve, setPlaceRouteResolve] = useState(null);
   const [placeRouteRetryEpoch, setPlaceRouteRetryEpoch] = useState(0);
@@ -609,6 +623,9 @@ function Home() {
     const pathname = routeLocation.pathname;
     if (!pathname.startsWith('/place/')) {
       placeServiceModalDeeplinkConsumedRef.current = null;
+      placeServiceModalUiAppliedRef.current = null;
+      clearPlaceServiceModalSummaryRequest();
+      setServiceModalSummaryActive(false);
       return;
     }
 
@@ -624,6 +641,17 @@ function Home() {
     const searchParams = new URLSearchParams(routeLocation.search);
     const deeplink = parsePlaceServiceModalDeeplink(searchParams);
     if (!deeplink.open) {
+      placeServiceModalUiAppliedRef.current = null;
+      releasePlaceServiceModalDeeplinkEmit();
+      const summaryRequest = readPlaceServiceModalSummaryRequest();
+      if (
+        summaryRequest &&
+        (summaryRequest.slug !== routeSlug ||
+          (summaryRequest.pathname && summaryRequest.pathname !== pathname))
+      ) {
+        clearPlaceServiceModalSummaryRequest();
+        setServiceModalSummaryActive(false);
+      }
       if (hasRawPlaceServiceModalOpenQuery(routeLocation.search)) {
         const consumeKey = `${routeSlug}|__invalid__|${searchParams.get('from') || ''}`;
         if (placeServiceModalDeeplinkConsumedRef.current !== consumeKey) {
@@ -666,12 +694,7 @@ function Home() {
     }
 
     const consumeKey = `${routeSlug}|${deeplink.open}|${deeplink.from || ''}`;
-    if (
-      placeServiceModalDeeplinkConsumedRef.current === consumeKey
-      && !searchParams.has('open')
-    ) {
-      return;
-    }
+    if (placeServiceModalUiAppliedRef.current === consumeKey) return;
 
     let focusTarget =
       selectedLocation && hasValidCoords(selectedLocation) ? selectedLocation : selectedLocationRef.current;
@@ -687,22 +710,26 @@ function Home() {
     }
 
     placeServiceModalDeeplinkConsumedRef.current = consumeKey;
+    placeServiceModalUiAppliedRef.current = consumeKey;
     const pendingOpen = {
       service: deeplink.open,
       ref: deeplink.from,
       slug: slugKey || routeSlug,
     };
+    const strippedPath = buildPlacePathWithStrippedServiceModalDeeplink(routeSlug, {
+      tab: match?.params?.tab,
+      search: routeLocation.search,
+    });
+    const summaryPath = (strippedPath || pathname).split('?')[0];
+    rememberPlaceServiceModalSummary(routeSlug, deeplink.open, summaryPath);
+    setServiceModalSummaryActive(true);
     setPendingServiceModalOpen(pendingOpen);
     pendingGlobeHomeFocusRef.current = focusTarget;
     rememberGlobeFocus(focusTarget);
     setSelectedLocation(focusTarget);
     setIsCardExpanded(false);
-    const strippedPath = buildPlacePathWithStrippedServiceModalDeeplink(routeSlug, {
-      tab: match?.params?.tab,
-      search: routeLocation.search,
-    });
-    navigate('/', { replace: true });
-    queueMicrotask(() => {
+    if (strippedPath) navigate(strippedPath, { replace: true });
+    if (claimPlaceServiceModalDeeplinkEmit(consumeKey)) {
       const ga = buildServiceModalOpenEvent({
         service: pendingOpen.service,
         from: 'deeplink',
@@ -710,16 +737,11 @@ function Home() {
         slug: pendingOpen.slug,
       });
       trackEvent(ga.name, ga.params);
-      setDeeplinkStripSignals((prev) => ({
-        ...prev,
-        [deeplink.open]: prev[deeplink.open] + 1,
-      }));
-      if (typeof window !== 'undefined') {
-        window.requestAnimationFrame(() => {
-          syncPlaceServiceModalDeeplinkDisplayUrl(strippedPath);
-        });
-      }
-    });
+    }
+    setDeeplinkStripSignals((prev) => ({
+      ...prev,
+      [deeplink.open]: prev[deeplink.open] + 1,
+    }));
   }, [
     routeLocation.pathname,
     routeLocation.search,
@@ -2054,7 +2076,7 @@ function Home() {
           />
         ) : null}
 
-        {selectedLocation && routeLocation.pathname === '/' && !isTourCinema && !flightCinemaActive && (
+        {isPlaceCardSummaryVisible && (
           <HomePlaceCardSummary
             key={`summary-${homeChromeEpoch}-${selectedLocation.id ?? selectedLocation.slug ?? selectedLocation.name}`}
             globeRef={globeRef}
@@ -2064,11 +2086,24 @@ function Home() {
             deeplinkTourOpenSignal={deeplinkStripSignals.tour}
             deeplinkStayOpenSignal={deeplinkStripSignals.stay}
             isBookmarked={savedTrips.some(t => t.destination === selectedLocation.name && t.is_bookmarked)}
-            onClose={dismissPlaceSelectionKeepGlobePin}
+            onClose={() => {
+              if (serviceModalSummaryActive) {
+                clearPlaceServiceModalSummaryRequest();
+                setServiceModalSummaryActive(false);
+                return;
+              }
+              dismissPlaceSelectionKeepGlobePin();
+            }}
             onExpand={() => {
+              const fromSummary = serviceModalSummaryActive;
+              if (fromSummary) {
+                clearPlaceServiceModalSummaryRequest();
+                setServiceModalSummaryActive(false);
+              }
               const param = getPlaceUrlParam(selectedLocation);
               if (!param) return;
               setIsCardExpanded(true);
+              if (fromSummary) return;
               const fromExplore = Boolean(peekExploreReturn()?.path);
               navigate(`/place/${param}`, fromExplore ? { replace: true } : undefined);
             }}
@@ -2085,6 +2120,7 @@ function Home() {
         <div className={flightCinemaActive ? 'invisible pointer-events-none' : undefined}>
         <Outlet context={{
           location: selectedLocation,
+          serviceModalSummaryActive,
           placeRouteResolve,
           onRetryPlaceRoute: retryPlaceRouteHydration,
           isBookmarked: selectedLocation ? savedTrips.some(t => t.destination === selectedLocation.name && t.is_bookmarked) : false,

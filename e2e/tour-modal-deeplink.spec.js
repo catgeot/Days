@@ -37,6 +37,18 @@ async function installGygMock(page) {
 async function installGtagCapture(page) {
   await page.addInitScript(() => {
     window.__gateoGaEvents = [];
+    window.__gateoPaths = [];
+    const recordPath = () => {
+      window.__gateoPaths.push(window.location.pathname);
+    };
+    const wrap = (fn) => function historyWrapped(...args) {
+      const result = fn.apply(this, args);
+      recordPath();
+      return result;
+    };
+    window.history.pushState = wrap(window.history.pushState);
+    window.history.replaceState = wrap(window.history.replaceState);
+    recordPath();
     window.gtag = (cmd, name, params) => {
       if (cmd === 'event') window.__gateoGaEvents.push({ name, params });
     };
@@ -117,20 +129,43 @@ test.describe('place tour modal deeplink', () => {
     await expect
       .poll(async () => {
         const events = await page.evaluate(() => window.__gateoGaEvents || []);
-        return events.find((e) => e.name === 'service_modal_open')?.params?.service;
+        return events.filter((e) => e.name === 'service_modal_open').length;
       })
-      .toBe('tour');
+      .toBe(1);
     const events = await page.evaluate(() => window.__gateoGaEvents || []);
-    const openEv = events.find((e) => e.name === 'service_modal_open');
+    const opens = events.filter((e) => e.name === 'service_modal_open');
+    expect(opens).toHaveLength(1);
+    const openEv = opens[0];
     expect(openEv?.params?.service).toBe('tour');
     expect(openEv?.params?.from).toBe('deeplink');
     expect(openEv?.params?.ref).toBe('review');
     expect(openEv?.params?.slug).toBe('kyoto');
+    const paths = await page.evaluate(() => window.__gateoPaths || []);
+    expect(paths.filter((pathname) => pathname === '/')).toEqual([]);
+    const logbookOnScreen = await page.evaluate(() => {
+      const heading = [...document.querySelectorAll('h3')].find((node) =>
+        node.textContent?.includes('당신의 여행을 기록하세요'),
+      );
+      if (!heading) return false;
+      const rect = heading.getBoundingClientRect();
+      const style = window.getComputedStyle(heading);
+      if (style.visibility === 'hidden' || style.display === 'none' || Number(style.opacity) === 0) {
+        return false;
+      }
+      return rect.right > 0 && rect.bottom > 0 && rect.left < window.innerWidth && rect.top < window.innerHeight;
+    });
+    expect(logbookOnScreen).toBe(false);
 
     await captureViewport(page, shot, viewport.width, viewport.height);
 
     await page.waitForTimeout(6_000);
     await expectPlacePathWithoutDeeplinkQuery(page, 'kyoto');
+    const laterOpens = await page.evaluate(
+      () => (window.__gateoGaEvents || []).filter((e) => e.name === 'service_modal_open').length,
+    );
+    expect(laterOpens).toBe(1);
+    const laterPaths = await page.evaluate(() => window.__gateoPaths || []);
+    expect(laterPaths.filter((pathname) => pathname === '/')).toEqual([]);
 
     await page.reload({ waitUntil: 'domcontentloaded' });
     await expect(page).toHaveURL(/\/place\/kyoto(\?|$)/);
@@ -149,6 +184,19 @@ test.describe('place tour modal deeplink', () => {
     await expectTourModalOpen(page, viewport);
     await expectPlacePathWithoutDeeplinkQuery(page, 'kyoto');
 
+    await page.keyboard.press('Escape');
+    await expect
+      .poll(async () => {
+        if (viewport.width < 1024) {
+          return page.getByRole('dialog', { name: '투어 전체 목록' }).count();
+        }
+        return page.getByRole('region', { name: '투어 목록' }).count();
+      })
+      .toBe(0);
+    await page.goto('/place/kyoto?open=tour&from=review&lang=ko', {
+      waitUntil: 'domcontentloaded',
+    });
+    await expectTourModalOpen(page, viewport);
     await closeTourModal(page, viewport);
     await expect
       .poll(async () => {
@@ -179,6 +227,12 @@ test.describe('place tour modal deeplink', () => {
     await expectStayModalOpen(page, viewport);
     if (viewport.width < 1024) {
       await expect(page.getByRole('dialog', { name: '투어 전체 목록' })).toHaveCount(0);
+    }
+    await page.keyboard.press('Escape');
+    if (viewport.width < 1024) {
+      await expect(page.getByRole('dialog', { name: '숙소 전체 목록' })).toHaveCount(0);
+    } else {
+      await expect(page.getByRole('region', { name: '숙소 목록' })).toHaveCount(0);
     }
   });
 

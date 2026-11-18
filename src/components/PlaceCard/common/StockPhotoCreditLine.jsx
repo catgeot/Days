@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { fetchCommonsArtistPageHref } from '../../../utils/commonsArtistHref.js';
 import {
   normalizeEditorialReviewCredit,
   normalizeGalleryPhotoCredit,
@@ -49,7 +50,30 @@ export default function StockPhotoCreditLine({
 }) {
   const { t, i18n } = useTranslation();
   const credit = normalizeGalleryPhotoCredit(rawCredit);
+  const [fetchedAuthorHref, setFetchedAuthorHref] = useState(null);
   const isKo = i18n.language?.startsWith('ko');
+
+  useEffect(() => {
+    setFetchedAuthorHref(null);
+    if (credit?.kind !== 'wikimedia' || credit.photographerHref || !credit.filePageHref) {
+      return undefined;
+    }
+    let cancelled = false;
+    const filePageHref = credit.filePageHref;
+    fetchCommonsArtistPageHref(filePageHref).then(
+      (href) => {
+        if (!cancelled) setFetchedAuthorHref(href);
+      },
+      (error) => {
+        queueMicrotask(() => {
+          throw error;
+        });
+      },
+    );
+    return () => {
+      cancelled = true;
+    };
+  }, [credit?.kind, credit?.photographerHref, credit?.filePageHref]);
   const Link = LinkComponent || PlainAnchor;
 
   const toneLinkClass = interactiveLinks
@@ -114,7 +138,7 @@ export default function StockPhotoCreditLine({
     return (
       <span className={rowClass} data-gallery-wikimedia-credit="">
         <span className="shrink-0">{t('place.gallery.photoCreditBy')}</span>
-        <Label href={credit.photographerHref || undefined} className={authorClass}>
+        <Label href={credit.photographerHref || fetchedAuthorHref || undefined} className={authorClass}>
           {credit.authorName}
         </Label>
         {credit.licenseName ? (

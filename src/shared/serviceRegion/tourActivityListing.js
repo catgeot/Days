@@ -36,6 +36,10 @@ const TOUR_ACTIVITY_ALIASES_BY_SLUG = {
   phuket: ['피피', 'phi phi', 'james bond', '팡아', 'phang nga'],
 };
 
+/** «zzqx 투어»처럼 무의미 토큰에 붙는 일반 명사. snorkeling 같은 활동어는 여기 넣지 않는다. */
+const TOUR_GENERIC_ACTIVITY_NOUN_RE =
+  /^(투어|티켓|패키지|tour|tours|ticket|tickets|package|packages)$/i;
+
 const TOUR_GENERIC_REGION_TOKENS = new Set([
   'island',
   'islands',
@@ -266,16 +270,6 @@ function tourActivitySearchTokenLooksPlausible(token) {
   return false;
 }
 
-function tourActivitySearchTextLooksPlausible(text) {
-  const raw = String(text || '').trim();
-  if (!raw) return false;
-  if (TOUR_KEYWORD_HINT_RE.test(raw)) return true;
-  for (const token of tourSearchTokens(raw)) {
-    if (tourActivitySearchTokenLooksPlausible(token)) return true;
-  }
-  return false;
-}
-
 /** zzqx·asdf 등 — 연타·반복·자음 덩어리·너무 짧은 영문 잡음 */
 function tourActivitySearchTokenLooksMeaningless(token) {
   const t = String(token || '').trim();
@@ -288,14 +282,27 @@ function tourActivitySearchTokenLooksMeaningless(token) {
   return false;
 }
 
-function tourActivitySearchTextLooksMeaningless(text) {
+function tourActivitySearchTokenIsGenericNoun(token) {
+  return TOUR_GENERIC_ACTIVITY_NOUN_RE.test(String(token || '').trim());
+}
+
+function tourActivitySearchTextHasSubstantivePlausibleToken(text) {
+  for (const token of tourSearchTokens(text)) {
+    if (tourActivitySearchTokenIsGenericNoun(token)) continue;
+    if (tourActivitySearchTokenLooksPlausible(token)) return true;
+  }
+  return false;
+}
+
+function tourActivitySearchTextHasMeaninglessToken(text) {
   const tokens = tourSearchTokens(text);
   if (!tokens.length) return false;
-  return tokens.every(tourActivitySearchTokenLooksMeaningless);
+  return tokens.some(tourActivitySearchTokenLooksMeaningless);
 }
 
 /**
  * GYG 커밋(items 없음): 실제 결과를 알 수 없을 때 fallback은 **무의미 입력만**.
+ * «zzqx 투어»의 투어·tour 같은 일반 명사는 실질 키워드로 보지 않는다.
  * MRT는 items·fetch 후 resolveTourActivityListing이 우선.
  */
 export function tourActivityKeywordShouldShowListingFallback(
@@ -309,9 +316,9 @@ export function tourActivityKeywordShouldShowListingFallback(
   const candidates = full && full !== kw ? [kw, full] : [kw];
   for (const text of candidates) {
     if (tourActivityKeywordLikelyMatches(location, text)) return false;
-    if (tourActivitySearchTextLooksPlausible(text)) return false;
+    if (tourActivitySearchTextHasSubstantivePlausibleToken(text)) return false;
   }
-  return candidates.some((text) => tourActivitySearchTextLooksMeaningless(text));
+  return candidates.some((text) => tourActivitySearchTextHasMeaninglessToken(text));
 }
 
 /**

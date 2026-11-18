@@ -202,6 +202,33 @@ test('wikimedia Karelj — photographer user page is linked', () => {
   assert.match(resolved.photographerHref, /wiki\/User:Karelj/);
 });
 
+test('wikimedia Artist HTML href is the author link, including Flickr', () => {
+  const resolved = resolveEditorialReviewImageCredit({
+    source: 'Wikimedia Commons',
+    photographer: 'Stephen Kennedy',
+    photographer_url: 'https://commons.wikimedia.org/wiki/File:The_tsunami_left_this_boat.jpg',
+    source_page: 'https://commons.wikimedia.org/wiki/File:The_tsunami_left_this_boat.jpg',
+    artist_html:
+      '<a rel="nofollow" class="external text" href="https://www.flickr.com/people/7752378@N03">Stephen Kennedy</a>',
+    license: 'CC BY 2.0',
+    license_url: 'https://creativecommons.org/licenses/by/2.0/',
+  });
+  assert.equal(resolved?.type, 'wikimedia');
+  assert.equal(resolved.photographerHref, 'https://www.flickr.com/people/7752378@N03');
+  assert.match(resolved.filePageHref, /wiki\/File:The_tsunami_left_this_boat/);
+});
+
+test('wikimedia stored external author URL is linked', () => {
+  const resolved = resolveEditorialReviewImageCredit({
+    source: 'Wikimedia Commons',
+    photographer: 'Stephen Kennedy',
+    photographer_url: 'https://www.flickr.com/people/7752378@N03',
+    source_page: 'https://commons.wikimedia.org/wiki/File:The_tsunami_left_this_boat.jpg',
+    license: 'CC BY 2.0',
+  });
+  assert.equal(resolved.photographerHref, 'https://www.flickr.com/people/7752378@N03');
+});
+
 test('wikimedia File:, Category:, and other wiki paths never get author links', () => {
   const fileOnly = resolveEditorialReviewImageCredit({
     source: 'Wikimedia Commons',
@@ -231,14 +258,30 @@ test('wikimedia File:, Category:, and other wiki paths never get author links', 
   });
   assert.equal(helpPage?.photographerHref, null);
 
-  const nonWikiHost = resolveEditorialReviewImageCredit({
+  const externalAuthor = resolveEditorialReviewImageCredit({
     source: 'Wikimedia Commons',
     photographer: 'Ada',
     photographer_url: 'https://example.com/wiki/User:Ada',
     source_page: 'https://commons.wikimedia.org/wiki/File:Ada.jpg',
     license: 'CC BY 4.0',
   });
-  assert.equal(nonWikiHost?.photographerHref, null);
+  assert.equal(externalAuthor?.photographerHref, 'https://example.com/wiki/User:Ada');
+
+  const scriptHref = resolveEditorialReviewImageCredit({
+    source: 'Wikimedia Commons',
+    photographer: 'Ada',
+    photographer_url: 'javascript:alert(1)',
+    source_page: 'https://commons.wikimedia.org/wiki/File:Ada.jpg',
+    license: 'CC BY 4.0',
+  });
+  assert.equal(scriptHref?.photographerHref, null);
+});
+
+test('wikimedia credit line keeps author anchors noopener and loads Commons Artist when href is missing', () => {
+  const source = readFileSync(join(root, 'src/components/PlaceCard/common/StockPhotoCreditLine.jsx'), 'utf8');
+  assert.match(source, /target="_blank"/);
+  assert.match(source, /rel="noopener noreferrer"/);
+  assert.match(source, /fetchCommonsArtistPageHref/);
 });
 
 test('hub detail layout still renders per-image credits in ReviewsTab', () => {

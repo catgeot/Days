@@ -1,3 +1,5 @@
+import { extractCommonsArtistHref, sanitizeWikimediaAuthorHref } from './commonsArtistHref.js';
+
 const UNSPLASH_HOME = 'https://unsplash.com/';
 const PEXELS_HOME = 'https://www.pexels.com/';
 const WIKIMEDIA_COMMONS = 'https://commons.wikimedia.org/';
@@ -44,18 +46,15 @@ function hostnameIsWikimedia(value) {
   return hostnameMatches(value, ['wikimedia.org', 'wikipedia.org']);
 }
 
-/** Wikimedia author link only for /wiki/User:… on a Wikimedia/Wikipedia host. */
-function resolveWikimediaPhotographerHref(photographerHrefRaw) {
-  if (typeof photographerHrefRaw !== 'string') return null;
-  const trimmed = photographerHrefRaw.trim();
-  if (!trimmed) return null;
-  if (!hostnameIsWikimedia(trimmed)) return null;
-  try {
-    const path = decodeURIComponent(new URL(trimmed).pathname);
-    return /\/wiki\/User:/i.test(path) ? trimmed : null;
-  } catch {
-    return null;
+/** Wiki User: pages, Wikidata authors, and external author URLs (Flickr). File/Category/Help stay unlinked. */
+function resolveWikimediaPhotographerHref(photographerHrefRaw, artistHtml) {
+  const fromArtistHtml = extractCommonsArtistHref(artistHtml);
+  if (fromArtistHtml) return fromArtistHtml;
+  if (typeof photographerHrefRaw === 'string' && photographerHrefRaw.includes('href=')) {
+    const fromRawHtml = extractCommonsArtistHref(photographerHrefRaw);
+    if (fromRawHtml) return fromRawHtml;
   }
+  return sanitizeWikimediaAuthorHref(photographerHrefRaw);
 }
 
 /**
@@ -124,6 +123,7 @@ export function resolveEditorialReviewImageCredit(img) {
   const creditText = String(img.credit || img.attribution || '').trim();
   const photographerName = String(img.photographer || img.photographer_name || '').trim();
   const photographerHrefRaw = img.photographer_url;
+  const artistHtml = img.artist_html || img.artistHtml || null;
   const unsplashHrefRaw = img.unsplash_url || img.html_link;
   const pexelsHrefRaw =
     img.pexels_url ||
@@ -176,7 +176,7 @@ export function resolveEditorialReviewImageCredit(img) {
             photographerHrefRaw.includes('commons.wikimedia.org/wiki/File:')
           ? photographerHrefRaw.trim()
           : null;
-    const photographerHref = resolveWikimediaPhotographerHref(photographerHrefRaw);
+    const photographerHref = resolveWikimediaPhotographerHref(photographerHrefRaw, artistHtml);
     return {
       type: 'wikimedia',
       photographerName,
