@@ -35,7 +35,8 @@ test('capture review credits 390 and 1280', async ({ page }) => {
   await expect(page.getByTestId('place-card-route-loading')).toBeHidden({ timeout: 60_000 });
   const card = page.locator(`[data-review-id="${THREE_PHOTO_ID}"]`);
   await card.getByRole('button', { name: '더보기', exact: true }).click();
-  await expect(card.getByTestId('editorial-review-image-credit')).toHaveCount(3);
+  await expect(card.getByTestId('editorial-review-image-credit')).toHaveCount(2);
+  await expect(card.getByTestId('logbook-editorial-review-detail-hero-credit')).toBeVisible();
   await page.screenshot({
     path: join(OUT, 'review-tab-credits-expanded-390x844.png'),
     clip: { x: 0, y: 0, width: 390, height: 844 },
@@ -46,7 +47,8 @@ test('capture review credits 390 and 1280', async ({ page }) => {
   await expect(page.getByTestId('place-card-route-loading')).toBeHidden({ timeout: 60_000 });
   const cardWide = page.locator(`[data-review-id="${THREE_PHOTO_ID}"]`);
   await cardWide.getByRole('button', { name: '더보기', exact: true }).click();
-  await expect(cardWide.getByTestId('editorial-review-image-credit')).toHaveCount(3);
+  await expect(cardWide.getByTestId('editorial-review-image-credit')).toHaveCount(2);
+  await expect(cardWide.getByTestId('logbook-editorial-review-detail-hero-credit')).toBeVisible();
   await page.screenshot({
     path: join(OUT, 'review-tab-credits-expanded-1280x800.png'),
     clip: { x: 0, y: 0, width: 1280, height: 800 },

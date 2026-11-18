@@ -14,6 +14,7 @@ const FIXTURE_ROWS = JSON.parse(
 
 const THREE_PHOTO_ID = 'e2e-khao-lak-three-photos';
 const FOOD_THUMBS_ID = 'e2e-khao-lak-food-thumbs';
+const FIRST_IMAGE_CREDIT = 'ⓒ한국관광공사-송재근 / 포토코리아 · 공공누리 제1유형';
 const REVIEWS_URL =
   '/place/khao-lak/reviews?lang=ko&logbook_review_hub=1&logbook_filter=1';
 
@@ -47,12 +48,16 @@ test.describe('Place review per-image credits @mocked', () => {
     await expect(card.getByTestId('logbook-editorial-review-detail-hero')).toBeVisible();
 
     await card.getByRole('button', { name: '더보기', exact: true }).click();
+    await expect(card.getByTestId('logbook-editorial-review-detail-hero-credit')).toContainText(
+      '한국관광공사',
+    );
+    await expect(card.getByText(FIRST_IMAGE_CREDIT, { exact: true })).toHaveCount(1);
+
     const credits = card.getByTestId('editorial-review-image-credit');
-    await expect(credits).toHaveCount(3);
-    await expect(credits.nth(0)).toContainText('한국관광공사');
-    await expect(credits.nth(1)).toContainText('문화재청');
-    await expect(credits.nth(2)).toContainText('Himmel S');
-    await expect(credits.nth(2).getByRole('link', { name: 'Unsplash' })).toBeVisible();
+    await expect(credits).toHaveCount(2);
+    await expect(credits.nth(0)).toContainText('문화재청');
+    await expect(credits.nth(1)).toContainText('Himmel S');
+    await expect(credits.nth(1).getByRole('link', { name: 'Unsplash' })).toBeVisible();
   });
 
   test('lightbox shows credit for second and third slides', async ({ page }) => {

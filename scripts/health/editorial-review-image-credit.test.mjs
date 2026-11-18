@@ -156,4 +156,6 @@ test('hub detail layout still renders per-image credits in ReviewsTab', () => {
   assert.equal(reviews.includes('!hubDetailLayout ? <EditorialReviewImageCredits'), false);
   assert.equal(reviews.includes('!hubDetailLayout ? <ReviewPerImageCredit'), false);
   assert.match(reviews, /gateo-review-lightbox-credit/);
+  assert.match(reviews, /resolveEditorialReviewHubHeroImageIndex/);
+  assert.match(reviews, /hubHeroImageIndex === imageIndex/);
 });

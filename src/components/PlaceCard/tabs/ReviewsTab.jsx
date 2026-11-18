@@ -63,6 +63,7 @@ import { useGateoPhotoLightboxA11y } from '../../../shared/useGateoPhotoLightbox
 import { isGateoOfficialEditorialPlaceReview } from '../../../logbookOfficialReviews/gateoOfficialEditorialPlaceReview.js';
 import { isLogbookEditorialReviewDetailLayoutActive } from '../../../utils/logbookReviewFilterFlag.js';
 import LogbookEditorialReviewDetailHero from '../../../logbookOfficialReviews/LogbookEditorialReviewDetailHero.jsx';
+import { resolveEditorialReviewHubHeroImageIndex } from '../../../logbookOfficialReviews/editorialReviewHubThumb.js';
 
 const RelatedBlogCardThumbnail = ({ src }) => {
   const [failed, setFailed] = useState(false);
@@ -341,6 +342,10 @@ export const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onTog
   const showExpandToggle = shouldShowReviewExpandToggle(review);
   const showBottomGallery = shouldShowReviewBottomGallery(review, isExpanded);
   const leadThumbnailIndex = getReviewLeadThumbnailImageIndex(review);
+  const hubHeroImageIndex = useMemo(() => {
+    if (!hubDetailLayout) return null;
+    return resolveEditorialReviewHubHeroImageIndex(review);
+  }, [hubDetailLayout, review]);
 
   const toggleExpanded = () => setIsExpanded((value) => !value);
 
@@ -374,7 +379,10 @@ export const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onTog
             }}
           />
         </button>
-        {review.is_editorial ? <ReviewPerImageCredit img={img} variant="inline" /> : null}
+        {review.is_editorial &&
+        !(hubDetailLayout && hubHeroImageIndex != null && hubHeroImageIndex === imageIndex) ? (
+          <ReviewPerImageCredit img={img} variant="inline" />
+        ) : null}
       </div>
     );
   };
