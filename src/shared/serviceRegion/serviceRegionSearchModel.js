@@ -20,9 +20,9 @@ import {
 import { resolveTravelSpotFromSearchQuery } from '../../utils/travelSpotResolve.js';
 import { buildGygActivitiesSearchQuery } from '../../components/PlaceCard/tabs/planner/locationRules.js';
 import { canShowMrtTnaStrip, resolveMrtTnaQuery } from '../../utils/mrtTnaQuery.js';
-import { buildGygPlannerCmp } from '../../utils/affiliate.js';
+import { buildGygPlannerCmp, getGygHomeUrl, getMrtSearchUrl } from '../../utils/affiliate.js';
 import { GYG_PARTNER_ID } from '../../utils/gygAffiliateLinks.js';
-import { loadTravelAgencyVisits } from '../../utils/travelAgencyVisits.js';
+import { loadTravelAgencyVisits, recordTravelAgencyVisit } from '../../utils/travelAgencyVisits.js';
 import { isChoseongQuery } from '../../utils/hangulSearch.js';
 
 export const RECENT_REGION_LIMIT = 3;
@@ -162,6 +162,37 @@ export function tourRegionLocation(state) {
 export function isTourRegionChanged(state) {
   if (!state?.active) return false;
   return regionIdentity(state.active) !== regionIdentity(state.original);
+}
+
+/**
+ * 지원 지역을 확정하면 기존 여행사 방문 키에 placeLabel만 남겨요.
+ * 위젯 클릭과 같은 제휴 URL을 쓰고, 새 저장 키는 만들지 않아요.
+ * @param {object | null | undefined} region
+ * @param {string} [locale]
+ */
+export function recordConfirmedTourRegionVisit(region, locale = 'ko') {
+  const target = resolveTourWidgetTarget(region);
+  const query = String(target?.query || '').trim();
+  if (!query) return loadTravelAgencyVisits();
+  if (target.kind === 'gyg') {
+    return recordTravelAgencyVisit({
+      href: getGygHomeUrl({
+        cmp: target.cmp,
+        partnerId: target.partnerId,
+        locale,
+      }),
+      placeLabel: query,
+      kind: 'tour',
+    });
+  }
+  if (target.kind === 'mrt') {
+    return recordTravelAgencyVisit({
+      href: getMrtSearchUrl(query),
+      placeLabel: query,
+      kind: 'tour',
+    });
+  }
+  return loadTravelAgencyVisits();
 }
 
 export function confirmTourRegion(state, region) {

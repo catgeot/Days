@@ -92,15 +92,36 @@ test('type, select, widget updates, reset', async ({ page }, testInfo) => {
   await expect(page.getByRole('button', { name: /검색어 ·/ })).toHaveCount(0);
   await expect(page.getByText('현지 투어를 불러오는 중이에요')).toHaveCount(0);
 
+  const packageLink = page.locator('[data-tour-package-more]');
+  await expect(packageLink).toBeVisible();
+  await expect(packageLink).toHaveText(/푸켓 패키지 상품보기/);
+  await expect(packageLink).toHaveAttribute('href', /(?:\?|&)q=/);
+  const phuketHref = decodeURIComponent((await packageLink.getAttribute('href')) || '');
+  expect(phuketHref).toContain('푸켓');
+  expect(phuketHref).not.toContain('카오락');
+  await packageLink.scrollIntoViewIfNeeded();
+
   await page.screenshot({
     path: `/opt/cursor/artifacts/${shot}`,
     clip: { x: 0, y: 0, width: viewport.width, height: viewport.height },
   });
+  if (viewport.width === 390 && !testInfo.project.name.includes('webkit')) {
+    await page.screenshot({
+      path: '/opt/cursor/artifacts/tour-modal-phuket-package-390.png',
+      clip: { x: 0, y: 0, width: 390, height: 844 },
+    });
+  }
+
+  await input.click();
+  await expect(page.locator('[data-region-method="recent"][data-region-slug="phuket"]')).toBeVisible();
 
   await page.getByRole('button', { name: /카오락 투어로 돌아가기/ }).click();
   await expect(host).toHaveAttribute('data-gyg-q', 'Khao Lak');
   await expect(host).toHaveAttribute('data-gyg-cmp', 'gateo_planer_khao-lak');
   await expect(page.locator('[data-service-region-reset]')).toHaveCount(0);
+  await expect(packageLink).toHaveText(/카오락 패키지 상품보기/);
+  const restoredHref = decodeURIComponent((await packageLink.getAttribute('href')) || '');
+  expect(restoredHref).toContain('카오락');
 
   if (viewport.width >= 1024) {
     await page.getByRole('region', { name: '투어 목록' }).getByRole('button', { name: '투어 목록 닫기' }).click();
