@@ -1136,6 +1136,8 @@
       "photoCreditKtoPrefix": "사진:",
       "photoCreditBy": "사진",
       "photoCreditOn": "·",
+      "photoCreditFilePage": "파일",
+      "photoCreditFilePageTitle": "위키미디어 공용 파일 페이지",
       "photoCreditUnsplash": "사진 <photographer>{{name}}</photographer> · <provider>Unsplash</provider>",
       "photoCreditPexels": "사진 <photographer>{{name}}</photographer> · <provider>Pexels</provider>",
       "enlargeImage": "{{alt}} 확대하기",

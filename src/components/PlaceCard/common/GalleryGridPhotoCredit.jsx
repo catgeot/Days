@@ -23,6 +23,38 @@ export default function GalleryGridPhotoCredit({ image, location, locale }) {
 
   if (!credit) return null;
 
+  if (credit.kind === 'wikimedia') {
+    return (
+      <p data-gallery-photo-credit="" data-gallery-wikimedia-credit="" className={creditShellClass}>
+        <span className={`${creditRowClass} flex-wrap`}>
+          <span className="shrink-0">{t('place.gallery.photoCreditBy')}</span>
+          <span className="min-w-0 max-w-full truncate font-semibold">{credit.authorName}</span>
+          <span className="shrink-0" aria-hidden="true">·</span>
+          <GalleryAttributionLink
+            href={credit.licenseHref}
+            location={location}
+            image={image}
+            context="gallery-grid"
+            className={providerLinkClass}
+          >
+            {credit.licenseName}
+          </GalleryAttributionLink>
+          <span className="shrink-0" aria-hidden="true">·</span>
+          <GalleryAttributionLink
+            href={credit.filePageHref}
+            location={location}
+            image={image}
+            context="gallery-grid"
+            className={providerLinkClass}
+            title={t('place.gallery.photoCreditFilePageTitle')}
+          >
+            {t('place.gallery.photoCreditFilePage')}
+          </GalleryAttributionLink>
+        </span>
+      </p>
+    );
+  }
+
   if (credit.kind === 'kto') {
     return (
       <p data-gallery-photo-credit="" className={creditShellClass}>

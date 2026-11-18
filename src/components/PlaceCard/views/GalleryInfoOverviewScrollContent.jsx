@@ -34,28 +34,58 @@ export default function GalleryInfoOverviewScrollContent({
         </p>
         {photoAttribution && (
           <div className="rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-2.5">
-            <p className="text-[13px] leading-relaxed text-gray-300">
-              Photo by{' '}
-              <GalleryAttributionLink
-                href={photoAttribution.photographerHref || photoAttribution.href}
-                location={selectedPlace}
-                image={selectedImg}
-                context="gallery"
-                className="font-semibold text-blue-200/95 underline decoration-blue-300/40 underline-offset-2 transition-colors hover:text-blue-100 hover:decoration-blue-200/70"
-                title={photoAttribution.title}
-              >
-                {photoAttribution.authorName}
-              </GalleryAttributionLink>
-              {' on '}
-              <GalleryAttributionLink
-                href={photoAttribution.providerHref}
-                location={selectedPlace}
-                image={selectedImg}
-                context="gallery"
-                className="font-semibold text-blue-200/95 underline decoration-blue-300/40 underline-offset-2 transition-colors hover:text-blue-100 hover:decoration-blue-200/70"
-              >
-                {photoAttribution.providerName}
-              </GalleryAttributionLink>
+            <p className="text-[13px] leading-relaxed text-gray-300" data-gallery-wikimedia-credit={photoAttribution.licenseHref ? '' : undefined}>
+              {photoAttribution.licenseHref ? (
+                <>
+                  {t('place.gallery.photoCreditBy')}{' '}
+                  <span className="font-semibold text-gray-100">{photoAttribution.authorName}</span>
+                  {' · '}
+                  <GalleryAttributionLink
+                    href={photoAttribution.licenseHref}
+                    location={selectedPlace}
+                    image={selectedImg}
+                    context="gallery"
+                    className="font-semibold text-blue-200/95 underline decoration-blue-300/40 underline-offset-2 transition-colors hover:text-blue-100 hover:decoration-blue-200/70"
+                  >
+                    {photoAttribution.licenseName}
+                  </GalleryAttributionLink>
+                  {' · '}
+                  <GalleryAttributionLink
+                    href={photoAttribution.filePageHref || photoAttribution.href}
+                    location={selectedPlace}
+                    image={selectedImg}
+                    context="gallery"
+                    title={t('place.gallery.photoCreditFilePageTitle')}
+                    className="font-semibold text-blue-200/95 underline decoration-blue-300/40 underline-offset-2 transition-colors hover:text-blue-100 hover:decoration-blue-200/70"
+                  >
+                    {t('place.gallery.photoCreditFilePage')}
+                  </GalleryAttributionLink>
+                </>
+              ) : (
+                <>
+                  Photo by{' '}
+                  <GalleryAttributionLink
+                    href={photoAttribution.photographerHref || photoAttribution.href}
+                    location={selectedPlace}
+                    image={selectedImg}
+                    context="gallery"
+                    className="font-semibold text-blue-200/95 underline decoration-blue-300/40 underline-offset-2 transition-colors hover:text-blue-100 hover:decoration-blue-200/70"
+                    title={photoAttribution.title}
+                  >
+                    {photoAttribution.authorName}
+                  </GalleryAttributionLink>
+                  {' on '}
+                  <GalleryAttributionLink
+                    href={photoAttribution.providerHref}
+                    location={selectedPlace}
+                    image={selectedImg}
+                    context="gallery"
+                    className="font-semibold text-blue-200/95 underline decoration-blue-300/40 underline-offset-2 transition-colors hover:text-blue-100 hover:decoration-blue-200/70"
+                  >
+                    {photoAttribution.providerName}
+                  </GalleryAttributionLink>
+                </>
+              )}
             </p>
           </div>
         )}

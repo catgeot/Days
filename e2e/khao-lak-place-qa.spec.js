@@ -70,8 +70,44 @@ async function scrollFestivalSheetToEnd(page) {
     await page.waitForTimeout(400);
   }
   await content.evaluate((el) => {
-    el.scrollTop = el.scrollHeight;
+    const canScroll = (node) => {
+      if (!node) return false;
+      const overflowY = getComputedStyle(node).overflowY;
+      return (
+        (overflowY === 'auto' || overflowY === 'scroll' || overflowY === 'overlay')
+        && node.scrollHeight > node.clientHeight + 1
+      );
+    };
+    let node = el;
+    while (node && !canScroll(node)) node = node.parentElement;
+    if (node) node.scrollTop = node.scrollHeight;
   });
+  await page.waitForTimeout(400);
+}
+
+async function hitAt(page, x, y) {
+  return page.evaluate(({ x, y }) => {
+    const el = document.elementFromPoint(x, y);
+    const button = el?.closest?.('button');
+    return {
+      label: button?.getAttribute('aria-label') || '',
+      text: (button?.innerText || '').replace(/\s+/g, ' ').trim(),
+    };
+  }, { x, y });
+}
+
+async function footerCloseBox(page, closeName) {
+  const viewport = page.viewportSize();
+  const limit = viewport?.height || 844;
+  const boxes = await page.getByRole('button', { name: closeName, exact: true }).evaluateAll((nodes) =>
+    nodes.map((node) => {
+      const rect = node.getBoundingClientRect();
+      return { x: rect.x, y: rect.y, w: rect.width, h: rect.height };
+    }),
+  );
+  const visible = boxes.filter((box) => box.w > 80 && box.w < 900 && box.h > 20 && box.h < 120 && box.y >= 0 && box.y < limit);
+  visible.sort((a, b) => b.w - a.w);
+  return visible[0] || null;
 }
 
 async function blockLiveApis(page) {
@@ -244,6 +280,38 @@ test.describe('festival ask mooni vs close', () => {
     );
     for (const closeBox of closesEn.filter((box) => box.w < 360 && box.h < 120 && box.w > 0 && box.y < 844)) {
       expect(boxesIntersect(fabEnBox, closeBox)).toBe(false);
+    }
+  });
+
+  test('Ask MOONi and Close stay clickable at 390 and 1280 in Korean and English', async ({ page }) => {
+    const cases = [
+      { width: 390, height: 844, lang: 'en', fab: 'Ask MOONi', close: 'Close' },
+      { width: 390, height: 844, lang: 'ko', fab: '무니에게 묻기', close: '닫기' },
+      { width: 1280, height: 800, lang: 'en', fab: 'Ask MOONi', close: 'Close' },
+      { width: 1280, height: 800, lang: 'ko', fab: '무니에게 묻기', close: '닫기' },
+    ];
+    for (const item of cases) {
+      await page.setViewportSize({ width: item.width, height: item.height });
+      await page.goto(`/korea?festival=2754421&lang=${item.lang}`, { waitUntil: 'domcontentloaded' });
+      await expect(page.locator('#korea-festival-sheet-title')).toBeVisible();
+      await expect(page.locator('[data-festival-fab-clearance]')).toBeVisible();
+      await scrollFestivalSheetToEnd(page);
+      const fab = page.getByRole('button', { name: item.fab, exact: true });
+      await expect(fab).toBeVisible();
+      const fabBox = await fab.boundingBox();
+      const closeBox = await footerCloseBox(page, item.close);
+      expect(closeBox, `${item.lang} ${item.width}`).toBeTruthy();
+      expect(boxesIntersect(fabBox, closeBox)).toBe(false);
+
+      const fabHit = await hitAt(page, fabBox.x + fabBox.width / 2, fabBox.y + fabBox.height / 2);
+      expect(fabHit.label || fabHit.text).toContain(item.fab);
+
+      const closeHit = await hitAt(page, closeBox.x + closeBox.w / 2, closeBox.y + closeBox.h / 2);
+      expect(closeHit.text).toBe(item.close);
+
+      const cornerHit = await hitAt(page, closeBox.x + closeBox.w - 6, closeBox.y + closeBox.h - 4);
+      expect(cornerHit.text).toBe(item.close);
+      expect(cornerHit.label).not.toContain(item.fab);
     }
   });
 });

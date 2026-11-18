@@ -8,13 +8,14 @@ const KTO_HOME = 'https://www.visitkorea.or.kr/';
 /**
  * @typedef {{ kind: 'stock', authorName: string, photographerHref: string, providerHref: string, provider: 'unsplash' | 'pexels' }} GalleryStockPhotoCredit
  * @typedef {{ kind: 'kto', authorName: string, photographerHref: string, providerHref: string, providerLabel: string }} GalleryKtoPhotoCredit
+ * @typedef {{ kind: 'wikimedia', authorName: string, photographerHref: string, providerHref: string, provider: 'wikimedia', licenseName: string, licenseHref: string, filePageHref: string }} GalleryWikimediaPhotoCredit
  */
 
 /**
  * Per-grid-tile photographer credit. Returns null when attribution cannot be shown (no empty “Photo by”).
  * @param {Record<string, unknown> | null | undefined} image
  * @param {string} [locale]
- * @returns {GalleryStockPhotoCredit | GalleryKtoPhotoCredit | null}
+ * @returns {GalleryStockPhotoCredit | GalleryKtoPhotoCredit | GalleryWikimediaPhotoCredit | null}
  */
 export function buildGalleryPhotoCredit(image, locale = 'ko') {
   if (!image || typeof image !== 'object') return null;
@@ -57,16 +58,24 @@ export function buildGalleryPhotoCredit(image, locale = 'ko') {
 
   if (source === 'wikimedia') {
     if (!authorName) return null;
-    const photoPage =
-      typeof image?.links?.html === 'string' && image.links.html.trim()
-        ? image.links.html
-        : 'https://commons.wikimedia.org/';
+    const filePageHref =
+      typeof image?.sourceUrl === 'string' && image.sourceUrl.trim()
+        ? image.sourceUrl.trim()
+        : typeof image?.links?.html === 'string' && image.links.html.trim()
+          ? image.links.html.trim()
+          : '';
+    const licenseName = String(image?.license || '').trim();
+    const licenseHref = String(image?.licenseUrl || '').trim();
+    if (!filePageHref || !licenseName || !licenseHref) return null;
     return {
-      kind: 'stock',
+      kind: 'wikimedia',
       authorName,
-      photographerHref: photoPage,
-      providerHref: 'https://commons.wikimedia.org/',
+      photographerHref: filePageHref,
+      providerHref: filePageHref,
       provider: 'wikimedia',
+      licenseName,
+      licenseHref,
+      filePageHref,
     };
   }
 
