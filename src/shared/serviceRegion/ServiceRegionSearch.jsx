@@ -1,5 +1,6 @@
 import React, { useId, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Search, X } from 'lucide-react';
 import { getLocalizedPlaceName } from '../../components/PlaceCard/common/locationDisplay.js';
 import {
   MOBILE_INPUT_TEXT_CLASS,
@@ -42,7 +43,9 @@ export default function ServiceRegionSearch({
 }) {
   const { t, i18n } = useTranslation();
   const listId = useId();
+  const inputId = useId();
   const rootRef = useRef(null);
+  const inputRef = useRef(null);
   const openedOnce = useRef(false);
   const [open, setOpen] = useState(false);
   const [dirty, setDirty] = useState(false);
@@ -55,18 +58,13 @@ export default function ServiceRegionSearch({
   const dark = tone !== 'light';
   const block = layout === 'block';
 
-  const labelSource = notice || activeLocation;
-  const committedLabel =
-    getLocalizedPlaceName(labelSource, i18n.language) ||
-    labelSource?.name ||
-    labelSource?.name_en ||
-    '';
   const originalName =
     getLocalizedPlaceName(originalLocation, i18n.language) ||
     originalLocation?.name ||
     originalLocation?.name_en ||
     '';
-  const inputValue = dirty ? draft : committedLabel;
+  const inputValue = dirty ? draft : '';
+  const showClear = Boolean(String(inputValue || '').trim());
   const hits = dirty ? searchRegions(draft) || [] : [];
   const showRecent = open && !dirty && recent.length > 0;
   const showRecommended = open && !dirty && recommended.length > 0;
@@ -132,6 +130,16 @@ export default function ServiceRegionSearch({
     setOpen(false);
   };
 
+  const handleClear = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setDirty(true);
+    setDraft('');
+    setOpen(true);
+    refreshQuiet();
+    inputRef.current?.focus();
+  };
+
   const handleKeyDown = (event) => {
     if (event.key !== 'Enter') return;
     event.preventDefault();
@@ -158,7 +166,7 @@ export default function ServiceRegionSearch({
           data-region-slug={region.slug || ''}
           data-region-support={supported ? 'ok' : 'no'}
           data-region-method={method}
-          onMouseDown={(event) => event.preventDefault()}
+          onMouseDown={(e) => e.preventDefault()}
           onClick={(event) => {
             event.stopPropagation();
             commit(region, method);
@@ -186,15 +194,38 @@ export default function ServiceRegionSearch({
     );
   };
 
-  return (
+  const fieldLabel =
+    service === 'tour' ? (
+      <label
+        htmlFor={inputId}
+        className={`mb-1.5 block text-left text-[12px] font-semibold leading-snug break-keep ${
+          dark ? 'text-orange-100/85' : 'text-gray-700'
+        }`}
+      >
+        {t('home.serviceRegion.tour.fieldLabel')}
+      </label>
+    ) : null;
+
+  const inputShell = (
     <div
-      ref={rootRef}
-      className={`relative min-w-0 ${block ? 'w-full' : 'w-[min(100%,18rem)]'}`}
-      onClick={(event) => event.stopPropagation()}
-      onMouseDown={(event) => event.stopPropagation()}
+      className={`relative flex min-w-0 items-center rounded-md border ${
+        dark
+          ? 'border-white/15 bg-white/10 focus-within:border-orange-200/55'
+          : 'border-orange-200 bg-white focus-within:border-orange-400'
+      }`}
     >
+      <Search
+        size={16}
+        aria-hidden="true"
+        className={`pointer-events-none absolute left-2.5 shrink-0 ${
+          dark ? 'text-orange-100/55' : 'text-orange-600/70'
+        }`}
+        data-service-region-search-icon=""
+      />
       <input
-        type="text"
+        ref={inputRef}
+        id={inputId}
+        type="search"
         role="combobox"
         aria-expanded={showList}
         aria-controls={listId}
@@ -228,12 +259,39 @@ export default function ServiceRegionSearch({
             syncViewport();
           }, 120);
         }}
-        className={`w-full min-w-0 rounded-md border px-2 py-1 outline-none ${MOBILE_INPUT_TEXT_CLASS} ${
-          dark
-            ? 'border-white/15 bg-white/10 text-orange-50 placeholder:text-orange-100/40 focus:border-orange-200/55'
-            : 'border-orange-200 bg-white text-gray-900 placeholder:text-gray-400 focus:border-orange-400'
+        className={`w-full min-w-0 rounded-md bg-transparent py-2 pl-9 outline-none ${
+          showClear ? 'pr-9' : 'pr-2.5'
+        } ${MOBILE_INPUT_TEXT_CLASS} ${
+          dark ? 'text-orange-50 placeholder:text-orange-100/45' : 'text-gray-900 placeholder:text-gray-400'
         }`}
       />
+      {showClear ? (
+        <button
+          type="button"
+          data-service-region-clear=""
+          aria-label={t('home.serviceRegion.tour.clearAria')}
+          onMouseDown={(e) => e.preventDefault()}
+          onClick={handleClear}
+          className={`absolute right-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-md transition-colors ${
+            dark ? 'text-orange-100/75 hover:bg-white/10 hover:text-orange-50' : 'text-gray-500 hover:bg-orange-50'
+          }`}
+        >
+          <X size={15} strokeWidth={2.25} aria-hidden="true" />
+        </button>
+      ) : null}
+    </div>
+  );
+
+  return (
+    <div
+      ref={rootRef}
+      data-service-region-root=""
+      className={`relative min-w-0 ${block ? 'w-full' : 'w-[min(100%,22rem)]'}`}
+      onClick={(event) => event.stopPropagation()}
+      onMouseDown={(event) => event.stopPropagation()}
+    >
+      {fieldLabel}
+      {inputShell}
       {showList ? (
         <ul
           id={listId}

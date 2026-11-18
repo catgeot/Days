@@ -375,7 +375,7 @@ export default function GlobeTourStrip({
     <ServiceRegionSearch
       service="tour"
       tone="dark"
-      layout={isLg ? 'inline' : 'block'}
+      layout="block"
       originalLocation={location}
       activeLocation={activeLocation}
       changed={isTourRegionChanged(regionState)}
@@ -389,6 +389,11 @@ export default function GlobeTourStrip({
       }}
     />
   );
+  const tourRegionSearchBar = (
+    <div className="relative z-20 shrink-0 border-b border-white/10 bg-black px-3 py-2.5">
+      {regionSearch}
+    </div>
+  );
   const widget =
     activeTarget.kind === 'mrt' ? (
       <MrtTnaActivitiesWidget
@@ -397,7 +402,6 @@ export default function GlobeTourStrip({
         variant="open"
         showMoreLink
         linkSponsoredLabel
-        regionSearch={isLg ? regionSearch : null}
       />
     ) : (
       <GetYourGuideActivitiesWidget
@@ -406,7 +410,6 @@ export default function GlobeTourStrip({
         variant="open"
         showMoreLink
         linkSponsoredLabel
-        regionSearch={isLg ? regionSearch : null}
         omitQueryChip
       />
     );
@@ -441,6 +444,7 @@ export default function GlobeTourStrip({
             className="fixed z-[61] left-0 top-0 bottom-0 right-[calc(2rem+400px+0.75rem)] xl:right-[calc(2rem+440px+0.75rem)] flex flex-col overflow-hidden border-2 border-orange-200/35 bg-black shadow-[0_0_28px_rgba(249,115,22,0.16)]"
           >
             <TourPanelHeader placeName={activeName} onClose={close} density="desktop" />
+            {tourRegionSearchBar}
             <div
               ref={desktopListScrollRef}
               className="globe-tour-strip-scroll min-h-0 flex-1 overflow-y-auto overscroll-contain bg-black px-3 py-3 pb-16"
@@ -492,9 +496,7 @@ export default function GlobeTourStrip({
             onMouseDown={(e) => e.stopPropagation()}
           >
             <TourPanelHeader placeName={activeName} onClose={close} density="mobile" />
-            <div className="relative z-20 shrink-0 border-b border-white/10 bg-black px-3 py-2">
-              {regionSearch}
-            </div>
+            {tourRegionSearchBar}
             <div
               ref={mobileListScrollRef}
               className="globe-tour-strip-scroll min-h-0 flex-1 overflow-y-auto overscroll-contain bg-black px-3 py-3 pb-[max(5.5rem,calc(env(safe-area-inset-bottom)+3.75rem))]"
