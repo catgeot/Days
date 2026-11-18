@@ -610,7 +610,6 @@ function Home() {
     }
     const deeplink = parsePlaceServiceModalDeeplink(new URLSearchParams(routeLocation.search));
     if (!deeplink.open) return;
-    if (placeRouteResolve?.status !== 'found') return;
 
     let match = matchPath({ path: '/place/:slug' }, pathname);
     if (!match) {
@@ -620,10 +619,33 @@ function Home() {
       .trim()
       .toLowerCase();
     if (!routeSlug) return;
+
+    const resolveSlug = String(placeRouteResolve?.slug ?? '')
+      .trim()
+      .toLowerCase();
+    if (resolveSlug && resolveSlug !== routeSlug) return;
+
+    const routeStatus = placeRouteResolve?.status;
+    const slugHydrateOptions = { savedTrips, category, selectedLocation };
+    const syncPin = resolvePlaceTargetFromSlug(routeSlug, slugHydrateOptions);
+
+    if (routeStatus === 'pending') return;
+    if (routeStatus !== 'found') {
+      if (routeStatus === 'missing' || routeStatus === 'error') {
+        if (!syncPin || !hasValidCoords(syncPin)) return;
+      } else if (!syncPin || !hasValidCoords(syncPin)) {
+        return;
+      }
+    }
+
     const consumeKey = `${routeSlug}|${deeplink.open}|${deeplink.from || ''}`;
     if (placeServiceModalDeeplinkConsumedRef.current === consumeKey) return;
 
-    const focusTarget = selectedLocationRef.current;
+    let focusTarget =
+      selectedLocation && hasValidCoords(selectedLocation) ? selectedLocation : selectedLocationRef.current;
+    if (!focusTarget || !hasValidCoords(focusTarget)) {
+      focusTarget = syncPin;
+    }
     if (!focusTarget || !hasValidCoords(focusTarget)) return;
     const slugKey = String(getPlaceUrlParam(focusTarget) || routeSlug || '')
       .trim()
@@ -662,6 +684,9 @@ function Home() {
     routeLocation.search,
     placeRouteResolve?.status,
     placeRouteResolve?.slug,
+    selectedLocation,
+    savedTrips,
+    category,
     navigate,
     rememberGlobeFocus,
     setSelectedLocation,
