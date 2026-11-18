@@ -70,13 +70,38 @@ async function expectStayModalOpen(page, viewport) {
   }
 }
 
+function expectPlacePathWithoutDeeplinkQuery(page, slug) {
+  return expect
+    .poll(async () => {
+      const url = new URL(page.url());
+      return {
+        pathname: url.pathname,
+        hasOpen: url.searchParams.has('open'),
+        hasFrom: url.searchParams.has('from'),
+      };
+    })
+    .toEqual({
+      pathname: `/place/${slug}`,
+      hasOpen: false,
+      hasFrom: false,
+    });
+}
+
+async function closeTourModal(page, viewport) {
+  const closeTour =
+    viewport.width < 1024
+      ? page.getByRole('button', { name: '투어 목록 닫기' }).first()
+      : page.locator('#globe-tour-strip-panel').getByRole('button', { name: '투어 목록 닫기' });
+  await closeTour.click({ force: true });
+}
+
 test.beforeEach(async ({ page }) => {
   await installGtagCapture(page);
   await installGygMock(page);
 });
 
 test.describe('place tour modal deeplink', () => {
-  test('open=tour replaces to home and opens modal once', async ({ page }, testInfo) => {
+  test('open=tour keeps place URL and opens modal once', async ({ page }, testInfo) => {
     const viewport = page.viewportSize() || { width: 1280, height: 900 };
     const shot =
       viewport.width < 1024
@@ -86,7 +111,7 @@ test.describe('place tour modal deeplink', () => {
     await page.goto('/place/kyoto?open=tour&from=review&lang=ko', {
       waitUntil: 'domcontentloaded',
     });
-    await expect(page).toHaveURL(/\/(\?|$)/, { timeout: 60_000 });
+    await expectPlacePathWithoutDeeplinkQuery(page, 'kyoto');
     await expectTourModalOpen(page, viewport);
 
     await expect
@@ -104,8 +129,42 @@ test.describe('place tour modal deeplink', () => {
 
     await captureViewport(page, shot, viewport.width, viewport.height);
 
+    await page.waitForTimeout(6_000);
+    await expectPlacePathWithoutDeeplinkQuery(page, 'kyoto');
+
     await page.reload({ waitUntil: 'domcontentloaded' });
-    await expect(page).toHaveURL(/\/(\?|$)/);
+    await expect(page).toHaveURL(/\/place\/kyoto(\?|$)/);
+    if (viewport.width < 1024) {
+      await expect(page.getByRole('dialog', { name: '투어 전체 목록' })).toHaveCount(0);
+    } else {
+      await expect(page.getByRole('region', { name: '투어 목록' })).toHaveCount(0);
+    }
+  });
+
+  test('after close and reload, place URL persists without modal reopen', async ({ page }) => {
+    const viewport = page.viewportSize() || { width: 1280, height: 900 };
+    await page.goto('/place/kyoto?open=tour&from=review&lang=ko', {
+      waitUntil: 'domcontentloaded',
+    });
+    await expectTourModalOpen(page, viewport);
+    await expectPlacePathWithoutDeeplinkQuery(page, 'kyoto');
+
+    await closeTourModal(page, viewport);
+    await expect
+      .poll(async () => {
+        if (viewport.width < 1024) {
+          return page.getByRole('dialog', { name: '투어 전체 목록' }).count();
+        }
+        return page.getByRole('region', { name: '투어 목록' }).count();
+      })
+      .toBe(0);
+
+    await page.waitForTimeout(500);
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await expect(page).toHaveURL(/\/place\/kyoto/);
+    const url = new URL(page.url());
+    expect(url.searchParams.has('open')).toBe(false);
+    expect(url.searchParams.has('from')).toBe(false);
     if (viewport.width < 1024) {
       await expect(page.getByRole('dialog', { name: '투어 전체 목록' })).toHaveCount(0);
     } else {
@@ -116,17 +175,19 @@ test.describe('place tour modal deeplink', () => {
   test('open=stay opens stay modal only', async ({ page }) => {
     const viewport = page.viewportSize() || { width: 1280, height: 900 };
     await page.goto('/place/khao-lak?open=stay&lang=ko', { waitUntil: 'domcontentloaded' });
-    await expect(page).toHaveURL(/\/(\?|$)/, { timeout: 60_000 });
+    await expectPlacePathWithoutDeeplinkQuery(page, 'khao-lak');
     await expectStayModalOpen(page, viewport);
     if (viewport.width < 1024) {
       await expect(page.getByRole('dialog', { name: '투어 전체 목록' })).toHaveCount(0);
     }
   });
 
-  test('invalid open is ignored', async ({ page }) => {
+  test('invalid open strips query and does not open modal', async ({ page }) => {
     await page.goto('/place/kyoto?open=foo&lang=ko', { waitUntil: 'domcontentloaded' });
-    await expect(page).toHaveURL(/\/place\/kyoto/, { timeout: 60_000 });
+    await expectPlacePathWithoutDeeplinkQuery(page, 'kyoto');
     await expect(page.getByRole('dialog', { name: '투어 전체 목록' })).toHaveCount(0);
+    const url = new URL(page.url());
+    expect(url.searchParams.get('lang')).toBe('ko');
   });
 
   test('planner tab without open param is unchanged', async ({ page }) => {
@@ -138,7 +199,7 @@ test.describe('place tour modal deeplink', () => {
   test('domestic open=tour (MRT) opens tour modal', async ({ page }) => {
     const viewport = page.viewportSize() || { width: 1280, height: 900 };
     await page.goto('/place/jeju?open=tour&lang=ko', { waitUntil: 'domcontentloaded' });
-    await expect(page).toHaveURL(/\/(\?|$)/, { timeout: 60_000 });
+    await expectPlacePathWithoutDeeplinkQuery(page, 'jeju');
     await expectTourModalOpen(page, viewport);
   });
 
@@ -148,11 +209,7 @@ test.describe('place tour modal deeplink', () => {
     await page.goto('/blog', { waitUntil: 'domcontentloaded' });
     await page.goto('/place/kyoto?open=tour&lang=ko', { waitUntil: 'domcontentloaded' });
     await expectTourModalOpen(page, viewport);
-    const closeTour =
-      viewport.width < 1024
-        ? page.getByRole('button', { name: '투어 목록 닫기' }).first()
-        : page.locator('#globe-tour-strip-panel').getByRole('button', { name: '투어 목록 닫기' });
-    await closeTour.click({ force: true });
+    await closeTourModal(page, viewport);
     await page.goBack();
     await expect(page).toHaveURL(/\/blog/, { timeout: 30_000 });
   });
