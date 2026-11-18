@@ -1,0 +1,48 @@
+import { buildGygActivitiesSearchQuery } from '../../../components/PlaceCard/tabs/planner/locationRules.js';
+import { canShowMrtStayStrip } from '../../../utils/mrtStayQuery.js';
+import { canShowMrtTnaStrip } from '../../../utils/mrtTnaQuery.js';
+
+export const PLACE_SERVICE_MODAL_OPEN_VALUES = new Set(['tour', 'stay']);
+
+const FROM_REF_PATTERN = /^[a-z0-9_-]{1,32}$/;
+
+/**
+ * @param {URLSearchParams | string | null | undefined} input
+ * @returns {{ open: 'tour' | 'stay' | null, from: string | null }}
+ */
+export function parsePlaceServiceModalDeeplink(input) {
+  const params =
+    input instanceof URLSearchParams
+      ? input
+      : new URLSearchParams(typeof input === 'string' ? input.replace(/^\?/, '') : '');
+  const openRaw = params.get('open');
+  const open =
+    typeof openRaw === 'string' && PLACE_SERVICE_MODAL_OPEN_VALUES.has(openRaw) ? openRaw : null;
+  const fromRaw = params.get('from');
+  const from =
+    typeof fromRaw === 'string' && FROM_REF_PATTERN.test(fromRaw) ? fromRaw : null;
+  return { open, from };
+}
+
+/** Canonical /place slug redirect 시 open·from만 유지 */
+export function preserveServiceModalDeeplinkSearch(search) {
+  const { open, from } = parsePlaceServiceModalDeeplink(search);
+  if (!open) return '';
+  const next = new URLSearchParams();
+  next.set('open', open);
+  if (from) next.set('from', from);
+  const serialized = next.toString();
+  return serialized ? `?${serialized}` : '';
+}
+
+/**
+ * @param {object | null | undefined} location
+ * @param {'tour' | 'stay'} service
+ */
+export function isPlaceServiceModalOpenEligible(location, service) {
+  if (!location || location.isScanning) return false;
+  if (service === 'stay') return canShowMrtStayStrip(location);
+  const useMrtTna = canShowMrtTnaStrip(location);
+  const gygQuery = useMrtTna ? null : buildGygActivitiesSearchQuery(location);
+  return useMrtTna || Boolean(gygQuery);
+}

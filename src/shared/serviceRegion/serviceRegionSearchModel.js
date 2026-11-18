@@ -667,3 +667,27 @@ export function buildServiceModalRegionResetEvent({ service = 'tour', to = '' } 
     },
   };
 }
+
+const SERVICE_MODAL_OPEN_FROM = new Set(['button', 'switch', 'deeplink']);
+
+/**
+ * @param {{ service?: 'tour' | 'stay', from?: string, ref?: string | null, slug?: string }} [opts]
+ */
+export function buildServiceModalOpenEvent({
+  service = 'tour',
+  from = 'button',
+  ref = null,
+  slug = '',
+} = {}) {
+  const svc = service === 'stay' ? 'stay' : 'tour';
+  const source = SERVICE_MODAL_OPEN_FROM.has(from) ? from : 'button';
+  const params = {
+    service: svc,
+    from: source,
+    slug: String(slug || '').trim().toLowerCase(),
+  };
+  if (source === 'deeplink' && typeof ref === 'string' && ref) {
+    params.ref = ref;
+  }
+  return { name: 'service_modal_open', params };
+}

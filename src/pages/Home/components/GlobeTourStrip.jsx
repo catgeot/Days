@@ -19,6 +19,8 @@ import { canShowMrtStayStrip } from '../../../utils/mrtStayQuery';
 import { canShowMrtTnaStrip } from '../../../utils/mrtTnaQuery';
 import { getLocalizedPlaceName } from '../../../components/PlaceCard/common/locationDisplay';
 import Logo from './Logo';
+import { trackEvent } from '../../../shared/analytics/trackEvent.js';
+import { buildServiceModalOpenEvent } from '../../../shared/serviceRegion/serviceRegionSearchModel.js';
 
 const LG_MQ = '(min-width: 1024px)';
 
@@ -302,6 +304,9 @@ export default function GlobeTourStrip({
   }
 
   const open = () => {
+    const slug = location?.slug ? String(location.slug).trim().toLowerCase() : '';
+    const { name, params } = buildServiceModalOpenEvent({ service: 'tour', from: 'button', slug });
+    trackEvent(name, params);
     if (!isLg) {
       setExpanded(true);
       setListFullscreen(true);

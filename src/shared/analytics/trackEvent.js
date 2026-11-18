@@ -18,6 +18,9 @@ export function trackMooniOpenIfRising(wasOpen, open, params) {
 export function trackEvent(name, params) {
   try {
     if (typeof window === 'undefined') return;
+    if (Array.isArray(window.__gateoGaEvents)) {
+      window.__gateoGaEvents.push({ name, params: params ?? {} });
+    }
     const gtag = window.gtag;
     if (typeof gtag !== 'function') return;
     gtag('event', name, params);
