@@ -64,7 +64,7 @@ test('type, select, widget updates, reset', async ({ page }, testInfo) => {
   }
 
   const host = page.locator('[data-gyg-widget="activities"]');
-  await expect(host).toHaveAttribute('data-gyg-q', 'Khao Lak');
+  await expect(host).toHaveAttribute('data-gyg-q', 'Khao Lak Phang Nga');
   await expect(host).toHaveAttribute('data-gyg-partner-id', 'LRKVVU4');
   await expect(host).toHaveAttribute('data-gyg-cmp', 'gateo_planer_khao-lak');
 
@@ -76,9 +76,9 @@ test('type, select, widget updates, reset', async ({ page }, testInfo) => {
   await expect(page.locator('[data-region-method="recommended"]')).toHaveCount(3);
 
   await input.fill('푸');
-  await expect(host).toHaveAttribute('data-gyg-q', 'Khao Lak');
+  await expect(host).toHaveAttribute('data-gyg-q', 'Khao Lak Phang Nga');
   await input.fill('푸켓');
-  await expect(host).toHaveAttribute('data-gyg-q', 'Khao Lak');
+  await expect(host).toHaveAttribute('data-gyg-q', 'Khao Lak Phang Nga');
   await page.locator('[data-region-slug="phuket"]').click();
   await expect(host).toHaveAttribute('data-gyg-q', 'Phuket');
   await expect(host).toHaveAttribute('data-gyg-cmp', 'gateo_planer_phuket');
@@ -116,7 +116,7 @@ test('type, select, widget updates, reset', async ({ page }, testInfo) => {
   await expect(page.locator('[data-region-method="recent"][data-region-slug="phuket"]')).toBeVisible();
 
   await page.getByRole('button', { name: /카오락 투어로 돌아가기/ }).click();
-  await expect(host).toHaveAttribute('data-gyg-q', 'Khao Lak');
+  await expect(host).toHaveAttribute('data-gyg-q', 'Khao Lak Phang Nga');
   await expect(host).toHaveAttribute('data-gyg-cmp', 'gateo_planer_khao-lak');
   await expect(page.locator('[data-service-region-reset]')).toHaveCount(0);
   await expect(packageLink).toHaveText(/카오락 패키지 상품보기/);
@@ -127,6 +127,6 @@ test('type, select, widget updates, reset', async ({ page }, testInfo) => {
     await page.getByRole('region', { name: '투어 목록' }).getByRole('button', { name: '투어 목록 닫기' }).click();
     await expect(page.getByRole('region', { name: '투어 목록' })).toHaveCount(0);
     await page.getByRole('button', { name: '투어 찾기' }).first().click();
-    await expect(page.locator('[data-gyg-widget="activities"]')).toHaveAttribute('data-gyg-q', 'Khao Lak');
+    await expect(page.locator('[data-gyg-widget="activities"]')).toHaveAttribute('data-gyg-q', 'Khao Lak Phang Nga');
   }
 });

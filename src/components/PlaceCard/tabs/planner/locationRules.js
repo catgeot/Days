@@ -26,6 +26,8 @@ const GYG_ACTIVITIES_Q_BY_SLUG = {
     aitutaki: 'Rarotonga, Cook Islands',
     // bare "Timbuktu" → Tbilisi(조지아) fuzzy · Hostaway q= 권장 "City, Country"
     timbuktu: 'Timbuktu, Mali',
+    // bare "Khao Lak" → 수랏타니 카오속·치오란 호수 오탐 · 팡아(안다만) 해안·시미란 출발 거점
+    'khao-lak': 'Khao Lak Phang Nga',
 };
 
 // 지도/명소 카드에서 Klook 커버리지가 약해 GYG를 우선 노출할 여행지.

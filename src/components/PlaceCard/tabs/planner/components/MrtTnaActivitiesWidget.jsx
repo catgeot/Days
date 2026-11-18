@@ -5,6 +5,7 @@ import {
   buildMrtTnaProductUrl,
   buildMrtTnaSearchMoreUrl,
   canShowNearbyChips,
+  fetchMrtTnas,
   fetchMrtTnasForLocation,
   fetchMrtTnasNearbyKeyword,
   isMrtTnaNearbyKeyword,
@@ -275,6 +276,7 @@ export default function MrtTnaActivitiesWidget({
   showMoreLink = true,
   linkSponsoredLabel = false,
   regionSearch = null,
+  activityKeyword = '',
 }) {
   const { t, i18n } = useTranslation();
   const planner = variant === 'planner';
@@ -296,7 +298,8 @@ export default function MrtTnaActivitiesWidget({
       location?.originalQuery,
     ],
   );
-  const placeKey = `${location?.slug || ''}|${location?.hubId || ''}|${query.keyword}|${(query.altKeywords || []).join(',')}|${(query.nearbyKeywords || []).join(',')}`;
+  const tourKeyword = String(activityKeyword || '').trim();
+  const placeKey = `${location?.slug || ''}|${location?.hubId || ''}|${tourKeyword || query.keyword}|${(query.altKeywords || []).join(',')}|${(query.nearbyKeywords || []).join(',')}`;
 
   const [status, setStatus] = useState('idle');
   /** @type {[{ id: string, keyword: string, nearby: boolean, items: object[] }]} */
@@ -316,7 +319,12 @@ export default function MrtTnaActivitiesWidget({
     setDensityZoomed(false);
 
     (async () => {
-      const result = await fetchMrtTnasForLocation(location, { size: limit });
+      let result = null;
+      if (tourKeyword) {
+        result = await fetchMrtTnas({ keyword: tourKeyword, size: limit });
+      } else {
+        result = await fetchMrtTnasForLocation(location, { size: limit });
+      }
       if (cancelled) return;
       if (!result) {
         setStatus('error');
@@ -343,7 +351,7 @@ export default function MrtTnaActivitiesWidget({
     return () => {
       cancelled = true;
     };
-  }, [placeKey, limit]);
+  }, [placeKey, limit, tourKeyword]);
 
   const loadedNearbyKws = useMemo(
     () =>

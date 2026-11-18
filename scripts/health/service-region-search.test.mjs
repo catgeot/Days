@@ -25,7 +25,9 @@ const {
   buildServiceModalSearchEvent,
   buildServiceModalSearchOpenEvent,
   collectRecentServiceRegions,
+  buildTourActivitiesWidgetQuery,
   confirmTourRegion,
+  confirmTourSearch,
   createTourRegionState,
   filterServiceRegions,
   isTourRegionChanged,
@@ -33,7 +35,10 @@ const {
   listKnownServiceRegions,
   listRecommendedServiceRegions,
   loadRecentServiceRegions,
+  parseTourServiceSearchInput,
+  resetKnownServiceRegionCacheForTests,
   resetTourRegion,
+  resolveTourSearchCommit,
   resolveTourWidgetTarget,
   tourRegionLocation,
 } = await import('../../src/shared/serviceRegion/serviceRegionSearchModel.js');
@@ -87,6 +92,7 @@ function regionBySlug(slug) {
 }
 
 const khaoLak = regionBySlug('khao-lak');
+const KHAO_LAK_GYG_Q = 'Khao Lak Phang Nga';
 const phuket = regionBySlug('phuket');
 const jeju = regionBySlug('jeju');
 const kyoto = regionBySlug('kyoto');
@@ -110,14 +116,17 @@ function searchRegions(query) {
 function TourHarness() {
   const [state, setState] = useState(() => createTourRegionState(khaoLak));
   const active = tourRegionLocation(state);
-  const target = resolveTourWidgetTarget(active);
+  const target = buildTourActivitiesWidgetQuery(active, state.activityKeyword);
   const search = React.createElement(ServiceRegionSearch, {
     service: 'tour',
     originalLocation: state.original,
     activeLocation: active,
     changed: isTourRegionChanged(state),
     notice: state.notice,
-    onCommit: (region) => setState((prev) => confirmTourRegion(prev, region)),
+    onCommit: (region, meta) =>
+      setState((prev) =>
+        confirmTourSearch(prev, { region, activityKeyword: meta?.activityKeyword }),
+      ),
     onReset: () => setState((prev) => resetTourRegion(prev)),
     loadRecent: () => [phuket],
     loadRecommended: () => [kyoto],
@@ -266,7 +275,7 @@ test('widget query waits for confirm, reset restores, and affiliate fields follo
     root.render(React.createElement(TourHarness));
   });
 
-  assert.equal(widgetQuery(), 'Khao Lak');
+  assert.equal(widgetQuery(), KHAO_LAK_GYG_Q);
   assert.equal(container.querySelector('[data-gyg-partner-id]')?.getAttribute('data-gyg-partner-id'), 'LRKVVU4');
   assert.equal(container.querySelector('[data-gyg-cmp]')?.getAttribute('data-gyg-cmp'), 'gateo_planer_khao-lak');
   assert.equal(container.querySelector('[data-service-region-reset]'), null);
@@ -285,17 +294,17 @@ test('widget query waits for confirm, reset restores, and affiliate fields follo
   });
 
   await typeQuery('푸');
-  assert.equal(widgetQuery(), 'Khao Lak');
+  assert.equal(widgetQuery(), KHAO_LAK_GYG_Q);
   await pressEnter();
-  assert.equal(widgetQuery(), 'Khao Lak');
+  assert.equal(widgetQuery(), KHAO_LAK_GYG_Q);
   assert.equal(events.some((event) => event.name === 'service_modal_search'), false);
 
   await typeQuery('태국');
   await pressEnter();
-  assert.equal(widgetQuery(), 'Khao Lak');
+  assert.equal(widgetQuery(), KHAO_LAK_GYG_Q);
 
   await typeQuery('푸켓');
-  assert.equal(widgetQuery(), 'Khao Lak');
+  assert.equal(widgetQuery(), KHAO_LAK_GYG_Q);
   await pressEnter();
   assert.equal(widgetQuery(), 'Phuket');
   assert.equal(container.querySelector('[data-gyg-cmp]')?.getAttribute('data-gyg-cmp'), 'gateo_planer_phuket');
@@ -334,7 +343,7 @@ test('widget query waits for confirm, reset restores, and affiliate fields follo
   await act(async () => {
     reset.dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
   });
-  assert.equal(widgetQuery(), 'Khao Lak');
+  assert.equal(widgetQuery(), KHAO_LAK_GYG_Q);
   assert.equal(container.querySelector('[data-gyg-cmp]')?.getAttribute('data-gyg-cmp'), 'gateo_planer_khao-lak');
   const resetEvent = events.find((event) => event.name === 'service_modal_region_reset');
   assert.deepEqual(resetEvent, {
@@ -344,7 +353,7 @@ test('widget query waits for confirm, reset restores, and affiliate fields follo
 
   await typeQuery('없음');
   await pressEnter();
-  assert.equal(widgetQuery(), 'Khao Lak');
+  assert.equal(widgetQuery(), KHAO_LAK_GYG_Q);
   assert.match(container.querySelector('[data-service-region-notice]')?.textContent || '', /투어 제휴 목록이 아직 없어요/);
   const rejected = events.filter((event) => event.name === 'service_modal_search').at(-1);
   assert.equal(rejected.params.result, 'no_partner');
@@ -480,7 +489,10 @@ test('confirmed region is recorded on confirm and the next open reports has_rece
       activeLocation: active,
       changed: isTourRegionChanged(state),
       notice: state.notice,
-      onCommit: (region) => setState((prev) => confirmTourRegion(prev, region)),
+      onCommit: (region, meta) =>
+        setState((prev) =>
+          confirmTourSearch(prev, { region, activityKeyword: meta?.activityKeyword }),
+        ),
       onReset: () => setState((prev) => resetTourRegion(prev)),
     });
   }
@@ -544,4 +556,50 @@ test('confirmed region is recorded on confirm and the next open reports has_rece
     1,
   );
   assert.ok(container.querySelector('[data-region-method="recent"][data-region-slug="phuket"]'));
+});
+
+test('tour parse — region+keyword, activity-only, no match', () => {
+  resetKnownServiceRegionCacheForTests();
+  assert.equal(parseTourServiceSearchInput('카오락 시미란', khaoLak).kind, 'region_activity');
+  assert.equal(
+    parseTourServiceSearchInput('카오락 시미란', khaoLak).activityKeyword,
+    '시미란',
+  );
+  assert.equal(parseTourServiceSearchInput('El Nido island hopping', khaoLak).kind, 'region_activity');
+  assert.match(buildTourActivitiesWidgetQuery(khaoLak, '스노클링').query || '', /스노클링/);
+  assert.equal(parseTourServiceSearchInput('스노클링', khaoLak).kind, 'activity_only');
+  assert.equal(parseTourServiceSearchInput('없는말', khaoLak).kind, 'no_match');
+  assert.equal(parseTourServiceSearchInput('카오락', khaoLak).kind, 'region_only');
+});
+
+test('widget query updates on region+keyword commit and Enter', async () => {
+  container = document.createElement('div');
+  document.body.appendChild(container);
+  root = createRoot(container);
+  await act(async () => {
+    root.render(React.createElement(TourHarness));
+  });
+
+  assert.equal(widgetQuery(), KHAO_LAK_GYG_Q);
+  await typeQuery('카오락 시미란');
+  await pressEnter();
+  assert.match(widgetQuery(), /Khao Lak/);
+  assert.match(widgetQuery(), /시미란/);
+
+  await typeQuery('island hopping');
+  await pressEnter();
+  assert.match(widgetQuery(), /island hopping/i);
+
+  await typeQuery('없는말');
+  const input = inputEl();
+  await act(async () => {
+    input.dispatchEvent(new window.FocusEvent('focusin', { bubbles: true }));
+  });
+  assert.ok(container.querySelector('[data-tour-search-no-results]'));
+  await pressEnter();
+  assert.equal(widgetQuery(), `${KHAO_LAK_GYG_Q} island hopping`);
+
+  const resolved = resolveTourSearchCommit('방콕 수상시장', [], khaoLak);
+  assert.equal(resolved?.region?.slug, 'bangkok');
+  assert.equal(resolved?.activityKeyword, '수상시장');
 });

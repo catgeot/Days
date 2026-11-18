@@ -15,10 +15,15 @@ import {
   buildServiceModalSearchOpenEvent,
   filterServiceRegions,
   isTourRegionSupported,
+  listKnownServiceRegions,
   listRecommendedServiceRegions,
+  listTourSearchRegionHits,
   loadRecentServiceRegions,
+  parseTourServiceSearchInput,
   pickTypedServiceRegion,
   recordConfirmedTourRegionVisit,
+  regionIdentity,
+  resolveTourSearchCommit,
 } from './serviceRegionSearchModel.js';
 
 /**
@@ -65,11 +70,30 @@ export default function ServiceRegionSearch({
     '';
   const inputValue = dirty ? draft : '';
   const showClear = Boolean(String(inputValue || '').trim());
-  const hits = dirty ? searchRegions(draft) || [] : [];
+  const parsedDraft =
+    dirty && draft ? parseTourServiceSearchInput(draft, activeLocation) : { kind: 'empty' };
+  const tourUsesCatalog = searchRegions === filterServiceRegions;
+  const hits =
+    dirty && service === 'tour'
+      ? tourUsesCatalog
+        ? listTourSearchRegionHits(draft, listKnownServiceRegions())
+        : searchRegions(draft) || []
+      : dirty
+        ? searchRegions(draft) || []
+        : [];
   const showRecent = open && !dirty && recent.length > 0;
   const showRecommended = open && !dirty && recommended.length > 0;
   const showHits = open && dirty && hits.length > 0;
-  const showList = showRecent || showRecommended || showHits;
+  const showActivityHint =
+    open && dirty && service === 'tour' && !showHits && parsedDraft.kind === 'activity_only';
+  const showNoResults =
+    open &&
+    dirty &&
+    service === 'tour' &&
+    !showHits &&
+    !showActivityHint &&
+    parsedDraft.kind === 'no_match';
+  const showList = showRecent || showRecommended || showHits || showActivityHint || showNoResults;
 
   const refreshQuiet = () => {
     const nextRecent = loadRecent() || [];
@@ -96,7 +120,7 @@ export default function ServiceRegionSearch({
     trackEvent(event.name, event.params);
   };
 
-  const commit = (region, method) => {
+  const commit = (region, method, activityKeyword = '') => {
     if (!region) return;
     const chars = method === 'typed' ? String(draft || '').trim().length : 0;
     const supported = isTourRegionSupported(region);
@@ -112,10 +136,18 @@ export default function ServiceRegionSearch({
     if (supported && service === 'tour') {
       recordConfirmedTourRegionVisit(region, i18n.language);
     }
-    onCommit?.(region);
+    onCommit?.(region, { activityKeyword, method });
     setDirty(false);
     setDraft('');
     setOpen(false);
+  };
+
+  const commitResolved = (resolved) => {
+    if (!resolved || resolved.noMatch) return false;
+    const { region, activityKeyword, method } = resolved;
+    if (!region) return false;
+    commit(region, method || 'typed', activityKeyword || '');
+    return true;
   };
 
   const handleReset = () => {
@@ -145,6 +177,11 @@ export default function ServiceRegionSearch({
     event.preventDefault();
     if (!shouldConfirmHangulEntry({ composing, key: 'Enter' })) return;
     if (!dirty) return;
+    if (service === 'tour') {
+      const resolved = resolveTourSearchCommit(draft, hits, activeLocation);
+      commitResolved(resolved);
+      return;
+    }
     const picked = pickTypedServiceRegion(draft, hits);
     if (!picked) return;
     commit(picked, 'typed');
@@ -169,7 +206,17 @@ export default function ServiceRegionSearch({
           onMouseDown={(e) => e.preventDefault()}
           onClick={(event) => {
             event.stopPropagation();
-            commit(region, method);
+            let activityKeyword = '';
+            if (service === 'tour' && dirty) {
+              const parsed = parseTourServiceSearchInput(draft, activeLocation);
+              if (
+                parsed.kind === 'region_activity' &&
+                regionIdentity(parsed.region) === regionIdentity(region)
+              ) {
+                activityKeyword = parsed.activityKeyword || '';
+              }
+            }
+            commit(region, method, activityKeyword);
           }}
           className={`flex w-full min-w-0 items-center justify-between gap-2 px-2.5 py-1.5 text-left ${
             MOBILE_INPUT_TEXT_CLASS
@@ -225,7 +272,8 @@ export default function ServiceRegionSearch({
       <input
         ref={inputRef}
         id={inputId}
-        type="search"
+        type="text"
+        inputMode="search"
         role="combobox"
         aria-expanded={showList}
         aria-controls={listId}
@@ -325,6 +373,39 @@ export default function ServiceRegionSearch({
             ? recommended.map((region) => renderOption(region, 'recommended'))
             : null}
           {showHits ? hits.map((region) => renderOption(region, 'typed')) : null}
+          {showActivityHint ? (
+            <li
+              role="presentation"
+              data-tour-search-activity-hint=""
+              className={`px-2.5 py-2 text-left text-[12px] leading-snug break-keep ${
+                dark ? 'text-orange-100/75' : 'text-gray-600'
+              }`}
+            >
+              {t('home.serviceRegion.tour.searchInRegion', {
+                keyword: parsedDraft.activityKeyword || draft,
+              })}
+            </li>
+          ) : null}
+          {showNoResults ? (
+            <li
+              role="presentation"
+              data-tour-search-no-results=""
+              className={`px-2.5 py-2 text-left ${
+                dark ? 'text-orange-100/80' : 'text-gray-700'
+              }`}
+            >
+              <p className="text-[12px] font-semibold leading-snug break-keep">
+                {t('home.serviceRegion.tour.noResults')}
+              </p>
+              <p
+                className={`mt-1 text-[11px] leading-snug break-keep ${
+                  dark ? 'text-orange-100/55' : 'text-gray-500'
+                }`}
+              >
+                {t('home.serviceRegion.tour.noResultsHint')}
+              </p>
+            </li>
+          ) : null}
         </ul>
       ) : null}
       {notice ? (

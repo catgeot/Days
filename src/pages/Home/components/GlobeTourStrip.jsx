@@ -7,11 +7,11 @@ import MrtTnaActivitiesWidget from '../../../components/PlaceCard/tabs/planner/c
 import { buildGygActivitiesSearchQuery } from '../../../components/PlaceCard/tabs/planner/locationRules';
 import ServiceRegionSearch from '../../../shared/serviceRegion/ServiceRegionSearch.jsx';
 import {
-  confirmTourRegion,
+  buildTourActivitiesWidgetQuery,
+  confirmTourSearch,
   createTourRegionState,
   isTourRegionChanged,
   resetTourRegion,
-  resolveTourWidgetTarget,
   tourRegionLocation,
 } from '../../../shared/serviceRegion/serviceRegionSearchModel.js';
 import { resolveVisibleTourPackageMoreLink } from '../../../utils/mrtPackageLinks';
@@ -360,7 +360,10 @@ export default function GlobeTourStrip({
   );
 
   const activeLocation = tourRegionLocation(regionState);
-  const activeTarget = resolveTourWidgetTarget(activeLocation);
+  const activeTarget = buildTourActivitiesWidgetQuery(
+    activeLocation,
+    regionState.activityKeyword,
+  );
   const packageLink = resolveVisibleTourPackageMoreLink({
     original: location,
     active: activeLocation,
@@ -380,7 +383,14 @@ export default function GlobeTourStrip({
       activeLocation={activeLocation}
       changed={isTourRegionChanged(regionState)}
       notice={regionState.notice}
-      onCommit={(region) => setRegionState((prev) => confirmTourRegion(prev, region))}
+      onCommit={(region, meta) =>
+        setRegionState((prev) =>
+          confirmTourSearch(prev, {
+            region,
+            activityKeyword: meta?.activityKeyword,
+          }),
+        )
+      }
       onReset={() => setRegionState((prev) => resetTourRegion(prev))}
       onSearchOpen={() => {
         if (searchOpenedRef.current) return false;
@@ -397,14 +407,16 @@ export default function GlobeTourStrip({
   const widget =
     activeTarget.kind === 'mrt' ? (
       <MrtTnaActivitiesWidget
-        key={placeKey}
+        key={`${placeKey}|${regionState.activityKeyword || ''}`}
         location={activeLocation}
         variant="open"
         showMoreLink
         linkSponsoredLabel
+        activityKeyword={activeTarget.activityKeyword || regionState.activityKeyword}
       />
     ) : (
       <GetYourGuideActivitiesWidget
+        key={`${placeKey}|${activeTarget.query || gygQuery || ''}`}
         location={activeLocation}
         query={activeTarget.query || gygQuery}
         variant="open"

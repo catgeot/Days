@@ -4,6 +4,23 @@ import { test } from 'node:test';
 import travelSpotsList from '../../src/pages/Home/data/travelSpots-list.json' with { type: 'json' };
 import { getPlaceStayLodgingGuidance } from '../../src/data/placeStayLodgingGuidance.js';
 import { resolveMrtStayQuery } from '../../src/utils/mrtStayQuery.js';
+import { buildGygActivitiesSearchQuery } from '../../src/components/PlaceCard/tabs/planner/locationRules.js';
+import { buildGygSearchUrl } from '../../src/utils/gygAffiliateLinks.js';
+
+test('khao-lak — GYG Activities q disambiguates Phang Nga coast (not Khao Sok)', () => {
+  const location = {
+    slug: 'khao-lak',
+    name: '카오락',
+    name_en: 'Khao Lak',
+    country: '태국',
+    country_en: 'Thailand',
+  };
+  const q = buildGygActivitiesSearchQuery(location);
+  assert.equal(q, 'Khao Lak Phang Nga');
+  assert.notEqual(q, 'Khao Lak');
+  const href = buildGygSearchUrl(q, { locale: 'en', cmp: 'gateo_planer_khao-lak' });
+  assert.match(decodeURIComponent(href), /Khao\+Lak\+Phang\+Nga|Khao%20Lak%20Phang%20Nga/);
+});
 
 test('khao-lak — travelSpots-list registry and MRT keyword', () => {
   const row = travelSpotsList.find((s) => s.slug === 'khao-lak');
