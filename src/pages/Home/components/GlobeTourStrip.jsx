@@ -388,11 +388,23 @@ export default function GlobeTourStrip({
       activeLocation={activeLocation}
       changed={isTourRegionChanged(regionState)}
       notice={regionState.notice}
+      appliedSearchText={regionState.committedSearchText}
+      onSearchClear={() =>
+        setRegionState((prev) =>
+          confirmTourSearch(prev, {
+            activityKeyword: '',
+            searchText: '',
+            keywordSearchFallback: false,
+          }),
+        )
+      }
       onCommit={(region, meta) =>
         setRegionState((prev) =>
           confirmTourSearch(prev, {
             region,
             activityKeyword: meta?.activityKeyword,
+            searchText: meta?.searchText,
+            keywordSearchFallback: meta?.keywordSearchFallback,
           }),
         )
       }
@@ -404,9 +416,22 @@ export default function GlobeTourStrip({
       }}
     />
   );
+  const showKeywordFallbackNotice =
+    Boolean(regionState.activityKeyword) && Boolean(regionState.keywordSearchFallback);
   const tourRegionSearchBar = (
     <div className="relative z-20 shrink-0 border-b border-white/10 bg-black px-3 py-2.5">
       {regionSearch}
+      {showKeywordFallbackNotice ? (
+        <p
+          data-tour-search-list-fallback=""
+          className="mt-2 text-left text-[12px] leading-snug break-keep text-orange-100/75"
+        >
+          {t('home.serviceRegion.tour.listKeywordFallback', {
+            keyword: regionState.activityKeyword,
+            region: activeName,
+          })}
+        </p>
+      ) : null}
     </div>
   );
   const widget =
@@ -418,6 +443,15 @@ export default function GlobeTourStrip({
         showMoreLink
         linkSponsoredLabel
         activityKeyword={activeTarget.activityKeyword || regionState.activityKeyword}
+        onActivityListingResolved={(meta) => {
+          setRegionState((prev) => {
+            if (!String(prev.activityKeyword || '').trim()) return prev;
+            return {
+              ...prev,
+              keywordSearchFallback: meta?.keywordMatched === false,
+            };
+          });
+        }}
       />
     ) : (
       <GetYourGuideActivitiesWidget

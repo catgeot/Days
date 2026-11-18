@@ -58,6 +58,7 @@ import PublicViewer from './pages/DailyReport/PublicViewer';
 import { ReportProvider } from './context/ReportContext';
 
 import Login from './shared/Auth/Login';
+import AuthOAuthReturnConsumer from './shared/Auth/AuthOAuthReturnConsumer';
 import Signup from './shared/Auth/SignUp';
 import ForgotPassword from './shared/Auth/ForgotPassWord';
 import UpdatePassword from './shared/Auth/UpdatePassword';
@@ -134,6 +135,7 @@ function App() {
         <PersistedBlankPageReload />
         <SocialPromoInstagramVisitCapture />
         <AppHistoryRecorder />
+        <AuthOAuthReturnConsumer />
         <ReportProvider>
           <Analytics />
           {PreviewDebugChrome ? (

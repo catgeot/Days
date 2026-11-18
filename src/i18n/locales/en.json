@@ -689,7 +689,8 @@
         "backTo": "← Back to {{name}} tours",
         "noResults": "No results",
         "noResultsHint": "Try a destination name, or pick a region from the list",
-        "searchInRegion": "Search «{{keyword}}» in this region (Enter)"
+        "searchInRegion": "Search «{{keyword}}» in this region (Enter)",
+        "listKeywordFallback": "No results for “{{keyword}}” — showing tours in {{region}}"
       }
     },
     "stayDate": {

@@ -6,12 +6,13 @@ import { UserPlus, Mail, Lock, X, Loader2 } from 'lucide-react';
 import { MOBILE_INPUT_TEXT_CLASS } from '../hooks/useMobileInputViewport';
 import { resetIosZoomAfterInput } from '../lib/mobileViewport';
 import AuthBenefits from './AuthBenefits';
+import { sanitizeAuthPostLoginPath } from './authPostLoginPath.js';
 
 const Signup = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
-  const from = location.state?.from || '/';
+  const from = sanitizeAuthPostLoginPath(location.state?.from, '/');
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
