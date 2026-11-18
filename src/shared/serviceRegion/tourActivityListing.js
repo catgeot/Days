@@ -205,10 +205,57 @@ function tourSearchTokens(text) {
     .filter(Boolean);
 }
 
+const QWERTY_LATIN_ROWS = ['qwertyuiop', 'asdfghjkl', 'zxcvbnm'];
+
+/** 같은 QWERTY 행에서 인접 키 4자+ 연속 (asdf, qwer, hjkl …) */
+function tourActivitySearchTokenIsQwertyRowRun(token) {
+  const t = String(token || '')
+    .trim()
+    .toLowerCase();
+  if (!/^[a-z]{4,}$/.test(t)) return false;
+  for (const row of QWERTY_LATIN_ROWS) {
+    const indices = [];
+    let onRow = true;
+    for (const ch of t) {
+      const idx = row.indexOf(ch);
+      if (idx === -1) {
+        onRow = false;
+        break;
+      }
+      indices.push(idx);
+    }
+    if (!onRow || indices.length !== t.length) continue;
+    let consecutive = true;
+    for (let i = 1; i < indices.length; i += 1) {
+      if (indices[i] !== indices[i - 1] + 1) {
+        consecutive = false;
+        break;
+      }
+    }
+    if (consecutive) return true;
+  }
+  return false;
+}
+
+/** 같은 글자 4회 이상 반복 (aaaa) */
+function tourActivitySearchTokenIsRepeatedChar(token) {
+  const t = String(token || '').trim();
+  if (t.length < 4) return false;
+  return /^(.)\1{3,}$/u.test(t);
+}
+
+function tourActivitySearchTokenIsKeyboardMash(token) {
+  return (
+    tourActivitySearchTokenIsQwertyRowRun(token) ||
+    tourActivitySearchTokenIsRepeatedChar(token)
+  );
+}
+
 /** 한글 2자+ 또는 라틴 활동/장소형 토큰 — 무의미 fallback 억제 */
 function tourActivitySearchTokenLooksPlausible(token) {
   const t = String(token || '').trim();
   if (!t) return false;
+  if (tourActivitySearchTokenIsKeyboardMash(t)) return false;
   if (TOUR_KEYWORD_HINT_RE.test(t)) return true;
   if (/^[가-힣]{2,}$/.test(t)) return true;
   if (/^[a-zA-Z]{3,}$/.test(t) && /[aeiouAEIOU]/.test(t)) return true;
@@ -226,10 +273,11 @@ function tourActivitySearchTextLooksPlausible(text) {
   return false;
 }
 
-/** zzqx 등 — 라틴 자음 덩어리·너무 짧은 영문 잡음 */
+/** zzqx·asdf 등 — 연타·반복·자음 덩어리·너무 짧은 영문 잡음 */
 function tourActivitySearchTokenLooksMeaningless(token) {
   const t = String(token || '').trim();
   if (!t) return false;
+  if (tourActivitySearchTokenIsKeyboardMash(t)) return true;
   if (/^[a-zA-Z]+$/.test(t)) {
     if (t.length < 3) return true;
     return !/[aeiouAEIOU]/.test(t);
