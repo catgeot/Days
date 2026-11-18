@@ -1,6 +1,6 @@
 /**
  * 리뷰 탭 → 리뷰 안 투어 링크 → 모달 닫기 → 뒤로.
- * layout.get pageerror 0, 뒤로 간 뒤 리뷰 표면 0회 공백.
+ * /place/{slug} 주소 유지, layout.get pageerror 0, 뒤로 간 뒤 리뷰 표면 0회 공백.
  *
  * npx playwright test -c playwright.config.tour-modal-region-search.js tour-modal-review-tour-back --project=chromium-1280-review-back
  */
@@ -90,6 +90,23 @@ async function expectTourModalOpen(page, viewport) {
   }
 }
 
+function expectPlacePathKept(page, slug) {
+  return expect
+    .poll(async () => {
+      const url = new URL(page.url());
+      return {
+        pathname: url.pathname,
+        hasOpen: url.searchParams.has('open'),
+        hasFrom: url.searchParams.has('from'),
+      };
+    })
+    .toEqual({
+      pathname: `/place/${slug}`,
+      hasOpen: false,
+      hasFrom: false,
+    });
+}
+
 async function pageLooksBlank(page) {
   return page.evaluate(() => {
     const root = document.getElementById('root');
@@ -150,6 +167,7 @@ test.describe('review → tour link → close → back', () => {
 
       await expect(page.getByTestId('place-card-route-loading')).toBeHidden({ timeout: 60_000 });
       await expectTourModalOpen(page, viewport);
+      await expectPlacePathKept(page, 'rome');
 
       await closeTourModal(page, viewport);
       await expect

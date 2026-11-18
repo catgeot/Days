@@ -39,6 +39,7 @@ const {
   resetKnownServiceRegionCacheForTests,
   resetTourRegion,
   listTourSearchRegionHits,
+  isTourRegionSearchDraftTooShort,
   resolveTourActivitySearchCommitMeta,
   resolveTourSearchCommit,
   resolveTourWidgetTarget,
@@ -652,13 +653,38 @@ test('region suggestions — El Nido phrase without substring cities', () => {
   assert.ok(filterTourServiceRegions('푸켓', listKnownServiceRegions()).some((r) => r.slug === 'phuket'));
 });
 
+test('tour search draft — single hangul char is too short for no-results', () => {
+  assert.equal(isTourRegionSearchDraftTooShort('방'), true);
+  assert.equal(isTourRegionSearchDraftTooShort('방콕'), false);
+  assert.equal(isTourRegionSearchDraftTooShort('Ph'), true);
+  assert.equal(isTourRegionSearchDraftTooShort('Phu'), false);
+});
+
 test('activity keyword listing — fallback vs match flags', () => {
   assert.equal(tourActivityKeywordLikelyMatches(khaoLak, 'zzqx'), false);
   assert.equal(tourActivityKeywordLikelyMatches(khaoLak, 'zzqx 투어'), false);
   assert.equal(tourActivityKeywordLikelyMatches(khaoLak, '시미란'), true);
   assert.equal(tourActivityKeywordLikelyMatches(khaoLak, 'Similan'), true);
-  assert.equal(resolveTourActivitySearchCommitMeta('zzqx', khaoLak).keywordSearchFallback, false);
+  assert.equal(resolveTourActivitySearchCommitMeta('zzqx', khaoLak).keywordSearchFallback, true);
   assert.equal(resolveTourActivitySearchCommitMeta('시미란', khaoLak).keywordSearchFallback, false);
+  assert.equal(resolveTourActivitySearchCommitMeta('코끼리', khaoLak).keywordSearchFallback, false);
+  assert.equal(resolveTourActivitySearchCommitMeta('snorkeling', khaoLak).keywordSearchFallback, false);
+  assert.equal(
+    resolveTourActivitySearchCommitMeta('시미란 스노클링', khaoLak, null, '시미란 스노클링')
+      .keywordSearchFallback,
+    false,
+  );
+  assert.equal(resolveTourActivitySearchCommitMeta('수상시장', regionBySlug('bangkok')).keywordSearchFallback, false);
+  const paris = regionBySlug('paris');
+  assert.equal(resolveTourActivitySearchCommitMeta('루브르', paris).keywordSearchFallback, false);
+  assert.equal(resolveTourActivitySearchCommitMeta('louvre', paris).keywordSearchFallback, false);
+  assert.equal(resolveTourActivitySearchCommitMeta('zzqx', paris).keywordSearchFallback, true);
+  assert.equal(resolveTourActivitySearchCommitMeta('asdf', khaoLak).keywordSearchFallback, true);
+  assert.equal(resolveTourActivitySearchCommitMeta('qwer', khaoLak).keywordSearchFallback, true);
+  assert.equal(resolveTourActivitySearchCommitMeta('aaaa', khaoLak).keywordSearchFallback, true);
+  assert.equal(resolveTourActivitySearchCommitMeta('spa', khaoLak).keywordSearchFallback, false);
+  assert.equal(resolveTourActivitySearchCommitMeta('tour', khaoLak).keywordSearchFallback, false);
+  assert.equal(resolveTourActivitySearchCommitMeta('kayak', khaoLak).keywordSearchFallback, false);
   const bangkok = regionBySlug('bangkok');
   const floatingMarketItems = [
     { itemName: 'Bangkok Damnoen Saduak Floating Market Tour' },

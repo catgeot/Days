@@ -5,7 +5,7 @@ const baseURL = `http://127.0.0.1:${port}`;
 
 export default defineConfig({
   testDir: './e2e',
-  testMatch: /tour-modal-(region-search|search-chrome|search-keyword|deeplink)\.spec\.js/,
+  testMatch: /tour-modal-(region-search|search-chrome|search-keyword|deeplink|review-tour-back)\.spec\.js/,
   fullyParallel: false,
   forbidOnly: Boolean(process.env.CI),
   retries: process.env.CI ? 1 : 0,
@@ -57,6 +57,14 @@ export default defineConfig({
       use: {
         ...devices['Desktop Safari'],
         viewport: { width: 390, height: 844 },
+        deviceScaleFactor: 1,
+      },
+    },
+    {
+      name: 'webkit-1280',
+      use: {
+        ...devices['Desktop Safari'],
+        viewport: { width: 1280, height: 900 },
         deviceScaleFactor: 1,
       },
     },

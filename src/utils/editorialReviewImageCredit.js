@@ -44,6 +44,20 @@ function hostnameIsWikimedia(value) {
   return hostnameMatches(value, ['wikimedia.org', 'wikipedia.org']);
 }
 
+/** Wikimedia author link only for /wiki/User:… on a Wikimedia/Wikipedia host. */
+function resolveWikimediaPhotographerHref(photographerHrefRaw) {
+  if (typeof photographerHrefRaw !== 'string') return null;
+  const trimmed = photographerHrefRaw.trim();
+  if (!trimmed) return null;
+  if (!hostnameIsWikimedia(trimmed)) return null;
+  try {
+    const path = decodeURIComponent(new URL(trimmed).pathname);
+    return /\/wiki\/User:/i.test(path) ? trimmed : null;
+  } catch {
+    return null;
+  }
+}
+
 /**
  * Photographer name alone is not Unsplash. KTO, KOGL, and Wikimedia rows store a
  * photographer plus the credit line that should be shown as written.
@@ -65,7 +79,7 @@ export function isPexelsReviewImage(img) {
   if (!img || typeof img !== 'object') return false;
   const source = String(img.source ?? '').trim().toLowerCase();
   if (source === 'pexels') return true;
-  return [img.url, img.publicUrl, img.html_link, img.pexels_url, img.photographer_url].some(
+  return [img.url, img.publicUrl, img.html_link, img.pexels_url, img.photographer_url, img.source_page].some(
     hostnameIsPexels,
   );
 }
@@ -81,7 +95,7 @@ export function isWikimediaStockReviewImage(img) {
   if (isHeritageStoredCreditLine(img)) return false;
   const source = String(img.source ?? '').trim().toLowerCase();
   const isWikiSource = source.includes('wikimedia') || source.includes('commons');
-  const isWikiUrl = [img.url, img.publicUrl, img.source_page, img.photographer_url].some(
+  const isWikiUrl = [img.url, img.publicUrl, img.source_page, img.photographer_url, img.html_link].some(
     hostnameIsWikimedia,
   );
   if (!isWikiSource && !isWikiUrl) return false;
@@ -111,7 +125,11 @@ export function resolveEditorialReviewImageCredit(img) {
   const photographerName = String(img.photographer || img.photographer_name || '').trim();
   const photographerHrefRaw = img.photographer_url;
   const unsplashHrefRaw = img.unsplash_url || img.html_link;
-  const pexelsHrefRaw = img.pexels_url || (isPexelsReviewImage(img) ? img.html_link : null);
+  const pexelsHrefRaw =
+    img.pexels_url ||
+    img.source_page ||
+    img.html_link ||
+    (typeof img.url === 'string' && hostnameIsPexels(img.url) ? img.url : null);
   const filePageRaw = img.source_page || img.file_page_url;
 
   if (isUnsplashReviewImage(img)) {
@@ -158,12 +176,7 @@ export function resolveEditorialReviewImageCredit(img) {
             photographerHrefRaw.includes('commons.wikimedia.org/wiki/File:')
           ? photographerHrefRaw.trim()
           : null;
-    const photographerHref =
-      typeof photographerHrefRaw === 'string' &&
-      photographerHrefRaw.trim() &&
-      !photographerHrefRaw.includes('commons.wikimedia.org/wiki/File:')
-        ? photographerHrefRaw.trim()
-        : null;
+    const photographerHref = resolveWikimediaPhotographerHref(photographerHrefRaw);
     return {
       type: 'wikimedia',
       photographerName,

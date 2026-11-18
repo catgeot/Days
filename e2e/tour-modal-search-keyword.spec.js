@@ -93,7 +93,8 @@ test('combo search, activity-only, no results, single clear control', async ({ p
   await input.fill('zzqx');
   await input.press('Enter');
   await expect(input).toHaveValue('zzqx');
-  await expect(page.locator('[data-tour-search-list-fallback]')).toHaveCount(0);
+  await expect(page.locator('[data-tour-search-list-fallback]')).toBeVisible();
+  await expect(page.locator('[data-tour-search-list-fallback]')).toContainText('zzqx');
 
   await page.screenshot({
     path: `/opt/cursor/artifacts/${shotEmpty}`,
