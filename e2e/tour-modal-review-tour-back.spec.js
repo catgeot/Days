@@ -138,7 +138,10 @@ test.describe('review → tour link → close → back', () => {
     await expect(page.getByTestId('place-card-route-loading')).toBeHidden({ timeout: 60_000 });
     await expect(linked).toBeVisible({ timeout: 30_000 });
     await expect(linked).toContainText('느린산책');
-    await expect(page.locator('.mapboxgl-canvas').first()).toBeAttached({ timeout: 30_000 });
+    // CI 잡에는 Mapbox 토큰이 없어 지구본이 마운트되지 않는다. 토큰이 있으면 캔버스 뒤에 루프를 돌린다.
+    if (process.env.VITE_MAPBOX_TOKEN) {
+      await expect(page.locator('.mapboxgl-canvas').first()).toBeAttached({ timeout: 30_000 });
+    }
 
     for (let round = 0; round < STRESS_ROUNDS; round += 1) {
       const tourLink = linked.getByRole('link', { name: TOUR_LINK_NAME });
