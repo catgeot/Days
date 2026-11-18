@@ -61,6 +61,14 @@ function playwrightBoxToIntersect(box) {
   return { x: box.x, y: box.y, w: box.width, h: box.height };
 }
 
+/** Desktop portal no-note layout (#847): max-h/max-w 90% of the lightbox viewport. */
+function expectedNoNotePhotoMinSize(viewport) {
+  return {
+    minHeight: Math.floor(viewport.height * 0.85),
+    minWidth: Math.floor(viewport.width * 0.55),
+  };
+}
+
 async function scrollFestivalSheetToEnd(page) {
   const content = page.locator('[data-festival-sheet-content]');
   await expect(content).toBeVisible();
@@ -412,7 +420,8 @@ test.describe('place gallery lightbox stock note — mock @390 @1280', () => {
 
   for (const viewport of [
     { label: '390', width: 390, height: 844 },
-    { label: '1280', width: 1280, height: 800 },
+    { label: '1280x800', width: 1280, height: 800 },
+    { label: '1280x720', width: 1280, height: 720 },
   ]) {
     test(`${viewport.label}: stock auto alt only — no photo note`, async ({ page }) => {
       const lightbox = await openBangkokStockGalleryLightbox(page, viewport);
@@ -425,6 +434,21 @@ test.describe('place gallery lightbox stock note — mock @390 @1280', () => {
         'src',
         /upload\.wikimedia\.org\/wikipedia\/commons\/thumb\/3\/36\/Khao_Lak_light_beacon/,
       );
+      if (viewport.width >= 1280) {
+        await expect.poll(async () => {
+          const box = await photo.boundingBox();
+          return box?.height ?? 0;
+        }).toBeGreaterThan(200);
+        const photoBox = await photo.boundingBox();
+        expect(photoBox).toBeTruthy();
+        const mins = expectedNoNotePhotoMinSize(viewport);
+        expect(photoBox.height).toBeGreaterThanOrEqual(mins.minHeight);
+        expect(photoBox.width).toBeGreaterThanOrEqual(mins.minWidth);
+        await expect(lightbox.getByText(/Photo by/i).first()).toBeVisible();
+        await expect(
+          lightbox.getByRole('link', { name: /Pexels|Unsplash/i }).first(),
+        ).toBeVisible();
+      }
       await page.screenshot({
         path: `/opt/cursor/artifacts/place-gallery-lightbox-stock-auto-alt-${viewport.label}.png`,
       });
@@ -439,7 +463,8 @@ test.describe('place gallery lightbox caption — mock @390 @1280', () => {
 
   for (const viewport of [
     { label: '390', width: 390, height: 844 },
-    { label: '1280', width: 1280, height: 800 },
+    { label: '1280x800', width: 1280, height: 800 },
+    { label: '1280x720', width: 1280, height: 720 },
   ]) {
     test(`${viewport.label}: photo note visible; top-right hit target is lightbox`, async ({ page }) => {
       const lightbox = await openNangThongGalleryLightbox(page, viewport);
@@ -474,6 +499,10 @@ test.describe('place gallery lightbox caption — mock @390 @1280', () => {
         false,
       );
       expect(noteBox.width).toBeLessThan(viewport.width);
+      if (viewport.width >= 1280) {
+        expect(Math.abs(noteBox.width - photoBox.width)).toBeLessThanOrEqual(4);
+        expect(noteBox.y + noteBox.height).toBeLessThanOrEqual(photoBox.y + 2);
+      }
 
       await page.screenshot({
         path: `/opt/cursor/artifacts/place-gallery-lightbox-caption-${viewport.label}.png`,
