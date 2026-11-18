@@ -4,6 +4,7 @@ import { isReachBoundaryLayer } from './globeReachBoundaries';
 import { isClusterBoundaryLayer } from './globeClusterBoundaries';
 import { isFlightCinemaLayer } from './globeFlightCinemaEngine';
 import { isRegionHighlightLayer } from './globeRegionHighlight';
+import { isGlobeMapStyleReady } from './globeMapStyleGuard.js';
 import {
   applyStandardBasemapConfig,
   isStandardBasemapLayer,
@@ -250,7 +251,7 @@ export function applyMapboxGlobeLabelPolicy(
   map,
   { globeTheme = 'deep', isPinVisible = true, placeLabelLayerIds = [], poiLabelLayerIds = [] } = {}
 ) {
-  if (!map?.getStyle || !map.isStyleLoaded?.()) return null;
+  if (!map || map._removed || !isGlobeMapStyleReady(map)) return null;
 
   const zoom = map.getZoom();
   const showCountry = shouldShowMapboxCountryLabels({ isPinVisible, zoom });

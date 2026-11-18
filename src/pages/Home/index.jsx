@@ -101,8 +101,11 @@ import {
 } from './lib/curationPlaceBridge';
 import { getGlobeApi, subscribeGlobeApi } from './lib/globeApiRegistry.js';
 import {
+  buildPlacePathWithStrippedServiceModalDeeplink,
+  hasRawPlaceServiceModalOpenQuery,
   parsePlaceServiceModalDeeplink,
   preserveServiceModalDeeplinkSearch,
+  syncPlaceServiceModalDeeplinkDisplayUrl,
 } from './lib/placeServiceModalDeeplink.js';
 
 const DEFAULT_GLOBE_THEME = 'deep';
@@ -608,8 +611,6 @@ function Home() {
       placeServiceModalDeeplinkConsumedRef.current = null;
       return;
     }
-    const deeplink = parsePlaceServiceModalDeeplink(new URLSearchParams(routeLocation.search));
-    if (!deeplink.open) return;
 
     let match = matchPath({ path: '/place/:slug' }, pathname);
     if (!match) {
@@ -620,6 +621,23 @@ function Home() {
       .toLowerCase();
     if (!routeSlug) return;
 
+    const searchParams = new URLSearchParams(routeLocation.search);
+    const deeplink = parsePlaceServiceModalDeeplink(searchParams);
+    if (!deeplink.open) {
+      if (hasRawPlaceServiceModalOpenQuery(routeLocation.search)) {
+        const consumeKey = `${routeSlug}|__invalid__|${searchParams.get('from') || ''}`;
+        if (placeServiceModalDeeplinkConsumedRef.current !== consumeKey) {
+          placeServiceModalDeeplinkConsumedRef.current = consumeKey;
+          const strippedPath = buildPlacePathWithStrippedServiceModalDeeplink(routeSlug, {
+            tab: match?.params?.tab,
+            search: routeLocation.search,
+          });
+          if (strippedPath) navigate(strippedPath, { replace: true });
+        }
+      }
+      return;
+    }
+
     const resolveSlug = String(placeRouteResolve?.slug ?? '')
       .trim()
       .toLowerCase();
@@ -629,7 +647,16 @@ function Home() {
     const slugHydrateOptions = { savedTrips, category, selectedLocation };
     const syncPin = resolvePlaceTargetFromSlug(routeSlug, slugHydrateOptions);
 
-    if (routeStatus === 'pending') return;
+    if (routeStatus === 'pending') {
+      const slugForCompare = String(getPlaceUrlParam(selectedLocation) || selectedLocation?.slug || '')
+        .trim()
+        .toLowerCase();
+      const alreadyHydrated =
+        selectedLocation &&
+        hasValidCoords(selectedLocation) &&
+        (slugForCompare === routeSlug || isSameCanonicalPlace(selectedLocation, { slug: routeSlug }));
+      if (!alreadyHydrated) return;
+    }
     if (routeStatus !== 'found') {
       if (routeStatus === 'missing' || routeStatus === 'error') {
         if (!syncPin || !hasValidCoords(syncPin)) return;
@@ -639,7 +666,12 @@ function Home() {
     }
 
     const consumeKey = `${routeSlug}|${deeplink.open}|${deeplink.from || ''}`;
-    if (placeServiceModalDeeplinkConsumedRef.current === consumeKey) return;
+    if (
+      placeServiceModalDeeplinkConsumedRef.current === consumeKey
+      && !searchParams.has('open')
+    ) {
+      return;
+    }
 
     let focusTarget =
       selectedLocation && hasValidCoords(selectedLocation) ? selectedLocation : selectedLocationRef.current;
@@ -665,6 +697,10 @@ function Home() {
     rememberGlobeFocus(focusTarget);
     setSelectedLocation(focusTarget);
     setIsCardExpanded(false);
+    const strippedPath = buildPlacePathWithStrippedServiceModalDeeplink(routeSlug, {
+      tab: match?.params?.tab,
+      search: routeLocation.search,
+    });
     navigate('/', { replace: true });
     queueMicrotask(() => {
       const ga = buildServiceModalOpenEvent({
@@ -678,6 +714,11 @@ function Home() {
         ...prev,
         [deeplink.open]: prev[deeplink.open] + 1,
       }));
+      if (typeof window !== 'undefined') {
+        window.requestAnimationFrame(() => {
+          syncPlaceServiceModalDeeplinkDisplayUrl(strippedPath);
+        });
+      }
     });
   }, [
     routeLocation.pathname,
