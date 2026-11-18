@@ -1,6 +1,7 @@
 /**
  * Style readiness = style.load (parsed), not map.isStyleLoaded() (tiles/sources).
- * getStyle/getLayer throw until style.load; setData/setLayoutProperty are safe once latched.
+ * getStyle/getLayer throw until style.load. setLayoutProperty is still unsafe
+ * inside Map._render: styledata runs after recalculate and before symbol placement.
  */
 
 const latchStateByMap = new WeakMap();

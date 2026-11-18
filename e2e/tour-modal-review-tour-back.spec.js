@@ -1,9 +1,10 @@
 /**
- * 리뷰 탭 → ?open=tour 딥링크 → 투어 닫기 → 브라우저 뒤로: 빈 화면 없이 리뷰 복귀.
+ * 리뷰 탭 → 리뷰 안 투어 링크 → 모달 닫기 → 뒤로.
+ * /place/{slug} 주소 유지, layout.get pageerror 0, 뒤로 간 뒤 리뷰 표면 0회 공백.
  *
- * npx playwright test -c playwright.config.tour-modal-region-search.js tour-modal-review-tour-back
+ * npx playwright test -c playwright.config.tour-modal-region-search.js tour-modal-review-tour-back --project=chromium-1280-review-back
  */
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { test, expect } from '@playwright/test';
@@ -14,8 +15,16 @@ const REVIEW_ROWS = JSON.parse(
 );
 
 const ROME_LINKED_ID = 'e2e-rome-walk';
-const STRESS_ROUNDS = Number(process.env.GATEO_STRESS_ROUNDS || '1');
-const BENCHMARK_MAIN = process.env.GATEO_STRESS_BENCHMARK === '1';
+const TOUR_LINK_NAME = '투어 보기';
+const STRESS_ROUNDS = Number(process.env.GATEO_STRESS_ROUNDS || '12');
+
+const ROWS = REVIEW_ROWS.map((row) => {
+  if (row.id !== ROME_LINKED_ID) return row;
+  return {
+    ...row,
+    content: `로마 느린산책 리뷰. [${TOUR_LINK_NAME}](https://www.gateo.kr/place/rome?open=tour&from=review)`,
+  };
+});
 
 const GYG_STUB = `(() => {
   const mount = () => {
@@ -51,12 +60,16 @@ function fulfillPlaceReviews(route) {
   if (!url.pathname.includes('/rest/v1/place_reviews')) return route.continue();
   const slugParam = url.searchParams.get('place_slug');
   const slug = slugParam ? slugParam.replace(/^eq\./, '') : '';
-  const filtered = REVIEW_ROWS.filter((row) => row.place_slug === slug);
+  const filtered = ROWS.filter((row) => row.place_slug === slug);
   return route.fulfill({
     status: 200,
     contentType: 'application/json',
     body: JSON.stringify(filtered),
   });
+}
+
+function isLayoutPageError(message) {
+  return /layout\.get|getLayoutProperty|reading 'get'|LAYOUT_MISSING/i.test(String(message || ''));
 }
 
 async function closeTourModal(page, viewport) {
@@ -77,53 +90,84 @@ async function expectTourModalOpen(page, viewport) {
   }
 }
 
-async function expectReviewSurface(page, linkedId) {
-  await expect(page.getByTestId('place-card-route-loading')).toBeHidden({ timeout: 9_000 });
-  const linked = page.locator(`[data-place-reviews-scroll-root] [data-review-id="${linkedId}"]`);
-  await expect(linked).toBeVisible({ timeout: 9_000 });
-  await expect(linked).toContainText('느린산책');
-  return linked;
+function expectPlacePathKept(page, slug) {
+  return expect
+    .poll(async () => {
+      const url = new URL(page.url());
+      return {
+        pathname: url.pathname,
+        hasOpen: url.searchParams.has('open'),
+        hasFrom: url.searchParams.has('from'),
+      };
+    })
+    .toEqual({
+      pathname: `/place/${slug}`,
+      hasOpen: false,
+      hasFrom: false,
+    });
 }
 
-test.describe('review → tour deeplink → close → back', () => {
+async function pageLooksBlank(page) {
+  return page.evaluate(() => {
+    const root = document.getElementById('root');
+    const text = (document.body?.innerText || '').replace(/\s+/g, ' ').trim();
+    const rootChildren = root ? root.childElementCount : 0;
+    return {
+      textLength: text.length,
+      rootChildren,
+      textSample: text.slice(0, 120),
+    };
+  });
+}
+
+test.describe('review → tour link → close → back', () => {
+  test.describe.configure({ retries: 0 });
+
   test.beforeEach(async ({ page }) => {
     await installGygMock(page);
     await page.route('**/rest/v1/place_reviews**', (route) => fulfillPlaceReviews(route));
   });
 
-  test(`${STRESS_ROUNDS} rounds — review visible after tour close and back`, async ({ page }) => {
+  test(`${STRESS_ROUNDS} rounds — review visible and layout pageerror 0`, async ({ page }) => {
     test.setTimeout(STRESS_ROUNDS * 90_000);
-    const viewport = page.viewportSize() || { width: 1280, height: 900 };
+    const viewport = page.viewportSize() || { width: 1280, height: 800 };
+    const pageErrors = [];
+    const consoleLayoutErrors = [];
     let blankAfterBack = 0;
 
-    for (let round = 0; round < STRESS_ROUNDS; round += 1) {
-      await page.goto(`/place/rome/reviews?review=${ROME_LINKED_ID}&lang=ko`, {
-        waitUntil: 'domcontentloaded',
+    page.on('pageerror', (err) => {
+      pageErrors.push({
+        message: String(err?.message || err),
+        stack: String(err?.stack || ''),
       });
-      await expectReviewSurface(page, ROME_LINKED_ID);
+    });
+    page.on('console', (msg) => {
+      if (msg.type() !== 'error') return;
+      const text = msg.text();
+      if (!isLayoutPageError(text)) return;
+      consoleLayoutErrors.push(text);
+    });
 
-      await page.goto(
-        `/place/rome/reviews?review=${ROME_LINKED_ID}&open=tour&from=review&lang=ko`,
-        { waitUntil: 'domcontentloaded' },
-      );
+    await page.goto(`/place/rome/reviews?review=${ROME_LINKED_ID}&lang=ko`, {
+      waitUntil: 'domcontentloaded',
+    });
+    const linked = page.locator(`[data-place-reviews-scroll-root] [data-review-id="${ROME_LINKED_ID}"]`);
+    await expect(page.getByTestId('place-card-route-loading')).toBeHidden({ timeout: 60_000 });
+    await expect(linked).toBeVisible({ timeout: 30_000 });
+    await expect(linked).toContainText('느린산책');
+    // CI 잡에는 Mapbox 토큰이 없어 지구본이 마운트되지 않는다. 토큰이 있으면 캔버스 뒤에 루프를 돌린다.
+    if (process.env.VITE_MAPBOX_TOKEN) {
+      await expect(page.locator('.mapboxgl-canvas').first()).toBeAttached({ timeout: 30_000 });
+    }
+
+    for (let round = 0; round < STRESS_ROUNDS; round += 1) {
+      const tourLink = linked.getByRole('link', { name: TOUR_LINK_NAME });
+      await expect(tourLink).toBeVisible();
+      await tourLink.click();
+
       await expect(page.getByTestId('place-card-route-loading')).toBeHidden({ timeout: 60_000 });
       await expectTourModalOpen(page, viewport);
-      if (!BENCHMARK_MAIN) {
-        await expect
-          .poll(async () => {
-            const url = new URL(page.url());
-            return {
-              pathname: url.pathname,
-              hasOpen: url.searchParams.has('open'),
-              hasFrom: url.searchParams.has('from'),
-            };
-          })
-          .toEqual({
-            pathname: '/place/rome/reviews',
-            hasOpen: false,
-            hasFrom: false,
-          });
-      }
+      await expectPlacePathKept(page, 'rome');
 
       await closeTourModal(page, viewport);
       await expect
@@ -137,15 +181,31 @@ test.describe('review → tour deeplink → close → back', () => {
 
       await page.goBack({ waitUntil: 'domcontentloaded' });
       try {
-        await expectReviewSurface(page, ROME_LINKED_ID);
+        await expect(page.getByTestId('place-card-route-loading')).toBeHidden({ timeout: 9_000 });
+        await expect(linked).toBeVisible({ timeout: 9_000 });
+        await expect(linked).toContainText('느린산책');
+        const surface = await pageLooksBlank(page);
+        if (surface.textLength < 20 || surface.rootChildren === 0) blankAfterBack += 1;
       } catch {
         blankAfterBack += 1;
       }
     }
 
+    const layoutErrors = pageErrors.filter((entry) => isLayoutPageError(entry.message));
+    const artifactPath = '/opt/cursor/artifacts/review-tour-back-stacks.json';
+    if (existsSync('/opt/cursor/artifacts')) {
+      writeFileSync(
+        artifactPath,
+        JSON.stringify({ blankAfterBack, pageErrors, layoutErrors, consoleLayoutErrors }, null, 2),
+      );
+    }
+
     expect(
-      { blankAfterBack },
-      `rounds=${STRESS_ROUNDS} project=${test.info().project.name}`,
-    ).toEqual({ blankAfterBack: 0 });
+      { blankAfterBack, layoutErrors: layoutErrors.map((entry) => entry.message) },
+      `rounds=${STRESS_ROUNDS} project=${test.info().project.name} stacks=${JSON.stringify(layoutErrors)}`,
+    ).toEqual({
+      blankAfterBack: 0,
+      layoutErrors: [],
+    });
   });
 });

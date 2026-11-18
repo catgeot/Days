@@ -68,5 +68,23 @@ export default defineConfig({
         deviceScaleFactor: 1,
       },
     },
+    {
+      name: 'chromium-1280-review-back',
+      testMatch: /tour-modal-review-tour-back\.spec\.js/,
+      use: {
+        ...devices['Desktop Chrome'],
+        viewport: { width: 1280, height: 800 },
+        deviceScaleFactor: 1,
+      },
+    },
+    {
+      name: 'webkit-1280-review-back',
+      testMatch: /tour-modal-review-tour-back\.spec\.js/,
+      use: {
+        ...devices['Desktop Safari'],
+        viewport: { width: 1280, height: 800 },
+        deviceScaleFactor: 1,
+      },
+    },
   ],
 });
