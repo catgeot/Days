@@ -33,6 +33,7 @@ function PlainAnchor({ href, className, children, ...rest }) {
  *   LinkComponent?: React.ComponentType<any>,
  *   linkExtraProps?: Record<string, unknown>,
  *   allowAuthorWrap?: boolean,
+ *   interactiveLinks?: boolean,
  * }} props
  */
 export default function StockPhotoCreditLine({
@@ -44,18 +45,24 @@ export default function StockPhotoCreditLine({
   LinkComponent,
   linkExtraProps = {},
   allowAuthorWrap = true,
+  interactiveLinks = true,
 }) {
   const { t, i18n } = useTranslation();
   const credit = normalizeGalleryPhotoCredit(rawCredit);
   const isKo = i18n.language?.startsWith('ko');
   const Link = LinkComponent || PlainAnchor;
 
-  const toneLinkClass =
-    tone === 'lightbox'
+  const toneLinkClass = interactiveLinks
+    ? tone === 'lightbox'
       ? defaultLightboxLink
       : tone === 'gallery-overlay'
         ? defaultGalleryLightLink
-        : defaultMutedLink;
+        : defaultMutedLink
+    : tone === 'gallery-overlay'
+      ? 'font-semibold text-white/90'
+      : tone === 'lightbox'
+        ? 'font-semibold text-white/85'
+        : 'font-semibold';
 
   const authorClass = [
     toneLinkClass,
@@ -69,10 +76,26 @@ export default function StockPhotoCreditLine({
 
   const rowClass = [
     allowAuthorWrap ? 'flex flex-wrap items-center gap-x-0.5' : 'flex min-w-0 items-center gap-x-0.5',
+    !interactiveLinks ? 'pointer-events-none' : '',
     rowClassName,
   ]
     .filter(Boolean)
     .join(' ');
+
+  const Label = ({ href, className, title, children }) => {
+    if (interactiveLinks && href) {
+      return (
+        <Link href={href} className={className} title={title} {...linkExtraProps}>
+          {children}
+        </Link>
+      );
+    }
+    return (
+      <span className={className} title={title}>
+        {children}
+      </span>
+    );
+  };
 
   if (!credit) return null;
 
@@ -80,9 +103,9 @@ export default function StockPhotoCreditLine({
     return (
       <span className={rowClass}>
         <span className="shrink-0">{t('place.gallery.photoCreditKtoPrefix')}</span>
-        <Link href={credit.providerHref} className={providerClass} {...linkExtraProps}>
+        <Label href={credit.providerHref} className={providerClass}>
           {credit.providerLabel}
-        </Link>
+        </Label>
       </span>
     );
   }
@@ -91,21 +114,17 @@ export default function StockPhotoCreditLine({
     return (
       <span className={rowClass} data-gallery-wikimedia-credit="">
         <span className="shrink-0">{t('place.gallery.photoCreditBy')}</span>
-        <Link href={credit.photographerHref || undefined} className={authorClass} {...linkExtraProps}>
+        <Label href={credit.photographerHref || undefined} className={authorClass}>
           {credit.authorName}
-        </Link>
+        </Label>
         {credit.licenseName ? (
           <>
             <span className="shrink-0" aria-hidden="true">
               ·
             </span>
-            {credit.licenseHref ? (
-              <Link href={credit.licenseHref} className={providerClass} {...linkExtraProps}>
-                {credit.licenseName}
-              </Link>
-            ) : (
-              <span className="shrink-0 font-semibold">{credit.licenseName}</span>
-            )}
+            <Label href={credit.licenseHref || undefined} className={providerClass}>
+              {credit.licenseName}
+            </Label>
           </>
         ) : null}
         {credit.filePageHref ? (
@@ -113,14 +132,13 @@ export default function StockPhotoCreditLine({
             <span className="shrink-0" aria-hidden="true">
               ·
             </span>
-            <Link
+            <Label
               href={credit.filePageHref}
               className={providerClass}
               title={t('place.gallery.photoCreditFilePageTitle')}
-              {...linkExtraProps}
             >
               {t('place.gallery.photoCreditFilePage')}
-            </Link>
+            </Label>
           </>
         ) : null}
       </span>
@@ -133,13 +151,13 @@ export default function StockPhotoCreditLine({
     return (
       <span className={rowClass}>
         <span className="shrink-0">{t('place.gallery.photoCreditBy')}</span>
-        <Link href={credit.photographerHref || undefined} className={authorClass} {...linkExtraProps}>
+        <Label href={credit.photographerHref || undefined} className={authorClass}>
           {credit.authorName}
-        </Link>
+        </Label>
         <span className="shrink-0">{isKo ? '·' : t('place.gallery.photoCreditOn')}</span>
-        <Link href={credit.providerHref || undefined} className={providerClass} {...linkExtraProps}>
+        <Label href={credit.providerHref || undefined} className={providerClass}>
           {providerName}
-        </Link>
+        </Label>
       </span>
     );
   }

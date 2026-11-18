@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
 import { buildGalleryPhotoCredit } from '../../src/components/PlaceCard/common/buildGalleryPhotoCredit.js';
 import {
@@ -107,6 +108,14 @@ test('missing photographer name returns null for stock sources', () => {
     buildGalleryPhotoCredit({ id: 'pexels-1', source: 'pexels', user: {} }, 'en'),
     null,
   );
+});
+
+test('gallery grid credit markup stays non-interactive (tile click safe)', () => {
+  const source = readFileSync(
+    new URL('../../src/components/PlaceCard/common/GalleryGridPhotoCredit.jsx', import.meta.url),
+    'utf8',
+  );
+  assert.match(source, /interactiveLinks=\{false\}/);
 });
 
 test('tourapi keeps kto provider label in ko and en', () => {

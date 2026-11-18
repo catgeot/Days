@@ -41,7 +41,9 @@ export default function GalleryGridPhotoCredit({ image, location, locale }) {
       <StockPhotoCreditLine
         credit={credit}
         tone="gallery-overlay"
-        allowAuthorWrap
+        interactiveLinks={false}
+        allowAuthorWrap={false}
+        rowClassName="min-w-0 max-w-full truncate"
         LinkComponent={GalleryCreditLink}
         linkExtraProps={{ location, image, context: 'gallery-grid' }}
       />

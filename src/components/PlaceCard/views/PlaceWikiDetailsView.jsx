@@ -646,8 +646,9 @@ const PlaceWikiDetailsView = ({
       <span className={wrapperClassName} title={lightboxAttribution?.title}>
         <StockPhotoCreditLine
           credit={lightboxPhotoCredit}
-          tone="gallery-overlay"
-          allowAuthorWrap
+          tone="lightbox"
+          interactiveLinks
+          allowAuthorWrap={false}
           authorLinkClassName={linkClassName}
           providerLinkClassName={linkClassName}
           LinkComponent={WikiGalleryLink}

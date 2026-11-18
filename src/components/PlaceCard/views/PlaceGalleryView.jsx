@@ -1096,10 +1096,11 @@ const PlaceGalleryView = React.memo(({
       <span className={wrapperClassName} title={photoAttribution?.title}>
         <StockPhotoCreditLine
           credit={selectedPhotoCredit}
-          tone="gallery-overlay"
-          allowAuthorWrap
+          tone="lightbox"
+          interactiveLinks
+          allowAuthorWrap={false}
           providerLinkClassName={linkClassName}
-          authorLinkClassName={linkClassName}
+          authorLinkClassName={`${linkClassName} max-w-[40vw] md:max-w-[18rem]`.trim()}
           LinkComponent={GalleryLink}
         />
       </span>
