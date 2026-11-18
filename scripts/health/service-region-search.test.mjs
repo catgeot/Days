@@ -39,6 +39,7 @@ const {
   resetKnownServiceRegionCacheForTests,
   resetTourRegion,
   listTourSearchRegionHits,
+  isTourRegionSearchDraftTooShort,
   resolveTourActivitySearchCommitMeta,
   resolveTourSearchCommit,
   resolveTourWidgetTarget,
@@ -652,12 +653,19 @@ test('region suggestions — El Nido phrase without substring cities', () => {
   assert.ok(filterTourServiceRegions('푸켓', listKnownServiceRegions()).some((r) => r.slug === 'phuket'));
 });
 
+test('tour search draft — single hangul char is too short for no-results', () => {
+  assert.equal(isTourRegionSearchDraftTooShort('방'), true);
+  assert.equal(isTourRegionSearchDraftTooShort('방콕'), false);
+  assert.equal(isTourRegionSearchDraftTooShort('Ph'), true);
+  assert.equal(isTourRegionSearchDraftTooShort('Phu'), false);
+});
+
 test('activity keyword listing — fallback vs match flags', () => {
   assert.equal(tourActivityKeywordLikelyMatches(khaoLak, 'zzqx'), false);
   assert.equal(tourActivityKeywordLikelyMatches(khaoLak, 'zzqx 투어'), false);
   assert.equal(tourActivityKeywordLikelyMatches(khaoLak, '시미란'), true);
   assert.equal(tourActivityKeywordLikelyMatches(khaoLak, 'Similan'), true);
-  assert.equal(resolveTourActivitySearchCommitMeta('zzqx', khaoLak).keywordSearchFallback, false);
+  assert.equal(resolveTourActivitySearchCommitMeta('zzqx', khaoLak).keywordSearchFallback, true);
   assert.equal(resolveTourActivitySearchCommitMeta('시미란', khaoLak).keywordSearchFallback, false);
   const bangkok = regionBySlug('bangkok');
   const floatingMarketItems = [

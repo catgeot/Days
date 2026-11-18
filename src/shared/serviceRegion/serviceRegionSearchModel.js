@@ -28,6 +28,7 @@ import {
   filterTourServiceRegions,
   listTourServiceRegionSuggestionHits,
   resolveTourActivityListing,
+  tourActivityKeywordLikelyMatches,
 } from './tourActivityListing.js';
 
 export const RECENT_REGION_LIMIT = 3;
@@ -516,7 +517,12 @@ export function listTourSearchRegionHits(draft, regions = listKnownServiceRegion
   return hits.slice(0, SERVICE_REGION_RESULT_LIMIT);
 }
 
-export function resolveTourActivitySearchCommitMeta(activityKeyword, location, items = null) {
+export function resolveTourActivitySearchCommitMeta(
+  activityKeyword,
+  location,
+  items = null,
+  searchText = '',
+) {
   const keyword = String(activityKeyword || '').trim();
   if (!keyword) {
     return { keywordSearchFallback: false };
@@ -525,7 +531,24 @@ export function resolveTourActivitySearchCommitMeta(activityKeyword, location, i
     const resolved = resolveTourActivityListing(keyword, location, items);
     return { keywordSearchFallback: Boolean(resolved.usedFallbackListing) };
   }
-  return { keywordSearchFallback: false };
+  const full = String(searchText || '').trim();
+  const likelyMatches =
+    tourActivityKeywordLikelyMatches(location, keyword) ||
+    (full.length > 0 &&
+      full !== keyword &&
+      tourActivityKeywordLikelyMatches(location, full));
+  return { keywordSearchFallback: !likelyMatches };
+}
+
+/** Dropdown only — too-short draft must not show bold no-results while default cards remain. */
+export function isTourRegionSearchDraftTooShort(draft) {
+  const raw = String(draft || '').trim();
+  if (!raw) return false;
+  const tokens = raw.split(/\s+/).filter(Boolean);
+  if (tokens.length !== 1) return false;
+  const token = tokens[0];
+  if (/[가-힣]/.test(token)) return token.length < 2;
+  return token.length < 3;
 }
 
 function tokensFirst(raw) {

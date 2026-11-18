@@ -23,6 +23,7 @@ import {
   pickTypedServiceRegion,
   recordConfirmedTourRegionVisit,
   regionIdentity,
+  isTourRegionSearchDraftTooShort,
   resolveTourActivitySearchCommitMeta,
   resolveTourSearchCommit,
 } from './serviceRegionSearchModel.js';
@@ -89,14 +90,19 @@ export default function ServiceRegionSearch({
   const showHits = open && dirty && hits.length > 0;
   const showActivityHint =
     open && dirty && service === 'tour' && !showHits && parsedDraft.kind === 'activity_only';
+  const draftTooShort = service === 'tour' && isTourRegionSearchDraftTooShort(draft);
+  const showShortQueryHint =
+    open && dirty && service === 'tour' && !showHits && !showActivityHint && draftTooShort;
   const showNoResults =
     open &&
     dirty &&
     service === 'tour' &&
     !showHits &&
     !showActivityHint &&
+    !draftTooShort &&
     parsedDraft.kind === 'no_match';
-  const showList = showRecent || showRecommended || showHits || showActivityHint || showNoResults;
+  const showList =
+    showRecent || showRecommended || showHits || showActivityHint || showShortQueryHint || showNoResults;
 
   const refreshQuiet = () => {
     const nextRecent = loadRecent() || [];
@@ -142,7 +148,12 @@ export default function ServiceRegionSearch({
     const searchText = String(draft || '').trim();
     const listingMeta =
       service === 'tour' && activityKeyword
-        ? resolveTourActivitySearchCommitMeta(activityKeyword, region || activeLocation)
+        ? resolveTourActivitySearchCommitMeta(
+            activityKeyword,
+            region || activeLocation,
+            null,
+            searchText,
+          )
         : { keywordSearchFallback: false };
     onCommit?.(region, {
       activityKeyword,
@@ -400,6 +411,17 @@ export default function ServiceRegionSearch({
               {t('home.serviceRegion.tour.searchInRegion', {
                 keyword: parsedDraft.activityKeyword || draft,
               })}
+            </li>
+          ) : null}
+          {showShortQueryHint ? (
+            <li
+              role="presentation"
+              data-tour-search-short-hint=""
+              className={`px-2.5 py-2 text-left text-[12px] leading-snug break-keep ${
+                dark ? 'text-orange-100/55' : 'text-gray-500'
+              }`}
+            >
+              {t('home.serviceRegion.tour.typeRegionMore')}
             </li>
           ) : null}
           {showNoResults ? (

@@ -10,6 +10,14 @@ const TOUR_KEYWORD_HINT_RE =
 
 /** 회귀(QA): 카오락·엘니도 등 해외 허브 — 액티비티 키워드 힌트 */
 const TOUR_ACTIVITY_ALIASES_BY_SLUG = {
+  bangkok: [
+    '수상시장',
+    'floating market',
+    'damnoen saduak',
+    'amphawa',
+    'saduak',
+    'chaophraya',
+  ],
   'khao-lak': [
     '시미란',
     'similan',
