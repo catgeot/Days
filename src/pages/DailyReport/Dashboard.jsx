@@ -57,10 +57,10 @@ const Dashboard = () => {
 
   const handleTabChange = (tab) => {
     const newParams = new URLSearchParams(searchParams);
-    if (tab === 'public') {
-      newParams.set('tab', 'public');
+    if (tab === 'mine') {
+      newParams.set('tab', 'mine');
     } else {
-      newParams.delete('tab');
+      newParams.set('tab', 'public');
     }
     setSearchParams(newParams);
   };
@@ -96,14 +96,6 @@ const Dashboard = () => {
             {user && (
               <div className="flex bg-gray-100 p-1 rounded-lg ml-0 sm:ml-4">
                 <button
-                  onClick={() => handleTabChange('private')}
-                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                    !isPublicMode ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'
-                  }`}
-                >
-                  {t('logbook.dashboard.tabMine')}
-                </button>
-                <button
                   onClick={() => handleTabChange('public')}
                   className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
                     isPublicMode ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'
@@ -112,6 +104,14 @@ const Dashboard = () => {
                   <span className="flex items-center gap-1">
                     {t('logbook.dashboard.tabFeed')}
                   </span>
+                </button>
+                <button
+                  onClick={() => handleTabChange('mine')}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                    !isPublicMode ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'
+                  }`}
+                >
+                  {t('logbook.dashboard.tabMine')}
                 </button>
               </div>
             )}

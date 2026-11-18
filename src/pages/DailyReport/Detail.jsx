@@ -83,13 +83,13 @@ const Detail = () => {
   }, [report]);
 
   const handleBack = useCallback(() => {
-    hardNavigateAppBack({ fallback: '/blog' });
+    hardNavigateAppBack({ fallback: '/blog?tab=mine' });
   }, []);
 
   useEffect(() => {
     const getOneReport = async () => {
       if (!id) {
-        navigate('/blog', { replace: true });
+        navigate('/blog?tab=mine', { replace: true });
         return;
       }
 
@@ -103,7 +103,7 @@ const Detail = () => {
 
       if (error || !data) {
         console.warn("[Safe Path] 존재하지 않거나 권한이 없는 기록입니다.");
-        navigate('/blog', { replace: true });
+        navigate('/blog?tab=mine', { replace: true });
       } else {
         setReport(data);
         setIsPublic(data.is_public || false);
@@ -165,7 +165,7 @@ const Detail = () => {
          alert(t('logbook.detail.deleteFail'));
          return;
       }
-      navigate('/blog', { replace: true });
+      navigate('/blog?tab=mine', { replace: true });
     }
   };
 
@@ -365,7 +365,7 @@ const Detail = () => {
               tone="article"
               minutes={logbookReadingMinutes(report.content)}
               placeCount={placeCount}
-              placeHref={placeKey ? `/blog?location=${encodeURIComponent(placeKey)}` : ''}
+              placeHref={placeKey ? `/blog?tab=mine&location=${encodeURIComponent(placeKey)}` : ''}
             />
           </div>
 

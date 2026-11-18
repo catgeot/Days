@@ -17,7 +17,7 @@ export const ReportProvider = ({ children }) => {
       return; 
     }
 
-    navigate('/blog');
+    navigate('/blog?tab=mine');
     setIsOpen(true);
   };
 
