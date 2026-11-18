@@ -8,8 +8,19 @@ import { getLocalizedPlaceName } from '../../components/PlaceCard/common/locatio
 const TOUR_KEYWORD_HINT_RE =
   /(스노클|다이빙|호핑|투어|티켓|패키지|market|tour|hop|diving|snorkel|cruise|ticket|island|kayak|rafting)/i;
 
+/** 라틴 모음 — y/Y 포함 (myth·spry 등 오탐 방지) */
+const TOUR_LATIN_VOWEL_RE = /[aeiouyAEIOUY]/;
+
 /** 회귀(QA): 카오락·엘니도 등 해외 허브 — 액티비티 키워드 힌트 */
 const TOUR_ACTIVITY_ALIASES_BY_SLUG = {
+  bangkok: [
+    '수상시장',
+    'floating market',
+    'damnoen saduak',
+    'amphawa',
+    'saduak',
+    'chaophraya',
+  ],
   'khao-lak': [
     '시미란',
     'similan',
@@ -187,6 +198,120 @@ export function tourActivityKeywordLikelyMatches(location, keyword) {
   }
 
   return false;
+}
+
+function tourSearchTokens(text) {
+  return String(text || '')
+    .trim()
+    .split(/\s+/)
+    .map((t) => t.trim())
+    .filter(Boolean);
+}
+
+const QWERTY_LATIN_ROWS = ['qwertyuiop', 'asdfghjkl', 'zxcvbnm'];
+
+/** 같은 QWERTY 행에서 인접 키 4자+ 연속 (asdf, qwer, hjkl …) */
+function tourActivitySearchTokenIsQwertyRowRun(token) {
+  const t = String(token || '')
+    .trim()
+    .toLowerCase();
+  if (!/^[a-z]{4,}$/.test(t)) return false;
+  for (const row of QWERTY_LATIN_ROWS) {
+    const indices = [];
+    let onRow = true;
+    for (const ch of t) {
+      const idx = row.indexOf(ch);
+      if (idx === -1) {
+        onRow = false;
+        break;
+      }
+      indices.push(idx);
+    }
+    if (!onRow || indices.length !== t.length) continue;
+    let consecutive = true;
+    for (let i = 1; i < indices.length; i += 1) {
+      if (indices[i] !== indices[i - 1] + 1) {
+        consecutive = false;
+        break;
+      }
+    }
+    if (consecutive) return true;
+  }
+  return false;
+}
+
+/** 같은 글자 4회 이상 반복 (aaaa) */
+function tourActivitySearchTokenIsRepeatedChar(token) {
+  const t = String(token || '').trim();
+  if (t.length < 4) return false;
+  return /^(.)\1{3,}$/u.test(t);
+}
+
+function tourActivitySearchTokenIsKeyboardMash(token) {
+  return (
+    tourActivitySearchTokenIsQwertyRowRun(token) ||
+    tourActivitySearchTokenIsRepeatedChar(token)
+  );
+}
+
+/** 한글 2자+ 또는 라틴 활동/장소형 토큰 — 무의미 fallback 억제 */
+function tourActivitySearchTokenLooksPlausible(token) {
+  const t = String(token || '').trim();
+  if (!t) return false;
+  if (tourActivitySearchTokenIsKeyboardMash(t)) return false;
+  if (TOUR_KEYWORD_HINT_RE.test(t)) return true;
+  if (/^[가-힣]{2,}$/.test(t)) return true;
+  if (/^[a-zA-Z]{3,}$/.test(t) && TOUR_LATIN_VOWEL_RE.test(t)) return true;
+  if (/^[a-zA-Z]{5,}$/.test(t)) return true;
+  return false;
+}
+
+function tourActivitySearchTextLooksPlausible(text) {
+  const raw = String(text || '').trim();
+  if (!raw) return false;
+  if (TOUR_KEYWORD_HINT_RE.test(raw)) return true;
+  for (const token of tourSearchTokens(raw)) {
+    if (tourActivitySearchTokenLooksPlausible(token)) return true;
+  }
+  return false;
+}
+
+/** zzqx·asdf 등 — 연타·반복·자음 덩어리·너무 짧은 영문 잡음 */
+function tourActivitySearchTokenLooksMeaningless(token) {
+  const t = String(token || '').trim();
+  if (!t) return false;
+  if (tourActivitySearchTokenIsKeyboardMash(t)) return true;
+  if (/^[a-zA-Z]+$/.test(t)) {
+    if (t.length < 3) return true;
+    return !TOUR_LATIN_VOWEL_RE.test(t);
+  }
+  return false;
+}
+
+function tourActivitySearchTextLooksMeaningless(text) {
+  const tokens = tourSearchTokens(text);
+  if (!tokens.length) return false;
+  return tokens.every(tourActivitySearchTokenLooksMeaningless);
+}
+
+/**
+ * GYG 커밋(items 없음): 실제 결과를 알 수 없을 때 fallback은 **무의미 입력만**.
+ * MRT는 items·fetch 후 resolveTourActivityListing이 우선.
+ */
+export function tourActivityKeywordShouldShowListingFallback(
+  location,
+  keyword,
+  searchText = '',
+) {
+  const kw = String(keyword || '').trim();
+  if (!kw) return false;
+  const full = String(searchText || '').trim();
+  const candidates = full && full !== kw ? [kw, full] : [kw];
+  for (const text of candidates) {
+    if (tourActivityKeywordLikelyMatches(location, text)) return false;
+    if (tourActivitySearchTextLooksPlausible(text)) return false;
+  }
+  return candidates.some((text) => tourActivitySearchTextLooksMeaningless(text));
 }
 
 /**

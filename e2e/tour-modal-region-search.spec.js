@@ -130,3 +130,83 @@ test('type, select, widget updates, reset', async ({ page }, testInfo) => {
     await expect(page.locator('[data-gyg-widget="activities"]')).toHaveAttribute('data-gyg-q', 'Khao Lak Phang Nga');
   }
 });
+
+test('keyword fallback notice — match vs no-match vs short draft', async ({ page }) => {
+  await installGygMock(page);
+  await page.goto('/place/khao-lak?lang=ko', { waitUntil: 'domcontentloaded' });
+  await page.getByRole('button', { name: '홈으로 이동' }).first().click();
+  await expect(page).toHaveURL(/\/(\?|$)/, { timeout: 60_000 });
+  const tourButton = page.getByRole('button', { name: '투어 찾기' }).first();
+  await expect(tourButton).toBeVisible({ timeout: 60_000 });
+  await tourButton.click();
+  await expect(page.locator('[data-gyg-widget="activities"]')).toHaveAttribute(
+    'data-gyg-q',
+    'Khao Lak Phang Nga',
+    { timeout: 60_000 },
+  );
+
+  const input = page.getByRole('combobox', { name: '투어 지역 검색' });
+
+  await input.fill('시미란 스노클링');
+  await input.press('Enter');
+  await expect(page.locator('[data-gyg-widget="activities"]')).toHaveAttribute(
+    'data-gyg-q',
+    /(?:시미란|Similan)/i,
+  );
+  await expect(page.locator('[data-tour-search-list-fallback]')).toHaveCount(0);
+
+  await input.fill('방콕 수상시장');
+  await input.press('Enter');
+  await expect(page.locator('[data-gyg-widget="activities"]')).toHaveAttribute('data-gyg-q', 'Bangkok 수상시장');
+  await expect(page.locator('[data-tour-search-list-fallback]')).toHaveCount(0);
+
+  await input.fill('코끼리');
+  await input.press('Enter');
+  await expect(page.locator('[data-tour-search-list-fallback]')).toHaveCount(0);
+
+  await input.fill('snorkeling');
+  await input.press('Enter');
+  await expect(page.locator('[data-tour-search-list-fallback]')).toHaveCount(0);
+
+  await input.fill('zzqx');
+  await input.press('Enter');
+  await expect(input).toHaveValue('zzqx');
+  await expect(page.locator('[data-tour-search-list-fallback]')).toBeVisible();
+  await expect(page.locator('[data-tour-search-list-fallback]')).toContainText('zzqx');
+
+  await input.fill('방');
+  await expect(page.getByText('검색 결과가 없어요')).toHaveCount(0);
+  await expect(page.locator('[data-tour-search-short-hint]')).toBeVisible();
+});
+
+async function openPlaceTourModal(page, placeSlug) {
+  await page.goto(`/place/${placeSlug}?lang=ko`, { waitUntil: 'domcontentloaded' });
+  await page.getByRole('button', { name: '홈으로 이동' }).first().click();
+  await expect(page).toHaveURL(/\/(\?|$)/, { timeout: 60_000 });
+  const tourButton = page.getByRole('button', { name: '투어 찾기' }).first();
+  await expect(tourButton).toBeVisible({ timeout: 60_000 });
+  await tourButton.click();
+  const viewport = page.viewportSize() || { width: 1280, height: 900 };
+  if (viewport.width < 1024) {
+    await expect(page.getByRole('dialog', { name: '투어 전체 목록' })).toBeVisible({
+      timeout: 60_000,
+    });
+  } else {
+    await expect(page.getByRole('region', { name: '투어 목록' })).toBeVisible({ timeout: 60_000 });
+  }
+}
+
+test('keyword fallback — paris plausible activity terms', async ({ page }) => {
+  await installGygMock(page);
+  await openPlaceTourModal(page, 'paris');
+  const input = page.getByRole('combobox', { name: '투어 지역 검색' });
+  await input.fill('louvre');
+  await input.press('Enter');
+  await expect(page.locator('[data-tour-search-list-fallback]')).toHaveCount(0);
+  await input.fill('루브르');
+  await input.press('Enter');
+  await expect(page.locator('[data-tour-search-list-fallback]')).toHaveCount(0);
+  await input.fill('zzqx');
+  await input.press('Enter');
+  await expect(page.locator('[data-tour-search-list-fallback]')).toBeVisible();
+});
