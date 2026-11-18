@@ -8,6 +8,9 @@ import { getLocalizedPlaceName } from '../../components/PlaceCard/common/locatio
 const TOUR_KEYWORD_HINT_RE =
   /(스노클|다이빙|호핑|투어|티켓|패키지|market|tour|hop|diving|snorkel|cruise|ticket|island|kayak|rafting)/i;
 
+/** 라틴 모음 — y/Y 포함 (myth·spry 등 오탐 방지) */
+const TOUR_LATIN_VOWEL_RE = /[aeiouyAEIOUY]/;
+
 /** 회귀(QA): 카오락·엘니도 등 해외 허브 — 액티비티 키워드 힌트 */
 const TOUR_ACTIVITY_ALIASES_BY_SLUG = {
   bangkok: [
@@ -258,7 +261,7 @@ function tourActivitySearchTokenLooksPlausible(token) {
   if (tourActivitySearchTokenIsKeyboardMash(t)) return false;
   if (TOUR_KEYWORD_HINT_RE.test(t)) return true;
   if (/^[가-힣]{2,}$/.test(t)) return true;
-  if (/^[a-zA-Z]{3,}$/.test(t) && /[aeiouAEIOU]/.test(t)) return true;
+  if (/^[a-zA-Z]{3,}$/.test(t) && TOUR_LATIN_VOWEL_RE.test(t)) return true;
   if (/^[a-zA-Z]{5,}$/.test(t)) return true;
   return false;
 }
@@ -280,7 +283,7 @@ function tourActivitySearchTokenLooksMeaningless(token) {
   if (tourActivitySearchTokenIsKeyboardMash(t)) return true;
   if (/^[a-zA-Z]+$/.test(t)) {
     if (t.length < 3) return true;
-    return !/[aeiouAEIOU]/.test(t);
+    return !TOUR_LATIN_VOWEL_RE.test(t);
   }
   return false;
 }
