@@ -19,6 +19,8 @@ import {
   X,
 } from 'lucide-react';
 import { getLocalizedPlaceName } from '../../../components/PlaceCard/common/locationDisplay';
+import { trackEvent } from '../../../shared/analytics/trackEvent.js';
+import { buildServiceModalOpenEvent } from '../../../shared/serviceRegion/serviceRegionSearchModel.js';
 import { getPlaceStayLodgingGuidance } from '../../../data/placeStayLodgingGuidance.js';
 import { buildGygActivitiesSearchQuery } from '../../../components/PlaceCard/tabs/planner/locationRules';
 import {
@@ -1880,6 +1882,12 @@ export default function GlobeStayStrip({
       aria-label={stayToggleFolded ? t('place.summary.closeStayListAria') : t('place.summary.findStaysAria')}
       onClick={(e) => {
         e.stopPropagation();
+        const willOpen = !expanded;
+        if (willOpen) {
+          const slug = location?.slug ? String(location.slug).trim().toLowerCase() : '';
+          const { name, params } = buildServiceModalOpenEvent({ service: 'stay', from: 'button', slug });
+          trackEvent(name, params);
+        }
         if (!isLg) {
           if (mobileOpen) closeMobileFullscreen();
           else openMobileFullscreen();

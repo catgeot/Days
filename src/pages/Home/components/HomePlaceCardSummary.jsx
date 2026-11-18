@@ -28,15 +28,24 @@ import GlobeTourStrip from './GlobeTourStrip.jsx';
 import PlaceWorldEventsSection from '../../../components/PlaceCard/common/PlaceWorldEventsSection.jsx';
 import PlaceCrossLinksSection from '../../../components/PlaceCard/common/PlaceCrossLinksSection.jsx';
 import { isPlaceCrosslinkWorldEventsRailEnabled } from '../lib/placeCrosslinkRollout.js';
+import { isPlaceServiceModalOpenEligible } from '../lib/placeServiceModalDeeplink.js';
+import { trackEvent } from '../../../shared/analytics/trackEvent.js';
+import { buildServiceModalOpenEvent } from '../../../shared/serviceRegion/serviceRegionSearchModel.js';
 
 /** 연속 not-ready 폴링 횟수 — 250ms×4 ≈ 1s (일시적 레이어 공백·style idle 깜박임 흡수) */
 const FLIGHT_ROUTE_NOT_READY_STREAK = 4;
 
 /** 써머리 장소카드 — 항공 경로 시네마 진입 (플래너 Trip CTA와 분리) */
+const PLACE_SERVICE_MODAL_DEEPLINK_WAIT_MS = 5000;
+
 export default function HomePlaceCardSummary({
   globeRef,
   onStayExpandedChange,
   onImmersedChange,
+  pendingServiceModalOpen = null,
+  onPendingServiceModalOpenConsumed,
+  deeplinkTourOpenSignal = 0,
+  deeplinkStayOpenSignal = 0,
   ...props
 }) {
   const {
@@ -84,12 +93,54 @@ export default function HomePlaceCardSummary({
   );
 
   const handleSwitchToTour = useCallback(() => {
+    const { name, params } = buildServiceModalOpenEvent({
+      service: 'tour',
+      from: 'switch',
+      slug: slug || '',
+    });
+    trackEvent(name, params);
     setOpenTourSignal((n) => n + 1);
-  }, []);
+  }, [slug]);
 
   const handleSwitchToStay = useCallback(() => {
+    const { name, params } = buildServiceModalOpenEvent({
+      service: 'stay',
+      from: 'switch',
+      slug: slug || '',
+    });
+    trackEvent(name, params);
     setOpenStaySignal((n) => n + 1);
-  }, []);
+  }, [slug]);
+
+  useEffect(() => {
+    if (!pendingServiceModalOpen) return undefined;
+    const { service } = pendingServiceModalOpen;
+    let cancelled = false;
+    let opened = false;
+
+    const consume = () => {
+      if (cancelled || opened) return;
+      opened = true;
+      onPendingServiceModalOpenConsumed?.();
+    };
+
+    const tryOpen = () => {
+      if (cancelled || opened) return;
+      if (location?.isScanning) return;
+      if (!isPlaceServiceModalOpenEligible(location, service)) {
+        consume();
+        return;
+      }
+      consume();
+    };
+
+    tryOpen();
+    const wait = window.setTimeout(consume, PLACE_SERVICE_MODAL_DEEPLINK_WAIT_MS);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(wait);
+    };
+  }, [pendingServiceModalOpen, location, slug, onPendingServiceModalOpenConsumed]);
 
   useEffect(() => {
     queueMicrotask(() => setSelectedOriginIata(resolveDefaultFlightOriginIataForLocation(location)));
@@ -333,7 +384,7 @@ export default function HomePlaceCardSummary({
     <GlobeStayStrip
       location={location}
       peerOpen={tourOpen}
-      openSignal={openStaySignal}
+      openSignal={openStaySignal + deeplinkStayOpenSignal}
       onSwitchToTour={handleSwitchToTour}
       onExpandedChange={handleStayExpandedChange}
       essentialGuide={essentialGuide}
@@ -344,7 +395,7 @@ export default function HomePlaceCardSummary({
         <GlobeTourStrip
           location={location}
           peerOpen={stayOpen}
-          openSignal={openTourSignal}
+          openSignal={openTourSignal + deeplinkTourOpenSignal}
           onSwitchToStay={handleSwitchToStay}
           onExpandedChange={handleTourExpandedChange}
         >

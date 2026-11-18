@@ -13,7 +13,8 @@ import HomeDocumentHead from './HomeDocumentHead';
 import { useLocale } from '../../i18n/LocaleProvider';
 import { supabase } from '../../shared/api/supabase';
 import { subscribeAuthUser } from '../../shared/Auth/sessionUser.js';
-import { trackMooniOpenIfRising } from '../../shared/analytics/trackEvent.js';
+import { trackEvent, trackMooniOpenIfRising } from '../../shared/analytics/trackEvent.js';
+import { buildServiceModalOpenEvent } from '../../shared/serviceRegion/serviceRegionSearchModel.js';
 import { logSeaExplore } from '../../shared/cloudPreview/seaExploreDebug.js';
 import { logCurationHandoff } from '../../shared/cloudPreview/curationHandoffDebug';
 import { TRAVEL_SPOTS } from './data/travelSpots';
@@ -99,6 +100,10 @@ import {
   cancelCurationHomeHandoffApply,
 } from './lib/curationPlaceBridge';
 import { getGlobeApi, subscribeGlobeApi } from './lib/globeApiRegistry.js';
+import {
+  parsePlaceServiceModalDeeplink,
+  preserveServiceModalDeeplinkSearch,
+} from './lib/placeServiceModalDeeplink.js';
 
 const DEFAULT_GLOBE_THEME = 'deep';
 
@@ -547,6 +552,9 @@ function Home() {
   const pendingGlobeHomeFocusRef = useRef(null);
   /** /place X 닫기 등 — 홈 복귀 시 써머리 재오픈 생략(핀 flyTo는 유지) */
   const skipHomeSummaryRestoreRef = useRef(false);
+  const [pendingServiceModalOpen, setPendingServiceModalOpen] = useState(null);
+  const [deeplinkStripSignals, setDeeplinkStripSignals] = useState({ tour: 0, stay: 0 });
+  const placeServiceModalDeeplinkConsumedRef = useRef(null);
   const placeRouteSyncRef = useRef(0);
   const [placeRouteResolve, setPlaceRouteResolve] = useState(null);
   const [placeRouteRetryEpoch, setPlaceRouteRetryEpoch] = useState(0);
@@ -558,6 +566,10 @@ function Home() {
       if (prev?.slug && prev.slug !== normalized) return prev;
       return { slug: normalized, status };
     });
+  }, []);
+
+  const clearPendingServiceModalOpen = useCallback(() => {
+    setPendingServiceModalOpen(null);
   }, []);
 
   const retryPlaceRouteHydration = useCallback(() => {
@@ -589,6 +601,96 @@ function Home() {
     if (!hasValidCoords(loc)) return;
     lastGlobeFocusRef.current = loc;
   }, []);
+
+  useEffect(() => {
+    const pathname = routeLocation.pathname;
+    if (!pathname.startsWith('/place/')) {
+      placeServiceModalDeeplinkConsumedRef.current = null;
+      return;
+    }
+    const deeplink = parsePlaceServiceModalDeeplink(new URLSearchParams(routeLocation.search));
+    if (!deeplink.open) return;
+
+    let match = matchPath({ path: '/place/:slug' }, pathname);
+    if (!match) {
+      match = matchPath({ path: '/place/:slug/:tab' }, pathname);
+    }
+    const routeSlug = String(match?.params?.slug || '')
+      .trim()
+      .toLowerCase();
+    if (!routeSlug) return;
+
+    const resolveSlug = String(placeRouteResolve?.slug ?? '')
+      .trim()
+      .toLowerCase();
+    if (resolveSlug && resolveSlug !== routeSlug) return;
+
+    const routeStatus = placeRouteResolve?.status;
+    const slugHydrateOptions = { savedTrips, category, selectedLocation };
+    const syncPin = resolvePlaceTargetFromSlug(routeSlug, slugHydrateOptions);
+
+    if (routeStatus === 'pending') return;
+    if (routeStatus !== 'found') {
+      if (routeStatus === 'missing' || routeStatus === 'error') {
+        if (!syncPin || !hasValidCoords(syncPin)) return;
+      } else if (!syncPin || !hasValidCoords(syncPin)) {
+        return;
+      }
+    }
+
+    const consumeKey = `${routeSlug}|${deeplink.open}|${deeplink.from || ''}`;
+    if (placeServiceModalDeeplinkConsumedRef.current === consumeKey) return;
+
+    let focusTarget =
+      selectedLocation && hasValidCoords(selectedLocation) ? selectedLocation : selectedLocationRef.current;
+    if (!focusTarget || !hasValidCoords(focusTarget)) {
+      focusTarget = syncPin;
+    }
+    if (!focusTarget || !hasValidCoords(focusTarget)) return;
+    const slugKey = String(getPlaceUrlParam(focusTarget) || routeSlug || '')
+      .trim()
+      .toLowerCase();
+    if (slugKey && slugKey !== routeSlug && !isSameCanonicalPlace(focusTarget, { slug: routeSlug })) {
+      return;
+    }
+
+    placeServiceModalDeeplinkConsumedRef.current = consumeKey;
+    const pendingOpen = {
+      service: deeplink.open,
+      ref: deeplink.from,
+      slug: slugKey || routeSlug,
+    };
+    setPendingServiceModalOpen(pendingOpen);
+    pendingGlobeHomeFocusRef.current = focusTarget;
+    rememberGlobeFocus(focusTarget);
+    setSelectedLocation(focusTarget);
+    setIsCardExpanded(false);
+    navigate('/', { replace: true });
+    queueMicrotask(() => {
+      const ga = buildServiceModalOpenEvent({
+        service: pendingOpen.service,
+        from: 'deeplink',
+        ref: pendingOpen.ref,
+        slug: pendingOpen.slug,
+      });
+      trackEvent(ga.name, ga.params);
+      setDeeplinkStripSignals((prev) => ({
+        ...prev,
+        [deeplink.open]: prev[deeplink.open] + 1,
+      }));
+    });
+  }, [
+    routeLocation.pathname,
+    routeLocation.search,
+    placeRouteResolve?.status,
+    placeRouteResolve?.slug,
+    selectedLocation,
+    savedTrips,
+    category,
+    navigate,
+    rememberGlobeFocus,
+    setSelectedLocation,
+  ]);
 
   const curationHandoffClaimRef = useRef(null);
   const curationHandoffSyncDoneRef = useRef(false);
@@ -1220,7 +1322,8 @@ function Home() {
             !preserveSearchCoordUrl
           ) {
             const tabSuffix = match.params.tab ? `/${match.params.tab}` : '';
-            navigate(`/place/${canonicalParam}${tabSuffix}`, { replace: true });
+            const deeplinkSearch = preserveServiceModalDeeplinkSearch(routeLocation.search);
+            navigate(`/place/${canonicalParam}${tabSuffix}${deeplinkSearch}`, { replace: true });
             return;
           }
 
@@ -1403,7 +1506,7 @@ function Home() {
         setIsCardExpanded(false);
       });
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- /place/ URL sync: only path + savedTrips; add selectedLocation/set/move would loop with microtask hydration
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- /place/ URL sync: path+savedTrips; add selectedLocation/set/move would loop with microtask hydration
   }, [routeLocation.pathname, savedTrips, placeRouteRetryEpoch]);
 
   const prevPathRef = useRef(routeLocation.pathname);
@@ -1915,6 +2018,10 @@ function Home() {
             key={`summary-${homeChromeEpoch}-${selectedLocation.id ?? selectedLocation.slug ?? selectedLocation.name}`}
             globeRef={globeRef}
             location={selectedLocation}
+            pendingServiceModalOpen={pendingServiceModalOpen}
+            onPendingServiceModalOpenConsumed={clearPendingServiceModalOpen}
+            deeplinkTourOpenSignal={deeplinkStripSignals.tour}
+            deeplinkStayOpenSignal={deeplinkStripSignals.stay}
             isBookmarked={savedTrips.some(t => t.destination === selectedLocation.name && t.is_bookmarked)}
             onClose={dismissPlaceSelectionKeepGlobePin}
             onExpand={() => {
