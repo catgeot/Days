@@ -657,8 +657,37 @@ test('activity keyword listing — fallback vs match flags', () => {
   assert.equal(tourActivityKeywordLikelyMatches(khaoLak, 'zzqx 투어'), false);
   assert.equal(tourActivityKeywordLikelyMatches(khaoLak, '시미란'), true);
   assert.equal(tourActivityKeywordLikelyMatches(khaoLak, 'Similan'), true);
-  assert.equal(resolveTourActivitySearchCommitMeta('zzqx', khaoLak).keywordSearchFallback, true);
+  assert.equal(resolveTourActivitySearchCommitMeta('zzqx', khaoLak).keywordSearchFallback, false);
   assert.equal(resolveTourActivitySearchCommitMeta('시미란', khaoLak).keywordSearchFallback, false);
+  const bangkok = regionBySlug('bangkok');
+  const floatingMarketItems = [
+    { itemName: 'Bangkok Damnoen Saduak Floating Market Tour' },
+    { itemName: 'Amphawa evening floating market half-day' },
+  ];
+  assert.equal(
+    resolveTourActivitySearchCommitMeta('수상시장', bangkok, floatingMarketItems).keywordSearchFallback,
+    false,
+  );
+  assert.equal(
+    resolveTourActivitySearchCommitMeta('방콕 수상시장', bangkok, floatingMarketItems).keywordSearchFallback,
+    false,
+  );
+  const similanSnorkelItems = [
+    { itemName: 'Khao Lak: Similan Islands Snorkeling Day Trip' },
+    { itemName: 'Premium Similan liveaboard snorkeling' },
+  ];
+  assert.equal(
+    resolveTourActivitySearchCommitMeta('시미란 스노클링', khaoLak, similanSnorkelItems).keywordSearchFallback,
+    false,
+  );
+  assert.equal(
+    resolveTourActivitySearchCommitMeta(
+      'zzqx',
+      khaoLak,
+      [{ itemName: '부산 시티투어' }, { itemName: '제주 렌트카' }],
+    ).keywordSearchFallback,
+    true,
+  );
   const relevant = resolveTourActivityListing(
     'zzqx',
     khaoLak,
@@ -671,4 +700,14 @@ test('activity keyword listing — fallback vs match flags', () => {
   ]);
   assert.equal(matched.keywordMatched, true);
   assert.equal(matched.items.length, 1);
+  const matchedEnglish = resolveTourActivityListing('수상시장', bangkok, floatingMarketItems);
+  assert.equal(matchedEnglish.keywordMatched, true);
+  assert.equal(matchedEnglish.usedFallbackListing, false);
+  const elNido = regionBySlug('el-nido');
+  const elNidoFallback = resolveTourActivityListing('zzqx투어', elNido, [
+    { itemName: 'El Nido Island Hopping Tour A' },
+    { itemName: 'Palawan kayak experience' },
+  ]);
+  assert.equal(elNidoFallback.keywordMatched, false);
+  assert.equal(elNidoFallback.usedFallbackListing, true);
 });

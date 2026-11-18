@@ -1,4 +1,4 @@
-/** @typedef {{ itemName?: string }} MrtTnaRelevanceItem */
+/** @typedef {{ itemName?: string, category?: string, itemDesc?: string, description?: string }} MrtTnaRelevanceItem */
 
 export const OVERSEAS_TNA_NOISE_RE =
   /중국|칭다오|상하이|오사카|도쿄|교토|간사이|유니버설|디즈니|만리장성|심천|대련|홍콩|타이베이|LA\b|노산\s*풍경|라오산|연세대학교|연남점|Douro|Yarra|Hidden\s*Valley|Valley\s*of\s*Fire|와인\s*투어|잔지바르|Zanzibar|나이로비|Nairobi|사파리|마사이|Masai|세렝게티|Serengeti|케냐|Kenya|탄자니아|Tanzania|응두투|Ndutu/;
@@ -8,8 +8,112 @@ const GENERIC_EN_TOKEN_RE =
 
 const AMBIGUOUS_KO_PLACE_NAMES = new Set(['영양', '동해', '남해', '연기']);
 
+/** 키워드↔영문 동의어 — 한 어느 쪽이든 그룹 전체를 매칭에 쓴다 */
+const TOUR_KEYWORD_SYNONYM_GROUPS = [
+  ['수상시장', 'floating', 'market', 'damnoen', 'amphawa', '콧창', 'khlong'],
+  ['시미란', 'similan', '심일란'],
+  ['스노클링', '스노클', 'snorkel', 'snorkeling'],
+  ['호핑', 'island hopping', 'hopping'],
+];
+
 function escapeRegExp(s) {
   return String(s || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function compact(value) {
+  return String(value ?? '')
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, '');
+}
+
+function synonymGroupsForKeyword(keyword) {
+  const raw = String(keyword || '').trim();
+  if (!raw) return [];
+  const lower = raw.toLowerCase();
+  const c = compact(raw);
+  const out = [];
+  for (const group of TOUR_KEYWORD_SYNONYM_GROUPS) {
+    const hit = group.some((term) => {
+      const t = String(term || '').trim();
+      if (!t) return false;
+      if (/[가-힣]/.test(t)) return raw.includes(t);
+      return lower.includes(t.toLowerCase()) || c.includes(compact(t));
+    });
+    if (hit) out.push(group);
+  }
+  return out;
+}
+
+function expandKeywordMatchingForms(keyword) {
+  const raw = String(keyword || '').trim();
+  if (!raw) return [];
+  const forms = new Set([raw]);
+  for (const group of synonymGroupsForKeyword(raw)) {
+    for (const term of group) forms.add(term);
+  }
+  const tokens = raw.split(/\s+/).map((t) => t.trim()).filter((t) => t.length >= 2);
+  for (const token of tokens) {
+    forms.add(token);
+    for (const group of synonymGroupsForKeyword(token)) {
+      for (const term of group) forms.add(term);
+    }
+  }
+  return [...forms];
+}
+
+function regionLabelTokens(location) {
+  if (!location || typeof location !== 'object') return new Set();
+  const parts = [
+    location.name,
+    location.name_en,
+    location.name_ko,
+    location.slug?.replace(/-/g, ' '),
+  ];
+  const out = new Set();
+  for (const part of parts) {
+    const text = String(part || '').trim();
+    if (!text) continue;
+    for (const token of text.split(/[\s/·,]+/)) {
+      const t = token.trim();
+      if (t.length >= 2) out.add(compact(t));
+    }
+    out.add(compact(text));
+  }
+  return out;
+}
+
+/**
+ * @param {unknown} keyword
+ * @param {object | null | undefined} [location]
+ */
+export function stripRegionTokensFromActivityKeyword(keyword, location) {
+  const raw = String(keyword || '').trim();
+  if (!raw) return '';
+  const regionTokens = regionLabelTokens(location);
+  if (!regionTokens.size) return raw;
+  const kept = raw
+    .split(/\s+/)
+    .map((t) => t.trim())
+    .filter((t) => t.length >= 2 && !regionTokens.has(compact(t)));
+  return kept.length ? kept.join(' ') : raw;
+}
+
+/**
+ * @param {MrtTnaRelevanceItem | string | null | undefined} itemOrText
+ */
+export function mrtTnaItemSearchText(itemOrText) {
+  if (typeof itemOrText === 'string') return String(itemOrText || '').trim();
+  if (!itemOrText || typeof itemOrText !== 'object') return '';
+  return [
+    itemOrText.itemName,
+    itemOrText.category,
+    itemOrText.itemDesc,
+    itemOrText.description,
+  ]
+    .map((v) => String(v || '').trim())
+    .filter(Boolean)
+    .join(' ');
 }
 
 function relevanceTokens(keyword) {
@@ -66,14 +170,32 @@ export function scoreMrtTnaRelevance(itemName, keyword) {
 }
 
 /**
+ * @param {MrtTnaRelevanceItem} item
+ * @param {unknown} keyword
+ * @param {object | null | undefined} [location]
+ */
+export function scoreMrtTnaItemRelevance(item, keyword, location = null) {
+  const text = mrtTnaItemSearchText(item);
+  if (!text) return 0;
+  const stripped = stripRegionTokensFromActivityKeyword(keyword, location);
+  const forms = expandKeywordMatchingForms(stripped || keyword);
+  let best = 0;
+  for (const form of forms) {
+    best = Math.max(best, scoreMrtTnaRelevance(text, form));
+  }
+  return best;
+}
+
+/**
  * @template {MrtTnaRelevanceItem} T
  * @param {T[]} items
  * @param {string} keyword
+ * @param {object | null | undefined} [location]
  * @returns {T[]}
  */
-export function filterRelevantMrtTnas(items, keyword) {
+export function filterRelevantMrtTnas(items, keyword, location = null) {
   const scored = (items || [])
-    .map((it) => ({ it, score: scoreMrtTnaRelevance(it?.itemName, keyword) }))
+    .map((it) => ({ it, score: scoreMrtTnaItemRelevance(it, keyword, location) }))
     .filter((row) => row.score > 0)
     .sort((a, b) => b.score - a.score);
   return scored.map((row) => row.it);

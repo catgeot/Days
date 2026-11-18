@@ -1,3 +1,4 @@
+import { isGlobeMapStyleReady } from './globeMapStyleGuard.js';
 import { COUNTRY_LABEL_MIN_ZOOM, PLACE_LABEL_MIN_ZOOM, POI_LABEL_MIN_ZOOM } from './globeZoomPolicy';
 import { isGateoLayer } from './globeMarkerLayers';
 import { isReachBoundaryLayer } from './globeReachBoundaries';
@@ -176,7 +177,7 @@ export function showGlobeContextBasemapLayer(map, layerId) {
 const marineLabelEmphasisAt = new WeakMap();
 
 export function emphasizeMapboxMarineLabels(map, { force = false, minIntervalMs = 700 } = {}) {
-  if (!map?.getStyle) return;
+  if (!map?.getStyle || !isGlobeMapStyleReady(map)) return;
   const now = Date.now();
   const lastAt = marineLabelEmphasisAt.get(map) || 0;
   if (!force && now - lastAt < minIntervalMs) return;
@@ -250,7 +251,7 @@ export function applyMapboxGlobeLabelPolicy(
   map,
   { globeTheme = 'deep', isPinVisible = true, placeLabelLayerIds = [], poiLabelLayerIds = [] } = {}
 ) {
-  if (!map?.getStyle || !map.isStyleLoaded?.()) return null;
+  if (!map?.getStyle || !isGlobeMapStyleReady(map)) return null;
 
   const zoom = map.getZoom();
   const showCountry = shouldShowMapboxCountryLabels({ isPinVisible, zoom });

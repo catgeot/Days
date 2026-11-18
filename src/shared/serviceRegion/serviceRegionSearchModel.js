@@ -27,7 +27,7 @@ import { isChoseongQuery } from '../../utils/hangulSearch.js';
 import {
   filterTourServiceRegions,
   listTourServiceRegionSuggestionHits,
-  tourActivityKeywordLikelyMatches,
+  resolveTourActivityListing,
 } from './tourActivityListing.js';
 
 export const RECENT_REGION_LIMIT = 3;
@@ -516,14 +516,16 @@ export function listTourSearchRegionHits(draft, regions = listKnownServiceRegion
   return hits.slice(0, SERVICE_REGION_RESULT_LIMIT);
 }
 
-export function resolveTourActivitySearchCommitMeta(activityKeyword, location) {
+export function resolveTourActivitySearchCommitMeta(activityKeyword, location, items = null) {
   const keyword = String(activityKeyword || '').trim();
   if (!keyword) {
     return { keywordSearchFallback: false };
   }
-  return {
-    keywordSearchFallback: !tourActivityKeywordLikelyMatches(location, keyword),
-  };
+  if (Array.isArray(items)) {
+    const resolved = resolveTourActivityListing(keyword, location, items);
+    return { keywordSearchFallback: Boolean(resolved.usedFallbackListing) };
+  }
+  return { keywordSearchFallback: false };
 }
 
 function tokensFirst(raw) {
