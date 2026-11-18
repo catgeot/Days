@@ -745,8 +745,12 @@ const PlaceGalleryView = React.memo(({
 
   useLightboxHistory(Boolean(selectedImg), () => setSelectedImg(null));
 
-  /** 그리드·확대·회전 중에도 터치 기기는 body 포털 유지 (헤더 z-index 겹침 방지) */
-  const shouldUseMobilePortal = Boolean(selectedImg && (isMobileViewport || isTouchDevice));
+  /** 확대 뷰 레이아웃 — 터치·좁은 뷰포트는 모바일 크롬 */
+  const shouldUseMobilePortal = Boolean(
+    selectedImg && (isMobileViewport || isTouchDevice),
+  );
+  /** body 포털 — 홈 크롬(z~140)이 PlaceCard(z~100) 위에 겹치지 않게 */
+  const shouldPortalLightbox = Boolean(selectedImg);
 
   useEffect(() => {
     const mq = window.matchMedia(MOBILE_GALLERY_LIGHTBOX_QUERY);
@@ -1631,17 +1635,17 @@ const PlaceGalleryView = React.memo(({
             </div>
           </div>
         </div>
-      {selectedImg ? (
-        shouldUseMobilePortal
-          ? createPortal(renderPhotoViewer(null, { mobilePortal: true }), document.body)
-          : (
-            <div className="absolute inset-0 z-[210]">
-              {renderPhotoViewer(
-                'w-full h-full relative animate-fade-in bg-black flex items-center justify-center overflow-hidden'
-              )}
-            </div>
+      {selectedImg && shouldPortalLightbox
+        ? createPortal(
+            renderPhotoViewer(
+              shouldUseMobilePortal
+                ? null
+                : 'fixed inset-0 z-[9999] h-[100dvh] min-h-[100svh] w-screen touch-none overscroll-none overflow-hidden bg-black animate-fade-in flex items-center justify-center',
+              { mobilePortal: shouldUseMobilePortal },
+            ),
+            document.body,
           )
-      ) : null}
+        : null}
       </div>
       {manageTarget && (
         <GalleryManageSheet

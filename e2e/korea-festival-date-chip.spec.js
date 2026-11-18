@@ -62,6 +62,22 @@ const FIXTURE = [
     addr1: '서울특별시 용산구 이태원로 1',
     areaCode: '1',
   },
+  {
+    contentId: '2001',
+    title: '무안 해변축제',
+    eventStartDate: '20261020',
+    eventEndDate: '20261022',
+    addr1: '전라남도 무안군 일로읍',
+    areaCode: '38',
+  },
+  {
+    contentId: '2002',
+    title: '무안 클래식 나이트',
+    eventStartDate: '20261020',
+    eventEndDate: '20261022',
+    addr1: '전라남도 무안군 무안읍',
+    areaCode: '38',
+  },
 ];
 
 async function dismissLocHint(page) {
@@ -473,5 +489,20 @@ test.describe('Korea festival date chips', () => {
     await expect(pickDates).toContainText('날짜 선택');
     await expect(pickDates.locator('svg')).toHaveCount(1);
     await expect(page.getByRole('button', { name: /시간 대분류/ })).toContainText('기간');
+  });
+
+  test('sub-region chip count matches list when a theme filter is active', async ({
+    page,
+  }) => {
+    await page.getByRole('button', { name: /^전남\s+\d+/ }).click();
+    await page.getByRole('button', { name: /테마 대분류/ }).click();
+    await page.getByRole('button', { name: /바다·해변/ }).click();
+    const muanBtn = page.getByRole('button', { name: /^무안군\s+\d+$/ });
+    await expect(muanBtn).toBeVisible({ timeout: 15_000 });
+    const chipCount = Number((await muanBtn.innerText()).match(/(\d+)\s*$/)?.[1]);
+    expect(chipCount).toBe(1);
+    await muanBtn.click();
+    await expect(listCards(page)).toHaveCount(chipCount);
+    await expect(page.locator('[data-festival-list-meta]')).toContainText(String(chipCount));
   });
 });
