@@ -26,6 +26,7 @@ import { useTravelData } from './hooks/useTravelData';
 import { useSearchEngine } from './hooks/useSearchEngine';
 import { useHomeHandlers } from './hooks/useHomeHandlers';
 import { formatUrlName, getPlaceUrlParam } from './lib/formatUrlName';
+import { resolvePlaceCardHref } from './lib/placeCardHref.js';
 import { cachePlaceLocation, mergeCachedPlaceIfCoordsMatch } from './lib/placeLocationCache';
 import { enrichJoseonRoyalTombsPromoPin } from './lib/joseonRoyalTombsPromoCopy.js';
 import { resolveJoseonRoyalTombsSearchSlugHydratePin } from './lib/joseonRoyalTombsSearch.js';
@@ -1050,7 +1051,7 @@ function Home() {
   }, [selectedLocation, routeLocation.pathname, category]);
 
   /** 연관 키워드 등 — URL 변경 전 selectedLocation을 먼저 맞춰 route-sync race 방지 */
-  const navigateToPlace = useCallback((targetPlace, { tab } = {}) => {
+  const navigateToPlace = useCallback((targetPlace, { tab, preserveRoute } = {}) => {
     if (!targetPlace) return;
 
     const prepared = enrichJoseonRoyalTombsPromoPin(
@@ -1100,12 +1101,21 @@ function Home() {
       if (prepared.uiPlace == null) prepared.uiPlace = true;
     }
     cachePlaceLocation(prepared);
-    const placeHref = `/place/${param}${tabSuffix}`;
+    const livePath = typeof window !== 'undefined' ? window.location.pathname : routeLocation.pathname;
+    const liveSearch = typeof window !== 'undefined' ? window.location.search : '';
+    const placeHref = resolvePlaceCardHref({
+      param,
+      tab,
+      preserveRoute: Boolean(preserveRoute),
+      pathname: livePath,
+      search: liveSearch,
+    });
     if (routeLocation.pathname.startsWith('/explore') && typeof window !== 'undefined') {
       window.location.assign(placeHref);
       return;
     }
-    navigate(placeHref);
+    if (preserveRoute && `${livePath}${liveSearch}` === placeHref) return;
+    navigate(placeHref, preserveRoute ? { replace: true } : undefined);
   }, [
     category,
     navigate,
@@ -1329,7 +1339,8 @@ function Home() {
               };
               cachePlaceLocation(prepared);
               markPlaceRouteResolve(normalizedTargetSlug, 'found');
-              navigateToPlace(prepared);
+              // tourContentMatch hydrate (fetchKoreaTourAttractionById) must keep /reviews, /planner, and ?open=tour.
+              navigateToPlace(prepared, { preserveRoute: true });
               return;
             }
             if (!Number.isFinite(Number(pin.lat))) {
@@ -1344,7 +1355,7 @@ function Home() {
             });
             cachePlaceLocation(prepared);
             markPlaceRouteResolve(normalizedTargetSlug, 'found');
-            navigateToPlace(prepared);
+            navigateToPlace(prepared, { preserveRoute: true });
           } catch {
             if (!cancelled) markPlaceRouteResolve(normalizedTargetSlug, 'error');
           }
