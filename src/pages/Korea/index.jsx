@@ -3016,7 +3016,13 @@ export default function KoreaFestivalHub() {
       }`}
     >
       <SEO
-        title={t('korea.festival.title')}
+        title={
+          festivalId &&
+          festivalDeepLink.sheet === 'open' &&
+          String(selectedForSheet?.title || '').trim()
+            ? String(selectedForSheet.title).trim()
+            : t('korea.festival.title')
+        }
         description={t('korea.festival.seoDescription')}
         url="/korea"
       />

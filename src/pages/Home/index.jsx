@@ -10,6 +10,7 @@ import LogoPanel from './components/LogoPanel';
 import SiteUpdateBanner from '../../shared/components/SiteUpdateBanner';
 import HomePlaceCardSummary from './components/HomePlaceCardSummary';
 import HomeDocumentHead from './HomeDocumentHead';
+import HomePlaceSummaryDocumentHead from './HomePlaceSummaryDocumentHead.jsx';
 import { useLocale } from '../../i18n/LocaleProvider';
 import { supabase } from '../../shared/api/supabase';
 import { subscribeAuthUser } from '../../shared/Auth/sessionUser.js';
@@ -112,6 +113,7 @@ import {
   preserveServiceModalDeeplinkSearch,
   releasePlaceServiceModalDeeplinkEmit,
   rememberPlaceServiceModalSummary,
+  readPlaceServiceModalSummaryRequest,
 } from './lib/placeServiceModalDeeplink.js';
 
 const DEFAULT_GLOBE_THEME = 'deep';
@@ -572,6 +574,7 @@ function Home() {
   const [deeplinkStripSignals, setDeeplinkStripSignals] = useState(initialDeeplinkStripSignals);
   const placeServiceModalDeeplinkConsumedRef = useRef(null);
   const placeServiceModalUiAppliedRef = useRef(null);
+  const placeServiceModalDeeplinkNavKeyRef = useRef(null);
   const placeRouteSyncRef = useRef(0);
   const [placeRouteResolve, setPlaceRouteResolve] = useState(null);
   const [placeRouteRetryEpoch, setPlaceRouteRetryEpoch] = useState(0);
@@ -624,6 +627,7 @@ function Home() {
     if (!pathname.startsWith('/place/')) {
       placeServiceModalDeeplinkConsumedRef.current = null;
       placeServiceModalUiAppliedRef.current = null;
+      placeServiceModalDeeplinkNavKeyRef.current = null;
       clearPlaceServiceModalSummaryRequest();
       setServiceModalSummaryActive(false);
       return;
@@ -692,7 +696,19 @@ function Home() {
     }
 
     const consumeKey = `${routeSlug}|${deeplink.open}|${deeplink.from || ''}`;
-    if (placeServiceModalUiAppliedRef.current === consumeKey) return;
+    const navKey = routeLocation.key ?? '';
+    const priorSummary = readPlaceServiceModalSummaryRequest();
+    if (priorSummary?.slug === routeSlug && priorSummary?.service && priorSummary.service !== deeplink.open) {
+      placeServiceModalUiAppliedRef.current = null;
+      placeServiceModalDeeplinkNavKeyRef.current = null;
+      releasePlaceServiceModalDeeplinkEmit();
+    }
+    if (
+      placeServiceModalUiAppliedRef.current === consumeKey &&
+      placeServiceModalDeeplinkNavKeyRef.current === navKey
+    ) {
+      return;
+    }
 
     let focusTarget =
       selectedLocation && hasValidCoords(selectedLocation) ? selectedLocation : selectedLocationRef.current;
@@ -709,6 +725,7 @@ function Home() {
 
     placeServiceModalDeeplinkConsumedRef.current = consumeKey;
     placeServiceModalUiAppliedRef.current = consumeKey;
+    placeServiceModalDeeplinkNavKeyRef.current = navKey;
     const pendingOpen = {
       service: deeplink.open,
       ref: deeplink.from,
@@ -732,6 +749,7 @@ function Home() {
     setSelectedLocation(focusTarget);
     setIsCardExpanded(false);
     if (strippedPath) navigate(strippedPath, { replace: true });
+    globeRef.current?.wakeAfterOverlay?.();
     if (claimPlaceServiceModalDeeplinkEmit(consumeKey)) {
       const ga = buildServiceModalOpenEvent({
         service: pendingOpen.service,
@@ -1969,6 +1987,9 @@ function Home() {
     >
     <div className="relative w-full h-screen bg-black text-white overflow-hidden font-sans">
       <HomeDocumentHead />
+      {isPlaceCardSummaryVisible && serviceModalSummaryActive && selectedLocation ? (
+        <HomePlaceSummaryDocumentHead location={selectedLocation} />
+      ) : null}
       <div className="w-full h-full">
         <HomeGlobe
           ref={globeRef}

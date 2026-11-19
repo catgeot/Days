@@ -29,6 +29,6 @@ export const mobilePlaceFooterScrollPadding =
 export const mobilePlaceReviewsFooterScrollPadding =
   'pb-40 landscape-phone:pb-[env(safe-area-inset-bottom,0px)]';
 
-/** 갤러리 그리드 — 연관바가 조금 더 높음 */
+/** 갤러리 그리드 — 하단 고정 연관 도시 칩바 + MOONi 여유 */
 export const mobilePlaceGalleryFooterScrollPadding =
-  'pb-28 landscape-phone:pb-[env(safe-area-inset-bottom,0px)]';
+  'pb-[max(9.5rem,calc(6rem+env(safe-area-inset-bottom,0px)+3.5rem))] landscape-phone:pb-[env(safe-area-inset-bottom,0px)]';
