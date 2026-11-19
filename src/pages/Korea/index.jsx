@@ -104,6 +104,10 @@ import {
   isFestivalSoonWidenContext,
   isZeroWindowSidoSelection,
 } from './lib/festivalSoonWiden.js';
+import {
+  fetchFestivalSoonHorizon,
+  mergeFestivalSoonHorizon,
+} from './lib/festivalSoonHorizon.js';
 import FestivalSoonSection, {
   FestivalNearestUpcomingBlock,
 } from './components/FestivalSoonSection.jsx';
@@ -1253,6 +1257,8 @@ export default function KoreaFestivalHub() {
   /** 모바일 지도 · PC 전체화면 — 글라스 헤더·뷰포트 몰입(분할 카드 밖) */
   const mapImmersive = mapOpen && !mapSplitActive;
   const [items, setItems] = useState([]);
+  /** searchFestival rows past the chip window — soon section and nearest fallback only. */
+  const [soonHorizonItems, setSoonHorizonItems] = useState([]);
   const itemsWithManualSsot = useMemo(
     () => mergeManualFestivalsIntoFestivalItems(items, now),
     [items, now],
@@ -1978,6 +1984,27 @@ export default function KoreaFestivalHub() {
   const searchFilter = searchDraft.trim() || searchApplied.trim();
   const searchActive = searchFilter.length > 0;
   const nearActive = Boolean(nearOrigin && nearLabel);
+  const soonHorizonContext = isFestivalSoonWidenContext({
+    timeTab,
+    searchActive,
+    nearActive,
+    personalTab,
+  });
+
+  useEffect(() => {
+    if (!soonHorizonContext) return undefined;
+    let cancelled = false;
+    fetchFestivalSoonHorizon(now)
+      .then((rows) => {
+        if (!cancelled) setSoonHorizonItems(rows);
+      })
+      .catch(() => {
+        if (!cancelled) setSoonHorizonItems([]);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [soonHorizonContext, now]);
 
   const instagramStripEligible = useMemo(() => {
     const storage =
@@ -2215,8 +2242,9 @@ export default function KoreaFestivalHub() {
 
   const soonWidenPool = useMemo(() => {
     if (personalTab != null || searchActive || nearActive) return [];
+    const withHorizon = mergeFestivalSoonHorizon(itemsWithSocialPromo, soonHorizonItems);
     const regionScoped = filterByTaste(
-      filterByRegion(itemsWithSocialPromo, { areaCode, cityName }),
+      filterByRegion(withHorizon, { areaCode, cityName }),
       tasteId,
     );
     return excludeFestivalsByContentId(regionScoped, visiblePromoContentIds);
@@ -2225,6 +2253,7 @@ export default function KoreaFestivalHub() {
     searchActive,
     nearActive,
     itemsWithSocialPromo,
+    soonHorizonItems,
     areaCode,
     cityName,
     tasteId,
