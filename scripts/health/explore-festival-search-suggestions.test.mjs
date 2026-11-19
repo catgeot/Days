@@ -14,6 +14,7 @@ const {
   festivalItemToExploreSuggestion,
   appendExploreFestivalBelowPlaceBlock,
   applyExploreFestivalMergeStrategy,
+  exploreFestivalTitleContainsQuery,
   explorePlaceBlockInsertIndex,
   prependExploreFestivalSuggestions,
   rankExploreFestivalSearchHits,
@@ -144,6 +145,26 @@ test('festivalItemToExploreSuggestion localizes EN title lines', () => {
   const en = festivalItemToExploreSuggestion(item, 'en');
   assert.equal(en.name, 'Gangneung Coffee Festival');
   assert.equal(en.name_en, '강릉커피축제');
+});
+
+test('exploreFestivalTitleContainsQuery matches whitespace-insensitive title', () => {
+  const fest = festivalItemToExploreSuggestion(FIXTURE_POOL.find((r) => r.contentId === '333'), 'ko', NOW);
+  assert.equal(exploreFestivalTitleContainsQuery(fest, '산천어'), true);
+  assert.equal(exploreFestivalTitleContainsQuery(fest, '산 천 어'), true);
+  assert.equal(exploreFestivalTitleContainsQuery(fest, '화천'), true);
+});
+
+test('appendExploreFestivalBelowPlaceBlock boosts title match directly under city row', () => {
+  const festivals = buildExploreFestivalSuggestionsFromPool(FIXTURE_POOL, '산천어', { now: NOW });
+  const hybrid = [
+    { id: 'city-hwacheon', kind: 'city', name: '화천', source: 'ssot' },
+    { id: 'place-1', kind: 'place', name: '화천 구경 1', source: 'ssot' },
+    { id: 'map-1', kind: 'city', name: 'Map', source: 'mapbox' },
+  ];
+  const merged = appendExploreFestivalBelowPlaceBlock(festivals, hybrid, { query: '산천어' });
+  assert.equal(merged[0].id, 'city-hwacheon');
+  assert.equal(merged[1]?.kind, 'festival');
+  assert.equal(merged[2]?.id, 'place-1');
 });
 
 test('appendExploreFestivalBelowPlaceBlock inserts after local place block', () => {

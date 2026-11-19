@@ -61,6 +61,7 @@ export default function FestivalGridPhotoCard({
   areaCode = 'all',
   cityName = 'all',
   priorityThumb = false,
+  soonStartsInDays = null,
 }) {
   const { t } = useTranslation();
   const { isEnglish, locale } = useLocale();
@@ -233,6 +234,11 @@ export default function FestivalGridPhotoCard({
             >
               {metaLine}
             </p>
+          ) : null}
+          {soonStartsInDays != null && soonStartsInDays > 0 ? (
+            <span className="mt-1 inline-flex w-fit rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold text-amber-900">
+              {t('korea.festival.soonStartsInDays', { days: soonStartsInDays })}
+            </span>
           ) : null}
         </div>
       </button>

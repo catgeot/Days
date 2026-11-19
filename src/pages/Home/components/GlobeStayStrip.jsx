@@ -1938,7 +1938,7 @@ export default function GlobeStayStrip({
             aria-label={t('home.stayStrip.listRegionAria')}
             onClick={(e) => e.stopPropagation()}
             onMouseDown={(e) => e.stopPropagation()}
-            className="fixed z-[61] left-0 top-0 bottom-0 right-[calc(2rem+400px+0.75rem)] xl:right-[calc(2rem+440px+0.75rem)] flex flex-col overflow-hidden border-2 border-amber-200/35 bg-black/85 shadow-[0_0_28px_rgba(251,191,36,0.16)] backdrop-blur-xl"
+            className="fixed z-[61] left-0 top-0 bottom-0 right-[calc(2rem+400px+0.75rem)] xl:right-[calc(2rem+440px+0.75rem)] flex flex-col overflow-hidden border-2 border-amber-200/35 bg-black shadow-[0_0_28px_rgba(251,191,36,0.16)]"
           >
             <StayPanelHeader
               placeName={name}
