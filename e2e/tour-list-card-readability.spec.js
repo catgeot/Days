@@ -97,7 +97,7 @@ test.describe('GlobeTourStrip list partner notice', () => {
     await goHomeFromPlace(page, '/place/haeundae-beach?lang=ko', '해운대해수욕장');
     await openTourListMobile(page);
     await assertProdLikeChrome(page);
-    await assertListNoticeOnce(page, '파트너에서 예약합니다 · 가격·자리는 그쪽 기준');
+    await assertListNoticeOnce(page, '파트너에서 예약합니다');
 
     const dialog = page.getByRole('dialog', { name: '투어 전체 목록' });
     const cardLinks = dialog.locator('a[data-partner-booking-handoff="cta"]');
@@ -123,7 +123,7 @@ test.describe('GlobeTourStrip list partner notice', () => {
     await goHomeFromPlace(page, '/place/haeundae-beach?lang=ko', '해운대해수욕장');
     await openTourListDesktop(page);
     await assertProdLikeChrome(page);
-    await assertListNoticeOnce(page, '파트너에서 예약합니다 · 가격·자리는 그쪽 기준');
+    await assertListNoticeOnce(page, '파트너에서 예약합니다');
 
     const region = page.getByRole('region', { name: '투어 목록' });
     await waitForTourCardImagesSettled(page);
@@ -193,7 +193,7 @@ test.describe('GlobeTourStrip — 강릉 실응답 재생 (Edge 스냅샷)', () 
     await goHomeFromPlace(page, '/place/haeundae-beach?lang=ko', '해운대해수욕장');
     await openTourListMobile(page);
     await assertProdLikeChrome(page);
-    await assertListNoticeOnce(page, '파트너에서 예약합니다 · 가격·자리는 그쪽 기준');
+    await assertListNoticeOnce(page, '파트너에서 예약합니다');
     await expect(page.getByText('상품 보고 예약 시작', { exact: true })).toHaveCount(0);
 
     const dialog = page.getByRole('dialog', { name: '투어 전체 목록' });

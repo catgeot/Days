@@ -97,7 +97,7 @@ test.describe('GlobeStayStrip list partner notice', () => {
     await goHomeFromPlace(page, '/place/iguazu-falls?lang=ko', '이구아수 폭포');
     await openStayListMobile(page, { findStays: '숙소 찾기', dialogName: '숙소 전체 목록' });
     await assertProdLikeChrome(page);
-    await assertListNoticeOnce(page, '파트너에서 예약합니다 · 가격·자리는 그쪽 기준');
+    await assertListNoticeOnce(page, '파트너에서 예약합니다');
     await expect(page.getByText('제휴 · 마이리얼트립')).toHaveCount(1);
 
     await assertCardImagesLoaded(page);
@@ -129,7 +129,7 @@ test.describe('GlobeStayStrip list partner notice', () => {
     await goHomeFromPlace(page, '/place/iguazu-falls?lang=ko', '이구아수 폭포');
     await openStayListDesktop(page);
     await assertProdLikeChrome(page);
-    await assertListNoticeOnce(page, '파트너에서 예약합니다 · 가격·자리는 그쪽 기준');
+    await assertListNoticeOnce(page, '파트너에서 예약합니다');
     await assertCardImagesLoaded(page);
 
     await page.screenshot({
@@ -149,7 +149,7 @@ test.describe('GlobeStayStrip list partner notice', () => {
     await openStayListMobile(page, { findStays: 'Find stays', dialogName: 'Full stay list' });
     await assertListNoticeOnce(
       page,
-      'Book on the partner site · price and seats are on their site',
+      'Book on the partner site',
     );
     await expect(page.getByRole('link', { name: 'View hotel & start booking' }).first()).toBeVisible();
   });
@@ -161,7 +161,7 @@ test.describe('GlobeStayStrip list partner notice', () => {
     const zoomBtn = page.getByRole('button', { name: '확대해서 보기' });
     await expect(zoomBtn).toBeVisible();
     await zoomBtn.click();
-    await assertListNoticeOnce(page, '파트너에서 예약합니다 · 가격·자리는 그쪽 기준');
+    await assertListNoticeOnce(page, '파트너에서 예약합니다');
     await expect(page.getByRole('link', { name: '호텔 보고 예약 시작' })).toHaveCount(4);
   });
 

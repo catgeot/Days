@@ -100,11 +100,9 @@ function TourPanelHeader({ placeName = '', onClose, density = 'desktop' }) {
 function TourPanelIntro() {
   const { t } = useTranslation();
   return (
-    <div className="mb-5 rounded-2xl border border-orange-400/25 bg-orange-500/10 px-3 py-2.5">
-      <p className="text-center text-sm font-semibold leading-snug text-orange-100/80 break-keep">
-        {t('home.tourStrip.intro')}
-      </p>
-    </div>
+    <p className="mb-3 text-center text-[12px] font-normal leading-snug text-white/55 break-keep">
+      {t('home.tourStrip.intro')}
+    </p>
   );
 }
 
