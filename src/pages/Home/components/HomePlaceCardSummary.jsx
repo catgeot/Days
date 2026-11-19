@@ -267,40 +267,59 @@ export default function HomePlaceCardSummary({
 
   const readGlobeFlightReady = () => Boolean(globeRef?.current?.isFlightCinemaReady?.());
   const [flightCinemaGlobeReady, setFlightCinemaGlobeReady] = useState(false);
+  const [flightGlobePending, setFlightGlobePending] = useState(false);
   const notReadyStreakRef = useRef(0);
 
   useEffect(() => {
     if (!hasFlightRoute) {
       notReadyStreakRef.current = 0;
       setFlightCinemaGlobeReady(false);
+      setFlightGlobePending(false);
       return undefined;
     }
 
     notReadyStreakRef.current = 0;
+    let cancelled = false;
+    setFlightGlobePending(true);
+    globeRef?.current?.wakeAfterOverlay?.();
 
     const syncReady = () => {
       const next = readGlobeFlightReady();
       if (next) {
         notReadyStreakRef.current = 0;
         setFlightCinemaGlobeReady(true);
+        setFlightGlobePending(false);
         return;
       }
 
       notReadyStreakRef.current += 1;
       if (notReadyStreakRef.current >= FLIGHT_ROUTE_NOT_READY_STREAK) {
         setFlightCinemaGlobeReady(false);
+        setFlightGlobePending(false);
       }
     };
 
     syncReady();
     const interval = window.setInterval(syncReady, 250);
+    void (async () => {
+      const wait = globeRef?.current?.waitForFlightCinemaReady?.({ timeoutMs: 8000 });
+      if (wait) await wait;
+      if (cancelled) return;
+      syncReady();
+      if (readGlobeFlightReady()) setFlightGlobePending(false);
+    })();
     return () => {
+      cancelled = true;
       window.clearInterval(interval);
       notReadyStreakRef.current = 0;
     };
   }, [globeRef, hasFlightRoute, location?.id]);
 
-  const isFlightRouteReady = hasFlightRoute && flightCinemaGlobeReady && Boolean(flightPreview);
+  const flightPreviewReady = Boolean(flightPreview) && !flightPreview?.edgePending;
+  const isFlightRouteReady =
+    hasFlightRoute &&
+    flightPreviewReady &&
+    !(needsEdgeFlightHubs && edgeFlightHubsLoading && !edgeFlightHubs);
 
   const flyImmerseTo = (options) => {
     const lat = Number(location?.lat);
@@ -350,6 +369,7 @@ export default function HomePlaceCardSummary({
 
   const handlePreviewFlightRoute = () => {
     if (!flightPreview || !isFlightRouteReady || flightCinemaRequestPending) return;
+    if (!flightCinemaGlobeReady && !readGlobeFlightReady()) return;
     if (isImmersed) {
       globeRef?.current?.clearImmerseState?.();
       setIsImmersed(false);
@@ -413,6 +433,7 @@ export default function HomePlaceCardSummary({
                 isFlightRouteReady={isFlightRouteReady}
                 isFlightRoutePending={
                   flightCinemaRequestPending ||
+                  flightGlobePending ||
                   (needsEdgeFlightHubs && (edgeFlightHubsLoading || Boolean(flightPreview?.edgePending)))
                 }
                 flightRouteLabel={

@@ -1974,7 +1974,7 @@ export default function GlobeStayStrip({
             role="dialog"
             aria-modal="true"
             aria-label={t('home.stayStrip.listFullscreenAria')}
-            className="fixed inset-0 z-[80] flex flex-col bg-black/95"
+            className="fixed inset-0 z-[80] flex flex-col bg-black"
             onClick={(e) => e.stopPropagation()}
             onMouseDown={(e) => e.stopPropagation()}
           >
