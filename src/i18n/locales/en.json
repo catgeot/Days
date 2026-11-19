@@ -5,7 +5,7 @@
     "defaultKeywords": "travel, AI docent, 3D globe, trip planner, GATEO, Korea festivals, scenic spots, Phuket travel, Galapagos photos, Angkor Wat photos, world destinations"
   },
   "partnerBookingHandoff": {
-    "noticeDefault": "Opens the partner booking page · price and availability are on their site",
+    "noticeDefault": "Opens the partner booking page",
     "noticeNarrow": "Book on the partner site",
     "ctaLodgingHotel": "View hotel & start booking",
     "ctaLodgingHotelNamed": "{{name}} — view hotel & start booking",

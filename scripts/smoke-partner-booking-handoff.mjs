@@ -31,6 +31,7 @@ const paths = {
     'src/components/PlaceCard/tabs/planner/components/MrtTnaActivitiesWidget.jsx',
   ),
   ko: join(root, 'src/i18n/locales/ko.json'),
+  en: join(root, 'src/i18n/locales/en.json'),
 };
 
 for (const [label, p] of Object.entries(paths)) {
@@ -45,6 +46,7 @@ const eventTna = readFileSync(paths.eventTna, 'utf8');
 const globeStay = readFileSync(paths.globeStay, 'utf8');
 const mrtTnaWidget = readFileSync(paths.mrtTnaWidget, 'utf8');
 const ko = readFileSync(paths.ko, 'utf8');
+const en = readFileSync(paths.en, 'utf8');
 
 assert.match(handoffJsx, /data-partner-booking-handoff="cta"/, 'handoff CTA marker');
 assert.match(handoffJsx, /target="_blank"/, 'handoff opens external tab');
@@ -68,7 +70,14 @@ assert.doesNotMatch(mrtTnaWidget, /PartnerBookingHandoff[\s\S]*kind="tour"/, 'Mr
 assert.match(globeStay, /StayListPartnerNotice/, 'GlobeStayStrip list-level partner notice');
 assert.doesNotMatch(globeStay, /PartnerBookingHandoff[\s\S]*kind="lodging"/, 'GlobeStayStrip card no PartnerBookingHandoff CTA');
 
-assert.match(ko, /파트너 예약 페이지로 이동합니다 · 가격·잔여석은 그쪽 기준/, 'ko notice default');
+assert.match(ko, /"noticeDefault": "파트너 예약 페이지로 이동합니다"/, 'ko notice default');
+assert.doesNotMatch(ko, /그쪽 기준/, 'ko partner notice without price disclaimer');
+assert.match(en, /"noticeDefault": "Opens the partner booking page"/, 'en notice default');
+assert.doesNotMatch(
+  en,
+  /partnerBookingHandoff[\s\S]*?on their site/,
+  'en partner notice without price disclaimer',
+);
 assert.match(ko, /호텔 보고 예약 시작/, 'ko lodging hotel CTA');
 assert.match(ko, /ctaLodgingHotelNamed/, 'ko named lodging aria i18n');
 assert.match(ko, /상품 보고 예약 시작/, 'ko tour CTA');

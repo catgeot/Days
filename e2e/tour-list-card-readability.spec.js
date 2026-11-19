@@ -66,6 +66,14 @@ async function assertListNoticeOnce(page, narrowPattern) {
   await expect(page.getByText('제휴 · 마이리얼트립')).toHaveCount(1);
 }
 
+async function assertListNoticeDesktopKo(page, defaultPattern) {
+  const shell = page.locator('[data-stay-list-partner-notice]');
+  await expect(shell).toHaveCount(1);
+  await expect(shell.getByText(defaultPattern)).toBeVisible();
+  await expect(shell.getByText(/그쪽 기준|가격·잔여석/)).toHaveCount(0);
+  await expect(page.getByText('제휴 · 마이리얼트립')).toHaveCount(1);
+}
+
 /** 이미지 onError·디코드 대기 (실네트워크·깨진 URL 모두) */
 async function waitForTourCardImagesSettled(page) {
   await page.waitForTimeout(2_500);
@@ -123,7 +131,7 @@ test.describe('GlobeTourStrip list partner notice', () => {
     await goHomeFromPlace(page, '/place/haeundae-beach?lang=ko', '해운대해수욕장');
     await openTourListDesktop(page);
     await assertProdLikeChrome(page);
-    await assertListNoticeOnce(page, '파트너에서 예약합니다');
+    await assertListNoticeDesktopKo(page, '파트너 예약 페이지로 이동합니다');
 
     const region = page.getByRole('region', { name: '투어 목록' });
     await waitForTourCardImagesSettled(page);

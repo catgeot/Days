@@ -5,7 +5,7 @@
     "defaultKeywords": "여행, AI 도슨트, 3D 지구본, 여행 기록, 여행 계획, GATEO, 게이트오, 국내 축제, 한국의 명승, 명승지, 푸켓 여행, 갈라파고스, 앙코르 와트"
   },
   "partnerBookingHandoff": {
-    "noticeDefault": "파트너 예약 페이지로 이동합니다 · 가격·잔여석은 그쪽 기준",
+    "noticeDefault": "파트너 예약 페이지로 이동합니다",
     "noticeNarrow": "파트너에서 예약합니다",
     "ctaLodgingHotel": "호텔 보고 예약 시작",
     "ctaLodgingHotelNamed": "{{name}} — 호텔 보고 예약 시작",

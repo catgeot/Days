@@ -77,6 +77,13 @@ async function assertListNoticeOnce(page, narrowPattern) {
   await expect(page.getByText(narrowPattern)).toHaveCount(1);
 }
 
+async function assertListNoticeDesktopKo(page, defaultPattern) {
+  const shell = page.locator('[data-stay-list-partner-notice]');
+  await expect(shell).toHaveCount(1);
+  await expect(shell.getByText(defaultPattern)).toBeVisible();
+  await expect(shell.getByText(/그쪽 기준|가격·잔여석/)).toHaveCount(0);
+}
+
 async function assertCardImagesLoaded(page) {
   const dialog = page.getByRole('dialog').or(page.getByRole('region', { name: '숙소 목록' }));
   const imgs = dialog.locator('img[src*="cloudfront.net"]');
@@ -129,7 +136,7 @@ test.describe('GlobeStayStrip list partner notice', () => {
     await goHomeFromPlace(page, '/place/iguazu-falls?lang=ko', '이구아수 폭포');
     await openStayListDesktop(page);
     await assertProdLikeChrome(page);
-    await assertListNoticeOnce(page, '파트너에서 예약합니다');
+    await assertListNoticeDesktopKo(page, '파트너 예약 페이지로 이동합니다');
     await assertCardImagesLoaded(page);
 
     await page.screenshot({
