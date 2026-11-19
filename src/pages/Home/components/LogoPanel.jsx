@@ -62,6 +62,7 @@ const LogoPanel = ({ isOpen, onClose, user, bucketList, onLogout, onToggleBookma
   const { openReport } = useReport();
   const account = useAccountProfile();
   const [profileOpen, setProfileOpen] = useState(false);
+  const [conceal, setConceal] = useState(!isOpen);
   const avatarUrl = user ? account.avatarUrl : '';
   const profileName = user ? (account.label || user.email.split('@')[0]) : '';
 
@@ -69,16 +70,28 @@ const LogoPanel = ({ isOpen, onClose, user, bucketList, onLogout, onToggleBookma
     if (!isOpen) setProfileOpen(false);
   }, [isOpen]);
 
+  // 닫힌 채 transform 만으로 치우면 데스크톱 WebGL 레이어가 리뷰 위에 그려질 수 있다.
+  useEffect(() => {
+    if (isOpen) {
+      setConceal(false);
+      return undefined;
+    }
+    const timer = window.setTimeout(() => setConceal(true), 500);
+    return () => window.clearTimeout(timer);
+  }, [isOpen]);
+
   return (
     <>
       {/* z-[130]+ — PlaceCardSummary z-60 · FlightCinemaBar z-120 위 (모바일 풀폭 시 덮어 가림) */}
       <div
-        className={`fixed inset-0 z-[130] bg-black/60 backdrop-blur-sm transition-opacity duration-500 ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+        aria-hidden={conceal ? true : undefined}
+        className={`fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-500 ${isOpen ? 'z-[130] opacity-100' : 'z-0 opacity-0 pointer-events-none'} ${conceal ? 'invisible' : ''}`}
         onClick={onClose}
       ></div>
 
       <div
-        className={`fixed top-0 left-0 h-full w-full md:w-[450px] bg-[#0a0a0a] border-r border-white/10 z-[140] transform transition-transform duration-500 ease-out shadow-2xl flex flex-col overflow-hidden ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}
+        aria-hidden={conceal ? true : undefined}
+        className={`fixed top-0 left-0 h-full w-full md:w-[450px] bg-[#0a0a0a] border-r border-white/10 transform transition-transform duration-500 ease-out shadow-2xl flex flex-col overflow-hidden ${isOpen ? 'z-[140] translate-x-0' : 'z-0 -translate-x-full'} ${conceal ? 'invisible pointer-events-none' : ''}`}
       >
         <div className="flex shrink-0 items-center justify-between gap-2 border-b border-white/5 bg-black/50 p-4 backdrop-blur-md md:p-6">
           <div className="min-w-0">

@@ -108,8 +108,8 @@ import {
   initialDeeplinkStripSignals,
   initialServiceModalSummaryActive,
   parsePlaceServiceModalDeeplink,
+  placeServiceModalSummaryShouldEnd,
   preserveServiceModalDeeplinkSearch,
-  readPlaceServiceModalSummaryRequest,
   releasePlaceServiceModalDeeplinkEmit,
   rememberPlaceServiceModalSummary,
 } from './lib/placeServiceModalDeeplink.js';
@@ -643,12 +643,10 @@ function Home() {
     if (!deeplink.open) {
       placeServiceModalUiAppliedRef.current = null;
       releasePlaceServiceModalDeeplinkEmit();
-      const summaryRequest = readPlaceServiceModalSummaryRequest();
-      if (
-        summaryRequest &&
-        (summaryRequest.slug !== routeSlug ||
-          (summaryRequest.pathname && summaryRequest.pathname !== pathname))
-      ) {
+      const historyIdx = Number.isInteger(window.history.state?.idx)
+        ? window.history.state.idx
+        : null;
+      if (placeServiceModalSummaryShouldEnd(pathname, routeSlug, historyIdx)) {
         clearPlaceServiceModalSummaryRequest();
         setServiceModalSummaryActive(false);
       }
@@ -721,7 +719,12 @@ function Home() {
       search: routeLocation.search,
     });
     const summaryPath = (strippedPath || pathname).split('?')[0];
-    rememberPlaceServiceModalSummary(routeSlug, deeplink.open, summaryPath);
+    rememberPlaceServiceModalSummary(
+      routeSlug,
+      deeplink.open,
+      summaryPath,
+      window.history.state?.idx,
+    );
     setServiceModalSummaryActive(true);
     setPendingServiceModalOpen(pendingOpen);
     pendingGlobeHomeFocusRef.current = focusTarget;
@@ -745,6 +748,7 @@ function Home() {
   }, [
     routeLocation.pathname,
     routeLocation.search,
+    routeLocation.key,
     placeRouteResolve?.status,
     placeRouteResolve?.slug,
     selectedLocation,

@@ -110,12 +110,36 @@ export function releasePlaceServiceModalDeeplinkEmit() {
   lastDeeplinkEmitKey = null;
 }
 
-export function rememberPlaceServiceModalSummary(slug, service, pathname) {
+function placePathname(pathname) {
+  const path = String(pathname || '').split('?')[0].split('#')[0];
+  if (path.length > 1) return path.replace(/\/+$/, '');
+  return path || '/';
+}
+
+export function rememberPlaceServiceModalSummary(slug, service, pathname, historyIdx) {
+  const idx = Number(historyIdx);
   serviceModalSummaryRequest = {
     slug: String(slug || '').trim().toLowerCase(),
     service: service === 'stay' ? 'stay' : 'tour',
-    pathname: String(pathname || '').split('?')[0] || null,
+    pathname: placePathname(pathname) || null,
+    historyIdx: Number.isInteger(idx) ? idx : null,
   };
+}
+
+/**
+ * 써머리를 끌지. 경로가 바뀌거나, 같은 /reviews 주소로 히스토리만 뒤로 간 경우.
+ * replace 로 쿼리만 지운 턴은 history idx 가 그대로라 끄지 않는다.
+ */
+export function placeServiceModalSummaryShouldEnd(pathname, slug, historyIdx) {
+  const req = serviceModalSummaryRequest;
+  if (!req) return false;
+  const path = placePathname(pathname);
+  const routeSlug = String(slug || '').trim().toLowerCase();
+  if (routeSlug && req.slug && req.slug !== routeSlug) return true;
+  if (req.pathname && req.pathname !== path) return true;
+  const idx = Number(historyIdx);
+  if (Number.isInteger(req.historyIdx) && Number.isInteger(idx) && idx < req.historyIdx) return true;
+  return false;
 }
 
 export function readPlaceServiceModalSummaryRequest() {
@@ -141,8 +165,9 @@ export function readServiceModalSummaryFromLocation(pathname, search) {
 export function initialServiceModalSummaryActive() {
   if (typeof window === 'undefined') return false;
   const req = readPlaceServiceModalSummaryRequest();
-  if (req?.slug && window.location.pathname.startsWith(`/place/${req.slug}`)) {
-    if (!req.pathname || window.location.pathname === req.pathname) return true;
+  const path = placePathname(window.location.pathname);
+  if (req?.slug && path.startsWith(`/place/${req.slug}`)) {
+    if (!req.pathname || path === req.pathname) return true;
   }
   return readServiceModalSummaryFromLocation(window.location.pathname, window.location.search);
 }
@@ -151,8 +176,9 @@ export function initialDeeplinkStripSignals() {
   const empty = { tour: 0, stay: 0 };
   if (typeof window === 'undefined') return empty;
   const req = readPlaceServiceModalSummaryRequest();
-  if (!req?.slug || !window.location.pathname.startsWith(`/place/${req.slug}`)) return empty;
-  if (req.pathname && window.location.pathname !== req.pathname) return empty;
+  const path = placePathname(window.location.pathname);
+  if (!req?.slug || !path.startsWith(`/place/${req.slug}`)) return empty;
+  if (req.pathname && path !== req.pathname) return empty;
   return {
     tour: req.service === 'tour' ? 1 : 0,
     stay: req.service === 'stay' ? 1 : 0,
