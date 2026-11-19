@@ -3,8 +3,18 @@ import { test, expect } from './fixtures.js';
 
 const MONTHLY_VISIBLE_COUNT = 6;
 const MONTHLY_HEADING = '11월의 여행지';
+const PREVIEW_HEADING = '12월의 여행지 미리 보기';
+
+/** @param {number} y @param {number} m @param {number} d @param {number} [h] @param {number} [min] @param {number} [sec] */
+function instantAtKst(y, m, d, h = 0, min = 0, sec = 0) {
+  return new Date(Date.UTC(y, m - 1, d, h - 9, min, sec));
+}
+
+const SINGLE_MONTH_KST = instantAtKst(2026, 11, 19, 12, 0, 0);
+const PREVIEW_WINDOW_KST = instantAtKst(2026, 11, 20, 0, 0, 0);
 
 const monthlySection = (page) => page.getByTestId('explore-v2-monthly-section');
+const monthlyPreviewSection = (page) => page.getByTestId('explore-v2-monthly-preview-section');
 const SCROLL_AREA = (page) => page.locator('.modal-scroll-area').first();
 
 async function openExplore(page, viewport, search = '') {
@@ -18,25 +28,25 @@ async function expectMonthlyMosaic(page) {
   await expect(section).toBeVisible({ timeout: 45_000 });
   await page.waitForTimeout(2000);
   await expect(section).not.toHaveAttribute('data-explore-v2-excluded');
-  await expect(page.getByTestId('explore-v2-monthly-heading')).toHaveText(MONTHLY_HEADING);
-  await expect(page.getByTestId('explore-v2-monthly-layout-b')).toBeVisible();
-  await expect(page.getByTestId('explore-v2-monthly-layout-a')).toHaveCount(0);
-  await expect(page.locator('[data-testid^="explore-v2-monthly-card-"]')).toHaveCount(
+  await expect(section.getByTestId('explore-v2-monthly-heading')).toHaveText(MONTHLY_HEADING);
+  await expect(section.getByTestId('explore-v2-monthly-layout-b')).toBeVisible();
+  await expect(section.getByTestId('explore-v2-monthly-layout-a')).toHaveCount(0);
+  await expect(section.locator('[data-testid^="explore-v2-monthly-card-"]')).toHaveCount(
     MONTHLY_VISIBLE_COUNT,
   );
   await expect(page.locator('meta[name="robots"][content="noindex"]')).toHaveCount(0);
   return section;
 }
 
-async function expectPhotoAltAndTextPanels(page, altForName) {
-  const cards = page.locator('[data-testid^="explore-v2-monthly-card-"]');
+async function expectPhotoAltAndTextPanels(section, altForName) {
+  const cards = section.locator('[data-testid^="explore-v2-monthly-card-"]');
   const count = await cards.count();
   for (let i = 0; i < count; i += 1) {
     const card = cards.nth(i);
     const name = (await card.locator('h3').textContent()).trim();
     await expect(card.locator('img')).toHaveAttribute('alt', altForName(name));
   }
-  const alphas = await page
+  const alphas = await section
     .getByTestId('explore-v2-monthly-text-panel')
     .evaluateAll((panels) =>
       panels.map((el) => {
@@ -65,15 +75,15 @@ async function expectPhotoAltAndTextPanels(page, altForName) {
   }
 }
 
-async function expectNoMonthlyHorizontalOverflow(page) {
-  const overflow = await page.getByTestId('explore-v2-monthly-layout-b').evaluate(
+async function expectNoMonthlyHorizontalOverflow(section) {
+  const overflow = await section.getByTestId('explore-v2-monthly-layout-b').evaluate(
     (root) => root.scrollWidth - root.clientWidth,
   );
   expect(overflow).toBeLessThanOrEqual(1);
 }
 
-async function expectNoFullWidthMonthlyBannerOnDesktop(page) {
-  const fullSpan = await page.getByTestId('explore-v2-monthly-layout-desktop').evaluate((root) => {
+async function expectNoFullWidthMonthlyBannerOnDesktop(section) {
+  const fullSpan = await section.getByTestId('explore-v2-monthly-layout-desktop').evaluate((root) => {
     return [...root.querySelectorAll('[data-pick-index]')].some((el) => {
       const itemLeft = el.offsetLeft;
       const itemWidth = el.offsetWidth;
@@ -84,8 +94,8 @@ async function expectNoFullWidthMonthlyBannerOnDesktop(page) {
   expect(fullSpan).toBe(false);
 }
 
-async function expectMobileLayoutB(page) {
-  const report = await page.getByTestId('explore-v2-monthly-layout-b').evaluate((root) => {
+async function expectMobileLayoutB(section) {
+  const report = await section.getByTestId('explore-v2-monthly-layout-b').evaluate((root) => {
     const width = root.clientWidth;
     const item = (slug) =>
       root.querySelector(`[data-testid="explore-v2-monthly-item-${slug}"]`);
@@ -113,8 +123,8 @@ async function expectMobileLayoutB(page) {
   expect(report.jeju.top).toBeGreaterThan(report.kyoto.top + report.kyoto.h - 4);
 }
 
-async function expectDesktopThreeRowGrid(page) {
-  const desktop = page.getByTestId('explore-v2-monthly-layout-desktop');
+async function expectDesktopThreeRowGrid(section) {
+  const desktop = section.getByTestId('explore-v2-monthly-layout-desktop');
   await expect(desktop).toBeVisible();
   const report = await desktop.evaluate((root) => {
     const row = (n) => root.querySelector(`[data-testid="explore-v2-monthly-desktop-row-${n}"]`);
@@ -158,8 +168,8 @@ async function expectDesktopThreeRowGrid(page) {
   expect(report.tallTallerThanWide).toBe(true);
 }
 
-async function expectPhotoTallerThanSummary(page) {
-  const rows = await page.getByTestId('explore-v2-monthly-layout-b').evaluate((root) =>
+async function expectPhotoTallerThanSummary(section) {
+  const rows = await section.getByTestId('explore-v2-monthly-layout-b').evaluate((root) =>
     [...root.querySelectorAll('[data-testid^="explore-v2-monthly-card-"]')].map((card) => {
       const photo = card.querySelector('[data-testid^="explore-v2-monthly-photo-"]');
       const text = card.querySelector('[data-testid="explore-v2-monthly-text-panel"]');
@@ -175,17 +185,17 @@ async function expectPhotoTallerThanSummary(page) {
   }
 }
 
-async function expectAllMonthlyPickSlugsVisible(page) {
+async function expectAllMonthlyPickSlugsVisible(section) {
   for (const slug of ['kyoto', 'chiang-mai', 'phu-quoc', 'jeju', 'dubai', 'melbourne']) {
-    const item = page.getByTestId(`explore-v2-monthly-item-${slug}`);
+    const item = section.getByTestId(`explore-v2-monthly-item-${slug}`);
     await item.scrollIntoViewIfNeeded();
     await expect(item).toBeVisible();
-    await expect(page.getByTestId(`explore-v2-monthly-card-${slug}`)).toBeVisible();
+    await expect(section.getByTestId(`explore-v2-monthly-card-${slug}`)).toBeVisible();
   }
 }
 
-async function expectMonthlyCardsDoNotOverlap(page) {
-  const report = await page.getByTestId('explore-v2-monthly-layout-b').evaluate((root) => {
+async function expectMonthlyCardsDoNotOverlap(section) {
+  const report = await section.getByTestId('explore-v2-monthly-layout-b').evaluate((root) => {
     const items = [...root.querySelectorAll('[data-testid^="explore-v2-monthly-item-"]')];
     const boxes = items.map((el) => {
       const r = el.getBoundingClientRect();
@@ -234,24 +244,24 @@ async function expectMonthlyCardsDoNotOverlap(page) {
   expect(report.leaks).toEqual([]);
 }
 
-async function expectMonthlySummaryNotSources(page) {
-  await expect(page.getByTestId('explore-v2-monthly-source-link')).toHaveCount(0);
-  await expect(page.getByText('파일·정책 페이지')).toHaveCount(0);
-  await expect(page.getByText('File / policy')).toHaveCount(0);
-  await expect(page.getByTestId('explore-v2-monthly-summary')).toHaveCount(MONTHLY_VISIBLE_COUNT);
-  const kyoto = page.getByTestId('explore-v2-monthly-card-kyoto');
+async function expectMonthlySummaryNotSources(section) {
+  await expect(section.getByTestId('explore-v2-monthly-source-link')).toHaveCount(0);
+  await expect(section.page().getByText('파일·정책 페이지')).toHaveCount(0);
+  await expect(section.page().getByText('File / policy')).toHaveCount(0);
+  await expect(section.getByTestId('explore-v2-monthly-summary')).toHaveCount(MONTHLY_VISIBLE_COUNT);
+  const kyoto = section.getByTestId('explore-v2-monthly-card-kyoto');
   await expect(kyoto).toContainText('단풍 절정');
   await expect(kyoto).not.toContainText('일본 전통 문화의 심장');
-  const jeju = page.getByTestId('explore-v2-monthly-card-jeju');
+  const jeju = section.getByTestId('explore-v2-monthly-card-jeju');
   await expect(jeju).toContainText('추정');
   await expect(jeju).not.toContainText('세계자연유산');
-  const chiang = page.getByTestId('explore-v2-monthly-card-chiang-mai');
+  const chiang = section.getByTestId('explore-v2-monthly-card-chiang-mai');
   await expect(chiang).toContainText('이펭');
   await expect(chiang).not.toContainText('태국 북부의 문화 수도');
 }
 
-async function expectIrregularMonthlyCardHeights(page) {
-  const report = await page.getByTestId('explore-v2-monthly-layout-b').evaluate((root) => {
+async function expectIrregularMonthlyCardHeights(section) {
+  const report = await section.getByTestId('explore-v2-monthly-layout-b').evaluate((root) => {
     const cards = [...root.querySelectorAll('[data-testid^="explore-v2-monthly-card-"]')];
     const heights = cards.map((el) => Math.round(el.getBoundingClientRect().height));
     const photos = [...root.querySelectorAll('[data-testid^="explore-v2-monthly-photo-"]')].map((el) =>
@@ -266,32 +276,54 @@ async function expectIrregularMonthlyCardHeights(page) {
   });
   expect(report.uniqueCards).toBeGreaterThan(2);
   expect(report.uniquePhotos).toBeGreaterThan(2);
-    expect(report.uniqueTops).toBeGreaterThan(1);
+  expect(report.uniqueTops).toBeGreaterThan(1);
+}
+
+async function expectBothMonthlySectionsWithLayoutB(page) {
+  const current = monthlySection(page);
+  const preview = monthlyPreviewSection(page);
+  await expect(current).toBeVisible({ timeout: 45_000 });
+  await expect(preview).toBeVisible({ timeout: 45_000 });
+  await expect(current.getByTestId('explore-v2-monthly-heading')).toHaveText(MONTHLY_HEADING);
+  await expect(preview.getByTestId('explore-v2-monthly-preview-heading')).toHaveText(PREVIEW_HEADING);
+  await expect(current.getByTestId('explore-v2-monthly-layout-b')).toBeVisible();
+  await expect(preview.getByTestId('explore-v2-monthly-layout-b')).toBeVisible();
+  await expect(current.getByTestId('explore-v2-monthly-layout-a')).toHaveCount(0);
+  await expect(preview.getByTestId('explore-v2-monthly-layout-a')).toHaveCount(0);
+  await expect(current.locator('[data-testid^="explore-v2-monthly-card-"]')).toHaveCount(
+    MONTHLY_VISIBLE_COUNT,
+  );
+  await expect(preview.locator('[data-testid^="explore-v2-monthly-card-"]')).toHaveCount(
+    MONTHLY_VISIBLE_COUNT,
+  );
+  await expect(page.locator('meta[name="robots"][content="noindex"]')).toHaveCount(0);
+  return { current, preview };
 }
 
 test.describe('Explore monthly picks @flagOff', () => {
   test.use({ ignoreHTTPSErrors: true });
 
-  test.beforeEach(() => {
+  test.beforeEach(async ({ page }) => {
     test.skip(
       process.env.VITE_GATEO_EXPLORE_V2 === '1',
       'default-path tests require env flag off in webServer',
     );
+    await page.clock.install({ time: SINGLE_MONTH_KST });
   });
 
   test('390 — default /explore shows mosaic B, jeju estimate, tap navigates', async ({ page }) => {
     await openExplore(page, { width: 390, height: 844 });
-    await expectMonthlyMosaic(page);
-    await expectNoMonthlyHorizontalOverflow(page);
-    await expectMobileLayoutB(page);
-    await expectPhotoTallerThanSummary(page);
-    await expectIrregularMonthlyCardHeights(page);
-    await expectMonthlyCardsDoNotOverlap(page);
-    await expectMonthlySummaryNotSources(page);
-    await expectAllMonthlyPickSlugsVisible(page);
+    const section = await expectMonthlyMosaic(page);
+    await expectNoMonthlyHorizontalOverflow(section);
+    await expectMobileLayoutB(section);
+    await expectPhotoTallerThanSummary(section);
+    await expectIrregularMonthlyCardHeights(section);
+    await expectMonthlyCardsDoNotOverlap(section);
+    await expectMonthlySummaryNotSources(section);
+    await expectAllMonthlyPickSlugsVisible(section);
 
-    const jejuItem = page.getByTestId('explore-v2-monthly-item-jeju');
-    const jejuCard = page.getByTestId('explore-v2-monthly-card-jeju');
+    const jejuItem = section.getByTestId('explore-v2-monthly-item-jeju');
+    const jejuCard = section.getByTestId('explore-v2-monthly-card-jeju');
     await expect(jejuCard.getByTestId('explore-v2-monthly-estimate')).toHaveText('추정');
 
     const scrollEl = SCROLL_AREA(page);
@@ -308,18 +340,19 @@ test.describe('Explore monthly picks @flagOff', () => {
 
   test('390 — Korean photo alt and dark text panel on every card', async ({ page }) => {
     await openExplore(page, { width: 390, height: 844 });
-    await expectMonthlyMosaic(page);
-    await expectPhotoAltAndTextPanels(page, (name) => `${name} 대표 사진`);
+    const section = await expectMonthlyMosaic(page);
+    await expectPhotoAltAndTextPanels(section, (name) => `${name} 대표 사진`);
   });
 
   test('1280 — English UI uses English photo alt', async ({ page }) => {
     await openExplore(page, { width: 1280, height: 720 }, 'lang=en');
-    await expect(monthlySection(page)).toBeVisible({ timeout: 45_000 });
-    await expect(page.getByTestId('explore-v2-monthly-card-kyoto').locator('img')).toHaveAttribute(
+    const section = monthlySection(page);
+    await expect(section).toBeVisible({ timeout: 45_000 });
+    await expect(section.getByTestId('explore-v2-monthly-card-kyoto').locator('img')).toHaveAttribute(
       'alt',
       'Featured photo of Kyoto',
     );
-    await expect(page.getByTestId('explore-v2-monthly-card-jeju').locator('img')).toHaveAttribute(
+    await expect(section.getByTestId('explore-v2-monthly-card-jeju').locator('img')).toHaveAttribute(
       'alt',
       'Featured photo of Jeju',
     );
@@ -327,33 +360,64 @@ test.describe('Explore monthly picks @flagOff', () => {
 
   test('1280 — default /explore shows desktop three-row grid', async ({ page }) => {
     await openExplore(page, { width: 1280, height: 720 });
-    await expectMonthlyMosaic(page);
-    await expectNoMonthlyHorizontalOverflow(page);
-    await expectDesktopThreeRowGrid(page);
-    await expectNoFullWidthMonthlyBannerOnDesktop(page);
-    await expectPhotoTallerThanSummary(page);
-    await expectMonthlyCardsDoNotOverlap(page);
-    await expectMonthlySummaryNotSources(page);
-    await expectAllMonthlyPickSlugsVisible(page);
-    await expectPhotoAltAndTextPanels(page, (name) => `${name} 대표 사진`);
+    const section = await expectMonthlyMosaic(page);
+    await expectNoMonthlyHorizontalOverflow(section);
+    await expectDesktopThreeRowGrid(section);
+    await expectNoFullWidthMonthlyBannerOnDesktop(section);
+    await expectPhotoTallerThanSummary(section);
+    await expectMonthlyCardsDoNotOverlap(section);
+    await expectMonthlySummaryNotSources(section);
+    await expectAllMonthlyPickSlugsVisible(section);
+    await expectPhotoAltAndTextPanels(section, (name) => `${name} 대표 사진`);
     await expect(page.getByText('에디터스 픽').first()).toBeVisible({ timeout: 45_000 });
   });
 
   test('1440 — desktop three-row grid mirrors row 1 and 3', async ({ page }) => {
     await openExplore(page, { width: 1440, height: 900 });
-    await expectMonthlyMosaic(page);
-    await expectDesktopThreeRowGrid(page);
+    const section = await expectMonthlyMosaic(page);
+    await expectDesktopThreeRowGrid(section);
+  });
+});
+
+test.describe('Explore monthly picks preview window @flagOff', () => {
+  test.use({ ignoreHTTPSErrors: true });
+
+  test.beforeEach(async ({ page }) => {
+    test.skip(
+      process.env.VITE_GATEO_EXPLORE_V2 === '1',
+      'default-path tests require env flag off in webServer',
+    );
+    await page.clock.install({ time: PREVIEW_WINDOW_KST });
+  });
+
+  test('390 — Nov section and Dec preview both show mosaic B', async ({ page }) => {
+    await openExplore(page, { width: 390, height: 844 });
+    const { current, preview } = await expectBothMonthlySectionsWithLayoutB(page);
+    await expectNoMonthlyHorizontalOverflow(current);
+    await expectNoMonthlyHorizontalOverflow(preview);
+    await expectMobileLayoutB(current);
+    await expect(preview.getByTestId('explore-v2-monthly-card-sapporo')).toBeVisible();
+  });
+
+  test('1280 — desktop three-row grid in Nov and Dec preview sections', async ({ page }) => {
+    await openExplore(page, { width: 1280, height: 720 });
+    const { current, preview } = await expectBothMonthlySectionsWithLayoutB(page);
+    await expectDesktopThreeRowGrid(current);
+    await expectDesktopThreeRowGrid(preview);
+    await expectNoFullWidthMonthlyBannerOnDesktop(current);
+    await expectNoFullWidthMonthlyBannerOnDesktop(preview);
   });
 });
 
 test.describe('Explore monthly picks @queryOn', () => {
   test.use({ ignoreHTTPSErrors: true });
 
-  test.beforeEach(() => {
+  test.beforeEach(async ({ page }) => {
     test.skip(
       process.env.VITE_GATEO_EXPLORE_V2 === '1',
       'legacy query path is tested with env flag off',
     );
+    await page.clock.install({ time: SINGLE_MONTH_KST });
   });
 
   test('390 — legacy ?explore_v2=1&layout=a still mosaic B, no noindex', async ({ page }) => {
@@ -370,25 +434,26 @@ test.describe('Explore monthly picks @queryOn', () => {
 test.describe('Explore monthly picks @flagOn', () => {
   test.use({ ignoreHTTPSErrors: true });
 
-  test.beforeEach(() => {
+  test.beforeEach(async ({ page }) => {
     test.skip(
       process.env.VITE_GATEO_EXPLORE_V2 !== '1',
       'requires VITE_GATEO_EXPLORE_V2=1 in webServer',
     );
+    await page.clock.install({ time: SINGLE_MONTH_KST });
   });
 
   test('390 — env flag on keeps same mosaic B', async ({ page }) => {
     await openExplore(page, { width: 390, height: 844 });
-    await expectMonthlyMosaic(page);
-    await expectNoMonthlyHorizontalOverflow(page);
+    const section = await expectMonthlyMosaic(page);
+    await expectNoMonthlyHorizontalOverflow(section);
   });
 
   test('1280 — env flag on keeps desktop grid and jeju estimate', async ({ page }) => {
     await openExplore(page, { width: 1280, height: 720 });
-    await expectMonthlyMosaic(page);
-    await expectDesktopThreeRowGrid(page);
+    const section = await expectMonthlyMosaic(page);
+    await expectDesktopThreeRowGrid(section);
     await expect(
-      page.getByTestId('explore-v2-monthly-card-jeju').getByTestId('explore-v2-monthly-estimate'),
+      section.getByTestId('explore-v2-monthly-card-jeju').getByTestId('explore-v2-monthly-estimate'),
     ).toBeVisible();
     await expect(page.getByText('에디터스 픽').first()).toBeVisible();
   });
