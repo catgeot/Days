@@ -27,14 +27,14 @@ const cairoSafety = CAIRO_CITY_FACTS.slots.find((slot) => slot.id === 'safety');
 
 test('event freshness bands use KST calendar days (Paris safety)', () => {
   assert.equal(parisSafety.kind, 'event');
-  assert.equal(parisSafety.checkedOn, '2026-11-16');
+  assert.equal(parisSafety.checkedOn, '2026-11-19');
   assert.equal(parisSafety.endsAt, null);
 
-  assert.equal(freshnessTier(parisSafety, '2026-11-16'), 'fresh');
-  assert.equal(freshnessTier(parisSafety, '2026-11-23'), 'fresh');
-  assert.equal(freshnessTier(parisSafety, '2026-11-24'), 'warn');
+  assert.equal(freshnessTier(parisSafety, '2026-11-19'), 'fresh');
+  assert.equal(freshnessTier(parisSafety, '2026-11-26'), 'fresh');
+  assert.equal(freshnessTier(parisSafety, '2026-11-27'), 'warn');
 
-  const warn = freshnessOf(parisSafety, '2026-11-16');
+  const warn = freshnessOf(parisSafety, '2026-11-19');
   assert.equal(warn.tier, 'fresh');
   assert.equal(warn.ageDays, 0);
 });
@@ -45,12 +45,12 @@ test('standing freshness bands (Cairo safety row)', () => {
   assert.equal(cairoMoney.checkedAt, '');
   assert.equal(freshnessTier(cairoMoney, '2027-06-01'), 'none');
   assert.equal(cairoSafety.kind, 'standing');
-  assert.equal(cairoSafety.checkedOn, '2026-11-16');
+  assert.equal(cairoSafety.checkedOn, '2026-11-19');
 
-  assert.equal(freshnessTier(cairoSafety, '2026-12-16'), 'fresh');
-  assert.equal(freshnessTier(cairoSafety, '2026-12-17'), 'warn');
-  assert.equal(freshnessTier(cairoSafety, '2027-02-14'), 'warn');
-  assert.equal(freshnessTier(cairoSafety, '2027-02-15'), 'hidden');
+  assert.equal(freshnessTier(cairoSafety, '2026-12-19'), 'fresh');
+  assert.equal(freshnessTier(cairoSafety, '2026-12-20'), 'warn');
+  assert.equal(freshnessTier(cairoSafety, '2027-02-17'), 'warn');
+  assert.equal(freshnessTier(cairoSafety, '2027-02-18'), 'hidden');
 });
 
 test('endsAt forces hidden even when checkedOn is fresh', () => {
@@ -65,8 +65,8 @@ test('endsAt forces hidden even when checkedOn is fresh', () => {
 });
 
 test('isActiveEventNotice is true through endsAt inclusive', () => {
-  assert.equal(isActiveEventNotice(parisSafety, '2026-11-16'), false);
-  assert.equal(isActiveEventNotice(cairoSafety, '2026-11-16'), false);
+  assert.equal(isActiveEventNotice(parisSafety, '2026-11-19'), false);
+  assert.equal(isActiveEventNotice(cairoSafety, '2026-11-19'), false);
 });
 
 test('slots without kind stay on legacy meta path', () => {
