@@ -15,7 +15,7 @@ const THEME = {
 };
 
 /**
- * 숙소·투어 목록 상단 1회 — 제휴·가격·잔여 기준 고지.
+ * 숙소·투어 목록 상단 1회 — 제휴 링크 고지(MRT 등).
  * @param {{ theme?: 'light' | 'dark', className?: string }} props
  */
 export default function StayListPartnerNotice({ theme = 'dark', className = '' }) {

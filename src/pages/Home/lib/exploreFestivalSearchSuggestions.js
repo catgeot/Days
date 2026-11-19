@@ -21,6 +21,32 @@ export const EXPLORE_FESTIVAL_MERGE_WAIT_MS = 300;
  * Index after SSOT/city/hub/settlement block — before Mapbox geocode rows.
  * @param {object[]} items
  */
+function collapseWhitespace(value) {
+  return String(value || '').replace(/\s+/g, '');
+}
+
+/**
+ * Festival title contains query (whitespace-insensitive) — explore insert boost only.
+ * @param {object} festivalRow
+ * @param {string} query
+ */
+export function exploreFestivalTitleContainsQuery(festivalRow, query) {
+  const raw = collapseWhitespace(query);
+  if (!raw) return false;
+  const tokens = exploreFestivalSearchTokens(query);
+  const title = collapseWhitespace(festivalRow?.name || festivalRow?.title || '');
+  if (!title) return false;
+  const probes = new Set([raw.toLowerCase()]);
+  for (const tok of tokens) {
+    if (tok) probes.add(collapseWhitespace(tok).toLowerCase());
+  }
+  const titleLower = title.toLowerCase();
+  for (const probe of probes) {
+    if (probe && titleLower.includes(probe)) return true;
+  }
+  return false;
+}
+
 export function explorePlaceBlockInsertIndex(items) {
   for (let i = 0; i < (items || []).length; i += 1) {
     const src = String(items[i]?.source || '');
@@ -38,8 +64,36 @@ export function explorePlaceBlockInsertIndex(items) {
 export function appendExploreFestivalBelowPlaceBlock(festivals, items, opts = {}) {
   if (!festivals?.length) return items || [];
   const maxItems = opts.maxItems ?? 24;
+  const query = String(opts.query || '');
   const festIds = new Set(festivals.map((row) => row.id));
   const base = (items || []).filter((row) => !festIds.has(row.id));
+
+  if (query.trim()) {
+    const titleBoost = [];
+    const rest = [];
+    for (const row of festivals) {
+      if (exploreFestivalTitleContainsQuery(row, query)) titleBoost.push(row);
+      else rest.push(row);
+    }
+    if (titleBoost.length) {
+      let merged = base;
+      const cityIdx = merged.findIndex(
+        (row) => row?.kind === 'city' || row?.source === 'ssot',
+      );
+      const insertAt = cityIdx >= 0 ? cityIdx + 1 : 0;
+      merged = [
+        ...merged.slice(0, insertAt),
+        ...titleBoost,
+        ...merged.slice(insertAt),
+      ];
+      if (rest.length) {
+        const idx = explorePlaceBlockInsertIndex(merged);
+        merged = [...merged.slice(0, idx), ...rest, ...merged.slice(idx)];
+      }
+      return merged.slice(0, maxItems);
+    }
+  }
+
   const idx = explorePlaceBlockInsertIndex(base);
   return [...base.slice(0, idx), ...festivals, ...base.slice(idx)].slice(0, maxItems);
 }
@@ -346,7 +400,10 @@ export async function applyExploreFestivalMergeStrategy(query, hybridItems, opts
     ]);
     if (raced.settled && raced.festivals?.length) {
       return {
-        items: appendExploreFestivalBelowPlaceBlock(raced.festivals, hybridItems, opts),
+        items: appendExploreFestivalBelowPlaceBlock(raced.festivals, hybridItems, {
+          ...opts,
+          query,
+        }),
         late: null,
       };
     }
@@ -360,7 +417,10 @@ export async function applyExploreFestivalMergeStrategy(query, hybridItems, opts
     late: async () => {
       const festivals = await festP;
       if (!festivals?.length) return hybridItems || [];
-      return appendExploreFestivalBelowPlaceBlock(festivals, hybridItems, opts);
+      return appendExploreFestivalBelowPlaceBlock(festivals, hybridItems, {
+        ...opts,
+        query,
+      });
     },
   };
 }

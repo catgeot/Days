@@ -92,13 +92,21 @@ import {
 import { buildTasteTags, filterByTaste, tasteLabel } from './festivalTasteTags';
 import {
   buildCityTags,
-  buildSidoTags,
   LIST_SIDO_CHIP_MIN_COUNT,
   filterByRegion,
   neighborSidoTags,
   sidoLabel,
   sidoListPhrase,
 } from './festivalRegionTags';
+import {
+  buildFestivalSoonWiden,
+  buildSidoTagsForListWindow,
+  isFestivalSoonWidenContext,
+  isZeroWindowSidoSelection,
+} from './lib/festivalSoonWiden.js';
+import FestivalSoonSection, {
+  FestivalNearestUpcomingBlock,
+} from './components/FestivalSoonSection.jsx';
 import {
   buildFestivalPanelListMetaSegments,
   insertWindow30MetaPeriodSegment,
@@ -1906,7 +1914,7 @@ export default function KoreaFestivalHub() {
   );
 
   const sidoChips = useMemo(
-    () => buildSidoTags(timedItems, { minCount: LIST_SIDO_CHIP_MIN_COUNT }),
+    () => buildSidoTagsForListWindow(timedItems, { minCount: LIST_SIDO_CHIP_MIN_COUNT }),
     [timedItems],
   );
 
@@ -2027,7 +2035,7 @@ export default function KoreaFestivalHub() {
   const sidoChipsForDisplay = useMemo(() => {
     if (!visiblePromoContentIds.size) return sidoChips;
     const timed = filterItemsByTime(timeTab, itemsForChipCounts);
-    return buildSidoTags(timed, { minCount: LIST_SIDO_CHIP_MIN_COUNT });
+    return buildSidoTagsForListWindow(timed, { minCount: LIST_SIDO_CHIP_MIN_COUNT });
   }, [
     visiblePromoContentIds,
     sidoChips,
@@ -2195,6 +2203,73 @@ export default function KoreaFestivalHub() {
       ? excludePinnedFromPanelItems(withoutPromo, sessionPinnedDisplay)
       : withoutPromo;
   }, [panelItems, visiblePromoContentIds, showSessionPinnedRow, sessionPinnedDisplay]);
+
+  const zeroWindowRegionActive = useMemo(
+    () =>
+      personalTab == null
+      && !searchActive
+      && !nearActive
+      && isZeroWindowSidoSelection(timedItems, areaCode),
+    [personalTab, searchActive, nearActive, timedItems, areaCode],
+  );
+
+  const soonWidenPool = useMemo(() => {
+    if (personalTab != null || searchActive || nearActive) return [];
+    const regionScoped = filterByTaste(
+      filterByRegion(itemsWithSocialPromo, { areaCode, cityName }),
+      tasteId,
+    );
+    return excludeFestivalsByContentId(regionScoped, visiblePromoContentIds);
+  }, [
+    personalTab,
+    searchActive,
+    nearActive,
+    itemsWithSocialPromo,
+    areaCode,
+    cityName,
+    tasteId,
+    visiblePromoContentIds,
+  ]);
+
+  const festivalSoonWiden = useMemo(() => {
+    if (
+      !isFestivalSoonWidenContext({
+        timeTab,
+        searchActive,
+        nearActive,
+        personalTab,
+      })
+    ) {
+      return {
+        items: [],
+        nearestFallback: null,
+        stage: null,
+        rangeStartYmd: '',
+        rangeEndYmd: '',
+      };
+    }
+    return buildFestivalSoonWiden({
+      pool: soonWidenPool,
+      defaultListItems: panelItemsForList,
+      now,
+      excludeContentIds: visiblePromoContentIds,
+      zeroWindowRegion: zeroWindowRegionActive,
+    });
+  }, [
+    timeTab,
+    searchActive,
+    nearActive,
+    personalTab,
+    soonWidenPool,
+    panelItemsForList,
+    now,
+    visiblePromoContentIds,
+    zeroWindowRegionActive,
+  ]);
+
+  const showFestivalSoonSection = festivalSoonWiden.items.length > 0;
+  const showFestivalNearestUpcoming =
+    !showFestivalSoonSection && Boolean(festivalSoonWiden.nearestFallback);
 
   const timeChipCounts = useMemo(() => {
     /** @type {Record<string, number>} */
@@ -3819,7 +3894,10 @@ export default function KoreaFestivalHub() {
                   ) : null}
                   <FestivalListLoadingSkeletons useGrid={useFestivalGrid} />
                 </>
-              ) : panelItemsForList.length === 0 && !showSessionPinnedRow ? (
+              ) : panelItemsForList.length === 0
+                && !showSessionPinnedRow
+                && !showFestivalSoonSection
+                && !showFestivalNearestUpcoming ? (
                 dateChipEnabled && !searchActive ? (
                   <div className="px-1 py-4" data-festival-period-empty="">
                     <p className="text-sm text-stone-500">
@@ -3920,6 +3998,46 @@ export default function KoreaFestivalHub() {
                       ))}
                     </>
                   )}
+                  {panelItemsForList.length === 0
+                    && !showSessionPinnedRow
+                    && (showFestivalSoonSection || showFestivalNearestUpcoming)
+                    && dateChipEnabled
+                    && !searchActive ? (
+                      <div className="px-1 py-4" data-festival-period-empty="">
+                        <p className="text-sm text-stone-500">
+                          {t('korea.festival.emptyPeriod')}
+                        </p>
+                      </div>
+                    ) : null}
+                  {showFestivalSoonSection ? (
+                    <FestivalSoonSection
+                      items={festivalSoonWiden.items}
+                      rangeStartYmd={festivalSoonWiden.rangeStartYmd}
+                      rangeEndYmd={festivalSoonWiden.rangeEndYmd}
+                      today={now}
+                      selected={selected}
+                      favoriteIds={favoriteIds}
+                      viewedIds={viewedIds}
+                      onToggleFavorite={handleToggleFavorite}
+                      onSelect={openItem}
+                      areaCode={areaCode}
+                      cityName={cityName}
+                      showTopDivider={panelItemsForList.length > 0}
+                    />
+                  ) : null}
+                  {showFestivalNearestUpcoming ? (
+                    <FestivalNearestUpcomingBlock
+                      item={festivalSoonWiden.nearestFallback}
+                      today={now}
+                      onSelect={openItem}
+                      selected={selected}
+                      favoriteIds={favoriteIds}
+                      viewedIds={viewedIds}
+                      onToggleFavorite={handleToggleFavorite}
+                      areaCode={areaCode}
+                      cityName={cityName}
+                    />
+                  ) : null}
                 </>
               )}
               </div>

@@ -3,6 +3,7 @@ import { test } from 'node:test';
 import {
   WINDOW30_INCLUSIVE_DAYS,
   addDaysYmd,
+  filterFestivalsByYmdRange,
   window30RangeYmd,
 } from '../../src/pages/Korea/festivalDateFilter.js';
 import {
@@ -20,7 +21,8 @@ import {
   omitFestivalMetaRegionDuplicatingHeading,
 } from '../../src/pages/Korea/festivalPanelListMeta.js';
 import { rolling30DayRangeYmd } from '../../src/pages/Korea/festivalTimeFilter.js';
-
+import { buildSidoTagsForListWindow } from '../../src/pages/Korea/lib/festivalSoonWiden.js';
+import { buildSidoTags, LIST_SIDO_CHIP_MIN_COUNT } from '../../src/pages/Korea/festivalRegionTags.js';
 const SEOUL_NOON = new Date('2026-10-17T03:00:00.000Z');
 const STILL_PREVIOUS_DAY_UTC = new Date('2026-10-16T15:00:00.000Z');
 
@@ -272,6 +274,32 @@ test('flag-on period tabs drop weekend and keep the pick-dates label', () => {
   assert.equal(date.label, '날짜 선택');
   assert.equal(date.headline, undefined);
   assert.equal(tabs.some((tab) => tab.id === 'weekend'), false);
+});
+
+test('sido chip counts stay on 30-day window while zero chips are display-only', () => {
+  const range = window30RangeYmd(SEOUL_NOON);
+  const panel = filterFestivalsByYmdRange(
+    [
+      {
+        contentId: '1',
+        eventStartDate: range.eventStartDate,
+        eventEndDate: range.eventEndDate,
+        addr1: '강원특별자치도 강릉시',
+        areaCode: '32',
+      },
+    ],
+    range.eventStartDate,
+    range.eventEndDate,
+  );
+  const baseChips = buildSidoTags(panel, { minCount: LIST_SIDO_CHIP_MIN_COUNT });
+  const displayChips = buildSidoTagsForListWindow(panel, { minCount: LIST_SIDO_CHIP_MIN_COUNT });
+  const sumBase = baseChips.reduce((acc, c) => acc + c.count, 0);
+  const sumNonZeroDisplay = displayChips
+    .filter((c) => c.count > 0)
+    .reduce((acc, c) => acc + c.count, 0);
+  assert.equal(sumBase, panel.length);
+  assert.equal(sumNonZeroDisplay, panel.length);
+  assert.equal(sumNonZeroDisplay, sumBase);
 });
 
 test('flag-on heading is the region name only', () => {

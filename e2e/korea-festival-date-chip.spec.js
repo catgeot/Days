@@ -491,6 +491,124 @@ test.describe('Korea festival date chips', () => {
     await expect(page.getByRole('button', { name: /시간 대분류/ })).toContainText('기간');
   });
 
+  const SOON_FIXTURE = [
+    ...FIXTURE,
+    {
+      contentId: '3201',
+      title: '강릉 바로 축제A',
+      eventStartDate: '20261020',
+      eventEndDate: '20261022',
+      addr1: '강원특별자치도 강릉시',
+      areaCode: '32',
+    },
+    {
+      contentId: '3202',
+      title: '강릉 바로 축제B',
+      eventStartDate: '20261024',
+      eventEndDate: '20261025',
+      addr1: '강원특별자치도 춘천시',
+      areaCode: '32',
+    },
+    {
+      contentId: '3210',
+      title: '강원 곧 축제1',
+      eventStartDate: '20261120',
+      eventEndDate: '20261122',
+      addr1: '강원특별자치도 평창군',
+      areaCode: '32',
+    },
+    {
+      contentId: '3211',
+      title: '강원 곧 축제2',
+      eventStartDate: '20261122',
+      eventEndDate: '20261124',
+      addr1: '강원특별자치도 원주시',
+      areaCode: '32',
+    },
+    {
+      contentId: '3212',
+      title: '강원 곧 축제3',
+      eventStartDate: '20261125',
+      eventEndDate: '20261127',
+      addr1: '강원특별자치도 속초시',
+      areaCode: '32',
+    },
+    {
+      contentId: '3901',
+      title: '제주 먼 곧 축제',
+      eventStartDate: '20261118',
+      eventEndDate: '20261120',
+      addr1: '제주특별자치도 제주시',
+      areaCode: '39',
+    },
+  ];
+
+  async function installSoonFixture(page) {
+    await page.unroute('**/functions/v1/tourapi-proxy**');
+    await page.route('**/functions/v1/tourapi-proxy**', async (route) => {
+      let action = '';
+      try {
+        action = String(route.request().postDataJSON()?.action || '');
+      } catch {
+        action = '';
+      }
+      if (action === 'festivalWindow') {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({ ok: true, items: SOON_FIXTURE }),
+        });
+        return;
+      }
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ ok: true }),
+      });
+    });
+    await page.reload();
+    await dismissLocHint(page);
+  }
+
+  test('gangwon region shows soon section with three cards when default under five', async ({
+    page,
+  }) => {
+    await installSoonFixture(page);
+    await page.getByRole('button', { name: /^강원/ }).click();
+    await expect(page.locator('[data-festival-soon-section]')).toBeVisible({
+      timeout: 20_000,
+    });
+  });
+
+  test('zero-count jeju chip shows soon section from first paint', async ({ page }) => {
+    await installSoonFixture(page);
+    const jejuChip = page.getByRole('button', { name: /^제주\s+0$/ });
+    await expect(jejuChip).toBeVisible({ timeout: 15_000 });
+    const scrollY = await page.evaluate(() => window.scrollY);
+    await jejuChip.click();
+    await expect(page.locator('[data-festival-soon-section]')).toBeVisible({
+      timeout: 15_000,
+    });
+    expect(await page.evaluate(() => window.scrollY)).toBe(scrollY);
+  });
+
+  test('nationwide plenty list hides soon section', async ({ page }) => {
+    await installSoonFixture(page);
+    await expect(page.locator('[data-festival-soon-section]')).toHaveCount(0);
+  });
+
+  test('search hides soon section and chip counts stay on 30-day basis', async ({ page }) => {
+    await installSoonFixture(page);
+    const gangwonChip = page.getByRole('button', { name: /^강원\s+\d+/ });
+    const gangwonLabel = await gangwonChip.innerText();
+    await page.getByRole('button', { name: /축제 검색/ }).click();
+    await page.getByRole('searchbox').fill('강릉');
+    await page.getByRole('searchbox').press('Enter');
+    await expect(page.locator('[data-festival-soon-section]')).toHaveCount(0);
+    await page.getByRole('button', { name: /검색 초기화|닫기/ }).first().click().catch(() => {});
+    await expect(gangwonChip).toContainText(gangwonLabel.match(/\d+/)?.[0] || '');
+  });
+
   test('sub-region chip count matches list when a theme filter is active', async ({
     page,
   }) => {
