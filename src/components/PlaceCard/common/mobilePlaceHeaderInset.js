@@ -25,9 +25,16 @@ export const mobilePlaceHeaderScrollPadding =
 export const mobilePlaceFooterScrollPadding =
   'pb-24 landscape-phone:pb-[env(safe-area-inset-bottom,0px)]';
 
-/** 리뷰 — 하단 연관 칩(pb-8)에 빈 목록 문구가 가리지 않게 */
+/**
+ * Fixed mobile city-chip bar clearance (PR #869 B6).
+ * Class strings below repeat this literal so Tailwind can see them.
+ */
+export const mobilePlaceChipBarClearance =
+  'max(9.5rem,calc(6rem+env(safe-area-inset-bottom,0px)+3.5rem))';
+
+/** 리뷰 — 갤러리와 같은 칩바 여유. 기존 pb-40(10rem)은 최소. scroll-padding은 마지막 줄을 칩바 위로 맞춘다. */
 export const mobilePlaceReviewsFooterScrollPadding =
-  'pb-40 landscape-phone:pb-[env(safe-area-inset-bottom,0px)]';
+  'pb-[max(10rem,max(9.5rem,calc(6rem+env(safe-area-inset-bottom,0px)+3.5rem)))] scroll-pb-[max(10rem,max(9.5rem,calc(6rem+env(safe-area-inset-bottom,0px)+3.5rem)))] landscape-phone:pb-[env(safe-area-inset-bottom,0px)] landscape-phone:scroll-pb-0';
 
 /** 갤러리 그리드 — 하단 고정 연관 도시 칩바 + MOONi 여유 */
 export const mobilePlaceGalleryFooterScrollPadding =

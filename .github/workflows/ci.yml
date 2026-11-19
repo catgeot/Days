@@ -961,6 +961,42 @@ jobs:
           CI: true
         run: npx playwright test -c playwright.config.place-review-deeplink-order.js --reporter=line
 
+  place-reviews-deeplink-chip-e2e:
+    name: Place reviews deep link + chip clearance E2E (Chromium 390·1280)
+    runs-on: ubuntu-24.04
+    needs: lint-and-build
+    timeout-minutes: 25
+    container:
+      image: mcr.microsoft.com/playwright:v1.60.0-jammy
+      options: --ipc=host
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers (Chromium)
+        run: npx playwright install --with-deps chromium
+
+      - name: Playwright — place reviews deep link and chip clearance
+        env:
+          VITE_SUPABASE_URL: https://example.supabase.co
+          VITE_SUPABASE_ANON_KEY: e2e-anon-placeholder
+          VITE_GATEO_PLACE_INTRO_OVER_SSOT: '1'
+          VITE_GATEO_LOGBOOK_REVIEW_HUB: '1'
+          VITE_GATEO_LOGBOOK_REVIEW_FILTER: '1'
+          VITE_GATEO_REVIEW_DEEPLINK: '1'
+          DEV_SSL: '0'
+          CI: true
+        run: npx playwright test -c playwright.config.place-reviews-deeplink-chip.js --reporter=line
+
   logbook-review-hub-nav-e2e:
     name: LogBook review hub navigation E2E (WebKit 390·Chromium 390·1280, prod build)
     runs-on: ubuntu-24.04
