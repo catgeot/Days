@@ -6,6 +6,7 @@ import { resolveExploreCityHubExact } from './exploreHubResolve.js';
 import {
   exploreFestivalSearchFields,
   exploreFestivalSearchTokens,
+  exploreFestivalTitleContainsQuery,
 } from './exploreFestivalSearchSuggestions.js';
 import { normalizeFestivalQuery } from '../../Korea/festivalSearch.js';
 import { hangulChoseong, isChoseongQuery } from '../../../utils/hangulSearch.js';
@@ -107,11 +108,24 @@ function cityNameExtendsDestination(cityRow, destRow) {
   return city.startsWith(dest);
 }
 
-function sinkEndedFestivals(items) {
+function isEndedFestivalRow(item) {
+  return Boolean(
+    item?.festivalEnded
+    && (item.kind === 'festival' || item.source === 'korea-festival'),
+  );
+}
+
+/**
+ * Ended festivals sink, except a title that contains the query — that row stays
+ * where the hub reorder put it (directly under the city).
+ * @param {object[]} items
+ * @param {string} [query]
+ */
+function sinkEndedFestivals(items, query = '') {
   const rest = [];
   const ended = [];
   for (const item of items || []) {
-    if (item?.festivalEnded && (item.kind === 'festival' || item.source === 'korea-festival')) {
+    if (isEndedFestivalRow(item) && !exploreFestivalTitleContainsQuery(item, query)) {
       ended.push(item);
     } else {
       rest.push(item);
@@ -178,7 +192,7 @@ function isPrimaryHubCityRow(item, hubId) {
 
 /**
  * Hub-exact query: a strictly better destination name stays first, then the hub city,
- * hub attractions, festivals, and the rest.
+ * festivals whose title contains the query, hub attractions, other festivals, and the rest.
  * @param {object[]} items
  * @param {object} hub
  * @param {string} [query]
@@ -189,6 +203,7 @@ export function reorderHubExactSuggestions(items, hub, query = '') {
 
   const primary = [];
   const hubAttractions = [];
+  const titleFestivals = [];
   const festivals = [];
   const rest = [];
 
@@ -199,6 +214,8 @@ export function reorderHubExactSuggestions(items, hub, query = '') {
       primary.push(item);
     } else if (itemHub === hubId && group === 'attraction') {
       hubAttractions.push(item);
+    } else if (group === 'festival' && exploreFestivalTitleContainsQuery(item, query)) {
+      titleFestivals.push(item);
     } else if (group === 'festival') {
       festivals.push(item);
     } else {
@@ -223,7 +240,7 @@ export function reorderHubExactSuggestions(items, hub, query = '') {
     }
   }
 
-  return [...lead, ...primary, ...hubAttractions, ...festivals, ...tail];
+  return [...lead, ...primary, ...titleFestivals, ...hubAttractions, ...festivals, ...tail];
 }
 
 function ensurePrimaryHubCityRow(items, hub) {
@@ -322,6 +339,7 @@ export function normalizeSearchSuggestions(query, rawItems, opts = {}) {
   if (!hub?.hubId) {
     return sinkEndedFestivals(
       deduped.map(({ _suggestOrder, suggestionGroup, ...item }) => item),
+      query,
     );
   }
 
@@ -331,6 +349,7 @@ export function normalizeSearchSuggestions(query, rawItems, opts = {}) {
       hub,
       query,
     ),
+    query,
   );
 }
 

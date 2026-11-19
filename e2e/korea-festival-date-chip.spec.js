@@ -81,24 +81,7 @@ const FIXTURE = [
   },
 ];
 
-const SOON_FIXTURE = [
-  ...FIXTURE,
-  {
-    contentId: '3201',
-    title: '강릉 바로 축제A',
-    eventStartDate: '20261020',
-    eventEndDate: '20261022',
-    addr1: '강원특별자치도 강릉시',
-    areaCode: '32',
-  },
-  {
-    contentId: '3202',
-    title: '강릉 바로 축제B',
-    eventStartDate: '20261024',
-    eventEndDate: '20261025',
-    addr1: '강원특별자치도 춘천시',
-    areaCode: '32',
-  },
+const SOON_HORIZON_ONLY = [
   {
     contentId: '3210',
     title: '강원 곧 축제1',
@@ -133,11 +116,33 @@ const SOON_FIXTURE = [
   },
 ];
 
+/** In-window rows only. Later starts arrive on searchFestival, matching prod festivalWindow. */
+const SOON_WINDOW_FIXTURE = [
+  ...FIXTURE,
+  {
+    contentId: '3201',
+    title: '강릉 바로 축제A',
+    eventStartDate: '20261020',
+    eventEndDate: '20261022',
+    addr1: '강원특별자치도 강릉시',
+    areaCode: '32',
+  },
+  {
+    contentId: '3202',
+    title: '강릉 바로 축제B',
+    eventStartDate: '20261024',
+    eventEndDate: '20261025',
+    addr1: '강원특별자치도 춘천시',
+    areaCode: '32',
+  },
+];
+
 /**
  * @param {import('@playwright/test').Page} page
  * @param {typeof FIXTURE} items
+ * @param {typeof FIXTURE} [horizonItems]
  */
-async function installTourApiFestivalRoutes(page, items) {
+async function installTourApiFestivalRoutes(page, items, horizonItems = []) {
   await page.route('**/functions/v1/tourapi-proxy**', async (route) => {
     let action = '';
     try {
@@ -150,6 +155,14 @@ async function installTourApiFestivalRoutes(page, items) {
         status: 200,
         contentType: 'application/json',
         body: JSON.stringify({ ok: true, items }),
+      });
+      return;
+    }
+    if (action === 'searchFestival') {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ ok: true, items: horizonItems }),
       });
       return;
     }
@@ -581,7 +594,7 @@ test.describe('Korea festival soon section (mocked widen)', () => {
   test.beforeEach(async ({ page }) => {
     await page.clock.install({ time: new Date('2026-10-16T03:00:00.000Z') });
     await clearFestivalListSessionCache(page);
-    await installTourApiFestivalRoutes(page, SOON_FIXTURE);
+    await installTourApiFestivalRoutes(page, SOON_WINDOW_FIXTURE, SOON_HORIZON_ONLY);
     await page.goto('/korea/');
     await expect(page.getByRole('heading', { name: /한국의 축제/ })).toBeVisible({
       timeout: 60_000,
@@ -607,6 +620,13 @@ test.describe('Korea festival soon section (mocked widen)', () => {
     await expect(jejuChip).toBeVisible({ timeout: 15_000 });
     const scrollY = await page.evaluate(() => window.scrollY);
     await jejuChip.click();
+    await expect(page.locator('[data-festival-period-empty]')).toBeVisible({
+      timeout: 15_000,
+    });
+    await expect(page.locator('[data-festival-period-empty]')).toContainText(
+      '이 기간에는 축제가 없어요',
+    );
+    await expect(page.getByRole('button', { name: '기간 풀기' })).toHaveCount(0);
     await expect(page.locator('[data-festival-soon-section]')).toBeVisible({
       timeout: 15_000,
     });

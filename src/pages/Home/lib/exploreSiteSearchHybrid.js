@@ -34,7 +34,7 @@ export async function buildExploreSiteSearchHybridSuggestions(query, opts = {}) 
       locale,
       now: opts.now,
     });
-    items = appendExploreFestivalBelowPlaceBlock(fest, items, { maxItems });
+    items = appendExploreFestivalBelowPlaceBlock(fest, items, { maxItems, query });
   } else {
     items = await mergeExploreFestivalIntoHybridSuggestions(query, items, {
       locale,

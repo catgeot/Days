@@ -7,6 +7,8 @@ import {
 } from '../../src/shared/gateoFeatureFlags.js';
 import { buildHybridSearchSuggestions } from '../../src/pages/Home/lib/searchSuggestions.js';
 import { runExploreHybridSuggestUpdate } from '../../src/pages/Home/lib/exploreHybridSuggestUpdate.js';
+import { buildExploreFestivalSuggestionsFromPool } from '../../src/pages/Home/lib/exploreFestivalSearchSuggestions.js';
+import { buildExploreSubmitParityDisambiguation } from '../../src/pages/Home/lib/exploreSearchSubmitParity.js';
 import {
   mergeHubAliasSuggestions,
   normalizeSearchSuggestions,
@@ -329,4 +331,71 @@ test('autocomplete paint flag ON applies normalize (빈 hub city before spot-vie
   const paintedIds = await hybridPaintIds('빈', true);
   assert.equal(paintedIds[0], 'hub-vienna');
   assert.equal(paintedIds.includes('spot-vienna'), false);
+});
+
+function assertSancheoneoUnderHwacheon(items) {
+  const cityAt = items.findIndex((row) => row.id === 'hub-hwacheon');
+  const festAt = items.findIndex((row) => row.festivalContentId === '507599');
+  const placeAt = items.findIndex((row) => String(row.name || '').includes('파로호'));
+  assert.equal(cityAt, 0);
+  assert.equal(festAt, cityAt + 1);
+  assert.ok(placeAt > festAt);
+}
+
+test('«산천어» festival title match sits under the 화천 row before the place block', async () => {
+  const key = GATEO_ENV_FLAG_NAMES.SITE_SEARCH;
+  const prev = globalThis.__VITE_ENV__[key];
+  globalThis.__VITE_ENV__[key] = '1';
+  const now = new Date('2026-11-20T03:00:00.000Z');
+  const pool = [
+    {
+      contentId: '507599',
+      title: '얼음나라화천 산천어축제',
+      eventStartDate: '20270109',
+      eventEndDate: '20270131',
+      addr1: '강원특별자치도 화천군 산천어길 1',
+    },
+  ];
+  try {
+    const fest = buildExploreFestivalSuggestionsFromPool(pool, '산천어', { now });
+    assert.equal(fest[0]?.festivalContentId, '507599');
+    assert.equal(fest[0]?.festivalEnded, false);
+    const local = buildLocalSearchSuggestions('산천어');
+    assertSancheoneoUnderHwacheon(normalizeSearchSuggestions('산천어', [...local, ...fest]));
+
+    const painted = [];
+    await runExploreHybridSuggestUpdate(
+      '산천어',
+      1,
+      () => 1,
+      { onPaint: (items) => painted.push(items) },
+      {
+        isSiteSearchEnabled: () => true,
+        isSubmitParityEnabled: () => true,
+        buildHybrid: (q) => buildLocalSearchSuggestions(q),
+        buildFest: async () => fest,
+        mergeReview: async (_query, items) => items,
+      },
+    );
+    assertSancheoneoUnderHwacheon(painted.at(-1));
+
+    const entered = await buildExploreSubmitParityDisambiguation('산천어', { festPool: pool, now });
+    assert.ok(entered?.candidates?.length);
+    assertSancheoneoUnderHwacheon(entered.candidates);
+
+    const endedPool = [
+      {
+        ...pool[0],
+        eventStartDate: '20200101',
+        eventEndDate: '20200131',
+      },
+    ];
+    const endedFest = buildExploreFestivalSuggestionsFromPool(endedPool, '산천어', { now });
+    assert.equal(endedFest[0]?.festivalEnded, true);
+    assertSancheoneoUnderHwacheon(
+      normalizeSearchSuggestions('산천어', [...local, ...endedFest]),
+    );
+  } finally {
+    globalThis.__VITE_ENV__[key] = prev;
+  }
 });

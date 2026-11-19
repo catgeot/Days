@@ -94,6 +94,14 @@ const FESTIVALS = [
     eventEndDate: '20201108',
     addr1: '부산광역시 해운대구',
   },
+  {
+    contentId: '507599',
+    title: '얼음나라화천 산천어축제',
+    titleEn: 'Hwacheon Sancheoneo Ice Festival',
+    eventStartDate: '20270109',
+    eventEndDate: '20270131',
+    addr1: '강원특별자치도 화천군',
+  },
 ];
 
 function delay(ms) {
@@ -287,6 +295,41 @@ test('ㅅㅇ pause and retype, ㄱㄴ, and ㅂㅅ keep the city above festivals'
   expect(rows.findIndex((row) => row.includes('매직'))).toBeGreaterThan(0);
   await saveLoadedList(page, `${project}-bs.png`);
   expect(geminiCalls).toEqual([]);
+});
+
+test('산천어 puts the festival title match under 화천 before the place block', async ({ page, context }, testInfo) => {
+  await installLateSearchMocks(context);
+  const project = testInfo.project.name;
+  const input = await openExplore(page, 'ko');
+  let since = Date.now();
+  await input.fill('산천어');
+  since = Date.now();
+  await waitUntilLoaded(page, 'ko', since);
+  let rows = await suggestionTexts(page, 'ko');
+  const cityAt = rows.findIndex((row) => row.includes('화천') && row.includes('도시'));
+  const festAt = rows.findIndex((row) => row.includes('산천어축제'));
+  const placeAt = rows.findIndex((row) => row.includes('파로호'));
+  expect(cityAt, rows.slice(0, 12).join(' | ')).toBe(0);
+  expect(festAt).toBe(cityAt + 1);
+  expect(placeAt).toBeGreaterThan(festAt);
+  expect(festAt).toBeLessThan(12);
+
+  await input.press('Enter');
+  const panel = page
+    .locator('div.animate-fade-in')
+    .filter({ has: page.getByRole('heading', { name: /도시·명소·여행지/ }) })
+    .last();
+  await expect(panel).toBeVisible({ timeout: 20_000 });
+  const entered = (await panel.locator('button').allTextContents())
+    .map((text) => text.replace(/\s+/g, ' ').trim())
+    .filter((text) => text && !text.includes('MOONi') && text !== '닫기');
+  const enteredCity = entered.findIndex((row) => row.includes('화천') && row.includes('도시'));
+  const enteredFest = entered.findIndex((row) => row.includes('산천어축제'));
+  const enteredPlace = entered.findIndex((row) => row.includes('파로호'));
+  expect(enteredCity, entered.slice(0, 12).join(' | ')).toBe(0);
+  expect(enteredFest).toBe(enteredCity + 1);
+  expect(enteredPlace).toBeGreaterThan(enteredFest);
+  await saveLoadedList(page, `${project}-sancheoneo.png`);
 });
 
 test('English Seoul keeps the city and the same attractions', async ({ page, context }, testInfo) => {
