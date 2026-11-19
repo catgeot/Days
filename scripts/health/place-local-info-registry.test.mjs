@@ -116,9 +116,9 @@ test('paris rollout hides the money row and does not call ETIAS required', () =>
     safety.sources.some((source) => source.url === 'https://www.0404.go.kr/bbs/safetyNtc/1335045/detail2?ntnCd=248'),
     true,
   );
-  assert.equal(safety.checkedAt, '2026-11-16');
+  assert.equal(safety.checkedAt, '2026-11-19');
   assert.equal(safety.kind, 'event');
-  assert.equal(safety.checkedOn, '2026-11-16');
+  assert.equal(safety.checkedOn, '2026-11-19');
   assert.equal(safety.endsAt, null);
   assert.equal(enSafety.sources[0].name, 'MOFA safety notice (Embassy of Korea in France)');
   assert.match(factValueForLocale('paris', enSafety, 'en'), /took place on 11\.5 \(Thu\)/i);
@@ -169,14 +169,17 @@ test('paris rollout hides the money row and does not call ETIAS required', () =>
   assert.equal(cairoMoney.checkedAt, '');
   assert.match(cairoMoney.value, /EGP/);
   assert.equal(cairoSafety.kind, 'standing');
-  assert.equal(cairoSafety.checkedOn, '2026-11-16');
-  assert.equal(cairoSafety.checkedAt, '2026-11-16');
+  assert.equal(cairoSafety.checkedOn, '2026-11-19');
+  assert.equal(cairoSafety.checkedAt, '2026-11-19');
   assert.match(cairoSafety.value, /여행유의/);
   assert.match(cairoSafety.value, /공수병\(광견병\)/);
   assert.match(cairoSafety.value, /알아이야트/);
   assert.match(cairoSafety.value, /2026-11-15/);
   assert.match(cairoSafety.value, /입장권·호텔 숙박권·크루즈/);
+  assert.match(cairoSafety.value, /2026-11-17/);
+  assert.match(cairoSafety.value, /11월부터 이듬해 2월경까지/);
   assert.match(factValueForLocale('cairo', cairoSafety, 'en'), /entry tickets, hotel stays, and cruises/);
+  assert.match(factValueForLocale('cairo', cairoSafety, 'en'), /thick fog/);
   assert.equal(/2026-11-15[^\n]*(항공권|\bflight\b)/i.test(`${cairoSafety.value}\n${factValueForLocale('cairo', cairoSafety, 'en')}`), false);
   assert.equal(
     cairoSafety.sources.some(
@@ -193,6 +196,12 @@ test('paris rollout hides the money row and does not call ETIAS required', () =>
   assert.equal(
     cairoSafety.sources.some(
       (source) => source.url === 'https://www.0404.go.kr/bbs/embsyNtc/1345779/detail?ntnCd=178',
+    ),
+    true,
+  );
+  assert.equal(
+    cairoSafety.sources.some(
+      (source) => source.url === 'https://www.0404.go.kr/bbs/embsyNtc/1345780/detail?ntnCd=178',
     ),
     true,
   );
