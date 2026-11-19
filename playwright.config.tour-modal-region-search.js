@@ -69,8 +69,17 @@ export default defineConfig({
       },
     },
     {
+      name: 'chromium-390-review-back',
+      testMatch: /tour-modal-review-logbook-cover\.spec\.js/,
+      use: {
+        ...devices['Desktop Chrome'],
+        viewport: { width: 390, height: 844 },
+        deviceScaleFactor: 1,
+      },
+    },
+    {
       name: 'chromium-1280-review-back',
-      testMatch: /tour-modal-review-tour-back\.spec\.js/,
+      testMatch: /tour-modal-review-(tour-back|logbook-cover)\.spec\.js/,
       use: {
         ...devices['Desktop Chrome'],
         viewport: { width: 1280, height: 800 },

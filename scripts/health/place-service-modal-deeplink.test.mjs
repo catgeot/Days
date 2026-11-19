@@ -9,7 +9,9 @@ import {
   PLACE_SERVICE_MODAL_OPEN_VALUES,
   readServiceModalSummaryFromLocation,
   releasePlaceServiceModalDeeplinkEmit,
+  rememberPlaceServiceModalSummary,
   resetPlaceServiceModalDeeplinkSession,
+  placeServiceModalSummaryShouldEnd,
   stripPlaceServiceModalDeeplinkSearch,
   syncPlaceServiceModalDeeplinkDisplayUrl,
 } from '../../src/pages/Home/lib/placeServiceModalDeeplink.js';
@@ -105,6 +107,19 @@ test('service modal summary is active only for a place deeplink', () => {
   assert.equal(readServiceModalSummaryFromLocation('/place/kyoto', '?open=tour&from=review'), true);
   assert.equal(readServiceModalSummaryFromLocation('/place/kyoto', '?lang=ko'), false);
   assert.equal(readServiceModalSummaryFromLocation('/', '?open=tour&from=review'), false);
+});
+
+test('summary ends on back to the same reviews path', () => {
+  resetPlaceServiceModalDeeplinkSession();
+  rememberPlaceServiceModalSummary('bangkok', 'tour', '/place/bangkok/reviews/', 2);
+  assert.equal(placeServiceModalSummaryShouldEnd('/place/bangkok/reviews', 'bangkok', 2), false);
+  assert.equal(placeServiceModalSummaryShouldEnd('/place/bangkok', 'bangkok', 2), true);
+  resetPlaceServiceModalDeeplinkSession();
+  rememberPlaceServiceModalSummary('bangkok', 'tour', '/place/bangkok/reviews', 2);
+  assert.equal(placeServiceModalSummaryShouldEnd('/place/bangkok/reviews/', 'bangkok', 1), true);
+  assert.equal(placeServiceModalSummaryShouldEnd('/place/bangkok/reviews', 'khao-lak', 2), true);
+  resetPlaceServiceModalDeeplinkSession();
+  assert.equal(placeServiceModalSummaryShouldEnd('/place/bangkok/reviews', 'bangkok', 0), false);
 });
 
 test('service_modal_open deeplink GA payload', () => {
