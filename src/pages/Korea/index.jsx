@@ -84,6 +84,7 @@ import FestivalGridPhotoCard, {
   FestivalGridSkeleton,
 } from './components/FestivalGridPhotoCard.jsx';
 import { defaultFestivalHubTimeTab } from './festivalHubDefaultTimeTab.js';
+import { festivalHubTimeTabAfterClearPeriod } from './festivalHubClearPeriod.js';
 import {
   readFestivalHubListScrollOffsets,
   restoreFestivalHubListScroll,
@@ -2855,7 +2856,7 @@ export default function KoreaFestivalHub() {
   };
 
   const clearPeriod = () => {
-    setTimeTab('now');
+    setTimeTab(festivalHubTimeTabAfterClearPeriod());
     setCustomRange(null);
     setDateSheetOpen(false);
     setChipPanel('time');

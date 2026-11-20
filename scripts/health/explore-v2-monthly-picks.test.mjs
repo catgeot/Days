@@ -315,3 +315,23 @@ test('monthly pick card places text panel below photo frame so caption does not 
   assert.doesNotMatch(item, /파일·정책|SourceLinks|PhotoCreditLine/);
   assert.doesNotMatch(item, /bg-gradient-to-t from-black\/95/);
 });
+
+test('monthly pick cards expose /place/{slug} href for crawlers and middle-click', () => {
+  const item = readFileSync(
+    join(root, 'src/pages/Home/components/SearchDiscovery/ExploreMonthlyPickItem.jsx'),
+    'utf8',
+  );
+  assert.match(item, /from 'react-router-dom'/);
+  assert.match(item, /placeHref = slug \? `\/place\/\$\{getPlaceUrlParam\(spot\) \|\| slug\}`/);
+  assert.match(item, /<Link[\s\S]*to=\{placeHref\}/);
+  assert.doesNotMatch(item, /<article[\s\S]*explore-v2-monthly-card/);
+});
+
+test('explore scroll area reserves bottom space above trust bar and scroll-top button', () => {
+  const modal = readFileSync(
+    join(root, 'src/pages/Home/components/SearchDiscoveryModal.jsx'),
+    'utf8',
+  );
+  assert.match(modal, /modal-scroll-area[\s\S]*scroll-pb-\[max\(11rem/);
+  assert.match(modal, /pb-\[max\(11rem,calc\(5\.5rem\+env\(safe-area-inset-bottom/);
+});

@@ -343,8 +343,13 @@ test.describe('Korea festival date chips', () => {
     await sheet.getByRole('button', { name: '이 기간 보기' }).click();
     await expect(page.getByText('이 기간에는 축제가 없어요')).toBeVisible();
     await page.getByRole('button', { name: '기간 풀기' }).click();
-    await expect(page.locator('[data-period-id="now"]')).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.locator('[data-period-id="now"]')).toHaveAttribute('aria-pressed', 'false');
+    await expect(page.locator('[data-period-id="window30"]')).toHaveAttribute(
+      'aria-pressed',
+      'false',
+    );
     await expect(page.getByText('이 기간에는 축제가 없어요')).toHaveCount(0);
+    expect(await listCards(page).count()).toBeGreaterThan(0);
 
     await page.getByRole('button', { name: '축제 검색' }).click();
     await page.locator('#korea-festival-search').fill('제주 먼');

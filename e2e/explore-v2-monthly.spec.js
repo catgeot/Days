@@ -397,6 +397,10 @@ test.describe('Explore monthly picks preview window @flagOff', () => {
     await expectNoMonthlyHorizontalOverflow(preview);
     await expectMobileLayoutB(current);
     await expect(preview.getByTestId('explore-v2-monthly-card-sapporo')).toBeVisible();
+    await expect(preview.getByTestId('explore-v2-monthly-card-sydney')).toHaveAttribute(
+      'href',
+      /\/place\/sydney/,
+    );
   });
 
   test('1280 — desktop three-row grid in Nov and Dec preview sections', async ({ page }) => {
