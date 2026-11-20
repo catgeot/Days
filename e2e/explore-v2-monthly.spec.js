@@ -253,8 +253,12 @@ async function expectMonthlySummaryNotSources(section) {
   await expect(kyoto).toContainText('단풍 절정');
   await expect(kyoto).not.toContainText('일본 전통 문화의 심장');
   const jeju = section.getByTestId('explore-v2-monthly-card-jeju');
-  await expect(jeju).toContainText('추정');
+  await expect(jeju).toContainText('11월 말 제주');
+  await expect(jeju).toContainText('해안·오름 산책');
+  await expect(jeju).not.toContainText('추정');
+  await expect(jeju).not.toContainText('억새');
   await expect(jeju).not.toContainText('세계자연유산');
+  await expect(jeju.getByTestId('explore-v2-monthly-estimate')).toHaveCount(0);
   const chiang = section.getByTestId('explore-v2-monthly-card-chiang-mai');
   await expect(chiang).toContainText('이펭');
   await expect(chiang).not.toContainText('태국 북부의 문화 수도');
@@ -311,7 +315,7 @@ test.describe('Explore monthly picks @flagOff', () => {
     await page.clock.install({ time: SINGLE_MONTH_KST });
   });
 
-  test('390 — default /explore shows mosaic B, jeju estimate, tap navigates', async ({ page }) => {
+  test('390 — default /explore shows mosaic B, jeju november copy, tap navigates', async ({ page }) => {
     await openExplore(page, { width: 390, height: 844 });
     const section = await expectMonthlyMosaic(page);
     await expectNoMonthlyHorizontalOverflow(section);
@@ -324,7 +328,8 @@ test.describe('Explore monthly picks @flagOff', () => {
 
     const jejuItem = section.getByTestId('explore-v2-monthly-item-jeju');
     const jejuCard = section.getByTestId('explore-v2-monthly-card-jeju');
-    await expect(jejuCard.getByTestId('explore-v2-monthly-estimate')).toHaveText('추정');
+    await expect(jejuCard).toContainText('11월 말 제주, 해안·오름 산책');
+    await expect(jejuCard.getByTestId('explore-v2-monthly-estimate')).toHaveCount(0);
 
     const scrollEl = SCROLL_AREA(page);
     const urlBefore = page.url();
@@ -452,13 +457,13 @@ test.describe('Explore monthly picks @flagOn', () => {
     await expectNoMonthlyHorizontalOverflow(section);
   });
 
-  test('1280 — env flag on keeps desktop grid and jeju estimate', async ({ page }) => {
+  test('1280 — env flag on keeps desktop grid without jeju estimate badge', async ({ page }) => {
     await openExplore(page, { width: 1280, height: 720 });
     const section = await expectMonthlyMosaic(page);
     await expectDesktopThreeRowGrid(section);
-    await expect(
-      section.getByTestId('explore-v2-monthly-card-jeju').getByTestId('explore-v2-monthly-estimate'),
-    ).toBeVisible();
+    const jeju = section.getByTestId('explore-v2-monthly-card-jeju');
+    await expect(jeju).toContainText('11월 말 제주, 해안·오름 산책');
+    await expect(jeju.getByTestId('explore-v2-monthly-estimate')).toHaveCount(0);
     await expect(page.getByText('에디터스 픽').first()).toBeVisible();
   });
 });
