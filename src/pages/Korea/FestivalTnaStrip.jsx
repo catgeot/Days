@@ -48,6 +48,8 @@ export default function FestivalTnaStrip({
       placeLabel={placeLabel}
       title={t('korea.festival.detail.tnaStripTitle')}
       hint={t('korea.festival.detail.tnaStripHint')}
+      hideWhenEmpty
+      filterListingByKeyword
       onFetchStatusChange={onFetchStatusChange}
       suppressInlineLoading={suppressInlineLoading}
     />

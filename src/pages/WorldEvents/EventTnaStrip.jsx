@@ -10,6 +10,8 @@ import {
   MRT_TNA_FETCH_SIZE,
   resolveMrtTnaQuery,
 } from '../../utils/fetchMrtTnas';
+import { stripUnsafeMrtTnaItems } from '../../utils/mrtTnaRelevance.js';
+import { resolveTourActivityListing } from '../../shared/serviceRegion/tourActivityListing.js';
 import { getKlookSearchUrl, getMrtDomesticRentalUrl, getTripcomTrainUrl } from '../../utils/affiliate';
 import StripListLargeToggle from './StripListLargeToggle';
 import { EVENT_STRIP_SCROLL_ROW_CLASS, eventStripCardShellClass } from './eventStripCardLayout';
@@ -150,6 +152,7 @@ function TnaStripCard({ item, locale, t, large = false }) {
  *   title?: string,
  *   hint?: string,
  *   hideWhenEmpty?: boolean,
+ *   filterListingByKeyword?: boolean,
  *   onFetchStatusChange?: (status: string) => void,
  *   suppressInlineLoading?: boolean,
  * }} props
@@ -164,6 +167,7 @@ export default function EventTnaStrip({
   title,
   hint,
   hideWhenEmpty = false,
+  filterListingByKeyword = false,
   onFetchStatusChange,
   suppressInlineLoading = false,
 }) {
@@ -223,7 +227,12 @@ export default function EventTnaStrip({
 
         if (cancelled) return;
 
-        const listed = Array.isArray(result?.items) ? result.items : [];
+        let listed = stripUnsafeMrtTnaItems(Array.isArray(result?.items) ? result.items : []);
+        const keywordUsed = String(result?.keywordUsed || effectiveKeyword || '').trim();
+        if (filterListingByKeyword && listed.length > 0) {
+          const filtered = resolveTourActivityListing(keywordUsed, location, listed);
+          listed = filtered.items;
+        }
         if (cancelled) return;
         if (listed.length > 0) {
           setItems(listed);

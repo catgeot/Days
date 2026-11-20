@@ -16,6 +16,7 @@ import {
   nearbyHubsForFestival,
 } from '../../Korea/nearbyFestivalHubs.js';
 import { festivalLngLat } from '../../Korea/koreaFestivalCorridors.js';
+import { applyFestivalDomesticTnaGuards } from '../../Korea/lib/festivalDomesticTnaQuery.js';
 import {
   resolveMrtStayQuery,
   stripKoAdminSuffix,
@@ -1108,5 +1109,5 @@ export function resolveFestivalThemeCrossLinks(item, opts = {}) {
     };
   }
 
-  return cross;
+  return applyFestivalDomesticTnaGuards(cross, item);
 }
