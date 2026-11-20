@@ -80,5 +80,38 @@
         "note": "교통·장소 구역"
       }
     ]
+  },
+  "9026112001": {
+    "contentId": "9026112001",
+    "title": "논산양촌곶감축제",
+    "officialHomepage": "https://www.nonsan.go.kr/cntf/html/sub03/030101.html?mng_no=3981&mode=V&search_type=__intro__&sval=",
+    "checkedOn": "2026-11-20",
+    "eventStartDate": "20261211",
+    "eventEndDate": "20261213",
+    "expiresAfter": "20261213",
+    "addr1": "충청남도 논산시 양촌면 양촌리 454",
+    "eventplace": "양촌면 양촌리 체육공원 일원",
+    "mapx": "127.2472045",
+    "mapy": "36.1295106",
+    "tel": "041-730-2928",
+    "playtime": "10:00~18:00",
+    "usetimefestival": "무료 (일부 체험 프로그램 유료)",
+    "overview": "2026 제24회 논산양촌곶감축제. 주제는 «양촌곶감이 고향을 잇다»예요.",
+    "program": "양촌곶감마켓, 개·폐막식 축하공연, 곶감쇼, LED 경관 포토존, 양촌곶감 다이닝 존, 곶감 피크닉 존, 곶감 푸드트럭 존, 기타 상설부스 존",
+    "images": [],
+    "sources": [
+      {
+        "url": "https://www.nonsan.go.kr/cntf/html/sub03/030101.html?mng_no=3981&mode=V&search_type=__intro__&sval=",
+        "note": "논산시(논산문화관광재단) 공식 안내 · 기간·장소·프로그램 (확인 2026-11-20)"
+      },
+      {
+        "url": "https://korean.visitkorea.or.kr/kfes/detail/fstvlDetail.do?fstvlCntntsId=c21e4c87-57d0-4a32-984d-7c50bec81984",
+        "note": "한국관광공사 대한민국 구석구석 · 2026.12.11~12.13 (확인 2026-11-20)"
+      },
+      {
+        "url": "https://www.data.go.kr/data/15013104/standard.do",
+        "note": "공공데이터포털 전국문화축제표준데이터 · 논산시 제공 행 (확인 2026-11-20)"
+      }
+    ]
   }
 }
