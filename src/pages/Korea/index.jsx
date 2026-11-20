@@ -84,7 +84,10 @@ import FestivalGridPhotoCard, {
   FestivalGridSkeleton,
 } from './components/FestivalGridPhotoCard.jsx';
 import { defaultFestivalHubTimeTab } from './festivalHubDefaultTimeTab.js';
-import { festivalHubTimeTabAfterClearPeriod } from './festivalHubClearPeriod.js';
+import {
+  festivalHubTimeTabAfterClearPeriod,
+  isFestivalHubFullPeriodTab,
+} from './festivalHubClearPeriod.js';
 import {
   readFestivalHubListScrollOffsets,
   restoreFestivalHubListScroll,
@@ -1890,6 +1893,9 @@ export default function KoreaFestivalHub() {
 
   const filterItemsByTime = useCallback((timeId, source) => {
     const list = source || [];
+    if (dateChipEnabled && isFestivalHubFullPeriodTab(timeId)) {
+      return list;
+    }
     if (dateChipEnabled) {
       const range = festivalHubFlagOnRangeYmd(timeId, now, customRange);
       if (range) {

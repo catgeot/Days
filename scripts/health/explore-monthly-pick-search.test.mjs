@@ -42,13 +42,13 @@ test('«11월 해외여행» excludes the domestic pick', () => {
   assert.deepEqual(slugs, ['kyoto', 'chiang-mai', 'phu-quoc', 'dubai', 'melbourne']);
 });
 
-test('reason keywords are searchable without a month («단풍 여행», «멜버른컵 여행»)', () => {
+test('reason keywords are searchable without a month («단풍 여행», «멜버른 여행»)', () => {
   assert.deepEqual(
     monthlyRows(buildLocalSearchSuggestions('단풍 여행')).map((item) => item.slug),
     ['kyoto'],
   );
   assert.deepEqual(
-    monthlyRows(buildLocalSearchSuggestions('멜버른컵 여행')).map((item) => item.slug),
+    monthlyRows(buildLocalSearchSuggestions('멜버른 여행')).map((item) => item.slug),
     ['melbourne'],
   );
   assert.deepEqual(

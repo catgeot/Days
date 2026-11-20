@@ -52,7 +52,7 @@ export const MONTHLY_PICKS = {
     },
     {
       slug: 'jeju',
-      reason: '10월 억새 절정. 11월 중순은 추정',
+      reason: '11월 말 제주, 해안·오름 산책',
       sources: [
         {
           url: 'https://www.visitjeju.net/kr/detail/view?contentsid=CONT_000000000500309',
@@ -63,8 +63,8 @@ export const MONTHLY_PICKS = {
           label: '제주관광공사·테마투어',
         },
       ],
-      checked: '2026-11-01',
-      estimate: true,
+      checked: '2026-11-20',
+      estimate: false,
     },
     {
       slug: 'dubai',
@@ -88,14 +88,14 @@ export const MONTHLY_PICKS = {
     },
     {
       slug: 'melbourne',
-      reason: '11/3 멜버른컵. 카니발 10/31~11/7',
+      reason: '11월 말 멜버른, 정원·해변 산책',
       sources: [
         {
-          url: 'https://www.vrc.com.au/race-days-and-events/2026-2027/lexus-melbourne-cup-day/',
-          label: '빅토리아 경마장',
+          url: 'https://www.visitvictoria.com/regions/melbourne',
+          label: '빅토리아 관광청',
         },
       ],
-      checked: '2026-11-01',
+      checked: '2026-11-20',
       estimate: false,
     },
   ],

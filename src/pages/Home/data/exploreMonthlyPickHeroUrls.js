@@ -15,7 +15,7 @@ export const EXPLORE_MONTHLY_PICK_VERIFIED_HERO_URLS = {
   melbourne:
     'https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Flemington_main_stand,_2013_Melbourne_Cup.jpg/1280px-Flemington_main_stand,_2013_Melbourne_Cup.jpg',
   sapporo:
-    'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/Sapporo_White_Illumination_2016_%28184517225%29.jpeg/1280px-Sapporo_White_Illumination_2016_%28184517225%29.jpeg',
+    'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0d/Hokkaido_Sapporo_Odori_Park.jpg/1280px-Hokkaido_Sapporo_Odori_Park.jpg',
   vienna:
     'https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Carousel_Ride_Rathaus.jpg/1280px-Carousel_Ride_Rathaus.jpg',
   'hong-kong':
@@ -36,7 +36,7 @@ export const EXPLORE_MONTHLY_PICK_HERO_OBJECT_POSITION = {
   jeju: '50% 82%',
   dubai: '58% 48%',
   melbourne: '72% 48%',
-  sapporo: '50% 55%',
+  sapporo: '50% 42%',
   vienna: '50% 40%',
   'hong-kong': '50% 35%',
   seoul: '50% 45%',
@@ -99,10 +99,9 @@ export const EXPLORE_MONTHLY_PICK_PHOTO_CREDIT = {
       'https://commons.wikimedia.org/wiki/File:Flemington_main_stand%2C_2013_Melbourne_Cup.jpg',
   },
   sapporo: {
-    ko: '저작 Sorah Fukumori · CC BY 3.0',
-    en: 'By Sorah Fukumori · CC BY 3.0',
-    filePageUrl:
-      'https://commons.wikimedia.org/wiki/File:Sapporo_White_Illumination_2016_(184517225).jpeg',
+    ko: '저작 Nkns · CC BY-SA 3.0',
+    en: 'By Nkns · CC BY-SA 3.0',
+    filePageUrl: 'https://commons.wikimedia.org/wiki/File:Hokkaido_Sapporo_Odori_Park.jpg',
   },
   vienna: {
     ko: '저작 Ooreoluwa4578420 · CC0 1.0',

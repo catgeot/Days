@@ -1,6 +1,11 @@
-import { defaultFestivalHubTimeTab } from './festivalHubDefaultTimeTab.js';
+/** Hub «전체 기간»: no YMD slice on the loaded rolling-12-month catalog (same pool as search). */
+export const FESTIVAL_HUB_FULL_PERIOD_TAB = 'fullPeriod';
 
-/** «기간 풀기» — restore the hub default window (flag-on 30-day / thisMonth), not «지금». */
+export function isFestivalHubFullPeriodTab(timeTab) {
+  return String(timeTab || '') === FESTIVAL_HUB_FULL_PERIOD_TAB;
+}
+
+/** «기간 풀기» — release period filter, not «지금» or the 30-day default. */
 export function festivalHubTimeTabAfterClearPeriod() {
-  return defaultFestivalHubTimeTab();
+  return FESTIVAL_HUB_FULL_PERIOD_TAB;
 }
