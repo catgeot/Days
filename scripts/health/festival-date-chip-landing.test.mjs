@@ -1,12 +1,33 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
+import { readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { defaultFestivalHubTimeTab } from '../../src/pages/Korea/festivalHubDefaultTimeTab.js';
+import {
+  FESTIVAL_HUB_FULL_PERIOD_TAB,
+  festivalHubTimeTabAfterClearPeriod,
+  isFestivalHubFullPeriodTab,
+} from '../../src/pages/Korea/festivalHubClearPeriod.js';
+
+const root = join(dirname(fileURLToPath(import.meta.url)), '../..');
 import { festivalIndexTimePhrase } from '../../src/pages/Korea/festivalIndexHeadline.js';
 import { replaceMonthTabWithDateChips } from '../../src/pages/Korea/festivalDateFilter.js';
 import { resolveSocialPromoPresentation } from '../../src/pages/Korea/socialPromoFestivalsLogic.js';
 
 test('default hub time tab matches flag-off landing (thisMonth, not window30)', () => {
   assert.equal(defaultFestivalHubTimeTab(), 'thisMonth');
+});
+
+test('기간 풀기 uses fullPeriod (empty-region path), not 지금', () => {
+  assert.equal(festivalHubTimeTabAfterClearPeriod(), FESTIVAL_HUB_FULL_PERIOD_TAB);
+  assert.ok(isFestivalHubFullPeriodTab(FESTIVAL_HUB_FULL_PERIOD_TAB));
+  assert.notEqual(festivalHubTimeTabAfterClearPeriod(), 'now');
+  const hub = readFileSync(join(root, 'src/pages/Korea/index.jsx'), 'utf8');
+  assert.match(hub, /festivalHubTimeTabAfterClearPeriod/);
+  assert.match(hub, /isFestivalHubFullPeriodTab\(timeId\)/);
+  assert.match(hub, /data-festival-period-empty[\s\S]{0,400}onClick=\{clearPeriod\}/);
+  assert.doesNotMatch(hub, /const clearPeriod = \(\) => \{[\s\S]{0,120}setTimeTab\('now'\)/);
 });
 
 test('flag-on time tabs omit thisMonth but headline still resolves 이번 달', () => {

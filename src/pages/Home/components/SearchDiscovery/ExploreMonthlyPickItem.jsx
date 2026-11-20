@@ -1,5 +1,7 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { getPlaceUrlParam } from '../../lib/formatUrlName';
 import useClickWithDragPrevention from '../../../../hooks/useClickWithDragPrevention';
 import {
   getLocalizedCountryName,
@@ -38,11 +40,15 @@ const ExploreMonthlyPickItem = ({
   const credit = EXPLORE_MONTHLY_PICK_PHOTO_CREDIT[slug];
   const creditTitle = isEnUi ? credit?.en : credit?.ko;
 
-  const { handleStart, handleMove, handleEnd, handleCancel } = useClickWithDragPrevention(onSelect, {
-    threshold: 5,
-    timeThreshold: 500,
-    minTime: 0,
-  });
+  const { handleStart, handleMove, handleEnd, handleCancel, handleClick } = useClickWithDragPrevention(
+    onSelect,
+    {
+      threshold: 5,
+      timeThreshold: 500,
+      minTime: 0,
+    },
+  );
+  const placeHref = slug ? `/place/${getPlaceUrlParam(spot) || slug}` : '';
 
   const objectPosition = EXPLORE_MONTHLY_PICK_HERO_OBJECT_POSITION[slug] || '50% 50%';
 
@@ -106,14 +112,20 @@ const ExploreMonthlyPickItem = ({
       data-variant={variant}
       data-desktop={desktop ? 'true' : undefined}
     >
-      <article
+      <Link
+        to={placeHref}
         data-testid={`explore-v2-monthly-card-${slug}`}
         onPointerDown={handleStart}
         onPointerMove={handleMove}
         onPointerUp={(e) => handleEnd(e, spot)}
         onPointerLeave={handleCancel}
         onPointerCancel={handleCancel}
-        className={`group flex cursor-pointer flex-col overflow-hidden rounded-2xl border border-white/[0.1] bg-black/40 text-left transition hover:border-white/25 ${articleRowClass}`}
+        onClick={(e) => {
+          if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button === 1) return;
+          e.preventDefault();
+          handleClick(e, spot);
+        }}
+        className={`group flex cursor-pointer flex-col overflow-hidden rounded-2xl border border-white/[0.1] bg-black/40 text-left no-underline transition hover:border-white/25 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/80 ${articleRowClass}`}
       >
         <div className={photoWrapClass || undefined}>
           <div
@@ -163,7 +175,7 @@ const ExploreMonthlyPickItem = ({
             </p>
           ) : null}
         </div>
-      </article>
+      </Link>
     </div>
   );
 };

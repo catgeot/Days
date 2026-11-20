@@ -30,6 +30,9 @@ import {
   isGateoExploreV2Enabled,
 } from '../../src/shared/gateoFeatureFlags.js';
 import {
+  EXPLORE_MONTHLY_PICK_VERIFIED_HERO_URLS,
+} from '../../src/pages/Home/data/exploreMonthlyPickHeroUrls.js';
+import {
   EXPLORE_MONTHLY_PICK_DESKTOP_ROWS,
   EXPLORE_MONTHLY_PICK_LAYOUT_B_GRID_CLASS,
   resolveExploreMonthlyPickDesktopVariant,
@@ -124,11 +127,23 @@ test('2026-12 monthly picks resolve verified heroes (no CC BY-SA-only blockers)'
   }
 });
 
-test('jeju monthly pick keeps estimate: true', () => {
+test('jeju november pick has no past-season copy', () => {
   const jeju = MONTHLY_PICKS[MONTH_KEY].find((e) => e.slug === 'jeju');
   assert.ok(jeju);
-  assert.equal(jeju.estimate, true);
-  assert.match(jeju.reason, /추정/);
+  assert.equal(jeju.estimate, false);
+  assert.doesNotMatch(jeju.reason, /10월|억새|추정/);
+});
+
+test('melbourne november pick has no past cup-week dates', () => {
+  const melbourne = MONTHLY_PICKS[MONTH_KEY].find((e) => e.slug === 'melbourne');
+  assert.ok(melbourne);
+  assert.doesNotMatch(melbourne.reason, /10\/|11\/3|카니발|멜버른컵/);
+});
+
+test('sapporo preview hero avoids signage-heavy illumination crop', () => {
+  const url = EXPLORE_MONTHLY_PICK_VERIFIED_HERO_URLS.sapporo;
+  assert.match(url, /Hokkaido_Sapporo_Odori_Park/);
+  assert.doesNotMatch(url, /184517225|Sapporo_White_Illumination_2016/);
 });
 
 test('VITE_GATEO_EXPLORE_V2 defaults off when unset', () => {
@@ -314,4 +329,24 @@ test('monthly pick card places text panel below photo frame so caption does not 
   assert.doesNotMatch(item, /explore-v2-monthly-source-link/);
   assert.doesNotMatch(item, /파일·정책|SourceLinks|PhotoCreditLine/);
   assert.doesNotMatch(item, /bg-gradient-to-t from-black\/95/);
+});
+
+test('monthly pick cards expose /place/{slug} href for crawlers and middle-click', () => {
+  const item = readFileSync(
+    join(root, 'src/pages/Home/components/SearchDiscovery/ExploreMonthlyPickItem.jsx'),
+    'utf8',
+  );
+  assert.match(item, /from 'react-router-dom'/);
+  assert.match(item, /placeHref = slug \? `\/place\/\$\{getPlaceUrlParam\(spot\) \|\| slug\}`/);
+  assert.match(item, /<Link[\s\S]*to=\{placeHref\}/);
+  assert.doesNotMatch(item, /<article[\s\S]*explore-v2-monthly-card/);
+});
+
+test('explore scroll area reserves bottom space above trust bar and scroll-top button', () => {
+  const modal = readFileSync(
+    join(root, 'src/pages/Home/components/SearchDiscoveryModal.jsx'),
+    'utf8',
+  );
+  assert.match(modal, /modal-scroll-area[\s\S]*scroll-pb-\[max\(11rem/);
+  assert.match(modal, /pb-\[max\(11rem,calc\(5\.5rem\+env\(safe-area-inset-bottom/);
 });
