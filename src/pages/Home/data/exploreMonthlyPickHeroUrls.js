@@ -9,11 +9,11 @@ export const EXPLORE_MONTHLY_PICK_VERIFIED_HERO_URLS = {
   'phu-quoc':
     'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0d/Beautiful_beach_on_Phu_Quoc_island_Vietnam_%2839543775721%29.jpg/1280px-Beautiful_beach_on_Phu_Quoc_island_Vietnam_%2839543775721%29.jpg',
   jeju:
-    'https://upload.wikimedia.org/wikipedia/commons/thumb/d/dc/Silver_Grass%2C_Sangumburi%2C_Jeju_%28%EC%96%B5%EC%83%88%2C_%EC%A0%9C%EC%A3%BC_%EC%82%B0%EA%B5%BC%EB%B6%80%EB%A6%AC%29_-_panoramio.jpg/1280px-Silver_Grass%2C_Sangumburi%2C_Jeju_%28%EC%96%B5%EC%83%88%2C_%EC%A0%9C%EC%A3%BC_%EC%82%B0%EA%B5%BC%EB%B6%80%EB%A6%AC%29_-_panoramio.jpg',
+    'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Seongsan%2C_Jeju_Island.jpg/1280px-Seongsan%2C_Jeju_Island.jpg',
   dubai:
     'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Dubai_Marina_Skyline.jpg/1280px-Dubai_Marina_Skyline.jpg',
   melbourne:
-    'https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Flemington_main_stand,_2013_Melbourne_Cup.jpg/1280px-Flemington_main_stand,_2013_Melbourne_Cup.jpg',
+    'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/Melbourne_Botanic_Gardens_view_towards_St_Kilda_Road_20180726-021.jpg/1280px-Melbourne_Botanic_Gardens_view_towards_St_Kilda_Road_20180726-021.jpg',
   sapporo:
     'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0d/Hokkaido_Sapporo_Odori_Park.jpg/1280px-Hokkaido_Sapporo_Odori_Park.jpg',
   vienna:
@@ -33,9 +33,9 @@ export const EXPLORE_MONTHLY_PICK_HERO_OBJECT_POSITION = {
   kyoto: '50% 42%',
   'chiang-mai': '50% 62%',
   'phu-quoc': '42% 50%',
-  jeju: '50% 82%',
+  jeju: '50% 45%',
   dubai: '58% 48%',
-  melbourne: '72% 48%',
+  melbourne: '50% 38%',
   sapporo: '50% 42%',
   vienna: '50% 40%',
   'hong-kong': '50% 35%',
@@ -49,9 +49,9 @@ export const EXPLORE_MONTHLY_PICK_HERO_INTRINSIC_SIZE = {
   kyoto: { width: 1280, height: 853 },
   'chiang-mai': { width: 1280, height: 854 },
   'phu-quoc': { width: 1280, height: 853 },
-  jeju: { width: 1280, height: 686 },
+  jeju: { width: 1280, height: 720 },
   dubai: { width: 1280, height: 853 },
-  melbourne: { width: 1280, height: 960 },
+  melbourne: { width: 1280, height: 961 },
   sapporo: { width: 1280, height: 960 },
   vienna: { width: 1280, height: 853 },
   'hong-kong': { width: 1280, height: 853 },
@@ -82,10 +82,9 @@ export const EXPLORE_MONTHLY_PICK_PHOTO_CREDIT = {
       'https://commons.wikimedia.org/wiki/File:Beautiful_beach_on_Phu_Quoc_island_Vietnam_%2839543775721%29.jpg',
   },
   jeju: {
-    ko: '저작 골뱅이 (Panoramio) · CC BY-SA 3.0 · 2차 저작(크롭) 표시',
-    en: 'By 골뱅이 (Panoramio) · CC BY-SA 3.0 · cropped (derivative)',
-    filePageUrl:
-      'https://commons.wikimedia.org/wiki/File:Silver_Grass,_Sangumburi,_Jeju_(%EC%96%B5%EC%83%88,_%EC%A0%9C%EC%A3%BC_%EC%82%B0%EA%B5%BC%EB%B6%80%EB%A6%AC)_-_panoramio.jpg',
+    ko: '저작 Bernard Gagnon · CC0 1.0',
+    en: 'By Bernard Gagnon · CC0 1.0',
+    filePageUrl: 'https://commons.wikimedia.org/wiki/File:Seongsan,_Jeju_Island.jpg',
   },
   dubai: {
     ko: '저작 Norlando Pobre · CC BY 2.0',
@@ -93,10 +92,10 @@ export const EXPLORE_MONTHLY_PICK_PHOTO_CREDIT = {
     filePageUrl: 'https://commons.wikimedia.org/wiki/File:Dubai_Marina_Skyline.jpg',
   },
   melbourne: {
-    ko: '저작 Jupiter Firelyte (Flickr) · CC BY 2.0',
-    en: 'By Jupiter Firelyte (Flickr) · CC BY 2.0',
+    ko: '저작 Gary Houston · CC0 1.0',
+    en: 'By Gary Houston · CC0 1.0',
     filePageUrl:
-      'https://commons.wikimedia.org/wiki/File:Flemington_main_stand%2C_2013_Melbourne_Cup.jpg',
+      'https://commons.wikimedia.org/wiki/File:Melbourne_Botanic_Gardens_view_towards_St_Kilda_Road_20180726-021.jpg',
   },
   sapporo: {
     ko: '저작 Nkns · CC BY-SA 3.0',
