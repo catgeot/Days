@@ -1775,12 +1775,26 @@ const ChatModal = ({
     <TripcomFlightSearchProvider>
     <div className={`fixed inset-0 z-[9999] flex items-center justify-center backdrop-blur-sm p-4 max-md:p-0 animate-fade-in ${overlaySuppressed ? 'invisible pointer-events-none' : ''} ${tone(fresh, 'bg-black/80', 'bg-cyan-950/20')}`}>
       <div className={`w-[95vw] max-w-6xl h-[90vh] max-md:w-full max-md:h-[100dvh] max-md:max-h-[100dvh] rounded-3xl max-md:rounded-none max-md:border-0 shadow-2xl flex overflow-hidden relative transition-all ${tone(fresh, 'bg-gray-900 border border-gray-700', 'bg-gradient-to-br from-sky-50 via-cyan-50 to-teal-50 border border-cyan-200/80')}`}>
+        <button
+          type="button"
+          data-testid="mooni-chat-close"
+          onClick={handleClose}
+          aria-label={t('mooni.chat.closeAria')}
+          title={t('mooni.chat.close')}
+          className={tone(
+            fresh,
+            'absolute z-[60] top-[max(0.75rem,env(safe-area-inset-top,0px))] right-[max(0.75rem,env(safe-area-inset-right,0px))] md:top-4 md:right-4 flex h-11 w-11 min-h-[44px] min-w-[44px] items-center justify-center rounded-full border-2 border-gray-200 bg-gray-500 text-white shadow-lg transition-colors hover:bg-gray-400 hover:border-white touch-manipulation',
+            'absolute z-[60] top-[max(0.75rem,env(safe-area-inset-top,0px))] right-[max(0.75rem,env(safe-area-inset-right,0px))] md:top-4 md:right-4 flex h-11 w-11 min-h-[44px] min-w-[44px] items-center justify-center rounded-full border-2 border-cyan-900 bg-cyan-700 text-white shadow-lg transition-colors hover:bg-cyan-600 hover:border-cyan-800 touch-manipulation',
+          )}
+        >
+          <X size={22} strokeWidth={2.5} className="pointer-events-none shrink-0" aria-hidden />
+        </button>
 
-        <div className={`hidden md:flex w-72 flex-col ${tone(fresh, 'bg-gray-900 border-r border-gray-700', 'bg-white/70 border-r border-cyan-100')}`}>
+        <div className={`hidden md:flex w-72 flex-col ${tone(fresh, 'bg-gray-900 border-r border-gray-700', 'bg-white border-r border-cyan-200/90')}`}>
           <div className={`p-5 flex items-center justify-between gap-2 ${tone(fresh, 'border-b border-gray-800', 'border-b border-cyan-100')}`}>
             <div className="flex items-center gap-2 min-w-0">
               <MessageSquare size={18} className={tone(fresh, 'text-blue-400', 'text-cyan-500')} />
-              <span className={`font-bold text-sm truncate ${tone(fresh, 'text-gray-200', 'text-slate-700')}`}>{t('mooni.chat.history')}</span>
+              <span className={`font-bold text-sm truncate ${tone(fresh, 'text-gray-100', 'text-slate-900')}`}>{t('mooni.chat.history')}</span>
             </div>
             {typeof onStartNewChat === 'function' ? (
               <button
@@ -1808,25 +1822,58 @@ const ChatModal = ({
             {chatHistory
               .filter((item) => !item.is_hidden && tripHasPersistedDialogue(item))
               .map((item) => (
-              <div key={item.id} onClick={() => handleSidebarClick(item.id)} className={`p-3 rounded-xl border cursor-pointer transition-all ${activeChatId === item.id ? tone(fresh, 'bg-gray-800 border-blue-500/50', 'bg-cyan-50 border-cyan-300') : tone(fresh, 'bg-gray-800/30 border-gray-700/50 hover:bg-gray-800', 'bg-white/80 border-cyan-100 hover:bg-sky-50')}`}>
+              <div
+                key={item.id}
+                onClick={() => handleSidebarClick(item.id)}
+                className={`p-3 rounded-xl border cursor-pointer transition-all ${
+                  activeChatId === item.id
+                    ? tone(fresh, 'bg-gray-800 border-blue-400/70', 'bg-cyan-50 border-cyan-400')
+                    : tone(fresh, 'bg-gray-800/60 border-gray-600/80 hover:bg-gray-800', 'bg-white border-cyan-100 hover:bg-sky-50 hover:border-cyan-200')
+                }`}
+              >
                 <div className="flex justify-between items-start mb-1">
-                  <span className={`font-bold text-sm truncate max-w-[140px] ${tone(fresh, 'text-gray-300', 'text-slate-700')}`}>{item.destination}</span>
+                  <span
+                    className={`font-bold text-sm truncate max-w-[140px] ${
+                      activeChatId === item.id
+                        ? tone(fresh, 'text-gray-100', 'text-slate-900')
+                        : tone(fresh, 'text-gray-200', 'text-slate-800')
+                    }`}
+                  >
+                    {item.destination}
+                  </span>
                   <div className="flex gap-1">
                       <button
+                        type="button"
                         onClick={(e) => {
                             e.stopPropagation();
                             onDeleteChat(item.id);
                         }}
-                        className="text-gray-600 hover:text-red-400"
+                        className={tone(
+                          fresh,
+                          'text-gray-300 hover:text-red-400 disabled:text-gray-600',
+                          'text-slate-500 hover:text-red-600 disabled:text-slate-400',
+                        )}
                         title={t('mooni.chat.deleteChat')}
+                        aria-label={t('mooni.chat.deleteChat')}
+                        disabled={!onDeleteChat}
                       >
                         <Trash2 size={14} />
                       </button>
                   </div>
                 </div>
                 <div className="flex justify-between items-center">
-                  <p className="text-[10px] text-gray-500">{item.date}</p>
-                  {item.persona && <span className="text-[8px] px-1.5 py-0.5 rounded-md bg-gray-700 text-gray-400 uppercase">{item.persona}</span>}
+                  <p className={`text-[10px] ${tone(fresh, 'text-gray-400', 'text-slate-600')}`}>{item.date}</p>
+                  {item.persona && (
+                    <span
+                      className={`text-[8px] px-1.5 py-0.5 rounded-md uppercase font-semibold ${tone(
+                        fresh,
+                        'bg-gray-600 text-gray-100',
+                        'bg-slate-200 text-slate-700',
+                      )}`}
+                    >
+                      {item.persona}
+                    </span>
+                  )}
                 </div>
               </div>
             ))}
@@ -1842,20 +1889,7 @@ const ChatModal = ({
                 }
               }}
             >
-               <button
-                 type="button"
-                 onClick={handleClose}
-                 aria-label={t('mooni.chat.closeAria')}
-                 title={t('mooni.chat.close')}
-                 className={tone(
-                   fresh,
-                   'flex h-9 w-9 md:h-8 md:w-8 max-md:h-8 max-md:w-8 max-[360px]:h-7 max-[360px]:w-7 shrink-0 items-center justify-center rounded-full border border-gray-500/60 max-md:border-white/45 bg-gray-700/70 max-md:bg-gray-700 text-gray-200 max-md:text-white shadow-md transition-colors hover:border-gray-400 hover:bg-gray-600 hover:text-white touch-manipulation',
-                   'flex h-9 w-9 md:h-8 md:w-8 max-md:h-8 max-md:w-8 max-[360px]:h-7 max-[360px]:w-7 shrink-0 items-center justify-center rounded-full border border-cyan-200 bg-white text-slate-600 shadow-sm transition-colors hover:border-cyan-300 hover:bg-cyan-50 hover:text-slate-800 touch-manipulation',
-                 )}
-               >
-                 <X size={16} className="pointer-events-none max-md:h-4 max-md:w-4" />
-               </button>
-               <div className="flex flex-col min-w-0 flex-1 justify-center">
+               <div className="flex flex-col min-w-0 flex-1 justify-center max-md:pr-12">
                  <span className={`font-bold tracking-wide text-base md:text-[15px] max-md:text-[15px] max-md:leading-snug truncate ${tone(fresh, 'text-white', 'text-slate-800')}`}>
                    {isMooniUi ? mooniHeaderLabel : (introDestinationRaw || 'MOONi')}
                  </span>

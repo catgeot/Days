@@ -3,13 +3,13 @@ import test from 'node:test';
 import { resolveCoordinatePlaceIdentity } from '../../src/pages/Home/lib/coordinatePlaceIdentity.js';
 import { preferOsmCityTitle } from '../../src/pages/Home/lib/osmReverseCityTitle.js';
 
-test('호찌민 좌표 — 등록 허브 호치민 이름·소개, 동네명 아님', () => {
+test('호찌민 좌표 — 등록 허브 호찌민 이름·소개, 동네명 아님', () => {
   const hit = resolveCoordinatePlaceIdentity(10.775525, 106.702105);
   assert.ok(hit, 'nearby registered place');
-  assert.equal(hit.name, '호치민');
+  assert.equal(hit.name, '호찌민');
   assert.equal(hit.slug, 'ho-chi-minh');
   assert.equal(hit.country, '베트남');
-  assert.match(hit.desc, /호치민/);
+  assert.match(hit.desc, /호찌민/);
   assert.doesNotMatch(hit.name, /Khu phố|Phường|Quận/);
 });
 

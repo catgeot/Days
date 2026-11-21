@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generatedAt": "2026-05-22T12:54:12.880Z",
+    "generatedAt": "2026-11-21T09:27:01.947Z",
     "spotCount": 6,
     "source": "travel-spot-transport-overrides.mjs"
   },
@@ -133,7 +133,7 @@
       "routes": [
         {
           "id": "ho-chi-minh-phnom-penh",
-          "label": "호치민 → 프놈펜",
+          "label": "호찌민 → 프놈펜",
           "twelveGoUrl": "https://12go.asia/en/travel/ho-chi-minh/phnom-penh",
           "keywords": [
             "프놈펜",
@@ -143,7 +143,7 @@
         },
         {
           "id": "ho-chi-minh-mui-ne",
-          "label": "호치민 → 무이네",
+          "label": "호찌민 → 무이네",
           "twelveGoUrl": "https://12go.asia/en/travel/ho-chi-minh/mui-ne",
           "keywords": [
             "무이네",

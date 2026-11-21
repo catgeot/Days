@@ -1977,7 +1977,7 @@
   },
   {
     "hubId": "ho-chi-minh",
-    "name": "호치민",
+    "name": "호찌민",
     "name_en": "Ho Chi Minh City",
     "country": "베트남",
     "country_en": "Vietnam",
@@ -1989,7 +1989,10 @@
       "hcmc",
       "사이공",
       "saigon",
-      "호치민시"
+      "호치민",
+      "호치민시",
+      "호찌민",
+      "호찌민시"
     ],
     "attractions": [
       {

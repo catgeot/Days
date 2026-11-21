@@ -92,13 +92,13 @@ export const TRAVEL_SPOT_TRANSPORT_OVERRIDES = {
     routes: [
       {
         id: 'ho-chi-minh-phnom-penh',
-        label: '호치민 → 프놈펜',
+        label: '호찌민 → 프놈펜',
         twelveGoUrl: 'https://12go.asia/en/travel/ho-chi-minh/phnom-penh',
         keywords: ['프놈펜', 'phnom penh', '캄보디아'],
       },
       {
         id: 'ho-chi-minh-mui-ne',
-        label: '호치민 → 무이네',
+        label: '호찌민 → 무이네',
         twelveGoUrl: 'https://12go.asia/en/travel/ho-chi-minh/mui-ne',
         keywords: ['무이네', 'mui ne'],
       },

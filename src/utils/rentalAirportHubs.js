@@ -114,7 +114,7 @@ export const RENTAL_AIRPORT_HUBS = [
     aliases: ['kalibo', '칼리보', 'klo', 'boracay', '보라카이']
   },
   { iata: 'CRK', officialKo: '클락국제공항', lat: 15.1858, lng: 120.5602, radiusKm: 120, aliases: ['clark', '클락', 'crk', 'angeles'] },
-  { iata: 'SGN', officialKo: '떤선녓국제공항', lat: 10.8188, lng: 106.6518, radiusKm: 200, aliases: ['ho chi minh', '호치민', 'saigon', 'sgn'] },
+  { iata: 'SGN', officialKo: '떤선녓국제공항', lat: 10.8188, lng: 106.6518, radiusKm: 200, aliases: ['ho chi minh', '호치민', '호찌민', 'saigon', 'sgn'] },
   { iata: 'HAN', officialKo: '노이바이국제공항', lat: 21.2187, lng: 105.8042, radiusKm: 200, aliases: ['hanoi', '하노이'] },
   { iata: 'DAD', officialKo: '다낭국제공항', lat: 16.0439, lng: 108.1994, radiusKm: 160, aliases: ['da nang', '다낭', 'dad'] },
   { iata: 'CXR', officialKo: '깜란공항', lat: 11.9982, lng: 109.2194, radiusKm: 120, aliases: ['nha trang', '나짱', 'cxr', 'cam ranh'] },
