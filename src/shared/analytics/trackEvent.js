@@ -21,6 +21,7 @@ export function trackEvent(name, params) {
     if (Array.isArray(window.__gateoGaEvents)) {
       window.__gateoGaEvents.push({ name, params: params ?? {} });
     }
+    if (window.__GATEO_GA_DISABLED__) return;
     const gtag = window.gtag;
     if (typeof gtag !== 'function') return;
     gtag('event', name, params);

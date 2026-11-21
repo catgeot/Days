@@ -16,6 +16,7 @@ import {
   titleMatchesPoiType,
 } from './koreaPoiTypeQuery.js';
 import { extractTourAttractionSigungu } from './koreaTourAttractionLocality.js';
+import { resolveCityAttractionHubFromTourAddr } from './resolveCityAttractionHubFromTourAddr.js';
 import { isExploreRestaurantItem } from '../../../shared/search/tourRestaurantDetect.js';
 import { tourRestaurantToExploreSuggestion } from './tourRestaurantExploreSuggestion.js';
 
@@ -57,12 +58,32 @@ function collectHubPoiTypeSuggestions(parsed) {
 }
 
 function resolveHubFromTourSpot(spot) {
-  const sigungu = extractTourAttractionSigungu(spot.addr1, spot.addr2);
-  if (!sigungu) return null;
-  return (
-    resolveCityAttractionHub(sigungu) ||
-    resolveCityAttractionHub(String(sigungu).replace(/(시|군|구)$/u, ''))
-  );
+  return resolveCityAttractionHubFromTourAddr(spot?.addr1, spot?.addr2);
+}
+
+const SEOWON_SEARCH_PRIORITY = [
+  { key: '옥산서원', boost: 200 },
+  { key: '도동서원', boost: 199 },
+  { key: '병산서원', boost: 120 },
+  { key: '도산서원', boost: 119 },
+  { key: '소수서원', boost: 90 },
+];
+
+function scoreSeowonSearchCandidate(item, parsed) {
+  if (!parsed || parsed.type !== '서원' || !parsed.isTypeOnly) return 0;
+  const name = String(item?.name || '');
+  const nk = compactKey(name);
+  let score = 0;
+  if (/서원구|병원|한의원|요양|치과|의원/.test(name)) score -= 120;
+  if (nk.includes('서원구')) score -= 120;
+  if (!titleMatchesPoiType(name, '서원')) score -= 40;
+  for (const row of SEOWON_SEARCH_PRIORITY) {
+    const pk = compactKey(row.key);
+    if (nk === pk || nk.includes(pk)) score += row.boost;
+  }
+  if (item?.hubId) score += 12;
+  if (item?.source === 'hub' || String(item?.id || '').startsWith('hub-')) score += 8;
+  return score;
 }
 
 export function tourAttractionToPoiSuggestion(spot, opts = {}) {
@@ -154,7 +175,12 @@ export async function collectKoreaPoiTypeSearchCandidates(query, opts = {}) {
     push(tourAttractionToPoiSuggestion(row));
   }
 
+  const seowonRank = parsed.type === '서원' && parsed.isTypeOnly;
   out.sort((a, b) => {
+    if (seowonRank) {
+      const ds = scoreSeowonSearchCandidate(b, parsed) - scoreSeowonSearchCandidate(a, parsed);
+      if (ds) return ds;
+    }
     const g = String(a.groupTitle || a.parentCity || '').localeCompare(
       String(b.groupTitle || b.parentCity || ''),
       'ko',

@@ -41,7 +41,7 @@ jobs:
       - name: Run E2E against production
         env:
           TZ: Asia/Seoul
-          SMOKE_SITE_URL: https://www.gateo.kr/
+          SMOKE_SITE_URL: https://www.gateo.kr/?qa=1
           CI: true
           PLAYWRIGHT_JSON_OUTPUT_FILE: health/e2e.json
           PLAYWRIGHT_HTML_OPEN: never

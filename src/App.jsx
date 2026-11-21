@@ -95,6 +95,7 @@ function RouteTracker() {
   const location = useLocation();
 
   useEffect(() => {
+    if (window.__GATEO_GA_DISABLED__) return;
     if (window.gtag) {
       window.gtag('config', 'G-7949KKNHRX', {
         page_path: location.pathname + location.search,

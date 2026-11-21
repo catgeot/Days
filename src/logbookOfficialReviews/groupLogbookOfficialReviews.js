@@ -34,9 +34,13 @@ const spotBySlug = new Map(
   travelSpotsList.map((spot) => [String(spot.slug || '').trim().toLowerCase(), spot]),
 );
 
+const LOGBOOK_DOMESTIC_FESTIVAL_SLUG_RE = /^(?:festival-|korea-festival-)\d+$/i;
+
 export function isLogbookReviewPlaceDomestic(placeSlug) {
   const slug = String(placeSlug || '').trim().toLowerCase();
   if (!slug) return false;
+  if (/^tour-\d+$/.test(slug)) return true;
+  if (LOGBOOK_DOMESTIC_FESTIVAL_SLUG_RE.test(slug)) return true;
   const spot = spotBySlug.get(slug);
   if (spot) {
     const country = String(spot.country || '').trim();

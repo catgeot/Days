@@ -41,6 +41,23 @@ test('isLogbookReviewPlaceDomestic — domestic fallback slugs (approved 11/13)'
   assert.equal(isLogbookReviewPlaceDomestic('suncheon-bay-wetland'), true);
 });
 
+test('isLogbookReviewPlaceDomestic — tour-* and festival slugs are domestic', () => {
+  assert.equal(isLogbookReviewPlaceDomestic('tour-127128'), true);
+  assert.equal(isLogbookReviewPlaceDomestic('festival-637693'), true);
+  assert.equal(isLogbookReviewPlaceDomestic('korea-festival-825295'), true);
+});
+
+test('groupLogbookOfficialReviews — 김해 tour and festival rows count domestic', () => {
+  const rows = [
+    { place_slug: 'tour-127128', place_name: '김해 대성동' },
+    { place_slug: 'festival-637693', place_name: '포항 불빛축제' },
+    { place_slug: 'paris', place_name: '파리' },
+  ];
+  const g = groupLogbookOfficialReviews(rows);
+  assert.equal(g.domesticCount, 2);
+  assert.equal(g.overseasCount, 1);
+});
+
 test('shortenLogbookReviewPlaceName trims venue suffix', () => {
   assert.equal(shortenLogbookReviewPlaceName('파리 · 루브르'), '파리');
   assert.equal(shortenLogbookReviewPlaceName('제주'), '제주');

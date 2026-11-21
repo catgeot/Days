@@ -55,6 +55,5 @@ export function isUserReviewForStats(review) {
 }
 
 export function formatGateoReviewerBadge(personaLabel) {
-  const label = normalizePersonaLabel(personaLabel);
-  return label ? `${BADGE_PREFIX}${label}` : 'GATEO 리뷰어';
+  return normalizePersonaLabel(personaLabel);
 }

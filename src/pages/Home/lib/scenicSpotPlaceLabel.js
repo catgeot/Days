@@ -1,4 +1,5 @@
 import { resolveCityAttractionHub } from './cityAttractionHubs.js';
+import { matchKoreaAdminRegionFromAddr } from './koreaAdminRegionMatch.js';
 import { extractTourAttractionSigungu } from './koreaTourAttractionLocality.js';
 import {
   labelScenicAreaCode,
@@ -48,7 +49,8 @@ const SINGLE_PROVINCE_REGION = new Set(['강원', '제주']);
 export function formatScenicSpotPlaceLabel(spot, locale = 'ko') {
   if (!spot) return '';
 
-  const hubId = String(spot.hubId || '')
+  const adminHubId = matchKoreaAdminRegionFromAddr(spot.addr1)?.hubId;
+  const hubId = String(adminHubId || spot.hubId || '')
     .trim()
     .toLowerCase();
   const areaCode =

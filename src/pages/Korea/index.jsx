@@ -1263,6 +1263,7 @@ export default function KoreaFestivalHub() {
   const [items, setItems] = useState([]);
   /** searchFestival rows past the chip window — soon section and nearest fallback only. */
   const [soonHorizonItems, setSoonHorizonItems] = useState([]);
+  const [soonHorizonReady, setSoonHorizonReady] = useState(false);
   const itemsWithManualSsot = useMemo(
     () => mergeManualFestivalsIntoFestivalItems(items, now),
     [items, now],
@@ -1999,14 +2000,25 @@ export default function KoreaFestivalHub() {
   });
 
   useEffect(() => {
-    if (!soonHorizonContext) return undefined;
+    if (!soonHorizonContext) {
+      setSoonHorizonItems([]);
+      setSoonHorizonReady(false);
+      return undefined;
+    }
     let cancelled = false;
+    setSoonHorizonReady(false);
     fetchFestivalSoonHorizon(now)
       .then((rows) => {
-        if (!cancelled) setSoonHorizonItems(rows);
+        if (!cancelled) {
+          setSoonHorizonItems(rows);
+          setSoonHorizonReady(true);
+        }
       })
       .catch(() => {
-        if (!cancelled) setSoonHorizonItems([]);
+        if (!cancelled) {
+          setSoonHorizonItems([]);
+          setSoonHorizonReady(true);
+        }
       });
     return () => {
       cancelled = true;
@@ -3933,7 +3945,8 @@ export default function KoreaFestivalHub() {
               ) : panelItemsForList.length === 0
                 && !showSessionPinnedRow
                 && !showFestivalSoonSection
-                && !showFestivalNearestUpcoming ? (
+                && !showFestivalNearestUpcoming
+                && !(zeroWindowRegionActive && soonHorizonContext && !soonHorizonReady) ? (
                 dateChipEnabled && !searchActive ? (
                   <div className="px-1 py-4" data-festival-period-empty="">
                     <p className="text-sm text-stone-500">

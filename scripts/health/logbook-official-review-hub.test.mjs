@@ -156,8 +156,9 @@ test('retry capture script asserts success and fail-again flows', () => {
   assert.match(cap, /editorialGate\.allowFetch/);
 });
 
-test('이틀컷 persona badge uses DB label (no rename to 문턱없이)', () => {
-  assert.equal(formatGateoReviewerBadge('이틀컷'), 'GATEO 리뷰어 · 이틀컷');
+test('이틀컷 persona badge shows reviewer name only', () => {
+  assert.equal(formatGateoReviewerBadge('이틀컷'), '이틀컷');
+  assert.equal(formatGateoReviewerBadge('GATEO 리뷰어 · 로컬하루'), '로컬하루');
   assert.equal(normalizePersonaLabel('이틀컷'), '이틀컷');
 });
 

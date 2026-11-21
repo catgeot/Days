@@ -1,10 +1,12 @@
 // @see plans/site-health-monitoring-plan.md Phase 2
 import { defineConfig, devices } from '@playwright/test';
+import { withGateoQaQuery } from './src/shared/analytics/gateoGaQa.js';
 
-const siteUrl =
+const siteUrl = withGateoQaQuery(
   process.env.SMOKE_SITE_URL ||
-  process.env.PLAYWRIGHT_BASE_URL ||
-  'https://www.gateo.kr/';
+    process.env.PLAYWRIGHT_BASE_URL ||
+    'https://www.gateo.kr/',
+);
 
 const playwrightArgv = process.argv.join(' ');
 const nearbyCardsE2e =
