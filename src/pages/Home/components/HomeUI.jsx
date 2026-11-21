@@ -14,8 +14,9 @@ import {
   User,
   LogOut,
 } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { shouldShowGlobeHomeControls } from '../lib/globeHomeControls.js';
 import TravelTicker from '../components/TravelTicker';
 import Logo from './Logo';
 import LocaleToggle from '../../../i18n/LocaleToggle';
@@ -152,6 +153,11 @@ const HomeUI = React.memo(({
   const categoryLabel = (id) => t(`home.category.${id}`, { defaultValue: CATEGORY_LABELS[id] || id });
   const [, setInputValue] = useState('');
   const navigate = useNavigate();
+  const { pathname } = useLocation();
+  const showGlobeHomeControls = shouldShowGlobeHomeControls({
+    pathname,
+    isPlaceCardVisible,
+  });
   const handleLogoActivate = useCallback((e) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
@@ -443,8 +449,8 @@ const HomeUI = React.memo(({
           </div>
         </div>
 
-        <div className={`hidden md:flex md:col-span-1 justify-center gap-3 lg:gap-4 pt-3 animate-fade-in-down delay-75 relative z-50 ${isPlaceCardVisible ? 'pointer-events-none' : 'pointer-events-auto'}`}>
-          {isPlaceCardVisible ? null : globeChromeButtons}
+        <div className={`hidden md:flex md:col-span-1 justify-center gap-3 lg:gap-4 pt-3 animate-fade-in-down delay-75 relative z-50 ${showGlobeHomeControls ? 'pointer-events-auto' : 'pointer-events-none'}`}>
+          {showGlobeHomeControls ? globeChromeButtons : null}
         </div>
 
         {isTourCinema && tourLocation ? (
@@ -482,12 +488,6 @@ const HomeUI = React.memo(({
           </div>
         </div>
       </div>
-
-      {isPlaceCardVisible ? (
-        <div className="hidden md:flex fixed top-5 right-6 z-[140] items-center gap-3 pointer-events-auto">
-          {globeChromeButtons}
-        </div>
-      ) : null}
 
       {/* 모바일 하단 스택 — 나라/세부칩/카테고리 (중분류 바는 뷰포트 폭) */}
       {!isTourCinema && (
