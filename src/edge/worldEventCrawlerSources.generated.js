@@ -73,6 +73,16 @@ export default {
       "detailOverview": "베트남 음력 설(뗏) 연휴로, 하노이 올드쿼터·호안끼엠 일대 꽃 시장·제례·불꽃놀이가 이어집니다. 연휴 전후 3~4박으로 올드쿼터 기점을 잡아 설 분위기와 현지 행사를 둘러보는 방문이 일반적입니다.",
       "heroImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Hansers_tim_hieu_Tet_Nguyen_Dan_16-02-2026_1771376540207.jpg/1280px-Hansers_tim_hieu_Tet_Nguyen_Dan_16-02-2026_1771376540207.jpg"
     },
+    "hong-kong-winterfest-2026": {
+      "id": "hong-kong-winterfest-2026",
+      "slug": "hong-kong",
+      "title": "홍콩 WinterFest",
+      "titleEn": "Hong Kong WinterFest",
+      "startDate": "2026-11-18",
+      "endDate": "2027-01-05",
+      "detailOverview": "홍콩관광청이 주최하는 겨울 시즌 축제로, 센트럴·침사추이·코즈웨이베이 Winter Wonderland와 빅토리아 하버 카운트다운이 이어집니다. 2026–27 시즌은 11월 18일부터 2027년 1월 5일까지이며, 코즈웨이베이 구역은 11월 25일부터 1월 3일까지입니다. 12월 연말 전후 2~4박으로 하버 뷰 기점을 잡는 방문이 일반적입니다.",
+      "heroImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/Hong_Kong_skyscrapers_in_a_night_of_typhoon.jpg/1280px-Hong_Kong_skyscrapers_in_a_night_of_typhoon.jpg"
+    },
     "iceland-midnight-sun-2027": {
       "id": "iceland-midnight-sun-2027",
       "slug": "iceland",
@@ -194,6 +204,26 @@ export default {
       "detailOverview": "로마 시에서 부활한 로마 카니발은 사순절 전 주에 피아차 델 포폴로·비아 델 코르소·피아차 나보나 일대에서 퍼레이드·카니발 마스크·역사 재현 행진이 이어집니다. 전체 시즌 숙박보다 행사 전후 2~3박으로 센트로 스토리코에 머물며 개막 행사와 마르디 그라 절정을 나눠 보는 방문이 일반적입니다.",
       "heroImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Carosello_al_Carnevale_Romano_febbraio_2013.jpg/1280px-Carosello_al_Carnevale_Romano_febbraio_2013.jpg"
     },
+    "sapporo-white-illumination-2026": {
+      "id": "sapporo-white-illumination-2026",
+      "slug": "sapporo",
+      "title": "삿포로 화이트 일루미네이션",
+      "titleEn": "Sapporo White Illumination",
+      "startDate": "2026-11-20",
+      "endDate": "2027-03-14",
+      "detailOverview": "1981년부터 이어지는 삿포로의 겨울 조명 축제로, 오도리 공원·駅前通·南一条通 등 도심 거리가 빛으로 물듭니다. 2026–27 시즌은 11월 20일부터 3월 14일까지이며, 오도리 회장은 12월 25일까지입니다. 12월 초·크리스마스 전후 2~3박으로 오도리~스스키노 기점을 잡는 방문이 일반적입니다.",
+      "heroImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0d/Hokkaido_Sapporo_Odori_Park.jpg/1280px-Hokkaido_Sapporo_Odori_Park.jpg"
+    },
+    "seoul-lantern-festival-2026": {
+      "id": "seoul-lantern-festival-2026",
+      "slug": "seoul",
+      "title": "서울빛초롱축제",
+      "titleEn": "Seoul Lantern Festival",
+      "startDate": "2026-12-11",
+      "endDate": "2027-01-31",
+      "detailOverview": "청계천 일대에서 열리는 서울 대표 야간 빛 축제로, 2026 회차 주제는 「서울의 낭만: 빛의 교향곡」입니다. 2026년 12월 11일부터 2027년 1월 31일까지 매일 18:00~23:00 무료로 운영됩니다. 개막 주말·연말 1~2박으로 광화문·종로 기점을 잡는 방문이 일반적입니다.",
+      "heroImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/Cheonggyecheon_Stream_in_sunset.jpg/1280px-Cheonggyecheon_Stream_in_sunset.jpg"
+    },
     "singapore-gp-2026": {
       "id": "singapore-gp-2026",
       "slug": "singapore",
@@ -203,6 +233,16 @@ export default {
       "endDate": "2026-10-11",
       "detailOverview": "마리나 베이 스트리트 서킷에서 열리는 F1 나이트 레이스로, 금~일 3일간 레이스·콘서트·축제가 이어집니다. 전체 시즌 숙박보다 레이스 주말 전후 2~3박으로 마리나 베이·시티홀 기점을 잡아 야간 레이스와 주변 행사를 둘러보는 방문이 일반적입니다.",
       "heroImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/Formula_One_Grand_Prix_Singapore_2013_-_Ferrari_3.jpg/1280px-Formula_One_Grand_Prix_Singapore_2013_-_Ferrari_3.jpg"
+    },
+    "sydney-nye-fireworks-2026": {
+      "id": "sydney-nye-fireworks-2026",
+      "slug": "sydney",
+      "title": "시드니 새해 불꽃놀이",
+      "titleEn": "Sydney New Year's Eve Fireworks",
+      "startDate": "2026-12-31",
+      "endDate": "2026-12-31",
+      "detailOverview": "세계적으로 유명한 시드니 하버 새해 불꽃으로, 12월 31일 밤 9시 Calling Country 불꽃과 자정 메인 쇼가 이어집니다. NSW 정부·공식 사이트 기준 2026년 12월 31일 행사로, 전후 1~2박으로 서큘러 키·더 록스·노스 시드니 뷰 포인트를 잡는 방문이 일반적입니다.",
+      "heroImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Sydney_habour_bridge_%26_opera_house_fireworks_new_year_eve_2008.jpg/1280px-Sydney_habour_bridge_%26_opera_house_fireworks_new_year_eve_2008.jpg"
     },
     "sydney-vivid-2027": {
       "id": "sydney-vivid-2027",
@@ -223,6 +263,16 @@ export default {
       "endDate": "2027-04-10",
       "detailOverview": "3월 말~4월 초 도쿄 전역에서 벚꽃(사쿠라) 개화·낙화 시기가 해마다 달라지는 시즌 행사입니다. 개화 예보(1~2주 전)를 확인한 뒤 만개 전후 3~5박을 잡는 방문이 일반적이며, 우에노·치도리가후치 등 명소는 주말·야간 라이트업에 혼잡합니다.",
       "heroImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/Sakura_Tokyo_2026.jpg/1280px-Sakura_Tokyo_2026.jpg"
+    },
+    "vienna-christkindlmarkt-2026": {
+      "id": "vienna-christkindlmarkt-2026",
+      "slug": "vienna",
+      "title": "빈 라트하우스 크리스마스 마켓",
+      "titleEn": "Vienna Christmas Market (Christkindlmarkt)",
+      "startDate": "2026-11-13",
+      "endDate": "2026-12-26",
+      "detailOverview": "빈 시청(Rathaus) 앞 라트하우스플라츠에서 열리는 비엔나 대표 크리스마스 마켓입니다. 2026년은 11월 13일부터 12월 26일까지 매일 10~22시(12/24는 18:30까지) 운영됩니다. 마켓·빙상장(Eistraum) 전후 2~3박으로 1구 기점을 잡는 방문이 일반적입니다.",
+      "heroImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Carousel_Ride_Rathaus.jpg/1280px-Carousel_Ride_Rathaus.jpg"
     },
     "vienna-staatsoper-season-2026": {
       "id": "vienna-staatsoper-season-2026",
@@ -263,6 +313,10 @@ export default {
     "hanoi": {
       "name": "하노이",
       "name_en": "Hanoi"
+    },
+    "hong-kong": {
+      "name": "홍콩",
+      "name_en": "Hong Kong"
     },
     "iceland": {
       "name": "아이슬란드",
@@ -311,6 +365,14 @@ export default {
     "rome": {
       "name": "로마",
       "name_en": "Rome"
+    },
+    "sapporo": {
+      "name": "삿포로",
+      "name_en": "Sapporo"
+    },
+    "seoul": {
+      "name": "서울",
+      "name_en": "Seoul"
     },
     "singapore": {
       "name": "싱가포르",
