@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { installNormalGateoTraffic } from './normalTrafficInit.js';
 
 const HUB_PATH =
   '/blog?tab=public&lang=ko&logbook_review_hub=1&logbook_filter=1&region=overseas';
@@ -216,6 +217,7 @@ test.describe('LogBook review filter cards @mocked', () => {
 
   test('GA — default open once, user toggle, review card click', async ({ page }) => {
     await page.route('https://www.googletagmanager.com/**', (route) => route.abort());
+    await installNormalGateoTraffic(page);
     await page.addInitScript(() => {
       window.dataLayer = window.dataLayer || [];
     });

@@ -9,6 +9,7 @@ export function trackGalleryPhotoReport({ placeId, imageId, source } = {}) {
   };
   try {
     if (typeof window === 'undefined') return { sent: false, reason: 'no_window' };
+    if (window.__GATEO_GA_DISABLED__) return { sent: false, reason: 'qa_guard', params };
     const gtag = window.gtag;
     if (typeof gtag !== 'function') return { sent: false, reason: 'no_gtag', params };
     gtag('event', 'gallery_photo_report', params);

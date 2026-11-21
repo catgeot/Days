@@ -1,0 +1,96 @@
+const QA_STORAGE_KEY = 'gateo_qa';
+const GA_MEASUREMENT_ID = 'G-7949KKNHRX';
+const BOT_UA_RE = /bot|crawler|spider|slurp|headless|lighthouse|preview/i;
+
+function defaultTrafficEnv() {
+  if (typeof window === 'undefined') return {};
+  return { window };
+}
+
+/**
+ * @param {{ window?: Window, navigator?: Navigator, localStorage?: Storage, search?: string, userAgent?: string, webdriver?: boolean }} [env]
+ */
+export function readGateoTrafficSignals(env = defaultTrafficEnv()) {
+  const win = env.window;
+  const nav = env.navigator ?? win?.navigator;
+  const storage = env.localStorage ?? win?.localStorage;
+  const search = env.search ?? win?.location?.search ?? '';
+  let qa = false;
+  try {
+    if (storage?.getItem(QA_STORAGE_KEY) === '1') qa = true;
+    const q = new URLSearchParams(String(search || ''));
+    if (q.get('qa') === '1') qa = true;
+  } catch {
+    /* ignore */
+  }
+  return {
+    webdriver: Boolean(env.webdriver ?? nav?.webdriver),
+    qa,
+    userAgent: String(env.userAgent ?? nav?.userAgent ?? ''),
+  };
+}
+
+/** @param {string} [userAgent] */
+export function isGateoBotUserAgent(userAgent) {
+  return BOT_UA_RE.test(String(userAgent ?? ''));
+}
+
+/**
+ * GA·리뷰 조회수 등 자동화/QA·봇 UA 트래픽 — 메트릭 증가·태그 로드 억제.
+ * @param {Parameters<typeof readGateoTrafficSignals>[0]} [env]
+ */
+export function shouldSkipGateoAutomatedTraffic(env) {
+  const { webdriver, qa, userAgent } = readGateoTrafficSignals(env);
+  if (webdriver) return true;
+  if (qa) return true;
+  if (isGateoBotUserAgent(userAgent)) return true;
+  return false;
+}
+
+export function gateoQaStorageKey() {
+  return QA_STORAGE_KEY;
+}
+
+export function persistGateoQaMarkerFromUrl(search = '') {
+  if (typeof window === 'undefined') return false;
+  try {
+    const q = new URLSearchParams(String(search || window.location.search || ''));
+    if (q.get('qa') === '1') {
+      window.localStorage.setItem(QA_STORAGE_KEY, '1');
+      return true;
+    }
+  } catch {
+    /* ignore */
+  }
+  return false;
+}
+
+/**
+ * @param {Parameters<typeof readGateoTrafficSignals>[0]} [env]
+ */
+export function isGateoQaTraffic(env) {
+  const { webdriver, qa } = readGateoTrafficSignals(env);
+  return webdriver || qa;
+}
+
+/**
+ * @param {Parameters<typeof readGateoTrafficSignals>[0]} [env]
+ */
+export function shouldSkipGateoGaLoad(env) {
+  return isGateoQaTraffic(env);
+}
+
+export function gateoGaMeasurementId() {
+  return GA_MEASUREMENT_ID;
+}
+
+/** Append qa=1 for automation hitting production HTML. */
+export function withGateoQaQuery(url) {
+  try {
+    const u = new URL(url, 'https://www.gateo.kr/');
+    if (!u.searchParams.has('qa')) u.searchParams.set('qa', '1');
+    return u.toString();
+  } catch {
+    return url;
+  }
+}

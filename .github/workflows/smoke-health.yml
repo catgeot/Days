@@ -64,7 +64,7 @@ jobs:
           GITHUB_ACTIONS: true
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
-          SMOKE_SITE_URL: https://www.gateo.kr/
+          SMOKE_SITE_URL: https://www.gateo.kr/?qa=1
           SMOKE_RESULT_FILE: health/smoke.json
         run: node scripts/smoke-health.mjs
 
@@ -121,7 +121,7 @@ jobs:
       - name: Run smoke page liveness (Playwright)
         env:
           TZ: Asia/Seoul
-          SMOKE_SITE_URL: https://www.gateo.kr/
+          SMOKE_SITE_URL: https://www.gateo.kr/?qa=1
           CI: true
           PLAYWRIGHT_JSON_OUTPUT_FILE: health/pages.json
         run: npx playwright test e2e/smoke-health-pages.spec.js --reporter=line,json

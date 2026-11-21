@@ -1,14 +1,40 @@
 <!doctype html>
 <html lang="ko">
   <head>
-      <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7949KKNHRX"></script>
     <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-
-      gtag('config', 'G-7949KKNHRX');
+      (function () {
+        try {
+          var params = new URLSearchParams(location.search);
+          if (params.get('qa') === '1') localStorage.setItem('gateo_qa', '1');
+        } catch (e) {}
+      })();
+    </script>
+    <script>
+      (function () {
+        var disabled = false;
+        try {
+          if (navigator.webdriver) disabled = true;
+          if (localStorage.getItem('gateo_qa') === '1') disabled = true;
+          if (new URLSearchParams(location.search).get('qa') === '1') disabled = true;
+        } catch (e) {}
+        if (disabled) {
+          window.__GATEO_GA_DISABLED__ = true;
+          window.__GATEO_GA_EVENTS__ = window.__GATEO_GA_EVENTS__ || [];
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          window.gtag = gtag;
+          return;
+        }
+        var s = document.createElement('script');
+        s.async = true;
+        s.src = 'https://www.googletagmanager.com/gtag/js?id=G-7949KKNHRX';
+        document.head.appendChild(s);
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        window.gtag = gtag;
+        gtag('js', new Date());
+        gtag('config', 'G-7949KKNHRX');
+      })();
     </script>
     <meta charset="UTF-8" />
 

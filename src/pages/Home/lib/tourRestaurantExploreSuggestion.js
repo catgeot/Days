@@ -1,4 +1,5 @@
 import { extractTourAttractionSigungu } from './koreaTourAttractionLocality.js';
+import { resolveCityAttractionHubFromTourAddr } from './resolveCityAttractionHubFromTourAddr.js';
 import { resolveCityAttractionHub } from './cityAttractionHubs.js';
 import { resolveKoreaTourContentId } from './koreaTourAttractions.js';
 import {
@@ -68,12 +69,7 @@ export function tourRestaurantToExploreSuggestion(spot, opts = {}) {
 }
 
 function resolveHubFromTourSpot(spot) {
-  const sigungu = extractTourAttractionSigungu(spot?.addr1, spot?.addr2);
-  if (!sigungu) return null;
-  return (
-    resolveCityAttractionHub(sigungu) ||
-    resolveCityAttractionHub(String(sigungu).replace(/(시|군|구)$/u, ''))
-  );
+  return resolveCityAttractionHubFromTourAddr(spot?.addr1, spot?.addr2);
 }
 
 /**

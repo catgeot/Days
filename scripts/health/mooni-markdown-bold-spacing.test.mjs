@@ -11,6 +11,7 @@ test('normalizeMooniMarkdownBoldSpacing — trims space before closing **', () =
 
 test('normalizeMooniMarkdownBoldSpacing — trims space after opening **', () => {
   assert.equal(normalizeMooniMarkdownBoldSpacing('** 리조트 체크인**'), '**리조트 체크인**');
+  assert.equal(normalizeMooniMarkdownBoldSpacing('** 영주역**'), '**영주역**');
   assert.equal(normalizeMooniMarkdownBoldSpacing('** 천진항과 **'), '**천진항과**');
 });
 

@@ -232,14 +232,16 @@ export const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onTog
   const hubDetailLayout =
     isGateoOfficialEditorialPlaceReview(review) && isLogbookEditorialReviewDetailLayoutActive();
 
-  useEffect(() => {
+  const recordViewOnce = useCallback(() => {
     if (hasViewed || !onVisible) return;
-    const id = review.id;
-    queueMicrotask(() => {
-      onVisible(id);
-      setHasViewed(true);
-    });
+    onVisible(review.id);
+    setHasViewed(true);
   }, [hasViewed, onVisible, review.id]);
+
+  useEffect(() => {
+    if (!focused) return;
+    queueMicrotask(() => recordViewOnce());
+  }, [focused, recordViewOnce]);
 
   const formatDate = (dateString) => {
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
@@ -285,6 +287,15 @@ export const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onTog
   }, [hubDetailLayout, review]);
 
   const toggleExpanded = () => setIsExpanded((value) => !value);
+
+  const handleExpandToggleClick = (event) => {
+    event.stopPropagation();
+    setIsExpanded((value) => {
+      const next = !value;
+      if (next) queueMicrotask(() => recordViewOnce());
+      return next;
+    });
+  };
 
   const handleReviewBodyClick = (event) => {
     if (!showExpandToggle) return;
@@ -461,10 +472,7 @@ export const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onTog
               type="button"
               data-review-expand-toggle=""
               aria-expanded={isExpanded}
-              onClick={(event) => {
-                event.stopPropagation();
-                toggleExpanded();
-              }}
+              onClick={handleExpandToggleClick}
               className="mt-2 inline-flex min-h-11 min-w-11 items-center justify-center gap-1.5 rounded-lg bg-slate-100 px-3 py-2 text-sm font-semibold text-slate-900 hover:bg-slate-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
             >
               <span>{isExpanded ? t('place.reviews.collapse') : t('place.reviews.expand')}</span>

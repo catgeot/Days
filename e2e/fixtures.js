@@ -4,6 +4,13 @@ import { installReadOnlyGuard } from './readOnlyGuard.js';
 export const test = base.extend({
   context: async ({ context }, use, testInfo) => {
     const blocked = [];
+    await context.addInitScript(() => {
+      try {
+        window.localStorage.setItem('gateo_qa', '1');
+      } catch {
+        /* ignore */
+      }
+    });
     await installReadOnlyGuard(context, blocked);
     await use(context);
     if (blocked.length) {

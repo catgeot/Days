@@ -3,7 +3,7 @@ export function editorialReviewCards(page) {
   return page
     .locator('div.bg-white.border.border-gray-100.rounded-xl.p-5.shadow-sm')
     .filter({
-      has: page.locator('span.border-indigo-100', { hasText: /GATEO 리뷰어/i }),
+      has: page.locator('span.border-indigo-100', { hasText: /로컬하루|페르소나|리뷰어/i }),
     });
 }
 

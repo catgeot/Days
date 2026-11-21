@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { supabase } from '../shared/api/supabase';
+import { incrementPlaceReviewViewOnce } from '../shared/placeReviewViewIncrement.js';
 import { computePlaceReviewStats } from '../utils/placeReviewStats';
 
 function mapReviewRows(data, user) {
@@ -240,31 +241,24 @@ export const usePlaceReviews = (placeSlug, user) => {
   };
 
   const incrementView = useCallback(async (reviewId) => {
-    const viewedKey = `viewed_review_${reviewId}`;
-    if (sessionStorage.getItem(viewedKey)) {
+    const result = await incrementPlaceReviewViewOnce({
+      reviewId,
+      rpc: (fn, args) => supabase.rpc(fn, args),
+      sessionStorage,
+    });
+    if (result.rpcCalls !== 1) {
+      if (result.error) console.error('Error incrementing view count:', result.error);
       return;
     }
 
-    try {
-      sessionStorage.setItem(viewedKey, 'true');
-
-      const { error } = await supabase.rpc('increment_review_view', {
-        review_id_param: reviewId
-      });
-      if (error) throw error;
-
-      setAllReviews((prev) =>
-        prev.map((r) => {
-          if (r.id === reviewId) {
-            return { ...r, views_count: (r.views_count || 0) + 1 };
-          }
-          return r;
-        }),
-      );
-    } catch (err) {
-      console.error('Error incrementing view count:', err);
-      sessionStorage.removeItem(viewedKey);
-    }
+    setAllReviews((prev) =>
+      prev.map((r) => {
+        if (r.id === reviewId) {
+          return { ...r, views_count: (r.views_count || 0) + 1 };
+        }
+        return r;
+      }),
+    );
   }, []);
 
   return {

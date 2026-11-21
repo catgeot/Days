@@ -10,7 +10,7 @@ const card = (editorial, withStars) => `
     <div class="flex items-center gap-3">
       <div class="w-10 h-10 rounded-full">G</div>
       <div><div class="font-medium text-gray-900 text-sm flex flex-wrap items-center gap-2">
-        ${editorial ? '<span class="text-[11px] font-semibold text-indigo-800 bg-indigo-50 border border-indigo-100 px-2 py-0.5 rounded-md">GATEO 리뷰어 · 페르소나</span>' : 'user'}
+        ${editorial ? '<span class="text-[11px] font-semibold text-indigo-800 bg-indigo-50 border border-indigo-100 px-2 py-0.5 rounded-md">페르소나</span>' : 'user'}
       </div><div class="text-xs text-gray-400 mt-0.5">2026년 10월 1일</div></div>
     </div>
     <div class="flex flex-col items-end gap-1">

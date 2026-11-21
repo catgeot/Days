@@ -33,6 +33,8 @@ const PROD_COLLAPSED_GUAM_COMPARE =
 
 const UDO_DUAL_SPACED_BOLD = '우도에는 ** 천진항과 ** 하우목동항 ** 이 있어요';
 
+const YEONGJU_STATION_BOLD = '** 영주역** KTX 환승 안내';
+
 const ORDERED_WITH_GAP = `1. 우도 터미널 집결
 
 짧은 이동 안내
@@ -175,6 +177,17 @@ export default function MooniChatMarkdownFixturePage() {
         <Bubble variant="dark">
           <MooniChatMarkdown
             text={getMooniModelMarkdownForRender(UDO_DUAL_SPACED_BOLD, {
+              stripPhantomTicketMention: true,
+            })}
+            variant="dark"
+          />
+        </Bubble>
+      </section>
+      <section data-testid="mooni-md-yeongju-bold" className="space-y-2">
+        <p className="text-gray-400 text-[10px] font-bold uppercase">PROD 영주역 spaced bold</p>
+        <Bubble variant="dark">
+          <MooniChatMarkdown
+            text={getMooniModelMarkdownForRender(YEONGJU_STATION_BOLD, {
               stripPhantomTicketMention: true,
             })}
             variant="dark"
