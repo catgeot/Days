@@ -89,3 +89,95 @@ test('collectKoreaPoiTypeSearchCandidates — «서원» pins UNESCO 9 and keeps
   assert.ok(names.length > 180);
   assert.equal(names.length, new Set(cores).size);
 });
+
+const LIVE_HOMONYMS = [
+  {
+    contentId: '1959941',
+    name: '옥산서원',
+    addr1: '경상남도 하동군 옥종면 옥산서원길 61-7',
+    lat: 35.162270449,
+    lng: 127.8883550574,
+  },
+  {
+    contentId: '1957023',
+    name: '옥산서원',
+    addr1: '전북특별자치도 정읍시 소성면 애당모촌길 9',
+    lat: 35.5299847292,
+    lng: 126.7800129508,
+  },
+  {
+    contentId: '1958202',
+    name: '김천 도동서원',
+    addr1: '경상북도 김천시 구성면 상좌원3길',
+    lat: 36.0448509866,
+    lng: 128.0332853034,
+  },
+  {
+    contentId: '1956969',
+    name: '도동서원(고창)',
+    addr1: '전북특별자치도 고창군 신림면 가평1길 64',
+    lat: 35.4779705412,
+    lng: 126.7419148771,
+  },
+  {
+    contentId: '1958126',
+    name: '남계서원',
+    addr1: '대구광역시 군위군 군위읍 대북길 9',
+    lat: 36.2537618464,
+    lng: 128.5576941217,
+  },
+  {
+    contentId: '1955818',
+    name: '도산서원(대전)',
+    addr1: '대전광역시 서구 남선로 8',
+    lat: 36.351,
+    lng: 127.384,
+  },
+  {
+    contentId: '9001',
+    name: '대구광역시 서원구 보건소',
+    addr1: '대구광역시 서원구',
+    lat: 35.87,
+    lng: 128.6,
+  },
+];
+
+test('«서원» keeps UNESCO places ahead of same-name academies when tour rows are the other region', async () => {
+  const rows = await collectKoreaPoiTypeSearchCandidates('서원', {
+    lookupTourAttractions: async () => LIVE_HOMONYMS,
+  });
+  const names = rows.map((row) => String(row.name || ''));
+  const cores = names.map(academyCore);
+  assert.deepEqual(cores.slice(0, UNESCO_KOREA_SEOWON.length), UNESCO_KOREA_SEOWON);
+  const oksan = rows.filter((row) => academyCore(row.name) === '옥산서원');
+  assert.equal(oksan[0]?.hubId, 'gyeongju');
+  assert.equal(oksan[0]?.parentCity, '경주');
+  assert.ok(oksan.some((row) => String(row.name).includes('하동')));
+  assert.ok(oksan.some((row) => String(row.name).includes('정읍')));
+  assert.ok(rows.findIndex((row) => row.hubId === 'gyeongju' && academyCore(row.name) === '옥산서원') < rows.findIndex((row) => String(row.name).includes('하동')));
+  const dodongAt = rows.findIndex((row) => row.hubId === 'dalseong' && academyCore(row.name) === '도동서원');
+  assert.equal(rows[dodongAt]?.parentCity, '달성');
+  assert.ok(dodongAt < rows.findIndex((row) => String(row.name).includes('김천')));
+  assert.ok(dodongAt < rows.findIndex((row) => String(row.name).includes('고창')));
+  assert.equal(rows.find((row) => row.hubId === 'jangseong')?.parentCity, '장성');
+  assert.equal(rows.find((row) => row.hubId === 'nonsan' && academyCore(row.name) === '돈암서원')?.parentCity, '논산');
+  assert.equal(names.filter((name) => name.includes('서원구')).length, 0);
+  assert.ok(names.some((name) => name.includes('군위')));
+  assert.ok(names.some((name) => name.includes('대전')));
+});
+
+test('«옥산서원» and «도동서원» lead with Gyeongju and Dalseong', async () => {
+  const oksan = await collectKoreaPoiTypeSearchCandidates('옥산서원', {
+    lookupTourAttractions: async () => LIVE_HOMONYMS,
+  });
+  const dodong = await collectKoreaPoiTypeSearchCandidates('도동서원', {
+    lookupTourAttractions: async () => LIVE_HOMONYMS,
+  });
+  assert.equal(oksan[0]?.hubId, 'gyeongju');
+  assert.equal(oksan[0]?.parentCity, '경주');
+  assert.ok(oksan.findIndex((row) => row.hubId === 'gyeongju') < oksan.findIndex((row) => String(row.addr1 || row.name).includes('하동')));
+  assert.equal(dodong[0]?.hubId, 'dalseong');
+  assert.equal(dodong[0]?.parentCity, '달성');
+  assert.ok(dodong.findIndex((row) => row.hubId === 'dalseong') < dodong.findIndex((row) => String(row.name).includes('김천')));
+  assert.ok(dodong.some((row) => String(row.name).includes('고창')));
+});
