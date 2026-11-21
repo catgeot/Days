@@ -1971,7 +1971,7 @@ const ChatModal = ({
                      className={tone(
                        fresh,
                        'inline-flex items-center gap-1 whitespace-nowrap rounded-full border border-cyan-300/80 bg-cyan-500/30 px-2.5 py-1.5 max-md:min-h-[32px] max-md:ring-0 max-md:shadow-none max-[360px]:h-7 max-[360px]:w-7 max-[360px]:min-h-0 max-[360px]:p-0 max-[360px]:justify-center max-[360px]:ring-0 max-[360px]:shadow-none text-[11px] font-semibold text-cyan-50 shadow-[0_0_12px_rgba(34,211,238,0.25)] ring-1 ring-cyan-400/35 hover:border-cyan-300 hover:bg-cyan-500/40 transition-colors touch-manipulation',
-                       'inline-flex items-center gap-1 whitespace-nowrap rounded-full border border-cyan-300 bg-gradient-to-r from-cyan-400 to-teal-400 px-2.5 py-1.5 max-md:min-h-[32px] max-md:ring-0 max-md:shadow-none max-[360px]:h-7 max-[360px]:w-7 max-[360px]:min-h-0 max-[360px]:p-0 max-[360px]:justify-center max-[360px]:ring-0 max-[360px]:shadow-none text-[11px] font-semibold text-white shadow-[0_4px_12px_rgba(34,211,238,0.28)] hover:from-cyan-300 hover:to-teal-300 transition-colors touch-manipulation',
+                       'inline-flex items-center gap-1 whitespace-nowrap rounded-full border border-cyan-800 bg-gradient-to-r from-cyan-700 to-teal-700 px-2.5 py-1.5 max-md:min-h-[32px] max-md:ring-0 max-md:shadow-none max-[360px]:h-7 max-[360px]:w-7 max-[360px]:min-h-0 max-[360px]:p-0 max-[360px]:justify-center max-[360px]:ring-0 max-[360px]:shadow-none text-[11px] font-semibold text-white shadow-[0_4px_12px_rgba(34,211,238,0.28)] hover:from-cyan-800 hover:to-teal-800 transition-colors touch-manipulation',
                      )}
                      title={t('mooni.chat.openPlanner')}
                    >
@@ -2326,7 +2326,7 @@ const ChatModal = ({
                         className={tone(
                           fresh,
                           'shrink-0 inline-flex items-center justify-center rounded-full border border-cyan-400/60 bg-cyan-500/25 px-3 py-2 text-[12px] font-semibold text-cyan-50 touch-manipulation hover:bg-cyan-500/35 disabled:opacity-50',
-                          'shrink-0 inline-flex items-center justify-center rounded-full border border-cyan-300 bg-gradient-to-r from-cyan-400 to-teal-400 px-3 py-2 text-[12px] font-semibold text-white touch-manipulation hover:from-cyan-300 hover:to-teal-300 disabled:opacity-50',
+                          'shrink-0 inline-flex items-center justify-center rounded-full border border-cyan-800 bg-gradient-to-r from-cyan-700 to-teal-700 px-3 py-2 text-[12px] font-semibold text-white touch-manipulation hover:from-cyan-800 hover:to-teal-800 disabled:opacity-50',
                         )}
                       >
                         {t('mooni.chat.askButton')}
@@ -2511,12 +2511,12 @@ const ChatModal = ({
                             ? tone(
                                 fresh,
                                 'absolute right-1 top-1/2 -translate-y-1/2 p-1.5 bg-blue-600 rounded-full text-white disabled:opacity-40 touch-manipulation',
-                                'absolute right-1 top-1/2 -translate-y-1/2 p-1.5 bg-gradient-to-br from-cyan-400 to-teal-400 rounded-full text-white disabled:opacity-40 touch-manipulation',
+                                'absolute right-1 top-1/2 -translate-y-1/2 p-1.5 bg-gradient-to-br from-cyan-700 to-teal-700 rounded-full text-white disabled:opacity-40 touch-manipulation',
                               )
                             : tone(
                                 fresh,
                                 'absolute right-0.5 top-1/2 -translate-y-1/2 p-1 bg-blue-600/80 rounded-full text-white disabled:opacity-40 touch-manipulation',
-                                'absolute right-0.5 top-1/2 -translate-y-1/2 p-1 bg-gradient-to-br from-cyan-400 to-teal-400 rounded-full text-white disabled:opacity-40 touch-manipulation',
+                                'absolute right-0.5 top-1/2 -translate-y-1/2 p-1 bg-gradient-to-br from-cyan-700 to-teal-700 rounded-full text-white disabled:opacity-40 touch-manipulation',
                               )
                         }
                         aria-label={t('mooni.chat.send')}
@@ -2558,7 +2558,7 @@ const ChatModal = ({
                         className={tone(
                           fresh,
                           'absolute right-1.5 top-1/2 -translate-y-1/2 p-1.5 bg-cyan-500/90 hover:bg-cyan-400 rounded-full text-white disabled:opacity-40 disabled:bg-blue-600/70',
-                          'absolute right-1.5 top-1/2 -translate-y-1/2 p-1.5 bg-gradient-to-br from-cyan-400 to-teal-400 hover:from-cyan-300 hover:to-teal-300 rounded-full text-white disabled:opacity-40',
+                          'absolute right-1.5 top-1/2 -translate-y-1/2 p-1.5 bg-gradient-to-br from-cyan-700 to-teal-700 hover:from-cyan-800 hover:to-teal-800 rounded-full text-white disabled:opacity-40',
                         )}
                         aria-label={t('mooni.chat.send')}
                       >
@@ -2604,7 +2604,7 @@ const ChatModal = ({
                     className={tone(
                       fresh,
                       'absolute right-2 top-1/2 -translate-y-1/2 p-2 md:p-1.5 bg-blue-600 rounded-full text-white',
-                      'absolute right-2 top-1/2 -translate-y-1/2 p-2 md:p-1.5 bg-gradient-to-br from-cyan-400 to-teal-400 rounded-full text-white',
+                      'absolute right-2 top-1/2 -translate-y-1/2 p-2 md:p-1.5 bg-gradient-to-br from-cyan-700 to-teal-700 rounded-full text-white',
                     )}
                   >
                     <Send size={18} />

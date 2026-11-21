@@ -133,6 +133,7 @@ export default defineConfig({
         /agency-home-link\.spec\.js/,
         /tour-modal-region-search\.spec\.js/,
         /khao-lak-place-qa\.spec\.js/,
+        /mooni-chat-modal-header-chrome\.spec\.js/,
       ],
       use: { ...devices['Desktop Chrome'], viewport: { width: 1280, height: 720 } },
     },

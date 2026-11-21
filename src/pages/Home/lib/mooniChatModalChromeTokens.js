@@ -46,3 +46,12 @@ export const MOONI_CHAT_CLOSE_COLORS = {
   mooni: { bg: [14, 116, 144], icon: [255, 255, 255], panel: [240, 249, 255] },
   travel: { bg: [107, 114, 128], icon: [255, 255, 255], panel: [17, 24, 39] },
 };
+
+/** Tailwind 3 sRGB — MOONi light accent buttons (planner·send·ask). Worst stop vs white ≥ 4.5:1. */
+export const MOONI_CHAT_ACCENT_GRADIENT = {
+  text: [255, 255, 255],
+  from: [14, 116, 144],
+  to: [15, 118, 110],
+  hoverFrom: [21, 94, 117],
+  hoverTo: [17, 94, 89],
+};

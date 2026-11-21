@@ -4,6 +4,7 @@ import { dirname, join } from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
 import {
+  MOONI_CHAT_ACCENT_GRADIENT,
   MOONI_CHAT_CLOSE,
   MOONI_CHAT_CLOSE_COLORS,
   MOONI_CHAT_MAIN_HEADER_RESERVE_CLASS,
@@ -55,6 +56,26 @@ test('MOONi chat close button — top-right anchor, 44px tap target, contrast', 
     assert.ok(contrastRatio(colors.bg, colors.panel) >= 3, `${label} close on panel`);
   }
   assert.equal(MOONI_CHAT_CLOSE.minTapPx, 44);
+});
+
+test('MOONi chat accent gradient — white on cyan/teal-700 stops ≥ 4.5:1', () => {
+  const text = MOONI_CHAT_ACCENT_GRADIENT.text;
+  for (const [label, bg] of Object.entries({
+    from: MOONI_CHAT_ACCENT_GRADIENT.from,
+    to: MOONI_CHAT_ACCENT_GRADIENT.to,
+    hoverFrom: MOONI_CHAT_ACCENT_GRADIENT.hoverFrom,
+    hoverTo: MOONI_CHAT_ACCENT_GRADIENT.hoverTo,
+  })) {
+    const ratio = contrastRatio(text, bg);
+    assert.ok(ratio >= 4.5, `${label} accent gradient ${ratio.toFixed(2)}:1`);
+  }
+  const chatModal = readFileSync(join(root, 'src/pages/Home/components/ChatModal.jsx'), 'utf8');
+  assert.doesNotMatch(
+    chatModal,
+    /from-cyan-400 to-teal-400/,
+    'light accent must not use cyan-400/teal-400 gradient',
+  );
+  assert.match(chatModal, /from-cyan-700 to-teal-700/);
 });
 
 test('MOONi chat main header — close reserve padding, mobile new-chat label', () => {
