@@ -1,0 +1,19 @@
+[
+  {
+    "id": "e2e-review-view-long",
+    "place_slug": "cairo",
+    "place_name": "카이로",
+    "content": "E2E 조회수 테스트 — 접힌 목록에서는 조회수가 오르지 않아야 합니다. 더보기를 눌러 펼칠 때에만 세션이 기록되어야 합니다. 긴 본문이 필요하므로 이 문장을 반복해 줄 수를 확보합니다. 카이로 여행 후기 편집 리뷰 조회수 정책 E2E.",
+    "content_blocks": null,
+    "persona_label": "조회수E2E",
+    "is_public": true,
+    "is_editorial": true,
+    "created_at": "2026-11-20T09:00:00.000Z",
+    "rating": null,
+    "user_id": "e2e-view-inc",
+    "user": { "id": "e2e-view-inc", "display_name": "E2E", "avatar_url": null },
+    "likes": [],
+    "images": [],
+    "views_count": 0
+  }
+]

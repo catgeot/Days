@@ -19,7 +19,10 @@
         } catch (e) {}
         if (disabled) {
           window.__GATEO_GA_DISABLED__ = true;
-          window.gtag = function () {};
+          window.__GATEO_GA_EVENTS__ = window.__GATEO_GA_EVENTS__ || [];
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          window.gtag = gtag;
           return;
         }
         var s = document.createElement('script');

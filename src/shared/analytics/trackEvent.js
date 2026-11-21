@@ -18,10 +18,14 @@ export function trackMooniOpenIfRising(wasOpen, open, params) {
 export function trackEvent(name, params) {
   try {
     if (typeof window === 'undefined') return;
+    const payload = { name, params: params ?? {} };
     if (Array.isArray(window.__gateoGaEvents)) {
-      window.__gateoGaEvents.push({ name, params: params ?? {} });
+      window.__gateoGaEvents.push(payload);
     }
-    if (window.__GATEO_GA_DISABLED__) return;
+    if (window.__GATEO_GA_DISABLED__) {
+      const buf = window.__GATEO_GA_EVENTS__;
+      if (Array.isArray(buf)) buf.push(payload);
+    }
     const gtag = window.gtag;
     if (typeof gtag !== 'function') return;
     gtag('event', name, params);

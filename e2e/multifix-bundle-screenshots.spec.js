@@ -1,6 +1,6 @@
 /**
  * Bundled regression captures — mocked API, qa marker via fixtures.
- * npx playwright test e2e/multifix-bundle-screenshots.spec.js
+ * npx playwright test -c playwright.config.multifix-bundle.js
  */
 import { test, expect } from './fixtures.js';
 

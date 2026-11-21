@@ -89,7 +89,9 @@ const devSsl = process.env.DEV_SSL !== '0';
 export default defineConfig({
   define: {
     'import.meta.env.VITE_GATEO_QA_MOONI_MD_FIXTURE': JSON.stringify(
-      process.env.VERCEL_ENV === 'preview' ? '1' : '',
+      process.env.VITE_GATEO_QA_MOONI_MD_FIXTURE === '1' || process.env.VERCEL_ENV === 'preview'
+        ? '1'
+        : '',
     ),
     'import.meta.env.VITE_GATEO_PREVIEW_DEBUG_CHROME': JSON.stringify(
       process.env.VERCEL_ENV === 'preview' ? '1' : '',

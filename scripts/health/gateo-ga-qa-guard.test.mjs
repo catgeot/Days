@@ -27,6 +27,7 @@ test('index.html — QA/webdriver guard before gtag network load', () => {
   assert.match(html, /navigator\.webdriver/);
   assert.match(html, /gateo_qa/);
   assert.match(html, /__GATEO_GA_DISABLED__/);
+  assert.match(html, /__GATEO_GA_EVENTS__/);
   const guardIdx = html.indexOf('__GATEO_GA_DISABLED__');
   const gtagNetIdx = html.indexOf('googletagmanager.com/gtag/js');
   assert.ok(guardIdx > -1 && gtagNetIdx > -1);

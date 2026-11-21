@@ -172,7 +172,9 @@ test.describe('Korea festival detail — reviews section (WebKit)', () => {
 
     await expect(section.getByText(DISCLOSURE_RE)).toBeVisible();
     await expect(section.getByText(DISCLOSURE_RE)).toBeInViewport();
-    await expect(section.getByText(/GATEO 리뷰어/)).toBeInViewport();
+    const editorialCard = section.locator('[data-review-id="e2e-festival-editorial-638576"]');
+    await expect(editorialCard.getByText('여행 큐레이터', { exact: true })).toBeInViewport();
+    await expect(section.getByText(/GATEO 리뷰어 ·/)).toHaveCount(0);
     await expect(near).toBeInViewport();
 
     await shotViewport(
