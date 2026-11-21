@@ -3,6 +3,10 @@
 export const OVERSEAS_TNA_NOISE_RE =
   /중국|칭다오|상하이|오사카|도쿄|교토|간사이|유니버설|디즈니|만리장성|심천|대련|홍콩|타이베이|LA\b|노산\s*풍경|라오산|연세대학교|연남점|Douro|Yarra|Hidden\s*Valley|Valley\s*of\s*Fire|와인\s*투어|잔지바르|Zanzibar|나이로비|Nairobi|사파리|마사이|Masai|세렝게티|Serengeti|케냐|Kenya|탄자니아|Tanzania|응두투|Ndutu/;
 
+/** 충남 공주시와 한글 「공주(公主)」 테마 해외·국내 체험 상품 */
+export const GONGJU_PRINCESS_TNA_NOISE_RE =
+  /당나라\s*(?:의\s*)?공주|唐(?:朝)?[^[]*公主|켄싱턴\s*궁(?:전)?[^[]*공주|Kensington\s+Palace[^[\n]*(?:[Pp]rincess|공주)|(?:London|영국|UK)[^[\n]*공주|인어\s*공주|(?:셰익스피어|웨스턴|문화)[^[\n]*공주\s*특별/;
+
 const GENERIC_EN_TOKEN_RE =
   /^(valley|park|tour|island|beach|museum|tower|bridge|lake|mountain|city|hotel|pass|garden|temple|palace|castle|road|street|point|peak|falls|river|bay|coast|harbor|harbour|village|town|center|centre)$/i;
 
@@ -212,6 +216,7 @@ export function stripUnsafeMrtTnaItems(items) {
     const name = String(it?.itemName || '');
     if (!name) return false;
     if (OVERSEAS_TNA_NOISE_RE.test(name)) return false;
+    if (GONGJU_PRINCESS_TNA_NOISE_RE.test(name)) return false;
     for (const place of AMBIGUOUS_KO_PLACE_NAMES) {
       if (!name.includes(place)) continue;
       if (scoreMrtTnaRelevance(name, place) === 0) return false;
