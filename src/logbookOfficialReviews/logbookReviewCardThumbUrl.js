@@ -24,7 +24,9 @@ export function wikimediaCommonsCardThumbUrl(src, widthPx) {
   }
   if (parsed.hostname !== WIKIMEDIA_HOST) return null;
   const path = parsed.pathname;
-  if (path.includes('/wikipedia/commons/thumb/')) return raw;
+  if (path.includes('/wikipedia/commons/thumb/')) {
+    return rewriteExistingCommonsThumb(raw, widthPx) || raw;
+  }
 
   const match = path.match(/^\/wikipedia\/commons\/([^/])\/([^/]{2})\/(.+)$/i);
   if (!match) return null;
@@ -33,6 +35,20 @@ export function wikimediaCommonsCardThumbUrl(src, widthPx) {
   const pxLabel = `${widthPx}px-${fileName}`;
   parsed.pathname = `/wikipedia/commons/thumb/${h1}/${h2}/${filePart}/${pxLabel}`;
   return parsed.toString();
+}
+
+/** Already /thumb/…/{N}px-file — swap N only. Encoding and parentheses in the filename stay. */
+function rewriteExistingCommonsThumb(raw, widthPx) {
+  const match = String(raw).match(
+    /^(https?:\/\/upload\.wikimedia\.org\/wikipedia\/commons\/thumb\/.+\/)(\d+)px-(.+)$/i,
+  );
+  if (!match) return null;
+  return `${match[1]}${widthPx}px-${match[3]}`;
+}
+
+/** srcSet splits on commas. A comma inside a filename must be %2C. */
+function srcSetUrl(url) {
+  return String(url).replace(/,/g, '%2C');
 }
 
 const UNSPLASH_IMGIX_KEYS = new Set(['w', 'h', 'fit', 'q', 'auto', 'fm', 'crop']);
@@ -55,7 +71,9 @@ export function optimizeLogbookReviewCardThumbUrl(src) {
   const wikiSrc = wikimediaCommonsCardThumbUrl(raw, WIKI_CARD_SRC_WIDTH);
   if (wikiSrc) {
     const wikiHi = wikimediaCommonsCardThumbUrl(raw, WIKI_CARD_SRCSET_WIDTH);
-    const srcSet = wikiHi ? `${wikiSrc} ${WIKI_CARD_SRC_WIDTH}w, ${wikiHi} ${WIKI_CARD_SRCSET_WIDTH}w` : null;
+    const srcSet = wikiHi
+      ? `${srcSetUrl(wikiSrc)} ${WIKI_CARD_SRC_WIDTH}w, ${srcSetUrl(wikiHi)} ${WIKI_CARD_SRCSET_WIDTH}w`
+      : null;
     return {
       src: wikiSrc,
       srcSet,

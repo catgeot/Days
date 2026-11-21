@@ -525,6 +525,7 @@
       "askMooniBadge": "AI",
       "disambiguationTitle": "Choose a place",
       "disambiguationBody": "This name may match several places. Tap a card to open it.",
+      "searchResultCount": "{{count}} results",
       "paginationPrev": "Previous",
       "paginationNext": "Next",
       "paginationPage": "{{page}} / {{total}}",

@@ -719,7 +719,15 @@ export async function buildHybridSearchSuggestions(query, opts = {}) {
       pushUnique(merged, seenPoi, enrichSearchCandidateScenicMedia(item));
     }
     if (merged.length >= 1) {
-      return finalizeHybridSuggestions(q, regional, applyScope(merged), 180, matchOpts);
+      const parsed = parseKoreaPoiTypeQuery(q);
+      const seowonFull = parsed?.type === '서원' && parsed.isTypeOnly;
+      return finalizeHybridSuggestions(
+        q,
+        regional,
+        applyScope(merged),
+        seowonFull ? Math.max(merged.length, 1) : 180,
+        seowonFull ? { ...matchOpts, tourItemsPromise: Promise.resolve([]) } : matchOpts,
+      );
     }
   }
 
@@ -897,6 +905,7 @@ export async function buildCuratedEnterDisambiguation(query) {
   const q = String(query || '').trim();
   if (!q) return null;
   if (resolveExploreAliasTourPlaceParam(q)) return null;
+  if (shouldExpandKoreaPoiTypeSearch(q)) return null;
 
   const searchQ = effectiveExploreSearchQuery(q);
 

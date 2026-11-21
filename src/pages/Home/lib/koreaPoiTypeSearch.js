@@ -14,6 +14,7 @@ import {
   parseKoreaPoiTypeQuery,
   shouldExpandKoreaPoiTypeSearch,
   titleMatchesPoiType,
+  titleMatchesSeowonAcademy,
 } from './koreaPoiTypeQuery.js';
 import { extractTourAttractionSigungu } from './koreaTourAttractionLocality.js';
 import { resolveCityAttractionHubFromTourAddr } from './resolveCityAttractionHubFromTourAddr.js';
@@ -46,7 +47,11 @@ function collectHubPoiTypeSuggestions(parsed) {
     for (const attraction of hub.attractions || []) {
       if (isHiddenHubScenicAttraction(hub.hubId, attraction.name)) continue;
       const names = [attraction.name, attraction.name_en, ...(attraction.aliases || [])];
-      if (!names.some((n) => titleMatchesPoiType(n, parsed.type))) continue;
+      const matchesType =
+        parsed.type === '서원'
+          ? names.some((n) => titleMatchesSeowonAcademy(n))
+          : names.some((n) => titleMatchesPoiType(n, parsed.type));
+      if (!matchesType) continue;
       const item = attractionToSuggestion(hub, attraction);
       if (hub.name && !item.groupTitle) {
         item.groupTitle = `${hub.name} 명소`;
@@ -61,29 +66,35 @@ function resolveHubFromTourSpot(spot) {
   return resolveCityAttractionHubFromTourAddr(spot?.addr1, spot?.addr2);
 }
 
-const SEOWON_SEARCH_PRIORITY = [
-  { key: '옥산서원', boost: 200 },
-  { key: '도동서원', boost: 199 },
-  { key: '병산서원', boost: 120 },
-  { key: '도산서원', boost: 119 },
-  { key: '소수서원', boost: 90 },
+/** 유네스코 한국의 서원. 이 순서 그대로 유형 검색 맨 앞. */
+const UNESCO_KOREA_SEOWON = [
+  '소수서원',
+  '남계서원',
+  '옥산서원',
+  '도산서원',
+  '필암서원',
+  '도동서원',
+  '병산서원',
+  '무성서원',
+  '돈암서원',
 ];
 
-function scoreSeowonSearchCandidate(item, parsed) {
-  if (!parsed || parsed.type !== '서원' || !parsed.isTypeOnly) return 0;
-  const name = String(item?.name || '');
-  const nk = compactKey(name);
-  let score = 0;
-  if (/서원구|병원|한의원|요양|치과|의원/.test(name)) score -= 120;
-  if (nk.includes('서원구')) score -= 120;
-  if (!titleMatchesPoiType(name, '서원')) score -= 40;
-  for (const row of SEOWON_SEARCH_PRIORITY) {
-    const pk = compactKey(row.key);
-    if (nk === pk || nk.includes(pk)) score += row.boost;
+function seowonAcademyIdentity(name) {
+  const t = compactKey(name);
+  for (const key of UNESCO_KOREA_SEOWON) {
+    const idx = t.indexOf(key);
+    if (idx < 0) continue;
+    const after = t.slice(idx + key.length);
+    if (!after || /^\([^)]*\)$/u.test(after) || /^\[유네스코세계(?:문화)?유산\]$/u.test(after)) {
+      return key;
+    }
   }
-  if (item?.hubId) score += 12;
-  if (item?.source === 'hub' || String(item?.id || '').startsWith('hub-')) score += 8;
-  return score;
+  return t;
+}
+
+function seowonRankIndex(name) {
+  const idx = UNESCO_KOREA_SEOWON.indexOf(seowonAcademyIdentity(name));
+  return idx >= 0 ? idx : UNESCO_KOREA_SEOWON.length;
 }
 
 export function tourAttractionToPoiSuggestion(spot, opts = {}) {
@@ -123,6 +134,11 @@ export function tourAttractionToPoiSuggestion(spot, opts = {}) {
     source: 'tourapi',
     uiPlace: true,
     parentCity: parentCity || undefined,
+    ...(spot?.addr1 ? { addr1: String(spot.addr1) } : {}),
+    ...(spot?.addr2 ? { addr2: String(spot.addr2) } : {}),
+    ...(spot?.areaCode != null && String(spot.areaCode).trim() !== ''
+      ? { areaCode: String(spot.areaCode) }
+      : {}),
     ...(contentId ? { contentId } : {}),
     ...(thumb ? { firstImage: thumb, imageUrl: thumb, thumbUrl: thumb } : {}),
     ...(groupTitle ? { groupTitle } : {}),
@@ -130,8 +146,13 @@ export function tourAttractionToPoiSuggestion(spot, opts = {}) {
   };
 }
 
+function rowTitleMatchesParsedType(title, type) {
+  if (type === '서원') return titleMatchesSeowonAcademy(title);
+  return titleMatchesPoiType(title, type);
+}
+
 function rowMatchesParsedPoi(spot, parsed) {
-  if (!titleMatchesPoiType(spot?.name || spot?.title, parsed.type)) return false;
+  if (!rowTitleMatchesParsedType(spot?.name || spot?.title, parsed.type)) return false;
   if (!parsed.cityPrefix) return true;
   const prefix = parsed.cityPrefix;
   const title = compactKey(spot?.name || spot?.title);
@@ -147,11 +168,12 @@ export async function collectKoreaPoiTypeSearchCandidates(query, opts = {}) {
   const parsed = parseKoreaPoiTypeQuery(query);
   if (!shouldExpandKoreaPoiTypeSearch(parsed)) return [];
 
+  const seowonRank = parsed.type === '서원' && parsed.isTypeOnly;
   const seen = new Set();
   const out = [];
   const push = (item) => {
     if (!item?.name) return;
-    const k = compactKey(item.name);
+    const k = seowonRank ? seowonAcademyIdentity(item.name) : compactKey(item.name);
     if (!k || seen.has(k)) return;
     seen.add(k);
     out.push(item);
@@ -167,6 +189,7 @@ export async function collectKoreaPoiTypeSearchCandidates(query, opts = {}) {
     const title = parsed.isTypeOnly ? parsed.type : `${parsed.cityPrefix}${parsed.type}`;
     rows = await lookupKoreaTourAttractionsMatchingTitle(title, {
       limit: parsed.isTypeOnly ? 250 : 24,
+      fetchAll: seowonRank,
     });
   }
 
@@ -175,10 +198,9 @@ export async function collectKoreaPoiTypeSearchCandidates(query, opts = {}) {
     push(tourAttractionToPoiSuggestion(row));
   }
 
-  const seowonRank = parsed.type === '서원' && parsed.isTypeOnly;
   out.sort((a, b) => {
     if (seowonRank) {
-      const ds = scoreSeowonSearchCandidate(b, parsed) - scoreSeowonSearchCandidate(a, parsed);
+      const ds = seowonRankIndex(a.name) - seowonRankIndex(b.name);
       if (ds) return ds;
     }
     const g = String(a.groupTitle || a.parentCity || '').localeCompare(
@@ -189,6 +211,7 @@ export async function collectKoreaPoiTypeSearchCandidates(query, opts = {}) {
     return String(a.name || '').localeCompare(String(b.name || ''), 'ko');
   });
 
+  if (seowonRank) return out;
   return out.slice(0, parsed.isTypeOnly ? 180 : 12);
 }
 

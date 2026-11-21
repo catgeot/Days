@@ -27,6 +27,7 @@ import {
   resolveKoreaDestinationFirstPass,
 } from './resolveKoreaDestinationFirstPass.js';
 import { inferPlaceMatchCategory } from './placeMatchCategory.js';
+import { preferOsmCityTitle } from './osmReverseCityTitle.js';
 
 const RETRY_FILTERS = [
   "고원", "섬", "산", "해변", "폭포", "마을", "대륙", "반도", "시", "군", "구",
@@ -925,12 +926,15 @@ export const getAddressFromCoordinates = async (lat, lng) => {
 
     const featureEn = pickFeaturePlaceName(dataEn, addressEn);
     const featureKo = pickFeaturePlaceName(dataKo, addressKo);
+    const featureType = dataKo?.type || dataEn?.type || '';
     const cityRawEn = addressEn?.city || addressEn?.town || addressEn?.village || addressEn?.municipality || addressEn?.island || addressEn?.state || "";
     const cityRawKo = addressKo?.city || addressKo?.town || addressKo?.village || addressKo?.municipality || addressKo?.island || addressKo?.state || "";
     const travelCountry = resolveTravelCountryFromAddresses(addressEn, addressKo);
 
-    const placeNameEn = featureEn || cityRawEn;
-    const placeNameKo = featureKo || cityRawKo;
+    const placeNameEn = preferOsmCityTitle(featureType, featureEn, addressEn) || cityRawEn;
+    const placeNameKo = preferOsmCityTitle(featureType, featureKo, addressKo)
+      || preferOsmCityTitle(featureType, featureEn, addressEn)
+      || cityRawKo;
     const resolvedCityEn = standardizeName(placeNameEn) || standardizeName(travelCountry.country_en);
     const resolvedCityKo = standardizeName(placeNameKo) || travelCountry.country;
     const stayAdmin = buildStayAdminFromOsmAddress(addressKo, addressEn);

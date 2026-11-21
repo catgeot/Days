@@ -5,6 +5,8 @@
 import seaBasinsJson from '../data/seaBasins.json' with { type: 'json' };
 import coastJson from '../data/travelSpotCoast.json' with { type: 'json' };
 import { TRAVEL_SPOTS } from '../data/travelSpots.js';
+import { resolveCityAttractionHub } from './cityAttractionHubs.js';
+import { resolveTravelSpotFromSearchQuery } from '../../../utils/travelSpotResolve.js';
 
 const normalize = (s) =>
   String(s ?? '')
@@ -36,25 +38,66 @@ function levenshtein(a, b) {
   return prev[n];
 }
 
-function maxTypoDistance(len) {
-  if (len <= 3) return 1;
-  if (len <= 6) return 2;
-  return 2;
+const HANGUL_SYLLABLE_RE = /[가-힣]/;
+/** ㅐ↔ㅔ, ㅒ↔ㅖ — 산호헤/맥시코 같은 한 글자 모음 혼동만 오타로 본다. */
+const CONFUSABLE_JUNG = new Set(['1:5', '5:1', '3:7', '7:3']);
+
+function decomposeHangul(ch) {
+  const code = ch.codePointAt(0);
+  if (code < 0xac00 || code > 0xd7a3) return null;
+  const syllable = code - 0xac00;
+  return [Math.floor(syllable / 588), Math.floor((syllable % 588) / 28), syllable % 28];
+}
+
+function syllablesConfusable(a, b) {
+  if (a === b) return true;
+  const left = decomposeHangul(a);
+  const right = decomposeHangul(b);
+  if (!left || !right) return false;
+  if (left[0] !== right[0] || left[2] !== right[2]) return false;
+  return CONFUSABLE_JUNG.has(`${left[1]}:${right[1]}`);
+}
+
+/** 같은 길이에서 음절 하나만 ㅐ/ㅔ(ㅒ/ㅖ)로 다른 경우. 서원↔서해, 노르망디↔노르웨이처럼 다른 지명은 제외. */
+function isSingleConfusableHangulEdit(a, b) {
+  if (!a || !b || a === b || a.length !== b.length) return false;
+  if (!HANGUL_SYLLABLE_RE.test(a) || !HANGUL_SYLLABLE_RE.test(b)) return false;
+  let diffs = 0;
+  for (let i = 0; i < a.length; i += 1) {
+    if (a[i] === b[i]) continue;
+    if (!syllablesConfusable(a[i], b[i])) return false;
+    diffs += 1;
+    if (diffs > 1) return false;
+  }
+  return diffs === 1;
+}
+
+function isLatinSingleEdit(a, b) {
+  if (!a || !b || HANGUL_SYLLABLE_RE.test(a) || HANGUL_SYLLABLE_RE.test(b)) return false;
+  if (Math.min(a.length, b.length) < 4) return false;
+  if (Math.abs(a.length - b.length) > 1) return false;
+  return levenshtein(a, b) === 1;
 }
 
 function isTypoMatch(queryNorm, aliasNorm) {
   if (!queryNorm || !aliasNorm) return false;
-
-  const directDist = levenshtein(queryNorm, aliasNorm);
-  const maxDirect = maxTypoDistance(Math.min(queryNorm.length, aliasNorm.length));
-  if (directDist <= maxDirect) return true;
+  if (isSingleConfusableHangulEdit(queryNorm, aliasNorm)) return true;
+  if (isLatinSingleEdit(queryNorm, aliasNorm)) return true;
 
   const qc = seaNameCore(queryNorm);
   const ac = seaNameCore(aliasNorm);
   if (qc.length < 2 || ac.length < 2) return false;
-  if (Math.abs(qc.length - ac.length) > 2) return false;
-  const coreDist = levenshtein(qc, ac);
-  return coreDist <= maxTypoDistance(Math.min(qc.length, ac.length));
+  if (qc === ac) return true;
+  if (isSingleConfusableHangulEdit(qc, ac)) return true;
+  return isLatinSingleEdit(qc, ac);
+}
+
+function queryIsExactRegisteredPlace(query) {
+  const q = String(query || '').trim();
+  if (!q) return false;
+  if (resolveTravelSpotFromSearchQuery(q)) return true;
+  if (resolveCityAttractionHub(q)) return true;
+  return false;
 }
 
 const basins = Array.isArray(seaBasinsJson.basins) ? seaBasinsJson.basins : [];
@@ -122,6 +165,8 @@ export function resolveSeaBasinFromQuery(query) {
   if (!basin) {
     const fuzzy = findFuzzyBasin(n);
     if (!fuzzy) return null;
+    // 등록 지명(여행지·도시 허브)은 해역 오타로 빼앗지 않는다. 완전 일치·접두 해역명은 위에서 이미 처리.
+    if (queryIsExactRegisteredPlace(query)) return null;
     basin = fuzzy.basin;
     matchedAlias = fuzzy.alias;
     typoCorrected = fuzzy.dist > 0 || n !== matchedAlias;

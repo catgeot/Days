@@ -6,11 +6,19 @@ import { festivalGridPlaceLabel } from '../../src/pages/Korea/festivalGridPlaceL
 import {
   FESTIVAL_HUB_COLUMN_LANDSCAPE_ASPECT_RATIOS,
   FESTIVAL_HUB_GRID_CLASS,
+  FESTIVAL_HUB_GRID_WIDE_COMPANION_CLASS,
+  FESTIVAL_HUB_GRID_WIDE_SLOT_CLASS,
   FESTIVAL_HUB_PHOTO_WIDE_MIN_RATIO,
   distributeFestivalHubMasonryColumns,
   festivalHubPhotoLayout,
   partitionFestivalHubSegments,
+  planFestivalHubGridRender,
 } from '../../src/pages/Korea/festivalHubGridLayout.js';
+import { readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 import {
   readFestivalHubLegacyListFromSession,
   writeFestivalHubLegacyListToSession,
@@ -22,6 +30,44 @@ test('festival hub grid class — 2 col mobile, 3 md, 4 lg, items-start masonry 
   assert.match(FESTIVAL_HUB_GRID_CLASS, /lg:grid-cols-4/);
   assert.match(FESTIVAL_HUB_GRID_CLASS, /items-start/);
   assert.doesNotMatch(FESTIVAL_HUB_GRID_CLASS, /columns-/);
+});
+
+test('festival hub wide landscape card — full width below lg, col-span-2 on lg grid', () => {
+  assert.match(FESTIVAL_HUB_GRID_WIDE_SLOT_CLASS, /col-span-2/);
+  assert.match(FESTIVAL_HUB_GRID_WIDE_SLOT_CLASS, /md:col-span-3/);
+  assert.match(FESTIVAL_HUB_GRID_WIDE_SLOT_CLASS, /lg:col-span-2/);
+  assert.match(FESTIVAL_HUB_GRID_WIDE_COMPANION_CLASS, /lg:flex/);
+  assert.match(FESTIVAL_HUB_GRID_WIDE_COMPANION_CLASS, /col-span-2/);
+  const hub = readFileSync(join(root, 'src/pages/Korea/index.jsx'), 'utf8');
+  assert.match(hub, /data-festival-grid-wide-slot/);
+  assert.match(hub, /data-festival-grid-wide-row/);
+  assert.match(hub, /planFestivalHubGridRender/);
+  assert.match(hub, /FESTIVAL_HUB_GRID_WIDE_SLOT_CLASS/);
+  assert.doesNotMatch(hub, /seg\.type === 'wide'[\s\S]*className="w-full"/);
+});
+
+test('planFestivalHubGridRender pairs wide row companions only at 4 columns', () => {
+  const segments = [
+    { type: 'wide', entry: { item: { id: 'w' }, index: 0 } },
+    {
+      type: 'columns',
+      entries: [
+        { item: { id: 'a' }, index: 1 },
+        { item: { id: 'b' }, index: 2 },
+        { item: { id: 'c' }, index: 3 },
+      ],
+    },
+  ];
+  const mobile = planFestivalHubGridRender(segments, 2);
+  assert.equal(mobile.length, 2);
+  assert.equal(mobile[0].type, 'segment');
+  assert.equal(mobile[0].seg.type, 'wide');
+  const desktop = planFestivalHubGridRender(segments, 4);
+  assert.equal(desktop.length, 2);
+  assert.equal(desktop[0].type, 'wideRow');
+  assert.equal(desktop[0].companions.length, 2);
+  assert.equal(desktop[1].type, 'segment');
+  assert.equal(desktop[1].seg.entries.length, 1);
 });
 
 test('partitionFestivalHubSegments and distributeFestivalHubMasonryColumns avoid lone-card holes and column-span fragmentation', () => {

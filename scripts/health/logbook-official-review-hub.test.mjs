@@ -135,7 +135,8 @@ test('hub card shows loadFailed retry UI (not blank)', () => {
   assert.match(src, /logbook-official-review-hub-retry/);
   assert.match(src, /data-hub-state="load-failed"/);
   assert.match(src, /LOGBOOK_OFFICIAL_REVIEW_CARD_TITLE/);
-  assert.match(src, /md:max-w-\[min\(80rem,calc\(100vw-16rem-3rem\)\)\]/);
+  assert.match(src, /w-full min-w-0 max-w-full box-border/);
+  assert.doesNotMatch(src, /100vw-16rem/);
   assert.match(src, /showChevron=\{false\}/);
   assert.doesNotMatch(
     src.split('data-hub-state="load-failed"')[1]?.split('if (!isLoading')[0] ?? '',

@@ -76,3 +76,20 @@ export function titleMatchesPoiType(title, type) {
   if (t.endsWith(token)) return true;
   return new RegExp(`${token}(?:대성전|명륜당|외삼문|동무|서무)`).test(t);
 }
+
+/**
+ * «서원» 유형. 끝·괄호 지역·유네스코 꼬리를 서원으로 보고, «서원구»는 구로 본다.
+ * @param {string} title
+ */
+export function titleMatchesSeowonAcademy(title) {
+  const t = compactKey(title);
+  const idx = t.lastIndexOf('서원');
+  if (idx < 0) return false;
+  const after = t.slice(idx + 2);
+  if (after.startsWith('구')) return false;
+  if (!after) return true;
+  if (/^\([^)]*\)$/u.test(after)) return true;
+  if (/^\[유네스코세계(?:문화)?유산\]$/u.test(after)) return true;
+  if (/^(?:대성전|명륜당|외삼문|동무|서무)$/u.test(after)) return true;
+  return false;
+}

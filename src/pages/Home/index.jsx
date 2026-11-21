@@ -57,6 +57,7 @@ import {
   isSameCanonicalPlace,
   resolveTravelSpotFromCoords,
 } from '../../utils/travelSpotResolve.js';
+import { resolveCoordinatePlaceIdentity } from './lib/coordinatePlaceIdentity.js';
 import { getAddressFromCoordinates } from './lib/geocoding';
 import { resolveSessionBoundSpot } from '../../utils/resolveDestinationFromChat';
 import {
@@ -1281,17 +1282,18 @@ function Home() {
                 const matchedCity = (citiesData || []).find(c =>
                   Math.abs(c.lat - parsedLat) < 0.001 && Math.abs(c.lng - parsedLng) < 0.001
                 );
+                const registeredPlace = targetSlug.startsWith('search-') ? resolveCoordinatePlaceIdentity(parsedLat, parsedLng) : null;
 
                 target = {
                   id: targetSlug,
-                  name: matchedCity ? matchedCity.name : (targetSlug.split('-')[0] === 'city' ? "알 수 없는 도시" : "알 수 없는 지역"),
-                  name_en: matchedCity ? matchedCity.name_en : "",
+                  name: registeredPlace?.name || (matchedCity ? matchedCity.name : (targetSlug.split('-')[0] === 'city' ? "알 수 없는 도시" : "알 수 없는 지역")),
+                  name_en: registeredPlace?.name_en || (matchedCity ? matchedCity.name_en : ""),
                   lat: parsedLat,
                   lng: parsedLng,
-                  country: matchedCity?.country || undefined,
-                  country_en: matchedCity?.country_en || undefined,
+                  country: registeredPlace?.country || matchedCity?.country || undefined,
+                  country_en: registeredPlace?.country_en || matchedCity?.country_en || undefined,
                   tags: matchedCity ? matchedCity.tags : [],
-                  desc: matchedCity ? matchedCity.desc : "",
+                  desc: registeredPlace?.desc || (matchedCity ? matchedCity.desc : ""),
                   ...(targetSlug.startsWith('search-') ? { uiPlace: true, source: 'mapbox' } : {}),
                 };
               }
