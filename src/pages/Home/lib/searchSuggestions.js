@@ -77,6 +77,7 @@ import {
 } from './detectHomonymLocation.js';
 import {
   collectKoreaPoiTypeSearchCandidates,
+  isUnescoKoreaSeowonQuery,
   parseKoreaPoiTypeQuery,
   shouldExpandKoreaPoiTypeSearch,
 } from './koreaPoiTypeSearch.js';
@@ -720,7 +721,8 @@ export async function buildHybridSearchSuggestions(query, opts = {}) {
     }
     if (merged.length >= 1) {
       const parsed = parseKoreaPoiTypeQuery(q);
-      const seowonFull = parsed?.type === '서원' && parsed.isTypeOnly;
+      const seowonFull =
+        parsed?.type === '서원' && (parsed.isTypeOnly || isUnescoKoreaSeowonQuery(q));
       return finalizeHybridSuggestions(
         q,
         regional,

@@ -66,35 +66,156 @@ function resolveHubFromTourSpot(spot) {
   return resolveCityAttractionHubFromTourAddr(spot?.addr1, spot?.addr2);
 }
 
-/** 유네스코 한국의 서원. 이 순서 그대로 유형 검색 맨 앞. */
+/**
+ * 유네스코 «한국의 서원» 9곳. 이 순서 그대로 유형 검색 맨 앞.
+ * lat가 있는 4곳은 tourapi_attraction에 공식 행이 없다.
+ * 허브 명소(소수·도산·무성)와 같이 좌표 핀만 두고, 운영 DB는 쓰지 않는다.
+ */
 const UNESCO_KOREA_SEOWON = [
-  '소수서원',
-  '남계서원',
-  '옥산서원',
-  '도산서원',
-  '필암서원',
-  '도동서원',
-  '병산서원',
-  '무성서원',
-  '돈암서원',
+  { key: '소수서원', hubId: 'yeongju', regions: ['영주'] },
+  { key: '남계서원', hubId: 'hamyang', regions: ['함양'] },
+  {
+    key: '옥산서원',
+    hubId: 'gyeongju',
+    regions: ['경주'],
+    nameEn: 'Oksan Seowon',
+    lat: 36.0117011,
+    lng: 129.1633833,
+    addr: '경상북도 경주시 안강읍',
+  },
+  { key: '도산서원', hubId: 'andong', regions: ['안동'] },
+  {
+    key: '필암서원',
+    hubId: 'jangseong',
+    regions: ['장성'],
+    nameEn: 'Piram Seowon',
+    lat: 35.310604,
+    lng: 126.7516729,
+    addr: '전라남도 장성군 황룡면',
+  },
+  {
+    key: '도동서원',
+    hubId: 'dalseong',
+    regions: ['달성'],
+    nameEn: 'Dodong Seowon',
+    lat: 35.7009217,
+    lng: 128.3719049,
+    addr: '대구광역시 달성군 현풍읍 구지서로',
+  },
+  { key: '병산서원', hubId: 'andong', regions: ['안동'] },
+  { key: '무성서원', hubId: 'jeongeup', regions: ['정읍'] },
+  {
+    key: '돈암서원',
+    hubId: 'nonsan',
+    regions: ['논산'],
+    nameEn: 'Donam Seowon',
+    lat: 36.2090961,
+    lng: 127.180548,
+    addr: '충청남도 논산시 연산면',
+  },
 ];
 
-function seowonAcademyIdentity(name) {
-  const t = compactKey(name);
-  for (const key of UNESCO_KOREA_SEOWON) {
-    const idx = t.indexOf(key);
-    if (idx < 0) continue;
-    const after = t.slice(idx + key.length);
-    if (!after || /^\([^)]*\)$/u.test(after) || /^\[유네스코세계(?:문화)?유산\]$/u.test(after)) {
-      return key;
-    }
-  }
-  return t;
+function academyCoreName(name) {
+  return compactKey(name)
+    .replace(/\[유네스코세계(?:문화)?유산\]$/u, '')
+    .replace(/\([^)]*\)$/u, '');
 }
 
-function seowonRankIndex(name) {
-  const idx = UNESCO_KOREA_SEOWON.indexOf(seowonAcademyIdentity(name));
-  return idx >= 0 ? idx : UNESCO_KOREA_SEOWON.length;
+function seowonRegionBlob(item) {
+  return compactKey(
+    [item?.name, item?.addr1, item?.addr2, item?.parentCity, item?.groupTitle, item?.desc]
+      .filter(Boolean)
+      .join(' '),
+  );
+}
+
+function matchingUnescoSeowon(item) {
+  const core = academyCoreName(item?.name);
+  return UNESCO_KOREA_SEOWON.find((rule) => rule.key === core) || null;
+}
+
+function isCanonicalUnescoSeowon(item, rule = matchingUnescoSeowon(item)) {
+  if (!rule || academyCoreName(item?.name) !== rule.key) return false;
+  if (item?.hubId && item.hubId === rule.hubId) return true;
+  const blob = seowonRegionBlob(item);
+  return rule.regions.some((region) => blob.includes(compactKey(region)));
+}
+
+function seowonRankIndex(item) {
+  const rule = matchingUnescoSeowon(item);
+  if (rule && isCanonicalUnescoSeowon(item, rule)) return UNESCO_KOREA_SEOWON.indexOf(rule);
+  return UNESCO_KOREA_SEOWON.length;
+}
+
+function distanceMeters(a, b) {
+  const lat1 = Number(a?.lat);
+  const lng1 = Number(a?.lng);
+  const lat2 = Number(b?.lat);
+  const lng2 = Number(b?.lng);
+  if (![lat1, lng1, lat2, lng2].every(Number.isFinite)) return Infinity;
+  const dy = (lat1 - lat2) * 111_320;
+  const dx = (lng1 - lng2) * 111_320 * Math.cos((lat1 * Math.PI) / 180);
+  return Math.hypot(dx, dy);
+}
+
+/** 같은 서원(유네스코 행·허브·괄호 표기)만 합친다. 하동 옥산·김천 도동은 남긴다. */
+function sameSeowonPlace(a, b) {
+  const core = academyCoreName(a?.name);
+  if (!core || core !== academyCoreName(b?.name)) return false;
+  const rule = UNESCO_KOREA_SEOWON.find((row) => row.key === core);
+  if (rule && isCanonicalUnescoSeowon(a, rule) && isCanonicalUnescoSeowon(b, rule)) return true;
+  return distanceMeters(a, b) <= 2500;
+}
+
+function shortSeowonRegion(item) {
+  const city = String(item?.parentCity || '').trim();
+  const sigungu = city || extractTourAttractionSigungu(item?.addr1, item?.addr2);
+  return String(sigungu || '').replace(/(특별자치시|광역시|특별시|자치시|시|군|구)$/u, '');
+}
+
+function disambiguateHomonymSeowonNames(items) {
+  const groups = new Map();
+  for (const item of items) {
+    const core = academyCoreName(item?.name);
+    if (!core) continue;
+    const list = groups.get(core) || [];
+    list.push(item);
+    groups.set(core, list);
+  }
+  for (const [core, group] of groups) {
+    if (group.length < 2) continue;
+    const rule = UNESCO_KOREA_SEOWON.find((row) => row.key === core);
+    for (const item of group) {
+      if (rule && isCanonicalUnescoSeowon(item, rule)) continue;
+      if (/\([^)]*\)/.test(String(item.name || ''))) continue;
+      const region = shortSeowonRegion(item);
+      if (!region || compactKey(item.name).includes(compactKey(region))) continue;
+      item.name = `${core}(${region})`;
+    }
+  }
+}
+
+function unescoSeowonSuggestion(rule) {
+  const hub = resolveCityAttractionHub(rule.hubId);
+  if (!hub || !Number.isFinite(rule.lat) || !Number.isFinite(rule.lng)) return null;
+  const item = attractionToSuggestion(hub, {
+    name: rule.key,
+    name_en: rule.nameEn || rule.key,
+    kind: 'landmark',
+    lat: rule.lat,
+    lng: rule.lng,
+  });
+  if (rule.addr) {
+    item.addr1 = rule.addr;
+    item.desc = rule.addr;
+  }
+  if (!item.groupTitle) item.groupTitle = `${hub.name} 명소`;
+  return item;
+}
+
+export function isUnescoKoreaSeowonQuery(query) {
+  const key = compactKey(query);
+  return UNESCO_KOREA_SEOWON.some((rule) => rule.key === key);
 }
 
 export function tourAttractionToPoiSuggestion(spot, opts = {}) {
@@ -168,14 +289,23 @@ export async function collectKoreaPoiTypeSearchCandidates(query, opts = {}) {
   const parsed = parseKoreaPoiTypeQuery(query);
   if (!shouldExpandKoreaPoiTypeSearch(parsed)) return [];
 
-  const seowonRank = parsed.type === '서원' && parsed.isTypeOnly;
+  const seowonRank = parsed.type === '서원' && (parsed.isTypeOnly || isUnescoKoreaSeowonQuery(query));
   const seen = new Set();
   const out = [];
   const push = (item) => {
     if (!item?.name) return;
-    const k = seowonRank ? seowonAcademyIdentity(item.name) : compactKey(item.name);
-    if (!k || seen.has(k)) return;
-    seen.add(k);
+    if (!seowonRank) {
+      const k = compactKey(item.name);
+      if (!k || seen.has(k)) return;
+      seen.add(k);
+      out.push(item);
+      return;
+    }
+    const idx = out.findIndex((row) => sameSeowonPlace(row, item));
+    if (idx >= 0) {
+      if (seowonRankIndex(item) < seowonRankIndex(out[idx])) out[idx] = item;
+      return;
+    }
     out.push(item);
   };
 
@@ -189,7 +319,7 @@ export async function collectKoreaPoiTypeSearchCandidates(query, opts = {}) {
     const title = parsed.isTypeOnly ? parsed.type : `${parsed.cityPrefix}${parsed.type}`;
     rows = await lookupKoreaTourAttractionsMatchingTitle(title, {
       limit: parsed.isTypeOnly ? 250 : 24,
-      fetchAll: seowonRank,
+      fetchAll: parsed.type === '서원' && parsed.isTypeOnly,
     });
   }
 
@@ -198,9 +328,20 @@ export async function collectKoreaPoiTypeSearchCandidates(query, opts = {}) {
     push(tourAttractionToPoiSuggestion(row));
   }
 
+  if (seowonRank) {
+    const pins = parsed.isTypeOnly
+      ? UNESCO_KOREA_SEOWON
+      : UNESCO_KOREA_SEOWON.filter((rule) => rule.key === compactKey(query));
+    for (const rule of pins) {
+      if (out.some((item) => isCanonicalUnescoSeowon(item, rule))) continue;
+      push(unescoSeowonSuggestion(rule));
+    }
+    disambiguateHomonymSeowonNames(out);
+  }
+
   out.sort((a, b) => {
     if (seowonRank) {
-      const ds = seowonRankIndex(a.name) - seowonRankIndex(b.name);
+      const ds = seowonRankIndex(a) - seowonRankIndex(b);
       if (ds) return ds;
     }
     const g = String(a.groupTitle || a.parentCity || '').localeCompare(
