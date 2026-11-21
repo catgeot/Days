@@ -1,5 +1,5 @@
 /**
- * Khao Lak /place overviews, locked galleries, zen hit target, festival FAB vs Close.
+ * Khao Lak /place overviews, locked galleries, globe chrome hidden on place, festival FAB vs Close.
  * Local Vite only. Network mocks — no Gemini.
  */
 import { test, expect } from '@playwright/test';
@@ -210,20 +210,27 @@ test.describe('khao lak place qa', () => {
     }
   });
 
-  test('zen button hit target at 1280 is the zen control', async ({ page }) => {
+  test('globe chrome buttons stay hidden on the place page at 1280', async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 800 });
     await page.goto('/place/bang-sak-beach', { waitUntil: 'domcontentloaded' });
-    const zen = page.getByRole('button', { name: /Zen Mode/i });
-    await expect(zen).toBeVisible();
-    const box = await zen.boundingBox();
-    expect(box).toBeTruthy();
-    const hitLabel = await page.evaluate(({ x, y }) => {
-      const el = document.elementFromPoint(x, y);
-      const button = el?.closest?.('button');
-      return button?.getAttribute('aria-label') || el?.getAttribute?.('aria-label') || '';
-    }, { x: box.x + box.width / 2, y: box.y + box.height / 2 });
-    expect(hitLabel).toMatch(/Zen Mode/i);
-    await zen.click({ trial: true });
+    const overview = hubAttractionOverview('bang-sak-beach');
+    await expect(page.getByText(overview.desc.slice(0, 24)).first()).toBeVisible();
+
+    const globeButtonNames = [
+      '지구본 무드 변경',
+      'Change globe mood',
+      'Zen Mode (전체화면 힐링)',
+      'Zen mode (fullscreen)',
+      '마커·지명 숨기기',
+      '마커·지명 보이기',
+      'Hide markers & labels',
+      'Show markers & labels',
+      '임시 핀 모두 삭제',
+      'Clear temporary pins',
+    ];
+    for (const name of globeButtonNames) {
+      await expect(page.getByRole('button', { name, exact: true })).toBeHidden();
+    }
   });
 });
 
