@@ -670,6 +670,12 @@ export function SearchDisambiguationCards({
           <p className="mt-1 text-xs text-white/70 break-keep">
             {body}
           </p>
+          <p
+            className="mt-1 text-xs font-semibold text-white/80 break-keep"
+            data-search-result-count={candidates.length}
+          >
+            {t('home.explore.searchResultCount', { count: candidates.length })}
+          </p>
         </div>
         {onCancel && (
           <button
@@ -699,7 +705,7 @@ export function SearchDisambiguationCards({
         </div>
       ) : null}
 
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-2" data-search-result-list="">
         {pageItems.map((item, index) => {
           const badgeKey = item.badge || EXPLORE_BADGE_PLACE;
           const badge = localizedExploreBadgeLabel(t, badgeKey);
@@ -737,6 +743,8 @@ export function SearchDisambiguationCards({
               <div className="rounded-2xl border border-white/25 bg-[#32281f]/95 shadow-[0_4px_20px_rgba(0,0,0,0.35)] hover:border-sky-300/50 hover:bg-[#3a2f25] transition-all">
             <button
               type="button"
+              data-search-result-card=""
+              data-search-result-name={item.name}
               onPointerDown={(event) => activateSearchSuggestion(event, hydrated, query, onSelect)}
               onClick={(event) => {
                 if (event.pointerType && event.pointerType !== 'mouse') return;

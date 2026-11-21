@@ -4,8 +4,8 @@ import hubsJson from '../data/cityAttractionHubs.json' with { type: 'json' };
 import scenicJson from '../data/koreaScenicSpots.json' with { type: 'json' };
 import { getWorldEventsForSlug, getWorldEventTitle, formatWorldEventDateRange } from '../../../utils/worldEvents.js';
 import { isGateoPlaceCrosslinkEnabled } from '../../../shared/gateoFeatureFlags.js';
-import { resolveCityAttractionHub, resolveHubPlaceFromSlug } from './cityAttractionHubs.js';
-import { matchKoreaAdminRegionFromAddr } from './koreaAdminRegionMatch.js';
+import { resolveCityAttractionHub } from './cityAttractionHubs.js';
+import { resolveRegionalHubIdForPlace } from './resolveRegionalHubForPlace.js';
 import { scenicHomePathForHubId } from './koreaThemeCrossLinks.js';
 import { isScenicSpotHidden } from './koreaScenicSpotVisibility.js';
 import { gateoKoreaFestivalDetailUrl } from '../../../shared/korea/mooniKoreaFestivalAssist.js';
@@ -96,19 +96,7 @@ function resolveEventHref(event) {
 }
 
 function resolveHubIdForPlace(loc) {
-  if (!loc || typeof loc !== 'object') return '';
-  const slug = String(loc.slug || loc.canonical_slug || '').trim().toLowerCase();
-  const hubFromSlug = slug ? resolveHubPlaceFromSlug(slug) : null;
-  if (hubFromSlug?.hubId) return String(hubFromSlug.hubId).toLowerCase();
-  const explicit = String(loc.hubId || '').trim().toLowerCase();
-  if (explicit && resolveCityAttractionHub(explicit)) return explicit;
-  const byName = resolveCityAttractionHub(loc.name || loc.name_ko || loc.parentCity);
-  if (byName?.hubId) return String(byName.hubId).toLowerCase();
-  if (loc.addr1) {
-    const region = matchKoreaAdminRegionFromAddr(loc.addr1);
-    if (region?.hubId) return region.hubId;
-  }
-  return slug;
+  return resolveRegionalHubIdForPlace(loc);
 }
 
 function resolveCrosslinkLocale(options = {}) {
