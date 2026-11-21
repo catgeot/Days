@@ -35,12 +35,17 @@ const UserProfile = ({ user, onLogout, onOpenSlide }) => {
       {user ? (
         <div className="bg-gray-100/50 rounded-2xl p-4">
           <div
-            className="w-full aspect-[4/3] bg-gray-200 rounded-lg mb-3 overflow-hidden relative group cursor-pointer border border-gray-300"
+            data-testid="logbook-sidebar-profile-photo"
+            className="relative mb-3 w-full max-w-full shrink-0 cursor-pointer overflow-hidden rounded-lg border border-gray-300 bg-gray-200 aspect-[4/3] group"
             onClick={onOpenSlide}
             title={t('logbook.profile.memoryBox')}
           >
             {avatarUrl ? (
-              <img src={avatarUrl} alt="Profile" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+              <img
+                src={avatarUrl}
+                alt="Profile"
+                className="h-full w-full object-cover object-center group-hover:scale-105 transition-transform duration-700"
+              />
             ) : (
               <div className="w-full h-full flex flex-col items-center justify-center text-gray-500">
                 <ImageIcon size={24} className="mb-1" />

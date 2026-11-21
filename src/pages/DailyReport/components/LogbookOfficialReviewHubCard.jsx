@@ -53,7 +53,7 @@ const LIST_PREVIEW_MAX = 120;
 
 /** Keeps hub inside the logbook main column when sidebar + max-w-7xl would exceed the viewport. */
 const HUB_CARD_LAYOUT_CLASS =
-  'mb-6 w-full min-w-0 max-w-full box-border md:max-w-[min(80rem,calc(100vw-16rem-3rem))] overflow-x-hidden rounded-2xl border border-gray-200 bg-white shadow-sm';
+  'mb-6 w-full min-w-0 max-w-full box-border overflow-x-hidden rounded-2xl border border-gray-200 bg-white shadow-sm';
 
 function hubPageSize(filterEnabled) {
   return filterEnabled ? LOGBOOK_OFFICIAL_REVIEW_HUB_CARD_PAGE_SIZE : LOGBOOK_OFFICIAL_REVIEW_HUB_PAGE_SIZE;

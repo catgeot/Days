@@ -127,7 +127,7 @@ const DailyLayout = () => {
   };
 
   return (
-    <div className="flex h-screen w-full flex-col overflow-hidden bg-gray-50 text-gray-900 md:flex-row">
+    <div className="flex h-screen w-full flex-col overflow-hidden bg-gray-50 text-gray-900">
 
       <div
         data-logbook-mobile-header
