@@ -128,6 +128,7 @@ export default defineConfig({
         /travelogue-back-nav\.spec\.js/,
         /article-festival-place-back\.spec\.js/,
         /explore-choseong-search\.spec\.js/,
+        /explore-seowon-search\.spec\.js/,
         /explore-suggest-rank\.spec\.js/,
         /agency-home-link\.spec\.js/,
         /tour-modal-region-search\.spec\.js/,
@@ -485,7 +486,7 @@ export default defineConfig({
     },
     {
       name: 'chromium-explore-bare-ko-390',
-      testMatch: /explore-search-bare-ko\.spec\.js|explore-place-screen-back\.spec\.js|explore-ganghwa-dolmen-search\.spec\.js/,
+      testMatch: /explore-search-bare-ko\.spec\.js|explore-place-screen-back\.spec\.js|explore-ganghwa-dolmen-search\.spec\.js|explore-seowon-search\.spec\.js/,
       timeout: 180_000,
       use: {
         ...devices['Desktop Chrome'],

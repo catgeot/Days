@@ -304,6 +304,7 @@
       "askMooniBadge": "AI",
       "disambiguationTitle": "원하는 장소를 선택하세요",
       "disambiguationBody": "위치가 여러 곳일 수 있어요. 카드를 누르면 해당 장소로 이동합니다.",
+      "searchResultCount": "검색 결과 {{count}}건",
       "paginationPrev": "이전",
       "paginationNext": "다음",
       "paginationPage": "{{page}} / {{total}}",

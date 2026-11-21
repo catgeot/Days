@@ -4,6 +4,7 @@ import {
   isDomesticKoreaLocation,
 } from '../../../utils/tourApiMatch.js';
 import { resolveCityAttractionHub } from './cityAttractionHubs.js';
+import { resolveRegionalHubIdForPlace } from './resolveRegionalHubForPlace.js';
 import { resolveExploreCityHubExact } from './exploreHubResolve.js';
 import { getLocalizedParentCityLabel } from '../../../components/PlaceCard/common/locationDisplay.js';
 import { koreaTourContentPlaceParam } from './formatUrlName.js';
@@ -211,6 +212,9 @@ export function normalizeExploreSelectionPin(pin) {
     next.uiPlace = true;
     delete next.exploreTourAttached;
   }
+
+  const regionalHubId = resolveRegionalHubIdForPlace(next);
+  if (regionalHubId) next.hubId = regionalHubId;
 
   return next;
 }
