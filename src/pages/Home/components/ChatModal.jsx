@@ -1784,7 +1784,7 @@ const ChatModal = ({
           title={t('mooni.chat.close')}
           className={tone(
             fresh,
-            'absolute z-[60] top-[max(0.75rem,env(safe-area-inset-top,0px))] right-[max(0.75rem,env(safe-area-inset-right,0px))] md:top-4 md:right-4 flex h-11 w-11 min-h-[44px] min-w-[44px] items-center justify-center rounded-full border-2 border-gray-200 bg-gray-500 text-white shadow-lg transition-colors hover:bg-gray-400 hover:border-white touch-manipulation',
+            'absolute z-[60] top-[max(0.75rem,env(safe-area-inset-top,0px))] right-[max(0.75rem,env(safe-area-inset-right,0px))] md:top-4 md:right-4 flex h-11 w-11 min-h-[44px] min-w-[44px] items-center justify-center rounded-full border-2 border-gray-200 bg-gray-500 text-white shadow-lg transition-colors hover:bg-gray-600 hover:border-white touch-manipulation',
             'absolute z-[60] top-[max(0.75rem,env(safe-area-inset-top,0px))] right-[max(0.75rem,env(safe-area-inset-right,0px))] md:top-4 md:right-4 flex h-11 w-11 min-h-[44px] min-w-[44px] items-center justify-center rounded-full border-2 border-cyan-900 bg-cyan-700 text-white shadow-lg transition-colors hover:bg-cyan-800 hover:border-cyan-950 touch-manipulation',
           )}
         >

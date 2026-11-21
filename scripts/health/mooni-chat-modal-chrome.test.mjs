@@ -30,19 +30,19 @@ function contrastRatio(rgbA, rgbB) {
   return (lighter + 0.05) / (darker + 0.05);
 }
 
-const WEAK_CYAN_TEAL_ON_WHITE =
-  /(?:^|[\s"'`])(?:hover:)?bg-(?:cyan|teal)-(?:300|400|500|600)(?:\/[\w.]+)?/;
+const WEAK_BG_ON_WHITE =
+  /(?:^|[\s"'`])(?:hover:)?bg-(?:(?:cyan|teal)-(?:300|400|500|600)|(?:gray|slate)-(?:300|400))(?:\/[\w.]+)?/;
 
-function assertNoWeakCyanTealBehindWhite(chatModal) {
+function assertNoWeakBgBehindWhite(chatModal) {
   const literal = /'([^'\\]|\\.)*'|"([^"\\]|\\.)*"/g;
   let match;
   while ((match = literal.exec(chatModal)) !== null) {
     const inner = match[0].slice(1, -1);
     if (!inner.includes('text-white')) continue;
-    const hits = inner.match(WEAK_CYAN_TEAL_ON_WHITE);
+    const hits = inner.match(WEAK_BG_ON_WHITE);
     if (hits) {
       assert.fail(
-        `text-white class string must not use cyan/teal 300–600 bg: ${hits[0]} …${inner.slice(0, 120)}`,
+        `text-white class string must not use low-contrast bg: ${hits[0]} …${inner.slice(0, 120)}`,
       );
     }
   }
@@ -108,9 +108,9 @@ test('MOONi chat solid accent — white on cyan-700/800 ≥ 4.5:1', () => {
   }
 });
 
-test('ChatModal — text-white must not pair with cyan/teal 300–600 bg', () => {
+test('ChatModal — text-white must not pair with cyan/teal 300–600 or gray/slate 300–400 bg', () => {
   const chatModal = readFileSync(join(root, 'src/pages/Home/components/ChatModal.jsx'), 'utf8');
-  assertNoWeakCyanTealBehindWhite(chatModal);
+  assertNoWeakBgBehindWhite(chatModal);
 });
 
 test('MOONi chat main header — close reserve padding, mobile new-chat label', () => {
