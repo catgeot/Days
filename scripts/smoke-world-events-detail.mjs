@@ -41,7 +41,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, '..');
 
 const events = getAllWorldEvents();
-assert.equal(events.length, 23, 'Wave1+Wave2+Wave3 paris+los-angeles+london+rome has 23 events');
+assert.equal(events.length, 28, 'Wave1–3 + monthly 2026-12 picks has 28 events');
 
 for (const event of events) {
   const found = getWorldEventById(event.id);
@@ -94,6 +94,11 @@ assertTier05('paris-nuit-blanche-2027', 3);
 assertTier05('los-angeles-rose-parade-2027', 3);
 assertTier05('london-notting-hill-2026', 3);
 assertTier05('rome-carnevale-2027', 3);
+assertTier05('sapporo-white-illumination-2026', 3);
+assertTier05('vienna-christkindlmarkt-2026', 2);
+assertTier05('hong-kong-winterfest-2026', 3);
+assertTier05('seoul-lantern-festival-2026', 2);
+assertTier05('sydney-nye-fireworks-2026', 2);
 
 const WAVE1_EVENT_IDS = [
   'edinburgh-fringe-2026',
@@ -149,6 +154,14 @@ const D5_B_BATCH_C_EVENT_IDS = [
 
 const D5_B_BATCH_D_EVENT_IDS = ['hanoi-tet-2027'];
 
+const MONTHLY_PICK_2026_12_EVENT_IDS = [
+  'sapporo-white-illumination-2026',
+  'vienna-christkindlmarkt-2026',
+  'hong-kong-winterfest-2026',
+  'seoul-lantern-festival-2026',
+  'sydney-nye-fireworks-2026',
+];
+
 for (const eventId of WAVE1_EVENT_IDS) {
   const event = getWorldEventById(eventId);
   assert.ok(event, `${eventId} in Wave1 roster`);
@@ -171,6 +184,19 @@ for (const eventId of WAVE2_EVENT_IDS) {
 for (const eventId of WAVE3_EVENT_IDS) {
   const event = getWorldEventById(eventId);
   assert.ok(event, `${eventId} in Wave3 roster`);
+  assert.ok(event.detailOverview, `${eventId} Tier0.5 detailOverview`);
+  assert.ok(Array.isArray(event.glossaryTerms) && event.glossaryTerms.length >= 4, `${eventId} glossaryTerms`);
+  assert.ok(Array.isArray(event.heroImages) && event.heroImages.length >= 3, `${eventId} heroImages`);
+  assert.ok(
+    Array.isArray(event.highlightContextLinks) && event.highlightContextLinks.length >= 2,
+    `${eventId} highlightContextLinks`,
+  );
+  assert.ok(!Array.isArray(event.actionChips) || event.actionChips.length === 0, `${eventId} no actionChips`);
+}
+
+for (const eventId of MONTHLY_PICK_2026_12_EVENT_IDS) {
+  const event = getWorldEventById(eventId);
+  assert.ok(event, `${eventId} in monthly 2026-12 roster`);
   assert.ok(event.detailOverview, `${eventId} Tier0.5 detailOverview`);
   assert.ok(Array.isArray(event.glossaryTerms) && event.glossaryTerms.length >= 4, `${eventId} glossaryTerms`);
   assert.ok(Array.isArray(event.heroImages) && event.heroImages.length >= 3, `${eventId} heroImages`);
@@ -1072,6 +1098,7 @@ for (const pilotId of [
   'los-angeles-rose-parade-2027',
   'london-notting-hill-2026',
   'rome-carnevale-2027',
+  ...MONTHLY_PICK_2026_12_EVENT_IDS,
   ...D5_B_BATCH_A_EVENT_IDS,
   ...D5_B_BATCH_B_EVENT_IDS,
   ...D5_B_BATCH_C_EVENT_IDS,

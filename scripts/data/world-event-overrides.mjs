@@ -8,6 +8,7 @@
  * Wave 3 (#47): paris — D5-b 템플릿
  * D5-b-3 #34 배치 A: vienna · amsterdam · prague · marrakech
  * D5-b-3 #35 배치 B: tokyo · kyoto · bangkok
+ * Monthly 2026-12: sapporo · vienna · hong-kong · seoul · sydney
  *
  * @typedef {import('../lib/world-event-schema.mjs').WorldEventOverride} WorldEventOverride
  */
@@ -3809,6 +3810,736 @@ export const WORLD_EVENT_OVERRIDES = [
         id: 'stay-area',
         promptKo: '센트로 스토리코랑 트리덴테 중 어디 숙소가 나아?',
         promptEn: 'Centro Storico or Tridente — where should I stay?',
+      },
+    ],
+    priority: 1,
+  },
+  {
+    id: 'sapporo-white-illumination-2026',
+    slug: 'sapporo',
+    hubId: 'sapporo',
+    type: 'festival',
+    title: '삿포로 화이트 일루미네이션',
+    titleEn: 'Sapporo White Illumination',
+    startDate: '2026-11-20',
+    endDate: '2027-03-14',
+    recurrence: 'annual',
+    recurrenceNote: '11/20~3/14 · 오도리 회장~12/25',
+    recurrenceNoteEn: 'Nov 20–Mar 14 · Odori site through Dec 25',
+    venue: { name: 'Odori Park · Ekimae-dori · Minami 1-jo' },
+    source: 'official_url',
+    sourceUrl: 'https://www.sapporo.travel/en/event/event-list/sapporo_white_illumination/',
+    bookingHints: '오도리·스스키노·札幌역 남口 — 회장별 기간·야간 온도 대비',
+    detailOverview:
+      '1981년부터 이어지는 삿포로의 겨울 조명 축제로, 오도리 공원·駅前通·南一条通 등 도심 거리가 빛으로 물듭니다. 2026–27 시즌은 11월 20일부터 3월 14일까지이며, 오도리 회장은 12월 25일까지입니다. 12월 초·크리스마스 전후 2~3박으로 오도리~스스키노 기점을 잡는 방문이 일반적입니다.',
+    highlights: [
+      'Odori Park 1~5丁目 — 회장별 테마 오브제·12/11~13 스페셜 라이트쇼(3丁目)',
+      '오도리 2丁目 Münchner Weihnachtsmarkt in Sapporo — 독일식 크리스마스 마켓',
+      '駅前通·南一条通·赤れんが(アカプラ) — 거리 조명 산책',
+    ],
+    stayAreas: [
+      {
+        name: '오도리 · Odori',
+        mrtKeyword: 'Sapporo Odori',
+        note: '오도리 회장 도보 · 지하철 허브',
+      },
+      {
+        name: '스스키노 · Susukino',
+        mrtKeyword: 'Susukino Sapporo',
+        note: '야식·바 · 오도리 도보 10분',
+      },
+    ],
+    recommendedNights: 3,
+    heroImage:
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0d/Hokkaido_Sapporo_Odori_Park.jpg/1280px-Hokkaido_Sapporo_Odori_Park.jpg',
+    heroImages: [
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0d/Hokkaido_Sapporo_Odori_Park.jpg/1280px-Hokkaido_Sapporo_Odori_Park.jpg',
+        captionKo: '오도리 공원',
+        captionEn: 'Odori Park',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/20181107_Sapporo_6517_%2848437224587%29.jpg/1280px-20181107_Sapporo_6517_%2848437224587%29.jpg',
+        captionKo: '삿포로 겨울 거리',
+        captionEn: 'Sapporo winter street',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0d/Hokkaido_Sapporo_Odori_Park.jpg/1280px-Hokkaido_Sapporo_Odori_Park.jpg',
+        captionKo: '오도리 공원 전경',
+        captionEn: 'Odori Park view',
+      },
+    ],
+    heroGallerySearchQueryEn: 'Sapporo White Illumination Odori',
+    glossaryTerms: [
+      {
+        id: 'white-illumination',
+        termKo: '화이트 일루미네이션',
+        termEn: 'White Illumination',
+        promptKo:
+          '삿포로 화이트 일루미네이션이 무엇인지, 여행자가 알아야 할 핵심만 3문장 이내로 설명해줘.',
+        promptEn: 'What is Sapporo White Illumination for travelers? 3 short sentences.',
+        searchQueryKo: '삿포로 화이트 일루미네이션',
+        searchQueryEn: 'Sapporo White Illumination',
+        referenceUrl: 'https://www.sapporo.travel/white-illumination/',
+      },
+      {
+        id: 'odori-site',
+        termKo: '오도리 회장',
+        termEn: 'Odori site',
+        promptKo:
+          '오도리 회장 일루미네이션 기간과 볼거리를 3문장 이내로 설명해줘.',
+        promptEn: 'Odori site dates and highlights in 3 short sentences.',
+        searchQueryKo: '삿포로 오도리 일루미네이션',
+        searchQueryEn: 'Sapporo Odori illumination',
+      },
+      {
+        id: 'christmas-market-sapporo',
+        termKo: '뮌헨 크리스마스 마켓',
+        termEn: 'Munich Christmas Market in Sapporo',
+        promptKo:
+          '오도리 독일식 크리스마스 마켓이 무엇인지 3문장 이내로 설명해줘.',
+        promptEn: 'What is the German Christmas Market in Odori? 3 short sentences.',
+        searchQueryKo: '삿포로 독일 크리스마스 마켓 오도리',
+        searchQueryEn: 'Sapporo German Christmas Market Odori',
+      },
+      {
+        id: 'susukino-base',
+        termKo: '스스키노',
+        termEn: 'Susukino',
+        promptKo:
+          '일루미네이션 시즌 스스키노가 숙소 기점으로 좋은 이유를 3문장 이내로 설명해줘.',
+        promptEn: 'Why Susukino is a good base for illumination season in 3 short sentences.',
+        searchQueryKo: '삿포로 스스키노 숙소',
+        searchQueryEn: 'Susukino Sapporo hotels',
+      },
+    ],
+    highlightContextLinks: [
+      {
+        highlightIndex: 0,
+        links: [
+          {
+            id: 'odori-official',
+            labelKo: '오도리 회장 안내',
+            labelEn: 'Odori site guide',
+            kind: 'shop',
+            href: 'https://www.sapporo.travel/white-illumination/event/illumination/odori/',
+          },
+        ],
+      },
+      {
+        highlightIndex: 1,
+        links: [
+          {
+            id: 'illumination-hub',
+            labelKo: '공식 일정',
+            labelEn: 'Official schedule',
+            kind: 'tour',
+            href: 'https://www.sapporo.travel/white-illumination/',
+          },
+        ],
+      },
+    ],
+    youtubeSearchQueryKo: '삿포로 화이트 일루미네이션 오도리',
+    youtubeSearchQueryEn: 'Sapporo White Illumination Odori',
+    mooniChips: [
+      {
+        id: 'odori-dates',
+        promptKo: '오도리 회장은 12월 몇 일까지야?',
+        promptEn: 'When does the Odori site close in December?',
+      },
+      {
+        id: 'dec-stay',
+        promptKo: '12월 크리스마스 전후 3박 일정 짜줘',
+        promptEn: 'Plan a 3-night Sapporo trip around Christmas illuminations',
+      },
+      {
+        id: 'stay-area',
+        promptKo: '오도리랑 스스키노 중 어디 숙소가 나아?',
+        promptEn: 'Odori or Susukino — where should I stay?',
+      },
+    ],
+    priority: 1,
+  },
+  {
+    id: 'vienna-christkindlmarkt-2026',
+    slug: 'vienna',
+    hubId: 'vienna',
+    type: 'festival',
+    title: '빈 라트하우스 크리스마스 마켓',
+    titleEn: 'Vienna Christmas Market (Christkindlmarkt)',
+    startDate: '2026-11-13',
+    endDate: '2026-12-26',
+    recurrence: 'annual',
+    recurrenceNote: '11/13~12/26 · 매일 10~22시',
+    recurrenceNoteEn: 'Nov 13–Dec 26 · daily 10am–10pm',
+    venue: { name: 'Rathausplatz' },
+    source: 'official_url',
+    sourceUrl: 'https://www.christkindlmarkt.at/besuch/',
+    bookingHints: '1구·Rathaus U2·Ring — 주말·12/24 전후 혼잡 · Eistraum 스케이트 별도 기간',
+    detailOverview:
+      '빈 시청(Rathaus) 앞 라트하우스플라츠에서 열리는 비엔나 대표 크리스마스 마켓입니다. 2026년은 11월 13일부터 12월 26일까지 매일 10~22시(12/24는 18:30까지) 운영됩니다. 마켓·빙상장(Eistraum) 전후 2~3박으로 1구 기점을 잡는 방문이 일반적입니다.',
+    highlights: [
+      'Rathausplatz 부스·펀치·장식 트리',
+      'Eistraum am Christkindlmarkt — 11/13~1/6 빙상장',
+      'Ringstraße·Volkstheater U3 — 대중교통 접근',
+    ],
+    stayAreas: [
+      {
+        name: '1구 · Innere Stadt',
+        mrtKeyword: 'Vienna Innere Stadt',
+        note: 'Rathaus·Stephansplatz 도보권',
+      },
+      {
+        name: 'Neubau · MuseumsQuartier',
+        mrtKeyword: 'Vienna Neubau',
+        note: 'U2 Rathaus 2정거장 · 숙소 가성비',
+      },
+    ],
+    recommendedNights: 2,
+    heroImage:
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Carousel_Ride_Rathaus.jpg/1280px-Carousel_Ride_Rathaus.jpg',
+    heroImages: [
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Carousel_Ride_Rathaus.jpg/1280px-Carousel_Ride_Rathaus.jpg',
+        captionKo: '라트하우스 크리스마스 마켓',
+        captionEn: 'Rathaus Christmas market',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Vienna_-_Rathaus.jpg/1280px-Vienna_-_Rathaus.jpg',
+        captionKo: '빈 시청',
+        captionEn: 'Vienna City Hall',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4f/Rathaus_Christmas_Market.jpg/1280px-Rathaus_Christmas_Market.jpg',
+        captionKo: '크리스마스 마켓 풍경',
+        captionEn: 'Christmas market stalls',
+      },
+    ],
+    heroGallerySearchQueryEn: 'Vienna Christkindlmarkt Rathaus',
+    glossaryTerms: [
+      {
+        id: 'christkindlmarkt',
+        termKo: '크리스트킨들마르크트',
+        termEn: 'Christkindlmarkt',
+        promptKo:
+          '빈 라트하우스 크리스마스 마켓(Christkindlmarkt)이 무엇인지 3문장 이내로 설명해줘.',
+        promptEn: 'What is the Vienna Christkindlmarkt? 3 short sentences.',
+        searchQueryKo: '빈 크리스마스 마켓 라트하우스',
+        searchQueryEn: 'Vienna Christmas market Rathaus',
+        referenceUrl: 'https://www.christkindlmarkt.at/',
+      },
+      {
+        id: 'rathausplatz',
+        termKo: '라트하우스플라츠',
+        termEn: 'Rathausplatz',
+        promptKo:
+          '라트하우스플라츠 마켓 운영 시간·날짜 확인 팁을 3문장 이내로 설명해줘.',
+        promptEn: 'Rathausplatz market hours and dates in 3 short sentences.',
+        searchQueryKo: '빈 Rathausplatz 크리스마스',
+        searchQueryEn: 'Rathausplatz Vienna Christmas',
+      },
+      {
+        id: 'eistraum',
+        termKo: '아이스트라움',
+        termEn: 'Eistraum',
+        promptKo:
+          'Christkindlmarkt Eistraum 빙상장 기간이 마켓과 어떻게 다른지 3문장 이내로 설명해줘.',
+        promptEn: 'How Eistraum rink dates differ from the market in 3 short sentences.',
+        searchQueryKo: '빈 Eistraum 라트하우스',
+        searchQueryEn: 'Vienna Eistraum Rathaus',
+      },
+      {
+        id: 'punsch',
+        termKo: '빈 펀치',
+        termEn: 'Viennese punch',
+        promptKo:
+          '빈 크리스마스 마켓 펀치·부스 이용 팁을 3문장 이내로 설명해줘.',
+        promptEn: 'Tips for punch and stalls at Vienna Christmas market in 3 short sentences.',
+        searchQueryKo: '빈 크리스마스 마켓 펀치',
+        searchQueryEn: 'Vienna Christmas market punch',
+      },
+    ],
+    highlightContextLinks: [
+      {
+        highlightIndex: 0,
+        links: [
+          {
+            id: 'market-hours',
+            labelKo: '운영 시간',
+            labelEn: 'Opening hours',
+            kind: 'shop',
+            href: 'https://www.christkindlmarkt.at/besuch/',
+          },
+        ],
+      },
+      {
+        highlightIndex: 1,
+        links: [
+          {
+            id: 'wien-tourism',
+            labelKo: '빈 관광청',
+            labelEn: 'Vienna tourism',
+            kind: 'tour',
+            href: 'https://www.wien.info/de/aktuell/veranstaltungen/wiener-christkindlmarkt-1001446',
+          },
+        ],
+      },
+    ],
+    youtubeSearchQueryKo: '빈 크리스마스 마켓 라트하우스',
+    youtubeSearchQueryEn: 'Vienna Christmas market Rathaus',
+    mooniChips: [
+      {
+        id: 'dec-24',
+        promptKo: '12월 24일 마켓 몇 시까지 열어?',
+        promptEn: 'What are the market hours on December 24?',
+      },
+      {
+        id: 'weekend-trip',
+        promptKo: '11월 말 주말 2박 빈 크리스마스 마켓 일정 짜줘',
+        promptEn: 'Plan a 2-night Vienna Christmas market weekend',
+      },
+      {
+        id: 'stay-area',
+        promptKo: '1구랑 노이바우 중 어디 숙소가 나아?',
+        promptEn: 'Innere Stadt or Neubau — where to stay?',
+      },
+    ],
+    priority: 1,
+  },
+  {
+    id: 'hong-kong-winterfest-2026',
+    slug: 'hong-kong',
+    hubId: 'hong-kong',
+    type: 'festival',
+    title: '홍콩 WinterFest',
+    titleEn: 'Hong Kong WinterFest',
+    startDate: '2026-11-18',
+    endDate: '2027-01-05',
+    recurrence: 'annual',
+    recurrenceNote: '11/18~1/5 · 센트럴·TST·코즈웨이베이',
+    recurrenceNoteEn: 'Nov 18–Jan 5 · Central, TST, Causeway Bay',
+    venue: { name: 'Victoria Harbour · Statue Square · Tsim Sha Tsui' },
+    source: 'official_url',
+    sourceUrl: 'https://www.discoverhongkong.com/eng/events/hong-kong-winterfest.html',
+    bookingHints: '센트럴·침사추이·코즈웨이베이 — 하버뷰 숙소·연말 혼잡',
+    detailOverview:
+      '홍콩관광청이 주최하는 겨울 시즌 축제로, 센트럴·침사추이·코즈웨이베이 Winter Wonderland와 빅토리아 하버 카운트다운이 이어집니다. 2026–27 시즌은 11월 18일부터 2027년 1월 5일까지이며, 코즈웨이베이 구역은 11월 25일부터 1월 3일까지입니다. 12월 연말 전후 2~4박으로 하버 뷰 기점을 잡는 방문이 일반적입니다.',
+    highlights: [
+      'Central Statue Square — 22m 트리·Christmas Town(11/18~1/5)',
+      'Tsim Sha Tsui Prudential Winter Wonderland — 하버 조명(11/18~1/5)',
+      'Causeway Bay Lee Gardens Christmas Village(11/25~1/3)',
+    ],
+    stayAreas: [
+      {
+        name: '침사추이 · Tsim Sha Tsui',
+        mrtKeyword: 'Tsim Sha Tsui Hong Kong',
+        note: '하버 전망·스타 페리',
+      },
+      {
+        name: '센트럴 · Central',
+        mrtKeyword: 'Central Hong Kong',
+        note: 'Statue Square·페리 허브',
+      },
+    ],
+    recommendedNights: 3,
+    heroImage:
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/Hong_Kong_skyscrapers_in_a_night_of_typhoon.jpg/1280px-Hong_Kong_skyscrapers_in_a_night_of_typhoon.jpg',
+    heroImages: [
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/Hong_Kong_skyscrapers_in_a_night_of_typhoon.jpg/1280px-Hong_Kong_skyscrapers_in_a_night_of_typhoon.jpg',
+        captionKo: '홍콩 야경',
+        captionEn: 'Hong Kong skyline at night',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Hong_Kong_Night_Skyline.jpg/1280px-Hong_Kong_Night_Skyline.jpg',
+        captionKo: '홍콩 야경',
+        captionEn: 'Hong Kong night skyline',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/Hong_Kong_skyscrapers_in_a_night_of_typhoon.jpg/1280px-Hong_Kong_skyscrapers_in_a_night_of_typhoon.jpg',
+        captionKo: '하버 전망',
+        captionEn: 'Harbour-facing skyline',
+      },
+    ],
+    heroGallerySearchQueryEn: 'Hong Kong WinterFest harbour lights',
+    glossaryTerms: [
+      {
+        id: 'winterfest',
+        termKo: 'WinterFest',
+        termEn: 'WinterFest',
+        promptKo:
+          '홍콩 WinterFest가 무엇인지 여행자 관점에서 3문장 이내로 설명해줘.',
+        promptEn: 'What is Hong Kong WinterFest for travelers? 3 short sentences.',
+        searchQueryKo: '홍콩 WinterFest',
+        searchQueryEn: 'Hong Kong WinterFest',
+        referenceUrl: 'https://www.discoverhongkong.com/eng/events/hong-kong-winterfest.html',
+      },
+      {
+        id: 'winter-wonderland',
+        termKo: 'Winter Wonderland',
+        termEn: 'Winter Wonderland',
+        promptKo:
+          '센트럴·TST·코즈웨이베이 Winter Wonderland 차이를 3문장 이내로 설명해줘.',
+        promptEn: 'Central vs TST vs Causeway Bay Winter Wonderland in 3 short sentences.',
+        searchQueryKo: '홍콩 Winter Wonderland',
+        searchQueryEn: 'Hong Kong Winter Wonderland',
+      },
+      {
+        id: 'harbour-countdown',
+        termKo: '하버 카운트다운',
+        termEn: 'harbour countdown',
+        promptKo:
+          'WinterFest 시즌 빅토리아 하버 새해 카운트다운을 3문장 이내로 설명해줘.',
+        promptEn: 'Victoria Harbour NYE countdown during WinterFest in 3 short sentences.',
+        searchQueryKo: '홍콩 새해 카운트다운 하버',
+        searchQueryEn: 'Hong Kong New Year harbour countdown',
+      },
+      {
+        id: 'tst-base',
+        termKo: '침사추이',
+        termEn: 'Tsim Sha Tsui',
+        promptKo:
+          'WinterFest 시즌 침사추이가 숙소 기점으로 좋은 이유를 3문장 이내로 설명해줘.',
+        promptEn: 'Why TST is a good WinterFest base in 3 short sentences.',
+        searchQueryKo: '침사추이 숙소 홍콩',
+        searchQueryEn: 'Tsim Sha Tsui hotels Hong Kong',
+      },
+    ],
+    highlightContextLinks: [
+      {
+        highlightIndex: 0,
+        links: [
+          {
+            id: 'winterfest-official',
+            labelKo: 'WinterFest 공식',
+            labelEn: 'WinterFest official',
+            kind: 'tour',
+            href: 'https://www.discoverhongkong.com/eng/events/hong-kong-winterfest.html',
+          },
+        ],
+      },
+      {
+        highlightIndex: 1,
+        links: [
+          {
+            id: 'tst-wonderland',
+            labelKo: '침사추이 구역',
+            labelEn: 'TST wonderland',
+            kind: 'shop',
+            href: 'https://www.discoverhongkong.com/eng/events/hong-kong-winterfest/winter-wonderland-in-tsim-sha-tsui.html',
+          },
+        ],
+      },
+    ],
+    youtubeSearchQueryKo: '홍콩 WinterFest 하버',
+    youtubeSearchQueryEn: 'Hong Kong WinterFest harbour',
+    mooniChips: [
+      {
+        id: 'causeway-dates',
+        promptKo: '코즈웨이베이 Winter Wonderland는 언제부터야?',
+        promptEn: 'When does Causeway Bay Winter Wonderland start?',
+      },
+      {
+        id: 'nye-stay',
+        promptKo: '12월 말 3박 홍콩 WinterFest 일정 짜줘',
+        promptEn: 'Plan a 3-night Hong Kong WinterFest trip in late December',
+      },
+      {
+        id: 'stay-area',
+        promptKo: '침사추이랑 센트럴 중 어디 숙소가 나아?',
+        promptEn: 'TST or Central — where should I stay?',
+      },
+    ],
+    priority: 1,
+  },
+  {
+    id: 'seoul-lantern-festival-2026',
+    slug: 'seoul',
+    hubId: 'seoul',
+    type: 'festival',
+    title: '서울빛초롱축제',
+    titleEn: 'Seoul Lantern Festival',
+    startDate: '2026-12-11',
+    endDate: '2027-01-31',
+    recurrence: 'annual',
+    recurrenceNote: '12/11~1/31 · 청계천 18~23시 무료',
+    recurrenceNoteEn: 'Dec 11–Jan 31 · Cheonggyecheon 6–11pm free',
+    venue: { name: 'Cheonggyecheon · Cheonggye Plaza–Samilgyo Bridge' },
+    source: 'official_url',
+    sourceUrl: 'https://www.stolantern.com/',
+    bookingHints: '광화문·종로·을지로 — 주말·연말 야간 혼잡 · 지하철 5호선 광화문',
+    detailOverview:
+      '청계천 일대에서 열리는 서울 대표 야간 빛 축제로, 2026 회차 주제는 「서울의 낭만: 빛의 교향곡」입니다. 2026년 12월 11일부터 2027년 1월 31일까지 매일 18:00~23:00 무료로 운영됩니다. 개막 주말·연말 1~2박으로 광화문·종로 기점을 잡는 방문이 일반적입니다.',
+    highlights: [
+      'Cheonggyecheon 청계광장~삼일교 조형·라이트쇼',
+      '광화문역 5번 출구 도보 — 야간 산책 동선',
+      '무료 관람 · 날씨·혼잡에 따른 이동 시간 여유',
+    ],
+    stayAreas: [
+      {
+        name: '광화문 · Gwanghwamun',
+        mrtKeyword: 'Gwanghwamun Seoul',
+        note: '청계천 북단 도보',
+      },
+      {
+        name: '명동 · Myeongdong',
+        mrtKeyword: 'Myeongdong Seoul',
+        note: '지하철 환승 · 종로 10분',
+      },
+    ],
+    recommendedNights: 2,
+    heroImage:
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/Cheonggyecheon_Stream_in_sunset.jpg/1280px-Cheonggyecheon_Stream_in_sunset.jpg',
+    heroImages: [
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/Cheonggyecheon_Stream_in_sunset.jpg/1280px-Cheonggyecheon_Stream_in_sunset.jpg',
+        captionKo: '청계천',
+        captionEn: 'Cheonggyecheon Stream',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Seoul_Lantern_Festival_2012.jpg/1280px-Seoul_Lantern_Festival_2012.jpg',
+        captionKo: '서울빛초롱축제',
+        captionEn: 'Seoul Lantern Festival',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/Lantern_Festival_Boaters_at_Cheonggyecheon_Stream.jpg/1280px-Lantern_Festival_Boaters_at_Cheonggyecheon_Stream.jpg',
+        captionKo: '청계천 빛 조형',
+        captionEn: 'Cheonggyecheon lantern display',
+      },
+    ],
+    heroGallerySearchQueryEn: 'Seoul Lantern Festival Cheonggyecheon',
+    glossaryTerms: [
+      {
+        id: 'seoul-lantern',
+        termKo: '서울빛초롱축제',
+        termEn: 'Seoul Lantern Festival',
+        promptKo:
+          '서울빛초롱축제가 무엇인지 여행자가 알아야 할 핵심만 3문장 이내로 설명해줘.',
+        promptEn: 'What is the Seoul Lantern Festival for travelers? 3 short sentences.',
+        searchQueryKo: '서울빛초롱축제',
+        searchQueryEn: 'Seoul Lantern Festival',
+        referenceUrl: 'https://www.stolantern.com/',
+      },
+      {
+        id: 'cheonggyecheon',
+        termKo: '청계천',
+        termEn: 'Cheonggyecheon',
+        promptKo:
+          '축제 구간 청계광장~삼일교 동선을 3문장 이내로 설명해줘.',
+        promptEn: 'Festival route Cheonggye Plaza to Samilgyo in 3 short sentences.',
+        searchQueryKo: '서울빛초롱축제 청계천',
+        searchQueryEn: 'Seoul Lantern Festival Cheonggyecheon',
+      },
+      {
+        id: 'festival-hours',
+        termKo: '야간 운영',
+        termEn: 'evening hours',
+        promptKo:
+          '서울빛초롱축제 운영 시간과 무료 입장을 3문장 이내로 설명해줘.',
+        promptEn: 'Festival evening hours and free admission in 3 short sentences.',
+        searchQueryKo: '서울빛초롱축제 시간',
+        searchQueryEn: 'Seoul Lantern Festival hours',
+      },
+      {
+        id: 'gwanghwamun-base',
+        termKo: '광화문',
+        termEn: 'Gwanghwamun',
+        promptKo:
+          '축제 시즌 광화문·종로가 숙소 기점으로 좋은 이유를 3문장 이내로 설명해줘.',
+        promptEn: 'Why Gwanghwamun is a good lantern festival base in 3 short sentences.',
+        searchQueryKo: '광화문 숙소 서울',
+        searchQueryEn: 'Gwanghwamun Seoul hotels',
+      },
+    ],
+    highlightContextLinks: [
+      {
+        highlightIndex: 0,
+        links: [
+          {
+            id: 'stolantern',
+            labelKo: '축제 공식',
+            labelEn: 'Official site',
+            kind: 'tour',
+            href: 'https://www.stolantern.com/',
+          },
+        ],
+      },
+      {
+        highlightIndex: 1,
+        links: [
+          {
+            id: 'visit-seoul',
+            labelKo: '서울 관광정보',
+            labelEn: 'Visit Seoul',
+            kind: 'shop',
+            href: 'https://korean.visitseoul.net/events/2026SeoulLanternFestival/KOPi0rhml',
+          },
+        ],
+      },
+    ],
+    youtubeSearchQueryKo: '서울빛초롱축제 청계천',
+    youtubeSearchQueryEn: 'Seoul Lantern Festival Cheonggyecheon',
+    mooniChips: [
+      {
+        id: 'opening-hours',
+        promptKo: '야간 관람은 몇 시부터야?',
+        promptEn: 'What time does the evening display start?',
+      },
+      {
+        id: 'weekend-trip',
+        promptKo: '개막 주말 서울 2박 빛초롱 일정 짜줘',
+        promptEn: 'Plan a 2-night Seoul trip for the lantern festival opening weekend',
+      },
+      {
+        id: 'stay-area',
+        promptKo: '광화문이랑 명동 중 어디 숙소가 나아?',
+        promptEn: 'Gwanghwamun or Myeongdong — where to stay?',
+      },
+    ],
+    priority: 1,
+  },
+  {
+    id: 'sydney-nye-fireworks-2026',
+    slug: 'sydney',
+    hubId: 'sydney',
+    type: 'festival',
+    title: '시드니 새해 불꽃놀이',
+    titleEn: "Sydney New Year's Eve Fireworks",
+    startDate: '2026-12-31',
+    endDate: '2026-12-31',
+    recurrence: 'annual',
+    recurrenceNote: '12/31 · 21시·자정 불꽃',
+    recurrenceNoteEn: 'Dec 31 · 9pm & midnight fireworks',
+    venue: { name: 'Sydney Harbour · Sydney Harbour Bridge' },
+    source: 'official_url',
+    sourceUrl: 'https://www.sydneynewyearseve.com/fireworks',
+    bookingHints: 'Circular Quay·The Rocks·North Sydney — 티켓·뷰 포인트 조기 마감',
+    detailOverview:
+      '세계적으로 유명한 시드니 하버 새해 불꽃으로, 12월 31일 밤 9시 Calling Country 불꽃과 자정 메인 쇼가 이어집니다. NSW 정부·공식 사이트 기준 2026년 12월 31일 행사로, 전후 1~2박으로 서큘러 키·더 록스·노스 시드니 뷰 포인트를 잡는 방문이 일반적입니다.',
+    highlights: [
+      '9pm Calling Country fireworks — 원주민 예술 연계',
+      'Midnight harbour fireworks — 하버 브리지·오페라 하우스',
+      '공식 Vantage Points·티켓 구역 사전 확인',
+    ],
+    stayAreas: [
+      {
+        name: '서큘러 키 · Circular Quay',
+        mrtKeyword: 'Circular Quay Sydney',
+        note: '페리·기차 허브 · 뷰 포인트 밀집',
+      },
+      {
+        name: '노스 시드니 · North Sydney',
+        mrtKeyword: 'North Sydney',
+        note: '하버 건너 뷰 · 렛슨 플라자',
+      },
+    ],
+    recommendedNights: 2,
+    heroImage:
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Sydney_habour_bridge_%26_opera_house_fireworks_new_year_eve_2008.jpg/1280px-Sydney_habour_bridge_%26_opera_house_fireworks_new_year_eve_2008.jpg',
+    heroImages: [
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Sydney_habour_bridge_%26_opera_house_fireworks_new_year_eve_2008.jpg/1280px-Sydney_habour_bridge_%26_opera_house_fireworks_new_year_eve_2008.jpg',
+        captionKo: '시드니 새해 불꽃',
+        captionEn: 'Sydney NYE fireworks',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/Sydney_Harbour_fireworks_and_smoke_2023.jpg/1280px-Sydney_Harbour_fireworks_and_smoke_2023.jpg',
+        captionKo: '하버 불꽃',
+        captionEn: 'Harbour fireworks',
+      },
+      {
+        url: 'https://upload.wikimedia.org/wikipedia/commons/d/d5/Sydney_Fireworks_2005.jpg',
+        captionKo: '하버 브리지 불꽃',
+        captionEn: 'Harbour Bridge fireworks',
+      },
+    ],
+    heroGallerySearchQueryEn: 'Sydney New Year Eve fireworks harbour',
+    glossaryTerms: [
+      {
+        id: 'sydney-nye',
+        termKo: '시드니 새해 전야',
+        termEn: "Sydney NYE",
+        promptKo:
+          '시드니 새해 불꽃이 왜 유명한지 여행자 관점에서 3문장 이내로 설명해줘.',
+        promptEn: 'Why Sydney NYE fireworks are famous for travelers in 3 short sentences.',
+        searchQueryKo: '시드니 새해 불꽃',
+        searchQueryEn: 'Sydney New Year fireworks',
+        referenceUrl: 'https://www.sydneynewyearseve.com/',
+      },
+      {
+        id: 'calling-country',
+        termKo: 'Calling Country 불꽃',
+        termEn: 'Calling Country fireworks',
+        promptKo:
+          '9시 Calling Country 불꽃이 무엇인지 3문장 이내로 설명해줘.',
+        promptEn: 'What is the 9pm Calling Country fireworks show in 3 short sentences.',
+        searchQueryKo: 'Sydney Calling Country fireworks',
+        searchQueryEn: 'Sydney Calling Country fireworks',
+      },
+      {
+        id: 'vantage-points',
+        termKo: '뷰 포인트',
+        termEn: 'vantage points',
+        promptKo:
+          '시드니 새해 불꽃 관람 포인트 선택 팁을 3문장 이내로 설명해줘.',
+        promptEn: 'Tips for picking Sydney NYE vantage points in 3 short sentences.',
+        searchQueryKo: '시드니 새해 불꽃 관람',
+        searchQueryEn: 'Sydney NYE fireworks vantage points',
+      },
+      {
+        id: 'circular-quay',
+        termKo: '서큘러 키',
+        termEn: 'Circular Quay',
+        promptKo:
+          '새해 전야 서큘러 키가 숙소·이동 기점으로 유리한 이유를 3문장 이내로 설명해줘.',
+        promptEn: 'Why Circular Quay is a good NYE base in 3 short sentences.',
+        searchQueryKo: '서큘러 키 숙소 시드니',
+        searchQueryEn: 'Circular Quay Sydney NYE',
+      },
+    ],
+    highlightContextLinks: [
+      {
+        highlightIndex: 0,
+        links: [
+          {
+            id: 'nye-schedule',
+            labelKo: '공식 일정',
+            labelEn: 'Official schedule',
+            kind: 'tour',
+            href: 'https://www.sydneynewyearseve.com/fireworks',
+          },
+        ],
+      },
+      {
+        highlightIndex: 2,
+        links: [
+          {
+            id: 'nsw-event',
+            labelKo: 'NSW 행사 안내',
+            labelEn: 'NSW event info',
+            kind: 'shop',
+            href: 'https://www.nsw.gov.au/visiting-and-exploring-nsw/nsw-events/new-years-eve-sydney',
+          },
+        ],
+      },
+    ],
+    youtubeSearchQueryKo: '시드니 새해 불꽃 하버',
+    youtubeSearchQueryEn: 'Sydney New Year harbour fireworks',
+    mooniChips: [
+      {
+        id: 'fireworks-times',
+        promptKo: '불꽃은 9시랑 자정 두 번이야?',
+        promptEn: 'Are there fireworks at 9pm and midnight?',
+      },
+      {
+        id: 'nye-trip',
+        promptKo: '12/31 새해 전야 2박 시드니 일정 짜줘',
+        promptEn: 'Plan a 2-night Sydney NYE harbour trip',
+      },
+      {
+        id: 'view-spot',
+        promptKo: '처음 가는데 어디서 보는 게 나아?',
+        promptEn: 'Best vantage spot for a first-time visitor?',
       },
     ],
     priority: 1,
