@@ -55,3 +55,10 @@ export const MOONI_CHAT_ACCENT_GRADIENT = {
   hoverFrom: [21, 94, 117],
   hoverTo: [17, 94, 89],
 };
+
+/** Solid cyan fills paired with text-white (새 대화·닫기 hover·travel send). */
+export const MOONI_CHAT_SOLID_ACCENT = {
+  text: [255, 255, 255],
+  bg: [14, 116, 144],
+  hoverBg: [21, 94, 117],
+};

@@ -1785,7 +1785,7 @@ const ChatModal = ({
           className={tone(
             fresh,
             'absolute z-[60] top-[max(0.75rem,env(safe-area-inset-top,0px))] right-[max(0.75rem,env(safe-area-inset-right,0px))] md:top-4 md:right-4 flex h-11 w-11 min-h-[44px] min-w-[44px] items-center justify-center rounded-full border-2 border-gray-200 bg-gray-500 text-white shadow-lg transition-colors hover:bg-gray-400 hover:border-white touch-manipulation',
-            'absolute z-[60] top-[max(0.75rem,env(safe-area-inset-top,0px))] right-[max(0.75rem,env(safe-area-inset-right,0px))] md:top-4 md:right-4 flex h-11 w-11 min-h-[44px] min-w-[44px] items-center justify-center rounded-full border-2 border-cyan-900 bg-cyan-700 text-white shadow-lg transition-colors hover:bg-cyan-600 hover:border-cyan-800 touch-manipulation',
+            'absolute z-[60] top-[max(0.75rem,env(safe-area-inset-top,0px))] right-[max(0.75rem,env(safe-area-inset-right,0px))] md:top-4 md:right-4 flex h-11 w-11 min-h-[44px] min-w-[44px] items-center justify-center rounded-full border-2 border-cyan-900 bg-cyan-700 text-white shadow-lg transition-colors hover:bg-cyan-800 hover:border-cyan-950 touch-manipulation',
           )}
         >
           <X size={22} strokeWidth={2.5} className="pointer-events-none shrink-0" aria-hidden />
@@ -1808,7 +1808,7 @@ const ChatModal = ({
                 className={tone(
                   fresh,
                   'inline-flex shrink-0 items-center gap-1.5 rounded-xl border border-cyan-300/70 bg-cyan-500/25 px-3 py-2 text-xs font-bold text-cyan-50 shadow-sm hover:bg-cyan-500/35 touch-manipulation',
-                  'inline-flex shrink-0 items-center gap-1.5 rounded-xl border-2 border-cyan-600 bg-cyan-600 px-3 py-2 text-xs font-bold text-white shadow-md hover:bg-cyan-700 hover:border-cyan-700 touch-manipulation',
+                  'inline-flex shrink-0 items-center gap-1.5 rounded-xl border-2 border-cyan-800 bg-cyan-700 px-3 py-2 text-xs font-bold text-white shadow-md hover:bg-cyan-800 hover:border-cyan-900 touch-manipulation',
                 )}
                 title={t('mooni.chat.newChat')}
                 aria-label={t('mooni.chat.newChat')}
@@ -1924,7 +1924,7 @@ const ChatModal = ({
                      className={tone(
                        fresh,
                        'md:hidden inline-flex max-w-full shrink min-h-[32px] items-center gap-1 rounded-full border border-cyan-300/80 bg-cyan-500/30 px-2 py-1 text-[10px] font-bold leading-none text-cyan-50 touch-manipulation hover:bg-cyan-500/40 max-[360px]:px-1.5',
-                       'md:hidden inline-flex max-w-full shrink min-h-[32px] items-center gap-1 rounded-full border border-cyan-500 bg-cyan-600 px-2 py-1 text-[10px] font-bold leading-none text-white touch-manipulation hover:bg-cyan-700',
+                       'md:hidden inline-flex max-w-full shrink min-h-[32px] items-center gap-1 rounded-full border border-cyan-800 bg-cyan-700 px-2 py-1 text-[10px] font-bold leading-none text-white touch-manipulation hover:bg-cyan-800',
                      )}
                      title={t('mooni.chat.newChat')}
                      aria-label={t('mooni.chat.newChat')}
@@ -2166,7 +2166,7 @@ const ChatModal = ({
                     data-testid={isModelMsg ? 'mooni-model-reply' : undefined}
                     className={`p-4 rounded-2xl text-base shadow-md w-full ${
                     msg.role === 'user'
-                      ? tone(fresh, 'max-w-full md:max-w-[80%] bg-blue-600 text-white rounded-tr-sm', 'max-w-full md:max-w-[80%] bg-gradient-to-br from-sky-500 to-cyan-500 text-white rounded-tr-sm')
+                      ? tone(fresh, 'max-w-full md:max-w-[80%] bg-blue-600 text-white rounded-tr-sm', 'max-w-full md:max-w-[80%] bg-gradient-to-br from-sky-700 to-cyan-700 text-white rounded-tr-sm')
                       : msg.role === 'error'
                         ? 'bg-red-950/50 text-red-200 rounded-tl-sm'
                         : tone(fresh, 'bg-gray-800 text-gray-200 rounded-tl-sm leading-relaxed', 'bg-white/90 border border-cyan-100 text-slate-700 rounded-tl-sm leading-relaxed')
@@ -2557,7 +2557,7 @@ const ChatModal = ({
                         disabled={isLoading || !input.trim()}
                         className={tone(
                           fresh,
-                          'absolute right-1.5 top-1/2 -translate-y-1/2 p-1.5 bg-cyan-500/90 hover:bg-cyan-400 rounded-full text-white disabled:opacity-40 disabled:bg-blue-600/70',
+                          'absolute right-1.5 top-1/2 -translate-y-1/2 p-1.5 bg-cyan-700 hover:bg-cyan-800 rounded-full text-white disabled:opacity-40 disabled:bg-blue-600/70',
                           'absolute right-1.5 top-1/2 -translate-y-1/2 p-1.5 bg-gradient-to-br from-cyan-700 to-teal-700 hover:from-cyan-800 hover:to-teal-800 rounded-full text-white disabled:opacity-40',
                         )}
                         aria-label={t('mooni.chat.send')}

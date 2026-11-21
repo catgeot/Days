@@ -8,6 +8,7 @@ import {
   MOONI_CHAT_CLOSE,
   MOONI_CHAT_CLOSE_COLORS,
   MOONI_CHAT_MAIN_HEADER_RESERVE_CLASS,
+  MOONI_CHAT_SOLID_ACCENT,
   MOONI_CHAT_SIDEBAR_TONES,
 } from '../../src/pages/Home/lib/mooniChatModalChromeTokens.js';
 import { resolveCityAttractionHub, listCityAttractionHubs } from '../../src/pages/Home/lib/cityAttractionHubs.js';
@@ -27,6 +28,24 @@ function contrastRatio(rgbA, rgbB) {
   const lighter = Math.max(l1, l2);
   const darker = Math.min(l1, l2);
   return (lighter + 0.05) / (darker + 0.05);
+}
+
+const WEAK_CYAN_TEAL_ON_WHITE =
+  /(?:^|[\s"'`])(?:hover:)?bg-(?:cyan|teal)-(?:300|400|500|600)(?:\/[\w.]+)?/;
+
+function assertNoWeakCyanTealBehindWhite(chatModal) {
+  const literal = /'([^'\\]|\\.)*'|"([^"\\]|\\.)*"/g;
+  let match;
+  while ((match = literal.exec(chatModal)) !== null) {
+    const inner = match[0].slice(1, -1);
+    if (!inner.includes('text-white')) continue;
+    const hits = inner.match(WEAK_CYAN_TEAL_ON_WHITE);
+    if (hits) {
+      assert.fail(
+        `text-white class string must not use cyan/teal 300–600 bg: ${hits[0]} …${inner.slice(0, 120)}`,
+      );
+    }
+  }
 }
 
 function assertSidebarTone(label, tone) {
@@ -76,6 +95,22 @@ test('MOONi chat accent gradient — white on cyan/teal-700 stops ≥ 4.5:1', ()
     'light accent must not use cyan-400/teal-400 gradient',
   );
   assert.match(chatModal, /from-cyan-700 to-teal-700/);
+});
+
+test('MOONi chat solid accent — white on cyan-700/800 ≥ 4.5:1', () => {
+  const text = MOONI_CHAT_SOLID_ACCENT.text;
+  for (const [label, bg] of Object.entries({
+    bg: MOONI_CHAT_SOLID_ACCENT.bg,
+    hoverBg: MOONI_CHAT_SOLID_ACCENT.hoverBg,
+  })) {
+    const ratio = contrastRatio(text, bg);
+    assert.ok(ratio >= 4.5, `${label} solid accent ${ratio.toFixed(2)}:1`);
+  }
+});
+
+test('ChatModal — text-white must not pair with cyan/teal 300–600 bg', () => {
+  const chatModal = readFileSync(join(root, 'src/pages/Home/components/ChatModal.jsx'), 'utf8');
+  assertNoWeakCyanTealBehindWhite(chatModal);
 });
 
 test('MOONi chat main header — close reserve padding, mobile new-chat label', () => {
