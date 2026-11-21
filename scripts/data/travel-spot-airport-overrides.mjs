@@ -964,9 +964,9 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     flightRouteHubIatas: ['SGN'],
     kind: 'multi',
     confidence: 'high',
-    rationale: 'ICN→SGN→SAI · 베트남항공 등 호치민 경유가 일반적(직항은 유동적)',
+    rationale: 'ICN→SGN→SAI · 베트남항공 등 호찌민 경유가 일반적(직항은 유동적)',
     bannerNote:
-      '씨엠립 앙코르(SAI)는 구 REP 폐쇄 후 관문입니다. 인천 직항은 드물고, 베트남항공 등 호치민(SGN)·하노이(HAN) 경유 일정이 일반적입니다. 티켓의 최종 도착 코드를 확인해 주세요.'
+      '씨엠립 앙코르(SAI)는 구 REP 폐쇄 후 관문입니다. 인천 직항은 드물고, 베트남항공 등 호찌민(SGN)·하노이(HAN) 경유 일정이 일반적입니다. 티켓의 최종 도착 코드를 확인해 주세요.'
   },
   'angkor-thom': {
     primaryIatas: ['SAI'],
@@ -976,7 +976,7 @@ export const TRAVEL_SPOT_AIRPORT_OVERRIDES = {
     confidence: 'high',
     rationale: 'ICN→SGN→SAI · angkor-wat와 동일 관문',
     bannerNote:
-      '앙코르 권역(SAI)은 구 REP 폐쇄 후 관문입니다. 인천 직항은 드물고, 베트남항공 등 호치민(SGN)·하노이(HAN) 경유 일정이 일반적입니다. 티켓의 최종 도착 코드를 확인해 주세요.'
+      '앙코르 권역(SAI)은 구 REP 폐쇄 후 관문입니다. 인천 직항은 드물고, 베트남항공 등 호찌민(SGN)·하노이(HAN) 경유 일정이 일반적입니다. 티켓의 최종 도착 코드를 확인해 주세요.'
   },
   sabah: {
     primaryIatas: ['BKI'],
@@ -1460,7 +1460,7 @@ export const TRAVEL_SPOT_PLACE_ID_OVERRIDES = {
     confidence: 'high',
     rationale: 'SGN 국제선 후 VCS 국내선 — 최종 도착·렌터카 VCS (travelSpots slug 없음)',
     bannerNote:
-      '콘다오는 인천→호치민(SGN) 국제선 후 VASCO 등 국내선(SGN-VCS)으로 이어지는 일정이 일반적입니다. 국내선은 소형기·좌석이 적어 조기 예약이 필요합니다. 렌터카·픽업·제휴 링크는 콘다오 공항(VCS) 기준입니다. 티켓의 최종 도착 코드를 확인한 뒤 검색어를 맞춰 주세요.'
+      '콘다오는 인천→호찌민(SGN) 국제선 후 VASCO 등 국내선(SGN-VCS)으로 이어지는 일정이 일반적입니다. 국내선은 소형기·좌석이 적어 조기 예약이 필요합니다. 렌터카·픽업·제휴 링크는 콘다오 공항(VCS) 기준입니다. 티켓의 최종 도착 코드를 확인한 뒤 검색어를 맞춰 주세요.'
   },
   상하이: {
     primaryIatas: ['PVG', 'SHA'],
