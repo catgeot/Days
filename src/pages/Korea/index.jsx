@@ -72,9 +72,12 @@ import {
   FESTIVAL_HUB_GRID_CLASS,
   FESTIVAL_HUB_GRID_MOBILE_SCROLL_PAD_CLASS,
   FESTIVAL_HUB_GRID_SCROLL_TOP_BOTTOM_CLASS,
+  FESTIVAL_HUB_GRID_WIDE_COMPANION_CLASS,
+  FESTIVAL_HUB_GRID_WIDE_SLOT_CLASS,
   distributeFestivalHubMasonryColumns,
   festivalHubPhotoLayout,
   partitionFestivalHubSegments,
+  planFestivalHubGridRender,
 } from './festivalHubGridLayout.js';
 import {
   festivalHubGridThumbLoadKey,
@@ -1109,16 +1112,60 @@ function FestivalEntries({
         />
       );
     };
+    const renderPlan = planFestivalHubGridRender(segments, columnCount);
     return (
       <div className="w-full" data-festival-grid="">
-        {segments.map((seg, segIdx) => {
+        {renderPlan.map((block, planIdx) => {
+          if (block.type === 'wideRow') {
+            const { wide, companions } = block;
+            return (
+              <div
+                key={`wide-row-${wide.index}-${planIdx}`}
+                className={FESTIVAL_HUB_GRID_CLASS}
+                data-festival-grid-wide-row=""
+              >
+                <div
+                  className={FESTIVAL_HUB_GRID_WIDE_SLOT_CLASS}
+                  data-festival-grid-wide-slot=""
+                >
+                  {renderGridCard(wide.item, wide.index, {
+                    inColumn: false,
+                    slotIndex: wide.index,
+                  })}
+                </div>
+                {companions.length > 0 ? (
+                  <div
+                    className={FESTIVAL_HUB_GRID_WIDE_COMPANION_CLASS}
+                    data-festival-grid-wide-companion=""
+                  >
+                    {companions.map(({ item, index }) =>
+                      renderGridCard(item, index, {
+                        inColumn: true,
+                        slotIndex: index,
+                      }),
+                    )}
+                  </div>
+                ) : null}
+              </div>
+            );
+          }
+          const seg = block.seg;
           if (seg.type === 'wide') {
             return (
-              <div key={`wide-${seg.entry.index}`} className="w-full">
-                {renderGridCard(seg.entry.item, seg.entry.index, {
-                  inColumn: false,
-                  slotIndex: seg.entry.index,
-                })}
+              <div
+                key={`wide-${seg.entry.index}-${planIdx}`}
+                className={FESTIVAL_HUB_GRID_CLASS}
+                data-festival-grid-wide-row=""
+              >
+                <div
+                  className={FESTIVAL_HUB_GRID_WIDE_SLOT_CLASS}
+                  data-festival-grid-wide-slot=""
+                >
+                  {renderGridCard(seg.entry.item, seg.entry.index, {
+                    inColumn: false,
+                    slotIndex: seg.entry.index,
+                  })}
+                </div>
               </div>
             );
           }
@@ -1128,7 +1175,7 @@ function FestivalEntries({
           );
           return (
             <div
-              key={`cols-${segIdx}-${seg.entries[0]?.index ?? 0}`}
+              key={`cols-${planIdx}-${seg.entries[0]?.index ?? 0}`}
               className={FESTIVAL_HUB_GRID_CLASS}
             >
               {cols.map((colEntries, colIdx) => (
@@ -1136,7 +1183,7 @@ function FestivalEntries({
                   {colEntries.map(({ item, index }, rowIdx) =>
                     renderGridCard(item, index, {
                       inColumn: true,
-                      slotIndex: colIdx + rowIdx * columnCount + segIdx,
+                      slotIndex: colIdx + rowIdx * columnCount + planIdx,
                     }),
                   )}
                 </div>

@@ -2,6 +2,13 @@
 export const FESTIVAL_HUB_GRID_CLASS =
   'grid w-full grid-cols-2 items-start gap-1.5 md:grid-cols-3 md:gap-2 lg:grid-cols-4 lg:gap-2.5';
 
+/** Wide landscape hub cards: full row on mobile/tablet; half row (2/4) on lg+ grid. */
+export const FESTIVAL_HUB_GRID_WIDE_SLOT_CLASS =
+  'col-span-2 md:col-span-3 lg:col-span-2 min-w-0';
+
+export const FESTIVAL_HUB_GRID_WIDE_COMPANION_CLASS =
+  'col-span-2 hidden min-w-0 flex-col lg:flex';
+
 export const FESTIVAL_HUB_PHOTO_WIDE_MIN_RATIO = 1.3;
 export const FESTIVAL_HUB_PHOTO_LANDSCAPE_MIN_RATIO = 1.05;
 
@@ -105,6 +112,39 @@ export function distributeFestivalHubMasonryColumns(entries, columnCount = 2) {
     cols[i % count].push(list[i]);
   }
   return cols.filter((col) => col.length > 0);
+}
+
+/**
+ * At 4-col desktop, pair each wide card with up to two list cards in the remaining columns.
+ * Mobile/tablet keep partition output unchanged (wide rows still span full width).
+ */
+export function planFestivalHubGridRender(segments, columnCount = 2) {
+  const list = segments || [];
+  const cols = Math.max(1, Number(columnCount) || 2);
+  if (cols !== 4) {
+    return list.map((seg) => ({ type: 'segment', seg }));
+  }
+  const plan = [];
+  for (let i = 0; i < list.length; i += 1) {
+    const seg = list[i];
+    if (seg.type !== 'wide') {
+      plan.push({ type: 'segment', seg });
+      continue;
+    }
+    const next = list[i + 1];
+    if (next?.type === 'columns' && next.entries?.length) {
+      const companions = next.entries.slice(0, 2);
+      const remainder = next.entries.slice(companions.length);
+      plan.push({ type: 'wideRow', wide: seg.entry, companions });
+      if (remainder.length) {
+        plan.push({ type: 'segment', seg: { type: 'columns', entries: remainder } });
+      }
+      i += 1;
+      continue;
+    }
+    plan.push({ type: 'wideRow', wide: seg.entry, companions: [] });
+  }
+  return plan;
 }
 
 /** Flat nationwide grid: eager-load thumbs for first screen (2× mobile · up to 4× desktop). */
