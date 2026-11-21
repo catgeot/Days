@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 import {
   MOONI_CHAT_CLOSE,
   MOONI_CHAT_CLOSE_COLORS,
+  MOONI_CHAT_MAIN_HEADER_RESERVE_CLASS,
   MOONI_CHAT_SIDEBAR_TONES,
 } from '../../src/pages/Home/lib/mooniChatModalChromeTokens.js';
 import { resolveCityAttractionHub, listCityAttractionHubs } from '../../src/pages/Home/lib/cityAttractionHubs.js';
@@ -54,6 +55,21 @@ test('MOONi chat close button — top-right anchor, 44px tap target, contrast', 
     assert.ok(contrastRatio(colors.bg, colors.panel) >= 3, `${label} close on panel`);
   }
   assert.equal(MOONI_CHAT_CLOSE.minTapPx, 44);
+});
+
+test('MOONi chat main header — close reserve padding, mobile new-chat label', () => {
+  const chatModal = readFileSync(join(root, 'src/pages/Home/components/ChatModal.jsx'), 'utf8');
+  assert.match(chatModal, /data-testid="mooni-chat-main-header"/);
+  assert.match(chatModal, /\$\{MOONI_CHAT_MAIN_HEADER_RESERVE_CLASS\}/);
+  assert.match(chatModal, /from '\.\.\/lib\/mooniChatModalChromeTokens\.js'/);
+  assert.ok(MOONI_CHAT_MAIN_HEADER_RESERVE_CLASS.includes('2.75rem'));
+  assert.match(chatModal, /data-testid="mooni-chat-new"[\s\S]*?\{t\('mooni\.chat\.newChat'\)\}/);
+  assert.doesNotMatch(
+    chatModal,
+    /data-testid="mooni-chat-new"[\s\S]{0,400}md:hidden[\s\S]{0,220}h-8 w-8/,
+    'mobile new-chat must not be icon-only 32px circle',
+  );
+  assert.doesNotMatch(chatModal, /flex-1[\s\S]{0,120}max-md:pr-12/);
 });
 
 test('호찌민 허브 SSOT — 공식명·별칭 검색', () => {

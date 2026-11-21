@@ -145,6 +145,7 @@ import {
 import { MooniChatMarkdownBoundary } from '../../../components/chat/MooniChatMarkdownBoundary.jsx';
 import { mooniUserBubbleText } from '../lib/mooniChipBubbleText.js';
 import { isMooniChipInstructionTurn } from '../lib/mooniChipInstruction.js';
+import { MOONI_CHAT_MAIN_HEADER_RESERVE_CLASS } from '../lib/mooniChatModalChromeTokens.js';
 
 const tone = (fresh, dark, light) => (fresh ? light : dark);
 
@@ -1882,14 +1883,15 @@ const ChatModal = ({
 
         <div className={`flex-1 flex flex-col relative min-w-0 ${tone(fresh, 'bg-black/50', 'bg-white/55')}`}>
             <div
-              className={`p-4 md:py-2.5 md:px-4 max-md:px-3 max-md:py-2 max-[360px]:pl-2 max-[360px]:pr-3 max-md:pr-[max(0.75rem,env(safe-area-inset-right,0px))] max-md:pt-[max(0.4rem,env(safe-area-inset-top,0px))] flex items-center gap-3 max-md:gap-2 max-[360px]:gap-1 backdrop-blur-md ${tone(fresh, 'bg-gray-800/50 border-b border-gray-700', 'bg-white/80 border-b border-cyan-100')}`}
+              data-testid="mooni-chat-main-header"
+              className={`p-4 md:py-2.5 md:px-4 max-md:px-3 max-md:py-2 max-[360px]:pl-2 max-md:pt-[max(0.4rem,env(safe-area-inset-top,0px))] ${MOONI_CHAT_MAIN_HEADER_RESERVE_CLASS} flex items-center gap-3 max-md:gap-2 max-[360px]:gap-1 backdrop-blur-md ${tone(fresh, 'bg-gray-800/50 border-b border-gray-700', 'bg-white/80 border-b border-cyan-100')}`}
               onPointerDown={() => {
                 if (mobileDockInputFocused && !input.trim()) {
                   collapseMobileDockInput();
                 }
               }}
             >
-               <div className="flex flex-col min-w-0 flex-1 justify-center max-md:pr-12">
+               <div className="flex flex-col min-w-0 flex-1 justify-center">
                  <span className={`font-bold tracking-wide text-base md:text-[15px] max-md:text-[15px] max-md:leading-snug truncate ${tone(fresh, 'text-white', 'text-slate-800')}`}>
                    {isMooniUi ? mooniHeaderLabel : (introDestinationRaw || 'MOONi')}
                  </span>
@@ -1910,7 +1912,7 @@ const ChatModal = ({
                    {isMooniUi ? t('mooni.chat.mooniSessionTitle') : t('mooni.chat.travelSessionTitle')}
                  </span>
                </div>
-               <div className="flex items-center gap-1.5 max-[360px]:gap-0.5 shrink-0 max-w-[46%] max-[360px]:max-w-[42%] md:max-w-none">
+               <div className="flex items-center gap-1.5 max-[360px]:gap-0.5 shrink-0 min-w-0">
                  {typeof onStartNewChat === 'function' ? (
                    <button
                      type="button"
@@ -1921,13 +1923,14 @@ const ChatModal = ({
                      }}
                      className={tone(
                        fresh,
-                       'md:hidden inline-flex h-8 w-8 max-[360px]:h-7 max-[360px]:w-7 shrink-0 items-center justify-center rounded-full border border-cyan-300/80 bg-cyan-500/30 p-0 text-cyan-50 touch-manipulation hover:bg-cyan-500/40',
-                       'md:hidden inline-flex h-8 w-8 max-[360px]:h-7 max-[360px]:w-7 shrink-0 items-center justify-center rounded-full border border-cyan-500 bg-cyan-600 p-0 text-white touch-manipulation hover:bg-cyan-700',
+                       'md:hidden inline-flex max-w-full shrink min-h-[32px] items-center gap-1 rounded-full border border-cyan-300/80 bg-cyan-500/30 px-2 py-1 text-[10px] font-bold leading-none text-cyan-50 touch-manipulation hover:bg-cyan-500/40 max-[360px]:px-1.5',
+                       'md:hidden inline-flex max-w-full shrink min-h-[32px] items-center gap-1 rounded-full border border-cyan-500 bg-cyan-600 px-2 py-1 text-[10px] font-bold leading-none text-white touch-manipulation hover:bg-cyan-700',
                      )}
                      title={t('mooni.chat.newChat')}
                      aria-label={t('mooni.chat.newChat')}
                    >
-                     <Plus size={16} strokeWidth={2.5} aria-hidden />
+                     <Plus size={12} strokeWidth={2.5} className="shrink-0" aria-hidden />
+                     <span className="truncate">{t('mooni.chat.newChat')}</span>
                    </button>
                  ) : null}
                  {showClearPlaceBinding ? (

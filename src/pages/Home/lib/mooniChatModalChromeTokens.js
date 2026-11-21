@@ -5,6 +5,10 @@ export const MOONI_CHAT_CLOSE = {
   minTapPx: 44,
 };
 
+/** Main chat header — reserve top-right close tap target + inset (all breakpoints). */
+export const MOONI_CHAT_MAIN_HEADER_RESERVE_CLASS =
+  'max-md:pr-[calc(2.75rem+0.75rem+env(safe-area-inset-right,0px)+0.25rem)] md:pr-[calc(2.75rem+1rem+0.25rem)]';
+
 /** @typedef {{ panel: number[]; itemBg: number[]; title: number[]; meta: number[]; personaBg: number[]; personaText: number[]; delete: number[]; activeBg: number[]; activeTitle: number[]; hoverBg: number[]; disabledMeta: number[] }} SidebarTone */
 
 /** @type {Record<'mooni' | 'travel', SidebarTone>} */

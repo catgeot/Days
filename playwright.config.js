@@ -560,5 +560,29 @@ export default defineConfig({
         ...(placeIntroOverSsotE2e ? { baseURL: placeIntroOverSsotLocalBase } : {}),
       },
     },
+    {
+      name: 'webkit-mooni-chat-modal-header-390',
+      testMatch: /mooni-chat-modal-header-chrome\.spec\.js/,
+      grep: /@390/,
+      timeout: 180_000,
+      use: {
+        ...devices['iPhone 13'],
+        viewport: { width: 390, height: 844 },
+        deviceScaleFactor: 1,
+        locale: 'ko-KR',
+        ignoreHTTPSErrors: true,
+      },
+    },
+    {
+      name: 'webkit-mooni-chat-modal-header-1280',
+      testMatch: /mooni-chat-modal-header-chrome\.spec\.js/,
+      grep: /@1280/,
+      timeout: 180_000,
+      use: {
+        ...devices['Desktop Safari'],
+        viewport: { width: 1280, height: 900 },
+        ignoreHTTPSErrors: true,
+      },
+    },
   ],
 });
