@@ -202,6 +202,44 @@ test('wikimedia card thumb rewrite — encoded filename', () => {
   assert.match(srcSet, /1280px-Colosseum_of_Rome%2C_Italy\.jpg/);
 });
 
+test('wikimedia already-thumb width swap — encoding, parentheses, comma srcSet', () => {
+  const nhaTrang =
+    'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/Nha_Trang%28beach%29.jpg/1920px-Nha_Trang%28beach%29.jpg';
+  assert.equal(
+    wikimediaCommonsCardThumbUrl(nhaTrang, 960),
+    'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/Nha_Trang%28beach%29.jpg/960px-Nha_Trang%28beach%29.jpg',
+  );
+  assert.equal(
+    wikimediaCommonsCardThumbUrl(nhaTrang, 1280),
+    'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/Nha_Trang%28beach%29.jpg/1280px-Nha_Trang%28beach%29.jpg',
+  );
+
+  const prague =
+    'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Prague_(Charles_Bridge).jpg/1920px-Prague_(Charles_Bridge).jpg';
+  assert.equal(
+    wikimediaCommonsCardThumbUrl(prague, 960),
+    'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Prague_(Charles_Bridge).jpg/960px-Prague_(Charles_Bridge).jpg',
+  );
+  assert.equal(
+    wikimediaCommonsCardThumbUrl(prague, 1280),
+    'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Prague_(Charles_Bridge).jpg/1280px-Prague_(Charles_Bridge).jpg',
+  );
+
+  const commaThumb =
+    'https://upload.wikimedia.org/wikipedia/commons/thumb/d/de/Rome,_Italy.jpg/1280px-Rome,_Italy.jpg';
+  const commaOut = optimizeLogbookReviewCardThumbUrl(commaThumb);
+  assert.match(commaOut.src, /960px-Rome,_Italy\.jpg/);
+  assert.match(commaOut.srcSet, /960px-Rome%2C_Italy\.jpg 960w/);
+  assert.match(commaOut.srcSet, /1280px-Rome%2C_Italy\.jpg 1280w/);
+  assert.doesNotMatch(commaOut.srcSet, /px-Rome,_Italy/);
+
+  const untouched = 'https://images.example.com/wikipedia/commons/thumb/not-wiki.jpg';
+  assert.equal(wikimediaCommonsCardThumbUrl(untouched, 960), null);
+  assert.equal(optimizeLogbookReviewCardThumbUrl(untouched).src, untouched);
+  const oddThumb = 'https://upload.wikimedia.org/wikipedia/commons/thumb/not-a-width-file';
+  assert.equal(wikimediaCommonsCardThumbUrl(oddThumb, 960), oddThumb);
+});
+
 test('optimizeLogbookReviewCardThumbUrl — unsplash only when imgix params exist', () => {
   const bare = 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34';
   assert.equal(optimizeLogbookReviewCardThumbUrl(bare).src, bare);
