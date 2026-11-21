@@ -60,7 +60,10 @@ const Sidebar = ({ user }) => {
 
   return (
     <>
-      <div className="hidden md:flex w-64 h-screen bg-white text-gray-700 flex-col border-r border-gray-200 flex-shrink-0 transition-all duration-300">
+      <div
+        data-testid="logbook-desktop-sidebar"
+        className="hidden md:flex h-full min-h-0 w-64 min-w-[16rem] max-w-[16rem] shrink-0 grow-0 bg-white text-gray-700 flex-col border-r border-gray-200"
+      >
         <HomeButton />
         <PublicNav />
         <div className="mt-auto">
