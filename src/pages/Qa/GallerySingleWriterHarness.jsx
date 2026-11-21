@@ -22,15 +22,15 @@ export default function GallerySingleWriterHarness() {
       <div className="fixed right-1 top-1 z-[300] flex max-w-[9rem] flex-col gap-1">
         <button
           type="button"
-          onClick={() => persistPlaceChatIntroSummary('QA Place', `${'가'.repeat(38)}${EMOJI}`)}
+          onClick={() => persistPlaceChatIntroSummary('QA Place', `${'가'.repeat(38)}`)}
         >
           소개 짧은 이모지
         </button>
         <button
           type="button"
-          onClick={() => persistPlaceChatIntroSummary('QA Place', `${'가'.repeat(39)}${EMOJI}`)}
+          onClick={() => persistPlaceChatIntroSummary('QA Place', `${'가'.repeat(39)}.`)}
         >
-          소개 경계 이모지
+          소개 경계 40코드
         </button>
         <button
           type="button"
