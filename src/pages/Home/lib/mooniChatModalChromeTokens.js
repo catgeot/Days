@@ -5,6 +5,10 @@ export const MOONI_CHAT_CLOSE = {
   minTapPx: 44,
 };
 
+/** Main chat header — reserve top-right close tap target + inset (all breakpoints). */
+export const MOONI_CHAT_MAIN_HEADER_RESERVE_CLASS =
+  'max-md:pr-[calc(2.75rem+0.75rem+env(safe-area-inset-right,0px)+0.25rem)] md:pr-[calc(2.75rem+1rem+0.25rem)]';
+
 /** @typedef {{ panel: number[]; itemBg: number[]; title: number[]; meta: number[]; personaBg: number[]; personaText: number[]; delete: number[]; activeBg: number[]; activeTitle: number[]; hoverBg: number[]; disabledMeta: number[] }} SidebarTone */
 
 /** @type {Record<'mooni' | 'travel', SidebarTone>} */
@@ -41,4 +45,20 @@ export const MOONI_CHAT_SIDEBAR_TONES = {
 export const MOONI_CHAT_CLOSE_COLORS = {
   mooni: { bg: [14, 116, 144], icon: [255, 255, 255], panel: [240, 249, 255] },
   travel: { bg: [107, 114, 128], icon: [255, 255, 255], panel: [17, 24, 39] },
+};
+
+/** Tailwind 3 sRGB — MOONi light accent buttons (planner·send·ask). Worst stop vs white ≥ 4.5:1. */
+export const MOONI_CHAT_ACCENT_GRADIENT = {
+  text: [255, 255, 255],
+  from: [14, 116, 144],
+  to: [15, 118, 110],
+  hoverFrom: [21, 94, 117],
+  hoverTo: [17, 94, 89],
+};
+
+/** Solid cyan fills paired with text-white (새 대화·닫기 hover·travel send). */
+export const MOONI_CHAT_SOLID_ACCENT = {
+  text: [255, 255, 255],
+  bg: [14, 116, 144],
+  hoverBg: [21, 94, 117],
 };
