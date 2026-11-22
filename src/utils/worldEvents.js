@@ -1,7 +1,11 @@
 import worldEventsData from '../pages/Home/data/worldEvents.json' with { type: 'json' };
 import travelSpotsList from '../pages/Home/data/travelSpots-list.json' with { type: 'json' };
 import { resolveWorldEventHubRegionId } from '../pages/WorldEvents/worldEventHubRegions.js';
-import { compareWorldEventsForList } from '../shared/worldEventTimeline.js';
+import {
+  compareWorldEventsForHubList,
+  compareWorldEventsForList,
+  filterWorldEventsForHub,
+} from '../shared/worldEventTimeline.js';
 
 /** @typedef {import('../../scripts/lib/world-event-schema.mjs').WorldEventOverride} WorldEvent */
 
@@ -250,7 +254,9 @@ export function getWorldEventRegionId(event) {
  * @returns {WorldEvent[]}
  */
 export function getWorldEventsForHubRegion(regionId) {
-  const events = getAllWorldEvents();
+  const events = [...filterWorldEventsForHub(worldEventsData.events ?? [])].sort(
+    compareWorldEventsForHubList,
+  );
   const key = String(regionId || '').trim();
   if (!key || key === 'all') return events;
   return events.filter((event) => getWorldEventRegionId(event) === key);

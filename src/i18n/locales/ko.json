@@ -1999,6 +1999,10 @@
     "regionChipsAria": "지역 필터",
     "headlineAll": "전체 {{count}}건",
     "headlineRegion": "{{region}} {{count}}건",
+    "badge": {
+      "ongoing": "진행 중",
+      "upcoming": "곧 개막"
+    },
     "empty": "이 지역에 등록된 행사가 없습니다.",
     "card": {
       "detailCta": "행사 상세",

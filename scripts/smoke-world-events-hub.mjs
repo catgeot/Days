@@ -26,8 +26,9 @@ import {
   isLikelyGrayscaleColor,
 } from '../src/utils/worldEventListPhoto.js';
 import {
-  compareWorldEventsForList,
+  compareWorldEventsForHubList,
   getWorldEventTimelineBucket,
+  isWorldEventActiveForHub,
 } from '../src/shared/worldEventTimeline.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -38,27 +39,27 @@ assert.equal(WORLD_EVENT_HUB_REGIONS.length, 5, 'hub has 5 regions');
 const allEvents = getAllWorldEvents();
 assert.ok(allEvents.length >= 12, `Wave1 events present (got ${allEvents.length})`);
 
-const bucketRank = { ongoing: 0, upcoming: 1, past: 2 };
-for (let i = 0; i < allEvents.length - 1; i += 1) {
-  const left = allEvents[i];
-  const right = allEvents[i + 1];
-  const leftBucket = getWorldEventTimelineBucket(left);
-  const rightBucket = getWorldEventTimelineBucket(right);
-  assert.ok(
-    bucketRank[leftBucket] <= bucketRank[rightBucket],
-    `events sorted ongoing→upcoming→past (${left.id} ${leftBucket} before ${right.id} ${rightBucket})`,
-  );
-  if (leftBucket === rightBucket) {
-    assert.ok(
-      compareWorldEventsForList(left, right) <= 0,
-      `events in same bucket sorted by startDate (${left.id} before ${right.id})`,
-    );
-  }
+const hubAll = getWorldEventsForHubRegion('all');
+assert.ok(hubAll.length >= 20, `hub active events (got ${hubAll.length})`);
+assert.ok(hubAll.length < allEvents.length, 'hub omits past events');
+for (const event of hubAll) {
+  assert.ok(isWorldEventActiveForHub(event), `${event.id} active on hub`);
 }
-assert.equal(
-  getWorldEventsForHubRegion('all').length,
-  allEvents.length,
-  'all region returns full list',
+for (let i = 0; i < hubAll.length - 1; i += 1) {
+  const left = hubAll[i];
+  const right = hubAll[i + 1];
+  assert.ok(
+    compareWorldEventsForHubList(left, right) <= 0,
+    `hub list order (${left.id} before ${right.id})`,
+  );
+}
+assert.ok(
+  hubAll.some((event) => getWorldEventTimelineBucket(event) === 'ongoing'),
+  'hub includes ongoing events',
+);
+assert.ok(
+  hubAll.some((event) => getWorldEventTimelineBucket(event) === 'upcoming'),
+  'hub includes upcoming events',
 );
 
 for (const region of WORLD_EVENT_HUB_REGIONS) {
@@ -199,6 +200,7 @@ assert.match(appSrc, /\/en\/world-events/, 'App registers /en/world-events redir
 const hubSrc = readFileSync(join(root, 'src/pages/WorldEvents/index.jsx'), 'utf8');
 assert.match(hubSrc, /WORLD_EVENT_HUB_REGIONS/, 'WorldEvents hub uses region SSOT');
 assert.match(hubSrc, /getWorldEventsForHubRegion/, 'WorldEvents hub filters by region');
+assert.match(hubSrc, /getWorldEventHubBadgeKind/, 'WorldEvents hub shows timeline badges');
 assert.match(hubSrc, /tripWindowPresetsFromEvent/, 'WorldEvents hub uses TripWindow presets');
 assert.match(hubSrc, /getWorldEventRecurrenceNote/, 'WorldEvents hub locale recurrenceNote');
 assert.match(hubSrc, /locale={locale}/, 'WorldEvents hub passes locale to cards');

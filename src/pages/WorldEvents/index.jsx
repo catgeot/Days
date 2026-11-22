@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import SEO from '../../components/SEO';
 import { useLocale } from '../../i18n/LocaleProvider';
+import { getWorldEventHubBadgeKind } from '../../shared/worldEventTimeline.js';
 import { tripWindowPresetsFromEvent } from '../../utils/worldEventTripPresets';
 import { fetchWorldEventListPhotos } from '../../utils/fetchWorldEventListPhotos';
 import {
@@ -49,6 +50,7 @@ function WorldEventHubCard({ event, locale, t, photo = null, onPhotoError }) {
   const title = getWorldEventTitle(event, locale);
   const dateLabel = formatWorldEventDateRange(event, locale);
   const recurrenceNote = getWorldEventRecurrenceNote(event, locale);
+  const badgeKind = getWorldEventHubBadgeKind(event);
   const { eventDetailHref } = tripWindowPresetsFromEvent(event);
   const photoUrl = String(photo?.url || '').trim();
   const photoTitle = photo?.photographer
@@ -80,9 +82,22 @@ function WorldEventHubCard({ event, locale, t, photo = null, onPhotoError }) {
           )}
         </div>
         <div className="space-y-1 p-3.5">
-          <h2 className="text-sm font-extrabold leading-snug text-stone-900 sm:text-[15px]">
-            {title}
-          </h2>
+          <div className="flex flex-wrap items-start gap-1.5">
+            {badgeKind ? (
+              <span
+                className={`shrink-0 rounded-full border px-2 py-0.5 text-[10px] font-bold ${
+                  badgeKind === 'upcoming'
+                    ? 'border-sky-200 bg-sky-50 text-sky-800'
+                    : 'border-emerald-200 bg-emerald-50 text-emerald-800'
+                }`}
+              >
+                {t(`worldEventsHub.badge.${badgeKind}`)}
+              </span>
+            ) : null}
+            <h2 className="min-w-0 flex-1 text-sm font-extrabold leading-snug text-stone-900 sm:text-[15px]">
+              {title}
+            </h2>
+          </div>
           <p className="flex items-center gap-1 text-xs font-semibold text-stone-600">
             <MapPin size={12} className="shrink-0 text-amber-700" aria-hidden />
             <span className="truncate">
