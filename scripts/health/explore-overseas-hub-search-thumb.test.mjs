@@ -11,6 +11,12 @@ import {
   isGenericPlaceOgImageUrl,
   resolveExploreSearchCardThumbUrl,
 } from '../../src/pages/Home/lib/placeSeoOg.js';
+import {
+  PRAGUE_ICON_ONLY_ATTRACTIONS,
+  PRAGUE_UNSPLASH_BINDINGS,
+  expectedPragueCredit,
+  expectedPragueThumbUrl,
+} from './prague-hub-unsplash-bindings.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '../..');
 const DUBAI_POOL_PHOTO =
@@ -50,6 +56,74 @@ test('enrichSearchCandidateScenicMedia skips og pool for prague hub attractions'
     const thumb = String(enriched.imageUrl || enriched.thumbUrl || '').trim();
     assert.ok(!thumb || !isGenericPlaceOgImageUrl(thumb), `${attraction.name} must not use generic og`);
     assert.notEqual(thumb, DUBAI_POOL_PHOTO, `${attraction.name} must not show dubai pool photo`);
+  }
+});
+
+test('prague 7 attractions — curated unsplash thumb or icon path via resolveExploreSearchCardThumbUrl', () => {
+  const hub = resolveCityAttractionHub('prague');
+  assert.equal(hub?.attractions?.length, 7);
+  let withThumb = 0;
+  for (const attraction of hub.attractions) {
+    const explicit = String(attraction.thumbnail || '').trim();
+    if (explicit) {
+      withThumb += 1;
+      assert.equal(
+        resolveExploreSearchCardThumbUrl({ thumbnail: explicit }),
+        explicit,
+        `${attraction.name} explicit thumb must pass explore card guard`,
+      );
+      const enriched = enrichSearchCandidateScenicMedia(
+        attractionToSuggestion(hub, attraction),
+      );
+      assert.equal(enriched.imageUrl, explicit, attraction.name);
+      assert.equal(enriched.thumbUrl, explicit, attraction.name);
+      assert.ok(
+        attraction.thumbnailCredit?.unsplash_url,
+        `${attraction.name} unsplash page credit`,
+      );
+    } else {
+      const enriched = enrichSearchCandidateScenicMedia(
+        attractionToSuggestion(hub, attraction),
+      );
+      assert.equal(
+        String(enriched.imageUrl || enriched.thumbUrl || '').trim(),
+        '',
+        `${attraction.name} must fall back to icon`,
+      );
+    }
+  }
+  assert.equal(withThumb, 6, 'six prague picks with explicit thumbs; castle icon-only');
+  assert.equal(resolveExploreSearchCardThumbUrl({ thumbnail: DUBAI_POOL_PHOTO }), null);
+});
+
+test('prague SSOT thumbnails match Unsplash slug↔CDN binding table', () => {
+  const hub = resolveCityAttractionHub('prague');
+  const byName = new Map((hub?.attractions || []).map((a) => [a.name, a]));
+  assert.equal(PRAGUE_UNSPLASH_BINDINGS.length, 6);
+  for (const iconName of PRAGUE_ICON_ONLY_ATTRACTIONS) {
+    const attraction = byName.get(iconName);
+    assert.ok(attraction, iconName);
+    assert.equal(String(attraction.thumbnail || '').trim(), '');
+    assert.equal(attraction.thumbnailCredit, undefined);
+    const enriched = enrichSearchCandidateScenicMedia(
+      attractionToSuggestion(hub, attraction),
+    );
+    assert.equal(String(enriched.imageUrl || enriched.thumbUrl || '').trim(), '');
+  }
+  for (const row of PRAGUE_UNSPLASH_BINDINGS) {
+    const attraction = byName.get(row.name);
+    assert.ok(attraction, row.name);
+    assert.equal(attraction.thumbnail, expectedPragueThumbUrl(row.photo), row.name);
+    const credit = expectedPragueCredit(row);
+    assert.deepEqual(attraction.thumbnailCredit, credit, row.name);
+    assert.ok(
+      attraction.thumbnail.includes(row.photo),
+      `${row.name} CDN must embed ${row.photo}`,
+    );
+    assert.ok(
+      attraction.thumbnailCredit.unsplash_url.includes(row.slug),
+      `${row.name} unsplash_url must embed page slug`,
+    );
   }
 });
 

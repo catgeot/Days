@@ -295,6 +295,8 @@ export function attractionToSuggestion(hub, attraction) {
     uiPlace: true,
     parentCity: hub.name,
     ...(contentId ? { contentId } : {}),
+    ...(attraction.thumbnail ? { thumbnail: attraction.thumbnail } : {}),
+    ...(attraction.thumbnailCredit ? { thumbnailCredit: attraction.thumbnailCredit } : {}),
   };
 }
 

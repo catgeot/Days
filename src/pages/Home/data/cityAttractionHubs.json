@@ -378,14 +378,14 @@
         "lng": 126.6640038158
       },
       {
-        "name": "\uC6B0\uB3C4",
+        "name": "우도",
         "name_en": "Udo Island",
         "kind": "island",
         "lat": 33.506,
         "lng": 126.953
       },
       {
-        "name": "\uB2ED\uBA38\uB974\uD574\uC548",
+        "name": "닭머르해안",
         "name_en": "Dakmeoru Coast",
         "kind": "trail",
         "lat": 33.5367354,
@@ -4311,42 +4311,84 @@
         "name_en": "Charles Bridge",
         "kind": "landmark",
         "lat": 50.0865,
-        "lng": 14.4114
+        "lng": 14.4114,
+        "thumbnail": "https://images.unsplash.com/photo-1719683187673-92559a5c0ab9?auto=format&fit=crop&w=400&h=400&q=80",
+        "thumbnailCredit": {
+          "source": "unsplash",
+          "photographer": "Joshua Kettle",
+          "photographer_url": "https://unsplash.com/@joshuakettle?utm_source=gateo&utm_medium=referral",
+          "unsplash_url": "https://unsplash.com/photos/4AL1OnvWAng?utm_source=gateo&utm_medium=referral"
+        }
       },
       {
         "name": "구시가 광장",
         "name_en": "Old Town Square",
         "kind": "landmark",
         "lat": 50.087,
-        "lng": 14.4208
+        "lng": 14.4208,
+        "thumbnail": "https://images.unsplash.com/photo-1749219346498-2e47d7c50e06?auto=format&fit=crop&w=400&h=400&q=80",
+        "thumbnailCredit": {
+          "source": "unsplash",
+          "photographer": "Sergey Leont'ev",
+          "photographer_url": "https://unsplash.com/@addictfuji?utm_source=gateo&utm_medium=referral",
+          "unsplash_url": "https://unsplash.com/photos/fO6a6npF4mg?utm_source=gateo&utm_medium=referral"
+        }
       },
       {
         "name": "천문시계",
         "name_en": "Astronomical Clock",
         "kind": "landmark",
         "lat": 50.087,
-        "lng": 14.4207
+        "lng": 14.4207,
+        "thumbnail": "https://images.unsplash.com/photo-1747466403454-d0518287e433?auto=format&fit=crop&w=400&h=400&q=80",
+        "thumbnailCredit": {
+          "source": "unsplash",
+          "photographer": "Sinisa Lekovic",
+          "photographer_url": "https://unsplash.com/@sinisalekovic?utm_source=gateo&utm_medium=referral",
+          "unsplash_url": "https://unsplash.com/photos/uHI5ToXVvwo?utm_source=gateo&utm_medium=referral"
+        }
       },
       {
         "name": "레논 벽",
         "name_en": "John Lennon Wall",
         "kind": "landmark",
         "lat": 50.0862,
-        "lng": 14.4045
+        "lng": 14.4045,
+        "thumbnail": "https://images.unsplash.com/photo-1573929491484-c151f78d50e5?auto=format&fit=crop&w=400&h=400&q=80",
+        "thumbnailCredit": {
+          "source": "unsplash",
+          "photographer": "Dariusz Sankowski",
+          "photographer_url": "https://unsplash.com/@dariuszsankowski?utm_source=gateo&utm_medium=referral",
+          "unsplash_url": "https://unsplash.com/photos/0m-Vj_0yFwE?utm_source=gateo&utm_medium=referral"
+        }
       },
       {
         "name": "페트르진 언덕",
         "name_en": "Petřín Hill",
         "kind": "viewpoint",
         "lat": 50.0836,
-        "lng": 14.395
+        "lng": 14.395,
+        "thumbnail": "https://images.unsplash.com/photo-1670784489742-5a8f40a8eda3?auto=format&fit=crop&w=400&h=400&q=80",
+        "thumbnailCredit": {
+          "source": "unsplash",
+          "photographer": "Mattia Spotti",
+          "photographer_url": "https://unsplash.com/@pockmini?utm_source=gateo&utm_medium=referral",
+          "unsplash_url": "https://unsplash.com/photos/rjqrQNWZmNo?utm_source=gateo&utm_medium=referral"
+        }
       },
       {
         "name": "요세포프",
         "name_en": "Josefov",
         "kind": "neighborhood",
         "lat": 50.0902,
-        "lng": 14.419
+        "lng": 14.419,
+        "thumbnail": "https://images.unsplash.com/photo-1761953443006-bad3b9eca39e?auto=format&fit=crop&w=400&h=400&q=80",
+        "thumbnailCredit": {
+          "source": "unsplash",
+          "photographer": "Emir Kutluay",
+          "photographer_url": "https://unsplash.com/@emirkutluay?utm_source=gateo&utm_medium=referral",
+          "unsplash_url": "https://unsplash.com/photos/USeZeayN_6M?utm_source=gateo&utm_medium=referral"
+        }
       }
     ]
   },
@@ -32653,7 +32695,12 @@
         "kind": "museum",
         "lat": 29.9964,
         "lng": 31.1203,
-        "aliases": ["GEM", "대이집트박물관", "카이로 대이집트박물관", "Grand Egyptian Museum"]
+        "aliases": [
+          "GEM",
+          "대이집트박물관",
+          "카이로 대이집트박물관",
+          "Grand Egyptian Museum"
+        ]
       },
       {
         "name": "술탄 하산 모스크",
@@ -32661,7 +32708,12 @@
         "kind": "landmark",
         "lat": 30.0325,
         "lng": 31.2567,
-        "aliases": ["카이로 술탄하산모스크", "술탄하산", "Sultan Hassan", "Mosque-Madrasa of Sultan Hassan"]
+        "aliases": [
+          "카이로 술탄하산모스크",
+          "술탄하산",
+          "Sultan Hassan",
+          "Mosque-Madrasa of Sultan Hassan"
+        ]
       }
     ]
   },
