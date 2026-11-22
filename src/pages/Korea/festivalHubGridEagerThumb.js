@@ -19,7 +19,17 @@ export function isFestivalHubGridEagerThumb(
  * Stable key segment so thumb priority resets when hub filters change (chip switch).
  * @param {{ listEpoch: string, index: number, contentId?: string | number }} p
  */
-export function festivalHubGridThumbLoadKey({ listEpoch, index, contentId = '' }) {
-  const eager = isFestivalHubGridEagerThumb(index) ? '1' : '0';
+export function festivalHubGridThumbLoadKey({
+  listEpoch,
+  index,
+  contentId = '',
+  eagerFlag,
+}) {
+  const eager =
+    eagerFlag === '1' || eagerFlag === '0'
+      ? eagerFlag
+      : isFestivalHubGridEagerThumb(index)
+        ? '1'
+        : '0';
   return `${String(listEpoch)}|${eager}|${String(contentId)}`;
 }

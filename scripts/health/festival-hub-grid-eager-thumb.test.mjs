@@ -63,6 +63,8 @@ test('Korea hub wires eager thumb helper and list epoch', () => {
   assert.match(indexJs, /festivalHubGridThumbLoadKey/);
   assert.match(indexJs, /thumbListEpoch=\{listFilterScrollKey\}/);
   assert.match(indexJs, /FESTIVAL_HUB_GRID_SCROLL_TOP_BOTTOM_CLASS/);
+  assert.match(indexJs, /forceRowEager/);
+  assert.match(indexJs, /setPhotoSizesByKey\(new Map\(\)\)/);
 });
 
 test('grid photo card shows pin fallback only after thumb exhausted', () => {

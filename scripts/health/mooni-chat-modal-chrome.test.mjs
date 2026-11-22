@@ -117,6 +117,8 @@ test('MOONi chat main header — close reserve padding, mobile new-chat label', 
   const chatModal = readFileSync(join(root, 'src/pages/Home/components/ChatModal.jsx'), 'utf8');
   assert.match(chatModal, /data-testid="mooni-chat-main-header"/);
   assert.match(chatModal, /\$\{MOONI_CHAT_MAIN_HEADER_RESERVE_CLASS\}/);
+  assert.match(chatModal, /data-testid="mooni-chat-main-header-title"/);
+  assert.match(chatModal, /max-md:line-clamp-2/);
   assert.match(chatModal, /from '\.\.\/lib\/mooniChatModalChromeTokens\.js'/);
   assert.ok(MOONI_CHAT_MAIN_HEADER_RESERVE_CLASS.includes('2.75rem'));
   assert.match(chatModal, /data-testid="mooni-chat-new"[\s\S]*?\{t\('mooni\.chat\.newChat'\)\}/);
