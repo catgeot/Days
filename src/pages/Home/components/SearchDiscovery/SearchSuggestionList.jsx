@@ -14,6 +14,8 @@ import {
   UtensilsCrossed,
 } from 'lucide-react';
 import ExploreRestaurantMapOutboundCue from './ExploreRestaurantMapOutboundCue.jsx';
+import ExploreSearchThumbnailCreditCue from './ExploreSearchThumbnailCreditCue.jsx';
+import { normalizeExploreSearchThumbnailCredit } from '../../lib/exploreSearchThumbnailCredit.js';
 import {
   fetchPlaceChatIntroSummaryForLocation,
   needsPlaceChatIntroHydration,
@@ -267,6 +269,10 @@ function useMissingTourAttractionThumbs(items) {
   }, [candidateKey, items]);
 
   return thumbByIndex;
+}
+
+function hasExploreSearchThumbnailCredit(item) {
+  return Boolean(normalizeExploreSearchThumbnailCredit(item?.thumbnailCredit));
 }
 
 function SearchResultThumb({ item, sizeClass, kind, iconSize = 16, selectionCard = false }) {
@@ -524,6 +530,12 @@ export function SearchSuggestionList({
                         ) : null}
                       </div>
                   </button>
+                  {hasExploreSearchThumbnailCredit(item) ? (
+                    <ExploreSearchThumbnailCreditCue
+                      credit={item.thumbnailCredit}
+                      className={`${isPopover ? 'mx-3 mb-2.5 -mt-0.5' : 'mx-4 mb-3 -mt-0.5'}`}
+                    />
+                  ) : null}
                   {isRestaurantRow ? (
                     <ExploreRestaurantMapOutboundCue
                       item={item}
@@ -801,6 +813,12 @@ export function SearchDisambiguationCards({
               ) : null}
               </div>
             </button>
+              {hasExploreSearchThumbnailCredit(hydrated) ? (
+                <ExploreSearchThumbnailCreditCue
+                  credit={hydrated.thumbnailCredit}
+                  className="mx-3 mb-2.5 -mt-0.5"
+                />
+              ) : null}
               {isRestaurantRow ? (
                 <ExploreRestaurantMapOutboundCue
                   item={hydrated}

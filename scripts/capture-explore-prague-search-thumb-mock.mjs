@@ -11,6 +11,10 @@ import {
 } from '../src/pages/Home/lib/koreaLocalScenicLists.js';
 import { attractionToSuggestion, resolveCityAttractionHub } from '../src/pages/Home/lib/cityAttractionHubs.js';
 import { isGenericPlaceOgImageUrl } from '../src/pages/Home/lib/placeSeoOg.js';
+import {
+  formatExploreSearchThumbnailCreditPlain,
+  normalizeExploreSearchThumbnailCredit,
+} from '../src/pages/Home/lib/exploreSearchThumbnailCredit.js';
 
 const OUT_DIR = '/opt/cursor/artifacts';
 
@@ -36,10 +40,22 @@ function buildPragueCards() {
   });
 }
 
+function creditHtml(item) {
+  const credit = normalizeExploreSearchThumbnailCredit(item.thumbnailCredit);
+  if (!credit) return '';
+  const label = formatExploreSearchThumbnailCreditPlain(credit, 'ko');
+  const parts = label.split(' / ');
+  const author = parts[0].replace(/^사진\s*/, '');
+  const authorHref = esc(credit.photographerHref || '#');
+  const unsplashHref = esc(credit.unsplashHref);
+  return `<p class="credit" data-explore-search-thumbnail-credit=""><span>${esc(parts[0].split(/\s+/)[0])}</span> <a href="${authorHref}" target="_blank" rel="noopener noreferrer">${esc(author)}</a> <span>/</span> <a href="${unsplashHref}" target="_blank" rel="noopener noreferrer">Unsplash</a></p>`;
+}
+
 function cardHtml(item) {
   const thumbBlock = item.showIcon
     ? `<div class="thumb icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#fbbf24" stroke-width="2"><path d="M3 21h18M6 21V9l6-4 6 4v12"/></svg></div>`
     : `<img class="thumb" src="${esc(item.imageUrl)}" alt="" />`;
+  const credit = creditHtml(item);
   return `<article class="card">
   ${item.groupTitle ? `<p class="group">${esc(item.groupTitle)}</p>` : ''}
   <div class="row">
@@ -50,6 +66,7 @@ function cardHtml(item) {
       <p class="loc">${esc(item.parentCity || '프라하')} · 체코</p>
     </div>
   </div>
+  ${credit}
 </article>`;
 }
 
@@ -68,6 +85,8 @@ function pageHtml(width, cards) {
   .badge{display:inline-block;font-size:10px;border:1px solid rgba(251,191,36,.5);color:#fde68a;border-radius:999px;padding:2px 8px;margin-bottom:6px}
   h2{font-size:15px;margin:0;font-weight:700}
   .loc{font-size:12px;color:rgba(255,255,255,.65);margin:4px 0 0}
+  .credit{margin:0 12px 10px;display:inline-flex;flex-wrap:wrap;align-items:center;gap:4px;font-size:10px;line-height:1.35;color:rgba(255,255,255,.9);border:1px solid rgba(255,255,255,.25);border-radius:999px;background:rgba(255,255,255,.06);padding:3px 8px}
+  .credit a{color:#7dd3fc;font-weight:600;text-decoration:underline;text-underline-offset:2px}
 </style></head><body>
 <h1>프라하 검색 — 선택 카드 (mock)</h1>
 ${cards.map(cardHtml).join('\n')}
@@ -86,7 +105,7 @@ async function capture(browserType, width, cards, suffix) {
   const file = path.join(OUT_DIR, `explore-prague-search-cards-${width}-${suffix}.png`);
   await page.screenshot({
     path: file,
-    clip: { x: 0, y: 0, width, height: Math.min(844, 120 + cards.length * 108) },
+    clip: { x: 0, y: 0, width, height: Math.min(844, 130 + cards.length * 118) },
   });
   await browser.close();
   return file;
