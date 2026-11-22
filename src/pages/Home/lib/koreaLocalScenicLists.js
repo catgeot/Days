@@ -12,7 +12,7 @@ import {
   getKindLabel,
   placeUrlSlug,
 } from './cityAttractionHubs.js';
-import { DEFAULT_OG_IMAGE, getPlaceOgImageUrl } from './placeSeoOg.js';
+import { resolveExploreSearchCardThumbUrl } from './placeSeoOg.js';
 import {
   scenicAreaCodeForHubId,
   scenicRegionForAreaCode,
@@ -748,14 +748,12 @@ export function enrichSearchCandidateScenicMedia(item, locale = 'ko') {
     ).trim(),
   );
   if (!afterMediaThumb) {
-    const thumbSlug = String(
-      item.kind === 'attraction' && hubId ? hubId : next.slug || item.slug || hubId || '',
-    ).trim();
-    const og = getPlaceOgImageUrl(
-      thumbSlug ? { slug: thumbSlug, name: next.name || item.name } : { name: next.name || item.name },
-    );
-    if (og && og !== DEFAULT_OG_IMAGE) {
-      next = { ...next, imageUrl: og, thumbUrl: og };
+    const exploreThumb = resolveExploreSearchCardThumbUrl({
+      thumbnail: next.thumbnail || item.thumbnail,
+      image: next.image || item.image,
+    });
+    if (exploreThumb) {
+      next = { ...next, imageUrl: exploreThumb, thumbUrl: exploreThumb };
     }
   }
   if (
