@@ -2,16 +2,20 @@
 
 SSOT: `src/pages/Home/data/cityAttractionHubs.json` (`hubId: prague`). 탐색 카드는 `resolveExploreSearchCardThumbUrl`로 명시 `thumbnail`만 통과, SEO pool·전역 OG는 차단.
 
-| 명소 (ko) | name_en | Unsplash 사진 페이지 | 작가 | CDN thumbnail (`images.unsplash.com`) | 선정 근거 | 탈락 후보 요약 |
-|-----------|---------|----------------------|------|----------------------------------------|-----------|----------------|
-| 프라하성 | Prague Castle | https://unsplash.com/photos/82RJm8VETb8 | Polina Podlesnaya | `photo-1558370037-9fe7f8e589f1` | 설명·위치에 Prague Castle / St. Vitus Cathedral 명시, 성 외관이 프레임 중심 | 성 없는 붉은 지붕 일반 시티뷰(QxWaATN9P5w)는 성 단독 샷이 아니어서 보류 |
-| 카를교 | Charles Bridge | https://unsplash.com/photos/4AL1OnvWAng | Joshua Kettle | `photo-1719683187673-92559a5c0ab9` | «the famous Charles Bridge at dawn», Prague · 조각상·다리 타워 가시 | 강 건너 성+다리 원경(mf_VRQTNycc)은 교 단독 앵커로는 모호해 보류 |
-| 구시가 광장 | Old Town Square | https://unsplash.com/photos/fO6a6npF4mg | Sergey Leont'ev | `photo-1749219346498-2e47d7c50e06` | 태그 old town square, Tyngothic towers over square | 시계 클로즈업만 있는 uHI5ToXVvwo는 광장 전경 대신 천문시계에 배정 |
-| 천문시계 | Astronomical Clock | https://unsplash.com/photos/uHI5ToXVvwo | Sinisa Lekovic | `photo-1747466403454-d0518287e433` | 제목·태그 prague astronomical clock, Orloj 타워 | 야간 일반 시계탑(Jms1rfh56CI)은 오를로지 특정 불명 |
-| 레논 벽 | John Lennon Wall | https://unsplash.com/photos/0m-Vj_0yFwE | Dariusz Sankowski | `photo-1573929491484-c151f78d50e5` | 위치 John Lennon Wall, Malá Strana, Prague 1 | 제목만 graffiti·Prague 미기재(E1UQ32yIds0), 홍콩 Lennon 터널(Ip2t2sHL8E4) |
-| 페트르진 언덕 | Petřín Hill | https://unsplash.com/photos/hW0qD1O0y08 | Thomas Peham | `photo-1629514774841-ee1fe98203ee` | Petřín Lookout Tower 정면, Prague | 도시 전경만 있고 탑 미표시 스카이라인 샷 다수 |
-| 요세포프 | Josefov | https://unsplash.com/photos/USeZeayN_6M | Emir Kutluay | `photo-1761953443006-bad3b9eca39e` | Synagogue, Star of David, Prague Jewish Quarter 건물 디테일 | Pinkas 내부 등 특정 회당 불명확 시 synagogue 일반 외관만 확정 |
+**slug↔CDN·작가 확인 방법(한 줄):** Unsplash 사진 페이지를 Playwright로 열어 `__NEXT_DATA__.props.pageProps.photo.urls.regular`의 pathname이 SSOT `thumbnail`과 동일한 `photo-…`인지 대조하고, 같은 객체의 `user.name`·`user.username`으로 크레딧을 맞춘 뒤, `scripts/health/prague-hub-unsplash-bindings.mjs` 표와 SSOT JSON을 `explore-overseas-hub-search-thumb.test.mjs`가 검증하며, 현물은 `images.unsplash.com` GET(800px) 저장본(`artifacts/prague-verify/*.jpg`)으로 화면 내용을 재검수한다.
 
-**미선정(아이콘)**: 이번 7곳 모두 위 표로 채움. 확신 없을 때는 `thumbnail` 비움 → 카드 아이콘.
+| 명소 (ko) | page slug | CDN `photo-…` | 작가 (@) | 선정 근거(실물 검수) | 탈락·교체 요약 |
+|-----------|-----------|---------------|----------|----------------------|----------------|
+| 프라하성 | FRGiwPEH2Cs | 1667853354961-2bd9ae437016 | Eugenia Pan'kiv (@eugeniya_now) | 흐라드차니 광장·궁전 안마당 **외부**: 붉은 지붕·회색 석재 파사드·광장 분수, 성궁 단지 건물이 화면 중심(대성당 내부 성가유리 아님) | **교체:** 82RJm8VETb8/1558370037… — 성가유리·성당 내부 클로즈업이었음 |
+| 카를교 | 4AL1OnvWAng | 1719683187673-92559a5c0ab9 | Joshua Kettle (@joshuakettle) | 새벽 카를교 **조각상·연석**과 말라 스트라나 쪽 가로등·첨탑 실루엣 | 유지 |
+| 구시가 광장 | fO6a6npF4mg | 1749219346498-2e47d7c50e06 | Sergey Leont'ev (@addictfuji) | **틴 교회** 쌍첨탑이 지붕 위로 올라온 구시가 전망 | 유지 |
+| 천문시계 | uHI5ToXVvwo | 1747466403454-d0518287e433 | Sinisa Lekovic (@sinisalekovic) | 구시청사 탑·**오를로이(천문시계)** 원판과 첨탑이 한 프레임 | 유지 |
+| 레논 벽 | 0m-Vj_0yFwE | 1573929491484-c151f78d50e5 | Dariusz Sankowski (@dariuszsankowski) | 레논 초상·`ALL YOU NEED IS LÁSKA` 등 **말라 스트라나 그래피티 벽** | 유지 |
+| 페트르진 언덕 | rjqrQNWZmNo | 1670784489742-5a8f40a8eda3 | Mattia Spotti (@pockmini) | **컬러** 철골 전망탑이 숲과 함께 보임(에펠 단독 흑백 로우앵글 아님). ※페이지 제목은 오탈자(Eiffel)이나 실물은 페트르진 탑 | **교체:** hW0qD1O0y08/1629514774841… — 흑백·탑 상부만 올려다본 에펠 유사 샷 |
+| 요세포프 | USeZeayN_6M | 1761953443006-bad3b9eca39e | Emir Kutluay (@emirkutluay) | **다윗의 별**·회당 지붕·뾰족 창문 — 유대인 지구 회당 외부 디테일 | 유지 |
 
-**검증**: `node --import ./scripts/register-src-esm.mjs --test scripts/health/explore-overseas-hub-search-thumb.test.mjs` · mock 캡처 `scripts/capture-explore-prague-search-thumb-mock.mjs`.
+**미선정(아이콘):** 7곳 모두 SSOT에 `thumbnail` 있음.
+
+**자동 검증:** `node --import ./scripts/register-src-esm.mjs --test scripts/health/explore-overseas-hub-search-thumb.test.mjs` · mock `node --import ./scripts/register-src-esm.mjs scripts/capture-explore-prague-search-thumb-mock.mjs`.
+
+**수동 실물 검수 샘플:** `/opt/cursor/artifacts/prague-verify/*.jpg` (동일 바이너리를 `artifacts/prague-verify/`에 복사해 두면 CI 외에서도 재확인 가능).
