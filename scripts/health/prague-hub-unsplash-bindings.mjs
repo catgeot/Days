@@ -1,15 +1,10 @@
 /**
- * 프라하 허브 7곳 Unsplash 페이지 slug ↔ images.unsplash.com pathname 고정표.
+ * 프라하 허브 Unsplash 페이지 slug ↔ images.unsplash.com pathname 고정표(썸네일 있는 명소만).
  * slug↔CDN 일치는 Playwright로 Unsplash `photo.urls.regular` pathname과 대조(봇 차단으로 CI는 pathname+HEAD만).
  */
+export const PRAGUE_ICON_ONLY_ATTRACTIONS = ['프라하성'];
+
 export const PRAGUE_UNSPLASH_BINDINGS = [
-  {
-    name: '프라하성',
-    slug: 'FRGiwPEH2Cs',
-    photo: 'photo-1667853354961-2bd9ae437016',
-    photographer: "Eugenia Pan'kiv",
-    username: 'eugeniya_now',
-  },
   {
     name: '카를교',
     slug: '4AL1OnvWAng',

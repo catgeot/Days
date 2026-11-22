@@ -12,6 +12,7 @@ import {
   resolveExploreSearchCardThumbUrl,
 } from '../../src/pages/Home/lib/placeSeoOg.js';
 import {
+  PRAGUE_ICON_ONLY_ATTRACTIONS,
   PRAGUE_UNSPLASH_BINDINGS,
   expectedPragueCredit,
   expectedPragueThumbUrl,
@@ -91,14 +92,24 @@ test('prague 7 attractions — curated unsplash thumb or icon path via resolveEx
       );
     }
   }
-  assert.equal(withThumb, 7, 'all prague hub picks stored in SSOT for this rollout');
+  assert.equal(withThumb, 6, 'six prague picks with explicit thumbs; castle icon-only');
   assert.equal(resolveExploreSearchCardThumbUrl({ thumbnail: DUBAI_POOL_PHOTO }), null);
 });
 
 test('prague SSOT thumbnails match Unsplash slug↔CDN binding table', () => {
   const hub = resolveCityAttractionHub('prague');
   const byName = new Map((hub?.attractions || []).map((a) => [a.name, a]));
-  assert.equal(PRAGUE_UNSPLASH_BINDINGS.length, 7);
+  assert.equal(PRAGUE_UNSPLASH_BINDINGS.length, 6);
+  for (const iconName of PRAGUE_ICON_ONLY_ATTRACTIONS) {
+    const attraction = byName.get(iconName);
+    assert.ok(attraction, iconName);
+    assert.equal(String(attraction.thumbnail || '').trim(), '');
+    assert.equal(attraction.thumbnailCredit, undefined);
+    const enriched = enrichSearchCandidateScenicMedia(
+      attractionToSuggestion(hub, attraction),
+    );
+    assert.equal(String(enriched.imageUrl || enriched.thumbUrl || '').trim(), '');
+  }
   for (const row of PRAGUE_UNSPLASH_BINDINGS) {
     const attraction = byName.get(row.name);
     assert.ok(attraction, row.name);

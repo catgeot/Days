@@ -96,12 +96,16 @@ async function main() {
   fs.mkdirSync(OUT_DIR, { recursive: true });
   const cards = buildPragueCards();
   const paths = [];
-  for (const [suffix, engine] of [
-    ['chromium', 'chromium'],
-    ['webkit', 'webkit'],
-  ]) {
-    paths.push(await capture(engine, 390, cards, suffix));
-    paths.push(await capture(engine, 1280, cards, suffix));
+  if (process.argv.includes('--only-390-chromium')) {
+    paths.push(await capture('chromium', 390, cards, 'chromium'));
+  } else {
+    for (const [suffix, engine] of [
+      ['chromium', 'chromium'],
+      ['webkit', 'webkit'],
+    ]) {
+      paths.push(await capture(engine, 390, cards, suffix));
+      paths.push(await capture(engine, 1280, cards, suffix));
+    }
   }
   console.log(JSON.stringify({ cards: cards.length, captures: paths }, null, 2));
 }

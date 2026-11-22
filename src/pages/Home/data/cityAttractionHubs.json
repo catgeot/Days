@@ -4304,14 +4304,7 @@
         "name_en": "Prague Castle",
         "kind": "landmark",
         "lat": 50.091,
-        "lng": 14.4016,
-        "thumbnail": "https://images.unsplash.com/photo-1667853354961-2bd9ae437016?auto=format&fit=crop&w=400&h=400&q=80",
-        "thumbnailCredit": {
-          "source": "unsplash",
-          "photographer": "Eugenia Pan'kiv",
-          "photographer_url": "https://unsplash.com/@eugeniya_now?utm_source=gateo&utm_medium=referral",
-          "unsplash_url": "https://unsplash.com/photos/FRGiwPEH2Cs?utm_source=gateo&utm_medium=referral"
-        }
+        "lng": 14.4016
       },
       {
         "name": "카를교",
