@@ -59,7 +59,8 @@ export function getWorldEventById(eventId) {
 export function getWorldEventsForSlug(slug) {
   const key = String(slug || '').trim().toLowerCase();
   if (!key) return [];
-  return eventsBySlug.get(key) ?? [];
+  const list = eventsBySlug.get(key) ?? [];
+  return filterWorldEventsForHub(list);
 }
 
 /**

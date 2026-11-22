@@ -9,7 +9,7 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { EVENT_PLANNER_QUERY_KEY } from '../src/utils/placePlannerPath.js';
-import { getWorldEventsForSlug } from '../src/utils/worldEvents.js';
+import { getWorldEventById, getWorldEventsForSlug } from '../src/utils/worldEvents.js';
 import { tripWindowPresetsFromEvent } from '../src/utils/worldEventTripPresets.js';
 import { tripWindowNights } from '../src/shared/tripWindow.js';
 
@@ -17,9 +17,13 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, '..');
 
 const edinburghEvents = getWorldEventsForSlug('edinburgh');
-assert.ok(edinburghEvents.length >= 1, 'edinburgh has world events');
+assert.equal(
+  edinburghEvents.find((event) => event.id === 'edinburgh-fringe-2026'),
+  undefined,
+  'past edinburgh-fringe-2026 excluded from place slug list',
+);
 
-const fringe = edinburghEvents.find((event) => event.id === 'edinburgh-fringe-2026');
+const fringe = getWorldEventById('edinburgh-fringe-2026');
 assert.ok(fringe, 'edinburgh-fringe-2026 override present');
 assert.equal(fringe.startDate, '2026-08-07');
 assert.equal(fringe.endDate, '2026-08-31');
