@@ -10,7 +10,7 @@ import {
   WORLD_EVENT_LONG_SEASON_DAYS,
 } from '../../src/shared/worldEventTimeline.js';
 import { todayYmdKst } from '../../src/shared/tripWindow.js';
-import { getWorldEventsForHubRegion } from '../../src/utils/worldEvents.js';
+import { getWorldEventsForHubRegion, getWorldEventsForSlug } from '../../src/utils/worldEvents.js';
 
 const KST_TODAY = '2026-11-22';
 
@@ -90,4 +90,28 @@ test('filterWorldEventsForHub keeps upcoming and ongoing only', () => {
     active.map((e) => e.id).sort(),
     ['b', 'c'],
   );
+});
+
+test('place slug lists exclude past events like hub (2026-11-22 KST)', () => {
+  const pastOnlySlugs = ['munich', 'istanbul', 'edinburgh', 'london'];
+  for (const slug of pastOnlySlugs) {
+    const events = getWorldEventsForSlug(slug);
+    assert.equal(events.length, 0, `${slug} place list empty when only past events`);
+    for (const event of events) {
+      assert.notEqual(getWorldEventTimelineBucket(event, KST_TODAY), 'past', event.id);
+    }
+  }
+
+  const munichIds = getWorldEventsForSlug('munich').map((e) => e.id);
+  assert.ok(!munichIds.includes('munich-oktoberfest-2026'));
+
+  const vienna = getWorldEventsForSlug('vienna');
+  assert.ok(vienna.length >= 1, 'vienna has active events for place rail');
+  assert.ok(
+    vienna.some((e) => e.id === 'vienna-staatsoper-season-2026'),
+    'vienna staatsoper season still listed',
+  );
+  for (const event of vienna) {
+    assert.notEqual(getWorldEventTimelineBucket(event, KST_TODAY), 'past', event.id);
+  }
 });
