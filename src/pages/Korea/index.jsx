@@ -70,6 +70,7 @@ import {
 } from './festivalHubRegionChoiceSession.js';
 import {
   FESTIVAL_HUB_GRID_CLASS,
+  FESTIVAL_HUB_GRID_EAGER_THUMB_COUNT,
   FESTIVAL_HUB_GRID_MOBILE_SCROLL_PAD_CLASS,
   FESTIVAL_HUB_GRID_SCROLL_TOP_BOTTOM_CLASS,
   FESTIVAL_HUB_GRID_WIDE_COMPANION_CLASS,
@@ -1053,6 +1054,9 @@ function FestivalEntries({
   const uniqueItems = dedupeFestivalItems(items).filter(hasFestivalCardContent);
   const columnCount = useFestivalHubMasonryColumnCount();
   const [photoSizesByKey, setPhotoSizesByKey] = useState(() => new Map());
+  useEffect(() => {
+    setPhotoSizesByKey(new Map());
+  }, [thumbListEpoch]);
   const handlePhotoSize = useCallback((item, size) => {
     const key = festivalCardDedupeKey(item) || festivalKey(item);
     if (!key || !size?.width || !size?.height) return;
@@ -1077,19 +1081,20 @@ function FestivalEntries({
       },
       columnCount,
     );
-    const renderGridCard = (item, index, layoutOpts = {}) => {
-      const priorityThumb = isFestivalHubGridEagerThumb(index);
-      const cardKey = priorityThumb
-        ? festivalHubGridThumbLoadKey({
-            listEpoch: thumbListEpoch,
-            index,
-            contentId: item?.contentId,
-          })
-        : festivalKey(item);
+    const renderGridCard = (item, index, layoutOpts = {}, thumbOpts = {}) => {
+      const priorityThumb =
+        thumbOpts.forceEager === true || isFestivalHubGridEagerThumb(index);
+      const cardKey = festivalHubGridThumbLoadKey({
+        listEpoch: thumbListEpoch,
+        index,
+        contentId: item?.contentId,
+        eagerFlag: priorityThumb ? '1' : '0',
+      });
+      const reactKey = `${cardKey}|${festivalKey(item)}`;
       const dedupeKey = festivalCardDedupeKey(item) || festivalKey(item);
       return (
         <FestivalGridPhotoCard
-          key={cardKey}
+          key={reactKey}
           item={item}
           priorityThumb={priorityThumb}
           areaCode={areaCode}
@@ -1118,6 +1123,13 @@ function FestivalEntries({
         {renderPlan.map((block, planIdx) => {
           if (block.type === 'wideRow') {
             const { wide, companions } = block;
+            const forceRowEager =
+              planIdx === 0 ||
+              wide.index < FESTIVAL_HUB_GRID_EAGER_THUMB_COUNT ||
+              companions.some(
+                ({ index: companionIndex }) =>
+                  companionIndex < FESTIVAL_HUB_GRID_EAGER_THUMB_COUNT,
+              );
             return (
               <div
                 key={`wide-row-${wide.index}-${planIdx}`}
@@ -1128,10 +1140,15 @@ function FestivalEntries({
                   className={FESTIVAL_HUB_GRID_WIDE_SLOT_CLASS}
                   data-festival-grid-wide-slot=""
                 >
-                  {renderGridCard(wide.item, wide.index, {
-                    inColumn: false,
-                    slotIndex: wide.index,
-                  })}
+                  {renderGridCard(
+                    wide.item,
+                    wide.index,
+                    {
+                      inColumn: false,
+                      slotIndex: wide.index,
+                    },
+                    { forceEager: forceRowEager },
+                  )}
                 </div>
                 {companions.length > 0 ? (
                   <div
@@ -1139,10 +1156,15 @@ function FestivalEntries({
                     data-festival-grid-wide-companion=""
                   >
                     {companions.map(({ item, index }) =>
-                      renderGridCard(item, index, {
-                        inColumn: true,
-                        slotIndex: index,
-                      }),
+                      renderGridCard(
+                        item,
+                        index,
+                        {
+                          inColumn: true,
+                          slotIndex: index,
+                        },
+                        { forceEager: forceRowEager },
+                      ),
                     )}
                   </div>
                 ) : null}

@@ -286,7 +286,13 @@ const PublicViewer = () => {
   const showOwnerEdit = isLogbookReportOwner(sessionUserId, report);
 
   return (
-    <div className="min-h-screen bg-white text-gray-900 relative overflow-hidden pb-20 font-sans">
+    <div
+      className={`min-h-screen bg-white text-gray-900 relative overflow-hidden font-sans ${
+        editorial
+          ? 'pb-[calc(max(5rem,env(safe-area-inset-bottom,0px))+3.5rem)]'
+          : 'pb-20'
+      }`}
+    >
       {editorial ? (
         <SEO
           title={report.title}

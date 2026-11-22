@@ -43,6 +43,8 @@ import {
   parseLogbookReviewFilterFromSearch,
 } from '../../../logbookOfficialReviews/logbookReviewFilterUrl.js';
 import { isGateoLogbookReviewFilterEnabled } from '../../../utils/logbookReviewFilterFlag.js';
+import { logbookPlaceKey } from '../../../utils/logbookReadingMeta.js';
+import { resolveLogbookBlogLocationReviewFilter } from '../../../logbookOfficialReviews/logbookBlogLocationReviewFilter.js';
 import { trackEvent } from '../../../shared/analytics/trackEvent.js';
 import LogbookOfficialReviewFilter from './LogbookOfficialReviewFilter.jsx';
 import LogbookOfficialReviewCardGrid from './LogbookOfficialReviewCardGrid.jsx';
@@ -190,7 +192,7 @@ function HubTitleRow({
   );
 }
 
-const LogbookOfficialReviewHubCard = () => {
+const LogbookOfficialReviewHubCard = ({ blogLocationFilter = '' }) => {
   const { t } = useTranslation();
   const hubTitle = t('logbook.officialReviewHub.title', {
     defaultValue: LOGBOOK_OFFICIAL_REVIEW_CARD_TITLE,
@@ -212,11 +214,26 @@ const LogbookOfficialReviewHubCard = () => {
   const [cityOverflowOpen, setCityOverflowOpen] = useState(() =>
     Boolean(readMatchingLogbookReviewHubSession(location.pathname, location.search)?.cityOverflowOpen),
   );
+  const blogLocationKey = useMemo(() => {
+    const fromProp = logbookPlaceKey(blogLocationFilter);
+    if (fromProp) return fromProp;
+    return logbookPlaceKey(new URLSearchParams(location.search).get('location'));
+  }, [blogLocationFilter, location.search]);
+  const blogLocationReviewFilter = useMemo(
+    () => resolveLogbookBlogLocationReviewFilter(blogLocationKey),
+    [blogLocationKey],
+  );
   const parsedFilter = filterEnabled
     ? parseLogbookReviewFilterFromSearch(location.search)
     : { major: LOGBOOK_REVIEW_FILTER_MAJOR.ALL, citySlug: '' };
-  const [filterMajor, setFilterMajor] = useState(parsedFilter.major);
-  const [filterCitySlug, setFilterCitySlug] = useState(parsedFilter.citySlug);
+  const initialMajor = blogLocationKey
+    ? blogLocationReviewFilter.major
+    : parsedFilter.major;
+  const initialCitySlug = blogLocationKey
+    ? blogLocationReviewFilter.citySlug
+    : parsedFilter.citySlug;
+  const [filterMajor, setFilterMajor] = useState(initialMajor);
+  const [filterCitySlug, setFilterCitySlug] = useState(initialCitySlug);
   const { enabled, rows, isLoading, loadFailed, totalCount, retry } = useLogbookOfficialReviewHub();
   const didRestoreScroll = useRef(false);
   const skipExpandedPersist = useRef(true);
@@ -366,10 +383,23 @@ const LogbookOfficialReviewHubCard = () => {
       setSearchParams(next, { replace: true });
       return;
     }
+    if (blogLocationKey) {
+      setFilterMajor(blogLocationReviewFilter.major);
+      setFilterCitySlug(blogLocationReviewFilter.citySlug);
+      setVisibleCount(pageSize);
+      return;
+    }
     const parsed = parseLogbookReviewFilterFromSearch(location.search);
     setFilterMajor(parsed.major);
     setFilterCitySlug(parsed.citySlug);
-  }, [filterEnabled, location.search, setSearchParams]);
+  }, [
+    filterEnabled,
+    location.search,
+    setSearchParams,
+    blogLocationKey,
+    blogLocationReviewFilter.major,
+    blogLocationReviewFilter.citySlug,
+  ]);
 
   const syncFilterToUrl = useCallback(
     (major, citySlug) => {
@@ -505,6 +535,17 @@ const LogbookOfficialReviewHubCard = () => {
               onMajorChange={onMajorChange}
               onCityChange={onCityChange}
             />
+          ) : null}
+          {filterEnabled && blogLocationKey && filteredTotal === 0 && !isLoading ? (
+            <p
+              className="py-6 text-center text-sm text-gray-500"
+              data-testid="logbook-official-review-hub-location-empty"
+            >
+              {t('logbook.officialReviewHub.locationEmpty', {
+                location: blogLocationKey,
+                defaultValue: `‘${blogLocationKey}’ 지역 GATEO 리뷰어 리뷰가 아직 없어요.`,
+              })}
+            </p>
           ) : null}
           {filterEnabled ? (
             <LogbookOfficialReviewCardGrid

@@ -9,7 +9,7 @@ import CalendarCard from './components/CalendarCard';
 import RecentList from './components/RecentList';
 import LogbookOfficialReviewHubCard from './components/LogbookOfficialReviewHubCard';
 import { useDashboardData } from './hooks/useDashboardData';
-import { reportMatchesLogbookPlace } from '../../utils/logbookReadingMeta';
+import { logbookPlaceKey, reportMatchesLogbookPlace } from '../../utils/logbookReadingMeta';
 import { isLogbookOfficialReviewHubActive } from '../../utils/logbookReviewFilterFlag.js';
 import { trackEvent } from '../../shared/analytics/trackEvent.js';
 
@@ -18,6 +18,7 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const locationFilter = searchParams.get('location');
+  const blogPlaceFilterActive = Boolean(logbookPlaceKey(locationFilter));
 
   const [showCuration, setShowCuration] = useState(false);
   const [showCalendar, setShowCalendar] = useState(false);
@@ -189,9 +190,21 @@ const Dashboard = () => {
           </div>
         )}
 
-        {isPublicMode && isLogbookOfficialReviewHubActive() ? <LogbookOfficialReviewHubCard /> : null}
-
-        <RecentList reports={reports || []} loading={loading} isPublicMode={isPublicMode} />
+        {isPublicMode && blogPlaceFilterActive ? (
+          <>
+            <RecentList reports={reports || []} loading={loading} isPublicMode={isPublicMode} />
+            {isLogbookOfficialReviewHubActive() ? (
+              <LogbookOfficialReviewHubCard blogLocationFilter={locationFilter} />
+            ) : null}
+          </>
+        ) : (
+          <>
+            {isPublicMode && isLogbookOfficialReviewHubActive() ? (
+              <LogbookOfficialReviewHubCard blogLocationFilter={locationFilter} />
+            ) : null}
+            <RecentList reports={reports || []} loading={loading} isPublicMode={isPublicMode} />
+          </>
+        )}
 
       </div>
     </div>

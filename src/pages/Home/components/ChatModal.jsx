@@ -1892,7 +1892,10 @@ const ChatModal = ({
               }}
             >
                <div className="flex flex-col min-w-0 flex-1 justify-center">
-                 <span className={`font-bold tracking-wide text-base md:text-[15px] max-md:text-[15px] max-md:leading-snug truncate ${tone(fresh, 'text-white', 'text-slate-800')}`}>
+                 <span
+                   className={`font-bold tracking-wide text-base md:text-[15px] max-md:text-[15px] max-md:leading-snug md:truncate max-md:line-clamp-2 max-md:whitespace-normal max-md:break-keep ${tone(fresh, 'text-white', 'text-slate-800')}`}
+                   data-testid="mooni-chat-main-header-title"
+                 >
                    {isMooniUi ? mooniHeaderLabel : (introDestinationRaw || 'MOONi')}
                  </span>
                  <span className={`hidden md:block text-[11px] font-medium leading-tight truncate ${tone(fresh, 'text-cyan-300/80', 'text-cyan-600')}`}>
