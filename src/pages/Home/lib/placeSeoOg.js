@@ -37,6 +37,32 @@ function pickPoolImage(slug) {
   return OG_PHOTO_POOL[hashSlug(slug) % OG_PHOTO_POOL.length];
 }
 
+function normalizeOgImageCompareUrl(url) {
+  const u = String(url || '').trim();
+  if (!u) return '';
+  try {
+    const parsed = new URL(u);
+    return `${parsed.origin}${parsed.pathname}`;
+  } catch {
+    return u.split('?')[0];
+  }
+}
+
+export function isGenericPlaceOgImageUrl(url) {
+  const base = normalizeOgImageCompareUrl(url);
+  if (!base) return true;
+  if (base === normalizeOgImageCompareUrl(DEFAULT_OG_IMAGE)) return true;
+  return OG_PHOTO_POOL.some((pool) => normalizeOgImageCompareUrl(pool) === base);
+}
+
+/** 탐색 검색 카드 — SEO pool·전역 OG 기본값은 쓰지 않는다 (명시 썸네일만). */
+export function resolveExploreSearchCardThumbUrl(location) {
+  if (!location || typeof location !== 'object') return null;
+  const direct = String(location.thumbnail || location.image || '').trim();
+  if (direct && !isGenericPlaceOgImageUrl(direct)) return direct;
+  return null;
+}
+
 export function getGalleryImageContentUrl(image) {
   if (!image || typeof image !== 'object') return '';
   return (
