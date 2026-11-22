@@ -2235,6 +2235,10 @@
     "regionChipsAria": "Region filter",
     "headlineAll": "All {{count}}",
     "headlineRegion": "{{region}} · {{count}}",
+    "badge": {
+      "ongoing": "Ongoing",
+      "upcoming": "Opening soon"
+    },
     "empty": "No events in this region yet.",
     "card": {
       "detailCta": "Event details",

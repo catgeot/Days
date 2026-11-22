@@ -31,6 +31,14 @@ export function todayYmdIso(now = new Date()) {
 }
 
 /**
+ * @param {Date} [now]
+ * @returns {string} YYYY-MM-DD in Asia/Seoul
+ */
+export function todayYmdKst(now = new Date()) {
+  return new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Seoul' }).format(now);
+}
+
+/**
  * @param {string} ymd
  * @returns {Date|null}
  */
