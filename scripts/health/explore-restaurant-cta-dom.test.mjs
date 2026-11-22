@@ -40,6 +40,16 @@ test('ExploreRestaurantMapOutboundCue — target=_blank 외부 지도 링크', (
   assert.match(cueSrc, /if \(!href\) return null/);
 });
 
+test('SearchSuggestionList — 썸네일 출처 CTA는 button 형제', () => {
+  assert.match(listSrc, /ExploreSearchThumbnailCreditCue/, 'thumbnail credit component');
+  const disambBlock = listSrc.slice(listSrc.indexOf('export function SearchDisambiguationCards'));
+  assert.match(
+    disambBlock,
+    /<\/button>\s*\{hasExploreSearchThumbnailCredit\(hydrated\) \? \(\s*<ExploreSearchThumbnailCreditCue/,
+    'disambiguation: credit after </button>',
+  );
+});
+
 test('SearchSuggestionList — 식당 CTA는 button 형제(리스트·모호함 카드)', () => {
   assert.match(listSrc, /isRestaurantRow/, 'isRestaurantRow guard');
   assert.match(listSrc, /ExploreRestaurantMapOutboundCue/, 'CTA component');
@@ -55,12 +65,12 @@ test('SearchSuggestionList — 식당 CTA는 button 형제(리스트·모호함 
 
   assert.match(
     popoverBlock,
-    /<\/button>\s*\{isRestaurantRow \? \(\s*<ExploreRestaurantMapOutboundCue/,
-    'popover: CTA after </button>',
+    /<\/button>\s*\{hasExploreSearchThumbnailCredit\(item\) \? \(\s*<ExploreSearchThumbnailCreditCue[\s\S]*\{isRestaurantRow \? \(\s*<ExploreRestaurantMapOutboundCue/,
+    'popover: thumbnail credit before restaurant CTA',
   );
   assert.match(
     disambBlock,
-    /<\/button>\s*\{isRestaurantRow \? \(\s*<ExploreRestaurantMapOutboundCue/,
-    'disambiguation: CTA after </button>',
+    /<\/button>\s*\{hasExploreSearchThumbnailCredit\(hydrated\) \? \(\s*<ExploreSearchThumbnailCreditCue[\s\S]*\{isRestaurantRow \? \(\s*<ExploreRestaurantMapOutboundCue/,
+    'disambiguation: thumbnail credit before restaurant CTA',
   );
 });
