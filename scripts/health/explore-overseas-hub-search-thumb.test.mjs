@@ -53,6 +53,43 @@ test('enrichSearchCandidateScenicMedia skips og pool for prague hub attractions'
   }
 });
 
+test('prague 7 attractions — curated unsplash thumb or icon path via resolveExploreSearchCardThumbUrl', () => {
+  const hub = resolveCityAttractionHub('prague');
+  assert.equal(hub?.attractions?.length, 7);
+  let withThumb = 0;
+  for (const attraction of hub.attractions) {
+    const explicit = String(attraction.thumbnail || '').trim();
+    if (explicit) {
+      withThumb += 1;
+      assert.equal(
+        resolveExploreSearchCardThumbUrl({ thumbnail: explicit }),
+        explicit,
+        `${attraction.name} explicit thumb must pass explore card guard`,
+      );
+      const enriched = enrichSearchCandidateScenicMedia(
+        attractionToSuggestion(hub, attraction),
+      );
+      assert.equal(enriched.imageUrl, explicit, attraction.name);
+      assert.equal(enriched.thumbUrl, explicit, attraction.name);
+      assert.ok(
+        attraction.thumbnailCredit?.unsplash_url,
+        `${attraction.name} unsplash page credit`,
+      );
+    } else {
+      const enriched = enrichSearchCandidateScenicMedia(
+        attractionToSuggestion(hub, attraction),
+      );
+      assert.equal(
+        String(enriched.imageUrl || enriched.thumbUrl || '').trim(),
+        '',
+        `${attraction.name} must fall back to icon`,
+      );
+    }
+  }
+  assert.equal(withThumb, 7, 'all prague hub picks stored in SSOT for this rollout');
+  assert.equal(resolveExploreSearchCardThumbUrl({ thumbnail: DUBAI_POOL_PHOTO }), null);
+});
+
 for (const hubId of ['paris', 'rome', 'bangkok']) {
   test(`enrichSearchCandidateScenicMedia avoids generic og for ${hubId} attractions`, () => {
     const hub = resolveCityAttractionHub(hubId);
