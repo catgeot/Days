@@ -242,6 +242,43 @@ jobs:
         run: |
           npx playwright test -c playwright.config.festival-course-modal.js --project=webkit --repeat-each=5 --reporter=line
 
+  place-course-modal-webkit-e2e:
+    name: Place scenic course modal E2E (WebKit 390, mocked)
+    runs-on: ubuntu-24.04
+    needs: lint-and-build
+    timeout-minutes: 35
+    container:
+      image: mcr.microsoft.com/playwright:v1.60.0-jammy
+      options: --ipc=host
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+        env:
+          VITE_SUPABASE_URL: https://example.supabase.co
+          VITE_SUPABASE_ANON_KEY: e2e-anon-placeholder
+          DEV_SSL: '0'
+
+      - name: Playwright WebKit — place-course-modal (×5)
+        env:
+          VITE_SUPABASE_URL: https://example.supabase.co
+          VITE_SUPABASE_ANON_KEY: e2e-anon-placeholder
+          DEV_SSL: '0'
+          MOONI_TOURAPI_STUB_ONLY: '1'
+        run: |
+          npx playwright test -c playwright.config.place-course-modal.js --project=webkit --repeat-each=5 --reporter=line
+
   festival-region-chip-scroll-e2e:
     name: Festival region chip scroll E2E (WebKit 390, mocked)
     runs-on: ubuntu-24.04

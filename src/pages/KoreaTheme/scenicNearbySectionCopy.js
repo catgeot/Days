@@ -21,4 +21,8 @@ export const SCENIC_NEARBY_SECTION_COPY = {
     titleKey: 'korea.theme.spotDetail.nearFestivals',
     descriptionKey: 'korea.theme.spotDetail.nearSectionDescFestivals',
   },
+  course: {
+    titleKey: 'korea.festival.detail.nearCourses',
+    descriptionKey: 'korea.theme.spotDetail.nearSectionDescFestivals',
+  },
 };

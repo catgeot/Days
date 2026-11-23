@@ -78,6 +78,27 @@ assert(
   sheetSrc.includes('CourseDetailModal'),
   'FestivalDetailSheet opens CourseDetailModal',
 );
+
+const scenicModalSrc = readFileSync(
+  join(root, 'src/pages/KoreaTheme/ThemeSpotDetailModal.jsx'),
+  'utf8',
+);
+assert(
+  scenicModalSrc.includes('fetchNearbyTourCourses'),
+  'ThemeSpotDetailModal fetches nearby courses',
+);
+assert(
+  scenicModalSrc.includes('data-theme-spot-section="nearCourses"'),
+  'ThemeSpotDetailModal shows 인근 여행코스 section',
+);
+assert(
+  scenicModalSrc.includes('CourseDetailModal'),
+  'ThemeSpotDetailModal opens CourseDetailModal',
+);
+assert(
+  scenicModalSrc.includes('selectedCourse ? true : undefined'),
+  'ThemeSpotDetailModal inert while course modal open',
+);
 assert(
   sheetSrc.includes('여행코스 더보기'),
   'FestivalDetailSheet links to courses page',
