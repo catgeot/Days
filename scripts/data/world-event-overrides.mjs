@@ -3836,7 +3836,7 @@ export const WORLD_EVENT_OVERRIDES = [
       'Since 1981, Sapporo’s winter light festival fills downtown streets including Odori Park, Ekimae-dori, and Minami 1-jo-dori.',
     highlights: [
       '오도리 공원 1~5초메 — 회장별 테마 오브제·12/11~13 스페셜 라이트쇼(3초메)',
-      '오도리 2초메 Münchner Weihnachtsmarkt in Sapporo — 독일식 크리스마스 마켓',
+      '오도리 2초메 뮌헨 크리스마스 마켓 in 삿포로 — 독일식 크리스마스 마켓',
       '에키마에도리·미나미이조도리·아카렌가 테라스(아카프라) — 거리 조명 산책',
     ],
     highlightsEn: [
@@ -3853,7 +3853,7 @@ export const WORLD_EVENT_OVERRIDES = [
         noteEn: 'Walk to Odori site · subway hub',
         doHere: [
           '오도리 공원 1~5초메가 화이트 일루미네이션 주회장이라 조명 산책이 가깝습니다.',
-          '「Münchner Weihnachtsmarkt in Sapporo」 등 부대 행사가 오도리 일대에서 열립니다.',
+          '「뮌헨 크리스마스 마켓 in 삿포로」 등 부대 행사가 오도리 일대에서 열립니다.',
           '시영 지하철 남북선·동서선 오도리역이 근처 허브입니다.',
         ],
         doHereEn: [
@@ -3870,12 +3870,12 @@ export const WORLD_EVENT_OVERRIDES = [
         noteEn: 'Restaurants and bars · walkable downtown',
         doHere: [
           '삿포로 대표 유흥·야간 거리로 식당·바가 밀집해 늦은 밤 식사·술자리를 두기 좋습니다.',
-          '도심 주요 명소는 서로 도보 이동이 가능한 거리에 모여 있습니다.',
+          '삿포로 도심의 주요 명소는 서로 걸어 다니기 좋은 거리에 모여 있습니다.',
           '시영 지하철 스스키노역이 근처에 있습니다.',
         ],
         doHereEn: [
           'Sapporo’s main nightlife quarter packs restaurants and bars—handy for late dinners after the lights.',
-          'Downtown sights are clustered within comfortable walking distance of one another.',
+          'The main attractions in downtown Sapporo are within a walkable distance of one another.',
           'Susukino Station on the Sapporo Municipal Subway is nearby.',
         ],
       },
