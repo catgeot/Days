@@ -116,9 +116,9 @@ test('paris rollout hides the money row and does not call ETIAS required', () =>
     safety.sources.some((source) => source.url === 'https://www.0404.go.kr/bbs/safetyNtc/1335045/detail2?ntnCd=248'),
     true,
   );
-  assert.equal(safety.checkedAt, '2026-11-19');
+  assert.equal(safety.checkedAt, '2026-11-23');
   assert.equal(safety.kind, 'event');
-  assert.equal(safety.checkedOn, '2026-11-19');
+  assert.equal(safety.checkedOn, '2026-11-23');
   assert.equal(safety.endsAt, null);
   assert.equal(enSafety.sources[0].name, 'MOFA safety notice (Embassy of Korea in France)');
   assert.match(factValueForLocale('paris', enSafety, 'en'), /took place on 11\.5 \(Thu\)/i);
@@ -169,8 +169,8 @@ test('paris rollout hides the money row and does not call ETIAS required', () =>
   assert.equal(cairoMoney.checkedAt, '');
   assert.match(cairoMoney.value, /EGP/);
   assert.equal(cairoSafety.kind, 'standing');
-  assert.equal(cairoSafety.checkedOn, '2026-11-19');
-  assert.equal(cairoSafety.checkedAt, '2026-11-19');
+  assert.equal(cairoSafety.checkedOn, '2026-11-23');
+  assert.equal(cairoSafety.checkedAt, '2026-11-23');
   assert.match(cairoSafety.value, /여행유의/);
   assert.match(cairoSafety.value, /공수병\(광견병\)/);
   assert.match(cairoSafety.value, /알아이야트/);

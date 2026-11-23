@@ -91,8 +91,8 @@ export const KHAO_LAK_CITY_FACTS = {
       '치안',
       '외교부 여행경보에서 팡아주·푸켓은 1단계(여행유의)예요.\n2·3단계는 남부 국경(송클라 남부·파타니·나라티왓·얄라)·딱 주와 태국-캄보디아 국경 50km 안이에요.\n관광경찰은 1155예요.\n영사콜센터는 +82-2-3210-0404예요.',
       [MOFA_TH],
-      '2026-11-19',
-      { id: 'safety', kind: 'standing', checkedOn: '2026-11-19' },
+      '2026-11-23',
+      { id: 'safety', kind: 'standing', checkedOn: '2026-11-23' },
     ),
     verifiedSlot(
       '시즌',
