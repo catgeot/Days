@@ -17,6 +17,8 @@
  *   mrtKeyword?: string,
  *   note?: string,
  *   noteEn?: string,
+ *   doHere?: string[],
+ *   doHereEn?: string[],
  * }} WorldEventStayArea
  */
 
@@ -317,6 +319,14 @@ export function normalizeWorldEventOverride(raw, ctx = {}) {
       }
       const noteEn = area.noteEn != null ? String(area.noteEn).trim() : undefined;
       if (noteEn) normalizedArea.noteEn = noteEn;
+      if (Array.isArray(area.doHere)) {
+        const doHere = area.doHere.map((line) => String(line).trim()).filter(Boolean);
+        if (doHere.length) normalizedArea.doHere = doHere;
+      }
+      if (Array.isArray(area.doHereEn)) {
+        const doHereEn = area.doHereEn.map((line) => String(line).trim()).filter(Boolean);
+        if (doHereEn.length) normalizedArea.doHereEn = doHereEn;
+      }
       return normalizedArea;
     });
     if (!stayAreas.length) {

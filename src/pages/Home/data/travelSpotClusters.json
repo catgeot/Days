@@ -99,7 +99,7 @@
     "labelKo": "오키나와·남서 권역",
     "labelEn": "Okinawa & Southwest Islands",
     "slugs": ["ishigaki", "miyakojima"],
-    "notes": "ISG · SHI/MMY — 본岛·미야코·이시가키 관문이 다름",
+    "notes": "ISG · SHI/MMY — 본섬·미야코·이시가키 관문이 다름",
     "notesEn": "ISG · SHI/MMY — main island · Miyako · Ishigaki gateways differ"
   },
   "japan-kyushu-region": {
@@ -120,7 +120,7 @@
     "labelKo": "프랑스령 폴리네시아 권역",
     "labelEn": "French Polynesia",
     "slugs": ["bora-bora", "tahiti"],
-    "notes": "BOB · PPT — 보라보라 vs 타히티 본岛 관문·일정이 다름",
+    "notes": "BOB · PPT — 보라보라 vs 타히티 본섬 관문·일정이 다름",
     "notesEn": "BOB · PPT — Bora Bora vs Tahiti main-island gateways differ"
   },
   "australia-east-region": {

@@ -2342,6 +2342,7 @@
       "dates": "Stay dates",
       "staysTitle": "Stays in {{place}}",
       "areasTitle": "Suggested stay areas",
+      "doHereTitle": "What you can do from this base",
       "moreOnMrt": "More on MRT",
       "flightCta": "Flight + hotel",
       "empty": "No stays for these dates. Try adjusting your window.",

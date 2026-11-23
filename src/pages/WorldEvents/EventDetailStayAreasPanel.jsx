@@ -2,6 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { getMrtAccommodationSearchUrl } from '../../utils/affiliate';
 import { getWorldEventStayAreas } from '../../utils/worldEvents';
+import EventStayAreaDoHere from './EventStayAreaDoHere';
 
 /**
  * @param {{
@@ -41,6 +42,10 @@ export default function EventDetailStayAreasPanel({ event, locale, checkIn, chec
               {area.note ? (
                 <p className="mt-1 text-xs leading-relaxed text-stone-600">{area.note}</p>
               ) : null}
+              <EventStayAreaDoHere
+                title={t('worldEventDetail.stayStrip.doHereTitle')}
+                lines={area.doHere}
+              />
               {stayHref ? (
                 <a
                   href={stayHref}

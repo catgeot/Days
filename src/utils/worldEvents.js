@@ -132,6 +132,13 @@ export function getWorldEventBookingHints(event, locale = 'ko') {
  * @param {WorldEvent} event
  * @param {string} [locale]
  */
+export function getWorldEventStayAreaDoHere(area, locale = 'ko') {
+  if (!area || typeof area !== 'object') return [];
+  const list = isEnLocale(locale) ? area.doHereEn : area.doHere;
+  if (!Array.isArray(list)) return [];
+  return list.map((line) => String(line).trim()).filter(Boolean);
+}
+
 export function getWorldEventStayAreas(event, locale = 'ko') {
   if (!Array.isArray(event?.stayAreas)) return [];
   return event.stayAreas
@@ -140,18 +147,22 @@ export function getWorldEventStayAreas(event, locale = 'ko') {
         const name = String(area.nameEn || '').trim();
         if (!name) return null;
         const note = area.noteEn != null ? String(area.noteEn).trim() : undefined;
+        const doHere = getWorldEventStayAreaDoHere(area, locale);
         return {
           ...area,
           name,
           ...(note ? { note } : {}),
+          ...(doHere.length ? { doHere } : {}),
         };
       }
       const name = String(area.name || '').trim();
       const note = area.note != null ? String(area.note).trim() : undefined;
+      const doHere = getWorldEventStayAreaDoHere(area, locale);
       return {
         ...area,
         name,
         ...(note ? { note } : {}),
+        ...(doHere.length ? { doHere } : {}),
       };
     })
     .filter(Boolean);

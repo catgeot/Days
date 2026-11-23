@@ -43,7 +43,6 @@ import EventActionChips from './EventActionChips';
 import EventDetailHero from './EventDetailHero';
 import EventDetailMediaSection from './EventDetailMediaSection';
 import EventDetailStaticPanel from './EventDetailStaticPanel';
-import EventDetailStayAreasPanel from './EventDetailStayAreasPanel';
 import EventStayStrip from './EventStayStrip';
 import EventTravelGuidePanel from './EventTravelGuidePanel';
 import EventMooniFab from './EventMooniFab';
@@ -354,20 +353,10 @@ export default function EventDetailPage() {
             onGlossaryTermClick={showD5bBodyUx ? setGlossaryTermId : undefined}
             hideHeaderSummary={hideHeaderSummary}
             hideStayAreas={showStayStrip}
+            hideStayAreaListingInHints={showStayStrip}
           />
 
           {showD3Media ? <EventDetailMediaSection event={event} locale={locale} /> : null}
-
-          {showStayStrip ? (
-            <div className="mt-4">
-              <EventDetailStayAreasPanel
-                event={event}
-                locale={locale}
-                checkIn={checkIn}
-                checkOut={checkOut}
-              />
-            </div>
-          ) : null}
 
           <div className="mt-4">
             <EventStayStrip
