@@ -27,6 +27,8 @@
 | 3 | `id` 유일 · `startDate`/`endDate` `YYYY-MM-DD` | ✅ |
 | 4 | `sourceUrl` 공식 일정·티켓 페이지 | ✅ (가능하면) |
 | 5 | `bookingHints` — MRT/Trip 검색어·시즌 메모 | 권장 |
+| 5b | `stayAreas[].doHere` / `doHereEn` — 권역별 3~4줄(공식 출처 확인된 사실만) · 없으면 UI 숨김 | 권장(Tier0.5) |
+| 5c | **ko 본문·en 본문에 한자·가나 금지**(한글 허용) · `npm run test:health` `world-event-ko-cjk` | ✅ |
 | 6 | `npm run generate:world-events` | ✅ |
 | 7 | `npm run audit:world-events` PASS | ✅ |
 | 8 | PlaceCard·상세 `/world-events/{id}` QA | ✅ |
