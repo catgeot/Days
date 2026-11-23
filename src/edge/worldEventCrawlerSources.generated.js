@@ -211,7 +211,8 @@ export default {
       "titleEn": "Sapporo White Illumination",
       "startDate": "2026-11-20",
       "endDate": "2027-03-14",
-      "detailOverview": "1981년부터 이어지는 삿포로의 겨울 조명 축제로, 오도리 공원·駅前通·南一条通 등 도심 거리가 빛으로 물듭니다. 2026–27 시즌은 11월 20일부터 3월 14일까지이며, 오도리 회장은 12월 25일까지입니다. 12월 초·크리스마스 전후 2~3박으로 오도리~스스키노 기점을 잡는 방문이 일반적입니다.",
+      "detailOverview": "1981년부터 이어지는 삿포로의 겨울 조명 축제로, 오도리 공원·에키마에도리·미나미이조도리 등 도심 거리가 빛으로 물듭니다.",
+      "detailOverviewEn": "Since 1981, Sapporo’s winter light festival fills downtown streets including Odori Park, Ekimae-dori, and Minami 1-jo-dori.",
       "heroImage": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0d/Hokkaido_Sapporo_Odori_Park.jpg/1280px-Hokkaido_Sapporo_Odori_Park.jpg"
     },
     "seoul-lantern-festival-2026": {

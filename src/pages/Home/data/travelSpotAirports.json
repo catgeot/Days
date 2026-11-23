@@ -1,7 +1,7 @@
 {
   "_meta": {
     "version": 1,
-    "generatedAt": "2026-11-21T09:27:02.171Z",
+    "generatedAt": "2026-11-23T01:25:26.425Z",
     "spotCount": 275,
     "placeIdCount": 647,
     "stats": {
@@ -3673,9 +3673,9 @@
       "kind": "multi",
       "source": "curated-override",
       "confidence": "high",
-      "bannerNote": "대마도(쓰시마·対馬島)는 같은 섬입니다. 한국에서 가는 일반 경로는 부산국제여객터미널→히타카츠항 페리이며, 인천(ICN) 직항은 없습니다. 아래 TSJ·FUK는 일본 국내선·후쿠오카 경유 일정 참고용이고, 페리·렌터카는 툴킷 여정(부산 출발)을 우선해 주세요.",
-      "bannerNoteEn": "Tsushima (対馬島) is the same island. The usual route from Korea is the ferry Busan International Passenger Terminal→Hitakatsu; there is no ICN direct flight. TSJ and FUK below are for Japanese domestic / Fukuoka-connection reference — prefer the toolkit itinerary (departing Busan) for ferry and rental cars.",
-      "rationale": "対馬島(대마도·쓰시마) — 한국인 주 경로 부산 페리·히타카츠; TSJ·FUK는 일본 측 항공 관문",
+      "bannerNote": "대마도와 쓰시마는 같은 섬입니다. 한국에서 가는 일반 경로는 부산국제여객터미널→히타카츠항 페리이며, 인천(ICN) 직항은 없습니다. 아래 TSJ·FUK는 일본 국내선·후쿠오카 경유 일정 참고용이고, 페리·렌터카는 툴킷 여정(부산 출발)을 우선해 주세요.",
+      "bannerNoteEn": "Tsushima Island (대마도) is the same island. The usual route from Korea is the ferry Busan International Passenger Terminal→Hitakatsu; there is no ICN direct flight. TSJ and FUK below are for Japanese domestic / Fukuoka-connection reference — prefer the toolkit itinerary (departing Busan) for ferry and rental cars.",
+      "rationale": "대마도(쓰시마) — 한국인 주 경로 부산 페리·히타카츠; TSJ·FUK는 일본 측 항공 관문",
       "graphFlightRouteHubIatas": [],
       "graphFlightRouteSource": "graph-direct"
     },

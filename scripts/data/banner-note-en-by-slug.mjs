@@ -131,7 +131,7 @@ export const BANNER_NOTE_EN_BY_SLUG = {
   yokohama:
     "Yokohama is typically reached via Tokyo-area Haneda (HND) or Narita (NRT), then JR/subway. Confirm the final arrival code on your ticket.",
   tsushima:
-    "Tsushima (対馬島) is the same island. The usual route from Korea is the ferry Busan International Passenger Terminal→Hitakatsu; there is no ICN direct flight. TSJ and FUK below are for Japanese domestic / Fukuoka-connection reference — prefer the toolkit itinerary (departing Busan) for ferry and rental cars.",
+    'Tsushima Island (대마도) is the same island. The usual route from Korea is the ferry Busan International Passenger Terminal→Hitakatsu; there is no ICN direct flight. TSJ and FUK below are for Japanese domestic / Fukuoka-connection reference — prefer the toolkit itinerary (departing Busan) for ferry and rental cars.',
   yap:
     "Yap (YAP) is usually reached ICN→Guam (GUM) direct, then United Airlines to YAP (Island Hopper via Honolulu HNL is also possible). Trip.com and similar flight searches go as far as GUM — the YAP segment requires a United official booking. Car rental, pickup, and island plans are based on YAP arrival.",
   chuuk:

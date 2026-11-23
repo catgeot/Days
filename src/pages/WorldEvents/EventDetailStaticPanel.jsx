@@ -4,8 +4,6 @@ import { ExternalLink, MapPin, Sparkles } from 'lucide-react';
 import { getMrtAccommodationSearchUrl } from '../../utils/affiliate';
 import {
   formatWorldEventDateRange,
-  getWorldEventBookingHints,
-  getWorldEventDetailOverview,
   getWorldEventHighlights,
   getWorldEventPlaceMeta,
   getWorldEventRecurrenceNote,
@@ -19,6 +17,8 @@ import {
   hasWorldEventD5bBodyUx,
 } from '../../utils/worldEventGlossary';
 import EventRichText from './EventRichText';
+import { resolveWorldEventDetailSections } from '../../utils/worldEventDetailCopy';
+import EventStayAreaDoHere from './EventStayAreaDoHere';
 
 /**
  * @param {{
@@ -30,6 +30,7 @@ import EventRichText from './EventRichText';
  *   onGlossaryTermClick?: (termId: string) => void,
  *   hideHeaderSummary?: boolean,
  *   hideStayAreas?: boolean,
+ *   hideStayAreaListingInHints?: boolean,
  * }} props
  */
 export default function EventDetailStaticPanel({
@@ -41,15 +42,22 @@ export default function EventDetailStaticPanel({
   onGlossaryTermClick,
   hideHeaderSummary = false,
   hideStayAreas = false,
+  hideStayAreaListingInHints = false,
 }) {
   const { t } = useTranslation();
   const title = getWorldEventTitle(event, locale);
   const dateLabel = formatWorldEventDateRange(event, locale);
   const placeMeta = getWorldEventPlaceMeta(event.slug, locale);
-  const detailOverview = getWorldEventDetailOverview(event, locale);
   const highlights = getWorldEventHighlights(event, locale);
   const recurrenceNote = getWorldEventRecurrenceNote(event, locale);
-  const bookingHints = getWorldEventBookingHints(event, locale);
+  const copy = resolveWorldEventDetailSections(event, locale, {
+    showRecommendedNights: true,
+    showTypeIntro: true,
+    showBookingHints: true,
+    hideStayAreaListing: hideStayAreaListingInHints,
+  });
+  const detailOverview = copy.detailOverview;
+  const bookingHints = copy.bookingHints;
   const stayAreas = getWorldEventStayAreas(event, locale);
   const typeKey = String(event.type || 'festival');
   const typeLabel = t(`worldEventDetail.type.${typeKey}`, { defaultValue: typeKey });
@@ -176,7 +184,7 @@ export default function EventDetailStaticPanel({
         </section>
       ) : null}
 
-      {event.recommendedNights != null ? (
+      {copy.showRecommendedNights ? (
         <section className="rounded-2xl border border-stone-200 bg-white p-4 shadow-sm">
           <h2 className="text-sm font-extrabold text-stone-900">
             {t('worldEventDetail.recommendedNightsTitle')}
@@ -187,14 +195,14 @@ export default function EventDetailStaticPanel({
         </section>
       ) : null}
 
-      {typeIntro ? (
+      {copy.showTypeIntro && typeIntro ? (
         <section className="rounded-2xl border border-stone-200 bg-white p-4 shadow-sm">
           <h2 className="text-sm font-extrabold text-stone-900">{t('worldEventDetail.typeGuide')}</h2>
           <p className="mt-2 text-sm leading-relaxed text-stone-700">{typeIntro}</p>
         </section>
       ) : null}
 
-      {bookingHints ? (
+      {copy.showBookingHints ? (
         <section className="rounded-2xl border border-stone-200 bg-white p-4 shadow-sm">
           <h2 className="text-sm font-extrabold text-stone-900">{t('worldEventDetail.bookingHints')}</h2>
           <p className="mt-2 text-sm leading-relaxed text-stone-700">
@@ -236,6 +244,10 @@ export default function EventDetailStaticPanel({
                   {area.note ? (
                     <p className="mt-1 text-xs leading-relaxed text-stone-600">{area.note}</p>
                   ) : null}
+                  <EventStayAreaDoHere
+                    title={t('worldEventDetail.stayStrip.doHereTitle')}
+                    lines={area.doHere}
+                  />
                   {stayHref ? (
                     <a
                       href={stayHref}

@@ -126,6 +126,7 @@ function restoreFestivalHubListScrollWhenReady(mainEl, tops) {
 
   const onScroll = () => {
     if (applying || performance.now() < ignoreScrollUntil) return;
+    if (performance.now() - started < RESTORE_READY_TIMEOUT_MS) return;
     abort();
   };
 
@@ -145,7 +146,7 @@ function restoreFestivalHubListScrollWhenReady(mainEl, tops) {
       return;
     }
     if (performance.now() - started >= RESTORE_READY_TIMEOUT_MS) {
-      abort();
+      finish();
       return;
     }
     requestAnimationFrame(attempt);
