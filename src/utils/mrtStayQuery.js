@@ -13,6 +13,7 @@ import {
   placeCategoryUsesStayPoint,
   PLACE_MATCH_CATEGORY,
 } from '../pages/Home/lib/placeMatchCategory.js';
+import { getPlaceStayBaseArea } from '../data/placeStayLodgingGuidance.js';
 import {
   KOREA_HOMONYM_GROUPS,
   KO_STATION_ALIASES,
@@ -108,10 +109,6 @@ const MRT_STAY_KEYWORD_OVERRIDES = {
   'phi-phi-islands': {
     keyword: '톤사이',
     altKeywords: ['피피동', 'Phi Phi Don', '크라비', 'Krabi', '피피'],
-  },
-  'similan-islands': {
-    keyword: '시밀란',
-    altKeywords: ['Similan'],
   },
   'khao-lak': { keyword: '카오락', altKeywords: ['Khao Lak'] },
   'andaman-islands': {
@@ -917,7 +914,29 @@ export function resolveMrtCityHints(admin, opts = {}) {
  */
 export function resolveMrtStayQuery(location, opts = {}) {
   const slug = String(location?.slug || '').trim().toLowerCase();
-  const override = KO_MRT_STAY_KEYWORD_OVERRIDES[slug] || MRT_STAY_KEYWORD_OVERRIDES[slug];
+  const stayBase = getPlaceStayBaseArea(slug);
+  const slugOverride = KO_MRT_STAY_KEYWORD_OVERRIDES[slug] || MRT_STAY_KEYWORD_OVERRIDES[slug];
+  const override = stayBase
+    ? {
+        ...slugOverride,
+        keyword: stayBase.ko,
+        altKeywords: [
+          stayBase.en,
+          ...(slugOverride?.altKeywords || []),
+        ].filter(Boolean),
+        ...(stayBase.countryKo
+          ? {
+              countryHint: stayBase.countryKo,
+              countryHintAlts: [
+                stayBase.countryEn,
+                'Thailand',
+                '태국',
+                ...(slugOverride?.countryHintAlts || []),
+              ].filter(Boolean),
+            }
+          : {}),
+      }
+    : slugOverride;
   const name = String(location?.name || '').trim();
   const nameEn = String(location?.name_en || '').trim();
   const nameKo = String(location?.name_ko || '').trim();
