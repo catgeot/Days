@@ -49,12 +49,9 @@ import { inferInitialPlaceRouteResolve } from './lib/placeRouteResolvePolicy.js'
 import { isHiddenKoreaScenicPlaceSlug } from './lib/koreaScenicSpotVisibility.js';
 import { getSystemPrompt, PERSONA_TYPES } from './lib/prompts';
 import { persistMooniLastChatId, persistMooniFreshDraftSession, mooniLastChatScopeInput } from './lib/tripChatUtils';
-import {
-  MOONI_CHAT_RESTORE_EVENT,
-  peekMooniChatPlannerReturn,
-  setMooniChatPlannerReturn,
-  consumeMooniChatPlannerReturn,
-} from './lib/mooniChatPlannerReturn.js';
+const MOONI_CHAT_RESTORE_EVENT = 'gateo:mooni-chat-restore';
+const mooniPlannerReturnImport = () =>
+  import('../../shared/lib/mooniChatPlannerReturn.js');
 import { enrichLocationWithRentalAirport } from '../../utils/rentalAirportMatch.js';
 import {
   mergeCanonicalTravelSpot,
@@ -535,7 +532,8 @@ function Home() {
     });
   }, [handleStartChat, isChatOpen, locale, selectedLocation]);
 
-  const restoreMooniChatFromPlanner = useCallback(() => {
+  const restoreMooniChatFromPlanner = useCallback(async () => {
+    const { consumeMooniChatPlannerReturn } = await mooniPlannerReturnImport();
     const bundle = consumeMooniChatPlannerReturn();
     if (!bundle || bundle.activeChatId == null) return;
     if (bundle.mooniPlaceContext) {
@@ -549,13 +547,14 @@ function Home() {
   }, [setActiveChatId]);
 
   const handleMooniPlannerHandoff = useCallback(
-    ({ plannerPath, activeChatId: chatId, scrollTop, mooniPlaceContext: ctx, mooniEntry }) => {
+    async ({ plannerPath, activeChatId: chatId, scrollTop, mooniPlaceContext: ctx, mooniEntry }) => {
       const slug = String(
         ctx?.slug || selectedLocation?.slug || getPlaceUrlParam(selectedLocation) || '',
       )
         .trim()
         .toLowerCase();
       if (slug && chatId != null) {
+        const { setMooniChatPlannerReturn } = await mooniPlannerReturnImport();
         setMooniChatPlannerReturn({
           slug,
           activeChatId: chatId,
@@ -588,9 +587,11 @@ function Home() {
   useEffect(() => {
     const onPop = () => {
       if (routeLocation.pathname.includes('/planner')) return;
-      if (peekMooniChatPlannerReturn(activePlaceSlug)) {
-        restoreMooniChatFromPlanner();
-      }
+      mooniPlannerReturnImport().then(({ peekMooniChatPlannerReturn }) => {
+        if (peekMooniChatPlannerReturn(activePlaceSlug)) {
+          restoreMooniChatFromPlanner();
+        }
+      });
     };
     window.addEventListener('popstate', onPop);
     return () => window.removeEventListener('popstate', onPop);

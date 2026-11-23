@@ -2,7 +2,7 @@ const STORAGE_KEY = 'gateo:mooni-chat-planner-return';
 export const MOONI_CHAT_RESTORE_EVENT = 'gateo:mooni-chat-restore';
 
 /**
- * @typedef {{
+ * @param {{
  *   slug: string,
  *   activeChatId: string | number,
  *   scrollTop: number,
@@ -10,10 +10,6 @@ export const MOONI_CHAT_RESTORE_EVENT = 'gateo:mooni-chat-restore';
  *   mooniEntry?: boolean,
  *   savedAt: number,
  * }} MooniChatPlannerReturn
- */
-
-/**
- * @param {MooniChatPlannerReturn} payload
  */
 export function setMooniChatPlannerReturn(payload) {
   if (!payload?.slug || payload.activeChatId == null) return;
