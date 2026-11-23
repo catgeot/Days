@@ -254,6 +254,8 @@ test('Home gallery PR drift guard; MOONi session wiring line allowlist', () => {
     /^[+-]\s*setMooniChatPlannerReturn,/,
     /^[+-]\s*consumeMooniChatPlannerReturn,/,
     /^[+-]\s*\} from '\.\/lib\/mooniChatPlannerReturn\.js';/,
+    /^[+-].*mooniPlannerReturnImport/,
+    /^[+-].*shared\/lib\/mooniChatPlannerReturn/,
     /^[+-].*destination === 'MOONi'/,
     /^[+-].*category/,
     /^[+-].*user\?\.id/,
