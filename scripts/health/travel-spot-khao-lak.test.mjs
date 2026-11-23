@@ -41,20 +41,20 @@ test('khao-lak — travelSpots-list registry and MRT keyword', () => {
   assert.ok(q.altKeywords.includes('Khao Lak'));
 });
 
-test('similan-islands — no Khao Lak stay keyword; lodging guidance to khao-lak', () => {
+test('similan-islands — MRT keyword 카오락 + lodging guidance to khao-lak', () => {
   const q = resolveMrtStayQuery({
     slug: 'similan-islands',
     name: '시미란 제도',
     name_en: 'Similan Islands',
     country: '태국',
   });
-  assert.notEqual(q.keyword, '카오락');
-  assert.ok(!q.altKeywords.includes('Khao Lak'));
-  assert.ok(!q.altKeywords.includes('카오락'));
+  assert.equal(q.keyword, '카오락');
+  assert.ok(q.altKeywords.includes('Khao Lak'));
 
   const guidance = getPlaceStayLodgingGuidance('similan-islands');
   assert.ok(guidance);
   assert.equal(guidance.linkSlug, 'khao-lak');
+  assert.equal(guidance.stayBaseArea.ko, '카오락');
 });
 
 test('travelSpots.js exports khao-lak with globe visibility', () => {
