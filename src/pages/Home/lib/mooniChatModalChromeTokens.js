@@ -62,3 +62,37 @@ export const MOONI_CHAT_SOLID_ACCENT = {
   bg: [14, 116, 144],
   hoverBg: [21, 94, 117],
 };
+
+/** MOONi light modal — booking CTA on pale bubbles (≥ 4.5:1). */
+export const MOONI_LIGHT_BOOKING = {
+  plannerButton: {
+    text: [255, 255, 255],
+    bg: [14, 116, 144],
+    border: [21, 94, 117],
+  },
+  plannerLink: {
+    text: [14, 116, 144],
+    hover: [21, 94, 117],
+  },
+  sectionTransport: {
+    text: [6, 78, 59],
+  },
+  sectionPrep: {
+    text: [146, 64, 14],
+  },
+};
+
+/** MOONi light — access-route composer + origin search (≥ 4.5:1 body). */
+export const MOONI_LIGHT_COMPOSER = {
+  panelBg: [255, 255, 255],
+  title: [15, 23, 42],
+  inputText: [15, 23, 42],
+  inputBg: [248, 250, 252],
+  inputBorder: [100, 116, 139],
+  placeholder: [71, 85, 105],
+  listActiveBg: [207, 250, 254],
+  listActiveText: [15, 23, 42],
+  listText: [30, 41, 59],
+  recommendBg: [224, 242, 254],
+  recommendText: [15, 23, 42],
+};

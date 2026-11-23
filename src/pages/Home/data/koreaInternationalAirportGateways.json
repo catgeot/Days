@@ -1,0 +1,48 @@
+{
+  "internationalAirports": {
+    "ICN": { "lat": 37.4602, "lng": 126.4407, "labelKo": "서울", "labelEn": "Seoul" },
+    "GMP": { "lat": 37.5583, "lng": 126.7906, "labelKo": "김포", "labelEn": "Gimpo" },
+    "PUS": { "lat": 35.1795, "lng": 128.9382, "labelKo": "부산", "labelEn": "Busan" },
+    "CJU": { "lat": 33.5111, "lng": 126.493, "labelKo": "제주", "labelEn": "Jeju" },
+    "TAE": { "lat": 35.8941, "lng": 128.6586, "labelKo": "대구", "labelEn": "Daegu" },
+    "CJJ": { "lat": 36.7166, "lng": 127.4991, "labelKo": "청주", "labelEn": "Cheongju" },
+    "MWX": { "lat": 34.9914, "lng": 126.3828, "labelKo": "무안", "labelEn": "Muan" },
+    "KWJ": { "lat": 35.1264, "lng": 126.8089, "labelKo": "광주", "labelEn": "Gwangju" },
+    "YNY": { "lat": 38.0613, "lng": 128.6691, "labelKo": "양양", "labelEn": "Yangyang" },
+    "RSU": { "lat": 34.8423, "lng": 127.6169, "labelKo": "여수", "labelEn": "Yeosu" }
+  },
+  "provinceGatewayIata": {
+    "서울": "ICN",
+    "인천": "ICN",
+    "경기": "ICN",
+    "강원": "ICN",
+    "충북": "CJJ",
+    "충남": "CJJ",
+    "세종": "CJJ",
+    "대전": "CJJ",
+    "전북": "MWX",
+    "전남": "MWX",
+    "광주": "KWJ",
+    "경북": "TAE",
+    "대구": "TAE",
+    "경남": "PUS",
+    "부산": "PUS",
+    "울산": "PUS",
+    "제주": "CJU"
+  },
+  "cityGatewayIata": {
+    "seoul": "ICN",
+    "incheon": "ICN",
+    "chuncheon": "ICN",
+    "gangneung": "YNY",
+    "wonju": "YNY",
+    "jeonju": "MWX",
+    "busan": "PUS",
+    "daegu": "TAE",
+    "gwangju": "KWJ",
+    "cheongju": "CJJ",
+    "daejeon": "CJJ",
+    "ulsan": "PUS",
+    "jeju": "CJU"
+  }
+}

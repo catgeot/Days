@@ -127,10 +127,14 @@ const BookingActionCards = ({
   );
 
   const plannerLinkClass =
-    'inline-flex items-center gap-1.5 text-[11px] text-blue-400 hover:text-blue-300 hover:underline break-keep pointer-events-auto';
+    bubbleVariant === 'light'
+      ? 'inline-flex items-center gap-1.5 text-[11px] font-semibold text-cyan-800 hover:text-cyan-950 hover:underline break-keep pointer-events-auto'
+      : 'inline-flex items-center gap-1.5 text-[11px] text-blue-400 hover:text-blue-300 hover:underline break-keep pointer-events-auto';
 
   const plannerButtonClass =
-    'inline-flex w-full items-center justify-center gap-1.5 rounded-lg border border-cyan-500/40 bg-cyan-950/40 px-3 py-2.5 text-xs font-bold text-cyan-100 hover:border-cyan-400/60 hover:bg-cyan-900/50 transition-colors break-keep pointer-events-auto';
+    bubbleVariant === 'light'
+      ? 'inline-flex w-full items-center justify-center gap-1.5 rounded-lg border border-cyan-800 bg-cyan-700 px-3 py-2.5 text-xs font-bold text-white hover:bg-cyan-800 transition-colors break-keep pointer-events-auto shadow-sm'
+      : 'inline-flex w-full items-center justify-center gap-1.5 rounded-lg border border-cyan-500/40 bg-cyan-950/40 px-3 py-2.5 text-xs font-bold text-cyan-100 hover:border-cyan-400/60 hover:bg-cyan-900/50 transition-colors break-keep pointer-events-auto';
 
   const flightLocation = slug ? { slug, name: destinationName || slug } : null;
   const flightPlannerPath = slug
@@ -188,7 +192,11 @@ const BookingActionCards = ({
 
     return (
       <div className="space-y-2">
-        <p className="text-[10px] font-bold uppercase tracking-wide text-emerald-400/90 break-keep">
+        <p
+          className={`text-[10px] font-bold uppercase tracking-wide break-keep ${
+            bubbleVariant === 'light' ? 'text-emerald-900' : 'text-emerald-400/90'
+          }`}
+        >
           {t('mooni.booking.transportSection')}
         </p>
 
@@ -270,8 +278,18 @@ const BookingActionCards = ({
     if (!prepActions.length) return null;
 
     return (
-      <div className="space-y-2 rounded-lg border border-amber-500/15 bg-amber-950/20 p-2.5">
-        <p className="text-[10px] font-bold uppercase tracking-wide text-amber-400/90 break-keep">
+      <div
+        className={`space-y-2 rounded-lg border p-2.5 ${
+          bubbleVariant === 'light'
+            ? 'border-amber-300 bg-amber-50'
+            : 'border-amber-500/15 bg-amber-950/20'
+        }`}
+      >
+        <p
+          className={`text-[10px] font-bold uppercase tracking-wide break-keep ${
+            bubbleVariant === 'light' ? 'text-amber-950' : 'text-amber-400/90'
+          }`}
+        >
           {t('mooni.booking.prepSection')}
         </p>
         <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">

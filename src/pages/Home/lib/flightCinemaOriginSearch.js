@@ -4,6 +4,7 @@ import { findNearestAirportInIndex } from '../../../utils/airportsIndexLookup.js
 import { matchDepartureInText } from '../../../utils/resolveDepartureIataFromChat.js';
 import { getFlightCinemaOriginOption, getFlightOriginDisplayLabel } from './flightCinemaOriginOptions.js';
 import { promoteFlightOriginGateway } from './flightOriginMetroGateways.js';
+import { searchKoreaCityInternationalAirportOrigins } from './koreaCityInternationalAirport.js';
 import { i18n } from '../../../i18n/config';
 
 const GEO_HUB_MAX_KM = 200;
@@ -108,6 +109,20 @@ export function searchFlightOriginHubs(query, options = {}) {
   for (const hub of RENTAL_AIRPORT_HUBS) {
     const score = scoreHubAgainstQuery(hay, hub);
     if (score > 0) push(hubToSearchResult(hub), score);
+  }
+
+  for (const row of searchKoreaCityInternationalAirportOrigins(raw, {
+    limit,
+    locale: i18n.language,
+  })) {
+    push(
+      {
+        iata: row.iata,
+        label: row.label,
+        officialKo: row.officialKo,
+      },
+      row.score,
+    );
   }
 
   return [...ranked.values()]
