@@ -38,6 +38,7 @@ import { MRT_HOME_MYLINK_ID } from '../Home/data/mrtPackageThemeLinks';
 import { resolveFlightDepartureIataForTrip } from '../Home/lib/flightOriginPreference.js';
 import { resolveTripcomPartnerLocale } from '../../utils/tripcomPartnerLocale.js';
 import { getWorldEventPlaceMeta, getWorldEventStayAreas } from '../../utils/worldEvents';
+import EventStayAreaDoHere from './EventStayAreaDoHere';
 import StayListPartnerNotice from '../../shared/affiliate/StayListPartnerNotice.jsx';
 import StayCardBookingLink from '../../shared/affiliate/StayCardBookingLink.jsx';
 import { formatMrtStayStarRatingLabel } from '../../utils/mrtStayCardMeta.js';
@@ -472,6 +473,12 @@ export default function EventStayStrip({
       {stayAreas.length === 1 && selectedArea?.note ? (
         <p className="mt-3 text-[11px] leading-relaxed text-stone-500">{selectedArea.note}</p>
       ) : null}
+      {stayAreas.length === 1 ? (
+        <EventStayAreaDoHere
+          title={t('worldEventDetail.stayStrip.doHereTitle')}
+          lines={selectedArea?.doHere}
+        />
+      ) : null}
 
       {stayAreas.length > 1 ? (
         <div className="mt-3">
@@ -504,6 +511,10 @@ export default function EventStayStrip({
           {selectedArea?.note ? (
             <p className="mt-1.5 text-[11px] leading-relaxed text-stone-500">{selectedArea.note}</p>
           ) : null}
+          <EventStayAreaDoHere
+            title={t('worldEventDetail.stayStrip.doHereTitle')}
+            lines={selectedArea?.doHere}
+          />
         </div>
       ) : null}
 

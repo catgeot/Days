@@ -874,7 +874,7 @@ export const WORLD_EVENT_OVERRIDES = [
       '7월 한 달간 이어지는 교토 대표 축제로, 7/16~17 요이야마(전야제·본행)가 절정입니다. 한 달 전체 숙박보다 요이야마 전후 2~3박으로 산마이(거리 행렬)·야마보코(마을 축)를 중심으로 보는 일정이 일반적입니다.',
     highlights: [
       '7/16~17 요이야마 — 야마보코·야마하oko 거리 행렬(교토 중심 교통 통제)',
-      '7/17 본행(本行) — 시조·카라스마 일대 최대 혼잡 · 전날 밤 체크인 권장',
+      '7/17 본행(메인 행진) — 시조·카라스마 일대 최대 혼잡 · 전날 밤 체크인 권장',
       '기온·사가노 — 축제 전후 전통 거리·야사카 신사 접근',
     ],
     stayAreas: [
@@ -3829,24 +3829,55 @@ export const WORLD_EVENT_OVERRIDES = [
     venue: { name: 'Odori Park · Ekimae-dori · Minami 1-jo' },
     source: 'official_url',
     sourceUrl: 'https://www.sapporo.travel/en/event/event-list/sapporo_white_illumination/',
-    bookingHints: '오도리·스스키노·札幌역 남口 — 회장별 기간·야간 온도 대비',
+    bookingHints: '삿포로역 남쪽 출구 — 회장별 기간·야간 온도 대비',
     detailOverview:
-      '1981년부터 이어지는 삿포로의 겨울 조명 축제로, 오도리 공원·駅前通·南一条通 등 도심 거리가 빛으로 물듭니다. 2026–27 시즌은 11월 20일부터 3월 14일까지이며, 오도리 회장은 12월 25일까지입니다. 12월 초·크리스마스 전후 2~3박으로 오도리~스스키노 기점을 잡는 방문이 일반적입니다.',
+      '1981년부터 이어지는 삿포로의 겨울 조명 축제로, 오도리 공원·에키마에도리·미나미이조도리 등 도심 거리가 빛으로 물듭니다.',
+    detailOverviewEn:
+      'Since 1981, Sapporo’s winter light festival fills downtown streets including Odori Park, Ekimae-dori, and Minami 1-jo-dori.',
     highlights: [
-      'Odori Park 1~5丁目 — 회장별 테마 오브제·12/11~13 스페셜 라이트쇼(3丁目)',
-      '오도리 2丁目 Münchner Weihnachtsmarkt in Sapporo — 독일식 크리스마스 마켓',
-      '駅前通·南一条通·赤れんが(アカプラ) — 거리 조명 산책',
+      '오도리 공원 1~5초메 — 회장별 테마 오브제·12/11~13 스페셜 라이트쇼(3초메)',
+      '오도리 2초메 Münchner Weihnachtsmarkt in Sapporo — 독일식 크리스마스 마켓',
+      '에키마에도리·미나미이조도리·아카렌가 테라스(아카프라) — 거리 조명 산책',
+    ],
+    highlightsEn: [
+      'Odori Park blocks 1–5 — themed installations per site; special light show Dec 11–13 (block 3)',
+      'Odori block 2 — Münchner Weihnachtsmarkt in Sapporo (German-style Christmas market)',
+      'Ekimae-dori · Minami 1-jo · Akarenga Terrace (Akapla) — street illumination walks',
     ],
     stayAreas: [
       {
-        name: '오도리 · Odori',
+        name: '오도리',
+        nameEn: 'Odori',
         mrtKeyword: 'Sapporo Odori',
         note: '오도리 회장 도보 · 지하철 허브',
+        noteEn: 'Walk to Odori site · subway hub',
+        doHere: [
+          '오도리 공원 1~5초메가 화이트 일루미네이션 주회장이라 조명 산책이 가깝습니다.',
+          '「Münchner Weihnachtsmarkt in Sapporo」 등 부대 행사가 오도리 일대에서 열립니다.',
+          '시영 지하철 남북선·동서선 오도리역이 근처 허브입니다.',
+        ],
+        doHereEn: [
+          'Odori Park blocks 1–5 are the main White Illumination site, so the light displays are right nearby.',
+          'Side events such as Münchner Weihnachtsmarkt in Sapporo run in the Odori area.',
+          'Odori Station on the Sapporo Municipal Subway (Nanboku and Tozai lines) is the nearby hub.',
+        ],
       },
       {
-        name: '스스키노 · Susukino',
+        name: '스스키노',
+        nameEn: 'Susukino',
         mrtKeyword: 'Susukino Sapporo',
-        note: '야식·바 · 오도리 도보 10분',
+        note: '야식·바 밀집 · 도심 도보 이동',
+        noteEn: 'Restaurants and bars · walkable downtown',
+        doHere: [
+          '삿포로 대표 유흥·야간 거리로 식당·바가 밀집해 늦은 밤 식사·술자리를 두기 좋습니다.',
+          '도심 주요 명소는 서로 도보 이동이 가능한 거리에 모여 있습니다.',
+          '시영 지하철 스스키노역이 근처에 있습니다.',
+        ],
+        doHereEn: [
+          'Sapporo’s main nightlife quarter packs restaurants and bars—handy for late dinners after the lights.',
+          'Downtown sights are clustered within comfortable walking distance of one another.',
+          'Susukino Station on the Sapporo Municipal Subway is nearby.',
+        ],
       },
     ],
     recommendedNights: 3,
