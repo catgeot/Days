@@ -54,7 +54,7 @@ import {
   peekMooniChatPlannerReturn,
   setMooniChatPlannerReturn,
   consumeMooniChatPlannerReturn,
-} from './lib/mooniChatPlannerReturn.js';
+} from '../../shared/lib/mooniChatPlannerReturn.js';
 import { enrichLocationWithRentalAirport } from '../../utils/rentalAirportMatch.js';
 import {
   mergeCanonicalTravelSpot,

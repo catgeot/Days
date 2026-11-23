@@ -226,9 +226,12 @@ export function FestivalHeroThumbStrip({
             'data-festival-hero-thumbs-scroller': '',
             'data-festival-hero-thumbs-locked': locked ? 'true' : 'false',
           },
-          loadedUrls.map((url) => {
+          list.map((url) => {
             const index = list.indexOf(url);
             const selected = index === activeIndex;
+            const isLoaded = loadedUrls.includes(url);
+            const isFailed = failedUrls.includes(url);
+            if (!isLoaded && isFailed) return null;
             return createElement(
               'button',
               {
@@ -236,8 +239,13 @@ export function FestivalHeroThumbStrip({
                 type: 'button',
                 role: 'option',
                 'aria-selected': selected ? 'true' : 'false',
-                onClick: () => onSelect?.(index),
+                disabled: !isLoaded,
+                onClick: () => {
+                  if (!isLoaded) return;
+                  onSelect?.(index);
+                },
                 onDoubleClick: () => {
+                  if (!isLoaded) return;
                   onSelect?.(index);
                   onOpen?.(index);
                 },
@@ -246,15 +254,18 @@ export function FestivalHeroThumbStrip({
                   selected
                     ? 'border-amber-500 ring-2 ring-amber-200'
                     : 'border-stone-200 opacity-85 hover:opacity-100',
+                  !isLoaded ? 'opacity-70' : '',
                 ].join(' '),
               },
-              createElement(FestivalPhotoFrame, {
-                src: resolveSrc(url),
-                alt: '',
-                className: 'absolute inset-0 h-full w-full object-cover',
-                fallback: createElement(FestivalDetailPhotoFallback, { size: 'sm' }),
-                onFailed: () => markFailed(url),
-              }),
+              isLoaded
+                ? createElement(FestivalPhotoFrame, {
+                    src: resolveSrc(url),
+                    alt: '',
+                    className: 'absolute inset-0 h-full w-full object-cover',
+                    fallback: createElement(FestivalDetailPhotoFallback, { size: 'sm' }),
+                    onFailed: () => markFailed(url),
+                  })
+                : createElement(FestivalDetailPhotoFallback, { size: 'sm' }),
             );
           }),
         )

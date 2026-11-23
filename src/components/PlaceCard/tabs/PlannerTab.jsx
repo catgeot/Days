@@ -37,7 +37,7 @@ import { TripcomFlightSearchProvider } from './planner/TripcomFlightSearchContex
 import {
   peekMooniChatPlannerReturn,
   requestMooniChatRestore,
-} from '../../../pages/Home/lib/mooniChatPlannerReturn.js';
+} from '../../../shared/lib/mooniChatPlannerReturn.js';
 import { getPlaceUrlParam } from '../../../pages/Home/lib/formatUrlName';
 import RelatedTravelSpots from '../RelatedTravelSpots';
 import TravelAgencyDirectory from '../../travelAgencies/TravelAgencyDirectory';
