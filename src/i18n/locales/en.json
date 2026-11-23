@@ -2725,6 +2725,7 @@
   "flightOrigin": {
     "departure": "From",
     "departureFrom": "Departure",
+    "gatewayDepartureLine": "From {{city}} ({{iata}})",
     "searchTitle": "Search departure",
     "searchPlaceholder": "City or airport (e.g. Manila, ICN)",
     "expandSearch": "Expand departure search",
@@ -2888,6 +2889,7 @@
     },
     "planner": {
       "heading": "Check in planner",
+      "backToChat": "Back to MOONi chat",
       "openFull": "View trip plan in GATEO planner",
       "flightGuide": "Flight guide for {{place}} in planner",
       "flightBooking": "{{place}} flight booking info",

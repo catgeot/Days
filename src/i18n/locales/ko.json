@@ -2488,6 +2488,7 @@
   "flightOrigin": {
     "departure": "출발",
     "departureFrom": "출발지",
+    "gatewayDepartureLine": "{{city}}({{iata}})에서 출발",
     "searchTitle": "출발지 검색",
     "searchPlaceholder": "도시·공항 검색 (예: 마닐라, ICN)",
     "expandSearch": "출발지 검색 펼치기",
@@ -2651,6 +2652,7 @@
     },
     "planner": {
       "heading": "플래너에서 확인",
+      "backToChat": "무니 대화로 돌아가기",
       "openFull": "GATEO 플래너에서 여행 계획 보기",
       "flightGuide": "플래너에서 {{place}} 항공권 안내 보기",
       "flightBooking": "{{place}} 항공권 예약 정보",

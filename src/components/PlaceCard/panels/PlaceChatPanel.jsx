@@ -42,7 +42,7 @@ import { navigatePlaceReturnToBlog } from '../../../shared/navigation/logbookBlo
 import PlaceWorldEventsSection from '../common/PlaceWorldEventsSection';
 import PlaceWorldEventsChatPreview from '../common/PlaceWorldEventsChatPreview';
 import PlaceCrossLinksSection from '../common/PlaceCrossLinksSection';
-import LocaleToggle from '../../../i18n/LocaleToggle';
+import PlaceSurfaceLocaleToggle from '../common/PlaceSurfaceLocaleToggle';
 import { isGateoPlaceWorldEventsTabEnabled } from '../../../shared/gateoFeatureFlags';
 import { isPlacePlannerEligible } from '../../../shared/place/placePlannerEligibility.js';
 import { isPlaceCrosslinkWorldEventsRailEnabled } from '../../../pages/Home/lib/placeCrosslinkRollout.js';
@@ -344,9 +344,6 @@ const PlaceChatPanel = React.memo(({
                  >
                    <BookmarkButton location={location} isBookmarked={isBookmarked} onToggle={onToggleBookmark} />
                  </div>
-                 <div data-testid="place-header-locale-toggle" className="shrink-0">
-                   <LocaleToggle compact className="shrink-0" />
-                 </div>
                  <button
                     type="button"
                     onClick={openMooni}
@@ -465,7 +462,8 @@ const PlaceChatPanel = React.memo(({
 
       {/* Footer — 데스크톱 MOONi 진입 */}
       {mediaMode !== 'WIKI' && (
-          <div className="hidden lg:block p-6 pt-4 bg-gradient-to-t from-[#05070a] via-[#05070a] to-transparent shrink-0 z-20">
+          <div className="hidden lg:flex flex-col gap-3 p-6 pt-4 bg-gradient-to-t from-[#05070a] via-[#05070a] to-transparent shrink-0 z-20">
+              <PlaceSurfaceLocaleToggle isMooniChatOpen={isMooniChatOpen} />
               <button
                 type="button"
                 onClick={openMooni}
@@ -481,6 +479,15 @@ const PlaceChatPanel = React.memo(({
               </button>
           </div>
       )}
+
+      {!isMooniChatOpen &&
+        createPortal(
+          <PlaceSurfaceLocaleToggle
+            isMooniChatOpen={isMooniChatOpen}
+            className={`lg:hidden fixed right-3 z-[165] touch-manipulation shadow-lg ${mobileLandscapeChromeHidden} bottom-[max(5.5rem,calc(env(safe-area-inset-bottom,0px)+4.5rem))]`}
+          />,
+          document.body,
+        )}
 
       {relatedPlaces.length > 0 && relatedPlaceTabForMediaMode(mediaMode) && !selectedImg && !isFullScreen && !isMooniChatOpen && createPortal(
           <div className={`lg:hidden fixed bottom-0 left-0 w-full z-[160] bg-[#05070a]/90 backdrop-blur-xl border-t border-white/10 p-3 pb-8 animate-fade-in-up shadow-[0_-10px_30px_rgba(0,0,0,0.5)] ${mobileLandscapeChromeHidden}`}>

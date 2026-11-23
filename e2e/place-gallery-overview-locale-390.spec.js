@@ -33,7 +33,7 @@ async function revealMobileGalleryOverview(page) {
 }
 
 async function clickLocaleToggle(page) {
-  const toggle = page.getByTestId('place-header-locale-toggle').locator('button').first();
+  const toggle = page.locator('[data-testid="place-surface-locale-toggle"]:visible button').first();
   await expect(toggle).toBeVisible({ timeout: 60_000 });
   await toggle.click();
 }

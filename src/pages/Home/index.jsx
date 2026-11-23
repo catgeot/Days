@@ -49,6 +49,12 @@ import { inferInitialPlaceRouteResolve } from './lib/placeRouteResolvePolicy.js'
 import { isHiddenKoreaScenicPlaceSlug } from './lib/koreaScenicSpotVisibility.js';
 import { getSystemPrompt, PERSONA_TYPES } from './lib/prompts';
 import { persistMooniLastChatId, persistMooniFreshDraftSession, mooniLastChatScopeInput } from './lib/tripChatUtils';
+import {
+  MOONI_CHAT_RESTORE_EVENT,
+  peekMooniChatPlannerReturn,
+  setMooniChatPlannerReturn,
+  consumeMooniChatPlannerReturn,
+} from './lib/mooniChatPlannerReturn.js';
 import { enrichLocationWithRentalAirport } from '../../utils/rentalAirportMatch.js';
 import {
   mergeCanonicalTravelSpot,
@@ -206,6 +212,7 @@ function Home() {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [mooniChatEntry, setMooniChatEntry] = useState(false);
   const [mooniPlaceContext, setMooniPlaceContext] = useState(null);
+  const [mooniRestoreScrollTop, setMooniRestoreScrollTop] = useState(null);
   const [chatDraft, setChatDraft] = useState(null);
   const [isLogoPanelOpen, setIsLogoPanelOpen] = useState(false);
 
@@ -527,6 +534,67 @@ function Home() {
       boundSpot,
     });
   }, [handleStartChat, isChatOpen, locale, selectedLocation]);
+
+  const restoreMooniChatFromPlanner = useCallback(() => {
+    const bundle = consumeMooniChatPlannerReturn();
+    if (!bundle || bundle.activeChatId == null) return;
+    if (bundle.mooniPlaceContext) {
+      setMooniPlaceContext(bundle.mooniPlaceContext);
+    }
+    setMooniChatEntry(Boolean(bundle.mooniEntry));
+    setChatDraft(null);
+    setActiveChatId(bundle.activeChatId);
+    setMooniRestoreScrollTop(bundle.scrollTop);
+    setIsChatOpen(true);
+  }, [setActiveChatId]);
+
+  const handleMooniPlannerHandoff = useCallback(
+    ({ plannerPath, activeChatId: chatId, scrollTop, mooniPlaceContext: ctx, mooniEntry }) => {
+      const slug = String(
+        ctx?.slug || selectedLocation?.slug || getPlaceUrlParam(selectedLocation) || '',
+      )
+        .trim()
+        .toLowerCase();
+      if (slug && chatId != null) {
+        setMooniChatPlannerReturn({
+          slug,
+          activeChatId: chatId,
+          scrollTop,
+          mooniPlaceContext: ctx,
+          mooniEntry: Boolean(mooniEntry),
+        });
+      }
+      setIsChatOpen(false);
+      navigate(plannerPath);
+    },
+    [navigate, selectedLocation],
+  );
+
+  useEffect(() => {
+    const onRestore = () => restoreMooniChatFromPlanner();
+    window.addEventListener(MOONI_CHAT_RESTORE_EVENT, onRestore);
+    return () => window.removeEventListener(MOONI_CHAT_RESTORE_EVENT, onRestore);
+  }, [restoreMooniChatFromPlanner]);
+
+  const activePlaceSlug = useMemo(() => {
+    const fromLoc = String(selectedLocation?.slug || getPlaceUrlParam(selectedLocation) || '')
+      .trim()
+      .toLowerCase();
+    if (fromLoc) return fromLoc;
+    const match = matchPath({ path: '/place/:slug/*' }, routeLocation.pathname);
+    return String(match?.params?.slug || '').trim().toLowerCase();
+  }, [selectedLocation, routeLocation.pathname]);
+
+  useEffect(() => {
+    const onPop = () => {
+      if (routeLocation.pathname.includes('/planner')) return;
+      if (peekMooniChatPlannerReturn(activePlaceSlug)) {
+        restoreMooniChatFromPlanner();
+      }
+    };
+    window.addEventListener('popstate', onPop);
+    return () => window.removeEventListener('popstate', onPop);
+  }, [routeLocation.pathname, activePlaceSlug, restoreMooniChatFromPlanner]);
 
   useEffect(() => {
     const st = routeLocation.state;
@@ -2202,6 +2270,9 @@ function Home() {
           overlaySuppressed={flightCinemaActive}
           mooniEntry={mooniChatEntry}
           mooniPlaceContext={mooniPlaceContext}
+          onPlannerHandoff={handleMooniPlannerHandoff}
+          restoreScrollTop={mooniRestoreScrollTop}
+          onScrollRestoreConsumed={() => setMooniRestoreScrollTop(null)}
           onPlaceIntroReady={handlePlaceIntroReady}
           onClose={() => {
             if (activeChatId && mooniChatEntry) {

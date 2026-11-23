@@ -34,6 +34,11 @@ const TOOLKIT_ERROR_MESSAGE_KEY = {
 };
 import PlannerStageNav from './planner/components/PlannerStageNav';
 import { TripcomFlightSearchProvider } from './planner/TripcomFlightSearchContext';
+import {
+  peekMooniChatPlannerReturn,
+  requestMooniChatRestore,
+} from '../../../pages/Home/lib/mooniChatPlannerReturn.js';
+import { getPlaceUrlParam } from '../../../pages/Home/lib/formatUrlName';
 import RelatedTravelSpots from '../RelatedTravelSpots';
 import TravelAgencyDirectory from '../../travelAgencies/TravelAgencyDirectory';
 import { isToolkitLocationMismatch } from '../../../utils/toolkitPlaceIdResolve';
@@ -125,6 +130,10 @@ const PlannerTab = ({
     const canonicalLocation = useMemo(() => mergeCanonicalTravelSpot(location), [location]);
     const toolkitLocation = useMemo(() => getPlannerToolkitLocation(canonicalLocation), [canonicalLocation]);
     const plannerEligible = isPlacePlannerEligible(canonicalLocation);
+    const placeSlugKey = String(getPlaceUrlParam(canonicalLocation) || canonicalLocation?.slug || '')
+      .trim()
+      .toLowerCase();
+    const mooniReturnPending = Boolean(peekMooniChatPlannerReturn(placeSlugKey));
     const plannerCityLabel = getPlannerTabCityTitleLabel(canonicalLocation, locale);
 
     const guideData = resolvePlannerGuideForDisplay(plannerData, canonicalLocation, locale);
@@ -551,6 +560,18 @@ const PlannerTab = ({
                         {mobileSecondaryNav}
                     </div>
                 )}
+                {mooniReturnPending ? (
+                    <div className="w-full max-w-2xl md:max-w-3xl lg:max-w-4xl mx-auto shrink-0 px-0 pb-3">
+                        <button
+                            type="button"
+                            data-testid="mooni-return-to-chat"
+                            onClick={() => requestMooniChatRestore()}
+                            className="inline-flex min-h-[44px] w-full items-center justify-center rounded-lg border border-cyan-800 bg-cyan-700 px-4 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-cyan-800 transition-colors"
+                        >
+                            {t('mooni.planner.backToChat')}
+                        </button>
+                    </div>
+                ) : null}
                 <div className="w-full max-w-2xl md:max-w-3xl lg:max-w-4xl mx-auto flex-1 flex flex-col mt-2 md:mt-0">
                     {showFlightCinemaNotice ? (
                         <FlightCinemaPlannerNotice

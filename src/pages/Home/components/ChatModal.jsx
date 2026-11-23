@@ -202,6 +202,9 @@ const ChatModal = ({
   onPlaceIntroReady = null,
   onClearPlaceBinding = null,
   onStartNewChat = null,
+  onPlannerHandoff = null,
+  restoreScrollTop = null,
+  onScrollRestoreConsumed = null,
 }) => {
   const { t, i18n } = useTranslation();
   const account = useAccountProfile();
@@ -274,11 +277,30 @@ const ChatModal = ({
 
   const handlePlannerNavigate = useCallback(
     (plannerPath) => {
+      if (onPlannerHandoff) {
+        onPlannerHandoff({
+          plannerPath,
+          activeChatId,
+          scrollTop: messagesScrollRef.current?.scrollTop ?? 0,
+          mooniPlaceContext: mooniPlaceContextRef.current,
+          mooniEntry,
+        });
+        return;
+      }
       handleClose();
       navigate(plannerPath);
     },
-    [handleClose, navigate]
+    [onPlannerHandoff, activeChatId, mooniEntry, handleClose, navigate]
   );
+
+  useLayoutEffect(() => {
+    if (!isOpen || restoreScrollTop == null) return undefined;
+    const el = messagesScrollRef.current;
+    if (!el) return undefined;
+    el.scrollTop = Math.max(0, Number(restoreScrollTop) || 0);
+    onScrollRestoreConsumed?.();
+    return undefined;
+  }, [isOpen, restoreScrollTop, messages.length, onScrollRestoreConsumed]);
 
   const introDestinationRaw = useMemo(() => {
     if (!isOpen) return '';
@@ -2196,6 +2218,7 @@ const ChatModal = ({
                       (msg.confirmedDestination ||
                         (msg.destinationCandidates?.length > 0 && msg.destinationPrompt))) && (
                       <DestinationResolutionChips
+                        variant={isMooniUi ? 'light' : 'dark'}
                         confirmed={
                           msg.confirmedDestination
                             ? {
@@ -2302,6 +2325,7 @@ const ChatModal = ({
                   {accessOriginSearchOpen ? (
                     <FlightOriginSelector
                       variant="chat"
+                      composerSurface={fresh ? 'light' : 'dark'}
                       selectedIata={accessOriginIata}
                       disabled={isLoading}
                       onSelect={handleAccessOriginSelect}

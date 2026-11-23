@@ -10,6 +10,8 @@ import {
   MOONI_CHAT_MAIN_HEADER_RESERVE_CLASS,
   MOONI_CHAT_SOLID_ACCENT,
   MOONI_CHAT_SIDEBAR_TONES,
+  MOONI_LIGHT_BOOKING,
+  MOONI_LIGHT_COMPOSER,
 } from '../../src/pages/Home/lib/mooniChatModalChromeTokens.js';
 import { resolveCityAttractionHub, listCityAttractionHubs } from '../../src/pages/Home/lib/cityAttractionHubs.js';
 
@@ -95,6 +97,15 @@ test('MOONi chat accent gradient — white on cyan/teal-700 stops ≥ 4.5:1', ()
     'light accent must not use cyan-400/teal-400 gradient',
   );
   assert.match(chatModal, /from-cyan-700 to-teal-700/);
+});
+
+test('MOONi light booking + composer tokens ≥ 4.5:1 (body)', () => {
+  const pb = MOONI_LIGHT_BOOKING.plannerButton;
+  assert.ok(contrastRatio(pb.text, pb.bg) >= 4.5, 'light planner button');
+  const comp = MOONI_LIGHT_COMPOSER;
+  assert.ok(contrastRatio(comp.inputText, comp.inputBg) >= 4.5, 'light composer input');
+  assert.ok(contrastRatio(comp.listActiveText, comp.listActiveBg) >= 4.5, 'light origin option active');
+  assert.ok(contrastRatio(comp.recommendText, comp.recommendBg) >= 4.5, 'light browser suggest');
 });
 
 test('MOONi chat solid accent — white on cyan-700/800 ≥ 4.5:1', () => {

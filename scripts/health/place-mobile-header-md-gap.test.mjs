@@ -79,19 +79,16 @@ test('PlaceChatPanel xl header keeps bookmark–MOONi chip gutter (1280 overlap)
   assert.match(chat, /min-\[1400px\]:w-auto min-\[1400px\]:flex-none min-\[1400px\]:ml-auto[\s\S]{0,900}place-header-mooni-btn/);
 });
 
-test('PlaceChatPanel header exposes locale toggle in action row (390·1280)', () => {
+test('PlaceChatPanel — locale toggle outside header chrome (surface)', () => {
   const chat = read('src/components/PlaceCard/panels/PlaceChatPanel.jsx');
-  assert.match(chat, /data-testid="place-header-locale-toggle"/);
-  assert.match(chat, /LocaleToggle compact/);
-  assert.match(chat, /data-testid="place-header-chrome-actions"/);
-  assert.match(
-    chat,
-    /data-testid="place-header-bookmark"[\s\S]{0,280}data-testid="place-header-locale-toggle"/,
-  );
-  assert.match(chat, /hidden lg:block[\s\S]{0,160}place-header-bookmark-desktop/);
+  const surface = read('src/components/PlaceCard/common/PlaceSurfaceLocaleToggle.jsx');
+  assert.match(surface, /data-testid="place-surface-locale-toggle"/);
   assert.doesNotMatch(
     chat,
-    /place-header-locale-toggle[\s\S]{0,80}relative z-30/,
-    'z-30 action row paints over title bookmark on narrow viewports',
+    /place-header-chrome-actions[\s\S]{0,600}place-header-locale-toggle/,
+    'header action row must not host locale toggle',
   );
+  assert.match(chat, /PlaceSurfaceLocaleToggle/);
+  assert.match(chat, /data-testid="place-header-chrome-actions"/);
+  assert.match(chat, /hidden lg:block[\s\S]{0,160}place-header-bookmark-desktop/);
 });

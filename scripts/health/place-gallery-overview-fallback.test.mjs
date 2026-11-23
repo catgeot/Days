@@ -201,6 +201,7 @@ test('Home gallery PR drift guard; MOONi session wiring line allowlist', () => {
   ];
 
   const indexAllow = [
+    /^[+-]\s*import \{/,
     /^[+-]\s*import .*tripChatUtils/,
     /^[+-].*resolveCoordinatePlaceIdentity/,
     /^[+-].*coordinatePlaceIdentity\.js/,
@@ -228,6 +229,31 @@ test('Home gallery PR drift guard; MOONi session wiring line allowlist', () => {
     /^[+-].*setSelectedLocation/,
     /^[+-].*handleClearMooniPlaceBinding/,
     /^[+-].*mooniChatEntry/,
+    /^[+-].*mooniChatPlannerReturn/,
+    /^[+-].*handleMooniPlannerHandoff/,
+    /^[+-].*restoreMooniChatFromPlanner/,
+    /^[+-].*mooniRestoreScrollTop/,
+    /^[+-].*setMooniRestoreScrollTop/,
+    /^[+-].*onPlannerHandoff/,
+    /^[+-].*peekMooniChatPlannerReturn/,
+    /^[+-].*consumeMooniChatPlannerReturn/,
+    /^[+-].*setMooniChatPlannerReturn/,
+    /^[+-].*MOONI_CHAT_RESTORE/,
+    /^[+-].*MOONI_CHAT_RESTORE_EVENT/,
+    /^[+-].*activePlaceSlug/,
+    /^[+-].*plannerPath/,
+    /^[+-].*scrollTop/,
+    /^[+-].*onPop/,
+    /^[+-].*onRestore/,
+    /^[+-].*popstate/,
+    /^[+-].*mooniEntry/,
+    /^[+-].*setIsChatOpen\(true\)/,
+    /^[+-].*bundle\./,
+    /^[+-]\s*MOONI_CHAT_RESTORE_EVENT,/,
+    /^[+-]\s*peekMooniChatPlannerReturn,/,
+    /^[+-]\s*setMooniChatPlannerReturn,/,
+    /^[+-]\s*consumeMooniChatPlannerReturn,/,
+    /^[+-]\s*\} from '\.\/lib\/mooniChatPlannerReturn\.js';/,
     /^[+-].*destination === 'MOONi'/,
     /^[+-].*category/,
     /^[+-].*user\?\.id/,
@@ -382,7 +408,8 @@ test('Home gallery PR drift guard; MOONi session wiring line allowlist', () => {
         (/window\.location\.assign\(placeHref\)/.test(diff) &&
           /routeLocation\.pathname\.startsWith\('\/explore'\)/.test(diff)) ||
         (/selectedFromSearch\?\.kind === 'festival'/.test(diff) &&
-          /selectedFromSearch\?\.festivalContentId/.test(diff)))
+          /selectedFromSearch\?\.festivalContentId/.test(diff)) ||
+        (/handleMooniPlannerHandoff/.test(diff) && /mooniChatPlannerReturn/.test(diff)))
     ) {
       return;
     }

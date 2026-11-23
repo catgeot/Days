@@ -41,6 +41,7 @@ const LISTBOX_Z_INDEX = 225;
  *   initialExpanded?: boolean,
  *   onSearchActiveChange?: (active: boolean) => void,
  *   headerSurface?: 'dark' | 'light',
+ *   composerSurface?: 'dark' | 'light',
  * }} props
  */
 export default function FlightOriginSelector({
@@ -48,6 +49,7 @@ export default function FlightOriginSelector({
   disabled = false,
   variant = 'summary',
   headerSurface = 'dark',
+  composerSurface = 'dark',
   browserOriginHint = null,
   onSelect,
   onApplyBrowserOriginSuggestion,
@@ -86,6 +88,7 @@ export default function FlightOriginSelector({
   const isSummaryHeader = variant === 'summary-header' || isChatHeader;
   const isSummaryPanel = variant === 'summary-panel' || isChat;
   const isSummary = variant === 'summary';
+  const isLightComposer = composerSurface === 'light' && isChat;
   const showSearchUi = !isBar || barExpanded;
 
   useEffect(() => {
@@ -325,28 +328,38 @@ export default function FlightOriginSelector({
 
   const inputClass = isBar
     ? 'min-h-[44px] w-full rounded-md border border-white/15 bg-white/5 py-2 pl-7 pr-11 text-[16px] md:text-xs font-medium text-white placeholder:text-white/35 focus:border-sky-300/50 focus:outline-none focus:ring-1 focus:ring-sky-300/30'
-    : isSummary || isSummaryPanel
-      ? 'min-h-[40px] w-full rounded-lg border border-sky-400/35 bg-black/40 py-2 pl-8 pr-12 text-[16px] md:text-sm font-medium text-white placeholder:text-white/45 shadow-inner shadow-black/20 focus:border-sky-300/55 focus:outline-none focus:ring-1 focus:ring-sky-400/35'
-      : 'min-h-[44px] w-full rounded-lg border border-white/10 bg-white/[0.04] py-2 pl-7 pr-11 text-[16px] md:text-xs font-medium text-gray-100 placeholder:text-gray-500 focus:border-sky-400/40 focus:outline-none focus:ring-1 focus:ring-sky-400/25';
+    : isLightComposer
+      ? 'min-h-[44px] w-full rounded-lg border border-slate-400 bg-slate-50 py-2 pl-8 pr-12 text-[16px] md:text-sm font-medium text-slate-900 placeholder:text-slate-600 focus:border-cyan-700 focus:outline-none focus:ring-1 focus:ring-cyan-700/30'
+      : isSummary || isSummaryPanel
+        ? 'min-h-[40px] w-full rounded-lg border border-sky-400/35 bg-black/40 py-2 pl-8 pr-12 text-[16px] md:text-sm font-medium text-white placeholder:text-white/45 shadow-inner shadow-black/20 focus:border-sky-300/55 focus:outline-none focus:ring-1 focus:ring-sky-400/35'
+        : 'min-h-[44px] w-full rounded-lg border border-white/10 bg-white/[0.04] py-2 pl-7 pr-11 text-[16px] md:text-xs font-medium text-gray-100 placeholder:text-gray-500 focus:border-sky-400/40 focus:outline-none focus:ring-1 focus:ring-sky-400/25';
 
   const listPortalClass = isBar
     ? 'overflow-y-auto overscroll-contain rounded-md border border-sky-400/45 bg-[#0b1220]/98 py-1 shadow-[0_12px_40px_rgba(0,0,0,0.92),0_0_0_1px_rgba(56,189,248,0.22)] ring-1 ring-sky-400/15 backdrop-blur-xl'
-    : 'overflow-y-auto overscroll-contain rounded-lg border border-sky-400/50 bg-[#0b1220]/98 py-1 shadow-[0_12px_40px_rgba(0,0,0,0.92),0_0_0_1px_rgba(56,189,248,0.28)] ring-1 ring-sky-400/20 backdrop-blur-xl';
+    : isLightComposer
+      ? 'overflow-y-auto overscroll-contain rounded-lg border border-slate-300 bg-white py-1 shadow-lg ring-1 ring-slate-200'
+      : 'overflow-y-auto overscroll-contain rounded-lg border border-sky-400/50 bg-[#0b1220]/98 py-1 shadow-[0_12px_40px_rgba(0,0,0,0.92),0_0_0_1px_rgba(56,189,248,0.28)] ring-1 ring-sky-400/20 backdrop-blur-xl';
 
   const itemClass = (active) =>
     isBar
       ? `flex min-h-[44px] w-full items-center justify-between gap-2 px-3 py-2.5 text-left text-xs transition-colors ${
           active ? 'bg-sky-400/20 text-white' : 'text-white/85 hover:bg-white/10'
         }`
-      : `flex min-h-[44px] w-full items-center justify-between gap-2 px-3 py-2.5 text-left text-xs transition-colors ${
-          active ? 'bg-sky-500/15 text-sky-100' : 'text-gray-200 hover:bg-white/[0.08]'
-        }`;
+      : isLightComposer
+        ? `flex min-h-[44px] w-full items-center justify-between gap-2 px-3 py-2.5 text-left text-xs transition-colors ${
+            active ? 'bg-cyan-100 text-slate-900' : 'text-slate-800 hover:bg-slate-100'
+          }`
+        : `flex min-h-[44px] w-full items-center justify-between gap-2 px-3 py-2.5 text-left text-xs transition-colors ${
+            active ? 'bg-sky-500/15 text-sky-100' : 'text-gray-200 hover:bg-white/[0.08]'
+          }`;
 
   const labelClass = isBar
     ? 'text-[10px] font-semibold uppercase tracking-wide text-white/45 break-keep'
-    : isSummary
-      ? 'text-[11px] font-bold text-sky-100 break-keep'
-      : 'text-[10px] font-semibold uppercase tracking-wide text-gray-400 break-keep';
+    : isLightComposer
+      ? 'text-[11px] font-bold text-slate-900 break-keep'
+      : isSummary
+        ? 'text-[11px] font-bold text-sky-100 break-keep'
+        : 'text-[10px] font-semibold uppercase tracking-wide text-gray-400 break-keep';
 
   const summarySelectedClass =
     'inline-flex max-w-[58%] shrink-0 items-center rounded-md border border-sky-400/40 bg-sky-500/20 px-2 py-0.5 text-[11px] font-bold text-sky-50 tabular-nums truncate';
@@ -360,7 +373,9 @@ export default function FlightOriginSelector({
   const summaryHeaderChipClass =
     headerSurface === 'light' ? summaryHeaderChipOnLight : summaryHeaderChipOnDark;
 
-  const barSearchLabelClass = 'text-[11px] font-bold text-sky-100 break-keep';
+  const barSearchLabelClass = isLightComposer
+    ? 'text-[11px] font-bold text-slate-900 break-keep'
+    : 'text-[11px] font-bold text-sky-100 break-keep';
 
   const barCollapseClass =
     'inline-flex shrink-0 items-center gap-1 rounded-md border border-white/25 bg-white/10 px-2.5 py-1 text-[11px] font-bold text-white/90 transition-colors hover:border-sky-300/45 hover:bg-sky-500/15 hover:text-white motion-safe:active:scale-[0.98]';
@@ -395,6 +410,7 @@ export default function FlightOriginSelector({
         <li key={row.iata} role="option" aria-selected={active}>
           <button
             type="button"
+            data-testid="flight-origin-option"
             className={itemClass(active)}
             onClick={() => handleSelect(row.iata)}
           >
@@ -527,13 +543,15 @@ export default function FlightOriginSelector({
     <div
       ref={rootRef}
       className={`min-w-0 ${
-        isSummary || isSummaryPanel
-          ? `space-y-2 rounded-xl border border-sky-400/25 bg-gradient-to-b from-sky-500/12 to-sky-950/25 p-2.5${
-              isSummaryPanel ? ' mt-1.5' : ''
-            }`
-          : isBar
-            ? 'space-y-1.5'
-            : 'space-y-1'
+        isLightComposer
+          ? `space-y-2 rounded-xl border border-slate-300 bg-white p-2.5 shadow-sm${isSummaryPanel ? ' mt-1.5' : ''}`
+          : isSummary || isSummaryPanel
+            ? `space-y-2 rounded-xl border border-sky-400/25 bg-gradient-to-b from-sky-500/12 to-sky-950/25 p-2.5${
+                isSummaryPanel ? ' mt-1.5' : ''
+              }`
+            : isBar
+              ? 'space-y-1.5'
+              : 'space-y-1'
       }`}
       onClick={(event) => event.stopPropagation()}
       onMouseDown={(event) => event.stopPropagation()}
@@ -602,9 +620,11 @@ export default function FlightOriginSelector({
             className={`pointer-events-none absolute top-1/2 -translate-y-1/2 ${
               isBar
                 ? 'left-2.5 text-white/40'
-                : isSummary || isSummaryPanel
-                  ? 'left-3 text-sky-300/75'
-                  : 'left-2.5 text-gray-500'
+                : isLightComposer
+                  ? 'left-3 text-slate-500'
+                  : isSummary || isSummaryPanel
+                    ? 'left-3 text-sky-300/75'
+                    : 'left-2.5 text-gray-500'
             }`}
             aria-hidden="true"
           />
@@ -715,8 +735,13 @@ export default function FlightOriginSelector({
           type="button"
           disabled={disabled}
           onClick={onApplyBrowserOriginSuggestion}
-          className={`min-h-[44px] w-full text-left text-xs font-medium break-keep ${
-            isBar ? 'text-violet-200/85 hover:text-violet-100' : 'text-violet-300/90 hover:text-violet-200'
+          data-testid="flight-origin-browser-suggest"
+          className={`min-h-[44px] w-full rounded-lg border px-3 py-2 text-left text-xs font-semibold break-keep ${
+            isLightComposer
+              ? 'border-cyan-200 bg-sky-50 text-slate-900 hover:bg-sky-100'
+              : isBar
+                ? 'text-violet-200/85 hover:text-violet-100'
+                : 'text-violet-300/90 hover:text-violet-200'
           } ${disabled ? 'opacity-60 cursor-wait' : ''}`}
           title={browserOriginHint}
         >
