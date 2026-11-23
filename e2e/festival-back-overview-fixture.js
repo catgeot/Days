@@ -9,7 +9,7 @@ const RECORDED_DETAIL = JSON.parse(
 );
 
 export const E2E_IMAGE_ORIGIN = 'https://e2e-static.gateo.test';
-const PNG_1X1 = Buffer.from(
+export const PNG_1X1 = Buffer.from(
   'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
   'base64',
 );

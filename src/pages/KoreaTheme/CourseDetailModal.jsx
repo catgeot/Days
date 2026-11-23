@@ -1,4 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
@@ -14,7 +15,18 @@ import { detectSidoCode } from '../Korea/festivalRegionTags';
 import { pushThemeNavBack } from '../Home/lib/koreaThemeNavBack';
 import { useLocale } from '../../i18n/LocaleProvider';
 import { useTrustBarOverlayLockEffect } from '../../shared/hooks/useTrustBarOverlayLockEffect.js';
+import { useGateoBodyScrollLockEffect } from '../../shared/hooks/useGateoBodyScrollLockEffect.js';
+import {
+  clearThemeSpotChromePointerBlockers,
+  nudgeFestivalSheetScrollAndRepaint,
+} from '../Korea/lib/festivalSheetInteractionRestore.js';
 import { formatFestivalDetailDateRange } from '../Korea/festivalDateFilter.js';
+
+const COURSE_MODAL_SAFE_PAD =
+  'p-2.5 pt-[max(0.625rem,env(safe-area-inset-top))] pb-[max(0.625rem,env(safe-area-inset-bottom))] pl-[max(0.625rem,env(safe-area-inset-left))] pr-[max(0.625rem,env(safe-area-inset-right))] md:items-center md:p-5';
+const COURSE_MODAL_SCRIM =
+  'absolute inset-0 pointer-events-auto cursor-default border-0 bg-stone-900/40 backdrop-blur-[2px]';
+export const COURSE_DETAIL_MODAL_Z_DEFAULT = 'z-[10075]';
 
 function stripHtml(html) {
   if (!html) return '';
@@ -58,30 +70,63 @@ export default function CourseDetailModal({
   detail,
   detailLoading = false,
   onClose,
-  overlayZClass = 'z-40',
+  overlayZClass = COURSE_DETAIL_MODAL_Z_DEFAULT,
   showNearbyFestivals = true,
 }) {
   const { t } = useTranslation();
   const { locale } = useLocale();
   const navigate = useNavigate();
   const scrollRef = useRef(null);
+  const dialogRef = useRef(null);
   const [nearbyFestivals, setNearbyFestivals] = useState([]);
   const [nearbyStatus, setNearbyStatus] = useState('idle');
 
   useTrustBarOverlayLockEffect(Boolean(course));
+  useGateoBodyScrollLockEffect(Boolean(course));
+
+  const restoreCourseModalInteraction = useCallback(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+    nudgeFestivalSheetScrollAndRepaint(dialog);
+    clearThemeSpotChromePointerBlockers(dialog);
+    if (typeof document !== 'undefined' && document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
+  }, []);
 
   useEffect(() => {
     const onKey = (event) => {
       if (event.key === 'Escape') onClose();
     };
     window.addEventListener('keydown', onKey);
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    return () => {
-      window.removeEventListener('keydown', onKey);
-      document.body.style.overflow = prev;
-    };
+    return () => window.removeEventListener('keydown', onKey);
   }, [onClose]);
+
+  useEffect(() => {
+    if (!course) return undefined;
+
+    const onPageShow = (event) => {
+      if (event.persisted) restoreCourseModalInteraction();
+    };
+    const onVisibility = () => {
+      if (document.visibilityState === 'visible') restoreCourseModalInteraction();
+    };
+    const onFocus = () => {
+      restoreCourseModalInteraction();
+      window.requestAnimationFrame(() => restoreCourseModalInteraction());
+    };
+
+    window.addEventListener('pageshow', onPageShow);
+    document.addEventListener('visibilitychange', onVisibility);
+    window.addEventListener('focus', onFocus);
+    restoreCourseModalInteraction();
+
+    return () => {
+      window.removeEventListener('pageshow', onPageShow);
+      document.removeEventListener('visibilitychange', onVisibility);
+      window.removeEventListener('focus', onFocus);
+    };
+  }, [course, restoreCourseModalInteraction]);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: 0 });
@@ -188,15 +233,23 @@ export default function CourseDetailModal({
     navigate(`/korea?${params.toString()}`);
   };
 
-  return (
+  const modal = (
     <div
-      className={`fixed inset-0 ${overlayZClass} flex items-stretch justify-center bg-stone-900/40 backdrop-blur-[2px] p-2.5 pt-[max(0.625rem,env(safe-area-inset-top))] pb-[max(0.625rem,env(safe-area-inset-bottom))] pl-[max(0.625rem,env(safe-area-inset-left))] pr-[max(0.625rem,env(safe-area-inset-right))] md:items-center md:p-5`}
-      onClick={onClose}
+      className={`fixed inset-0 ${overlayZClass} flex items-stretch justify-center pointer-events-none ${COURSE_MODAL_SAFE_PAD}`}
+      data-korea-course-modal-overlay=""
       role="presentation"
     >
+      <button
+        type="button"
+        data-korea-course-modal-scrim=""
+        className={COURSE_MODAL_SCRIM}
+        aria-label={t('korea.common.close')}
+        onClick={onClose}
+      />
       <div
-        className="relative flex h-full w-full max-w-lg flex-col overflow-hidden rounded-2xl border border-stone-200 bg-white text-stone-900 shadow-2xl md:h-auto md:max-h-[min(90dvh,52rem)] md:max-w-2xl md:rounded-3xl lg:max-w-3xl"
-        onClick={(e) => e.stopPropagation()}
+        ref={dialogRef}
+        data-korea-course-modal=""
+        className="relative z-10 pointer-events-auto flex h-full w-full max-w-lg touch-manipulation flex-col overflow-hidden rounded-2xl border border-stone-200 bg-white text-stone-900 shadow-2xl md:h-auto md:max-h-[min(90dvh,52rem)] md:max-w-2xl md:rounded-3xl lg:max-w-3xl"
         role="dialog"
         aria-modal="true"
         aria-labelledby="korea-course-modal-title"
@@ -228,7 +281,9 @@ export default function CourseDetailModal({
 
         <div
           ref={scrollRef}
-          className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain custom-scrollbar"
+          data-korea-course-modal-scroll=""
+          className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain touch-pan-y custom-scrollbar"
+          style={{ WebkitOverflowScrolling: 'touch' }}
         >
           {hero ? (
             <img
@@ -424,4 +479,7 @@ export default function CourseDetailModal({
       </div>
     </div>
   );
+
+  if (typeof document === 'undefined') return modal;
+  return createPortal(modal, document.body);
 }
