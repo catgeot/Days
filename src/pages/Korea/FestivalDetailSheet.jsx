@@ -2686,7 +2686,11 @@ export default function FestivalDetailSheet({
       />
       <div
         ref={sheetScrollRef}
-        inert={lightboxOpen ? true : undefined}
+        inert={
+          lightboxOpen || selectedNearby || selectedScenic || selectedCourse
+            ? true
+            : undefined
+        }
         className="relative z-10 pointer-events-auto flex w-full max-w-lg md:max-w-6xl xl:max-w-7xl max-h-[100dvh] md:my-0 md:h-full md:max-h-none flex-col md:flex-row overflow-y-auto overscroll-contain [overflow-anchor:none] md:overflow-hidden rounded-t-3xl md:rounded-3xl border border-stone-200 bg-white text-stone-900 shadow-2xl custom-scrollbar"
         role="dialog"
         aria-modal={lightboxOpen ? undefined : 'true'}
@@ -3883,7 +3887,6 @@ export default function FestivalDetailSheet({
           spot={toNearbyModalSpot(selectedNearby)}
           eyebrow={nearbyEyebrow(selectedNearby)}
           returnTo="/korea"
-          overlayZClass="z-[55]"
           favorited={scenicFavoriteIds.has(scenicSpotFavoriteKey(selectedNearby))}
           onToggleFavorite={handleScenicSpotFavorite}
           mooniFab
@@ -3901,7 +3904,6 @@ export default function FestivalDetailSheet({
           spot={toScenicModalSpot(selectedScenic, locale)}
           eyebrow={t('korea.festival.detail.nearScenic')}
           returnTo="/korea"
-          overlayZClass="z-[55]"
           favorited={scenicFavoriteIds.has(scenicSpotFavoriteKey(selectedScenic))}
           onToggleFavorite={handleScenicSpotFavorite}
           mooniFab
@@ -3923,7 +3925,6 @@ export default function FestivalDetailSheet({
           }}
           detail={courseDetail}
           detailLoading={courseDetailLoading}
-          overlayZClass="z-[55]"
           onClose={() => {
             setSelectedCourse(null);
             setCourseDetail(null);

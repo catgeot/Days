@@ -99,7 +99,12 @@ import { usePrunedImageGallery } from './themeSpotGalleryImages.js';
 import { localizedHubLabel, localizedScenicMajorRegion } from '../../i18n/koreaRegionLabels';
 import { localizedPackageCtaLabel } from '../../i18n/exploreUi';
 import { fetchNearbyFestivals } from '../../utils/fetchNearbyFestivals';
+import {
+  fetchNearbyTourCourses,
+} from '../../utils/fetchNearbyTourCourses';
+import { fetchTourApiCourseDetail } from '../../utils/fetchTourApiCourses';
 import { detectSidoCode } from '../Korea/festivalRegionTags';
+import CourseDetailModal from './CourseDetailModal';
 import ScenicStayStrip from './ScenicStayStrip';
 import ScenicTnaStrip from './ScenicTnaStrip';
 import ScenicNearbyCardGrid from './ScenicNearbyCardGrid.jsx';
@@ -890,6 +895,11 @@ export default function ThemeSpotDetailModal({
   const [nearbyThumbById, setNearbyThumbById] = useState(() => new Map());
   const [nearbyFestivals, setNearbyFestivals] = useState([]);
   const [nearbyFestivalsStatus, setNearbyFestivalsStatus] = useState('idle');
+  const [nearbyCourses, setNearbyCourses] = useState([]);
+  const [nearbyCoursesStatus, setNearbyCoursesStatus] = useState('idle');
+  const [selectedCourse, setSelectedCourse] = useState(null);
+  const [courseDetail, setCourseDetail] = useState(null);
+  const [courseDetailLoading, setCourseDetailLoading] = useState(false);
   const [selectedFood, setSelectedFood] = useState(null);
   const [selectedLeports, setSelectedLeports] = useState(null);
   const [selectedCulture, setSelectedCulture] = useState(null);
@@ -1163,6 +1173,12 @@ export default function ThemeSpotDetailModal({
           setVideosOpen(false);
           return;
         }
+        if (selectedCourse) {
+          setSelectedCourse(null);
+          setCourseDetail(null);
+          setCourseDetailLoading(false);
+          return;
+        }
         if (
           selectedFood ||
           selectedLeports ||
@@ -1189,6 +1205,7 @@ export default function ThemeSpotDetailModal({
     selectedLeports,
     selectedCulture,
     selectedAttraction,
+    selectedCourse,
   ]);
 
   useEffect(() => {
@@ -1423,6 +1440,9 @@ export default function ThemeSpotDetailModal({
     setSelectedCulture(null);
     setSelectedAttraction(null);
     setSelectedSameHub(null);
+    setSelectedCourse(null);
+    setCourseDetail(null);
+    setCourseDetailLoading(false);
     if (!spot) {
       setNearbyFood([]);
       setNearbyFoodStatus('idle');
@@ -1434,6 +1454,8 @@ export default function ThemeSpotDetailModal({
       setNearbyAttractionsStatus('idle');
       setNearbyFestivals([]);
       setNearbyFestivalsStatus('idle');
+      setNearbyCourses([]);
+      setNearbyCoursesStatus('idle');
       return undefined;
     }
 
@@ -1619,6 +1641,71 @@ export default function ThemeSpotDetailModal({
     locale,
   ]);
 
+  useEffect(() => {
+    if (!spot) {
+      setNearbyCourses([]);
+      setNearbyCoursesStatus('idle');
+      return undefined;
+    }
+
+    const fromDetailLat = Number(detail?.mapy);
+    const fromDetailLng = Number(detail?.mapx);
+    const lat = Number(spot.lat);
+    const lng = Number(spot.lng);
+    const useLat = Number.isFinite(lat) ? lat : fromDetailLat;
+    const useLng = Number.isFinite(lng) ? lng : fromDetailLng;
+    const areaCode = String(
+      spot.areaCode || resolveThemeSpotAreaCode(spot) || detectSidoCode(spot.addr1) || '',
+    ).trim();
+    const hasCoords =
+      Number.isFinite(useLat) &&
+      Number.isFinite(useLng) &&
+      !(useLat === 0 && useLng === 0);
+
+    if (!areaCode && !hasCoords) {
+      setNearbyCourses([]);
+      setNearbyCoursesStatus(detailLoading ? 'idle' : 'nocoords');
+      return undefined;
+    }
+
+    let cancelled = false;
+    setNearbyCoursesStatus('loading');
+    fetchNearbyTourCourses({
+      lat: hasCoords ? useLat : undefined,
+      lng: hasCoords ? useLng : undefined,
+      areaCode: areaCode || undefined,
+      radiusKm: 80,
+      limit: 6,
+    })
+      .then((res) => {
+        if (cancelled) return;
+        const list = Array.isArray(res?.spots) ? res.spots : [];
+        setNearbyCourses(list);
+        if (res?.error) setNearbyCoursesStatus('error');
+        else if (!list.length) setNearbyCoursesStatus('empty');
+        else setNearbyCoursesStatus('ok');
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setNearbyCourses([]);
+        setNearbyCoursesStatus('error');
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [
+    spot?.id,
+    spot?.lat,
+    spot?.lng,
+    spot?.areaCode,
+    spot?.addr1,
+    spot?.hubId,
+    detail?.mapx,
+    detail?.mapy,
+    detailLoading,
+  ]);
+
   const overview = useMemo(
     () => stripHtml(detail?.overview || ''),
     [detail?.overview],
@@ -1769,6 +1856,41 @@ export default function ThemeSpotDetailModal({
   const placeCardHref =
     showThemeSpotPlaceCardLink(placeCardSlug) ? `/place/${placeCardSlug}` : '';
 
+  const spotAreaCode = useMemo(
+    () =>
+      String(
+        spot?.areaCode ||
+          resolveThemeSpotAreaCode(spot) ||
+          detectSidoCode(spot?.addr1 || detail?.addr1) ||
+          '',
+      ).trim(),
+    [spot, detail?.addr1],
+  );
+
+  const COURSES_PATH = '/korea/theme/courses';
+  const coursesPageHref = useMemo(() => {
+    if (!spotAreaCode) return COURSES_PATH;
+    return `${COURSES_PATH}?area=${encodeURIComponent(spotAreaCode)}`;
+  }, [spotAreaCode]);
+
+  const openCoursesPage = () => {
+    const backEntry = themeNavBackEntryForSpot(spot, returnTo);
+    if (backEntry) pushThemeNavBack(backEntry);
+    onClose?.();
+    navigate(coursesPageHref, { state: backEntry ? { themeBack: backEntry } : undefined });
+  };
+
+  const openCourseModal = async (row) => {
+    const contentId = String(row?.contentId || '').trim();
+    if (!contentId) return;
+    setSelectedCourse(row);
+    setCourseDetail(null);
+    setCourseDetailLoading(true);
+    const loaded = await fetchTourApiCourseDetail({ contentId });
+    setCourseDetail(loaded || { empty: true });
+    setCourseDetailLoading(false);
+  };
+
   const openFestival = (fest) => {
     const festId = String(fest?.contentId || '').trim();
     if (!festId) return;
@@ -1828,7 +1950,8 @@ export default function ThemeSpotDetailModal({
     !selectedLeports &&
     !selectedCulture &&
     !selectedAttraction &&
-    !selectedSameHub;
+    !selectedSameHub &&
+    !selectedCourse;
 
   return (
     <>
@@ -1857,7 +1980,7 @@ export default function ThemeSpotDetailModal({
       />
       <div
         ref={dialogRef}
-        inert={lightboxOpen ? true : undefined}
+        inert={lightboxOpen || selectedCourse ? true : undefined}
         className="relative z-10 pointer-events-auto flex h-full w-full max-w-lg flex-col overflow-hidden rounded-2xl border border-stone-200 bg-white text-stone-900 shadow-2xl md:h-auto md:max-h-[90dvh] md:max-w-2xl md:rounded-3xl lg:max-w-6xl xl:max-w-7xl"
         role="dialog"
         aria-modal={lightboxOpen ? undefined : 'true'}
@@ -1939,6 +2062,7 @@ export default function ThemeSpotDetailModal({
 
         <div
           ref={scrollRef}
+          data-theme-spot-modal-scroll=""
           className={`min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain custom-scrollbar ${
             mooniFab
               ? 'max-md:pb-[max(7.25rem,calc(env(safe-area-inset-bottom)+5.75rem))]'
@@ -2475,6 +2599,49 @@ export default function ThemeSpotDetailModal({
               </ScenicNearbyListSection>
             ) : null}
 
+            <ScenicNearbyListSection
+              variant="course"
+              status={nearbyCoursesStatus}
+              count={nearbyCourses.length}
+            >
+                <div className="space-y-2" data-theme-spot-section="nearCourses">
+                  {nearbyCoursesStatus === 'error' && nearbyCourses.length === 0 ? (
+                    <p className="text-xs text-stone-500">
+                      {t('korea.festival.detail.nearCoursesError')}
+                    </p>
+                  ) : null}
+                  {nearbyCoursesStatus === 'empty' ? (
+                    <p className="text-xs text-stone-500">
+                      {t('korea.festival.detail.nearCoursesEmpty')}
+                    </p>
+                  ) : null}
+                  {nearbyCourses.length > 0 ? (
+                    <ScenicNearbyCardGrid
+                      variant="attraction"
+                      ariaLabel={t('korea.festival.detail.nearCoursesAria')}
+                      items={nearbyCourses.map((row) =>
+                        nearbyListCardItem(row, {
+                          title: row.title || row.name,
+                          meta: [foodPlaceLabel(row), formatDistKm(row.distKm)]
+                            .filter(Boolean)
+                            .join(' · '),
+                          onActivate: () => openCourseModal(row),
+                          textProps: koText,
+                        }),
+                      )}
+                    />
+                  ) : null}
+                  <button
+                    type="button"
+                    onClick={openCoursesPage}
+                    className="inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-amber-400/90 bg-amber-50 px-3 py-2.5 text-sm font-bold text-amber-950 hover:bg-amber-100"
+                  >
+                    {t('korea.festival.detail.moreCourses')}
+                    <ExternalLink size={14} aria-hidden="true" />
+                  </button>
+                </div>
+            </ScenicNearbyListSection>
+
             <ThemeSpotCrossRail
               spot={spot}
               detail={detail}
@@ -2524,7 +2691,8 @@ export default function ThemeSpotDetailModal({
           !selectedLeports &&
           !selectedCulture &&
           !selectedAttraction &&
-          !selectedSameHub
+          !selectedSameHub &&
+          !selectedCourse
             ? 'pointer-events-auto translate-y-0 opacity-100'
             : 'pointer-events-none translate-y-3 opacity-0'
         }`}
@@ -2541,7 +2709,8 @@ export default function ThemeSpotDetailModal({
       !selectedLeports &&
       !selectedCulture &&
       !selectedAttraction &&
-      !selectedSameHub ? (
+      !selectedSameHub &&
+      !selectedCourse ? (
         <button
           type="button"
           onClick={(e) => {
@@ -2608,6 +2777,23 @@ export default function ThemeSpotDetailModal({
           overlayZClass={nestedChildZ}
           mooniFab={mooniFab}
           onClose={() => setSelectedSameHub(null)}
+        />
+      ) : null}
+
+      {selectedCourse ? (
+        <CourseDetailModal
+          course={{
+            ...selectedCourse,
+            title: selectedCourse.title || selectedCourse.name,
+            areaCode: selectedCourse.areaCode || spotAreaCode,
+          }}
+          detail={courseDetail}
+          detailLoading={courseDetailLoading}
+          onClose={() => {
+            setSelectedCourse(null);
+            setCourseDetail(null);
+            setCourseDetailLoading(false);
+          }}
         />
       ) : null}
 

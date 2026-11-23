@@ -196,10 +196,14 @@ test('trust bar hides under modal overlay lock', () => {
     readFileSync(join(root, 'src/shared/hooks/useTrustBarOverlayHidden.js'), 'utf8'),
     /isTrustBarOverlayLocked\(\)/,
   );
-  assert.match(
-    readFileSync(join(root, 'src/pages/KoreaTheme/CourseDetailModal.jsx'), 'utf8'),
-    /useTrustBarOverlayLockEffect/,
+  const courseModalSrc = readFileSync(
+    join(root, 'src/pages/KoreaTheme/CourseDetailModal.jsx'),
+    'utf8',
   );
+  assert.match(courseModalSrc, /useTrustBarOverlayLockEffect/);
+  assert.match(courseModalSrc, /useGateoBodyScrollLockEffect/);
+  assert.match(courseModalSrc, /createPortal/);
+  assert.match(courseModalSrc, /data-korea-course-modal/);
   const sheet = readFileSync(join(root, 'src/pages/Korea/FestivalDetailSheet.jsx'), 'utf8');
   assert.match(sheet, /useTrustBarOverlayLockEffect\(true\)/);
   assert.match(sheet, /data-festival-photo-strip=/);
