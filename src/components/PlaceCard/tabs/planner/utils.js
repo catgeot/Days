@@ -22,6 +22,10 @@ import {
     isKlookDiningPriorityLocation,
     isKlookDiningUnsupportedLocation
 } from './locationRules';
+import {
+    buildPlannerMrtStayQuery,
+    resolvePlannerStayDisplayName,
+} from '../../../../utils/placeStaySearch.js';
 
 export { isMapPoiGygOnlyLocation } from './locationRules';
 
@@ -87,7 +91,11 @@ export const getAdviceText = (data) => {
 
 // 툴킷 카드 제휴 링크 생성 로직
 export const getMultiLinks = ({ type, data, location, essentialGuide }) => {
-    const searchQuery = location?.name || location?.country || '';
+    const searchQuery =
+        resolvePlannerStayDisplayName(location, i18n.language) ||
+        location?.name ||
+        location?.country ||
+        '';
     const encodedQuery = encodeURIComponent(searchQuery);
     const searchTarget = ((location?.name || '') + ' ' + (location?.country || '')).toLowerCase();
 
@@ -130,7 +138,10 @@ export const getMultiLinks = ({ type, data, location, essentialGuide }) => {
 
                     links.push({
                         isMrt: true,
-                        mrtQuery: `${finalSearchTerm} ${mrtQuerySuffix('stay')}`,
+                        mrtQuery: buildPlannerMrtStayQuery(
+                            { ...location, name: finalSearchTerm, name_ko: finalSearchTerm },
+                            mrtQuerySuffix('stay'),
+                        ),
                         text: linkLabel('place.planner.links.regionStay', { region: finalSearchTerm }),
                         colorClass: 'bg-purple-50 hover:bg-purple-100 text-purple-700 border-purple-200'
                     });
@@ -148,8 +159,8 @@ export const getMultiLinks = ({ type, data, location, essentialGuide }) => {
                 } else {
                     links.push({
                         isMrt: true,
-                        mrtQuery: `${searchQuery} ${mrtQuerySuffix('stay')}`,
-                        text: linkLabel('place.planner.links.staySearch', { name: plannerPlaceName(location) }),
+                        mrtQuery: buildPlannerMrtStayQuery(location, mrtQuerySuffix('stay')),
+                        text: linkLabel('place.planner.links.staySearch', { name: searchQuery }),
                         colorClass: 'bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border-indigo-200'
                     });
                 }
@@ -158,7 +169,7 @@ export const getMultiLinks = ({ type, data, location, essentialGuide }) => {
             // 3. 한인민박 검색 버튼 (마이리얼트립)
             links.push({
                 isMrt: true,
-                mrtQuery: `${searchQuery} ${mrtQuerySuffix('guesthouse')}`,
+                mrtQuery: buildPlannerMrtStayQuery(location, mrtQuerySuffix('guesthouse')),
                 text: linkLabel('place.planner.links.guesthouse'),
                 colorClass: 'bg-rose-50 hover:bg-rose-100 text-rose-700 border-rose-200'
             });
