@@ -39,7 +39,6 @@ async function collectChromeBoxes(page, locale) {
     back: page.getByRole('button', { name: /뒤로|Back/i }).first(),
     home: page.getByRole('button', { name: /홈|Home/i }).first(),
     bookmark,
-    locale: page.getByTestId('place-header-locale-toggle').locator('button').first(),
     mooni: page.locator('.place-header-mooni-btn').first(),
     planner: page.getByRole('button', { name: /플래너|Planner|갤러리|Gallery/i }).first(),
   };
@@ -76,15 +75,12 @@ for (const place of PLACES) {
       }) => {
         await page.setViewportSize(viewport);
         await page.goto(`${place.path}?lang=${lang}`, { waitUntil: 'domcontentloaded' });
-        const toggle = page.getByTestId('place-header-locale-toggle').locator('button').first();
-        await expect(toggle).toBeVisible({ timeout: 60_000 });
+        await expect(page.getByTestId('place-header-locale-toggle')).toHaveCount(0);
         if (lang === 'ko') {
           await expect(page.getByRole('button', { name: place.koTitle }).first()).toBeVisible({
             timeout: 60_000,
           });
-          await expect(toggle).toHaveText(/EN|영문/i);
         } else {
-          await expect(toggle).toHaveText(/한|KO/i);
           const titlePattern = place.path.includes('paris') ? place.enTitle : place.koTitle;
           await expect(page.getByRole('button', { name: titlePattern }).first()).toBeVisible({
             timeout: 60_000,

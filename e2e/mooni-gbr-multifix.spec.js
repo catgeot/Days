@@ -7,6 +7,7 @@ import { join } from 'node:path';
 import { test, expect } from './fixtures.js';
 import { buildGeminiProxyMockBody } from './gemini-proxy-mock-response.js';
 import { dismissMooniHintIfPresent } from './helpers.js';
+import { installExploreTourapiMock } from './explore-tourapi-mock.js';
 
 const ARTIFACT = '/opt/cursor/artifacts/mooni-gbr-multifix';
 const GBR_SLUG = 'great-barrier-reef';
@@ -205,5 +206,33 @@ test.describe('MOONi GBR multifix', () => {
 
     expect(scrollTop).toBeGreaterThanOrEqual(savedScroll - 8);
     expect(mooniChatCalls, 'planner return must reuse chat without new AI').toBe(1);
+  });
+
+  test('place header — no header EN; surface locale switch (Lofoten)', async ({ page, context }) => {
+    await installExploreTourapiMock(context);
+    await page.goto('/place/lofoten/gallery?lang=ko', {
+      waitUntil: 'domcontentloaded',
+      timeout: 120_000,
+    });
+    await dismissMooniHintIfPresent(page);
+    await expect(page.getByTestId('place-header-locale-toggle')).toHaveCount(0);
+
+    await clipShotBoth(page, '06-lofoten-header-after');
+
+    const toggle = page.locator('[data-testid="place-surface-locale-toggle"]:visible button').first();
+    await expect(toggle).toBeVisible({ timeout: 60_000 });
+    await expect(page.getByTestId('place-header-chrome-actions')).toBeVisible();
+    const headerBox = await page.getByTestId('place-header-chrome-actions').boundingBox();
+    const toggleBox = await toggle.boundingBox();
+    expect(headerBox && toggleBox).toBeTruthy();
+    const toggleBelowHeader = toggleBox.y > headerBox.y + headerBox.height - 8;
+    expect(toggleBelowHeader, 'locale control must sit outside header action row').toBe(true);
+
+    await clipShotBoth(page, '07-surface-locale-ko');
+
+    await toggle.click();
+    await expect(page).toHaveURL(/\?lang=en/, { timeout: 30_000 });
+    await expect(page.getByRole('button', { name: /Lofoten/i }).first()).toBeVisible({ timeout: 60_000 });
+    await clipShotBoth(page, '07-surface-locale-en');
   });
 });
