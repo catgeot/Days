@@ -93,7 +93,7 @@ export const MONTHLY_PICKS = {
     },
     {
       slug: 'melbourne',
-      reason: '11월 말 정원·해변',
+      reason: '11월 말 멜버른·해변',
       reason_en: 'Late Nov·gardens',
       sources: [
         {
