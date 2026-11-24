@@ -136,6 +136,7 @@ const HomeWatchCard = ({
   }, [shown, slots.length]);
 
   useEffect(() => {
+    if (!enabled) return undefined;
     const onDown = (event) => {
       const card = cardRef.current;
       if (!card || card.contains(event.target)) return;
@@ -150,7 +151,7 @@ const HomeWatchCard = ({
       window.removeEventListener('pointerup', onUp, true);
       window.removeEventListener('pointercancel', onUp, true);
     };
-  }, []);
+  }, [enabled]);
 
   if (!shown) return null;
 
