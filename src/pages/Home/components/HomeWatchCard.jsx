@@ -34,18 +34,24 @@ function readReviewRows() {
   }
 }
 
-function useSiteNoticeOpen() {
-  const [open, setOpen] = useState(false);
+function useHomeWatchChromeFlags() {
+  const [flags, setFlags] = useState({ siteNotice: false, mooniChat: false });
   useEffect(() => {
     const sync = () => {
-      setOpen(Boolean(document.querySelector('[data-site-update-notice]')));
+      const next = {
+        siteNotice: Boolean(document.querySelector('[data-site-update-notice]')),
+        mooniChat: Boolean(document.querySelector('[data-testid="mooni-chat-close"]')),
+      };
+      setFlags((prev) => (
+        prev.siteNotice === next.siteNotice && prev.mooniChat === next.mooniChat ? prev : next
+      ));
     };
     sync();
     const observer = new MutationObserver(sync);
-    observer.observe(document.body, { childList: true, subtree: true, attributes: true });
+    observer.observe(document.body, { childList: true, subtree: true });
     return () => observer.disconnect();
   }, []);
-  return open;
+  return flags;
 }
 
 function useHomeWatchSlotCount() {
@@ -84,14 +90,13 @@ function WatchSlotLink({ slot, className, ariaLabel, onActivate, children }) {
 }
 
 const HomeWatchCard = ({
-  isChatOpen = false,
   isPlaceCardVisible = false,
   isTourCinema = false,
   isFlightCinema = false,
 }) => {
   const { t } = useTranslation();
   const { pathname } = useLocation();
-  const siteNotice = useSiteNoticeOpen();
+  const { siteNotice, mooniChat } = useHomeWatchChromeFlags();
   const slotCount = useHomeWatchSlotCount();
   const cardRef = useRef(null);
   const viewedRef = useRef(false);
@@ -118,7 +123,7 @@ const HomeWatchCard = ({
   const hidden = shouldHideHomeWatchCard({
     placeCard: isPlaceCardVisible || pathname.startsWith('/place'),
     explore: pathname === '/explore' || pathname.startsWith('/explore/'),
-    mooniChat: isChatOpen,
+    mooniChat,
     cinema: isTourCinema || isFlightCinema,
     siteNotice,
   });

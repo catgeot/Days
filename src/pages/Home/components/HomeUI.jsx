@@ -132,7 +132,6 @@ const HomeUI = React.memo(({
   isTourCinema = false,
   isFlightCinema = false,
   isPlaceCardVisible = false,
-  isChatOpen = false,
   homeChromeEpoch = 0,
   tourLocation = null,
   tourPivoted = false,
@@ -363,7 +362,6 @@ const HomeUI = React.memo(({
   return (
     <>
       <HomeWatchCard
-        isChatOpen={isChatOpen}
         isPlaceCardVisible={isPlaceCardVisible}
         isTourCinema={isTourCinema}
         isFlightCinema={isFlightCinema}
