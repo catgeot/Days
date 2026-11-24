@@ -19,7 +19,7 @@ async function saveShot(page, name, width) {
   return path;
 }
 
-async function installGemini(context, calls, { status = 200 } = {}) {
+async function installGemini(context, calls, { status = 200, mockText = 'E2E-MOCK-9f3a 춘천에서 축제장까지' } = {}) {
   await context.route(/\/functions\/v1\/gemini-proxy/i, async (route) => {
     const request = route.request();
     if (request.method() === 'OPTIONS') {
@@ -56,13 +56,19 @@ async function installGemini(context, calls, { status = 200 } = {}) {
       status: 200,
       contentType: 'application/json',
       headers: { 'access-control-allow-origin': '*' },
-      body: JSON.stringify(buildGeminiProxyMockBody('E2E-MOCK-9f3a 춘천에서 축제장까지', { modelUsed: 'mock-origin' })),
+      body: JSON.stringify(buildGeminiProxyMockBody(mockText, { modelUsed: 'mock-origin' })),
     });
   });
 }
 
-async function openOriginDock(page, context, { lang = 'ko', calls = null, geminiStatus = 200 } = {}) {
-  if (calls) await installGemini(context, calls, { status: geminiStatus });
+async function openOriginDock(page, context, {
+  lang = 'ko',
+  calls = null,
+  geminiStatus = 200,
+  festivalId = FESTIVAL_ID,
+  mockText,
+} = {}) {
+  if (calls) await installGemini(context, calls, { status: geminiStatus, mockText });
   await enableMooniE2eLoggedIn(page);
   await page.addInitScript((language) => {
     try {
@@ -73,7 +79,7 @@ async function openOriginDock(page, context, { lang = 'ko', calls = null, gemini
     }
   }, lang);
   if (lang === 'en') {
-    await page.goto(`/korea/?festival=${FESTIVAL_ID}&lang=en`, {
+    await page.goto(`/korea/?festival=${festivalId}&lang=en`, {
       waitUntil: 'domcontentloaded',
       timeout: 120_000,
     });
@@ -82,7 +88,7 @@ async function openOriginDock(page, context, { lang = 'ko', calls = null, gemini
     await mooniBtn.click({ force: true, timeout: 15_000 });
     await expect(page.getByTestId('mooni-festival-opening')).toBeVisible({ timeout: 120_000 });
   } else {
-    await openFestivalMooni(page, FESTIVAL_ID);
+    await openFestivalMooni(page, festivalId);
   }
   const access = lang === 'en' ? /Getting there/i : /가는 법/;
   await page.getByRole('button', { name: access }).first().click({ force: true });
@@ -347,7 +353,7 @@ test('Khao Lak my-location stays in Thailand and flies HKT, not Seogwipo', async
   await saveOverseasShot(page, `khao-lak-${width}.png`, width);
 });
 
-test('Bangkok my-location uses the city and Don Mueang, not a Korean city', async ({ page, context }, testInfo) => {
+test('Bangkok my-location uses Suvarnabhumi, not Don Mueang or a Korean city', async ({ page, context }, testInfo) => {
   test.skip(testInfo.project.name.includes('webkit'), 'captures are chromium 390 and 1280');
   await openLocatedOrigin(page, context, { latitude: 13.7563, longitude: 100.5018 });
   const input = page.getByTestId('mooni-origin-input');
@@ -356,7 +362,8 @@ test('Bangkok my-location uses the city and Don Mueang, not a Korean city', asyn
   await input.press('Enter');
   const bubble = page.getByText(/방콕 · 태국에서/).first();
   await expect(bubble).toBeVisible({ timeout: 30_000 });
-  await expect(bubble).toContainText('DMK');
+  await expect(bubble).toContainText('BKK');
+  await expect(bubble).not.toContainText('DMK');
   await expect(bubble).not.toContainText('서귀포');
   const width = testInfo.project.name.includes('1280') ? 1280 : 390;
   await saveOverseasShot(page, `bangkok-${width}.png`, width);
@@ -372,4 +379,36 @@ test('domestic Seoul my-location still names Seoul and stays on the ground ask',
   await expect(page.getByText(/서울에서 이 축제장까지 대중교통과 차로/).first()).toBeVisible({ timeout: 30_000 });
   expect(calls.filter((task) => task === 'mooni_chat')).toEqual(['mooni_chat']);
   await saveOverseasShot(page, 'seoul-390.png', 390);
+});
+
+test('Haeundae light festival from Khao Lak flies HKT to PUS', async ({ page, context }, testInfo) => {
+  test.skip(testInfo.project.name.includes('webkit'), 'captures are chromium 390 and 1280');
+  const calls = [];
+  await installGemini(context, calls, { mockText: 'E2E-MOCK-9f3a 해운대에서 축제장까지' });
+  await enableMooniE2eLoggedIn(page);
+  await page.addInitScript(() => {
+    try {
+      localStorage.removeItem('gateo.domesticOriginCityId');
+    } catch {
+      /* ignore */
+    }
+  });
+  await openFestivalMooni(page, '2048902');
+  await expect(page.getByText('해운대 빛축제').first()).toBeVisible({ timeout: 30_000 });
+  await page.getByRole('button', { name: /가는 법/ }).first().click({ force: true });
+  await expect(page.getByTestId('mooni-festival-access-dock')).toBeVisible({ timeout: 20_000 });
+  await context.grantPermissions(['geolocation']);
+  await context.setGeolocation({ latitude: 8.6374, longitude: 98.2475 });
+  await mockReverseGeocode(context);
+  await page.getByTestId('mooni-origin-locate').click();
+  const input = page.getByTestId('mooni-origin-input');
+  await expect(input).toHaveValue('카오락 · 태국 (내 위치)');
+  await input.press('Enter');
+  const bubble = page.getByText(/카오락 · 태국에서/).first();
+  await expect(bubble).toBeVisible({ timeout: 30_000 });
+  await expect(bubble).toContainText('HKT');
+  await expect(bubble).toContainText('PUS');
+  await expect(bubble).not.toContainText('서귀포');
+  const width = testInfo.project.name.includes('1280') ? 1280 : 390;
+  await saveOverseasShot(page, `haeundae-khao-lak-${width}.png`, width);
 });

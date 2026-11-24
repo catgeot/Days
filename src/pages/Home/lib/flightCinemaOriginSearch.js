@@ -4,7 +4,7 @@ import { findNearestAirportInIndex } from '../../../utils/airportsIndexLookup.js
 import { matchDepartureInText } from '../../../utils/resolveDepartureIataFromChat.js';
 import { KOREA_AIRPORT_IATAS } from '../../../utils/koreaAirportIatas.js';
 import { getFlightCinemaOriginOption, getFlightOriginDisplayLabel } from './flightCinemaOriginOptions.js';
-import { promoteFlightOriginGateway } from './flightOriginMetroGateways.js';
+import { preferPrimaryMetroHub, promoteFlightOriginGateway } from './flightOriginMetroGateways.js';
 import { searchKoreaCityInternationalAirportOrigins } from './koreaCityInternationalAirport.js';
 import { coordsInKorea } from './visitedPlaceSearch.js';
 import { geocodeReversePlaceFields } from './mapboxGeocodeSuggestions.js';
@@ -170,7 +170,8 @@ export function resolveFlightOriginFromCoords(latitude, longitude, options = {})
   const hub = findNearestRentalHub(latitude, longitude, GEO_HUB_MAX_KM, excludeIatas);
   if (!hub) return null;
 
-  const promoted = promoteFlightOriginGateway(hub.iata, latitude, longitude);
+  const promoted = promoteFlightOriginGateway(hub.iata, latitude, longitude)
+    || preferPrimaryMetroHub(hub.iata, latitude, longitude);
   if (promoted && excludeIatas?.has(promoted)) {
     return {
       iata: hub.iata,

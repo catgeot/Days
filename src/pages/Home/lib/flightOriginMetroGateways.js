@@ -9,6 +9,15 @@ export const FLIGHT_ORIGIN_METRO_GATEWAYS = [
 ];
 
 /**
+ * 거리상 feeder가 더 가까워도, 같은 대도시권의 주 국제 허브가 반경 안이면 그 허브를 쓴다.
+ * 한국행이 몰린 관문만 둔다. 권역 밖(카오락→HKT)은 이 표에 없다.
+ */
+export const PRIMARY_METRO_INTERNATIONAL_HUBS = [
+  { primaryIata: 'BKK', feederIatas: ['DMK'] },
+  { primaryIata: 'NRT', feederIatas: ['HND'] },
+];
+
+/**
  * 동일 대도시권 coterminal (ICN↔GMP, PVG↔SHA) — 시네마 OD 오탐 억제용.
  * @param {string} aIata
  * @param {string} bIata
@@ -82,6 +91,31 @@ export function promoteFlightOriginGateway(feederIata, lat, lng, hubs = RENTAL_A
 
     if (isWithinHubRadius(lat, lng, feederHub) && isWithinHubRadius(lat, lng, gatewayHub)) {
       return group.gatewayIata;
+    }
+  }
+
+  return null;
+}
+
+/**
+ * Nearest hub is a metro feeder and the primary international hub's radius also covers the point.
+ * @param {string} feederIata
+ * @param {number} lat
+ * @param {number} lng
+ * @param {import('../../../utils/rentalAirportHubs.js').RentalAirportHub[]} [hubs]
+ * @returns {string | null}
+ */
+export function preferPrimaryMetroHub(feederIata, lat, lng, hubs = RENTAL_AIRPORT_HUBS) {
+  const code = String(feederIata ?? '').trim().toUpperCase();
+  if (code.length !== 3 || !Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+
+  for (const group of PRIMARY_METRO_INTERNATIONAL_HUBS) {
+    if (!group.feederIatas.includes(code)) continue;
+    const feederHub = findHubByIata(code, hubs);
+    const primaryHub = findHubByIata(group.primaryIata, hubs);
+    if (!feederHub || !primaryHub) continue;
+    if (isWithinHubRadius(lat, lng, feederHub) && isWithinHubRadius(lat, lng, primaryHub)) {
+      return group.primaryIata;
     }
   }
 

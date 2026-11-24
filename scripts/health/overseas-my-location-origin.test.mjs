@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { KOREA_AIRPORT_IATAS } from '../../src/utils/koreaAirportIatas.js';
 import { resolveFlightOriginFromCoords } from '../../src/pages/Home/lib/flightCinemaOriginSearch.js';
+import { preferPrimaryMetroHub } from '../../src/pages/Home/lib/flightOriginMetroGateways.js';
 import {
   arrivalAirportForAccessDestination,
   nearestKoreaOriginCity,
@@ -34,7 +35,7 @@ test('overseas coordinates are not snapped to a Korean origin city', () => {
   assert.equal(nearestKoreaOriginCity(HAEUNDAE.lat, HAEUNDAE.lng)?.id, 'busan');
 });
 
-test('Khao Lak and Bangkok use the nearest international airport, not a Korean one', async () => {
+test('Khao Lak stays on HKT and Bangkok uses Suvarnabhumi, not a Korean airport', async () => {
   let geocodeCalls = 0;
   const khao = await resolveMyLocationOrigin(KHAO_LAK.lat, KHAO_LAK.lng, {
     reverseGeocode: async () => {
@@ -55,7 +56,7 @@ test('Khao Lak and Bangkok use the nearest international airport, not a Korean o
   assert.equal(bangkok.ok, true);
   assert.equal(bangkok.city, '방콕');
   assert.equal(bangkok.country, '태국');
-  assert.equal(bangkok.originIata, 'DMK');
+  assert.equal(bangkok.originIata, 'BKK');
   assert.equal(KOREA_AIRPORT_IATAS.has(bangkok.originIata), false);
   assert.equal(bangkok.originIata, resolveFlightOriginFromCoords(BANGKOK.lat, BANGKOK.lng, {
     excludeIatas: KOREA_AIRPORT_IATAS,
@@ -70,6 +71,20 @@ test('Khao Lak and Bangkok use the nearest international airport, not a Korean o
   assert.equal(domestic.overseas, false);
   assert.equal(domestic.city.id, 'seoul');
   assert.equal(geocodeCalls, 1);
+});
+
+test('metro priority picks the primary international hub and leaves a lone feeder', () => {
+  const tokyo = { lat: 35.6812, lng: 139.7671 };
+  assert.equal(preferPrimaryMetroHub('HND', tokyo.lat, tokyo.lng), 'NRT');
+  assert.equal(resolveFlightOriginFromCoords(tokyo.lat, tokyo.lng)?.iata, 'NRT');
+  assert.equal(preferPrimaryMetroHub('DMK', BANGKOK.lat, BANGKOK.lng), 'BKK');
+  assert.equal(preferPrimaryMetroHub('HKT', KHAO_LAK.lat, KHAO_LAK.lng), null);
+  const northOfDonMueang = { lat: 15.67, lng: 100.6067 };
+  assert.equal(preferPrimaryMetroHub('DMK', northOfDonMueang.lat, northOfDonMueang.lng), null);
+  assert.equal(
+    resolveFlightOriginFromCoords(northOfDonMueang.lat, northOfDonMueang.lng)?.iata,
+    'DMK',
+  );
 });
 
 test('Haeundae lands at PUS and Seoul at ICN; domestic city match is unchanged', () => {
@@ -105,8 +120,8 @@ test('overseas ask names the real city and the airport hop, and round-trips', ()
     kind: 'place',
     city: 'Bangkok',
     country: 'Thailand',
-    originLabel: 'Don mueang',
-    originIata: 'DMK',
+    originLabel: 'Suvarnabhumi',
+    originIata: 'BKK',
     arrivalLabel: 'Busan',
     arrivalIata: 'PUS',
   });
@@ -114,6 +129,7 @@ test('overseas ask names the real city and the airport hop, and round-trips', ()
   assert.equal(placeParsed.city, 'Bangkok');
   assert.equal(placeParsed.country, 'Thailand');
   assert.equal(placeParsed.kind, 'place');
+  assert.equal(placeParsed.originIata, 'BKK');
   assert.match(overseasMyLocationModelHint(parsed, 'ko'), /한국 도시로 출발지를 바꾸지 마세요/);
   assert.match(overseasMyLocationModelHint(parsed, 'ko'), /HKT에서 PUS로 비행/);
 });
