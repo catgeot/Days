@@ -5,6 +5,7 @@ import { rememberLogbookDetailReturn } from '../../../shared/navigation/logbookD
 import { publicLogbookDetailPath } from '../../../utils/logbookEditorial';
 import { resolveLogbookDek } from '../../../utils/logbookDek';
 import { logbookHeroImageUrl } from '../../../utils/logbookImageSrc';
+import LogbookResolvedImage from '../../LogbookResolvedImage.jsx';
 import { travelogueRowKey } from '../../../utils/placeEditorialTravelogue';
 
 function TravelogueCoverFallback() {
@@ -35,7 +36,7 @@ function TravelogueCover({ report }) {
     <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-xl border border-indigo-400/20 bg-indigo-950/40">
       {showImage && ready ? null : <TravelogueCoverFallback />}
       {showImage ? (
-        <img
+        <LogbookResolvedImage
           src={thumb}
           alt=""
           ref={settle}

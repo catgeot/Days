@@ -24,6 +24,7 @@ import {
 } from '../../../shared/navigation/logbookDetailBack.js';
 import { isEditorialLogbook, publicLogbookDetailPath } from '../../../utils/logbookEditorial';
 import { logbookHeroImageUrl } from '../../../utils/logbookImageSrc';
+import LogbookResolvedImage from '../../LogbookResolvedImage.jsx';
 import { collectUniqueEditorialReviewImageCredits } from '../../../utils/editorialReviewImageCredit';
 import { EditorialStockPhotoCreditLine } from '../common/StockPhotoCreditLine';
 import { EditorialReviewPhotoNote } from '../common/EditorialReviewPhotoNote';
@@ -80,7 +81,7 @@ const RelatedBlogCardThumbnail = ({ src }) => {
 
   return (
     <div className="h-28 overflow-hidden bg-gray-100 relative">
-      <img
+      <LogbookResolvedImage
         src={src}
         alt=""
         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"

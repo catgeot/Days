@@ -89,6 +89,19 @@ function md5(text) {
   return le(a0) + le(b0) + le(c0) + le(d0);
 }
 
+/** Widths upload.wikimedia.org actually serves. Any other `Npx-` name returns HTTP 400. */
+export const COMMONS_THUMB_STEPS = [20, 40, 60, 120, 250, 330, 500, 960, 1280, 1920, 3840];
+
+/** Smallest allowed step that is at least `widthPx`. Null when the original file should be used. */
+export function snapCommonsThumbWidth(widthPx) {
+  const width = Math.round(Number(widthPx));
+  if (!Number.isFinite(width) || width < 1) return null;
+  for (const step of COMMONS_THUMB_STEPS) {
+    if (step >= width) return step;
+  }
+  return null;
+}
+
 function commonsFileNameFromSrc(src) {
   const raw = String(src || '').trim();
   if (!raw) return '';
@@ -114,18 +127,47 @@ function commonsFileNameFromSrc(src) {
   return name.replace(/ /g, '_');
 }
 
-/**
- * @param {unknown} src
- * @param {number} [widthPx]
- * @returns {string|null}
- */
+function commonsHashedFileUrl(name, { thumbWidth = null } = {}) {
+  const hash = md5(name);
+  const encoded = encodeURIComponent(name);
+  const prefix = `${hash[0]}/${hash.slice(0, 2)}/${encoded}`;
+  if (thumbWidth == null) {
+    return `https://upload.wikimedia.org/wikipedia/commons/${prefix}`;
+  }
+  return `https://upload.wikimedia.org/wikipedia/commons/thumb/${prefix}/${thumbWidth}px-${encoded}`;
+}
+
+/** Full original file for a Special:FilePath URL, or null when `src` is not one. */
+export function commonsOriginalFileUrl(src) {
+  const name = commonsFileNameFromSrc(src);
+  if (!name) return null;
+  return commonsHashedFileUrl(name);
+}
+
 export function commonsSpecialFileThumbUrl(src, widthPx = 960) {
   const name = commonsFileNameFromSrc(src);
   if (!name || !Number.isFinite(widthPx) || widthPx < 1) return null;
-  const hash = md5(name);
-  const encoded = encodeURIComponent(name);
-  const width = Math.round(widthPx);
-  return `https://upload.wikimedia.org/wikipedia/commons/thumb/${hash[0]}/${hash.slice(0, 2)}/${encoded}/${width}px-${encoded}`;
+  const snapped = snapCommonsThumbWidth(widthPx);
+  if (snapped == null) return commonsHashedFileUrl(name);
+  return commonsHashedFileUrl(name, { thumbWidth: snapped });
+}
+
+/** Original file behind a `/thumb/.../Npx-` URL this module built. Null for other srcs. */
+export function commonsOriginalFromThumbUrl(src) {
+  const raw = String(src || '').trim();
+  if (!raw) return null;
+  let parsed;
+  try {
+    parsed = new URL(raw);
+  } catch {
+    return null;
+  }
+  if (parsed.hostname.toLowerCase() !== 'upload.wikimedia.org') return null;
+  const match = parsed.pathname.match(
+    /^\/wikipedia\/commons\/thumb\/([0-9a-f])\/([0-9a-f]{2})\/([^/]+)\/\d+px-\3$/i,
+  );
+  if (!match) return null;
+  return `https://upload.wikimedia.org/wikipedia/commons/${match[1]}/${match[2]}/${match[3]}`;
 }
 
 /** Dead Commons user page for the Tsushima cover. The file page is the live credit. */
