@@ -106,6 +106,7 @@ export function buildHomeWatchMonthlyDestinations(now = new Date(), rows = []) {
       name,
       imageUrl,
       reason: String(entry?.reason || '').trim(),
+      reasonEn: String(entry?.reason_en || '').trim(),
       href: slug ? `/place/${getPlaceUrlParam(spot) || slug}` : '',
       reviewer,
       reviewerHref: reviewer ? buildLogbookReviewerFilterHref(reviewer) : '',

@@ -38,7 +38,7 @@ export const GATEO_ENV_FLAG_NAMES = {
   EXPLORE_V2: 'VITE_GATEO_EXPLORE_V2',
   /** SSOT 실문장 desc도 place_chat_intro로 요약 칸 표시. 기본 off. */
   PLACE_INTRO_OVER_SSOT: 'VITE_GATEO_PLACE_INTRO_OVER_SSOT',
-  /** Globe home 「지금 볼 거리」 card. Default off. */
+  /** Globe home 「지금 볼 거리」 card. Default on; `"0"`/`false`/`off` disables. */
   HOME_WATCH_CARD: 'VITE_GATEO_HOME_WATCH_CARD',
   /** Last home-watch slot becomes a /reels poster. Default off. */
   SELF_REELS: 'VITE_GATEO_SELF_REELS',
@@ -199,15 +199,47 @@ export function isHomeWatchCardQueryEnabled(search) {
   }
 }
 
-/** Globe home watch card. Env default off. `?home_watch_card=1` opens a preview. */
-export function isGateoHomeWatchCardEnabled() {
-  if (readGateoEnvFlag(GATEO_ENV_FLAG_NAMES.HOME_WATCH_CARD)) return true;
-  if (typeof window === 'undefined') return false;
+/** @param {string | null | undefined} search */
+export function isHomeWatchCardQueryDisabled(search) {
   try {
-    return isHomeWatchCardQueryEnabled(window.location.search);
+    const value = new URLSearchParams(String(search || '').replace(/^\?/, '')).get(
+      HOME_WATCH_CARD_QUERY_PARAM,
+    );
+    const normalized = String(value || '').trim().toLowerCase();
+    return normalized === '0' || normalized === 'false' || normalized === 'off';
   } catch {
     return false;
   }
+}
+
+function isHomeWatchCardEnvExplicitOff() {
+  const name = GATEO_ENV_FLAG_NAMES.HOME_WATCH_CARD;
+  const raw = import.meta.env?.[name] ?? globalThis.__VITE_ENV__?.[name];
+  const normalized = String(raw ?? '').trim().toLowerCase();
+  return normalized === '0' || normalized === 'false' || normalized === 'off';
+}
+
+/** Globe home watch card. Default on. Env `"0"` disables; `?home_watch_card=0` hides when default on. */
+export function isGateoHomeWatchCardEnabled() {
+  if (isHomeWatchCardEnvExplicitOff()) {
+    if (typeof window !== 'undefined') {
+      try {
+        if (isHomeWatchCardQueryEnabled(window.location.search)) return true;
+      } catch {
+        /* ignore */
+      }
+    }
+    return false;
+  }
+  if (readGateoEnvFlag(GATEO_ENV_FLAG_NAMES.HOME_WATCH_CARD)) return true;
+  if (typeof window !== 'undefined') {
+    try {
+      if (isHomeWatchCardQueryDisabled(window.location.search)) return false;
+    } catch {
+      /* ignore */
+    }
+  }
+  return true;
 }
 
 /** Self-hosted reels poster on the home watch card. Default off. */

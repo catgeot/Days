@@ -12,6 +12,7 @@ import {
   EXPLORE_MONTHLY_PICK_HERO_OBJECT_POSITION,
   EXPLORE_MONTHLY_PICK_PHOTO_CREDIT,
 } from '../../data/exploreMonthlyPickHeroUrls.js';
+import { resolveMonthlyPickSummary } from '../../lib/exploreMonthlyPicks.js';
 import ExploreMonthlyPickMedia from './ExploreMonthlyPickMedia';
 
 const ExploreMonthlyPickItem = ({
@@ -36,7 +37,7 @@ const ExploreMonthlyPickItem = ({
   const isEnUi = String(i18n.language || '')
     .toLowerCase()
     .startsWith('en');
-  const summary = String(entry?.reason || '').trim();
+  const summary = resolveMonthlyPickSummary(entry, i18n.language);
   const credit = EXPLORE_MONTHLY_PICK_PHOTO_CREDIT[slug];
   const creditTitle = isEnUi ? credit?.en : credit?.ko;
 

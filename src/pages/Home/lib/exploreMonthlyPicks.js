@@ -176,6 +176,17 @@ export function monthlyPickDisplayName(spot, slug = '') {
   );
 }
 
+/** @param {import('../data/spotTraits.js').MonthlyPickEntry | null | undefined} entry */
+export function resolveMonthlyPickSummary(entry, language = 'ko') {
+  const isEn = String(language || '')
+    .trim()
+    .toLowerCase()
+    .startsWith('en');
+  const primary = isEn ? entry?.reason_en : entry?.reason;
+  const fallback = isEn ? entry?.reason : entry?.reason_en;
+  return String(primary || fallback || '').trim();
+}
+
 /**
  * @param {ReturnType<typeof buildVisibleMonthlyPickCards>} cards
  */

@@ -76,7 +76,9 @@ test('MONTHLY_PICKS 2026-11 has six slugs in TRAVEL_SPOTS with sources and check
   for (const entry of entries) {
     assert.ok(spotSlugs.has(entry.slug), `missing TRAVEL_SPOTS slug ${entry.slug}`);
     assert.ok(typeof entry.reason === 'string' && entry.reason.trim().length > 0);
+    assert.ok(typeof entry.reason_en === 'string' && entry.reason_en.trim().length > 0);
     assert.ok(entry.reason.length <= 40, `${entry.slug} summary too long`);
+    assert.ok(entry.reason_en.length <= 40, `${entry.slug} en summary too long`);
     assert.match(entry.reason, /월|\//, `${entry.slug} summary should say when`);
     assert.ok(Array.isArray(entry.sources) && entry.sources.length >= 1);
     for (const raw of entry.sources) {
@@ -101,7 +103,9 @@ test('MONTHLY_PICKS 2026-12 has six slugs in TRAVEL_SPOTS with sources and check
   for (const entry of entries) {
     assert.ok(spotSlugs.has(entry.slug), `missing TRAVEL_SPOTS slug ${entry.slug}`);
     assert.ok(typeof entry.reason === 'string' && entry.reason.trim().length > 0);
+    assert.ok(typeof entry.reason_en === 'string' && entry.reason_en.trim().length > 0);
     assert.ok(entry.reason.length <= 40, `${entry.slug} summary too long: ${entry.reason}`);
+    assert.ok(entry.reason_en.length <= 40, `${entry.slug} en summary too long`);
     assert.match(entry.reason, /월|\//, `${entry.slug} summary should say when`);
     assert.equal(entry.estimate, false);
     assert.ok(Array.isArray(entry.sources) && entry.sources.length >= 1);
@@ -324,7 +328,7 @@ test('monthly pick card places text panel below photo frame so caption does not 
   assert.match(item, /explore-v2-monthly-photo-/);
   assert.match(item, /explore-v2-monthly-text-panel/);
   assert.match(item, /explore-v2-monthly-summary/);
-  assert.match(item, /entry\?\.reason/);
+  assert.match(item, /resolveMonthlyPickSummary/);
   assert.doesNotMatch(item, /spot\?\.desc/);
   assert.doesNotMatch(item, /explore-v2-monthly-source-link/);
   assert.doesNotMatch(item, /파일·정책|SourceLinks|PhotoCreditLine/);
