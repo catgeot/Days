@@ -24,6 +24,17 @@ function targetWord(kind, en) {
  *   arrivalIata?: string,
  * }} input
  */
+/** Short 출발 chip. The ask sentence is separate and is sent once. */
+export function buildOverseasOriginChipLabel({ city, country, originIata, koreaIata } = {}) {
+  const cityName = String(city || '').trim();
+  const countryName = String(country || '').trim();
+  const from = String(originIata || '').trim().toUpperCase();
+  const to = String(koreaIata || '').trim().toUpperCase();
+  if (!cityName || !countryName || from.length !== 3) return '';
+  const hop = to && to !== from ? `${from} → ${to}` : from;
+  return `${cityName} · ${countryName} (${hop})`;
+}
+
 export function buildOverseasMyLocationAsk(input) {
   const en = isEn(input.locale);
   const city = String(input.city || '').trim();

@@ -105,10 +105,11 @@ export async function resolveMyLocationOrigin(lat, lng, options = {}) {
   }
   const airport = resolveFlightOriginFromCoords(la, ln, { excludeIatas: KOREA_AIRPORT_IATAS });
   if (!airport?.iata || KOREA_AIRPORT_IATAS.has(airport.iata)) return { ok: false };
-  const reverseGeocode = options.reverseGeocode || geocodeReversePlaceFields;
+  const reverseGeocode = options.reverseGeocode
+    || ((la2, ln2) => geocodeReversePlaceFields(la2, ln2, { preferLocality: true }));
   let hit = null;
   try {
-    hit = await reverseGeocode(la, ln);
+    hit = await reverseGeocode(la, ln, { preferLocality: true });
   } catch {
     hit = null;
   }

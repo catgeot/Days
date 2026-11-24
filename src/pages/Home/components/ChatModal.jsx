@@ -1203,7 +1203,7 @@ const ChatModal = ({
     }
 
     const chipDestination =
-      (accessRoute || ferryRoute) && effectiveBound
+      (accessRoute || ferryRoute || (explicitDeparture && mooniPlaceContext?.festivalContext)) && effectiveBound
         ? { slug: effectiveBound.slug, name: effectiveBound.name }
         : !catalogPlacePinned &&
             resolution?.confidence === 'high' &&
@@ -1732,9 +1732,15 @@ const ChatModal = ({
       return;
     }
     const request = festivalOriginSendRequest(origin);
-    if (!request?.askKo) return;
-    const key = request.cityId || request.chipId || request.askKo;
+    if (!request?.askKo && !request?.sentenceKo) return;
+    const key = request.repeatKey || request.cityId || request.chipId || request.askKo;
     const english = String(i18n.language || '').slice(0, 2) === 'en';
+    const askText = request.sentenceKo
+      ? (english ? request.sentenceEn : request.sentenceKo)
+      : buildFestivalAccessAskText({ ko: request.askKo, en: request.askEn }, i18n.language);
+    const departureLabel = request.sentenceKo
+      ? (english ? request.chipEn : request.chipKo)
+      : (english ? request.askEn : request.askKo);
     if (originInputOn && key && key === lastSentOriginRef.current) {
       suppressMessageScrollRef.current = true;
       const name = english ? request.askEn : request.askKo;
@@ -1747,11 +1753,11 @@ const ChatModal = ({
     if (request.chipId) setFestivalAccessId(request.chipId);
     else if (originInputOn) setFestivalAccessId('');
     const ok = await handleSend(
-      buildFestivalAccessAskText({ ko: request.askKo, en: request.askEn }, i18n.language),
+      askText,
       PERSONA_TYPES.PLANNER,
       {
         chipId: MOONI_CHIP_IDS.FESTIVAL_ACCESS,
-        departureLabel: english ? request.askEn : request.askKo,
+        departureLabel,
       },
     );
     if (ok) {

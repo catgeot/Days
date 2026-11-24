@@ -325,12 +325,12 @@ async function saveOverseasShot(page, name, width) {
   });
 }
 
-async function openLocatedOrigin(page, context, { latitude, longitude }) {
+async function openLocatedOrigin(page, context, { latitude, longitude, lang = 'ko', festivalId } = {}) {
   await context.grantPermissions(['geolocation']);
   await context.setGeolocation({ latitude, longitude });
   await mockReverseGeocode(context);
   const calls = [];
-  await openOriginDock(page, context, { calls });
+  await openOriginDock(page, context, { calls, lang, festivalId });
   await page.getByTestId('mooni-origin-locate').click();
   return calls;
 }
@@ -348,6 +348,10 @@ test('Khao Lak my-location stays in Thailand and flies HKT, not Seogwipo', async
   await expect(bubble).toContainText('HKT');
   await expect(bubble).toContainText('ICN');
   await expect(bubble).not.toContainText('서귀포');
+  expect((await bubble.innerText()).match(/알려줘/g)).toHaveLength(1);
+  const chip = page.getByTestId('mooni-destination-resolution');
+  await expect(chip).toContainText('카오락 · 태국 (HKT → ICN)');
+  await expect(chip).not.toContainText('알려줘');
   expect(calls.filter((task) => task === 'mooni_chat')).toEqual(['mooni_chat']);
   const width = testInfo.project.name.includes('1280') ? 1280 : 390;
   await saveOverseasShot(page, `khao-lak-${width}.png`, width);
@@ -365,6 +369,10 @@ test('Bangkok my-location uses Suvarnabhumi, not Don Mueang or a Korean city', a
   await expect(bubble).toContainText('BKK');
   await expect(bubble).not.toContainText('DMK');
   await expect(bubble).not.toContainText('서귀포');
+  expect((await bubble.innerText()).match(/알려줘/g)).toHaveLength(1);
+  const chip = page.getByTestId('mooni-destination-resolution');
+  await expect(chip).toContainText('방콕 · 태국 (BKK → ICN)');
+  await expect(chip).not.toContainText('알려줘');
   const width = testInfo.project.name.includes('1280') ? 1280 : 390;
   await saveOverseasShot(page, `bangkok-${width}.png`, width);
 });
@@ -376,7 +384,13 @@ test('domestic Seoul my-location still names Seoul and stays on the ground ask',
   await expect(input).toHaveValue('서울 · 특별시 (내 위치)');
   await expect(page.getByTestId('mooni-festival-access-dock')).toHaveAttribute('data-origin-kind', 'domestic');
   await input.press('Enter');
-  await expect(page.getByText(/서울에서 이 축제장까지 대중교통과 차로/).first()).toBeVisible({ timeout: 30_000 });
+  const seoulBubble = page.getByText(/서울에서 이 축제장까지 대중교통과 차로/).first();
+  await expect(seoulBubble).toBeVisible({ timeout: 30_000 });
+  await expect(seoulBubble).toHaveText('서울에서 이 축제장까지 대중교통과 차로 가는 법을 알려줘');
+  expect((await seoulBubble.innerText()).match(/알려줘/g)).toHaveLength(1);
+  const seoulChip = page.getByTestId('mooni-destination-resolution');
+  await expect(seoulChip).toContainText('서울');
+  await expect(seoulChip).not.toContainText('대중교통');
   expect(calls.filter((task) => task === 'mooni_chat')).toEqual(['mooni_chat']);
   await saveOverseasShot(page, 'seoul-390.png', 390);
 });
@@ -409,6 +423,25 @@ test('Haeundae light festival from Khao Lak flies HKT to PUS', async ({ page, co
   await expect(bubble).toContainText('HKT');
   await expect(bubble).toContainText('PUS');
   await expect(bubble).not.toContainText('서귀포');
+  expect((await bubble.innerText()).match(/알려줘/g)).toHaveLength(1);
+  const chip = page.getByTestId('mooni-destination-resolution');
+  await expect(chip).toContainText('카오락 · 태국 (HKT → PUS)');
+  await expect(chip).not.toContainText('알려줘');
   const width = testInfo.project.name.includes('1280') ? 1280 : 390;
   await saveOverseasShot(page, `haeundae-khao-lak-${width}.png`, width);
+});
+
+test('English Khao Lak ask is not wrapped twice and the chip stays short', async ({ page, context }, testInfo) => {
+  test.skip(testInfo.project.name.includes('webkit'), 'captures are chromium 390 and 1280');
+  await openLocatedOrigin(page, context, { latitude: 8.6374, longitude: 98.2475, lang: 'en' });
+  const input = page.getByTestId('mooni-origin-input');
+  await expect(input).toHaveValue('Khao Lak · Thailand (my location)');
+  await input.press('Enter');
+  const bubble = page.getByText(/How do I get from Khao Lak, Thailand/).first();
+  await expect(bubble).toBeVisible({ timeout: 30_000 });
+  expect((await bubble.innerText()).match(/How do I get from/g)).toHaveLength(1);
+  await expect(bubble).not.toContainText('public transit');
+  const chip = page.getByTestId('mooni-destination-resolution');
+  await expect(chip).toContainText('Khao Lak · Thailand (HKT → ICN)');
+  await expect(chip).not.toContainText('How do I get from');
 });

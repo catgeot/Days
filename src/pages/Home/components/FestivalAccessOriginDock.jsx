@@ -15,7 +15,6 @@ import {
   suggestKoreaOriginCities,
 } from '../lib/koreaOriginCityMatch.js';
 import { arrivalAirportForAccessDestination, locateNearestOriginCity } from '../lib/koreaOriginGeolocation.js';
-import { buildOverseasMyLocationAsk } from '../lib/overseasMyLocationAsk.js';
 import { shouldResendPinnedOrigin, tryOriginKeyboardConfirm } from '../lib/festivalOriginConfirm.js';
 import { shouldConfirmHangulEntry } from '../../../utils/hangulSearch.js';
 
@@ -144,30 +143,20 @@ export default function FestivalAccessOriginDock({
       lng: destinationLng,
     });
     const same = !arrival?.iata || arrival.iata === found.originIata;
-    const askKo = buildOverseasMyLocationAsk({
-      locale: 'ko',
-      kind: 'festival',
-      city: found.city,
-      country: found.country,
-      originLabel: found.originLabelKo,
-      originIata: found.originIata,
-      arrivalLabel: same ? '' : arrival.labelKo,
-      arrivalIata: same ? '' : arrival.iata,
-    });
-    const askEn = buildOverseasMyLocationAsk({
-      locale: 'en',
-      kind: 'festival',
-      city: found.cityEn || found.city,
-      country: found.countryEn || found.country,
-      originLabel: found.originLabelEn || found.originIata,
-      originIata: found.originIata,
-      arrivalLabel: same ? '' : arrival.labelEn,
-      arrivalIata: same ? '' : arrival.iata,
-    });
-    if (!askKo) return;
+    if (!found.city || !found.country) return;
     const sent = emitConfirm({
-      askLabel: askKo,
-      askLabelEn: askEn || askKo,
+      overseas: {
+        city: found.city,
+        country: found.country,
+        cityEn: found.cityEn || found.city,
+        countryEn: found.countryEn || found.country,
+        originIata: found.originIata,
+        koreaIata: same ? found.originIata : arrival.iata,
+        originLabelKo: found.originLabelKo,
+        originLabelEn: found.originLabelEn || found.originIata,
+        arrivalLabelKo: same ? '' : arrival.labelKo,
+        arrivalLabelEn: same ? '' : arrival.labelEn,
+      },
     });
     if (!sent) return;
     setLocateError('');
@@ -234,6 +223,11 @@ export default function FestivalAccessOriginDock({
     const composing = composingRef.current || event.nativeEvent?.isComposing === true;
     if (blocked) {
       event.preventDefault();
+      return;
+    }
+    if (!composing && pinnedId === 'overseas' && overseasPin) {
+      event.preventDefault();
+      confirmOverseas(overseasPin);
       return;
     }
     if (shouldResendPinnedOrigin({

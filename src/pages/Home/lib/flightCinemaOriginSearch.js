@@ -15,7 +15,7 @@ const GEO_INDEX_MAX_KM = 120;
 
 async function attachOverseasPlace(resolved, lat, lng) {
   try {
-    const hit = await geocodeReversePlaceFields(lat, lng);
+    const hit = await geocodeReversePlaceFields(lat, lng, { preferLocality: true });
     const city = String(hit?.name || '').trim();
     const country = String(hit?.country || '').trim();
     if (!city || !country) return resolved;

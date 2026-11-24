@@ -5,7 +5,9 @@ const baseURL = `http://127.0.0.1:${port}`;
 
 export default defineConfig({
   testDir: './e2e',
-  testMatch: /mooni-festival-origin-input\.spec\.js/,
+  testMatch: process.env.OVERSEAS_ORIGIN_LIVE === '1'
+    ? /mooni-overseas-origin-live\.spec\.js/
+    : /mooni-festival-origin-input\.spec\.js/,
   fullyParallel: false,
   forbidOnly: Boolean(process.env.CI),
   retries: process.env.CI ? 1 : 0,

@@ -3,6 +3,7 @@ import {
   koreaOriginCityForChip,
   KOREA_PROVINCE_EN,
 } from './koreaOriginCityMatch.js';
+import { buildOverseasMyLocationAsk, buildOverseasOriginChipLabel } from './overseasMyLocationAsk.js';
 
 /**
  * One domestic departure chip per 시·도 (17).
@@ -308,12 +309,72 @@ export function festivalOriginLabel(rowOrId, locale = 'ko') {
   return en ? row.en : row.ko;
 }
 
-/** Chip row or `{ askLabel, askLabelEn, cityId }` → one send payload. */
+function overseasSendRequest(overseas) {
+  const city = String(overseas?.city || '').trim();
+  const country = String(overseas?.country || '').trim();
+  const originIata = String(overseas?.originIata || '').trim().toUpperCase();
+  const koreaIata = String(overseas?.koreaIata || '').trim().toUpperCase();
+  if (!city || !country || originIata.length !== 3) return null;
+  const cityEn = String(overseas.cityEn || city).trim();
+  const countryEn = String(overseas.countryEn || country).trim();
+  const arrivalIata = koreaIata && koreaIata !== originIata ? koreaIata : '';
+  const sentenceKo = buildOverseasMyLocationAsk({
+    locale: 'ko',
+    kind: 'festival',
+    city,
+    country,
+    originLabel: overseas.originLabelKo || originIata,
+    originIata,
+    arrivalLabel: arrivalIata ? (overseas.arrivalLabelKo || koreaIata) : '',
+    arrivalIata,
+  });
+  const sentenceEn = buildOverseasMyLocationAsk({
+    locale: 'en',
+    kind: 'festival',
+    city: cityEn,
+    country: countryEn,
+    originLabel: overseas.originLabelEn || originIata,
+    originIata,
+    arrivalLabel: arrivalIata ? (overseas.arrivalLabelEn || koreaIata) : '',
+    arrivalIata,
+  });
+  if (!sentenceKo) return null;
+  const chipKo = buildOverseasOriginChipLabel({
+    city,
+    country,
+    originIata,
+    koreaIata: arrivalIata || originIata,
+  });
+  const chipEn = buildOverseasOriginChipLabel({
+    city: cityEn,
+    country: countryEn,
+    originIata,
+    koreaIata: arrivalIata || originIata,
+  });
+  return {
+    chipId: '',
+    cityId: '',
+    overseas: true,
+    repeatKey: `overseas:${originIata}:${arrivalIata || originIata}`,
+    sentenceKo,
+    sentenceEn: sentenceEn || sentenceKo,
+    chipKo,
+    chipEn,
+    askKo: chipKo,
+    askEn: chipEn,
+  };
+}
+
+/** Chip row, domestic `{ askLabel }`, or `{ overseas }` → one send payload. */
 export function festivalOriginSendRequest(origin) {
   const row = origin && typeof origin === 'object'
     ? origin
     : findFestivalDomesticOrigin(origin);
   if (!row) return null;
+  if (row.overseas) {
+    const overseas = overseasSendRequest(row.overseas);
+    if (overseas) return overseas;
+  }
   if (row.askLabel) {
     return {
       chipId: row.chipId || '',

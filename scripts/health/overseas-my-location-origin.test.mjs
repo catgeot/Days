@@ -15,6 +15,11 @@ import {
 } from '../../src/pages/Home/lib/overseasMyLocationAsk.js';
 import { prepareFestivalMooniChatPayload } from '../../src/pages/Home/lib/festivalMooniRequest.js';
 import { planFestivalMooniModelCall } from '../../src/pages/Korea/lib/festivalTransportCardCore.js';
+import {
+  buildFestivalAccessAskText,
+  festivalOriginSendRequest,
+} from '../../src/pages/Home/lib/festivalDomesticOrigins.js';
+import { chooseReverseLocalityFeature } from '../../src/pages/Home/lib/mapboxGeocodeSuggestions.js';
 
 const KHAO_LAK = { lat: 8.6374, lng: 98.2475 };
 const BANGKOK = { lat: 13.7563, lng: 100.5018 };
@@ -170,4 +175,81 @@ test('festival payload keeps the overseas airports and does not load a Korean gr
   });
   assert.equal(domestic.groundOrigin?.ko, '서울');
   assert.equal(domestic.session.departureIata, '');
+});
+
+test('overseas sentence is sent once and the departure chip stays short', () => {
+  const khao = festivalOriginSendRequest({
+    overseas: {
+      city: '카오락',
+      country: '태국',
+      cityEn: 'Khao Lak',
+      countryEn: 'Thailand',
+      originIata: 'HKT',
+      koreaIata: 'PUS',
+      originLabelKo: '푸켓국제공항',
+      originLabelEn: 'Phuket',
+      arrivalLabelKo: '김해국제공항',
+      arrivalLabelEn: 'Busan',
+    },
+  });
+  assert.equal((khao.sentenceKo.match(/알려줘/g) || []).length, 1);
+  assert.equal((khao.sentenceEn.match(/How do I get from/g) || []).length, 1);
+  assert.equal(khao.chipKo, '카오락 · 태국 (HKT → PUS)');
+  assert.equal(khao.chipEn, 'Khao Lak · Thailand (HKT → PUS)');
+  assert.equal(khao.chipKo.includes('알려줘'), false);
+  assert.equal(khao.sentenceKo.includes('대중교통과 차로'), false);
+  const wrapped = buildFestivalAccessAskText({ ko: khao.sentenceKo, en: khao.sentenceEn }, 'ko');
+  assert.equal((wrapped.match(/알려줘/g) || []).length, 2);
+
+  const bangkok = festivalOriginSendRequest({
+    overseas: {
+      city: '방콕',
+      country: '태국',
+      cityEn: 'Bangkok',
+      countryEn: 'Thailand',
+      originIata: 'BKK',
+      koreaIata: 'ICN',
+      originLabelKo: '수완나품국제공항',
+      originLabelEn: 'Suvarnabhumi',
+      arrivalLabelKo: '인천국제공항',
+      arrivalLabelEn: 'Incheon',
+    },
+  });
+  assert.equal(bangkok.chipKo, '방콕 · 태국 (BKK → ICN)');
+  assert.equal((bangkok.sentenceEn.match(/How do I get from/g) || []).length, 1);
+
+  const domestic = festivalOriginSendRequest({ askLabel: '서울', askLabelEn: 'Seoul', cityId: 'seoul' });
+  assert.equal(domestic.sentenceKo, undefined);
+  assert.equal(
+    buildFestivalAccessAskText({ ko: domestic.askKo, en: domestic.askEn }, 'ko'),
+    '서울에서 이 축제장까지 대중교통과 차로 가는 법을 알려줘',
+  );
+  assert.equal(
+    buildFestivalAccessAskText({ ko: domestic.askKo, en: domestic.askEn }, 'en'),
+    'How do I get from Seoul to this festival by public transit and by car?',
+  );
+});
+
+test('reverse geocode prefers a known locality and otherwise keeps the district', () => {
+  const district = {
+    id: 'place.takua',
+    text: '따꾸아빠군',
+    place_type: ['place'],
+    properties: { wikidata: 'Q123' },
+  };
+  const obscure = {
+    id: 'locality.khuek',
+    text: 'Khuek Khak',
+    place_type: ['locality'],
+    properties: {},
+  };
+  const known = {
+    id: 'locality.khao',
+    text: 'Khao Lak',
+    place_type: ['locality'],
+    properties: { wikidata: 'Q938511' },
+  };
+  assert.equal(chooseReverseLocalityFeature([obscure, district])?.text, '따꾸아빠군');
+  assert.equal(chooseReverseLocalityFeature([district, known])?.text, 'Khao Lak');
+  assert.equal(chooseReverseLocalityFeature([district])?.text, '따꾸아빠군');
 });
