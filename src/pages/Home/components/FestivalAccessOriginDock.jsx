@@ -429,7 +429,7 @@ export default function FestivalAccessOriginDock({
             className={tone(
               fresh,
               'h-11 min-w-0 flex-1 rounded-full border border-gray-600 bg-gray-800 px-3 text-[16px] text-white placeholder:text-gray-500 focus:border-cyan-400 focus:outline-none disabled:opacity-50',
-              'h-11 min-w-0 flex-1 rounded-full border border-cyan-200 bg-white px-3 text-[16px] text-slate-800 placeholder:text-slate-400 focus:border-cyan-400 focus:outline-none disabled:opacity-50',
+              'h-11 min-w-0 flex-1 rounded-full border border-cyan-200 bg-white px-3 text-[16px] text-slate-800 placeholder:text-slate-600 focus:border-cyan-400 focus:outline-none disabled:opacity-50',
             )}
           />
           <button

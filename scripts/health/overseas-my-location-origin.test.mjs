@@ -10,9 +10,14 @@ import {
 } from '../../src/pages/Home/lib/koreaOriginGeolocation.js';
 import {
   buildOverseasMyLocationAsk,
+  overseasMyLocationBubbleText,
   overseasMyLocationModelHint,
   parseOverseasMyLocationAsk,
 } from '../../src/pages/Home/lib/overseasMyLocationAsk.js';
+import { mooniUserBubbleText } from '../../src/pages/Home/lib/mooniChipBubbleText.js';
+import { messageTextPlain } from '../../src/pages/Home/lib/mooniChatContinue.js';
+import { searchFlightOriginHubs } from '../../src/pages/Home/lib/flightCinemaOriginSearch.js';
+import { resolveInternationalGatewayForCityId } from '../../src/pages/Home/lib/koreaCityInternationalAirport.js';
 import { prepareFestivalMooniChatPayload } from '../../src/pages/Home/lib/festivalMooniRequest.js';
 import { planFestivalMooniModelCall } from '../../src/pages/Korea/lib/festivalTransportCardCore.js';
 import {
@@ -92,6 +97,24 @@ test('metro priority picks the primary international hub and leaves a lone feede
   );
 });
 
+test('city and coordinate matching uses the primary airport for each origin', () => {
+  const cases = [
+    ['방콕', 'Bangkok', 13.7563, 100.5018, 'BKK'],
+    ['치앙마이', 'Chiang Mai', 18.7883, 98.9853, 'CNX'],
+    ['크라비', 'Krabi', 8.0863, 98.9063, 'KBV'],
+    ['싱가포르', 'Singapore', 1.3521, 103.8198, 'SIN'],
+  ];
+  for (const [ko, en, lat, lng, iata] of cases) {
+    assert.equal(searchFlightOriginHubs(ko)[0]?.iata, iata, ko);
+    assert.equal(searchFlightOriginHubs(en)[0]?.iata, iata, en);
+    assert.equal(resolveFlightOriginFromCoords(lat, lng)?.iata, iata, en);
+  }
+  assert.equal(resolveFlightOriginFromCoords(35.6812, 139.7671)?.iata, 'NRT');
+  assert.equal(resolveFlightOriginFromCoords(37.8813, 127.7298)?.iata, 'ICN');
+  assert.equal(resolveInternationalGatewayForCityId('chuncheon'), 'ICN');
+  assert.equal(searchFlightOriginHubs('춘천')[0]?.iata, 'ICN');
+});
+
 test('Haeundae lands at PUS and Seoul at ICN; domestic city match is unchanged', () => {
   assert.equal(arrivalAirportForAccessDestination(HAEUNDAE).iata, 'PUS');
   assert.equal(arrivalAirportForAccessDestination(SEOUL).iata, 'ICN');
@@ -115,6 +138,10 @@ test('overseas ask names the real city and the airport hop, and round-trips', ()
   assert.match(festival, /HKT/);
   assert.match(festival, /PUS/);
   assert.doesNotMatch(festival, /서귀포|제주/);
+  assert.equal(mooniUserBubbleText(festival), overseasMyLocationBubbleText('festival', 'ko'));
+  assert.equal(mooniUserBubbleText(festival), '내 위치에서 이 축제장까지 가는 법을 알려줘');
+  assert.equal(messageTextPlain({ text: mooniUserBubbleText(festival), mooniPromptText: festival }), festival);
+  assert.doesNotMatch(mooniUserBubbleText(festival), /HKT|PUS|카오락/);
   const parsed = parseOverseasMyLocationAsk(festival);
   assert.equal(parsed.originIata, 'HKT');
   assert.equal(parsed.arrivalIata, 'PUS');
@@ -131,6 +158,7 @@ test('overseas ask names the real city and the airport hop, and round-trips', ()
     arrivalIata: 'PUS',
   });
   const placeParsed = parseOverseasMyLocationAsk(place);
+  assert.equal(mooniUserBubbleText(place), 'How do I get from my location to this place?');
   assert.equal(placeParsed.city, 'Bangkok');
   assert.equal(placeParsed.country, 'Thailand');
   assert.equal(placeParsed.kind, 'place');

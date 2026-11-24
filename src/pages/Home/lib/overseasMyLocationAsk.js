@@ -12,6 +12,20 @@ function targetWord(kind, en) {
   return en ? 'festival' : '축제장';
 }
 
+/** Visible user bubble. Route details stay in the ask sentence and the origin chip. */
+export function overseasMyLocationBubbleText(kind, locale) {
+  const en = isEn(locale);
+  const place = kind === 'place';
+  if (en) {
+    return place
+      ? 'How do I get from my location to this place?'
+      : 'How do I get from my location to this festival?';
+  }
+  return place
+    ? '내 위치에서 이 여행지까지 가는 법을 알려줘'
+    : '내 위치에서 이 축제장까지 가는 법을 알려줘';
+}
+
 /**
  * @param {{
  *   locale?: string,

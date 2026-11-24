@@ -13,6 +13,12 @@ const primaryClass =
 const secondaryClass =
   'inline-flex w-full items-center justify-center gap-1.5 rounded-lg border border-gray-600/50 bg-gray-800/40 px-3 py-2.5 text-xs font-bold text-gray-200 hover:border-gray-500/60 hover:bg-gray-800/70 transition-colors break-keep pointer-events-auto text-left';
 
+const primaryClassLight =
+  'inline-flex w-full items-center justify-center gap-1.5 rounded-lg border border-cyan-800 bg-cyan-700 px-3 py-2.5 text-xs font-bold text-white hover:bg-cyan-800 transition-colors break-keep pointer-events-auto text-left';
+
+const secondaryClassLight =
+  'inline-flex w-full items-center justify-center gap-1.5 rounded-lg border border-slate-500 bg-white px-3 py-2.5 text-xs font-bold text-slate-900 hover:bg-slate-100 transition-colors break-keep pointer-events-auto text-left';
+
 /**
  * MOONi 렌터카·픽업 칩 — 공항 이동 + 교통·패스 플래너 앵커 2버튼.
  */
@@ -23,17 +29,19 @@ export default function MooniTransportPlannerLinks({
   onPlannerNavigate = null,
   showHeading = true,
   className = '',
+  variant = 'dark',
 }) {
   const { t } = useTranslation();
   if (!slug) return null;
 
   const links = resolveMooniTransportPlannerLinks(essentialGuide, destinationName);
   if (!links.length) return null;
+  const light = variant === 'light';
 
   return (
     <div className={`space-y-2 w-full ${className}`}>
       {showHeading ? (
-        <p className="text-[10px] font-bold uppercase tracking-wide text-cyan-400/90 break-keep">
+        <p className={`text-[10px] font-bold uppercase tracking-wide break-keep ${light ? 'text-cyan-900' : 'text-cyan-200'}`}>
           {t('mooni.planner.heading')}
         </p>
       ) : null}
@@ -41,7 +49,9 @@ export default function MooniTransportPlannerLinks({
         {links.map((link, idx) => {
           const path = buildPlacePlannerPathWithFocus(slug, link.focusId);
           if (!path) return null;
-          const buttonClass = idx === 0 ? primaryClass : secondaryClass;
+          const buttonClass = light
+            ? (idx === 0 ? primaryClassLight : secondaryClassLight)
+            : (idx === 0 ? primaryClass : secondaryClass);
 
           if (onPlannerNavigate) {
             return (
@@ -51,7 +61,7 @@ export default function MooniTransportPlannerLinks({
                 onClick={() => onPlannerNavigate(path)}
                 className={buttonClass}
               >
-                <MapPin size={14} className="shrink-0 opacity-90" />
+                <MapPin size={14} className="shrink-0" />
                 <span className="flex-1">{link.label}</span>
               </button>
             );
@@ -59,7 +69,7 @@ export default function MooniTransportPlannerLinks({
 
           return (
             <Link key={link.focusId} to={path} className={buttonClass}>
-              <MapPin size={14} className="shrink-0 opacity-90" />
+              <MapPin size={14} className="shrink-0" />
               <span className="flex-1">{link.label}</span>
             </Link>
           );
