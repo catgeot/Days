@@ -15,14 +15,14 @@ function readMapboxToken() {
 
 const GEOCODE_BASE = 'https://api.mapbox.com/geocoding/v5/mapbox.places';
 
-async function fetchReverseFeatures(lng, lat, language) {
+async function fetchReverseFeatures(lng, lat, language, types = 'place,region,country') {
   const token = readMapboxToken();
   if (!token) return [];
   const params = new URLSearchParams({
     access_token: token,
     language,
     limit: '1',
-    types: 'place,region,country',
+    types,
   });
   const response = await fetch(`${GEOCODE_BASE}/${lng},${lat}.json?${params}`);
   if (!response.ok) return [];
@@ -33,19 +33,55 @@ async function fetchReverseFeatures(lng, lat, language) {
 const reversePlaceCache = new Map();
 
 /**
- * 방문 좌표 → 국가·라틴 지명. Search Box 객체 context를 못 읽을 때 카드가 Explore/Global로 떨어지는 구멍 메움.
+ * Reverse geocode returns one feature per type. Prefer a wikidata locality
+ * (a known place name) over the admin place; otherwise keep that place/district.
+ * @param {Array<Record<string, unknown>>} features
  */
-export async function geocodeReversePlaceFields(lat, lng) {
+export function chooseReverseLocalityFeature(features) {
+  const list = (features || []).filter((feature) => String(feature?.text || '').trim());
+  if (!list.length) return null;
+  const ofType = (type) => list.filter((feature) => (feature.place_type || []).includes(type));
+  const known = (rows) => rows.filter((feature) => feature.properties?.wikidata);
+  const knownLocality = known(ofType('locality'));
+  if (knownLocality.length) return knownLocality[0];
+  const knownPlace = known(ofType('place'));
+  if (knownPlace.length) return knownPlace[0];
+  const locality = ofType('locality');
+  if (locality.length) return locality[0];
+  const place = ofType('place');
+  if (place.length) return place[0];
+  return ofType('district')[0] || ofType('region')[0] || list[0];
+}
+
+/**
+ * 방문 좌표 → 국가·라틴 지명. Search Box 객체 context를 못 읽을 때 카드가 Explore/Global로 떨어지는 구멍 메움.
+ * `preferLocality` asks locality and place separately (Mapbox reverse allows one type per call).
+ */
+export async function geocodeReversePlaceFields(lat, lng, options = {}) {
   const latN = Number(lat);
   const lngN = Number(lng);
   if (!Number.isFinite(latN) || !Number.isFinite(lngN) || !readMapboxToken()) return null;
-  const cacheKey = `${latN.toFixed(3)},${lngN.toFixed(3)}`;
+  const preferLocality = options.preferLocality === true;
+  const cacheKey = `${latN.toFixed(3)},${lngN.toFixed(3)}${preferLocality ? ':loc' : ''}`;
   if (reversePlaceCache.has(cacheKey)) return reversePlaceCache.get(cacheKey);
   try {
-    const [koFeatures, enFeatures] = await Promise.all([
-      fetchReverseFeatures(lngN, latN, 'ko'),
-      fetchReverseFeatures(lngN, latN, 'en'),
+    const koTypes = preferLocality ? ['locality', 'place'] : [undefined];
+    const enTypes = koTypes;
+    const [koLists, enLists] = await Promise.all([
+      Promise.all(koTypes.map((type) => fetchReverseFeatures(lngN, latN, 'ko', type))),
+      Promise.all(enTypes.map((type) => fetchReverseFeatures(lngN, latN, 'en', type))),
     ]);
+    let koFeatures = koLists.flat();
+    let enFeatures = enLists.flat();
+    if (preferLocality) {
+      const chosen = chooseReverseLocalityFeature(koFeatures);
+      const enChosen = chosen
+        ? enFeatures.find((feature) => feature?.id && feature.id === chosen.id)
+          || chooseReverseLocalityFeature(enFeatures)
+        : null;
+      koFeatures = chosen ? [chosen] : [];
+      enFeatures = enChosen ? [enChosen] : [];
+    }
     const merged = mergeSearchBoxEnglishHits(
       koFeatures.map(featureToHit).filter(Boolean),
       enFeatures.map(featureToHit).filter(Boolean),

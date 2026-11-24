@@ -2,13 +2,39 @@ import { RENTAL_AIRPORT_HUBS } from '../../../utils/rentalAirportHubs.js';
 import { distanceKm } from '../../../utils/rentalAirportMatch.js';
 import { findNearestAirportInIndex } from '../../../utils/airportsIndexLookup.js';
 import { matchDepartureInText } from '../../../utils/resolveDepartureIataFromChat.js';
+import { KOREA_AIRPORT_IATAS } from '../../../utils/koreaAirportIatas.js';
 import { getFlightCinemaOriginOption, getFlightOriginDisplayLabel } from './flightCinemaOriginOptions.js';
-import { promoteFlightOriginGateway } from './flightOriginMetroGateways.js';
+import { preferPrimaryMetroHub, promoteFlightOriginGateway } from './flightOriginMetroGateways.js';
 import { searchKoreaCityInternationalAirportOrigins } from './koreaCityInternationalAirport.js';
+import { coordsInKorea } from './visitedPlaceSearch.js';
+import { geocodeReversePlaceFields } from './mapboxGeocodeSuggestions.js';
 import { i18n } from '../../../i18n/config';
 
 const GEO_HUB_MAX_KM = 200;
 const GEO_INDEX_MAX_KM = 120;
+
+async function attachOverseasPlace(resolved, lat, lng) {
+  try {
+    const hit = await geocodeReversePlaceFields(lat, lng, { preferLocality: true });
+    const city = String(hit?.name || '').trim();
+    const country = String(hit?.country || '').trim();
+    if (!city || !country) return resolved;
+    return {
+      ...resolved,
+      overseas: {
+        city,
+        country,
+        cityEn: String(hit?.name_en || city).trim() || city,
+        countryEn: String(hit?.country_en || country).trim() || country,
+        originIata: resolved.iata,
+        originLabelKo: resolved.officialKo || resolved.label || resolved.iata,
+        originLabelEn: getFlightOriginDisplayLabel(resolved.iata, 'en') || resolved.iata,
+      },
+    };
+  } catch {
+    return resolved;
+  }
+}
 
 /**
  * @param {number} lat
@@ -16,12 +42,13 @@ const GEO_INDEX_MAX_KM = 120;
  * @param {number} maxKm
  * @returns {{ iata: string, label: string, officialKo?: string, km: number } | null}
  */
-function findNearestRentalHub(lat, lng, maxKm) {
+function findNearestRentalHub(lat, lng, maxKm, excludeIatas = null) {
   if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
 
   let best = null;
   let bestKm = Infinity;
   for (const hub of RENTAL_AIRPORT_HUBS) {
+    if (excludeIatas?.has(hub.iata)) continue;
     const km = distanceKm(lat, lng, hub.lat, hub.lng);
     const limit = Math.min(maxKm, hub.radiusKm ?? maxKm);
     if (km <= limit && km < bestKm) {
@@ -133,13 +160,26 @@ export function searchFlightOriginHubs(query, options = {}) {
 
 /**
  * GPS 좌표 → rental 허브 + metro gateway 승격 (geolocation API 없음 — smoke·단위용).
+ * @param {number} latitude
+ * @param {number} longitude
+ * @param {{ excludeIatas?: Set<string> | null }} [options]
  * @returns {{ iata: string, label: string, officialKo?: string, source: 'hub' } | null}
  */
-export function resolveFlightOriginFromCoords(latitude, longitude) {
-  const hub = findNearestRentalHub(latitude, longitude, GEO_HUB_MAX_KM);
+export function resolveFlightOriginFromCoords(latitude, longitude, options = {}) {
+  const excludeIatas = options.excludeIatas || null;
+  const hub = findNearestRentalHub(latitude, longitude, GEO_HUB_MAX_KM, excludeIatas);
   if (!hub) return null;
 
-  const promoted = promoteFlightOriginGateway(hub.iata, latitude, longitude);
+  const promoted = promoteFlightOriginGateway(hub.iata, latitude, longitude)
+    || preferPrimaryMetroHub(hub.iata, latitude, longitude);
+  if (promoted && excludeIatas?.has(promoted)) {
+    return {
+      iata: hub.iata,
+      label: hub.label,
+      officialKo: hub.officialKo,
+      source: 'hub',
+    };
+  }
   if (promoted) {
     const option = getFlightCinemaOriginOption(promoted);
     const promotedHub = RENTAL_AIRPORT_HUBS.find((row) => row.iata === promoted);
@@ -171,27 +211,43 @@ export function resolveOriginFromGeolocation() {
     }
 
     navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const { latitude, longitude } = position.coords;
-        const fromHub = resolveFlightOriginFromCoords(latitude, longitude);
-        if (fromHub) {
-          resolve(fromHub);
-          return;
+      async (position) => {
+        try {
+          const { latitude, longitude } = position.coords;
+          const outside = !coordsInKorea(latitude, longitude);
+          const excludeIatas = outside ? KOREA_AIRPORT_IATAS : null;
+          const fromHub = resolveFlightOriginFromCoords(
+            latitude,
+            longitude,
+            outside ? { excludeIatas } : {},
+          );
+          let resolved = fromHub;
+          if (!resolved) {
+            const indexHit = findNearestAirportInIndex(latitude, longitude, {
+              maxKm: GEO_INDEX_MAX_KM,
+              excludeIatas: outside ? excludeIatas : null,
+            });
+            if (indexHit && !(outside && KOREA_AIRPORT_IATAS.has(indexHit.iata))) {
+              const option = getFlightCinemaOriginOption(indexHit.iata);
+              resolved = {
+                iata: indexHit.iata,
+                label: option?.label || indexHit.iata,
+                officialKo: option?.officialKo,
+                source: 'index',
+              };
+            }
+          }
+          if (!resolved) {
+            reject(Object.assign(new Error('not_found'), { code: 'not_found' }));
+            return;
+          }
+          if (outside) {
+            resolved = await attachOverseasPlace(resolved, latitude, longitude);
+          }
+          resolve(resolved);
+        } catch {
+          reject(Object.assign(new Error('unavailable'), { code: 'unavailable' }));
         }
-
-        const indexHit = findNearestAirportInIndex(latitude, longitude, { maxKm: GEO_INDEX_MAX_KM });
-        if (indexHit) {
-          const option = getFlightCinemaOriginOption(indexHit.iata);
-          resolve({
-            iata: indexHit.iata,
-            label: option?.label || indexHit.iata,
-            officialKo: option?.officialKo,
-            source: 'index',
-          });
-          return;
-        }
-
-        reject(Object.assign(new Error('not_found'), { code: 'not_found' }));
       },
       (err) => {
         const code = err?.code === 1 ? 'denied' : 'unavailable';

@@ -56,16 +56,18 @@ function haversineKm(lat1, lng1, lat2, lng2) {
  * uiPlace·좌표 핀 — rental 허브 밖 scheduled 공항 (arc 도착 IATA).
  * @param {number} lat
  * @param {number} lng
- * @param {{ maxKm?: number }} [options]
+ * @param {{ maxKm?: number, excludeIatas?: Set<string> | null }} [options]
  * @returns {{ iata: string, lat: number, lng: number, km: number } | null}
  */
 export function findNearestAirportInIndex(lat, lng, options = {}) {
   if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
   const maxKm = options.maxKm ?? 650;
+  const excludeIatas = options.excludeIatas || null;
 
   let best = null;
   let bestKm = Infinity;
   for (const [code, row] of buildIndex()) {
+    if (excludeIatas?.has(code)) continue;
     if (!Number.isFinite(row.lat) || !Number.isFinite(row.lng)) continue;
     const km = haversineKm(lat, lng, row.lat, row.lng);
     if (km < bestKm) {

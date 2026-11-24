@@ -290,10 +290,10 @@ export default function FlightOriginSelector({
   }, []);
 
   const handleSelect = useCallback(
-    (iata) => {
+    (iata, geo) => {
       const code = String(iata ?? '').trim().toUpperCase();
       if (code.length !== 3) return;
-      onSelect?.(code);
+      onSelect?.(code, geo?.overseas ? geo : undefined);
       setGeoError(null);
       if (isBar) setBarExpanded(false);
       onCollapseRequest?.();
@@ -317,7 +317,7 @@ export default function FlightOriginSelector({
     setGeoPending(true);
     try {
       const resolved = await resolveOriginFromGeolocation();
-      handleSelect(resolved.iata);
+      handleSelect(resolved.iata, resolved);
     } catch (err) {
       const code = err?.code && GEO_ERROR_KEYS[err.code] ? err.code : 'unavailable';
       setGeoError(t(GEO_ERROR_KEYS[code] || GEO_ERROR_KEYS.unavailable));

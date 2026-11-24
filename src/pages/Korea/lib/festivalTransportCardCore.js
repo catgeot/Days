@@ -1,6 +1,7 @@
 import { parseEventYmd } from '../../../shared/tripWindow.js';
 import { glueAccessNumbersInProse, glueAccessUnit } from '../../../shared/korea/festivalAccessProseGlue.js';
 import { shouldQueryFestivalTransport } from './festivalTransportCatalog.js';
+import { parseOverseasMyLocationAsk } from '../../Home/lib/overseasMyLocationAsk.js';
 
 export { FESTIVAL_TRANSPORT_CONTENT_IDS, shouldQueryFestivalTransport } from './festivalTransportCatalog.js';
 export { glueAccessNumbersInProse, glueAccessUnit } from '../../../shared/korea/festivalAccessProseGlue.js';
@@ -928,6 +929,7 @@ export function planFestivalMooniModelCall({
 } = {}) {
   const route = chipId === 'festival_access' || festivalAccessAskIsRoute(userText);
   if (!route) return { callModel: true, reply: '', tagoLead: '' };
+  if (parseOverseasMyLocationAsk(userText)) return { callModel: true, reply: '', tagoLead: '' };
   const askFragment = festivalAccessAskFragment(userText);
   const tagoLead = composeFestivalAccessReply(transport, {
     locale,

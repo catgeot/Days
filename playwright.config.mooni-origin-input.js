@@ -5,7 +5,9 @@ const baseURL = `http://127.0.0.1:${port}`;
 
 export default defineConfig({
   testDir: './e2e',
-  testMatch: /mooni-festival-origin-input\.spec\.js/,
+  testMatch: process.env.OVERSEAS_ORIGIN_LIVE === '1'
+    ? /mooni-overseas-origin-live\.spec\.js/
+    : /mooni-festival-origin-input\.spec\.js/,
   fullyParallel: false,
   forbidOnly: Boolean(process.env.CI),
   retries: process.env.CI ? 1 : 0,
@@ -20,6 +22,7 @@ export default defineConfig({
       DEV_SSL: '0',
       VITE_SUPABASE_URL: process.env.VITE_SUPABASE_URL || 'https://example.supabase.co',
       VITE_SUPABASE_ANON_KEY: process.env.VITE_SUPABASE_ANON_KEY || 'e2e-anon-placeholder',
+      VITE_MAPBOX_TOKEN: process.env.VITE_MAPBOX_TOKEN || 'pk.e2e-origin',
     },
     url: `${baseURL}/`,
     reuseExistingServer: !process.env.CI,

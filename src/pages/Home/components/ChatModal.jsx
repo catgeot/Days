@@ -122,6 +122,8 @@ import {
 import { TripcomFlightSearchProvider } from '../../../components/PlaceCard/tabs/planner/TripcomFlightSearchContext';
 import FlightOriginSelector from './FlightOriginSelector';
 import { getFlightCinemaOriginOption } from '../lib/flightCinemaOriginOptions';
+import { arrivalAirportForAccessDestination } from '../lib/koreaOriginGeolocation.js';
+import { buildOverseasMyLocationAsk } from '../lib/overseasMyLocationAsk.js';
 import {
   persistFlightOriginIata,
   resolveDefaultFlightOriginIataForLocation,
@@ -1201,7 +1203,7 @@ const ChatModal = ({
     }
 
     const chipDestination =
-      (accessRoute || ferryRoute) && effectiveBound
+      (accessRoute || ferryRoute || (explicitDeparture && mooniPlaceContext?.festivalContext)) && effectiveBound
         ? { slug: effectiveBound.slug, name: effectiveBound.name }
         : !catalogPlacePinned &&
             resolution?.confidence === 'high' &&
@@ -1674,26 +1676,55 @@ const ChatModal = ({
     [messages, mooniContinuingIdx, activeChatId, onUpdateChat, i18n.language, mooniPlaceContext],
   );
 
+  const overseasAccessRef = useRef(null);
+
+  const placeAccessAskText = useCallback((iata, overseas) => {
+    const code = String(iata ?? '').trim().toUpperCase();
+    const option = getFlightCinemaOriginOption(code);
+    if (!overseas?.city || !overseas?.country || overseas.originIata !== code) {
+      return buildAccessRouteAskText(code, option);
+    }
+    const en = String(i18n.language || '').slice(0, 2) === 'en';
+    const arrival = arrivalAirportForAccessDestination({
+      lat: activeSessionPlace?.lat,
+      lng: activeSessionPlace?.lng,
+    });
+    const same = !arrival?.iata || arrival.iata === code;
+    return buildOverseasMyLocationAsk({
+      locale: i18n.language,
+      kind: 'place',
+      city: en ? (overseas.cityEn || overseas.city) : overseas.city,
+      country: en ? (overseas.countryEn || overseas.country) : overseas.country,
+      originLabel: en ? (overseas.originLabelEn || code) : (overseas.originLabelKo || code),
+      originIata: code,
+      arrivalLabel: same ? '' : (en ? arrival.labelEn : arrival.labelKo),
+      arrivalIata: same ? '' : arrival.iata,
+    }) || buildAccessRouteAskText(code, option);
+  }, [activeSessionPlace?.lat, activeSessionPlace?.lng, i18n.language]);
+
   const handleAccessOriginSelect = useCallback(
-    (iata) => {
+    (iata, geo) => {
       const code = String(iata ?? '').trim().toUpperCase();
       if (code.length !== 3) return;
       persistFlightOriginIata(code);
       setAccessOriginIata(code);
       setAccessOriginSearchOpen(false);
       setAccessOriginSearchActive(false);
-      const option = getFlightCinemaOriginOption(code);
-      const askText = buildAccessRouteAskText(code, option);
+      const overseas = geo?.overseas?.originIata === code ? geo.overseas : null;
+      overseasAccessRef.current = overseas;
+      const askText = placeAccessAskText(code, overseas);
       handleSend(askText, PERSONA_TYPES.PLANNER, { chipId: MOONI_CHIP_IDS.ACCESS_ORIGIN });
     },
-    [handleSend]
+    [handleSend, placeAccessAskText]
   );
 
   const handleAskWithAccessOrigin = useCallback(() => {
-    const option = getFlightCinemaOriginOption(accessOriginIata);
-    const askText = buildAccessRouteAskText(accessOriginIata, option);
+    const overseas = overseasAccessRef.current?.originIata === accessOriginIata
+      ? overseasAccessRef.current
+      : null;
+    const askText = placeAccessAskText(accessOriginIata, overseas);
     handleSend(askText, PERSONA_TYPES.PLANNER, { chipId: MOONI_CHIP_IDS.ACCESS_ORIGIN });
-  }, [accessOriginIata, handleSend]);
+  }, [accessOriginIata, handleSend, placeAccessAskText]);
 
   const handleFestivalAccessOrigin = useCallback(async (origin) => {
     if (origin?.rememberOnly) {
@@ -1701,9 +1732,15 @@ const ChatModal = ({
       return;
     }
     const request = festivalOriginSendRequest(origin);
-    if (!request?.askKo) return;
-    const key = request.cityId || request.chipId || request.askKo;
+    if (!request?.askKo && !request?.sentenceKo) return;
+    const key = request.repeatKey || request.cityId || request.chipId || request.askKo;
     const english = String(i18n.language || '').slice(0, 2) === 'en';
+    const askText = request.sentenceKo
+      ? (english ? request.sentenceEn : request.sentenceKo)
+      : buildFestivalAccessAskText({ ko: request.askKo, en: request.askEn }, i18n.language);
+    const departureLabel = request.sentenceKo
+      ? (english ? request.chipEn : request.chipKo)
+      : (english ? request.askEn : request.askKo);
     if (originInputOn && key && key === lastSentOriginRef.current) {
       suppressMessageScrollRef.current = true;
       const name = english ? request.askEn : request.askKo;
@@ -1716,11 +1753,11 @@ const ChatModal = ({
     if (request.chipId) setFestivalAccessId(request.chipId);
     else if (originInputOn) setFestivalAccessId('');
     const ok = await handleSend(
-      buildFestivalAccessAskText({ ko: request.askKo, en: request.askEn }, i18n.language),
+      askText,
       PERSONA_TYPES.PLANNER,
       {
         chipId: MOONI_CHIP_IDS.FESTIVAL_ACCESS,
-        departureLabel: english ? request.askEn : request.askKo,
+        departureLabel,
       },
     );
     if (ok) {
@@ -2388,6 +2425,8 @@ const ChatModal = ({
                   title={getMooniL1ChipLabel(FESTIVAL_ACCESS_PARENT, { mobile: true })}
                   onBack={() => setTopicDockParent(null)}
                   messageScrollRef={messagesScrollRef}
+                  destinationLat={festivalMooniContext?.lat}
+                  destinationLng={festivalMooniContext?.lng}
                   onConfirm={handleFestivalAccessOrigin}
                 />
               ) : showFestivalAccessDock ? (

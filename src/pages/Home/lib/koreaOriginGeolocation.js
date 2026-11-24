@@ -1,5 +1,12 @@
 import { queryGeolocationPermission } from '../../Korea/festivalLocationHint.js';
+import { KOREA_AIRPORT_IATAS } from '../../../utils/koreaAirportIatas.js';
+import { RENTAL_AIRPORT_HUBS } from '../../../utils/rentalAirportHubs.js';
+import { distanceKm } from '../../../utils/rentalAirportMatch.js';
+import { coordsInKorea } from './visitedPlaceSearch.js';
 import { KOREA_ORIGIN_CITIES } from './koreaOriginCityMatch.js';
+import { geocodeReversePlaceFields } from './mapboxGeocodeSuggestions.js';
+import { getFlightOriginDisplayLabel } from './flightCinemaOriginOptions.js';
+import { resolveFlightOriginFromCoords } from './flightCinemaOriginSearch.js';
 
 function toRad(deg) {
   return (Number(deg) * Math.PI) / 180;
@@ -13,11 +20,27 @@ function haversineKm(lat1, lng1, lat2, lng2) {
   return 6371 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
-/** Nearest 시·군. Coordinates stay in memory for this call only. */
+function airportCopy(iata) {
+  const code = String(iata || '').trim().toUpperCase();
+  const hub = RENTAL_AIRPORT_HUBS.find((row) => row.iata === code);
+  return {
+    iata: code,
+    labelKo: hub?.officialKo || code,
+    labelEn: getFlightOriginDisplayLabel(code, 'en') || code,
+  };
+}
+
+/**
+ * Nearest 시·군 inside Korea. Coordinates outside Korea are not snapped to a Korean city.
+ * @param {number} lat
+ * @param {number} lng
+ * @param {typeof KOREA_ORIGIN_CITIES} [cities]
+ */
 export function nearestKoreaOriginCity(lat, lng, cities = KOREA_ORIGIN_CITIES) {
   const la = Number(lat);
   const ln = Number(lng);
   if (!Number.isFinite(la) || !Number.isFinite(ln)) return null;
+  if (!coordsInKorea(la, ln)) return null;
   let best = null;
   let bestKm = Infinity;
   for (const city of cities) {
@@ -32,8 +55,82 @@ export function nearestKoreaOriginCity(lat, lng, cities = KOREA_ORIGIN_CITIES) {
 }
 
 /**
+ * Korea-bound international gateway. PUS when the venue is closer to Busan, otherwise ICN.
+ * Outside Korea, the venue's own nearest airport (not a Korean city).
+ * @param {{ lat?: number, lng?: number }} [destination]
+ */
+export function arrivalAirportForAccessDestination(destination = {}) {
+  const lat = Number(destination.lat);
+  const lng = Number(destination.lng);
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+    return airportCopy('ICN');
+  }
+  if (!coordsInKorea(lat, lng)) {
+    const foreign = resolveFlightOriginFromCoords(lat, lng);
+    if (foreign?.iata && !KOREA_AIRPORT_IATAS.has(foreign.iata)) return airportCopy(foreign.iata);
+    return airportCopy(foreign?.iata || 'ICN');
+  }
+  const pus = RENTAL_AIRPORT_HUBS.find((row) => row.iata === 'PUS');
+  const icn = RENTAL_AIRPORT_HUBS.find((row) => row.iata === 'ICN');
+  if (!pus || !icn) return airportCopy('ICN');
+  const toPus = distanceKm(lat, lng, pus.lat, pus.lng);
+  const toIcn = distanceKm(lat, lng, icn.lat, icn.lng);
+  return airportCopy(toPus <= toIcn ? 'PUS' : 'ICN');
+}
+
+function placeNames(hit) {
+  const city = String(hit?.name || '').trim();
+  const country = String(hit?.country || '').trim();
+  const cityEn = String(hit?.name_en || hit?.name || '').trim();
+  const countryEn = String(hit?.country_en || hit?.country || '').trim();
+  if (!city || !country) return null;
+  return { city, country, cityEn: cityEn || city, countryEn: countryEn || country };
+}
+
+/**
+ * GPS → domestic 시·군, or an overseas city plus its nearest airport.
+ * Reverse geocode runs only outside Korea.
+ * @param {number} lat
+ * @param {number} lng
+ * @param {{ reverseGeocode?: (lat: number, lng: number) => Promise<unknown> }} [options]
+ */
+export async function resolveMyLocationOrigin(lat, lng, options = {}) {
+  const la = Number(lat);
+  const ln = Number(lng);
+  if (!Number.isFinite(la) || !Number.isFinite(ln)) return { ok: false };
+  if (coordsInKorea(la, ln)) {
+    const city = nearestKoreaOriginCity(la, ln);
+    if (!city) return { ok: false };
+    return { ok: true, overseas: false, city };
+  }
+  const airport = resolveFlightOriginFromCoords(la, ln, { excludeIatas: KOREA_AIRPORT_IATAS });
+  if (!airport?.iata || KOREA_AIRPORT_IATAS.has(airport.iata)) return { ok: false };
+  const reverseGeocode = options.reverseGeocode
+    || ((la2, ln2) => geocodeReversePlaceFields(la2, ln2, { preferLocality: true }));
+  let hit = null;
+  try {
+    hit = await reverseGeocode(la, ln, { preferLocality: true });
+  } catch {
+    hit = null;
+  }
+  const names = placeNames(hit);
+  if (!names) return { ok: false };
+  const described = airportCopy(airport.iata);
+  return {
+    ok: true,
+    overseas: true,
+    lat: la,
+    lng: ln,
+    ...names,
+    originIata: described.iata,
+    originLabelKo: described.labelKo,
+    originLabelEn: described.labelEn,
+  };
+}
+
+/**
  * Permission is requested only when this runs (button press).
- * Returns a city id/name. Does not persist coordinates.
+ * Does not persist coordinates. Outside Korea this does not return a Korean city.
  */
 export async function locateNearestOriginCity() {
   try {
@@ -50,9 +147,7 @@ export async function locateNearestOriginCity() {
     });
     const lat = pos?.coords?.latitude;
     const lng = pos?.coords?.longitude;
-    const city = nearestKoreaOriginCity(lat, lng);
-    if (!city) return { ok: false };
-    return { ok: true, city };
+    return resolveMyLocationOrigin(lat, lng);
   } catch {
     return { ok: false };
   }
