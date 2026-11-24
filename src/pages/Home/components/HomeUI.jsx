@@ -33,6 +33,7 @@ import { useMdUpViewport } from '../hooks/useMdUpViewport';
 import { CATEGORY_LABELS } from './SearchDiscovery/constants';
 import { getLocalizedPlaceName } from '../../../components/PlaceCard/common/locationDisplay';
 import TrustLinkBar from '../../../shared/layout/TrustLinkBar';
+import HomeWatchCard from './HomeWatchCard';
 
 const MOBILE_QUICK_LINK_DEFS = [
   {
@@ -360,6 +361,11 @@ const HomeUI = React.memo(({
 
   return (
     <>
+      <HomeWatchCard
+        isPlaceCardVisible={isPlaceCardVisible}
+        isTourCinema={isTourCinema}
+        isFlightCinema={isFlightCinema}
+      />
       <div className="fixed top-0 left-0 right-0 z-[100] p-4 md:p-6 flex flex-col gap-2 md:grid md:grid-cols-12 md:items-start md:gap-3 pointer-events-none w-full max-md:overflow-x-clip">
         <div
           data-site-notice-anchor-mobile

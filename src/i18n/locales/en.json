@@ -479,6 +479,25 @@
       "adventure": "Adventure"
     },
     "chatWithAi": "Chat with AI",
+    "watchCard": {
+      "title": "What to see now",
+      "dismiss": "Hide this card on this device for 7 days",
+      "continueLabel": "Continue viewing",
+      "continueVisited": "A place you viewed recently",
+      "continueAgency": "A booking page you opened",
+      "continueFestivalViewed": "A festival you viewed",
+      "continueFestivalFavorite": "A festival you saved",
+      "continueReview": "A review you were reading",
+      "continueReviewFallback": "GATEO reviewer reviews",
+      "photoAlt": "Photo of {{name}}",
+      "destinationAria": "View {{name}}",
+      "continueAria": "Continue viewing {{name}}",
+      "reelsTitle": "Reels",
+      "reelsSubtitle": "Short videos you can watch",
+      "reelsAria": "Open reels",
+      "reviewerAria": "Open reviews by {{name}}",
+      "tasteAria": "This month's note for {{name}}"
+    },
     "ticker": {
       "topTen": "TOP 10",
       "gateSystem": "GATE 0 SYSTEM"

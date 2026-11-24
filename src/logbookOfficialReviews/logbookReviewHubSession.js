@@ -1,4 +1,5 @@
-const SESSION_KEY = 'gateo:logbook-review-hub-ui';
+export const LOGBOOK_REVIEW_HUB_SESSION_KEY = 'gateo:logbook-review-hub-ui';
+const SESSION_KEY = LOGBOOK_REVIEW_HUB_SESSION_KEY;
 
 /**
  * @typedef {{

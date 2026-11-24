@@ -38,6 +38,10 @@ export const GATEO_ENV_FLAG_NAMES = {
   EXPLORE_V2: 'VITE_GATEO_EXPLORE_V2',
   /** SSOT 실문장 desc도 place_chat_intro로 요약 칸 표시. 기본 off. */
   PLACE_INTRO_OVER_SSOT: 'VITE_GATEO_PLACE_INTRO_OVER_SSOT',
+  /** Globe home 「지금 볼 거리」 card. Default off. */
+  HOME_WATCH_CARD: 'VITE_GATEO_HOME_WATCH_CARD',
+  /** Last home-watch slot becomes a /reels poster. Default off. */
+  SELF_REELS: 'VITE_GATEO_SELF_REELS',
 };
 
 /** @param {string} name */
@@ -178,6 +182,37 @@ export function isGateoExploreV2Enabled() {
 /** travelSpots 실문장도 무니 intro로 요약 칸 교체. 기본 off. */
 export function isGateoPlaceIntroOverSsotEnabled() {
   return readGateoEnvFlag(GATEO_ENV_FLAG_NAMES.PLACE_INTRO_OVER_SSOT);
+}
+
+export const HOME_WATCH_CARD_QUERY_PARAM = 'home_watch_card';
+
+/** @param {string | null | undefined} search */
+export function isHomeWatchCardQueryEnabled(search) {
+  try {
+    const value = new URLSearchParams(String(search || '').replace(/^\?/, '')).get(
+      HOME_WATCH_CARD_QUERY_PARAM,
+    );
+    const normalized = String(value || '').trim().toLowerCase();
+    return normalized === '1' || normalized === 'true' || normalized === 'yes';
+  } catch {
+    return false;
+  }
+}
+
+/** Globe home watch card. Env default off. `?home_watch_card=1` opens a preview. */
+export function isGateoHomeWatchCardEnabled() {
+  if (readGateoEnvFlag(GATEO_ENV_FLAG_NAMES.HOME_WATCH_CARD)) return true;
+  if (typeof window === 'undefined') return false;
+  try {
+    return isHomeWatchCardQueryEnabled(window.location.search);
+  } catch {
+    return false;
+  }
+}
+
+/** Self-hosted reels poster on the home watch card. Default off. */
+export function isGateoSelfReelsEnabled() {
+  return readGateoEnvFlag(GATEO_ENV_FLAG_NAMES.SELF_REELS);
 }
 
 /** Festival departure-city field. Unset is on. The string `"0"` is the only off switch. */

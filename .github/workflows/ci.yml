@@ -1251,6 +1251,36 @@ jobs:
           DEV_SSL: '0'
         run: npx playwright test -c playwright.config.home-festival-quick-link.js --reporter=line
 
+  home-watch-card-e2e:
+    name: Home watch card E2E (Chromium 390 · 1280)
+    runs-on: ubuntu-24.04
+    needs: lint-and-build
+    timeout-minutes: 35
+    container:
+      image: mcr.microsoft.com/playwright:v1.60.0-jammy
+      options: --ipc=host
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Playwright — home watch card
+        env:
+          VITE_SUPABASE_URL: https://example.supabase.co
+          VITE_SUPABASE_ANON_KEY: e2e-anon-placeholder
+          VITE_MAPBOX_TOKEN: pk.e2e-home-watch-placeholder
+          CI: true
+          DEV_SSL: '0'
+        run: npx playwright test -c playwright.config.home-watch-card.js --reporter=line
+
   travelogue-fullpage-nav-e2e:
     name: Travelogue full-page nav E2E (Chromium 1280 · WebKit 390)
     runs-on: ubuntu-24.04

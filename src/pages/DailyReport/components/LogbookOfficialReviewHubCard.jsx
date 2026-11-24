@@ -414,10 +414,20 @@ const LogbookOfficialReviewHubCard = ({ blogLocationFilter = '' }) => {
 
   const grouped = useMemo(() => groupLogbookOfficialReviews(rows), [rows]);
 
+  const reviewerFilter = useMemo(
+    () => parseLogbookReviewFilterFromSearch(location.search).reviewer,
+    [location.search],
+  );
+
   const filteredRows = useMemo(() => {
-    if (!filterEnabled) return rows;
-    return filterLogbookOfficialReviewRows(rows, filterMajor, filterCitySlug || null);
-  }, [rows, filterEnabled, filterMajor, filterCitySlug]);
+    if (!filterEnabled && !reviewerFilter) return rows;
+    return filterLogbookOfficialReviewRows(
+      rows,
+      filterEnabled ? filterMajor : LOGBOOK_REVIEW_FILTER_MAJOR.ALL,
+      filterEnabled ? filterCitySlug || null : null,
+      reviewerFilter || null,
+    );
+  }, [rows, filterEnabled, filterMajor, filterCitySlug, reviewerFilter]);
 
   const filteredTotal = filteredRows.length;
 
