@@ -73,7 +73,7 @@ export function plannerSlotForToolkit(card, toolkitType) {
 
 /**
  * 로그북·리뷰 제목. DB에 있는 제목만. 장소명만인 제목·중복·빈 제목은 제외.
- * 순서: 에디토리얼 우선, 그다음 최신 날짜. 최대 2개.
+ * 순서: 에디토리얼 우선, 그다음 최신 날짜. 공개 리뷰와 로그북 글을 모두 보여요.
  */
 export function selectVisitStories(entries, placeNames) {
   const nameKeys = new Set((placeNames || []).map(normTitle).filter(Boolean));
@@ -101,5 +101,5 @@ export function selectVisitStories(entries, placeNames) {
     const tb = Date.parse(b.date) || 0;
     return tb - ta;
   });
-  return rows.slice(0, 2);
+  return rows;
 }

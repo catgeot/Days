@@ -84,6 +84,27 @@ test('groupLogbookOfficialReviews — counts and city sort', () => {
   assert.equal(g.cities[0].count, 3);
 });
 
+test('groupLogbookOfficialReviews — recent cities lead, at most 3, then count', () => {
+  const now = new Date('2026-11-24T00:00:00Z');
+  const rows = [
+    { place_slug: 'paris', place_name: '파리', created_at: '2026-10-01T00:00:00Z' },
+    { place_slug: 'paris', place_name: '파리', created_at: '2026-10-02T00:00:00Z' },
+    { place_slug: 'paris', place_name: '파리', created_at: '2026-10-03T00:00:00Z' },
+    { place_slug: 'paris', place_name: '파리', created_at: '2026-10-04T00:00:00Z' },
+    { place_slug: 'jeju', place_name: '제주', created_at: '2026-11-23T00:00:00Z' },
+    { place_slug: 'bangkok', place_name: '방콕', created_at: '2026-11-22T00:00:00Z' },
+    { place_slug: 'bangkok', place_name: '방콕', created_at: '2026-11-18T00:00:00Z' },
+    { place_slug: 'osaka', place_name: '오사카', created_at: '2026-11-21T00:00:00Z' },
+    { place_slug: 'rome', place_name: '로마', created_at: '2026-11-20T00:00:00Z' },
+    { place_slug: 'seoul', place_name: '서울', created_at: '2026-11-10T00:00:00Z' },
+  ];
+  const g = groupLogbookOfficialReviews(rows, now);
+  assert.deepEqual(
+    g.cities.map((c) => c.slug),
+    ['jeju', 'bangkok', 'osaka', 'paris', 'rome', 'seoul'],
+  );
+});
+
 test('buildLogbookReviewCityChipLayout — top 8 + other count', () => {
   const cities = Array.from({ length: 12 }, (_, i) => ({
     slug: `city-${i}`,

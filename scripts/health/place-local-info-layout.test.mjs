@@ -136,9 +136,14 @@ test('visit story titles come from stored titles only', () => {
     { id: '6', kind: 'logbook', title: '나일강의 저녁', date: '2026-10-08', editorial: false },
     { id: '7', kind: 'review', title: '예시 제목', editorial: false },
   ], names);
-  assert.deepEqual(stories.map((row) => row.title), ['사흘의 윤곽', '나일강의 저녁']);
+  assert.deepEqual(stories.map((row) => row.title), [
+    '사흘의 윤곽',
+    '나일강의 저녁',
+    '골목의 코샤리',
+    '예시 제목',
+  ]);
   assert.equal(stories[0].kind, 'review');
   assert.equal(stories[0].editorial, false);
-  assert.equal(stories.some((row) => row.title === '예시 제목'), false);
+  assert.equal(stories.some((row) => row.title === '예시 제목'), true);
   assert.equal(stories.some((row) => !row.title), false);
 });

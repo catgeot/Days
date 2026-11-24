@@ -307,6 +307,7 @@ jobs:
           DEV_SSL: '0'
         run: |
           npx playwright test -c playwright.config.festival-region-chip-scroll.js --project=webkit --reporter=line
+          npx playwright test e2e/korea-festival-region-chip-scroll.spec.js -c playwright.config.festival-region-chip-scroll.js --project=chromium --reporter=line
 
   festival-city-place-e2e:
     name: Festival city place link E2E (Chromium 390·1280, WebKit 390)
