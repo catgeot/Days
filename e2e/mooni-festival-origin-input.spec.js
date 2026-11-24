@@ -286,3 +286,90 @@ test('1280 default dock', async ({ page, context }, testInfo) => {
   await expect(page.locator('[data-festival-origin="seoul"]')).toBeVisible();
   await saveShot(page, 'default-1280-chromium.png', 1280);
 });
+
+const OVERSEAS_SHOTS = '/opt/cursor/artifacts/overseas-origin';
+
+async function mockReverseGeocode(context) {
+  await context.route(/api\.mapbox\.com\/geocoding\/v5\/mapbox\.places\//i, async (route) => {
+    const url = new URL(route.request().url());
+    const lang = url.searchParams.get('language') || 'ko';
+    const ko = lang.startsWith('ko');
+    const bangkok = url.pathname.includes('100.5018');
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        features: [{
+          id: bangkok ? 'place.bangkok' : 'place.khaolak',
+          text: bangkok ? (ko ? '방콕' : 'Bangkok') : (ko ? '카오락' : 'Khao Lak'),
+          place_type: ['place'],
+          center: bangkok ? [100.5018, 13.7563] : [98.2475, 8.6374],
+          context: [{ id: 'country.th', text: ko ? '태국' : 'Thailand' }],
+        }],
+      }),
+    });
+  });
+}
+
+async function saveOverseasShot(page, name, width) {
+  mkdirSync(OVERSEAS_SHOTS, { recursive: true });
+  await page.screenshot({
+    path: join(OVERSEAS_SHOTS, name),
+    clip: shotBox(width),
+  });
+}
+
+async function openLocatedOrigin(page, context, { latitude, longitude }) {
+  await context.grantPermissions(['geolocation']);
+  await context.setGeolocation({ latitude, longitude });
+  await mockReverseGeocode(context);
+  const calls = [];
+  await openOriginDock(page, context, { calls });
+  await page.getByTestId('mooni-origin-locate').click();
+  return calls;
+}
+
+test('Khao Lak my-location stays in Thailand and flies HKT, not Seogwipo', async ({ page, context }, testInfo) => {
+  test.skip(testInfo.project.name.includes('webkit'), 'captures are chromium 390 and 1280');
+  const calls = await openLocatedOrigin(page, context, { latitude: 8.6374, longitude: 98.2475 });
+  const input = page.getByTestId('mooni-origin-input');
+  await expect(input).toHaveValue('카오락 · 태국 (내 위치)');
+  await expect(page.getByTestId('mooni-festival-access-dock')).toHaveAttribute('data-origin-kind', 'overseas');
+  await expect(input).not.toHaveValue(/서귀포|제주/);
+  await input.press('Enter');
+  const bubble = page.getByText(/카오락 · 태국에서/).first();
+  await expect(bubble).toBeVisible({ timeout: 30_000 });
+  await expect(bubble).toContainText('HKT');
+  await expect(bubble).toContainText('ICN');
+  await expect(bubble).not.toContainText('서귀포');
+  expect(calls.filter((task) => task === 'mooni_chat')).toEqual(['mooni_chat']);
+  const width = testInfo.project.name.includes('1280') ? 1280 : 390;
+  await saveOverseasShot(page, `khao-lak-${width}.png`, width);
+});
+
+test('Bangkok my-location uses the city and Don Mueang, not a Korean city', async ({ page, context }, testInfo) => {
+  test.skip(testInfo.project.name.includes('webkit'), 'captures are chromium 390 and 1280');
+  await openLocatedOrigin(page, context, { latitude: 13.7563, longitude: 100.5018 });
+  const input = page.getByTestId('mooni-origin-input');
+  await expect(input).toHaveValue('방콕 · 태국 (내 위치)');
+  await expect(input).not.toHaveValue(/서귀포/);
+  await input.press('Enter');
+  const bubble = page.getByText(/방콕 · 태국에서/).first();
+  await expect(bubble).toBeVisible({ timeout: 30_000 });
+  await expect(bubble).toContainText('DMK');
+  await expect(bubble).not.toContainText('서귀포');
+  const width = testInfo.project.name.includes('1280') ? 1280 : 390;
+  await saveOverseasShot(page, `bangkok-${width}.png`, width);
+});
+
+test('domestic Seoul my-location still names Seoul and stays on the ground ask', async ({ page, context }, testInfo) => {
+  test.skip(!testInfo.project.name.includes('chromium-390'), 'one domestic geolocation check');
+  const calls = await openLocatedOrigin(page, context, { latitude: 37.5665, longitude: 126.978 });
+  const input = page.getByTestId('mooni-origin-input');
+  await expect(input).toHaveValue('서울 · 특별시 (내 위치)');
+  await expect(page.getByTestId('mooni-festival-access-dock')).toHaveAttribute('data-origin-kind', 'domestic');
+  await input.press('Enter');
+  await expect(page.getByText(/서울에서 이 축제장까지 대중교통과 차로/).first()).toBeVisible({ timeout: 30_000 });
+  expect(calls.filter((task) => task === 'mooni_chat')).toEqual(['mooni_chat']);
+  await saveOverseasShot(page, 'seoul-390.png', 390);
+});

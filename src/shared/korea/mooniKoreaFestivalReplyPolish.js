@@ -32,6 +32,10 @@ import {
   domesticFestivalGroundOrigin,
   formatOriginHubGuidance,
 } from '../../pages/Home/lib/festivalDomesticOrigins.js';
+import {
+  overseasMyLocationModelHint,
+  parseOverseasMyLocationAsk,
+} from '../../pages/Home/lib/overseasMyLocationAsk.js';
 import { fitMooniKoreaFestivalHint } from './mooniKoreaFestivalHintBudget.js';
 import {
   extractMooniFestivalLocationQueryText,
@@ -5016,8 +5020,14 @@ export async function resolveMooniChatKoreaFestivalHint(input = {}) {
     const enFood = String(input.locale || '').slice(0, 2) === 'en';
     if (isFestivalAccessAsk({ userText, chipId: input.chipId })) {
       hint = trimBoundFestivalHintForAccess(hint, input.locale);
-      const originRow = domesticFestivalGroundOrigin(userText, input.departureLabel);
-      if (originRow?.dictionaryOnly) {
+      const overseasRoute = parseOverseasMyLocationAsk(userText)
+        || parseOverseasMyLocationAsk(input.departureLabel);
+      const originRow = overseasRoute
+        ? null
+        : domesticFestivalGroundOrigin(userText, input.departureLabel);
+      if (overseasRoute) {
+        hint += overseasMyLocationModelHint(overseasRoute, input.locale);
+      } else if (originRow?.dictionaryOnly) {
         const area = enFood ? originRow.en : originRow.ko;
         const province = enFood ? (originRow.provinceEn || originRow.province) : originRow.province;
         hint += enFood
@@ -5047,7 +5057,7 @@ export async function resolveMooniChatKoreaFestivalHint(input = {}) {
       hint += enFood
         ? '\n- This turn is only getting there. Do not repeat the festival welcome, overview, or program from the opening message — go straight from the chosen origin to the venue.'
         : '\n- 이번 답은 가는 법만이에요. 채팅 첫 인사·개요·프로그램 소개는 반복하지 말고, 고른 출발지에서 축제장까지 교통만 짧게 이어 주세요.';
-      if (!festivalTransportHasTagoRows(festivalContext.transport)) {
+      if (!overseasRoute && !festivalTransportHasTagoRows(festivalContext.transport)) {
         if (originRow?.dictionaryOnly) {
           hint += enFood
             ? '\n- Getting there: GATEO may not have confirmed train or bus times for this departure. Use only confirmed numbers. Otherwise say they can check [Korail](https://www.letskorail.com/), [BUSTAGO](https://www.bustago.or.kr/), [KOBUS](https://www.kobus.co.kr/), or [T-money express bus](https://txbus.t-money.co.kr/). Do not invent station names.'

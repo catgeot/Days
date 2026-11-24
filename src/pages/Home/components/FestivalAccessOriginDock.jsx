@@ -14,7 +14,8 @@ import {
   readDomesticOriginCityId,
   suggestKoreaOriginCities,
 } from '../lib/koreaOriginCityMatch.js';
-import { locateNearestOriginCity } from '../lib/koreaOriginGeolocation.js';
+import { arrivalAirportForAccessDestination, locateNearestOriginCity } from '../lib/koreaOriginGeolocation.js';
+import { buildOverseasMyLocationAsk } from '../lib/overseasMyLocationAsk.js';
 import { shouldResendPinnedOrigin, tryOriginKeyboardConfirm } from '../lib/festivalOriginConfirm.js';
 import { shouldConfirmHangulEntry } from '../../../utils/hangulSearch.js';
 
@@ -44,6 +45,8 @@ export default function FestivalAccessOriginDock({
   onConfirm,
   backLabel,
   title,
+  destinationLat = null,
+  destinationLng = null,
 }) {
   const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
@@ -52,6 +55,7 @@ export default function FestivalAccessOriginDock({
   const [suggestionsOpen, setSuggestionsOpen] = useState(false);
   const [locateError, setLocateError] = useState('');
   const [locating, setLocating] = useState(false);
+  const [overseasPin, setOverseasPin] = useState(null);
   const composingRef = useRef(false);
   const rememberedRef = useRef(false);
   const savedScrollTopRef = useRef(null);
@@ -127,8 +131,47 @@ export default function FestivalAccessOriginDock({
     if (!sent) return;
     setText(koreaOriginAskLabel(city, locale));
     setPinnedId(city.id);
+    setOverseasPin(null);
     setLocateError('');
     submittedIdRef.current = city.id;
+  };
+
+  const confirmOverseas = (pin) => {
+    const found = pin || overseasPin;
+    if (!found?.originIata) return;
+    const arrival = arrivalAirportForAccessDestination({
+      lat: destinationLat,
+      lng: destinationLng,
+    });
+    const same = !arrival?.iata || arrival.iata === found.originIata;
+    const askKo = buildOverseasMyLocationAsk({
+      locale: 'ko',
+      kind: 'festival',
+      city: found.city,
+      country: found.country,
+      originLabel: found.originLabelKo,
+      originIata: found.originIata,
+      arrivalLabel: same ? '' : arrival.labelKo,
+      arrivalIata: same ? '' : arrival.iata,
+    });
+    const askEn = buildOverseasMyLocationAsk({
+      locale: 'en',
+      kind: 'festival',
+      city: found.cityEn || found.city,
+      country: found.countryEn || found.country,
+      originLabel: found.originLabelEn || found.originIata,
+      originIata: found.originIata,
+      arrivalLabel: same ? '' : arrival.labelEn,
+      arrivalIata: same ? '' : arrival.iata,
+    });
+    if (!askKo) return;
+    const sent = emitConfirm({
+      askLabel: askKo,
+      askLabelEn: askEn || askKo,
+    });
+    if (!sent) return;
+    setLocateError('');
+    submittedIdRef.current = 'overseas';
   };
 
   const onChip = (row) => {
@@ -136,6 +179,7 @@ export default function FestivalAccessOriginDock({
     if (!sent) return;
     setText('');
     setPinnedId('');
+    setOverseasPin(null);
     setLocateError('');
     submittedIdRef.current = `chip:${row.id}`;
   };
@@ -157,10 +201,23 @@ export default function FestivalAccessOriginDock({
     setLocateError('');
     try {
       const found = await locateNearestOriginCity();
-      if (!found.ok || !found.city) {
+      if (!found.ok || (!found.overseas && !found.city)) {
+        setOverseasPin(null);
         setLocateError(t('mooni.chat.originLocateFail'));
         return;
       }
+      if (found.overseas) {
+        const en = String(locale).slice(0, 2) === 'en';
+        const cityName = en ? (found.cityEn || found.city) : found.city;
+        const countryName = en ? (found.countryEn || found.country) : found.country;
+        setOverseasPin(found);
+        setText(t('mooni.chat.originLocated', { city: cityName, province: countryName }));
+        setPinnedId('overseas');
+        submittedIdRef.current = '';
+        closeSuggestions();
+        return;
+      }
+      setOverseasPin(null);
       const city = found.city;
       const name = String(locale).slice(0, 2) === 'en' ? city.en : city.ko;
       setText(t('mooni.chat.originLocated', { city: name, province: koreaOriginRegionTag(city, locale) }));
@@ -186,6 +243,10 @@ export default function FestivalAccessOriginDock({
     })) {
       event.preventDefault();
       if (!shouldConfirmHangulEntry({ composing, key: 'Enter' })) return;
+      if (pinnedId === 'overseas' && overseasPin) {
+        confirmOverseas(overseasPin);
+        return;
+      }
       confirmCity(findKoreaOriginCityById(pinnedId));
       return;
     }
@@ -204,11 +265,12 @@ export default function FestivalAccessOriginDock({
 
   const showList = suggestionsOpen && (suggestion.kind === 'typo' || suggestion.cities.length > 0);
   const showGu = suggestionsOpen && suggestion.kind === 'gu';
-  const showMissing = suggestionsOpen && suggestion.kind === 'missing' && suggestion.askRaw;
+  const showMissing = suggestionsOpen && !overseasPin && suggestion.kind === 'missing' && suggestion.askRaw;
 
   return (
     <div
       data-testid="mooni-festival-access-dock"
+      data-origin-kind={overseasPin ? 'overseas' : 'domestic'}
       className={`px-3 md:px-4 pt-3 md:pt-2 pb-2 md:pb-1.5 space-y-2 md:space-y-1.5 ${tone(fresh, 'border-b border-gray-800/80', 'border-b border-cyan-100')}`}
     >
       <div className="flex items-center gap-2 min-w-0 flex-wrap">
@@ -359,6 +421,7 @@ export default function FestivalAccessOriginDock({
             onChange={(event) => {
               setText(event.target.value);
               setPinnedId('');
+              setOverseasPin(null);
               setLocateError('');
               submittedIdRef.current = '';
             }}

@@ -20,6 +20,7 @@ export default defineConfig({
       DEV_SSL: '0',
       VITE_SUPABASE_URL: process.env.VITE_SUPABASE_URL || 'https://example.supabase.co',
       VITE_SUPABASE_ANON_KEY: process.env.VITE_SUPABASE_ANON_KEY || 'e2e-anon-placeholder',
+      VITE_MAPBOX_TOKEN: process.env.VITE_MAPBOX_TOKEN || 'pk.e2e-origin',
     },
     url: `${baseURL}/`,
     reuseExistingServer: !process.env.CI,

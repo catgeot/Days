@@ -2,6 +2,7 @@ import {
   clearDomesticAirportDeparture,
   domesticFestivalGroundOrigin,
 } from './festivalDomesticOrigins.js';
+import { parseOverseasMyLocationAsk } from './overseasMyLocationAsk.js';
 import { resolveFestivalMooniEventDates } from '../../Korea/lib/festivalMooniContext.js';
 import { todayYmd } from '../../Korea/festivalTimeFilter.js';
 import { extractMooniChipPromptFacts } from './mooniChipPrompts.js';
@@ -81,8 +82,19 @@ export function prepareFestivalMooniChatPayload({
   nextSession.destinationName = destinationName || nextSession.destinationName;
   nextSession.slug = slug || nextSession.slug;
 
+  const overseasRoute = parseOverseasMyLocationAsk(cleanText)
+    || parseOverseasMyLocationAsk(departureLabel);
+  if (overseasRoute) {
+    nextSession.departureIata = overseasRoute.originIata;
+    nextSession.departureAirportLabel = overseasRoute.originLabel;
+    if (overseasRoute.arrivalIata && overseasRoute.arrivalIata !== overseasRoute.originIata) {
+      nextSession.arrivalIata = overseasRoute.arrivalIata;
+      nextSession.arrivalAirportLabel = overseasRoute.arrivalLabel;
+    }
+  }
+
   const overseas = Boolean(festivalContext) && isFestivalOverseasAirPath(chipId, cleanText);
-  const groundOrigin = festivalContext && !overseas
+  const groundOrigin = festivalContext && !overseas && !overseasRoute
     ? domesticFestivalGroundOrigin(cleanText, departureLabel)
     : null;
   if (groundOrigin) clearDomesticAirportDeparture(nextSession);
