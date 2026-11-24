@@ -250,11 +250,10 @@ async function expectMonthlySummaryNotSources(section) {
   await expect(section.page().getByText('File / policy')).toHaveCount(0);
   await expect(section.getByTestId('explore-v2-monthly-summary')).toHaveCount(MONTHLY_VISIBLE_COUNT);
   const kyoto = section.getByTestId('explore-v2-monthly-card-kyoto');
-  await expect(kyoto).toContainText('단풍 절정');
+  await expect(kyoto).toContainText('단풍·야경');
   await expect(kyoto).not.toContainText('일본 전통 문화의 심장');
   const jeju = section.getByTestId('explore-v2-monthly-card-jeju');
-  await expect(jeju).toContainText('11월 말 제주');
-  await expect(jeju).toContainText('해안·오름 산책');
+  await expect(jeju).toContainText('11월 말 해안·오름');
   await expect(jeju).not.toContainText('추정');
   await expect(jeju).not.toContainText('억새');
   await expect(jeju).not.toContainText('세계자연유산');
@@ -328,7 +327,7 @@ test.describe('Explore monthly picks @flagOff', () => {
 
     const jejuItem = section.getByTestId('explore-v2-monthly-item-jeju');
     const jejuCard = section.getByTestId('explore-v2-monthly-card-jeju');
-    await expect(jejuCard).toContainText('11월 말 제주, 해안·오름 산책');
+    await expect(jejuCard).toContainText('11월 말 해안·오름');
     await expect(jejuCard.getByTestId('explore-v2-monthly-estimate')).toHaveCount(0);
 
     const scrollEl = SCROLL_AREA(page);
@@ -462,7 +461,7 @@ test.describe('Explore monthly picks @flagOn', () => {
     const section = await expectMonthlyMosaic(page);
     await expectDesktopThreeRowGrid(section);
     const jeju = section.getByTestId('explore-v2-monthly-card-jeju');
-    await expect(jeju).toContainText('11월 말 제주, 해안·오름 산책');
+    await expect(jeju).toContainText('11월 말 해안·오름');
     await expect(jeju.getByTestId('explore-v2-monthly-estimate')).toHaveCount(0);
     await expect(page.getByText('에디터스 픽').first()).toBeVisible();
   });

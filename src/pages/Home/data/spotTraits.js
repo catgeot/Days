@@ -1,14 +1,15 @@
 /** Explore v2 spot traits + monthly picks (does not modify travelSpots.js). */
 
 /** @typedef {{ url: string, label: string }} MonthlyPickSource */
-/** @typedef {{ slug: string, reason: string, sources: MonthlyPickSource[], checked: string, estimate?: boolean }} MonthlyPickEntry */
+/** @typedef {{ slug: string, reason: string, reason_en: string, sources: MonthlyPickSource[], checked: string, estimate?: boolean }} MonthlyPickEntry */
 
 /** @type {Record<string, MonthlyPickEntry[]>} */
 export const MONTHLY_PICKS = {
   '2026-11': [
     {
       slug: 'kyoto',
-      reason: '11월 중순 단풍 절정·밤 라이트업',
+      reason: '11월 중순 단풍·야경',
+      reason_en: 'Nov leaves·lights',
       sources: [
         {
           url: 'https://www.kyoto.travel/en/seasonal-info/autumnleaves/',
@@ -24,7 +25,8 @@ export const MONTHLY_PICKS = {
     },
     {
       slug: 'chiang-mai',
-      reason: '11/23~25 이펭. 건기 2월까지',
+      reason: '11/23~25 이펭·건기',
+      reason_en: 'Yi Peng Nov 23–25',
       sources: [
         {
           url: 'https://www.thailandtravel.or.jp/about/calendar/',
@@ -40,7 +42,8 @@ export const MONTHLY_PICKS = {
     },
     {
       slug: 'phu-quoc',
-      reason: '11월 건기 시작(전환기)',
+      reason: '11월 건기 시작',
+      reason_en: 'Dry season·Nov',
       sources: [
         {
           url: 'https://vietnam.travel/places-to-go/mekong-delta/phu-quoc/',
@@ -52,7 +55,8 @@ export const MONTHLY_PICKS = {
     },
     {
       slug: 'jeju',
-      reason: '11월 말 제주, 해안·오름 산책',
+      reason: '11월 말 해안·오름',
+      reason_en: 'Late Nov·coast',
       sources: [
         {
           url: 'https://www.visitjeju.net/kr/detail/view?contentsid=CONT_000000000500309',
@@ -68,7 +72,8 @@ export const MONTHLY_PICKS = {
     },
     {
       slug: 'dubai',
-      reason: '11월 피트니스 챌린지. 걷기 좋아요',
+      reason: '11월 피트니스·산책',
+      reason_en: 'Nov fitness walks',
       sources: [
         {
           url: 'https://www.visitdubai.com/en/-/media/Images/pdf/2026/dubai-city-guide-en-2026.pdf',
@@ -88,7 +93,8 @@ export const MONTHLY_PICKS = {
     },
     {
       slug: 'melbourne',
-      reason: '11월 말 멜버른, 정원·해변 산책',
+      reason: '11월 말 멜버른·해변',
+      reason_en: 'Late Nov·gardens',
       sources: [
         {
           url: 'https://www.visitvictoria.com/regions/melbourne',
@@ -102,7 +108,8 @@ export const MONTHLY_PICKS = {
   '2026-12': [
     {
       slug: 'sapporo',
-      reason: '화이트일루 11/20~3/14 오도리~12/25',
+      reason: '오도리 일루 11/20~',
+      reason_en: 'Odori lights Nov–',
       sources: [
         {
           url: 'https://www.sapporo.travel/en/event/event-list/sapporo_white_illumination/',
@@ -122,7 +129,8 @@ export const MONTHLY_PICKS = {
     },
     {
       slug: 'vienna',
-      reason: '라트하우스 마켓 11/13~12/26',
+      reason: '빈 마켓 11/13~',
+      reason_en: 'Xmas market Nov–',
       sources: [
         {
           url: 'https://www.wien.info/de/aktuell/veranstaltungen/wiener-christkindlmarkt-1001446',
@@ -130,7 +138,7 @@ export const MONTHLY_PICKS = {
         },
         {
           url: 'https://www.christkindlmarkt.at/besuch/',
-          label: '크리스트킨들마르크트',
+          label: '크리스트킨들마르트',
         },
         {
           url: 'https://www.wien.gv.at/freizeit/weihnachtsmaerkte',
@@ -142,7 +150,8 @@ export const MONTHLY_PICKS = {
     },
     {
       slug: 'hong-kong',
-      reason: 'WinterFest 11/18~1/5',
+      reason: '윈터페스트 11/18~',
+      reason_en: 'WinterFest Nov 18–',
       sources: [
         {
           url: 'https://www.discoverhongkong.com/eng/events/hong-kong-winterfest.html',
@@ -162,7 +171,8 @@ export const MONTHLY_PICKS = {
     },
     {
       slug: 'seoul',
-      reason: '서울빛초롱 12/11~1/31 청계천 18~23 무료',
+      reason: '빛초롱 12/11~',
+      reason_en: 'Lantern fest Dec',
       sources: [
         {
           url: 'https://www.stolantern.com/',
@@ -178,7 +188,8 @@ export const MONTHLY_PICKS = {
     },
     {
       slug: 'sydney',
-      reason: '시드니 새해 불꽃 12/31 21시·자정',
+      reason: '12/31 새해 불꽃',
+      reason_en: 'NYE Dec 31',
       sources: [
         {
           url: 'https://www.sydneynewyearseve.com/',
@@ -198,7 +209,8 @@ export const MONTHLY_PICKS = {
     },
     {
       slug: 'reykjavik',
-      reason: '오로라 9월~4월 가능(보장 없음)',
+      reason: '12~2월 오로라·변동',
+      reason_en: 'Winter aurora',
       sources: [
         {
           url: 'https://visitreykjavik.is/reykjavik-faqs',

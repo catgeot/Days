@@ -94,7 +94,10 @@ const HomeWatchCard = ({
   isTourCinema = false,
   isFlightCinema = false,
 }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isEnUi = String(i18n.language || '')
+    .toLowerCase()
+    .startsWith('en');
   const { pathname } = useLocation();
   const { siteNotice, mooniChat } = useHomeWatchChromeFlags();
   const slotCount = useHomeWatchSlotCount();
@@ -240,13 +243,13 @@ const HomeWatchCard = ({
                       </p>
                     ) : null}
                     <p className="truncate text-[11px] font-bold leading-tight text-white">{label}</p>
-                    {slot.type === 'destination' && slot.reason ? (
+                    {slot.type === 'destination' && (slot.reason || slot.reasonEn) ? (
                       <span
                         data-testid="home-watch-taste"
                         className="mt-0.5 inline-block max-w-full truncate rounded bg-black/70 px-1 py-0.5 text-[8px] font-semibold leading-none text-amber-100"
                         aria-label={t('home.watchCard.tasteAria', { name: label })}
                       >
-                        {slot.reason}
+                        {isEnUi ? slot.reasonEn || slot.reason : slot.reason}
                       </span>
                     ) : null}
                     {subtitle && slot.type !== 'destination' ? (

@@ -6,6 +6,7 @@ import {
   HOME_WATCH_CARD_QUERY_PARAM,
   isGateoHomeWatchCardEnabled,
   isGateoSelfReelsEnabled,
+  isHomeWatchCardQueryDisabled,
   isHomeWatchCardQueryEnabled,
 } from '../../src/shared/gateoFeatureFlags.js';
 import {
@@ -26,6 +27,7 @@ import { FAVORITES_KEY, VIEWED_KEY } from '../../src/pages/Korea/festivalPersona
 import { TRAVEL_AGENCY_VISITS_KEY } from '../../src/utils/travelAgencyVisits.js';
 import { LOGBOOK_REVIEW_HUB_SESSION_KEY } from '../../src/logbookOfficialReviews/logbookReviewHubSession.js';
 import { LOGBOOK_REVIEW_HUB_ROWS_STORAGE_KEY } from '../../src/logbookOfficialReviews/logbookReviewHubListCache.js';
+import { MONTHLY_PICKS } from '../../src/pages/Home/data/spotTraits.js';
 import {
   HOME_WATCH_DISMISS_KEY,
   HOME_WATCH_DISMISS_MS,
@@ -39,9 +41,12 @@ import {
   shouldHideHomeWatchCard,
 } from '../../src/pages/Home/lib/homeWatchCardModel.js';
 
+const HOME_WATCH_TASTE_MAX_KO = 16;
+const HOME_WATCH_TASTE_MAX_EN = 18;
+
 const NOW = 1_763_900_000_000;
 
-test('home watch card flag defaults off', () => {
+test('home watch card defaults on unless env or query disables', () => {
   const cardKey = GATEO_ENV_FLAG_NAMES.HOME_WATCH_CARD;
   const reelsKey = GATEO_ENV_FLAG_NAMES.SELF_REELS;
   const prevCard = globalThis.__VITE_ENV__[cardKey];
@@ -49,15 +54,30 @@ test('home watch card flag defaults off', () => {
   try {
     globalThis.__VITE_ENV__[cardKey] = '';
     globalThis.__VITE_ENV__[reelsKey] = '';
-    assert.equal(isGateoHomeWatchCardEnabled(), false);
+    assert.equal(isGateoHomeWatchCardEnabled(), true);
     assert.equal(isGateoSelfReelsEnabled(), false);
     assert.equal(isHomeWatchCardQueryEnabled(`?${HOME_WATCH_CARD_QUERY_PARAM}=1`), true);
-    assert.equal(isHomeWatchCardQueryEnabled(''), false);
+    assert.equal(isHomeWatchCardQueryDisabled(`?${HOME_WATCH_CARD_QUERY_PARAM}=0`), true);
+    globalThis.__VITE_ENV__[cardKey] = '0';
+    assert.equal(isGateoHomeWatchCardEnabled(), false);
     globalThis.__VITE_ENV__[cardKey] = '1';
     assert.equal(isGateoHomeWatchCardEnabled(), true);
   } finally {
     globalThis.__VITE_ENV__[cardKey] = prevCard;
     globalThis.__VITE_ENV__[reelsKey] = prevReels;
+  }
+});
+
+test('monthly pick taste copy fits the 390px watch card row', () => {
+  const months = Object.values(MONTHLY_PICKS);
+  for (const entries of months) {
+    for (const entry of entries) {
+      assert.ok(entry.reason.length <= HOME_WATCH_TASTE_MAX_KO, `${entry.slug} ko: ${entry.reason}`);
+      assert.ok(
+        entry.reason_en.length <= HOME_WATCH_TASTE_MAX_EN,
+        `${entry.slug} en: ${entry.reason_en}`,
+      );
+    }
   }
 });
 

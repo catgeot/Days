@@ -20,15 +20,29 @@ async function box(locator) {
   return raw;
 }
 
-async function gotoHome(page) {
+async function gotoHome(page, path = '/') {
   await page.addInitScript(() => {
     window.__gateoGaEvents = window.__gateoGaEvents || [];
   });
-  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  await page.goto(path, { waitUntil: 'domcontentloaded' });
   await expect(page.getByTestId('home-watch-card')).toBeVisible({ timeout: 60_000 });
 }
 
+async function expectTasteLabelsFit(page) {
+  const tastes = page.getByTestId('home-watch-taste');
+  const count = await tastes.count();
+  for (let i = 0; i < count; i += 1) {
+    const fit = await tastes.nth(i).evaluate((el) => el.scrollWidth <= el.clientWidth + 1);
+    expect(fit, `home-watch-taste[${i}] truncates`).toBe(true);
+  }
+}
+
 test.describe('home watch card', () => {
+  test('renders on plain home without query flag', async ({ page }) => {
+    await gotoHome(page, '/');
+    await expect(page.url()).not.toContain('home_watch_card=');
+  });
+
   test('shows the row, clears MOONi and map tools, and records a view', async ({ page }, testInfo) => {
     const width = testInfo.project.use.viewport?.width ?? 390;
     const height = testInfo.project.use.viewport?.height ?? 844;
@@ -38,6 +52,9 @@ test.describe('home watch card', () => {
     await expect(page.getByTestId('home-watch-slot-reels')).toHaveCount(0);
     await expect(page.getByTestId('home-watch-slot-destination')).toHaveCount(width >= 1280 ? 4 : 3);
     await expect(card).toContainText('지금 볼 거리');
+    if (width < 1280) {
+      await expectTasteLabelsFit(page);
+    }
 
     const cardBox = await box(card);
     expect(cardBox.height).toBeGreaterThanOrEqual(80);
@@ -107,6 +124,24 @@ test.describe('home watch card', () => {
     await expect(card).toHaveAttribute('data-globe-drag-passthrough', 'true');
     await page.mouse.up();
     await expect(card).toHaveAttribute('data-globe-drag-passthrough', 'false');
+  });
+
+  test('English taste labels fit at 390 without truncation', async ({ page }, testInfo) => {
+    const width = testInfo.project.use.viewport?.width ?? 390;
+    test.skip(width >= 1280, '390-only layout check');
+    await page.addInitScript(() => {
+      window.__gateoGaEvents = window.__gateoGaEvents || [];
+      localStorage.setItem('i18nextLng', 'en');
+    });
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
+    await expect(page.getByTestId('home-watch-card')).toBeVisible({ timeout: 60_000 });
+    await expectTasteLabelsFit(page);
+    const subtitles = page.locator('[data-testid^="home-watch-slot-"] p.truncate.text-\\[9px\\]');
+    const subCount = await subtitles.count();
+    for (let i = 0; i < subCount; i += 1) {
+      const fit = await subtitles.nth(i).evaluate((el) => el.scrollWidth <= el.clientWidth + 1);
+      expect(fit, `continue subtitle[${i}] truncates`).toBe(true);
+    }
   });
 
   test('destination click routes and the card hides on the place', async ({ page }) => {
