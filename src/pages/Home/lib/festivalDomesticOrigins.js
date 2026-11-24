@@ -309,7 +309,7 @@ export function festivalOriginLabel(rowOrId, locale = 'ko') {
   return en ? row.en : row.ko;
 }
 
-function overseasSendRequest(overseas) {
+export function overseasSendRequest(overseas, kind = 'festival') {
   const city = String(overseas?.city || '').trim();
   const country = String(overseas?.country || '').trim();
   const originIata = String(overseas?.originIata || '').trim().toUpperCase();
@@ -320,7 +320,7 @@ function overseasSendRequest(overseas) {
   const arrivalIata = koreaIata && koreaIata !== originIata ? koreaIata : '';
   const sentenceKo = buildOverseasMyLocationAsk({
     locale: 'ko',
-    kind: 'festival',
+    kind,
     city,
     country,
     originLabel: overseas.originLabelKo || originIata,
@@ -330,7 +330,7 @@ function overseasSendRequest(overseas) {
   });
   const sentenceEn = buildOverseasMyLocationAsk({
     locale: 'en',
-    kind: 'festival',
+    kind,
     city: cityEn,
     country: countryEn,
     originLabel: overseas.originLabelEn || originIata,
@@ -362,6 +362,8 @@ function overseasSendRequest(overseas) {
     chipEn,
     askKo: chipKo,
     askEn: chipEn,
+    departureIata: originIata,
+    arrivalIata,
   };
 }
 

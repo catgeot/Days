@@ -1,5 +1,6 @@
 import { RENTAL_AIRPORT_HUBS } from './rentalAirportHubs.js';
 import { aliasMatchesHay } from './rentalAirportMatch.js';
+import { parseOverseasMyLocationAsk } from '../pages/Home/lib/overseasMyLocationAsk.js';
 
 const MIN_ALIAS_LEN = 4;
 
@@ -152,6 +153,48 @@ export function resolveDepartureFromChat(userText, chatHistory = [], options = {
  */
 export function resolveDepartureIataFromChat(userText, chatHistory = [], options = {}) {
   return resolveDepartureFromChat(userText, chatHistory, options)?.iata ?? null;
+}
+
+function iataCode(value) {
+  const code = String(value || '').trim().toUpperCase();
+  return /^[A-Z]{3}$/.test(code) ? code : '';
+}
+
+function chipOriginIata(label) {
+  const hop = String(label || '').match(/\(([A-Z]{3})(?:\s*(?:→|->)\s*[A-Z]{3})?\)/);
+  return hop ? hop[1] : '';
+}
+
+/**
+ * Flight button departure. A parsed my-location route wins over the ICN fallback,
+ * including when that airport is also the destination (Khao Lak → HKT).
+ */
+export function resolveFlightDepartureIataForBooking({
+  userText = '',
+  chatHistory = [],
+  tripSession = null,
+  excludeIata = null,
+} = {}) {
+  const texts = [userText];
+  for (const message of chatHistory) {
+    texts.push(message?.mooniPromptText, message?.text, message?.departureLabel);
+  }
+  for (const text of texts) {
+    const parsed = parseOverseasMyLocationAsk(text);
+    if (parsed?.originIata) return parsed.originIata;
+  }
+  const sessionIata = iataCode(tripSession?.departureIata);
+  if (sessionIata) return sessionIata;
+  const latestChip = [...chatHistory].reverse().find((message) => chipOriginIata(message?.departureLabel));
+  const fromChip = chipOriginIata(latestChip?.departureLabel);
+  if (fromChip) return fromChip;
+  const excluded = iataCode(excludeIata);
+  const matched = resolveDepartureFromChat(userText, chatHistory, {});
+  if (!matched?.iata) return null;
+  if (!excluded || matched.iata !== excluded) return matched.iata;
+  const raw = String(userText || '');
+  if (/에서|\bfrom\s+/i.test(raw)) return matched.iata;
+  return resolveDepartureFromChat(userText, chatHistory, { excludeIata: excluded })?.iata ?? null;
 }
 
 /**

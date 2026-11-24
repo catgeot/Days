@@ -24,6 +24,9 @@ import {
   buildFestivalAccessAskText,
   festivalOriginSendRequest,
 } from '../../src/pages/Home/lib/festivalDomesticOrigins.js';
+import { myLocationSendRequest } from '../../src/pages/Home/lib/myLocationAccess.js';
+import { resolveFlightDepartureIataForBooking } from '../../src/utils/resolveDepartureIataFromChat.js';
+import { resolveChatBookingActions } from '../../src/utils/chatBookingResolver.js';
 import { chooseReverseLocalityFeature } from '../../src/pages/Home/lib/mapboxGeocodeSuggestions.js';
 
 const KHAO_LAK = { lat: 8.6374, lng: 98.2475 };
@@ -280,4 +283,76 @@ test('reverse geocode prefers a known locality and otherwise keeps the district'
   assert.equal(chooseReverseLocalityFeature([obscure, district])?.text, '따꾸아빠군');
   assert.equal(chooseReverseLocalityFeature([district, known])?.text, 'Khao Lak');
   assert.equal(chooseReverseLocalityFeature([district])?.text, '따꾸아빠군');
+});
+
+test('place and festival my-location use the same airport and a short bubble', async () => {
+  const origins = [
+    ['방콕', 'Bangkok', '태국', 'Thailand', 13.7563, 100.5018, 'BKK'],
+    ['치앙마이', 'Chiang Mai', '태국', 'Thailand', 18.7883, 98.9853, 'CNX'],
+    ['크라비', 'Krabi', '태국', 'Thailand', 8.0863, 98.9063, 'KBV'],
+    ['싱가포르', 'Singapore', '싱가포르', 'Singapore', 1.3521, 103.8198, 'SIN'],
+  ];
+  for (const [ko, en, country, countryEn, lat, lng, iata] of origins) {
+    const found = await resolveMyLocationOrigin(lat, lng, {
+      reverseGeocode: async () => placeHit(ko, country, en, countryEn),
+    });
+    assert.equal(found.originIata, iata, ko);
+    for (const kind of ['place', 'festival']) {
+      const destination = kind === 'place' ? KHAO_LAK : HAEUNDAE;
+      const arrival = kind === 'place' ? 'HKT' : 'PUS';
+      const request = myLocationSendRequest({ kind, found, destination });
+      assert.equal(request.departureIata, iata, `${kind} ${ko}`);
+      assert.equal(mooniUserBubbleText(request.sentenceKo), overseasMyLocationBubbleText(kind, 'ko'));
+      assert.match(request.chipKo, new RegExp(`${iata} → ${arrival}`));
+      assert.equal(
+        resolveFlightDepartureIataForBooking({ userText: request.sentenceKo, excludeIata: arrival }),
+        iata,
+      );
+    }
+  }
+
+  const chuncheon = await resolveMyLocationOrigin(37.8813, 127.7298);
+  assert.equal(chuncheon.city.ko, '춘천');
+  const placeChuncheon = myLocationSendRequest({
+    kind: 'place',
+    found: chuncheon,
+    destination: KHAO_LAK,
+  });
+  assert.equal(placeChuncheon.departureIata, 'ICN');
+  assert.match(placeChuncheon.chipKo, /춘천/);
+  assert.match(placeChuncheon.chipKo, /ICN → HKT/);
+  assert.equal(
+    resolveFlightDepartureIataForBooking({
+      userText: overseasMyLocationBubbleText('place', 'ko'),
+      tripSession: { departureIata: 'BKK' },
+      excludeIata: 'HKT',
+    }),
+    'BKK',
+  );
+  const booking = resolveChatBookingActions({
+    userText: placeChuncheon.sentenceKo,
+    slug: 'khao-lak',
+    destinationName: '카오락',
+    chatSource: 'place',
+  });
+  const flight = booking.actions.find((action) => action.provider === 'trip_com');
+  assert.match(flight.routeHint, /ICN/);
+  assert.match(flight.routeHint, /HKT/);
+  assert.doesNotMatch(flight.routeHint, /BKK/);
+
+  const festivalChuncheon = myLocationSendRequest({
+    kind: 'festival',
+    found: chuncheon,
+    destination: HAEUNDAE,
+  });
+  assert.equal(festivalChuncheon.departureIata, 'ICN');
+  assert.match(festivalChuncheon.chipKo, /춘천 \(ICN\)/);
+  assert.match(festivalChuncheon.sentenceKo, /대중교통/);
+  assert.equal(
+    resolveFlightDepartureIataForBooking({
+      userText: '푸켓에서 카오락까지 가는 방법',
+      excludeIata: 'HKT',
+    }),
+    'HKT',
+  );
 });

@@ -120,12 +120,18 @@ export default function FestivalAccessOriginDock({
     setPinnedId(city.id);
   }, [locale, onConfirm, visible]);
 
+  const gpsCityRef = useRef(false);
+
   const confirmCity = (city) => {
     if (!city) return;
+    const fromMyLocation = gpsCityRef.current && city.id === pinnedId;
+    gpsCityRef.current = false;
     const sent = emitConfirm({
       cityId: city.id,
       askLabel: koreaOriginAskLabel(city, 'ko'),
       askLabelEn: koreaOriginAskLabel(city, 'en'),
+      fromMyLocation,
+      city,
     });
     if (!sent) return;
     setText(koreaOriginAskLabel(city, locale));
@@ -164,6 +170,7 @@ export default function FestivalAccessOriginDock({
   };
 
   const onChip = (row) => {
+    gpsCityRef.current = false;
     const sent = emitConfirm(row);
     if (!sent) return;
     setText('');
@@ -196,6 +203,7 @@ export default function FestivalAccessOriginDock({
         return;
       }
       if (found.overseas) {
+        gpsCityRef.current = false;
         const en = String(locale).slice(0, 2) === 'en';
         const cityName = en ? (found.cityEn || found.city) : found.city;
         const countryName = en ? (found.countryEn || found.country) : found.country;
@@ -207,6 +215,7 @@ export default function FestivalAccessOriginDock({
         return;
       }
       setOverseasPin(null);
+      gpsCityRef.current = true;
       const city = found.city;
       const name = String(locale).slice(0, 2) === 'en' ? city.en : city.ko;
       setText(t('mooni.chat.originLocated', { city: name, province: koreaOriginRegionTag(city, locale) }));

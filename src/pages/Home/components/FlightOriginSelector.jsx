@@ -57,6 +57,7 @@ export default function FlightOriginSelector({
   onCollapseRequest,
   initialExpanded = false,
   onSearchActiveChange,
+  locateOrigin = null,
 }) {
   const { t, i18n } = useTranslation();
   const listboxId = useId();
@@ -293,7 +294,7 @@ export default function FlightOriginSelector({
     (iata, geo) => {
       const code = String(iata ?? '').trim().toUpperCase();
       if (code.length !== 3) return;
-      onSelect?.(code, geo?.overseas ? geo : undefined);
+      onSelect?.(code, geo?.overseas || geo?.domesticCity ? geo : undefined);
       setGeoError(null);
       if (isBar) setBarExpanded(false);
       onCollapseRequest?.();
@@ -316,7 +317,9 @@ export default function FlightOriginSelector({
     setGeoError(null);
     setGeoPending(true);
     try {
-      const resolved = await resolveOriginFromGeolocation();
+      const resolved = locateOrigin
+        ? await locateOrigin()
+        : await resolveOriginFromGeolocation();
       handleSelect(resolved.iata, resolved);
     } catch (err) {
       const code = err?.code && GEO_ERROR_KEYS[err.code] ? err.code : 'unavailable';
@@ -324,7 +327,7 @@ export default function FlightOriginSelector({
     } finally {
       setGeoPending(false);
     }
-  }, [disabled, geoPending, handleSelect, t]);
+  }, [disabled, geoPending, handleSelect, locateOrigin, t]);
 
   const inputClass = isBar
     ? 'min-h-[44px] w-full rounded-md border border-white/15 bg-white/5 py-2 pl-7 pr-11 text-[16px] md:text-xs font-medium text-white placeholder:text-white/35 focus:border-sky-300/50 focus:outline-none focus:ring-1 focus:ring-sky-300/30'
