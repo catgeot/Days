@@ -9,6 +9,7 @@ import {
   rememberLogbookReaderOrigin,
 } from '../../../shared/navigation/logbookDetailBack.js';
 import { classifyLogbookMarkdownHref } from '../../../shared/navigation/logbookMarkdownHref.js';
+import { rewriteLogbookCreditHref } from '../../../utils/commonsSpecialFileThumb.js';
 import { logbookRemarkPlugins } from '../utils/logbookMarkdownRemark.js';
 import { useTranslation } from 'react-i18next';
 import {
@@ -55,7 +56,10 @@ const MARKDOWN_LINK_CLASS =
 
 function LogbookMarkdownAnchor({ href, children }) {
   const navigate = useNavigate();
-  const classified = classifyLogbookMarkdownHref(href, typeof window !== 'undefined' ? window.location.href : undefined);
+  const classified = classifyLogbookMarkdownHref(
+    rewriteLogbookCreditHref(href),
+    typeof window !== 'undefined' ? window.location.href : undefined,
+  );
   if (classified.kind === 'internal') {
     return (
       <a
