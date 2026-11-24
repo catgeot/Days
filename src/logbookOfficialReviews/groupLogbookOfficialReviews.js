@@ -1,4 +1,5 @@
 import travelSpotsList from '../pages/Home/data/travelSpots-list.json' with { type: 'json' };
+import { normalizePersonaLabel } from '../utils/placeReviewEditorial.js';
 import { shortenLogbookReviewPlaceName } from './logbookReviewPlaceLabel.js';
 
 /** 0건이면 칩에서 숨김 — travelSpots-list에 국가 없을 때 폴백 */
@@ -108,10 +109,12 @@ export const LOGBOOK_REVIEW_FILTER_MAJOR = {
  * @param {Array<Record<string, unknown>>} rows
  * @param {'all'|'domestic'|'overseas'} major
  * @param {string|null|undefined} citySlug
+ * @param {string|null|undefined} [reviewerLabel]
  */
-export function filterLogbookOfficialReviewRows(rows, major, citySlug) {
+export function filterLogbookOfficialReviewRows(rows, major, citySlug, reviewerLabel) {
   const list = Array.isArray(rows) ? rows : [];
   const slugFilter = String(citySlug || '').trim().toLowerCase();
+  const reviewer = normalizePersonaLabel(reviewerLabel);
 
   return list.filter((row) => {
     const slug = String(row?.place_slug || '').trim().toLowerCase();
@@ -120,6 +123,7 @@ export function filterLogbookOfficialReviewRows(rows, major, citySlug) {
     if (major === LOGBOOK_REVIEW_FILTER_MAJOR.DOMESTIC && !domestic) return false;
     if (major === LOGBOOK_REVIEW_FILTER_MAJOR.OVERSEAS && domestic) return false;
     if (slugFilter && slug !== slugFilter) return false;
+    if (reviewer && normalizePersonaLabel(row?.persona_label) !== reviewer) return false;
     return true;
   });
 }

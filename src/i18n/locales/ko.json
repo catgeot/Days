@@ -258,6 +258,25 @@
       "adventure": "모험"
     },
     "chatWithAi": "AI와 대화하기",
+    "watchCard": {
+      "title": "지금 볼 거리",
+      "dismiss": "7일 동안 이 카드를 숨겨요",
+      "continueLabel": "이어서 보기",
+      "continueVisited": "최근에 보신 장소예요",
+      "continueAgency": "예약 페이지를 보셨어요",
+      "continueFestivalViewed": "보신 축제예요",
+      "continueFestivalFavorite": "저장해 두신 축제예요",
+      "continueReview": "보시던 리뷰예요",
+      "continueReviewFallback": "GATEO 리뷰어 리뷰",
+      "photoAlt": "{{name}} 사진",
+      "destinationAria": "{{name}} 여행지를 볼까요",
+      "continueAria": "{{name}} 이어서 볼게요",
+      "reelsTitle": "릴스",
+      "reelsSubtitle": "짧은 영상으로 볼 수 있어요",
+      "reelsAria": "릴스를 보러 갈게요",
+      "reviewerAria": "{{name}} 리뷰어의 리뷰 목록을 볼까요",
+      "tasteAria": "{{name}} 이달의 포인트"
+    },
     "ticker": {
       "topTen": "TOP 10",
       "gateSystem": "GATE 0 SYSTEM"

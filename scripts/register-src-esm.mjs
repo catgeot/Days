@@ -18,6 +18,8 @@ globalThis.__VITE_ENV__ = {
   VITE_GATEO_EXPLORE_SEARCH_SUBMIT_PARITY: process.env.VITE_GATEO_EXPLORE_SEARCH_SUBMIT_PARITY || '',
   VITE_GATEO_EXPLORE_V2: process.env.VITE_GATEO_EXPLORE_V2 || '',
   VITE_GATEO_EXPLORE_CHOSEONG: process.env.VITE_GATEO_EXPLORE_CHOSEONG || '',
+  VITE_GATEO_HOME_WATCH_CARD: process.env.VITE_GATEO_HOME_WATCH_CARD || '',
+  VITE_GATEO_SELF_REELS: process.env.VITE_GATEO_SELF_REELS || '',
 };
 
 register('./src-resolve-loader.mjs', import.meta.url);

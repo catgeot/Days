@@ -2136,6 +2136,7 @@ function Home() {
           isTourCinema={isTourCinema}
           isFlightCinema={flightCinemaActive}
           isPlaceCardVisible={isPlaceCardSummaryVisible || isPlaceRoute}
+          isChatOpen={isChatOpen}
           tourLocation={selectedLocation}
           tourPivoted={tourPivoted}
           globeMode={globeMode}

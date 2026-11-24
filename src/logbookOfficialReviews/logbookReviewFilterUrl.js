@@ -1,7 +1,9 @@
 import { LOGBOOK_REVIEW_FILTER_MAJOR } from './groupLogbookOfficialReviews.js';
+import { normalizePersonaLabel } from '../utils/placeReviewEditorial.js';
 
 export const LOGBOOK_REVIEW_FILTER_REGION_QUERY = 'region';
 export const LOGBOOK_REVIEW_FILTER_CITY_QUERY = 'city';
+export const LOGBOOK_REVIEW_FILTER_REVIEWER_QUERY = 'reviewer';
 
 const MAJOR_VALUES = new Set(Object.values(LOGBOOK_REVIEW_FILTER_MAJOR));
 
@@ -34,7 +36,17 @@ export function parseLogbookReviewFilterFromSearch(search) {
   const city = String(params.get(LOGBOOK_REVIEW_FILTER_CITY_QUERY) || '')
     .trim()
     .toLowerCase();
-  return { major, citySlug: city };
+  const reviewer = normalizePersonaLabel(params.get(LOGBOOK_REVIEW_FILTER_REVIEWER_QUERY) || '');
+  return { major, citySlug: city, reviewer };
+}
+
+/** @param {string} reviewer */
+export function buildLogbookReviewerFilterHref(reviewer) {
+  const name = normalizePersonaLabel(reviewer);
+  if (!name) return '/blog';
+  const params = new URLSearchParams();
+  params.set(LOGBOOK_REVIEW_FILTER_REVIEWER_QUERY, name);
+  return `/blog?${params.toString()}`;
 }
 
 /**
@@ -42,16 +54,21 @@ export function parseLogbookReviewFilterFromSearch(search) {
  * @param {'all'|'domestic'|'overseas'} major
  * @param {string} citySlug
  */
-export function applyLogbookReviewFilterToSearchParams(params, major, citySlug) {
+export function applyLogbookReviewFilterToSearchParams(params, major, citySlug, reviewerLabel) {
   const next = new URLSearchParams(params);
   if (major === LOGBOOK_REVIEW_FILTER_MAJOR.ALL) {
     next.delete(LOGBOOK_REVIEW_FILTER_REGION_QUERY);
     next.delete(LOGBOOK_REVIEW_FILTER_CITY_QUERY);
-    return next;
+  } else {
+    next.set(LOGBOOK_REVIEW_FILTER_REGION_QUERY, major);
+    const city = String(citySlug || '').trim().toLowerCase();
+    if (city) next.set(LOGBOOK_REVIEW_FILTER_CITY_QUERY, city);
+    else next.delete(LOGBOOK_REVIEW_FILTER_CITY_QUERY);
   }
-  next.set(LOGBOOK_REVIEW_FILTER_REGION_QUERY, major);
-  const city = String(citySlug || '').trim().toLowerCase();
-  if (city) next.set(LOGBOOK_REVIEW_FILTER_CITY_QUERY, city);
-  else next.delete(LOGBOOK_REVIEW_FILTER_CITY_QUERY);
+  if (reviewerLabel !== undefined) {
+    const reviewer = normalizePersonaLabel(reviewerLabel);
+    if (reviewer) next.set(LOGBOOK_REVIEW_FILTER_REVIEWER_QUERY, reviewer);
+    else next.delete(LOGBOOK_REVIEW_FILTER_REVIEWER_QUERY);
+  }
   return next;
 }

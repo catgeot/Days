@@ -49,6 +49,7 @@ function SiteUpdateBanner() {
         role="dialog"
         aria-modal="false"
         aria-labelledby="site-update-notice-title"
+        data-site-update-notice=""
       >
         <div
           style={headerStyle}
