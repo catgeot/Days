@@ -76,12 +76,39 @@ export function samePlaceCount(counts, location) {
   return n;
 }
 
-/** Archive chips: one row per saved place, busiest first. Unknown places are omitted. */
+function reportTimestampMs(report) {
+  const raw = report?.published_at || report?.date || report?.created_at || '';
+  if (typeof raw !== 'string' || !raw.trim()) return null;
+  const time = Date.parse(raw);
+  return Number.isFinite(time) ? time : null;
+}
+
+/**
+ * Archive chips: the place of the newest post first, then the rest by post count.
+ * Unknown places are omitted. Rows without a date keep the count order.
+ */
 export function listLogbookPlaceChips(reports) {
   const counts = countReportsByPlace(reports);
+  let newestPlace = '';
+  let newestTime = null;
+  for (const report of reports || []) {
+    const key = logbookPlaceKey(report?.location);
+    if (!key || !counts.has(key)) continue;
+    const time = reportTimestampMs(report);
+    if (time == null) continue;
+    if (newestTime == null || time > newestTime) {
+      newestTime = time;
+      newestPlace = key;
+    }
+  }
   return [...counts.entries()]
     .map(([name, count]) => ({ name, count }))
-    .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name, 'ko'));
+    .sort((a, b) => {
+      const aLead = a.name === newestPlace ? 1 : 0;
+      const bLead = b.name === newestPlace ? 1 : 0;
+      if (aLead !== bLead) return bLead - aLead;
+      return b.count - a.count || a.name.localeCompare(b.name, 'ko');
+    });
 }
 
 /** Empty filter keeps every row. A chip matches the normalized place only. */

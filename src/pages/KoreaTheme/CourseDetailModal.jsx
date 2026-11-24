@@ -21,6 +21,10 @@ import {
   nudgeFestivalSheetScrollAndRepaint,
 } from '../Korea/lib/festivalSheetInteractionRestore.js';
 import { formatFestivalDetailDateRange } from '../Korea/festivalDateFilter.js';
+import {
+  courseMunicipalityLabel,
+  replaceDashWrappedPlaceholders,
+} from './coursePlaceholderText.js';
 
 const COURSE_MODAL_SAFE_PAD =
   'p-2.5 pt-[max(0.625rem,env(safe-area-inset-top))] pb-[max(0.625rem,env(safe-area-inset-bottom))] pl-[max(0.625rem,env(safe-area-inset-left))] pr-[max(0.625rem,env(safe-area-inset-right))] md:items-center md:p-5';
@@ -198,6 +202,15 @@ export default function CourseDetailModal({
 
   if (!course) return null;
 
+  const municipality = courseMunicipalityLabel(course.addr1, detail?.addr1);
+  const courseText = (value) => replaceDashWrappedPlaceholders(value, municipality);
+  const courseMetaLine =
+    detail && !detail.empty
+      ? [detail.theme, detail.schedule, detail.distance, detail.taketime]
+          .map((part) => courseText(part))
+          .filter(Boolean)
+          .join(' · ')
+      : '';
   const id = String(course.contentId || '');
   const thumb = courseThumb(course);
   const hero =
@@ -265,8 +278,8 @@ export default function CourseDetailModal({
             >
               {course.title || course.name}
             </h2>
-            {course.addr1 ? (
-              <p className="mt-1 text-xs text-stone-500 break-keep">{course.addr1}</p>
+            {courseText(course.addr1) ? (
+              <p className="mt-1 text-xs text-stone-500 break-keep">{courseText(course.addr1)}</p>
             ) : null}
           </div>
           <button
@@ -308,24 +321,14 @@ export default function CourseDetailModal({
             ) : null}
             {!detailLoading && detail && !detail.empty ? (
               <>
-                {(detail.theme ||
-                  detail.schedule ||
-                  detail.distance ||
-                  detail.taketime) && (
+                {courseMetaLine ? (
                   <p className="text-[11px] font-semibold text-amber-900/90 break-keep break-words">
-                    {[
-                      detail.theme,
-                      detail.schedule,
-                      detail.distance,
-                      detail.taketime,
-                    ]
-                      .filter(Boolean)
-                      .join(' · ')}
+                    {courseMetaLine}
                   </p>
-                )}
-                {detail.overview ? (
+                ) : null}
+                {courseText(stripHtml(detail.overview)) ? (
                   <p className="min-w-0 max-w-full whitespace-pre-line text-sm leading-relaxed text-stone-600 break-keep break-words">
-                    {stripHtml(detail.overview)}
+                    {courseText(stripHtml(detail.overview))}
                   </p>
                 ) : null}
                 {galleryExtra.length > 0 ? (
@@ -359,11 +362,11 @@ export default function CourseDetailModal({
                             />
                           ) : null}
                           <p className="font-bold text-stone-800 break-keep">
-                            {Number(seg.subnum ?? idx) + 1}. {seg.subname || t('korea.theme.courses.segmentFallback')}
+                            {Number(seg.subnum ?? idx) + 1}. {courseText(seg.subname) || t('korea.theme.courses.segmentFallback')}
                           </p>
-                          {seg.subdetailoverview ? (
+                          {courseText(stripHtml(seg.subdetailoverview)) ? (
                             <p className="min-w-0 max-w-full whitespace-pre-line text-sm leading-relaxed text-stone-600 break-keep break-words">
-                              {stripHtml(seg.subdetailoverview)}
+                              {courseText(stripHtml(seg.subdetailoverview))}
                             </p>
                           ) : null}
                         </li>

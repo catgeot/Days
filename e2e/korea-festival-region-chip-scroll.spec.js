@@ -118,6 +118,29 @@ test.describe('Korea festival region chip scroll reset', () => {
     await expect(firstCard).toBeInViewport({ ratio: 0.25 });
   });
 
+  test('map close keeps a mid-list scroll near 860 (WebKit 390)', async ({ page }) => {
+    const main = page.locator('main');
+    await main.evaluate((el) => {
+      el.scrollTo({ top: 860, behavior: 'instant' });
+    });
+    const before = await main.evaluate((el) => el.scrollTop);
+    expect(before).toBeGreaterThan(700);
+    expect(before).toBeLessThan(1000);
+
+    await page.getByRole('button', { name: '지도로 위치·동선 보기' }).evaluate((el) => el.click());
+    await expect(page.getByRole('button', { name: /지도 닫기|목록으로/ }).first()).toBeVisible({
+      timeout: 10_000,
+    });
+    await page.getByRole('button', { name: /지도 닫기|목록으로/ }).first().click();
+
+    await expect
+      .poll(async () => main.evaluate((el) => el.scrollTop), { timeout: 8_000 })
+      .toBeGreaterThan(700);
+    await page.waitForTimeout(1500);
+    const after = await main.evaluate((el) => el.scrollTop);
+    expect(Math.abs(after - before)).toBeLessThanOrEqual(24);
+  });
+
   test('map close keeps deep list scroll (WebKit 390, tall fixture)', async ({ page }) => {
     const main = page.locator('main');
     const targetTop = 2214;

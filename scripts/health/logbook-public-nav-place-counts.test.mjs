@@ -68,6 +68,21 @@ test('PublicNav wires shared logbook place grouping (not raw top-15)', () => {
   assert.doesNotMatch(publicNav, /locCounts\[loc\]/);
 });
 
+test('place chips lead with the newest post, then count', () => {
+  const rows = [
+    { location: '파리', created_at: '2026-11-01T00:00:00Z' },
+    { location: '파리', created_at: '2026-10-01T00:00:00Z' },
+    { location: '파리', date: '2026-09-01' },
+    { location: '방콕', published_at: '2026-11-20T00:00:00Z' },
+    { location: '제주', created_at: '2026-11-10T00:00:00Z' },
+    { location: '제주', created_at: '2026-11-11T00:00:00Z' },
+  ];
+  assert.deepEqual(
+    listLogbookPlaceChips(rows).map((chip) => chip.name),
+    ['방콕', '파리', '제주'],
+  );
+});
+
 test('place filter keys stay aligned between sidebar navigation and chips', () => {
   assert.equal(logbookPlaceKey('춘천시 퇴계동'), '춘천');
   assert.equal(logbookPlaceKey('춘천'), '춘천');

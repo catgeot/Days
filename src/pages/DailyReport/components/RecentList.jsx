@@ -10,6 +10,7 @@ import { resolveLogbookFeedExcerpt } from '../../../utils/logbookDek.js';
 import { rememberLogbookDetailReturn } from '../../../shared/navigation/logbookDetailBack.js';
 import { isEditorialLogbook, publicLogbookDetailPath } from '../../../utils/logbookEditorial';
 import { logbookFeedThumbImageProps } from '../../../utils/logbookImageSrc';
+import LogbookResolvedImage from '../../../components/LogbookResolvedImage.jsx';
 import { useLogbookFeedViewMode } from '../hooks/useLogbookFeedViewMode';
 import { profileAvatarUrl } from '../../../shared/Auth/profileAvatar';
 import { formatLogbookDisplayDate } from '../../../utils/logbookDisplayDate';
@@ -297,7 +298,7 @@ const RecentList = ({ reports, loading, isPublicMode }) => {
                   }
                 `}>
                   {thumb.src ? (
-                    <img
+                    <LogbookResolvedImage
                       src={thumb.src}
                       srcSet={thumb.srcSet}
                       sizes={thumb.sizes}

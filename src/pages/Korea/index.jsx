@@ -3683,7 +3683,7 @@ export default function KoreaFestivalHub() {
             ? 'pointer-events-none flex max-w-none flex-col overflow-hidden px-0 pb-0 pt-0'
             : mapOpen
               ? 'flex max-w-none flex-col overflow-hidden px-0 pb-0 pt-0 lg:max-w-6xl lg:px-8 lg:pb-[max(1.25rem,env(safe-area-inset-bottom,0px))] lg:pt-3 xl:max-w-7xl'
-              : 'max-w-3xl overflow-y-auto overscroll-contain px-3 pb-[max(8.25rem,calc(env(safe-area-inset-bottom)+6.75rem))] pt-3 md:flex md:max-w-3xl md:flex-col md:overflow-hidden md:px-5 md:pb-[max(1.25rem,env(safe-area-inset-bottom,0px))] lg:max-w-6xl lg:px-8 xl:max-w-7xl'
+              : 'max-w-3xl overflow-y-auto overscroll-contain [overflow-anchor:none] px-3 pb-[max(8.25rem,calc(env(safe-area-inset-bottom)+6.75rem))] pt-3 md:flex md:max-w-3xl md:flex-col md:overflow-hidden md:px-5 md:pb-[max(1.25rem,env(safe-area-inset-bottom,0px))] lg:max-w-6xl lg:px-8 xl:max-w-7xl'
         }`}
       >
         {loading && !mapOpen && (
@@ -3953,7 +3953,7 @@ export default function KoreaFestivalHub() {
                 data-festival-list-scroll=""
                 className={`${
                   useFestivalGrid ? 'space-y-4' : 'space-y-2'
-                } page-scroll-end-pad ${
+                } [overflow-anchor:none] page-scroll-end-pad ${
                   useFestivalGrid ? FESTIVAL_HUB_GRID_MOBILE_SCROLL_PAD_CLASS : ''
                 } ${
                   useFestivalGrid ? 'px-2.5 pt-1' : 'px-3 pt-3'

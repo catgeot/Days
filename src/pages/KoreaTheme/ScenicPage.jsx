@@ -386,7 +386,33 @@ function FilterChipRow({ 'aria-label': ariaLabel, className = '', children }) {
   }, []);
 
   useLayoutEffect(() => {
+    const alignSelectedChip = () => {
+      const root = scrollerRef.current;
+      if (!root) return;
+      const active = root.querySelector('[aria-pressed="true"]');
+      if (!(active instanceof HTMLElement)) return;
+      const rowRect = root.getBoundingClientRect();
+      const chipRect = active.getBoundingClientRect();
+      if (rowRect.width < 2 || chipRect.width < 2) return;
+      const pad = 12;
+      const fullyVisible =
+        chipRect.left >= rowRect.left + pad - 1 &&
+        chipRect.right <= rowRect.right - pad + 1;
+      if (fullyVisible) return;
+      const next =
+        root.scrollLeft +
+        (chipRect.left - rowRect.left) -
+        Math.max(0, (rowRect.width - chipRect.width) / 2);
+      const max = Math.max(0, root.scrollWidth - root.clientWidth);
+      root.scrollLeft = Math.max(0, Math.min(max, next));
+    };
+    alignSelectedChip();
     syncScrollEdges();
+    const frame = requestAnimationFrame(() => {
+      alignSelectedChip();
+      syncScrollEdges();
+    });
+    return () => cancelAnimationFrame(frame);
   }, [syncScrollEdges, children]);
 
   useEffect(() => {

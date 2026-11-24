@@ -1,3 +1,4 @@
+import { commonsSpecialFileThumbUrl } from './commonsSpecialFileThumb.js';
 import { resolveListImageUrl } from './listImageUrl.js';
 import { resolveReviewImageSrc } from './placeReviewContentBlocks.js';
 
@@ -39,8 +40,9 @@ function withUnsplashSizing(src, { width, fit = 'crop', quality = 80, forceWidth
 
 /** In-page body / gallery: cap Unsplash at w=1200 when `w` is absent. */
 export function resolveLogbookDisplaySrc(img, opts = {}) {
-  const src = resolveLogbookImageSrc(img);
-  if (!src) return null;
+  const raw = resolveLogbookImageSrc(img);
+  if (!raw) return null;
+  const src = commonsSpecialFileThumbUrl(raw, opts.role === 'thumb' ? 960 : (opts.maxWidth ?? 1280)) || raw;
 
   if (opts.role === 'thumb') {
     const listSrc = resolveListImageUrl(src, { role: 'list', width: 400 });

@@ -2,6 +2,7 @@ import entries from './data/manualFestivalEntries.json';
 import { formatFestivalAsOfDate, isFestivalEnded } from './festivalDeepLinkItem.js';
 import { festivalIntervalYmd, pickLatestFestivalInterval } from './festivalDateFilter.js';
 import { mergeFestivalRowItem, normalizeFestivalItemImages } from './socialPromoFestivalsLogic.js';
+import { extractTourAttractionSigungu } from '../Home/lib/koreaTourAttractionLocality.js';
 
 const byId = new Map(
   Object.entries(entries).map(([id, row]) => [String(id), { ...row, contentId: String(id) }]),
@@ -208,6 +209,56 @@ export function buildInitialManualPromoMap(now = new Date()) {
  * @param {object[]} baseItems
  * @param {Date | string | number} [now]
  */
+/** Manual-only ids minted when TourAPI had no row yet (e.g. 9026112001). */
+export function isSyntheticFestivalContentId(contentId) {
+  return /^9\d{9}$/.test(String(contentId || '').trim());
+}
+
+export function normalizeFestivalEditionName(title) {
+  return String(title || '')
+    .normalize('NFKC')
+    .replace(/제\s*\d+\s*회/gu, '')
+    .replace(/\s+/gu, '')
+    .replace(/[^\p{L}\p{N}]/gu, '')
+    .toLowerCase();
+}
+
+export function festivalEditionStartYmd(item) {
+  const digits = String(item?.eventStartDate || item?.eventstartdate || '').replace(/\D/g, '');
+  return digits.length >= 8 ? digits.slice(0, 8) : '';
+}
+
+/** Same festival edition: normalized name + start date, and 시군 when both rows have one. */
+export function festivalRowsShareEdition(a, b) {
+  const nameA = normalizeFestivalEditionName(a?.title);
+  const nameB = normalizeFestivalEditionName(b?.title);
+  if (!nameA || nameA !== nameB) return false;
+  const startA = festivalEditionStartYmd(a);
+  const startB = festivalEditionStartYmd(b);
+  if (!startA || startA !== startB) return false;
+  const sigA = extractTourAttractionSigungu(a?.addr1, a?.addr2);
+  const sigB = extractTourAttractionSigungu(b?.addr1, b?.addr2);
+  if (sigA && sigB && sigA !== sigB) return false;
+  return true;
+}
+
+/**
+ * Drop a synthetic-id manual row once a TourAPI row for the same edition is present.
+ * The TourAPI row stays.
+ */
+export function dropSyntheticFestivalShadows(items) {
+  const list = Array.isArray(items) ? items : [];
+  return list.filter((row, index) => {
+    if (!isSyntheticFestivalContentId(row?.contentId)) return true;
+    return !list.some(
+      (other, otherIndex) =>
+        otherIndex !== index &&
+        !isSyntheticFestivalContentId(other?.contentId) &&
+        festivalRowsShareEdition(row, other),
+    );
+  });
+}
+
 export function mergeManualFestivalsIntoFestivalItems(baseItems, now = new Date()) {
   const list = Array.isArray(baseItems) ? [...baseItems] : [];
   const indexById = new Map(
@@ -219,6 +270,12 @@ export function mergeManualFestivalsIntoFestivalItems(baseItems, now = new Date(
     if (!manualItem) continue;
     const index = indexById.get(id);
     if (index === undefined) {
+      const tourTwin = list.some(
+        (row) =>
+          String(row?.contentId || '') !== id &&
+          festivalRowsShareEdition(row, manualItem),
+      );
+      if (tourTwin) continue;
       list.push(manualItem);
       indexById.set(id, list.length - 1);
       continue;
@@ -228,5 +285,5 @@ export function mergeManualFestivalsIntoFestivalItems(baseItems, now = new Date(
       list[index] = mergeFestivalRowItem(tourRow, manualItem);
     }
   }
-  return list;
+  return dropSyntheticFestivalShadows(list);
 }

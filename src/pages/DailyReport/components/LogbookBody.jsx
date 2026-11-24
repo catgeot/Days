@@ -9,6 +9,7 @@ import {
   rememberLogbookReaderOrigin,
 } from '../../../shared/navigation/logbookDetailBack.js';
 import { classifyLogbookMarkdownHref } from '../../../shared/navigation/logbookMarkdownHref.js';
+import { rewriteLogbookCreditHref } from '../../../utils/commonsSpecialFileThumb.js';
 import { logbookRemarkPlugins } from '../utils/logbookMarkdownRemark.js';
 import { useTranslation } from 'react-i18next';
 import {
@@ -16,6 +17,7 @@ import {
   splitLogbookPhotoPlaceholders,
 } from '../utils/logbookMarkdownSnippet.js';
 import { resolveLogbookDisplaySrc } from '../../../utils/logbookImageSrc.js';
+import LogbookResolvedImage from '../../../components/LogbookResolvedImage.jsx';
 import EditorialLogbookImageCredits from './EditorialLogbookImageCredits.jsx';
 import { splitFactTimeRanges, TIME_RANGE_CLASS } from '../../../data/placeVerifiedFacts/cairoEn.js';
 
@@ -55,7 +57,10 @@ const MARKDOWN_LINK_CLASS =
 
 function LogbookMarkdownAnchor({ href, children }) {
   const navigate = useNavigate();
-  const classified = classifyLogbookMarkdownHref(href, typeof window !== 'undefined' ? window.location.href : undefined);
+  const classified = classifyLogbookMarkdownHref(
+    rewriteLogbookCreditHref(href),
+    typeof window !== 'undefined' ? window.location.href : undefined,
+  );
   if (classified.kind === 'internal') {
     return (
       <a
@@ -270,13 +275,13 @@ export default function LogbookBody({
           if (!url) return null;
           return (
             <div key={`photo-${index}`} className={inlineImageFrameClass}>
-              <img
+              <LogbookResolvedImage
                 src={url}
                 alt={t('logbook.common.attachment', { n: photoIndex + 1 })}
                 className={imageClass}
                 loading="lazy"
                 decoding="async"
-                onClick={() => window.open(url, '_blank')}
+                onClick={(event) => window.open(event.currentTarget.currentSrc || url, '_blank')}
               />
               {showImageOverlay && (
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors pointer-events-none" />

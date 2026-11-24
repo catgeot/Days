@@ -55,11 +55,31 @@ export function isLogbookReviewPlaceDomestic(placeSlug) {
   return LOGBOOK_REVIEW_FILTER_DOMESTIC_SLUGS.has(slug);
 }
 
+const RECENT_REVIEW_WINDOW_MS = 7 * 24 * 60 * 60 * 1000;
+const RECENT_REVIEW_CHIP_MAX = 3;
+
+function reviewRowTimestampMs(row) {
+  const raw = row?.created_at || row?.published_at || row?.date || '';
+  if (typeof raw !== 'string' || !raw.trim()) return null;
+  const time = Date.parse(raw);
+  return Number.isFinite(time) ? time : null;
+}
+
+function compareCitiesByCount(a, b) {
+  return (
+    b.count - a.count ||
+    (a.shortPlaceName || a.placeName).localeCompare(b.shortPlaceName || b.placeName, 'ko')
+  );
+}
+
 /**
- * @param {Array<{ place_slug?: string, place_name?: string }>} rows
+ * @param {Array<{ place_slug?: string, place_name?: string, created_at?: string }>} rows
+ * @param {Date | string | number} [now]
  */
-export function groupLogbookOfficialReviews(rows) {
+export function groupLogbookOfficialReviews(rows, now = new Date()) {
   const list = Array.isArray(rows) ? rows : [];
+  const nowMs = now instanceof Date ? now.getTime() : Date.parse(now);
+  const recentSince = (Number.isFinite(nowMs) ? nowMs : Date.now()) - RECENT_REVIEW_WINDOW_MS;
   let domesticCount = 0;
   let overseasCount = 0;
   const cityMap = new Map();
@@ -73,29 +93,41 @@ export function groupLogbookOfficialReviews(rows) {
 
     const placeName = String(row?.place_name || '').trim() || slug;
     const shortPlaceName = shortenLogbookReviewPlaceName(placeName) || placeName;
+    const rowTime = reviewRowTimestampMs(row);
     const prev = cityMap.get(slug);
     if (prev) {
       prev.count += 1;
       if (!prev.placeName && placeName) prev.placeName = placeName;
       if (!prev.shortPlaceName && shortPlaceName) prev.shortPlaceName = shortPlaceName;
+      if (rowTime != null && (prev.newestAt == null || rowTime > prev.newestAt)) {
+        prev.newestAt = rowTime;
+      }
     } else {
-      cityMap.set(slug, { slug, placeName, shortPlaceName, count: 1, domestic });
+      cityMap.set(slug, {
+        slug,
+        placeName,
+        shortPlaceName,
+        count: 1,
+        domestic,
+        newestAt: rowTime,
+      });
     }
   }
 
-  const cities = [...cityMap.values()]
-    .filter((c) => c.count > 0)
-    .sort(
-      (a, b) =>
-        b.count - a.count ||
-        (a.shortPlaceName || a.placeName).localeCompare(b.shortPlaceName || b.placeName, 'ko'),
-    );
+  const cities = [...cityMap.values()].filter((c) => c.count > 0);
+  const recent = cities
+    .filter((c) => c.newestAt != null && c.newestAt >= recentSince)
+    .sort((a, b) => b.newestAt - a.newestAt || compareCitiesByCount(a, b))
+    .slice(0, RECENT_REVIEW_CHIP_MAX);
+  const recentSlugs = new Set(recent.map((c) => c.slug));
+  const rest = cities.filter((c) => !recentSlugs.has(c.slug)).sort(compareCitiesByCount);
+  const orderedCities = [...recent, ...rest];
 
   return {
     total: list.length,
     domesticCount,
     overseasCount,
-    cities,
+    cities: orderedCities,
   };
 }
 

@@ -13,6 +13,7 @@ import EditorialLogbookImageCredits from './components/EditorialLogbookImageCred
 import { contentHasLogbookPhotoPlaceholders } from './utils/logbookMarkdownSnippet';
 import { isEditorialLogbook, isEditorialLogbookPublished, publicLogbookDetailPath } from '../../utils/logbookEditorial';
 import { logbookHeroImageUrl, logbookImageUrlList } from '../../utils/logbookImageSrc';
+import LogbookResolvedImage from '../../components/LogbookResolvedImage.jsx';
 import { formatLogbookDisplayDate } from '../../utils/logbookDisplayDate';
 import { claimLogbookViewSession, readLogbookViewCount, releaseLogbookViewSession } from '../../utils/logbookViewCount';
 import { fetchSamePlaceCount, logbookPlaceKey, logbookReadingMinutes } from '../../utils/logbookReadingMeta';
@@ -316,7 +317,7 @@ const PublicViewer = () => {
 
       {showDecorativeHeroBlur && (
         <div className="absolute inset-0 z-0 opacity-10 transition-opacity duration-700 pointer-events-none hidden md:block" aria-hidden>
-          <img
+          <LogbookResolvedImage
             src={heroImageUrl}
             alt=""
             loading="lazy"
@@ -428,7 +429,7 @@ const PublicViewer = () => {
                         : 'relative w-full h-full'
                     }
                   >
-                    <img
+                    <LogbookResolvedImage
                       src={imgUrl}
                       alt={t('logbook.common.attachment', { n: idx + 1 })}
                       loading="lazy"

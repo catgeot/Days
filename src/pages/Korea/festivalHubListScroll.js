@@ -107,13 +107,26 @@ function restoreFestivalHubListScrollWhenReady(mainEl, tops) {
     removeListeners();
   };
 
+  const POST_SETTLE_FRAMES = 4;
+  let settling = false;
+
   const finish = () => {
-    if (done) return;
-    done = true;
-    ro?.disconnect();
-    removeListeners();
-    applyRestore();
-    requestAnimationFrame(() => applyRestore());
+    if (done || settling) return;
+    settling = true;
+    let framesLeft = POST_SETTLE_FRAMES;
+    const step = () => {
+      if (done) return;
+      applyRestore();
+      framesLeft -= 1;
+      if (framesLeft > 0) {
+        requestAnimationFrame(step);
+        return;
+      }
+      done = true;
+      ro?.disconnect();
+      removeListeners();
+    };
+    step();
   };
 
   const onUserIntent = (event) => {

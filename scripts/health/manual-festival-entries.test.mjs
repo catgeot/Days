@@ -1,8 +1,11 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
+  dropSyntheticFestivalShadows,
+  festivalRowsShareEdition,
   getManualFestivalEntry,
   isManualFestivalActive,
+  isSyntheticFestivalContentId,
   manualFestivalDetailAsOf,
   manualFestivalListItem,
   manualFestivalTourDetail,
@@ -18,6 +21,66 @@ import { buildFestivalMooniContext } from '../../src/pages/Korea/lib/festivalMoo
 import { FestivalDetailAsOfLine } from '../../src/pages/Korea/festivalDeepLinkItem.js';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
+
+test('synthetic manual row is dropped once a TourAPI row shares the edition', () => {
+  const NOW = new Date('2026-11-20T03:00:00Z');
+  const tour = {
+    contentId: '1139979',
+    title: '논산양촌곶감축제',
+    eventStartDate: '20261211',
+    eventEndDate: '20261213',
+    addr1: '충청남도 논산시 양촌면',
+  };
+  const synthetic = {
+    contentId: '9026112001',
+    title: '논산 양촌 곶감 축제',
+    eventStartDate: '20261211',
+    eventEndDate: '20261213',
+    addr1: '충청남도 논산시 양촌면 양촌리 454',
+  };
+  assert.equal(isSyntheticFestivalContentId(synthetic.contentId), true);
+  assert.equal(isSyntheticFestivalContentId(tour.contentId), false);
+  assert.equal(festivalRowsShareEdition(tour, synthetic), true);
+  assert.equal(getManualFestivalEntry('9026112001'), null);
+
+  const merged = mergeManualFestivalsIntoFestivalItems([tour, synthetic], NOW);
+  const nonsan = merged.filter((row) => String(row.title || '').includes('논산'));
+  assert.equal(nonsan.length, 1);
+  assert.equal(nonsan[0].contentId, '1139979');
+
+  const otherCity = {
+    ...synthetic,
+    addr1: '전라남도 여수시 중앙동',
+  };
+  assert.equal(festivalRowsShareEdition(tour, otherCity), false);
+  assert.equal(dropSyntheticFestivalShadows([tour, otherCity]).length, 2);
+
+  const otherStart = { ...synthetic, eventStartDate: '20251211' };
+  assert.equal(festivalRowsShareEdition(tour, otherStart), false);
+  assert.equal(dropSyntheticFestivalShadows([tour, otherStart]).length, 2);
+
+  const noSigungu = { ...synthetic, addr1: '' };
+  assert.equal(festivalRowsShareEdition(tour, noSigungu), true);
+  assert.equal(dropSyntheticFestivalShadows([tour, noSigungu])[0].contentId, '1139979');
+});
+
+test('remaining manual festival rows do not share an edition', () => {
+  const NOW = new Date('2026-06-01T03:00:00Z');
+  const ids = ['638576', '235076'];
+  const items = ids.map((id) => manualFestivalListItem(getManualFestivalEntry(id), NOW));
+  assert.equal(items.every(Boolean), true);
+  for (let i = 0; i < items.length; i += 1) {
+    for (let j = i + 1; j < items.length; j += 1) {
+      assert.equal(
+        festivalRowsShareEdition(items[i], items[j]),
+        false,
+        `${items[i].contentId} vs ${items[j].contentId}`,
+      );
+    }
+  }
+  const listed = mergeManualFestivalsIntoFestivalItems([], NOW).map((row) => row.contentId);
+  assert.deepEqual(listed.sort(), [...ids].sort());
+});
 
 test('235076 manual entry — TourAPI gap fill, Busan list, expires after 2026-11-07', () => {
   const NOW = new Date('2026-11-01T03:00:00Z');

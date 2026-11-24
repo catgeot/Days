@@ -117,12 +117,12 @@ test.describe('LogBook review filter cards @mocked', () => {
     expect(href).toMatch(/review=/);
     await assertReviewerNameVisible(page.locator('[data-hub-place-slug="paris"]').first(), '야경렌즈');
     await assertReviewerNameVisible(page.locator('[data-hub-place-slug="prague"]').first(), '로컬하루');
-    const archive = page.getByRole('heading', { name: /기록 보관소/ });
+    const archive = page.getByRole('heading', { name: /여행 기록/ });
     await expect(archive).toBeVisible({ timeout: 15_000 });
     const gap = await page.evaluate(() => {
       const hub = document.querySelector('[data-testid="logbook-official-review-hub"]');
       const heading = [...document.querySelectorAll('h3')].find((el) =>
-        /기록 보관소/.test(el.textContent || ''),
+        /여행 기록/.test(el.textContent || ''),
       );
       if (!hub || !heading) return null;
       return heading.getBoundingClientRect().top - hub.getBoundingClientRect().bottom;
