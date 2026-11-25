@@ -110,6 +110,41 @@ test('Aitutaki persist keeps One Foot Island and drops Nagaland, African dress, 
   assert.equal(filterGalleryImagesForPersist([unlabeled], bangkok).length, 0);
 });
 
+test('Kobe beef is not Kobe, and Puncak Jaya is Carstensz Pyramid', () => {
+  const kobe = resolveGallerySaveTarget({
+    slug: 'kobe',
+    name: '고베',
+    name_en: 'Kobe',
+    country: '일본',
+    country_en: 'Japan',
+  }, 'kobe');
+  const carstensz = resolveGallerySaveTarget({
+    slug: 'carstensz-pyramid',
+    name: '카르스텐츠 피라미드',
+    name_en: 'Carstensz Pyramid',
+    country: '인도네시아',
+    country_en: 'Indonesia',
+  }, 'carstensz-pyramid');
+  const beef = photo('kobe-beef', { description: 'Kobe beef' });
+  const harbor = photo('kobe-harbor', { description: 'Kobe harbor' });
+  const tower = photo('kobe-tower', { alt_description: 'Kobe Port Tower' });
+  const gluedBeef = photo('kobe-gyu', { description: '고베규' });
+  const puncak = photo('puncak', { tags: ['Puncak Jaya'] });
+  const rome = photo('rome-pyramid', {
+    description: 'Rome Italy beige pyramid during daytime photo',
+  });
+  assert.equal(galleryPhotoPositivelyMatchesTarget(beef, kobe), false);
+  assert.equal(galleryPhotoPositivelyMatchesTarget(harbor, kobe), true);
+  assert.equal(galleryPhotoPositivelyMatchesTarget(tower, kobe), true);
+  assert.equal(galleryPhotoPositivelyMatchesTarget(gluedBeef, kobe), false);
+  assert.equal(galleryPhotoPositivelyMatchesTarget(puncak, carstensz), true);
+  assert.equal(galleryPhotoPositivelyMatchesTarget(rome, carstensz), false);
+  const savedKobe = filterGalleryImagesForPersist([beef, harbor, tower, gluedBeef], kobe);
+  assert.deepEqual(savedKobe.map((img) => img.id), ['kobe-harbor', 'kobe-tower']);
+  const savedPeak = filterGalleryImagesForPersist([puncak, rome], carstensz);
+  assert.deepEqual(savedPeak.map((img) => img.id), ['puncak']);
+});
+
 test('domestic persist still keeps empty metadata and still drops another city', () => {
   assert.equal(galleryTargetRequiresPositivePersist(seoul), false);
   const saved = filterGalleryImagesForPersist(

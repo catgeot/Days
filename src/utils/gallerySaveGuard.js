@@ -147,6 +147,111 @@ export function galleryPhotoPlaceText(photo) {
   ].filter((value) => typeof value === 'string' && value.trim()).join(' ');
 }
 
+/**
+ * Stock captions use a different name than the catalog slug.
+ * Parent regions are intentionally absent (Bali ≠ Ubud, Tahiti ≠ Bora Bora,
+ * Andaman Sea ≠ the Andaman Islands, Christmas Island ≠ Kiribati).
+ */
+const GALLERY_POSITIVE_PLACE_ALIASES = {
+  'aitutaki': ['One Foot Island'],
+  'andaman-islands': ['Port Blair'],
+  'carstensz-pyramid': ['Puncak Jaya', 'Jayawijaya'],
+  'kiribati': ['Tarawa'],
+  'kobe': ['神戸'],
+  'koh-samui': ['Ko Samui'],
+  'mayotte': ['Maore'],
+};
+
+/**
+ * Positive match is token-based, not a raw substring.
+ * A place token does not count when the next word is a product
+ * ("Kobe beef", "Kobe gyu") or the previous word marks a title
+ * ("the movie Madagascar"). "Kobe harbor" and "Kobe Port Tower" still count.
+ * Hangul/CJK must sit on a token edge. A following particle (의, 에서, …) is fine;
+ * a glued product syllable is not (고베규).
+ */
+const POSITIVE_MATCH_PRODUCT_NEXT = new Set([
+  'beef', 'steak', 'wagyu', 'gyu', 'wine', 'cheese', 'ham', 'pork',
+  'tea', 'coffee', 'chocolate', 'rum', 'silk', 'cotton', 'porcelain',
+]);
+const POSITIVE_MATCH_TITLE_PREV = new Set(['movie', 'film']);
+const POSITIVE_MATCH_HANGUL_PRODUCT_NEXT = ['소고기', '비프', '규'].map((word) => foldPlaceText(word));
+const POSITIVE_MATCH_HANGUL_PARTICLES = [
+  '에서', '으로', '에게', '한테', '까지', '부터', '처럼', '보다',
+  '의', '은', '는', '이', '가', '을', '를', '에', '로', '와', '과', '도', '만',
+].map((word) => foldPlaceText(word));
+
+function isCjkOrHangulChar(ch) {
+  return /[\u1100-\u11ff\u3130-\u318f\u3040-\u30ff\u3400-\u9fff\uac00-\ud7a3]/.test(ch || '');
+}
+
+function latinTokenBefore(foldedText, start) {
+  const head = foldedText.slice(0, start);
+  return head.match(/([a-z0-9]+)[^a-z0-9]*$/)?.[1] || '';
+}
+
+function latinTokenAfter(foldedText, end) {
+  return foldedText.slice(end).match(/^[^a-z0-9]*([a-z0-9]+)/)?.[1] || '';
+}
+
+function positiveLatinAliasHit(foldedText, needle) {
+  const compact = needle.replace(/ /g, '');
+  if (compact.length < 4 && !SHORT_LATIN_ALIASES.has(needle)) return false;
+  const escaped = needle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const re = new RegExp(`(^|[^a-z0-9])(${escaped})(?=$|[^a-z0-9])`, 'g');
+  let found = re.exec(foldedText);
+  while (found) {
+    const start = found.index + found[1].length;
+    const end = start + found[2].length;
+    const next = latinTokenAfter(foldedText, end);
+    const prev = latinTokenBefore(foldedText, start);
+    if (!POSITIVE_MATCH_PRODUCT_NEXT.has(next) && !POSITIVE_MATCH_TITLE_PREV.has(prev)) {
+      return true;
+    }
+    found = re.exec(foldedText);
+  }
+  return false;
+}
+
+function hangulTailIsPlaceBoundary(after) {
+  if (!after || !isCjkOrHangulChar(after[0])) return true;
+  const trimmed = after.trimStart();
+  if (POSITIVE_MATCH_HANGUL_PRODUCT_NEXT.some((word) => trimmed.startsWith(word))) return false;
+  for (const particle of POSITIVE_MATCH_HANGUL_PARTICLES) {
+    if (!trimmed.startsWith(particle)) continue;
+    const rest = trimmed.slice(particle.length);
+    if (!rest || !isCjkOrHangulChar(rest[0])) return true;
+  }
+  return false;
+}
+
+function positiveNonLatinAliasHit(foldedText, needle) {
+  if (needle.length < 2) return false;
+  let from = 0;
+  while (from < foldedText.length) {
+    const at = foldedText.indexOf(needle, from);
+    if (at < 0) return false;
+    const before = at === 0 ? '' : foldedText[at - 1];
+    const after = foldedText.slice(at + needle.length);
+    const beforeOk = !before || !isCjkOrHangulChar(before);
+    if (beforeOk && hangulTailIsPlaceBoundary(after)) return true;
+    from = at + Math.max(needle.length, 1);
+  }
+  return false;
+}
+
+function positiveAliasHit(foldedText, alias) {
+  const needle = foldPlaceText(alias);
+  if (!foldedText || !needle) return false;
+  if (isHangulOrNonLatin(needle)) return positiveNonLatinAliasHit(foldedText, needle);
+  return positiveLatinAliasHit(foldedText, needle);
+}
+
+function positiveMatchNeedles(target) {
+  const extra = GALLERY_POSITIVE_PLACE_ALIASES[target?.id] || [];
+  return [...(target?.city || []), ...(target?.country || []), ...extra];
+}
+
 /** Overseas targets must mention the place or its country before a row is written. */
 export function galleryTargetRequiresPositivePersist(target) {
   const countries = (target?.country || [])
@@ -160,11 +265,12 @@ export function galleryTargetRequiresPositivePersist(target) {
 }
 
 export function galleryPhotoPositivelyMatchesTarget(photo, target) {
-  if (!target?.city?.length && !target?.country?.length) return false;
+  if (!target?.city?.length && !target?.country?.length && !GALLERY_POSITIVE_PLACE_ALIASES[target?.id]) {
+    return false;
+  }
   const folded = foldPlaceText(galleryPhotoPlaceText(photo));
   if (!folded) return false;
-  const needles = [...(target.city || []), ...(target.country || [])];
-  return needles.some((alias) => galleryAliasHit(folded, alias));
+  return positiveMatchNeedles(target).some((alias) => positiveAliasHit(folded, alias));
 }
 
 function sameCountry(target, entry) {
