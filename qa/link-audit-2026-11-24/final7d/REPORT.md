@@ -131,4 +131,4 @@ See `SHA256SUMS` in this directory (computed with `sha256sum` on the four bundle
 
 ## Git
 
-Branch `ops/link-audit-final7d` · tip: `7cb0b3843d60cf215b851ebf28bd4f9ebd03a25b` (meta after bundle `a786785c`)
+Branch `ops/link-audit-final7d` · verify tip: `git rev-parse origin/ops/link-audit-final7d`
