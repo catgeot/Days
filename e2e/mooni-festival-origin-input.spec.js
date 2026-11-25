@@ -349,18 +349,27 @@ test('1280 default dock', async ({ page, context }, testInfo) => {
 
 const OVERSEAS_SHOTS = '/opt/cursor/artifacts/overseas-origin';
 
-async function mockReverseGeocode(context) {
+const CITY_REVERSE_PLACES = [
+  ['100.5018', '방콕', 'Bangkok', '태국', 'Thailand'],
+  ['98.9853', '치앙마이', 'Chiang Mai', '태국', 'Thailand'],
+  ['98.9063', '크라비', 'Krabi', '태국', 'Thailand'],
+  ['103.8198', '싱가포르', 'Singapore', '싱가포르', 'Singapore'],
+  ['98.2475', '카오락', 'Khao Lak', '태국', 'Thailand'],
+];
+
+const DISTRICT_REVERSE_PLACES = [
+  ['100.5018', '프라나콘', 'Phra Nakhon', '태국', 'Thailand'],
+  ['98.9853', '므앙치앙마이군', 'Mueang Chiang Mai', '태국', 'Thailand'],
+  ['98.9063', '므앙끄라비군', 'Mueang Krabi', '태국', 'Thailand'],
+  ['103.8198', 'Central Water Catchment', 'Central Water Catchment', '싱가포르', 'Singapore'],
+  ['98.3648', '따꾸아빠군', 'Takua Pa', '태국', 'Thailand'],
+];
+
+async function mockReverseGeocode(context, places = CITY_REVERSE_PLACES) {
   await context.route(/api\.mapbox\.com\/geocoding\/v5\/mapbox\.places\//i, async (route) => {
     const url = new URL(route.request().url());
     const lang = url.searchParams.get('language') || 'ko';
     const ko = lang.startsWith('ko');
-    const places = [
-      ['100.5018', '방콕', 'Bangkok', '태국', 'Thailand'],
-      ['98.9853', '치앙마이', 'Chiang Mai', '태국', 'Thailand'],
-      ['98.9063', '크라비', 'Krabi', '태국', 'Thailand'],
-      ['103.8198', '싱가포르', 'Singapore', '싱가포르', 'Singapore'],
-      ['98.2475', '카오락', 'Khao Lak', '태국', 'Thailand'],
-    ];
     const hit = places.find(([lng]) => url.pathname.includes(lng)) || places[4];
     await route.fulfill({
       status: 200,
@@ -386,12 +395,20 @@ async function saveOverseasShot(page, name, width) {
   });
 }
 
-async function openLocatedOrigin(page, context, { latitude, longitude, lang = 'ko', festivalId, payloads = null } = {}) {
+async function openLocatedOrigin(page, context, {
+  latitude,
+  longitude,
+  lang = 'ko',
+  festivalId,
+  payloads = null,
+  places = null,
+  mockText,
+} = {}) {
   await context.grantPermissions(['geolocation']);
   await context.setGeolocation({ latitude, longitude });
-  await mockReverseGeocode(context);
+  await mockReverseGeocode(context, places || undefined);
   const calls = [];
-  await openOriginDock(page, context, { calls, lang, festivalId, payloads });
+  await openOriginDock(page, context, { calls, lang, festivalId, payloads, mockText });
   await page.getByTestId('mooni-origin-locate').click();
   return calls;
 }
@@ -678,4 +695,71 @@ test('place-card my-location flight button uses the real origin airport', async 
       await saveOverseasShot(page, `khao-lak-place-flight-${width}.png`, width);
     }
   }
+});
+
+test('district reverse geocode shows the city and keeps the airport code', async ({ page, context }, testInfo) => {
+  test.skip(testInfo.project.name.includes('webkit'), 'captures are chromium 390 and 1280');
+  const width = testInfo.project.name.includes('1280') ? 1280 : 390;
+  const origins = [
+    [13.7563, 100.5018, '방콕', 'BKK', '프라나콘', 'bangkok'],
+    [8.8295, 98.3648, '카오락', 'HKT', '따꾸아빠군', 'khao-lak'],
+    [18.7883, 98.9853, '치앙마이', 'CNX', '므앙치앙마이군', 'chiang-mai'],
+    [8.0863, 98.9063, '크라비', 'KBV', '므앙끄라비군', 'krabi'],
+    [1.3521, 103.8198, '싱가포르', 'SIN', 'Central Water Catchment', 'singapore'],
+  ];
+  for (const [latitude, longitude, city, iata, district, slug] of origins) {
+    const payloads = [];
+    await openLocatedOrigin(page, context, {
+      latitude,
+      longitude,
+      payloads,
+      places: DISTRICT_REVERSE_PLACES,
+    });
+    const input = page.getByTestId('mooni-origin-input');
+    await expect(input).toHaveValue(`${city} · ${city === '싱가포르' ? '싱가포르' : '태국'} (내 위치)`);
+    await expect(input).not.toHaveValue(new RegExp(district));
+    await input.press('Enter');
+    const sent = payloads.at(-1);
+    expect(sent?.params?.userText || '', city).toContain(city);
+    expect(sent?.params?.userText || '', iata).toContain(iata);
+    expect(sent?.params?.userText || '', district).not.toContain(district);
+    expect(sent?.params?.tripSession?.departureIata).toBe(iata);
+    const chip = page.getByTestId('mooni-destination-resolution').last();
+    await expect(chip).toContainText(city);
+    await expect(chip).toContainText(iata);
+    await expect(chip).not.toContainText(district);
+    if (slug === 'bangkok' || slug === 'khao-lak') {
+      await saveOverseasShot(page, `district-city-${slug}-${width}.png`, width);
+    }
+  }
+});
+
+test('korean transit links stay for a domestic leg and drop for an overseas hop', async ({ page, context }, testInfo) => {
+  test.skip(testInfo.project.name.includes('webkit'), 'captures are chromium 390 and 1280');
+  const width = testInfo.project.name.includes('1280') ? 1280 : 390;
+  const reply = '공항에서 행사장까지 이어서 안내해요.';
+  await openOriginDock(page, context, { calls: [], mockText: reply });
+  const input = page.getByTestId('mooni-origin-input');
+  await input.fill('춘천시');
+  await expect(page.getByTestId('mooni-origin-option')).toHaveCount(1);
+  await input.press('Enter');
+  const homeReply = page.getByTestId('mooni-model-reply').last();
+  await expect(homeReply).toContainText('열차·버스 시각은', { timeout: 30_000 });
+  await saveShot(page, `transit-footer-chuncheon-${width}.png`, width);
+
+  const payloads = [];
+  await openLocatedOrigin(page, context, {
+    latitude: 8.8295,
+    longitude: 98.3648,
+    payloads,
+    places: DISTRICT_REVERSE_PLACES,
+    mockText: reply,
+  });
+  await expect(page.getByTestId('mooni-origin-input')).toHaveValue('카오락 · 태국 (내 위치)');
+  await page.getByTestId('mooni-origin-input').press('Enter');
+  const landed = page.getByTestId('mooni-model-reply').last();
+  await expect(landed).toContainText('열차·버스 시각은', { timeout: 30_000 });
+  expect(payloads.at(-1)?.params?.tripSession?.departureIata).toBe('HKT');
+  expect(payloads.at(-1)?.params?.tripSession?.arrivalIata).toBe('ICN');
+  await saveShot(page, `transit-footer-khao-lak-${width}.png`, width);
 });

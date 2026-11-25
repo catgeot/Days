@@ -7,6 +7,7 @@ import { KOREA_ORIGIN_CITIES } from './koreaOriginCityMatch.js';
 import { geocodeReversePlaceFields } from './mapboxGeocodeSuggestions.js';
 import { getFlightOriginDisplayLabel } from './flightCinemaOriginOptions.js';
 import { resolveFlightOriginFromCoords } from './flightCinemaOriginSearch.js';
+import { listCityAttractionHubs } from './cityAttractionHubs.js';
 
 function toRad(deg) {
   return (Number(deg) * Math.PI) / 180;
@@ -87,6 +88,54 @@ function placeNames(hit) {
   return { city, country, cityEn: cityEn || city, countryEn: countryEn || country };
 }
 
+/** District reverse hits (프라나콘, 따꾸아빠군) sit inside a known city. Farther GPS keeps the geocoded name. */
+const MY_LOCATION_CITY_RADIUS_KM = 40;
+
+function compactPlaceName(value) {
+  return String(value || '').trim().toLowerCase().replace(/[\s·,._-]+/g, '');
+}
+
+function nearestKnownCity(lat, lng) {
+  let best = null;
+  let bestKm = Infinity;
+  for (const hub of listCityAttractionHubs()) {
+    const hlat = Number(hub?.lat);
+    const hlng = Number(hub?.lng);
+    if (!Number.isFinite(hlat) || !Number.isFinite(hlng)) continue;
+    const km = distanceKm(lat, lng, hlat, hlng);
+    if (km < bestKm) {
+      bestKm = km;
+      best = hub;
+    }
+  }
+  if (!best || bestKm > MY_LOCATION_CITY_RADIUS_KM) return null;
+  return best;
+}
+
+function placeNameMatchesHub(names, hub) {
+  const keys = [hub.name, hub.name_en, hub.hubId, ...(hub.aliases || [])]
+    .map(compactPlaceName)
+    .filter(Boolean);
+  const got = [names.city, names.cityEn].map(compactPlaceName).filter(Boolean);
+  return got.some((name) => keys.includes(name));
+}
+
+/**
+ * Mapbox reverse often returns the admin district (프라나콘, 따꾸아빠군, Central Water Catchment).
+ * The chip and the ask sentence use this city string. Within 40km, use the known city hub
+ * (방콕, 카오락, 치앙마이, 크라비, 싱가포르). The airport IATA is chosen separately and is not changed here.
+ */
+function cityNamesForMyLocation(lat, lng, names) {
+  const known = nearestKnownCity(lat, lng);
+  if (!known || placeNameMatchesHub(names, known)) return names;
+  return {
+    city: known.name,
+    country: known.country || names.country,
+    cityEn: known.name_en || known.name,
+    countryEn: known.country_en || names.countryEn,
+  };
+}
+
 /**
  * GPS → domestic 시·군, or an overseas city plus its nearest airport.
  * Reverse geocode runs only outside Korea.
@@ -113,8 +162,9 @@ export async function resolveMyLocationOrigin(lat, lng, options = {}) {
   } catch {
     hit = null;
   }
-  const names = placeNames(hit);
-  if (!names) return { ok: false };
+  const geocoded = placeNames(hit);
+  if (!geocoded) return { ok: false };
+  const names = cityNamesForMyLocation(la, ln, geocoded);
   const described = airportCopy(airport.iata);
   return {
     ok: true,

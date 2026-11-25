@@ -230,8 +230,7 @@ export function FestivalHeroThumbStrip({
             const index = list.indexOf(url);
             const selected = index === activeIndex;
             const isLoaded = loadedUrls.includes(url);
-            const isFailed = failedUrls.includes(url);
-            if (!isLoaded && isFailed) return null;
+            if (!isLoaded) return null;
             return createElement(
               'button',
               {

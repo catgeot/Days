@@ -128,6 +128,9 @@ export default defineConfig({
         /travelogue-back-nav\.spec\.js/,
         /article-festival-place-back\.spec\.js/,
         /explore-choseong-search\.spec\.js/,
+        /patrol-explore-empty\.spec\.js/,
+        /patrol-festival-tours\.spec\.js/,
+        /patrol-blog-bottom\.spec\.js/,
         /explore-seowon-search\.spec\.js/,
         /explore-suggest-rank\.spec\.js/,
         /agency-home-link\.spec\.js/,
@@ -445,6 +448,19 @@ export default defineConfig({
       },
     },
     {
+      name: 'webkit-logbook-article-pad',
+      testMatch: /patrol-blog-bottom\.spec\.js/,
+      timeout: 180_000,
+      use: {
+        ...devices['Desktop Safari'],
+        baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://127.0.0.1:5199',
+        locale: 'ko-KR',
+        viewport: { width: 390, height: 844 },
+        deviceScaleFactor: 1,
+        ignoreHTTPSErrors: true,
+      },
+    },
+    {
       name: 'chromium-logbook-owner-edit',
       testMatch: /logbook-public-owner-edit-390\.spec\.js|logbook-detail-toolbar-layout\.spec\.js/,
       timeout: 180_000,
@@ -487,7 +503,7 @@ export default defineConfig({
     },
     {
       name: 'chromium-explore-bare-ko-390',
-      testMatch: /explore-search-bare-ko\.spec\.js|explore-place-screen-back\.spec\.js|explore-ganghwa-dolmen-search\.spec\.js|explore-seowon-search\.spec\.js/,
+      testMatch: /explore-search-bare-ko\.spec\.js|explore-place-screen-back\.spec\.js|explore-ganghwa-dolmen-search\.spec\.js|explore-seowon-search\.spec\.js|patrol-explore-empty\.spec\.js|patrol-festival-tours\.spec\.js/,
       timeout: 180_000,
       use: {
         ...devices['Desktop Chrome'],

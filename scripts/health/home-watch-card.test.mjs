@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import test from 'node:test';
 
 import {
@@ -318,6 +319,13 @@ test('continue place photo follows the place-card source and falls back when emp
   assert.equal(HOME_WATCH_CARD_LAYOUT.mobile.height, 85);
   assert.equal(HOME_WATCH_CARD_LAYOUT.desktop.height, 85);
   assert.equal(HOME_WATCH_CAPTION_BAND, 'rgba(0,0,0,0.86)');
+  const cardSrc = fs.readFileSync(new URL('../../src/pages/Home/components/HomeWatchCard.jsx', import.meta.url), 'utf8');
+  assert.match(cardSrc, /data-caption-role="name"/);
+  assert.match(cardSrc, /data-caption-role="label"/);
+  assert.match(cardSrc, /data-caption-role="subtitle"/);
+  assert.match(cardSrc, /data-caption-role="chip"/);
+  assert.equal((cardSrc.match(/HOME_WATCH_CAPTION_BAND/g) || []).length, 5);
+  assert.doesNotMatch(cardSrc, /home-watch-caption-band"[\s\S]{0,160}backgroundColor/);
   const bandAlpha = Number(HOME_WATCH_CAPTION_BAND.match(/[\d.]+(?=\))/)[0]);
   assert.equal(bandAlpha, 0.86);
   const bandOnWhite = overWhite(bandAlpha);

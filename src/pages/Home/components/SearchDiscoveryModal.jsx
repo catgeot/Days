@@ -114,6 +114,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, onAskMooni,
   const [suggestionsLoading, setSuggestionsLoading] = useState(false);
   const [disambiguation, setDisambiguation] = useState(null);
   const [searchSubmitError, setSearchSubmitError] = useState(null);
+  const [searchNoResultQuery, setSearchNoResultQuery] = useState(null);
   const [aiLimitLinks, setAiLimitLinks] = useState([]);
 
   const searchBarRowRefPc = useRef(null);
@@ -532,13 +533,10 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, onAskMooni,
         return;
       }
       if (result?.__noResults) {
-        setSearchSubmitError(
-          t('home.explore.searchNoResults', {
-            defaultValue: '「{{query}}」에 맞는 장소를 찾지 못했습니다. 검색어를 바꿔 보세요.',
-            query: finalQuery,
-          }),
-        );
-        setIsSearchHistoryOpen(true);
+        setSearchSubmitError(null);
+        setDisambiguation(null);
+        setSearchNoResultQuery(finalQuery);
+        setIsSearchHistoryOpen(false);
         dismissSearchKeyboard();
         return;
       }
@@ -874,6 +872,39 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, onAskMooni,
   };
 
   const renderContent = () => {
+    if (searchNoResultQuery && searchNoResultQuery === query.trim()) {
+      return (
+        <div
+          data-explore-no-results
+          role="status"
+          className="mx-auto flex w-full max-w-lg flex-col items-start gap-3 px-1 py-10"
+        >
+          <h2 className="text-xl font-bold text-white md:text-2xl">
+            {t('home.explore.searchNoResultsTitle')}
+          </h2>
+          <p className="text-sm leading-relaxed text-gray-200 md:text-base">
+            {t('home.explore.searchNoResults', { query: searchNoResultQuery })}
+          </p>
+          <p className="text-sm leading-relaxed text-gray-400">{t('home.explore.searchNoResultsTips')}</p>
+          <button
+            type="button"
+            data-explore-no-results-browse
+            onClick={() => {
+              setQuery('');
+              setSearchNoResultQuery(null);
+              setDisambiguation(null);
+              setSearchSubmitError(null);
+              setHybridSuggestions([]);
+              setIsSearchHistoryOpen(false);
+            }}
+            className="mt-1 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-semibold text-white hover:bg-white/15"
+          >
+            {t('home.explore.searchNoResultsBrowse')}
+          </button>
+        </div>
+      );
+    }
+
     if (disambiguation?.candidates?.length) {
       return (
         <SearchDisambiguationCards
@@ -1140,6 +1171,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, onAskMooni,
                 setQuery(e.target.value);
                 setDisambiguation(null);
                 setSearchSubmitError(null);
+                setSearchNoResultQuery(null);
                 setActiveQuickSection(null);
                 // 타이핑 중에는 드롭다운에 제안 리스트를 유지
                 setIsSearchHistoryOpen(true);
@@ -1156,6 +1188,7 @@ const SearchDiscoveryModal = ({ isOpen, onClose, onSelect, onSearch, onAskMooni,
                   setIsSearchHistoryOpen(false);
                   setDisambiguation(null);
                   setSearchSubmitError(null);
+                  setSearchNoResultQuery(null);
                   setAiLimitLinks([]);
                   setHybridSuggestions([]);
                   inputRef.current?.focus();

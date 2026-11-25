@@ -2,6 +2,7 @@ import { makeDisambiguationResult } from './cityAttractionHubs.js';
 import { resolveExploreCityHubExact } from './exploreHubResolve.js';
 import { normalizeSearchSuggestions } from './normalizeSearchSuggestions.js';
 import { buildExploreSiteSearchHybridSuggestions } from './exploreSiteSearchHybrid.js';
+import { dropUnrelatedMapboxSuggestions } from './exploreRemoteHitMatch.js';
 import { SEARCH_DISAMBIGUATION_PALGYEONG_PAGE_SIZE } from './searchDisambiguationPaging.js';
 
 /**
@@ -49,10 +50,13 @@ export async function buildExploreSubmitParityBroadDisambiguation(query, opts = 
     reviewPool: opts.reviewPool,
     now: opts.now,
   });
-  const normalized = normalizeSearchSuggestions(q, items, {
-    hub: null,
-    locale: opts.locale || 'ko',
-  });
+  const normalized = dropUnrelatedMapboxSuggestions(
+    q,
+    normalizeSearchSuggestions(q, items, {
+      hub: null,
+      locale: opts.locale || 'ko',
+    }),
+  );
   if (normalized.length < 2) return null;
 
   const title = `'${q}' → 도시·명소·여행지`;

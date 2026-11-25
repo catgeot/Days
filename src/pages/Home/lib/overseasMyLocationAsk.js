@@ -2,6 +2,7 @@
  * Overseas «내 위치» ask. The sentence is the SSOT the model hint parses.
  * Domestic city asks stay in festivalDomesticOrigins.js.
  */
+import { KOREA_AIRPORT_IATAS } from '../../../utils/koreaAirportIatas.js';
 
 function isEn(locale) {
   return String(locale || '').slice(0, 2) === 'en';
@@ -153,4 +154,19 @@ export function overseasMyLocationModelHint(route, locale = 'ko') {
     ? `${route.originIata}에서 ${route.arrivalIata}로 비행한 다음 행사장소까지 이어서 안내하세요.`
     : `${route.originIata}에서 행사장소까지 이어서 안내하세요.`;
   return `\n- 여행자는 ${route.country} ${route.city}에 있어요. 한국 도시로 출발지를 바꾸지 마세요. ${via}`;
+}
+
+/**
+ * Korean train/bus footer stays only when the route includes a domestic Korean ground leg.
+ * - A domestic origin (춘천, 서울, …) is not an overseas ask, so the leg is in Korea.
+ * - An overseas origin keeps the leg when the hop lands at a Korean airport (ICN, PUS, …)
+ *   and the traveler continues by Korean train or bus.
+ * - An overseas hop that stays abroad has no Korean ground leg, so the footer is omitted.
+ * @param {unknown} userText
+ */
+export function festivalAccessRouteHasKoreanGroundLeg(userText) {
+  const route = parseOverseasMyLocationAsk(userText);
+  if (!route) return true;
+  const arrival = String(route.arrivalIata || '').trim().toUpperCase();
+  return KOREA_AIRPORT_IATAS.has(arrival);
 }

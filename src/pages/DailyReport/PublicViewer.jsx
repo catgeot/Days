@@ -27,6 +27,10 @@ import LogbookOwnerEditButton from './components/LogbookOwnerEditButton';
 import { isLogbookReportOwner } from './utils/logbookReportOwner';
 import { buildEditorialLogbookJsonLd } from './lib/logbookEditorialJsonLd';
 import SEO from '../../components/SEO';
+import {
+  LOGBOOK_ARTICLE_INLINE_CLEARANCE,
+  LOGBOOK_ARTICLE_PAGE_PAD,
+} from './logbookArticleClearance.js';
 import { resolveLogbookFeedExcerpt } from '../../utils/logbookDek';
 import { getAppHistoryPath } from '../../shared/navigation/appHistoryPathIndex.js';
 import {
@@ -288,11 +292,7 @@ const PublicViewer = () => {
 
   return (
     <div
-      className={`min-h-screen bg-white text-gray-900 relative overflow-hidden font-sans ${
-        editorial
-          ? 'pb-[calc(max(5rem,env(safe-area-inset-bottom,0px))+3.5rem)]'
-          : 'pb-20'
-      }`}
+      className={`min-h-screen bg-white text-gray-900 relative overflow-hidden font-sans ${LOGBOOK_ARTICLE_PAGE_PAD}`}
     >
       {editorial ? (
         <SEO
@@ -343,8 +343,8 @@ const PublicViewer = () => {
         <div
           className={
             editorial
-              ? 'bg-white sm:bg-white/60 sm:backdrop-blur-xl border-0 sm:border sm:border-gray-200/90 p-0 sm:p-10 rounded-none sm:rounded-3xl shadow-none sm:shadow-sm mt-0 sm:mt-8'
-              : 'bg-white/60 backdrop-blur-xl border border-gray-200 p-6 sm:p-10 rounded-3xl shadow-sm mt-8'
+              ? `bg-white sm:bg-white/60 sm:backdrop-blur-xl border-0 sm:border sm:border-gray-200/90 p-0 sm:p-10 rounded-none sm:rounded-3xl shadow-none sm:shadow-sm mt-0 sm:mt-8 ${LOGBOOK_ARTICLE_INLINE_CLEARANCE}`
+              : `bg-white/60 backdrop-blur-xl border border-gray-200 p-6 sm:p-10 rounded-3xl shadow-sm mt-8 ${LOGBOOK_ARTICLE_INLINE_CLEARANCE}`
           }
         >
           {editorial ? (
@@ -468,7 +468,7 @@ const PublicViewer = () => {
 
           <LogbookComments report={report} onCountChange={setCommentCount} />
 
-          <div className="mt-16 pt-8 border-t border-gray-200 text-center flex flex-col items-center">
+          <div data-logbook-article-end className="mt-16 pt-8 border-t border-gray-200 text-center flex flex-col items-center">
             <p className="text-gray-500 text-sm font-medium mb-6">{t('logbook.public.ctaBody')}</p>
             <div className="flex flex-col sm:flex-row gap-3">
               <button

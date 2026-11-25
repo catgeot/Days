@@ -329,7 +329,8 @@ function SearchResultThumb({ item, sizeClass, kind, iconSize = 16, selectionCard
   if (!src || failed) {
     return (
       <div
-        className={`flex shrink-0 items-center justify-center rounded-xl bg-white/[0.08] ${sizeClass}`}
+        data-search-thumb-empty="gradient"
+        className={`flex shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-white/15 via-white/[0.06] to-transparent ${sizeClass}`}
         aria-hidden="true"
       >
         <SuggestionIcon kind={kind} size={iconSize} />

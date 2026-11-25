@@ -1,4 +1,20 @@
+import { isDomesticKoreaLocation } from './tourApiMatch.js';
+
 /** @typedef {{ itemName?: string, category?: string, itemDesc?: string, description?: string }} MrtTnaRelevanceItem */
+
+/** Admin/place suffix that still names the same token (마포구, 제주도, 서울타워). */
+const KO_PLACE_SUFFIX = '(?:구|시|군|읍|면|동|리|도|역|타워|공원)';
+
+/** Province tag glued onto a short place, e.g. [경북영양] · [경북/영양]. */
+const KO_REGION_PREFIX =
+  '서울|부산|대구|인천|광주|대전|울산|세종|경기|강원|충북|충남|전북|전남|경북|경남|제주';
+
+/**
+ * A Korea festival must not keep a product that names another country,
+ * even when a short place token sits inside the title.
+ */
+const OVERSEAS_COUNTRY_RE =
+  /뉴질랜드|new zealand|호주|australia|일본|japan|태국|thailand|베트남|vietnam|프랑스|france|이탈리아|italy|미국|united states|\busa\b|캐나다|canada|영국|united kingdom|독일|germany|스위스|switzerland|스페인|spain|인도네시아|indonesia|필리핀|philippines|말레이시아|malaysia|싱가포르|singapore|대만|taiwan|홍콩|hong kong|라오스|\blaos\b|캄보디아|cambodia|튀르키예|turkey|그리스|greece|포르투갈|portugal|네덜란드|netherlands|오스트리아|austria|체코|czech|헝가리|hungary|폴란드|poland|러시아|russia|멕시코|mexico|브라질|brazil|페루|peru|이집트|egypt|모로코|morocco|피지|fiji|하와이|hawaii/i;
 
 export const OVERSEAS_TNA_NOISE_RE =
   /중국|칭다오|상하이|오사카|도쿄|교토|간사이|유니버설|디즈니|만리장성|심천|대련|홍콩|타이베이|LA\b|노산\s*풍경|라오산|연세대학교|연남점|Douro|Yarra|Hidden\s*Valley|Valley\s*of\s*Fire|와인\s*투어|잔지바르|Zanzibar|나이로비|Nairobi|사파리|마사이|Masai|세렝게티|Serengeti|케냐|Kenya|탄자니아|Tanzania|응두투|Ndutu/;
@@ -149,8 +165,12 @@ export function scoreMrtTnaRelevance(itemName, keyword) {
       best = Math.max(best, 8);
       continue;
     }
-    if (name.toLowerCase().includes(token.toLowerCase())) {
-      best = Math.max(best, 3);
+    const boundedPlace = new RegExp(
+      `(?:^|[\\s\\[\\(/,·])${esc}${KO_PLACE_SUFFIX}(?:$|[\\s\\]\\)/,·.])|\\[(?:${KO_REGION_PREFIX})[/ ]?${esc}\\]`,
+      'i',
+    ).test(name);
+    if (boundedPlace) {
+      best = Math.max(best, 8);
     }
   }
 
@@ -186,6 +206,9 @@ export function scoreMrtTnaItemRelevance(item, keyword, location = null) {
   let best = 0;
   for (const form of forms) {
     best = Math.max(best, scoreMrtTnaRelevance(text, form));
+  }
+  if (best > 0 && isDomesticKoreaLocation(location) && OVERSEAS_COUNTRY_RE.test(text)) {
+    return 0;
   }
   return best;
 }

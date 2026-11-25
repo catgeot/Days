@@ -166,6 +166,7 @@ export default function GlobeTourStrip({
   const [showMobileScrollTop, setShowMobileScrollTop] = useState(false);
   const [regionState, setRegionState] = useState(() => createTourRegionState(location));
   const searchOpenedRef = useRef(false);
+  const dismissedOpenSignalRef = useRef(0);
   const desktopListScrollRef = useRef(null);
   const mobileListScrollRef = useRef(null);
 
@@ -208,16 +209,28 @@ export default function GlobeTourStrip({
   );
   const showPeerStayCta = Boolean(onSwitchToStay) && peerStayEligible;
   const name = getLocalizedPlaceName(location, i18n.language) || location?.name || '';
-  const placeKey = `${location?.slug || ''}|${name}|${location?.lat}|${location?.lng}|${useMrtTna ? 'mrt' : 'gyg'}`;
+  const placeSlug = String(location?.slug || location?.canonical_slug || '')
+    .trim()
+    .toLowerCase();
+  const placeKey = `${placeSlug}|${name}|${location?.lat}|${location?.lng}|${useMrtTna ? 'mrt' : 'gyg'}`;
+  const placeSlugRef = useRef(placeSlug);
   const mobileOpen = !isLg && listFullscreen;
   const desktopOpen = Boolean(expanded && isLg);
 
   useEffect(() => {
+    const slugChanged = placeSlugRef.current !== placeSlug;
+    placeSlugRef.current = placeSlug;
+    // 좌표·표시 이름이 늦게 오면 placeKey만 바뀐다. 그때 목록을 닫으면
+    // 딥링크 신호가 그대로라 모달이 다시 열리지 않는다 (WebKit에서 다이얼로그 누락).
+    if (!slugChanged) {
+      if (!searchOpenedRef.current) setRegionState(createTourRegionState(location));
+      return;
+    }
     setExpanded(false);
     setListFullscreen(false);
     setRegionState(createTourRegionState(location));
     searchOpenedRef.current = false;
-  }, [placeKey]);
+  }, [placeKey, placeSlug]);
 
   useEffect(() => {
     if (expanded) return;
@@ -231,19 +244,21 @@ export default function GlobeTourStrip({
 
   useEffect(() => {
     if (!peerOpen) return;
+    dismissedOpenSignalRef.current = openSignal || 0;
     setExpanded(false);
     setListFullscreen(false);
-  }, [peerOpen]);
+  }, [peerOpen, openSignal]);
 
   useEffect(() => {
     if (!openSignal || !eligible) return;
+    if (dismissedOpenSignalRef.current === openSignal) return;
     if (!isLg) {
       setExpanded(true);
       setListFullscreen(true);
       return;
     }
     setExpanded(true);
-  }, [openSignal, eligible, isLg]);
+  }, [openSignal, eligible, isLg, placeSlug]);
 
   useEffect(() => {
     onExpandedChange?.(Boolean(eligible && expanded));
@@ -291,11 +306,12 @@ export default function GlobeTourStrip({
   }, [mobileOpen, placeKey]);
 
   const close = useCallback(() => {
+    dismissedOpenSignalRef.current = openSignal || 0;
     setRegionState(createTourRegionState(location));
     searchOpenedRef.current = false;
     setListFullscreen(false);
     setExpanded(false);
-  }, [location]);
+  }, [location, openSignal]);
 
   useServiceModalEscapeClose(Boolean(eligible && (expanded || listFullscreen)), close);
 
