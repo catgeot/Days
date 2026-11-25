@@ -94,7 +94,10 @@ export default defineConfig({
         : '',
     ),
     'import.meta.env.VITE_GATEO_PREVIEW_DEBUG_CHROME': JSON.stringify(
-      process.env.VERCEL_ENV === 'preview' ? '1' : '',
+      process.env.VERCEL_ENV === 'preview' &&
+      process.env.VERCEL_GIT_COMMIT_REF !== 'preview/airport-pickup-on'
+        ? '1'
+        : '',
     ),
   },
   plugins: [
