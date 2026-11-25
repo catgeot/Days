@@ -66,7 +66,7 @@ assert.equal(titles.primaryName, '자킨토스');
 assert.equal(titles.secondaryName, 'Zakynthos');
 
 const gallery = resolveGalleryStockQuery(hydrated);
-assert.equal(gallery.primaryQuery, 'Zakynthos');
+assert.equal(gallery.primaryQuery, 'Zakynthos Greece');
 assert.match(gallery.backupQuery, /Greece/);
 
 const videos = resolvePlaceVideoQueries(hydrated);

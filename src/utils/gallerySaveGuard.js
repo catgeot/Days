@@ -9,6 +9,11 @@ export const GALLERY_UNSPLASH_MAX_PAGE = 2;
  */
 export const GALLERY_PURGE_STORED_PHOTOS = false;
 
+/** UI cap and the longest gallery_urls array this client will persist. */
+export const GALLERY_MAX_IMAGES = 60;
+
+const KR_COUNTRY_RE = /^(한국|대한민국|korea|south\s*korea|republic of korea)$/i;
+
 const PLACEHOLDER_COUNTRY = new Set([
   '',
   'explore',
@@ -110,18 +115,56 @@ export function unsplashGallerySearchPage(page) {
   return n;
 }
 
+function galleryTagText(photo) {
+  const tags = photo?.tags;
+  if (!tags) return '';
+  if (typeof tags === 'string') return tags;
+  if (!Array.isArray(tags)) return '';
+  return tags
+    .map((tag) => {
+      if (typeof tag === 'string') return tag;
+      if (tag && typeof tag === 'object') return tag.title || tag.name || '';
+      return '';
+    })
+    .filter((value) => String(value || '').trim())
+    .join(' ');
+}
+
 export function galleryPhotoPlaceText(photo) {
   if (!photo || typeof photo !== 'object') return '';
   const location = photo.location && typeof photo.location === 'object' ? photo.location : {};
+  const locationText = typeof photo.location === 'string' ? photo.location : '';
   return [
     photo.description,
     photo.alt_description,
     photo.alt,
+    locationText,
     location.name,
     location.city,
     location.country,
     location.title,
+    galleryTagText(photo),
   ].filter((value) => typeof value === 'string' && value.trim()).join(' ');
+}
+
+/** Overseas targets must mention the place or its country before a row is written. */
+export function galleryTargetRequiresPositivePersist(target) {
+  const countries = (target?.country || [])
+    .map((name) => String(name || '').trim())
+    .filter((name) => {
+      const folded = foldPlaceText(name);
+      return folded && !PLACEHOLDER_COUNTRY.has(folded);
+    });
+  if (!countries.length) return false;
+  return countries.some((name) => !KR_COUNTRY_RE.test(name));
+}
+
+export function galleryPhotoPositivelyMatchesTarget(photo, target) {
+  if (!target?.city?.length && !target?.country?.length) return false;
+  const folded = foldPlaceText(galleryPhotoPlaceText(photo));
+  if (!folded) return false;
+  const needles = [...(target.city || []), ...(target.country || [])];
+  return needles.some((alias) => galleryAliasHit(folded, alias));
 }
 
 function sameCountry(target, entry) {
@@ -154,6 +197,65 @@ export function filterGalleryIncomingForSave(images, target, excludedIds) {
     if (img.id != null && excluded.has(String(img.id))) return false;
     return !galleryPhotoConflictsWithTarget(img, target);
   });
+}
+
+/**
+ * Session lists may keep unlabeled overseas hits. Persist lists may not.
+ * Domestic targets stay on the negative conflict filter, including empty metadata.
+ */
+export function filterGalleryImagesForPersist(images, target, excludedIds) {
+  const incoming = filterGalleryIncomingForSave(images, target, excludedIds);
+  if (!galleryTargetRequiresPositivePersist(target)) return incoming;
+  return incoming.filter((img) => galleryPhotoPositivelyMatchesTarget(img, target));
+}
+
+export function capPersistedGalleryImages(images, max = GALLERY_MAX_IMAGES) {
+  const list = Array.isArray(images) ? images.filter((img) => img && typeof img === 'object') : [];
+  const limit = Math.floor(Number(max));
+  if (!Number.isFinite(limit) || limit < 0) return list;
+  return list.length <= limit ? list : list.slice(0, limit);
+}
+
+/**
+ * A 1–7 image overseas row is refetched. Add only positive new photos.
+ * Stored rows stay on the server (merge), including a curated image with no caption.
+ */
+export function planThinStockGalleryPersist({ stored, incoming, target, max = GALLERY_MAX_IMAGES } = {}) {
+  const kept = (Array.isArray(stored) ? stored : []).filter((img) => img && typeof img === 'object');
+  if (!galleryTargetRequiresPositivePersist(target)) {
+    return {
+      overseas: false,
+      mode: 'replace',
+      images: capPersistedGalleryImages(incoming, max),
+    };
+  }
+  const keptIds = new Set(kept.map((img) => String(img.id ?? '')).filter(Boolean));
+  const additions = filterGalleryImagesForPersist(incoming, target).filter(
+    (img) => img?.id != null && img.id !== '' && !keptIds.has(String(img.id)),
+  );
+  const room = Math.max(0, max - kept.length);
+  const images = additions.slice(0, room);
+  return {
+    overseas: true,
+    mode: images.length ? 'merge_keep_hero' : null,
+    images,
+  };
+}
+
+/** True when a replace payload drops something other than the over-cap tail or an unverified overseas hit. */
+export function galleryReplaceOmitsOnlyAllowed(payloadImages, storage, target, max = GALLERY_MAX_IMAGES) {
+  const payloadIds = new Set((payloadImages || []).map((img) => img?.id).filter((id) => id != null && id !== ''));
+  const withinCap = new Set(
+    capPersistedGalleryImages(storage, max).map((img) => img?.id).filter((id) => id != null && id !== ''),
+  );
+  const overseas = galleryTargetRequiresPositivePersist(target);
+  for (const img of storage || []) {
+    if (!img?.id || payloadIds.has(img.id)) continue;
+    if (!withinCap.has(img.id)) continue;
+    if (overseas && !galleryPhotoPositivelyMatchesTarget(img, target)) continue;
+    return false;
+  }
+  return true;
 }
 
 export function galleryCandidatesForSave({ stored, incoming, target, excludedIds } = {}) {
