@@ -329,7 +329,7 @@ const PublicViewer = () => {
       )}
 
       <div
-        className={`relative z-10 max-w-3xl mx-auto ${LOGBOOK_ARTICLE_INLINE_CLEARANCE} ${
+        className={`relative z-10 max-w-3xl mx-auto ${
           editorial
             ? 'pt-[calc(max(2rem,env(safe-area-inset-top,0px))+3.5rem)] md:pt-12 px-5 sm:px-6'
             : 'pt-12 px-4 sm:px-6'
@@ -343,8 +343,8 @@ const PublicViewer = () => {
         <div
           className={
             editorial
-              ? 'bg-white sm:bg-white/60 sm:backdrop-blur-xl border-0 sm:border sm:border-gray-200/90 p-0 sm:p-10 rounded-none sm:rounded-3xl shadow-none sm:shadow-sm mt-0 sm:mt-8'
-              : 'bg-white/60 backdrop-blur-xl border border-gray-200 p-6 sm:p-10 rounded-3xl shadow-sm mt-8'
+              ? `bg-white sm:bg-white/60 sm:backdrop-blur-xl border-0 sm:border sm:border-gray-200/90 p-0 sm:p-10 rounded-none sm:rounded-3xl shadow-none sm:shadow-sm mt-0 sm:mt-8 ${LOGBOOK_ARTICLE_INLINE_CLEARANCE}`
+              : `bg-white/60 backdrop-blur-xl border border-gray-200 p-6 sm:p-10 rounded-3xl shadow-sm mt-8 ${LOGBOOK_ARTICLE_INLINE_CLEARANCE}`
           }
         >
           {editorial ? (

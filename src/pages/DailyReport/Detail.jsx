@@ -303,7 +303,7 @@ const Detail = () => {
         </div>
       )}
 
-      <div className={`relative z-10 max-w-3xl mx-auto max-md:pt-[max(3rem,env(safe-area-inset-top,0px))] pt-8 sm:pt-12 px-4 sm:px-6 ${LOGBOOK_ARTICLE_INLINE_CLEARANCE}`}>
+      <div className="relative z-10 max-w-3xl mx-auto max-md:pt-[max(3rem,env(safe-area-inset-top,0px))] pt-8 sm:pt-12 px-4 sm:px-6">
 
         <div
           data-logbook-detail-toolbar
@@ -361,7 +361,7 @@ const Detail = () => {
             </button>
         </div>
 
-        <div className="bg-white/60 backdrop-blur-xl border border-gray-200 p-6 sm:p-10 rounded-3xl shadow-sm">
+        <div className={`bg-white/60 backdrop-blur-xl border border-gray-200 p-6 sm:p-10 rounded-3xl shadow-sm ${LOGBOOK_ARTICLE_INLINE_CLEARANCE}`}>
           <div className="flex flex-wrap items-center gap-3 mb-6">
             <span className="text-xs font-bold text-blue-600 bg-blue-50 border border-blue-100 px-3 py-1.5 rounded-full uppercase tracking-wider">{formatLogbookDisplayDate(report)}</span>
             <span className="text-gray-500 text-sm flex items-center gap-1 font-medium"><MapPin size={14} className="text-gray-400"/> {report.location}</span>
