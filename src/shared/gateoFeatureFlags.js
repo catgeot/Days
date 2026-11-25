@@ -249,9 +249,14 @@ export function isGateoSelfReelsEnabled() {
   return readGateoEnvFlag(GATEO_ENV_FLAG_NAMES.SELF_REELS);
 }
 
-/** Airport pickup booking row on overseas arrival → lodging legs. Default off. */
+/** Airport pickup booking row on overseas arrival → lodging legs. Unset is on; `0`/`false`/`off` disable. */
 export function isGateoAirportPickupLinksEnabled() {
-  return readGateoEnvFlag(GATEO_ENV_FLAG_NAMES.AIRPORT_PICKUP_LINKS);
+  const name = GATEO_ENV_FLAG_NAMES.AIRPORT_PICKUP_LINKS;
+  const raw = import.meta.env?.[name] ?? globalThis.__VITE_ENV__?.[name];
+  const normalized = String(raw ?? '').trim().toLowerCase();
+  if (!normalized) return true;
+  if (normalized === '0' || normalized === 'false' || normalized === 'off') return false;
+  return normalized === '1' || normalized === 'true' || normalized === 'yes';
 }
 
 /** Festival departure-city field. Unset is on. The string `"0"` is the only off switch. */
