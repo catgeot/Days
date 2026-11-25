@@ -147,4 +147,4 @@ _vs final7 post-corpus issues (141):_ final7b rescans **416** post-update URL in
 - update.sql: 7d10391fedcfa975c5e5d0761c2ea812cd65d2c5b5bd931dbaa79d2a5134c9f2
 - rollback.sql: 92f073f3269412eb08156d01b96d1dbed9d2986d3a306aa4ac3c80e7fcc72563
 
-Branch: `ops/link-audit-final7b` · bundle artifact commit: (see git after publish)
+Branch tip: `ops/link-audit-final7b` @ `960383bd7a11cf17855d9b6d4bcabe44d0da10e9`
