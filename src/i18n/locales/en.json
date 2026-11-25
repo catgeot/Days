@@ -496,7 +496,23 @@
       "reelsSubtitle": "Short videos",
       "reelsAria": "Open reels",
       "reviewerAria": "Open reviews by {{name}}",
-      "tasteAria": "This month's note for {{name}}"
+      "tasteAria": "This month's note for {{name}}",
+      "monthTitle": "{{month}} picks",
+      "seeMonth": "See {{month}} ▸",
+      "months": {
+        "1": "January",
+        "2": "February",
+        "3": "March",
+        "4": "April",
+        "5": "May",
+        "6": "June",
+        "7": "July",
+        "8": "August",
+        "9": "September",
+        "10": "October",
+        "11": "November",
+        "12": "December"
+      }
     },
     "ticker": {
       "topTen": "TOP 10",

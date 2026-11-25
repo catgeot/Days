@@ -1,11 +1,13 @@
 import { buildLogbookReviewerFilterHref } from '../../../logbookOfficialReviews/logbookReviewFilterUrl.js';
 import { normalizePersonaLabel } from '../../../utils/placeReviewEditorial.js';
+import { MONTHLY_PICKS } from '../data/spotTraits.js';
 import {
   buildVisibleMonthlyPickCards,
   monthlyPickDisplayName,
   partitionExploreMonthlyPickCardsByHero,
   resolveExploreCurrentMonthPickKey,
   resolveExploreV2MonthlyPickKey,
+  seoulExploreCalendarParts,
 } from './exploreMonthlyPicks.js';
 import { getPlaceUrlParam } from './formatUrlName.js';
 
@@ -24,6 +26,100 @@ export const HOME_WATCH_CARD_LAYOUT = {
  * 0.86 black stays ≥4.5:1 for white, white/80, and amber-100 even on a white photo.
  */
 export const HOME_WATCH_CAPTION_BAND = 'rgba(0,0,0,0.86)';
+
+/**
+ * KST day-of-month when next month's home card opens (inclusive).
+ * 1 = the 1st, so the preview of next month is available all month
+ * (December from Nov 1; January from Dec 1). Retune with the January data PR.
+ * /explore keeps its own 15/20-day rule.
+ */
+export const HOME_MONTHLY_PREVIEW_START_DAY = 1;
+export const HOME_MONTHLY_PREVIEW_START_QUERY = 'home_monthly_preview_start';
+export const HOME_MONTHLY_CARD_GAP = 8;
+
+/** @param {string | null | undefined} search */
+export function resolveHomeMonthlyPreviewStartDay(
+  search,
+  fallback = HOME_MONTHLY_PREVIEW_START_DAY,
+) {
+  try {
+    const raw = new URLSearchParams(String(search || '').replace(/^\?/, '')).get(
+      HOME_MONTHLY_PREVIEW_START_QUERY,
+    );
+    const day = Number(raw);
+    if (Number.isInteger(day) && day >= 1 && day <= 28) return day;
+  } catch {
+    /* ignore malformed search */
+  }
+  return fallback;
+}
+
+/**
+ * @param {Date} [now]
+ * @param {number} [startDay]
+ * @param {Record<string, unknown[]>} [picks]
+ */
+export function homeMonthlySwitchState(
+  now = new Date(),
+  startDay = HOME_MONTHLY_PREVIEW_START_DAY,
+  picks = MONTHLY_PICKS,
+) {
+  const parts = seoulExploreCalendarParts(now);
+  const nextMonth = parts.month === 12 ? 1 : parts.month + 1;
+  const windowOpen = parts.day >= startDay;
+  const nextEntries = picks?.[parts.nextMonthKey];
+  const nextHasPicks = Array.isArray(nextEntries) && nextEntries.length > 0;
+  return {
+    year: parts.year,
+    month: parts.month,
+    day: parts.day,
+    nextMonth,
+    currentMonthKey: parts.monthKey,
+    nextMonthKey: parts.nextMonthKey,
+    windowOpen,
+    previewOpen: windowOpen && nextHasPicks,
+  };
+}
+
+/**
+ * Flag-on placement: sit just above the bottom About row / nav / chat,
+ * and stop short of the MOONi button. `obstacles` are viewport rects.
+ */
+export function layoutHomeMonthlyCard({
+  viewportWidth,
+  viewportHeight,
+  safeBottom = 0,
+  mooni = null,
+  obstacles = [],
+  gap = HOME_MONTHLY_CARD_GAP,
+} = {}) {
+  const width = Number(viewportWidth) || 0;
+  const height = Number(viewportHeight) || 0;
+  const left = width >= HOME_WATCH_CARD_LAYOUT.desktop.minWidth
+    ? HOME_WATCH_CARD_LAYOUT.desktop.left
+    : HOME_WATCH_CARD_LAYOUT.mobile.side;
+  let right = HOME_WATCH_CARD_LAYOUT.mobile.side;
+  if (mooni && mooni.width > 0 && mooni.height > 0 && mooni.left < width) {
+    right = Math.max(right, width - mooni.left + gap);
+  }
+  const cardLeft = left;
+  const cardRight = width - right;
+  let bottom = Math.max(0, Number(safeBottom) || 0) + gap;
+  for (const rect of obstacles) {
+    if (!rect || rect.width < 1 || rect.height < 1) continue;
+    if (rect.top < height * 0.45) continue;
+    const overlapsX = cardLeft < rect.right - 0.5 && cardRight > rect.left + 0.5;
+    if (!overlapsX) continue;
+    bottom = Math.max(bottom, height - rect.top + gap);
+  }
+  return {
+    left,
+    right,
+    bottom,
+    height: HOME_WATCH_CARD_LAYOUT.mobile.height,
+    top: height - bottom - HOME_WATCH_CARD_LAYOUT.mobile.height,
+  };
+}
 
 export function homeWatchSlotCountForWidth(width) {
   return Number(width) >= HOME_WATCH_CARD_LAYOUT.desktop.minWidth
@@ -101,9 +197,11 @@ export function reviewerForPlaceSlug(slug, rows) {
   return normalizePersonaLabel(matches[0]?.persona_label);
 }
 
-export function buildHomeWatchMonthlyDestinations(now = new Date(), rows = []) {
-  const monthKey = resolveExploreV2MonthlyPickKey(resolveExploreCurrentMonthPickKey(now));
-  const cards = partitionExploreMonthlyPickCardsByHero(buildVisibleMonthlyPickCards(monthKey)).withHero;
+export function buildHomeWatchMonthlyDestinations(now = new Date(), rows = [], monthKey) {
+  const resolvedKey = monthKey
+    ? resolveExploreV2MonthlyPickKey(monthKey)
+    : resolveExploreV2MonthlyPickKey(resolveExploreCurrentMonthPickKey(now));
+  const cards = partitionExploreMonthlyPickCardsByHero(buildVisibleMonthlyPickCards(resolvedKey)).withHero;
   return cards.map(({ entry, spot, imageUrl }) => {
     const slug = String(spot?.slug || entry?.slug || '').trim();
     const name = monthlyPickDisplayName(spot, slug);
@@ -128,6 +226,7 @@ export function buildHomeWatchMonthlyDestinations(now = new Date(), rows = []) {
  *   reelsEnabled?: boolean,
  *   slotCount?: number,
  *   reelsPoster?: string,
+ *   limitDestinations?: boolean,
  * }} input
  */
 export function buildHomeWatchSlots({
@@ -136,10 +235,12 @@ export function buildHomeWatchSlots({
   reelsEnabled = false,
   slotCount = HOME_WATCH_CARD_LAYOUT.mobile.slots,
   reelsPoster = '',
+  limitDestinations = true,
 } = {}) {
   const count = slotCount === HOME_WATCH_CARD_LAYOUT.desktop.slots
     ? HOME_WATCH_CARD_LAYOUT.desktop.slots
     : HOME_WATCH_CARD_LAYOUT.mobile.slots;
+  const unlimited = limitDestinations === false;
   const slots = [];
   const head = continueItems[0];
   if (head?.href && (head.name || head.nameKey)) {
@@ -158,7 +259,7 @@ export function buildHomeWatchSlots({
         reviewer: '',
       }
     : null;
-  const destLimit = count - (reelsSlot ? 1 : 0);
+  const destLimit = unlimited ? Number.POSITIVE_INFINITY : count - (reelsSlot ? 1 : 0);
   for (const dest of destinations) {
     if (slots.length >= destLimit) break;
     if (!dest?.href || !dest?.name) continue;
@@ -169,6 +270,7 @@ export function buildHomeWatchSlots({
     });
   }
   if (reelsSlot) slots.push(reelsSlot);
+  if (unlimited) return slots;
   return slots.slice(0, count);
 }
 

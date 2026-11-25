@@ -276,6 +276,7 @@
     "test:e2e:mooni-festival-detail-wait": "playwright test --config=playwright.config.mooni-festival-detail-wait.js",
     "test:e2e:reels-locale": "playwright test --config=playwright.config.reels-locale.js",
     "test:e2e:editorial-blog-head-meta": "playwright test --config=playwright.config.editorial-blog-head-meta.js",
+    "test:e2e:home-monthly": "DEV_SSL=0 playwright test --config=playwright.config.home-monthly.js",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui"
   },

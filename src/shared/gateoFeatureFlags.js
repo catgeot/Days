@@ -42,6 +42,8 @@ export const GATEO_ENV_FLAG_NAMES = {
   HOME_WATCH_CARD: 'VITE_GATEO_HOME_WATCH_CARD',
   /** Last home-watch slot becomes a /reels poster. Default off. */
   SELF_REELS: 'VITE_GATEO_SELF_REELS',
+  /** Home watch card month title, next-month text switch, and lower placement. Default off. */
+  HOME_MONTHLY_SWITCH: 'VITE_GATEO_HOME_MONTHLY_SWITCH',
   /** Overseas airport → lodging pickup row (MyRealTrip / Trip.com). Default off. */
   AIRPORT_PICKUP_LINKS: 'VITE_GATEO_AIRPORT_PICKUP_LINKS',
 };
@@ -247,6 +249,33 @@ export function isGateoHomeWatchCardEnabled() {
 /** Self-hosted reels poster on the home watch card. Default off. */
 export function isGateoSelfReelsEnabled() {
   return readGateoEnvFlag(GATEO_ENV_FLAG_NAMES.SELF_REELS);
+}
+
+export const HOME_MONTHLY_SWITCH_QUERY_PARAM = 'home_monthly_switch';
+
+/** @param {string | null | undefined} search */
+export function isHomeMonthlySwitchQueryEnabled(search) {
+  try {
+    const value = new URLSearchParams(String(search || '').replace(/^\?/, '')).get(
+      HOME_MONTHLY_SWITCH_QUERY_PARAM,
+    );
+    const normalized = String(value || '').trim().toLowerCase();
+    return normalized === '1' || normalized === 'true' || normalized === 'yes';
+  } catch {
+    return false;
+  }
+}
+
+/** Month title, text switch, horizontal tiles, lower card. Default off. Query `1` previews it. */
+export function isGateoHomeMonthlySwitchEnabled(search) {
+  if (readGateoEnvFlag(GATEO_ENV_FLAG_NAMES.HOME_MONTHLY_SWITCH)) return true;
+  const source =
+    search != null
+      ? search
+      : typeof window !== 'undefined'
+        ? window.location.search
+        : '';
+  return isHomeMonthlySwitchQueryEnabled(source);
 }
 
 /** Airport pickup booking row on overseas arrival → lodging legs. Default off. */

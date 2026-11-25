@@ -549,7 +549,7 @@ const HomeUI = React.memo(({
           </div>
         )}
 
-        <div ref={mobileCategoryBarRef} className="pointer-events-auto relative max-md:home-category-bar-shell animate-fade-in-left">
+        <div ref={mobileCategoryBarRef} data-testid="home-category-bar" className="pointer-events-auto relative max-md:home-category-bar-shell animate-fade-in-left">
           <div className="home-category-bar-halo md:hidden" aria-hidden="true" />
           <div className="home-category-bar-card relative z-[1] flex items-end gap-0.5 sm:gap-1
              max-md:bg-black/80 max-md:border-white/20 max-md:backdrop-blur-xl max-md:p-2 max-md:rounded-2xl max-md:border
@@ -680,6 +680,7 @@ const HomeUI = React.memo(({
             <button
               type="button"
               onClick={onLogout}
+              data-testid="home-bottom-account"
               className="group flex items-center gap-2 pb-2 cursor-pointer focus:outline-none"
               aria-label={t('layout.nav.logout')}
             >
@@ -692,6 +693,7 @@ const HomeUI = React.memo(({
             <Link
               to="/auth/login"
               state={{ from: window.location.pathname + window.location.search }}
+              data-testid="home-bottom-account"
               className="group flex items-center gap-2 pb-2 cursor-pointer"
               aria-label={t('layout.nav.login')}
             >
@@ -716,6 +718,8 @@ const HomeUI = React.memo(({
 
         <div className="hidden md:flex absolute bottom-6 left-1/2 -translate-x-1/2 items-center pointer-events-auto">
           <button
+            type="button"
+            data-testid="home-bottom-chat"
             onClick={() => onOpenChat()}
             className="bg-gradient-to-r from-blue-600/80 to-purple-600/80 backdrop-blur-md text-white px-8 py-3 rounded-full shadow-[0_0_20px_rgba(59,130,246,0.4)] flex items-center gap-2 font-bold text-xs border border-white/10 hover:scale-105 transition-transform"
           >
