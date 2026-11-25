@@ -1,3 +1,4 @@
+import fs from 'node:fs';
 import { test, expect } from './fixtures.js';
 
 function rectsOverlap(a, b) {
@@ -26,6 +27,57 @@ async function gotoHome(page, path = '/') {
   });
   await page.goto(path, { waitUntil: 'domcontentloaded' });
   await expect(page.getByTestId('home-watch-card')).toBeVisible({ timeout: 60_000 });
+}
+
+async function expectCaptionBands(page) {
+  const bands = page.getByTestId('home-watch-caption-band');
+  const count = await bands.count();
+  expect(count).toBeGreaterThan(0);
+  const slots = page.locator('[data-testid^="home-watch-slot-"]');
+  expect(count).toBe(await slots.count());
+  for (let i = 0; i < count; i += 1) {
+    const band = bands.nth(i);
+    await expect(band).toHaveCSS('background-color', 'rgba(0, 0, 0, 0.86)');
+    const lines = band.locator('[data-caption-role]');
+    expect(await lines.count()).toBeGreaterThan(0);
+  }
+  const card = page.getByTestId('home-watch-card');
+  const cardBox = await box(card);
+  expect(cardBox.height).toBeGreaterThanOrEqual(85);
+  expect(cardBox.height).toBeLessThan(86);
+}
+
+async function captionProbe(page) {
+  return page.evaluate(() => {
+    const card = document.querySelector('[data-testid="home-watch-card"]').getBoundingClientRect();
+    const tiles = [...document.querySelectorAll('[data-testid="home-watch-caption-band"]')].map((band) => {
+      const slot = band.closest('[data-slot-type]');
+      const bandRect = band.getBoundingClientRect();
+      const lines = [...band.querySelectorAll('[data-caption-role]')].map((el) => {
+        const rect = el.getBoundingClientRect();
+        return {
+          role: el.getAttribute('data-caption-role'),
+          text: (el.textContent || '').trim(),
+          color: getComputedStyle(el).color,
+          x: rect.left,
+          y: rect.top,
+          w: rect.width,
+          h: rect.height,
+        };
+      });
+      return {
+        type: slot?.getAttribute('data-slot-type') || '',
+        slug: slot?.getAttribute('data-slug') || '',
+        bandColor: getComputedStyle(band).backgroundColor,
+        band: { x: bandRect.left, y: bandRect.top, w: bandRect.width, h: bandRect.height },
+        lines,
+      };
+    });
+    return {
+      card: { height: card.height, top: card.top, left: card.left, width: card.width },
+      tiles,
+    };
+  });
 }
 
 async function expectTasteLabelsFit(page) {
@@ -246,5 +298,123 @@ test.describe('home watch card', () => {
     await page.getByTestId('home-watch-slot-destination').first().locator('a').click();
     await expect(page).toHaveURL(/\/place\/kyoto/);
     await expect(page.getByTestId('home-watch-card')).toHaveCount(0);
+  });
+
+  test('continue slot shows a place photo or the site fallback', async ({ page }, testInfo) => {
+    const width = testInfo.project.use.viewport?.width ?? 390;
+    const khaoPhoto =
+      'https://images.unsplash.com/photo-1645051049747-265f8c124875?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400';
+    const busanPhoto = 'https://tong.visitkorea.or.kr/cms/resource/01/2947001_image2_1.jpg';
+    const cases = [
+      {
+        slug: 'khao-lak',
+        name: '카오락',
+        imageUrl: khaoPhoto,
+        state: 'photo',
+        src: /photo-1645051049747-265f8c124875/,
+      },
+      {
+        slug: 'busan',
+        name: '부산',
+        imageUrl: busanPhoto,
+        state: 'photo',
+        src: /tong\.visitkorea\.or\.kr\/cms\/resource\/01\/2947001_image2_1\.jpg/,
+      },
+      {
+        slug: 'bang-niang-market',
+        name: '방니앙 시장',
+        imageUrl: '',
+        state: 'fallback',
+      },
+    ];
+
+    await page.route(/\/rest\/v1\/place_stats/i, async (route) => {
+      const url = decodeURIComponent(route.request().url());
+      const hit = cases.find((row) => row.imageUrl && url.includes(row.slug));
+      if (!hit) {
+        await route.continue();
+        return;
+      }
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify([
+          {
+            place_id: hit.slug,
+            image_url: hit.imageUrl,
+            gallery_urls: [{ urls: { regular: hit.imageUrl, small: hit.imageUrl } }],
+          },
+        ]),
+      });
+    });
+
+    for (const row of cases) {
+      await page.addInitScript((payload) => {
+        localStorage.setItem('gateo_recent_visited_destinations', JSON.stringify([payload]));
+      }, { name: row.name, slug: row.slug });
+      await page.goto('/', { waitUntil: 'domcontentloaded' });
+      const slot = page.getByTestId('home-watch-slot-continue');
+      await expect(slot).toContainText(row.name);
+      await expect(slot).toContainText('최근에 보신 장소예요');
+      const photo = slot.getByTestId('home-watch-continue-photo');
+      await expect(photo).toHaveAttribute('data-image-state', row.state);
+      await expect(photo).toHaveAttribute('data-photo-slug', row.slug);
+      if (row.state === 'photo') {
+        await expect(photo).toHaveAttribute('src', row.src);
+        await expect.poll(() => photo.evaluate((img, state) => (
+          img.getAttribute('data-image-state') === state && img.complete ? img.naturalWidth : 0
+        ), row.state)).toBeGreaterThan(0);
+      } else {
+        await expect(photo).toHaveAttribute('data-photo-fallback', 'gradient');
+        await expect(photo).toHaveClass(/from-slate-800/);
+        await expect(photo).toHaveClass(/to-slate-950/);
+        await expect(slot.locator('img')).toHaveCount(0);
+        await expect(slot.locator('text=/GATEO|og-image/')).toHaveCount(0);
+      }
+      await expectCaptionBands(page);
+      const file = width >= 1280
+        ? `/opt/cursor/artifacts/home-watch-continue-${row.slug}-1280.png`
+        : `/opt/cursor/artifacts/home-watch-continue-${row.slug}-390.png`;
+      const probeFile = file.replace(/\.png$/, '.json');
+      fs.mkdirSync('/opt/cursor/artifacts', { recursive: true });
+      fs.writeFileSync(probeFile, JSON.stringify(await captionProbe(page)));
+      await page.screenshot({
+        path: file,
+        clip: width >= 1280 ? undefined : { x: 0, y: 0, width: 390, height: 844 },
+      });
+    }
+  });
+
+  test('continue slot swaps a broken place photo for the fallback', async ({ page }) => {
+    const broken = 'https://example.invalid/khao-lak-missing.jpg';
+    await page.route(/\/rest\/v1\/place_stats/i, async (route) => {
+      const url = decodeURIComponent(route.request().url());
+      if (!url.includes('khao-lak')) {
+        await route.continue();
+        return;
+      }
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify([
+          { place_id: 'khao-lak', image_url: broken, gallery_urls: [] },
+        ]),
+      });
+    });
+    await page.route(broken, (route) => route.abort());
+    await page.addInitScript(() => {
+      localStorage.setItem(
+        'gateo_recent_visited_destinations',
+        JSON.stringify([{ name: '카오락', slug: 'khao-lak' }]),
+      );
+    });
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
+    const slot = page.getByTestId('home-watch-slot-continue');
+    const photo = slot.getByTestId('home-watch-continue-photo');
+    await expect(photo).toHaveAttribute('data-image-state', 'error');
+    await expect(photo).toHaveAttribute('data-photo-fallback', 'gradient');
+    await expect(photo).toHaveClass(/from-slate-800/);
+    await expect(slot.locator('img')).toHaveCount(0);
+    await expect(slot).toContainText('카오락');
   });
 });
