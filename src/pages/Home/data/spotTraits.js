@@ -209,19 +209,15 @@ export const MONTHLY_PICKS = {
     },
     {
       slug: 'reykjavik',
-      reason: '12~2월 오로라·변동',
-      reason_en: 'Winter aurora',
+      reason: '12월 오로라 관측시기',
+      reason_en: 'Aurora view season',
       sources: [
         {
           url: 'https://visitreykjavik.is/reykjavik-faqs',
           label: '비짓 레이캬비크 FAQ',
         },
-        {
-          url: 'https://visitreykjavik.is/festivals-and-events-reykjavik/new-years-eve-reykjavik',
-          label: '새해 전야',
-        },
       ],
-      checked: '2026-11-10',
+      checked: '2026-11-25',
       estimate: false,
     },
   ],
