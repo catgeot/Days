@@ -30,13 +30,14 @@ import { LOGBOOK_REVIEW_HUB_ROWS_STORAGE_KEY } from '../../src/logbookOfficialRe
 import { MONTHLY_PICKS } from '../../src/pages/Home/data/spotTraits.js';
 import {
   HOME_WATCH_CONTINUE_FALLBACK_CLASS,
-  HOME_WATCH_CONTINUE_SCRIM_CLASS,
   continuePlaceSlugFromHref,
   fetchHomeWatchContinuePlacePhoto,
   homeWatchContinueDisplayUrl,
   resolveHomeWatchContinueLockedPhoto,
 } from '../../src/pages/Home/lib/homeWatchContinuePhoto.js';
 import {
+  HOME_WATCH_CAPTION_BAND,
+  HOME_WATCH_CARD_LAYOUT,
   HOME_WATCH_DISMISS_KEY,
   HOME_WATCH_DISMISS_MS,
   buildHomeWatchSlots,
@@ -287,10 +288,6 @@ function blend(fg, bg, alpha) {
   return fg.map((channel, index) => Math.round(channel * alpha + bg[index] * (1 - alpha)));
 }
 
-function contrastOnWhitePhoto(fg, scrimAlpha) {
-  return contrastRatio(fg, overWhite(scrimAlpha));
-}
-
 const KHAO_LAK_PHOTO =
   'https://images.unsplash.com/photo-1645051049747-265f8c124875?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400';
 const BUSAN_PHOTO = 'https://tong.visitkorea.or.kr/cms/resource/01/2947001_image2_1.jpg';
@@ -318,14 +315,16 @@ test('continue place photo follows the place-card source and falls back when emp
   assert.equal(HOME_WATCH_CONTINUE_FALLBACK_CLASS.includes('og-image'), false);
   assert.match(HOME_WATCH_CONTINUE_FALLBACK_CLASS, /from-slate-800/);
   assert.match(HOME_WATCH_CONTINUE_FALLBACK_CLASS, /to-slate-950/);
-  const scrimStops = [...HOME_WATCH_CONTINUE_SCRIM_CLASS.matchAll(/black\/(\d+)/g)].map((match) => Number(match[1]));
-  assert.ok(scrimStops.length >= 2);
-  const lightest = Math.min(...scrimStops) / 100;
-  assert.ok(lightest >= 0.7);
-  assert.ok(contrastOnWhitePhoto([255, 255, 255], lightest) >= 4.5);
-  assert.ok(contrastOnWhitePhoto([0xba, 0xe6, 0xfd], lightest) >= 4.5);
-  const fadedWhite = blend([255, 255, 255], overWhite(lightest), 0.8);
-  assert.ok(contrastRatio(fadedWhite, overWhite(lightest)) >= 4.5);
+  assert.equal(HOME_WATCH_CARD_LAYOUT.mobile.height, 85);
+  assert.equal(HOME_WATCH_CARD_LAYOUT.desktop.height, 85);
+  assert.equal(HOME_WATCH_CAPTION_BAND, 'rgba(0,0,0,0.86)');
+  const bandAlpha = Number(HOME_WATCH_CAPTION_BAND.match(/[\d.]+(?=\))/)[0]);
+  assert.equal(bandAlpha, 0.86);
+  const bandOnWhite = overWhite(bandAlpha);
+  assert.ok(contrastRatio([255, 255, 255], bandOnWhite) >= 4.5);
+  assert.ok(contrastRatio([254, 243, 199], bandOnWhite) >= 4.5);
+  const fadedWhite = blend([255, 255, 255], bandOnWhite, 0.8);
+  assert.ok(contrastRatio(fadedWhite, bandOnWhite) >= 4.5);
 
   const khao = await fetchHomeWatchContinuePlacePhoto('khao-lak', async (candidates) => {
     calls += 1;

@@ -11,14 +11,6 @@ import { resolveListImageUrl } from '../../../utils/listImageUrl.js';
 export const HOME_WATCH_CONTINUE_FALLBACK_CLASS =
   'absolute inset-0 bg-gradient-to-br from-slate-800 to-slate-950';
 
-/**
- * Lightest stop under the continue label. Destination tiles fade to transparent,
- * which leaves the extra continue lines on the bright part of a photo.
- * black/70 over white still clears 4.5:1 for white and sky-200 text.
- */
-export const HOME_WATCH_CONTINUE_SCRIM_CLASS =
-  'bg-gradient-to-t from-black/90 via-black/80 to-black/70';
-
 const PLACE_STATS_QUERY_MS = 8_000;
 const LIST_PHOTO_WIDTH = 480;
 

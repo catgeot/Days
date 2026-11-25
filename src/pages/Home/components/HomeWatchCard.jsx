@@ -10,6 +10,7 @@ import {
   isGateoSelfReelsEnabled,
 } from '../../../shared/gateoFeatureFlags.js';
 import {
+  HOME_WATCH_CAPTION_BAND,
   HOME_WATCH_CARD_LAYOUT,
   buildHomeWatchMonthlyDestinations,
   buildHomeWatchSlots,
@@ -25,7 +26,6 @@ import {
 import { readHomeWatchContinueItems } from '../lib/homeWatchContinue.js';
 import {
   HOME_WATCH_CONTINUE_FALLBACK_CLASS,
-  HOME_WATCH_CONTINUE_SCRIM_CLASS,
   continuePlaceSlugFromHref,
   fetchHomeWatchContinuePlacePhoto,
   homeWatchContinueDisplayUrl,
@@ -337,22 +337,21 @@ const HomeWatchCard = ({
                       <div className="absolute inset-0 bg-gradient-to-br from-slate-800 to-slate-950" />
                     )
                   ) : null}
-                  <div className={`relative z-[1] px-1.5 pb-1 pt-3 ${
-                    slot.type === 'continue'
-                      ? HOME_WATCH_CONTINUE_SCRIM_CLASS
-                      : 'bg-gradient-to-t from-black/80 via-black/45 to-transparent'
-                  }`}
-                  data-testid={slot.type === 'continue' ? 'home-watch-continue-scrim' : undefined}
+                  <div
+                    className="relative z-[1] px-1.5 pb-1 pt-3"
+                    style={{ backgroundColor: HOME_WATCH_CAPTION_BAND }}
+                    data-testid="home-watch-caption-band"
                   >
                     {slot.type === 'continue' ? (
-                      <p className="truncate text-[9px] font-semibold leading-none text-white">
+                      <p data-caption-role="label" className="truncate text-[9px] font-semibold leading-none text-white">
                         {t('home.watchCard.continueLabel')}
                       </p>
                     ) : null}
-                    <p className="truncate text-[11px] font-bold leading-tight text-white">{label}</p>
+                    <p data-caption-role="name" className="truncate text-[11px] font-bold leading-tight text-white">{label}</p>
                     {slot.type === 'destination' && (slot.reason || slot.reasonEn) ? (
                       <span
                         data-testid="home-watch-taste"
+                        data-caption-role="chip"
                         className="mt-0.5 inline-block max-w-full truncate rounded bg-black/70 px-1 py-0.5 text-[8px] font-semibold leading-none text-amber-100"
                         aria-label={t('home.watchCard.tasteAria', { name: label })}
                       >
@@ -360,9 +359,11 @@ const HomeWatchCard = ({
                       </span>
                     ) : null}
                     {subtitle && slot.type !== 'destination' ? (
-                      <p className={`truncate text-[9px] leading-tight ${
-                        slot.type === 'continue' ? 'text-white' : 'text-white/80'
-                      }`}
+                      <p
+                        data-caption-role="subtitle"
+                        className={`truncate text-[9px] leading-tight ${
+                          slot.type === 'continue' ? 'text-white' : 'text-white/80'
+                        }`}
                       >
                         {subtitle}
                       </p>

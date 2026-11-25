@@ -1,3 +1,4 @@
+import fs from 'node:fs';
 import { test, expect } from './fixtures.js';
 
 function rectsOverlap(a, b) {
@@ -26,6 +27,57 @@ async function gotoHome(page, path = '/') {
   });
   await page.goto(path, { waitUntil: 'domcontentloaded' });
   await expect(page.getByTestId('home-watch-card')).toBeVisible({ timeout: 60_000 });
+}
+
+async function expectCaptionBands(page) {
+  const bands = page.getByTestId('home-watch-caption-band');
+  const count = await bands.count();
+  expect(count).toBeGreaterThan(0);
+  const slots = page.locator('[data-testid^="home-watch-slot-"]');
+  expect(count).toBe(await slots.count());
+  for (let i = 0; i < count; i += 1) {
+    const band = bands.nth(i);
+    await expect(band).toHaveCSS('background-color', 'rgba(0, 0, 0, 0.86)');
+    const lines = band.locator('[data-caption-role]');
+    expect(await lines.count()).toBeGreaterThan(0);
+  }
+  const card = page.getByTestId('home-watch-card');
+  const cardBox = await box(card);
+  expect(cardBox.height).toBeGreaterThanOrEqual(85);
+  expect(cardBox.height).toBeLessThan(86);
+}
+
+async function captionProbe(page) {
+  return page.evaluate(() => {
+    const card = document.querySelector('[data-testid="home-watch-card"]').getBoundingClientRect();
+    const tiles = [...document.querySelectorAll('[data-testid="home-watch-caption-band"]')].map((band) => {
+      const slot = band.closest('[data-slot-type]');
+      const bandRect = band.getBoundingClientRect();
+      const lines = [...band.querySelectorAll('[data-caption-role]')].map((el) => {
+        const rect = el.getBoundingClientRect();
+        return {
+          role: el.getAttribute('data-caption-role'),
+          text: (el.textContent || '').trim(),
+          color: getComputedStyle(el).color,
+          x: rect.left,
+          y: rect.top,
+          w: rect.width,
+          h: rect.height,
+        };
+      });
+      return {
+        type: slot?.getAttribute('data-slot-type') || '',
+        slug: slot?.getAttribute('data-slug') || '',
+        bandColor: getComputedStyle(band).backgroundColor,
+        band: { x: bandRect.left, y: bandRect.top, w: bandRect.width, h: bandRect.height },
+        lines,
+      };
+    });
+    return {
+      card: { height: card.height, top: card.top, left: card.left, width: card.width },
+      tiles,
+    };
+  });
 }
 
 async function expectTasteLabelsFit(page) {
@@ -319,12 +371,13 @@ test.describe('home watch card', () => {
         await expect(slot.locator('img')).toHaveCount(0);
         await expect(slot.locator('text=/GATEO|og-image/')).toHaveCount(0);
       }
-      const scrim = slot.getByTestId('home-watch-continue-scrim');
-      await expect(scrim).toHaveClass(/to-black\/70/);
-      await expect(scrim).toHaveClass(/from-black\/90/);
+      await expectCaptionBands(page);
       const file = width >= 1280
         ? `/opt/cursor/artifacts/home-watch-continue-${row.slug}-1280.png`
         : `/opt/cursor/artifacts/home-watch-continue-${row.slug}-390.png`;
+      const probeFile = file.replace(/\.png$/, '.json');
+      fs.mkdirSync('/opt/cursor/artifacts', { recursive: true });
+      fs.writeFileSync(probeFile, JSON.stringify(await captionProbe(page)));
       await page.screenshot({
         path: file,
         clip: width >= 1280 ? undefined : { x: 0, y: 0, width: 390, height: 844 },

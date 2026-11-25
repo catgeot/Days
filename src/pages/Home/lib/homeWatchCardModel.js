@@ -18,6 +18,13 @@ export const HOME_WATCH_CARD_LAYOUT = {
   desktop: { left: 300, bottom: 110, height: 85, minWidth: 1280, slots: 4 },
 };
 
+/**
+ * Solid band behind every tile caption. A bottom gradient left live captions
+ * at about 3.6–4.3:1 on bright photos. 0.86 black stays ≥4.5:1 for white,
+ * white/80, and amber-100 even when the photo under the band is white.
+ */
+export const HOME_WATCH_CAPTION_BAND = 'rgba(0,0,0,0.86)';
+
 export function homeWatchSlotCountForWidth(width) {
   return Number(width) >= HOME_WATCH_CARD_LAYOUT.desktop.minWidth
     ? HOME_WATCH_CARD_LAYOUT.desktop.slots
