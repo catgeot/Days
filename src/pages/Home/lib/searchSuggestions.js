@@ -43,6 +43,7 @@ import {
   matchCitiesPrefix,
 } from './citiesSearch';
 import { searchBoxForward, searchBoxTypesForQuery } from './mapboxSearchBox';
+import { dropUnrelatedMapboxSuggestions } from './exploreRemoteHitMatch.js';
 import { lookupVisitedPlacesForSearch } from './visitedPlaceSearchLookup.js';
 import { dropFarHomonymBusinessHits } from './searchHomonymRegion.js';
 import { overlayGeoFieldsOnVisitedSpots } from './visitedPlaceSearch.js';
@@ -770,7 +771,9 @@ export async function buildHybridSearchSuggestions(query, opts = {}) {
         language: /[\uAC00-\uD7A3]/.test(mq) ? 'ko' : 'en',
         ...regionalMapbox,
       });
-      for (const item of remote) pushUnique(out, seen, item);
+      for (const item of dropUnrelatedMapboxSuggestions(q, remote || [])) {
+        pushUnique(out, seen, item);
+      }
       if (out.length >= 8) break;
     }
   } catch {

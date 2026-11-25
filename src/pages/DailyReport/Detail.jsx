@@ -17,6 +17,10 @@ import { contentHasLogbookPhotoPlaceholders } from './utils/logbookMarkdownSnipp
 import { fetchSamePlaceCount, logbookPlaceKey, logbookReadingMinutes } from '../../utils/logbookReadingMeta';
 import LogbookReadFacts from './components/LogbookReadFacts';
 import AppOutlineBackButton from '../../shared/navigation/AppOutlineBackButton';
+import {
+  LOGBOOK_ARTICLE_INLINE_CLEARANCE,
+  LOGBOOK_ARTICLE_PAGE_PAD,
+} from './logbookArticleClearance.js';
 import { hardNavigateAppBack } from '../../shared/navigation/hardAppBack';
 import {
   ARTICLE_DASHBOARD_SCROLL_SELECTOR,
@@ -283,7 +287,7 @@ const Detail = () => {
   const placeKey = logbookPlaceKey(report.location);
 
   return (
-    <div ref={rootRef} className="min-h-screen bg-white text-gray-900 relative overflow-hidden pb-20 font-sans">
+    <div ref={rootRef} className={`min-h-screen bg-white text-gray-900 relative overflow-hidden font-sans ${LOGBOOK_ARTICLE_PAGE_PAD}`}>
 
       <AppOutlineBackButton
         onClick={handleBack}
@@ -299,7 +303,7 @@ const Detail = () => {
         </div>
       )}
 
-      <div className="relative z-10 max-w-3xl mx-auto max-md:pt-[max(3rem,env(safe-area-inset-top,0px))] pt-8 sm:pt-12 px-4 sm:px-6">
+      <div className={`relative z-10 max-w-3xl mx-auto max-md:pt-[max(3rem,env(safe-area-inset-top,0px))] pt-8 sm:pt-12 px-4 sm:px-6 ${LOGBOOK_ARTICLE_INLINE_CLEARANCE}`}>
 
         <div
           data-logbook-detail-toolbar

@@ -543,6 +543,23 @@ test('two successful loads open the strip and a later failure collapses it', asy
   assert.equal(container.querySelectorAll('[role="option"]').length, 0);
 });
 
+test('a photo that has not loaded is omitted from the open strip', async () => {
+  const urls = [
+    'https://example.test/guard-a.jpg',
+    'https://example.test/guard-b.jpg',
+    'https://example.test/guard-pending.jpg',
+  ];
+  await mountStrip({ urls, detailLoading: false, photosAria: 'photos' });
+  await settleProbe(true);
+  await settleProbe(true);
+
+  assert.equal(stripMode(), 'open');
+  assert.equal(container.querySelectorAll('[role="option"]').length, 2);
+  assert.equal(container.querySelectorAll('[data-thumb-fallback]').length, 0);
+  assert.equal(container.querySelectorAll('[data-festival-photo-fallback]').length, 0);
+  assert.equal(container.querySelectorAll('[data-festival-photo-probes] img').length, 1);
+});
+
 test('lightbox slides follow loaded filmstrip urls and keep the open photo when one loads later', () => {
   const urls = ['a', 'b', 'c', 'd', 'e', 'f'].map((id) => `https://example.test/${id}.jpg`);
   const loaded = [urls[0], urls[5]];

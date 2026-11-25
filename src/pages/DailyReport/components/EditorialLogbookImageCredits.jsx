@@ -9,7 +9,7 @@ export default function EditorialLogbookImageCredits({ images, className = '' })
   if (!image && credits.length === 0) return null;
 
   return (
-    <div className={className}>
+    <div className={className} data-logbook-image-credits>
       {image ? <EditorialReviewPhotoNote image={image} variant="inline" className="mb-0.5" /> : null}
       {credits.length > 0 ? (
         <p className="text-[10px] text-gray-400 leading-snug" translate="no">

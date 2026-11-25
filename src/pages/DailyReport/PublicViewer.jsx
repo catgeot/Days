@@ -27,6 +27,10 @@ import LogbookOwnerEditButton from './components/LogbookOwnerEditButton';
 import { isLogbookReportOwner } from './utils/logbookReportOwner';
 import { buildEditorialLogbookJsonLd } from './lib/logbookEditorialJsonLd';
 import SEO from '../../components/SEO';
+import {
+  LOGBOOK_ARTICLE_INLINE_CLEARANCE,
+  LOGBOOK_ARTICLE_PAGE_PAD,
+} from './logbookArticleClearance.js';
 import { resolveLogbookFeedExcerpt } from '../../utils/logbookDek';
 import { getAppHistoryPath } from '../../shared/navigation/appHistoryPathIndex.js';
 import {
@@ -288,11 +292,7 @@ const PublicViewer = () => {
 
   return (
     <div
-      className={`min-h-screen bg-white text-gray-900 relative overflow-hidden font-sans ${
-        editorial
-          ? 'pb-[calc(max(5rem,env(safe-area-inset-bottom,0px))+3.5rem)]'
-          : 'pb-20'
-      }`}
+      className={`min-h-screen bg-white text-gray-900 relative overflow-hidden font-sans ${LOGBOOK_ARTICLE_PAGE_PAD}`}
     >
       {editorial ? (
         <SEO
@@ -329,7 +329,7 @@ const PublicViewer = () => {
       )}
 
       <div
-        className={`relative z-10 max-w-3xl mx-auto ${
+        className={`relative z-10 max-w-3xl mx-auto ${LOGBOOK_ARTICLE_INLINE_CLEARANCE} ${
           editorial
             ? 'pt-[calc(max(2rem,env(safe-area-inset-top,0px))+3.5rem)] md:pt-12 px-5 sm:px-6'
             : 'pt-12 px-4 sm:px-6'
@@ -468,7 +468,7 @@ const PublicViewer = () => {
 
           <LogbookComments report={report} onCountChange={setCommentCount} />
 
-          <div className="mt-16 pt-8 border-t border-gray-200 text-center flex flex-col items-center">
+          <div data-logbook-article-end className="mt-16 pt-8 border-t border-gray-200 text-center flex flex-col items-center">
             <p className="text-gray-500 text-sm font-medium mb-6">{t('logbook.public.ctaBody')}</p>
             <div className="flex flex-col sm:flex-row gap-3">
               <button
