@@ -1,26 +1,46 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { getRentalAirportDisplayName } from '../../utils/rentalAirportMatch.js';
 
 /**
- * One booking row for an overseas arrival-airport → lodging leg.
- * `href` is already null when the flag is off or the airport has no listing.
+ * Secondary booking row for an overseas arrival-airport → lodging leg.
+ * Light (MOONi): slate-900 / slate-800 on slate-100.
+ * Dark (place card): sky-50 / sky-100 on slate-800.
  */
-export default function AirportPickupLegRow({ href, light = true }) {
-  const { t } = useTranslation();
-  if (!href) return null;
-  const className = light
-    ? 'mt-3 inline-flex min-h-11 items-center rounded-xl border border-sky-900/25 bg-white px-3 text-sm font-bold text-sky-900 underline-offset-2 hover:bg-sky-50'
-    : 'mt-3 inline-flex min-h-11 items-center rounded-xl border border-sky-100/40 bg-slate-950 px-3 text-sm font-bold text-sky-100 underline-offset-2 hover:bg-slate-900';
+export default function AirportPickupLegRow({ row, light = true, className = '' }) {
+  const { t, i18n } = useTranslation();
+  if (!row?.href) return null;
+  const airport = getRentalAirportDisplayName(row.iata, i18n.language) || row.iata;
+  const place = String(i18n.language || '').toLowerCase().startsWith('en')
+    ? row.placeEn
+    : row.placeKo;
+  const title = place
+    ? t('place.facts.airportPickupLeg', { airport, iata: row.iata, place })
+    : t('place.facts.airportPickupLegNoPlace', { airport, iata: row.iata });
+  const partner = row.partner === 'mrt'
+    ? t('place.facts.airportPickupPartnerMrt')
+    : t('place.facts.airportPickupPartnerTrip');
+  const shell = light
+    ? 'flex w-full flex-col items-start gap-0.5 rounded-lg border border-slate-700 bg-slate-100 px-3 py-2.5 text-left'
+    : 'flex w-full flex-col items-start gap-0.5 rounded-lg border border-sky-100/35 bg-slate-800 px-3 py-2.5 text-left';
+  const titleClass = light
+    ? 'text-sm font-bold leading-snug text-slate-900 break-keep'
+    : 'text-sm font-bold leading-snug text-sky-50 break-keep';
+  const subClass = light
+    ? 'text-[11px] font-semibold leading-snug text-slate-800 break-keep'
+    : 'text-[11px] font-semibold leading-snug text-sky-100 break-keep';
   return (
     <a
-      href={href}
+      href={row.href}
       target="_blank"
       rel="sponsored noopener noreferrer"
       data-airport-pickup-row=""
-      className={className}
+      data-airport-pickup-partner={row.partner}
+      className={`${shell} ${className}`.trim()}
       onClick={(event) => event.stopPropagation()}
     >
-      {t('place.facts.airportPickup')}
+      <span className={titleClass}>{title}</span>
+      <span className={subClass}>{partner}</span>
     </a>
   );
 }

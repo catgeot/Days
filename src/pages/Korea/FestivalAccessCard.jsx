@@ -364,7 +364,7 @@ export default function FestivalAccessCard({
       <p className="text-[11px] font-bold tracking-widest text-stone-400 uppercase">
         {t('korea.festival.detail.accessTitle')}
       </p>
-      <AirportPickupLegRow href={airportPickupRowForPlace(destination)?.href} light />
+      <AirportPickupLegRow row={airportPickupRowForPlace(destination)} light />
       <div
         className="space-y-2 rounded-2xl border border-stone-200 bg-stone-50 p-3"
         data-festival-access-status={phase}

@@ -18,6 +18,7 @@ import {
 import { useTryOpenTripcomFlightSearch } from '../PlaceCard/tabs/planner/TripcomFlightSearchContext';
 import MooniTransportPlannerLinks from './MooniTransportPlannerLinks';
 import PartnerBookingHandoff from '../../shared/affiliate/PartnerBookingHandoff.jsx';
+import AirportPickupLegRow from '../../shared/affiliate/AirportPickupLegRow.jsx';
 
 const TRANSPORT_PROVIDERS = new Set([
   'trip_com',
@@ -79,13 +80,14 @@ const BookingActionCards = ({
   itineraryBookingCompact = false,
   bubbleVariant = 'dark',
   onPlannerNavigate = null,
+  airportPickup = null,
   className = '',
 }) => {
   const { t } = useTranslation();
   const tryOpenFlightSearch = useTryOpenTripcomFlightSearch();
   const [itineraryExpanded, setItineraryExpanded] = React.useState(false);
 
-  if (!actions.length) return null;
+  if (!actions.length && !airportPickup?.href) return null;
 
   const handoffActions = actions.filter(
     (a) => a.url && PARTNER_HANDOFF_PROVIDERS.has(a.provider),
@@ -188,10 +190,10 @@ const BookingActionCards = ({
   };
 
   const renderTransportSection = () => {
-    if (!transportActions.length) return null;
+    if (!transportActions.length && !airportPickup?.href) return null;
 
     return (
-      <div className="space-y-2">
+      <div className="space-y-2" data-mooni-transport-section="">
         <p
           className={`text-[10px] font-bold uppercase tracking-wide break-keep ${
             bubbleVariant === 'light' ? 'text-emerald-900' : 'text-emerald-400/90'
@@ -235,6 +237,13 @@ const BookingActionCards = ({
             ) : null}
           </button>
         ))}
+
+        {airportPickup?.href ? (
+          <AirportPickupLegRow
+            row={airportPickup}
+            light={bubbleVariant === 'light'}
+          />
+        ) : null}
 
         {tripActions.length > 0 ? renderFlightPlannerLink() : null}
 

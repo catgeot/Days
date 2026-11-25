@@ -737,6 +737,10 @@
       "aiGenerated": "AI 생성 · 출처 없음",
       "aiGeneratedDated": "AI 생성 · 출처 없음 · {{date}}",
       "airportPickup": "공항 픽업·차량 예약",
+      "airportPickupLeg": "{{airport}}({{iata}}) → {{place}} 픽업·차량 예약",
+      "airportPickupLegNoPlace": "{{airport}}({{iata}}) 픽업·차량 예약",
+      "airportPickupPartnerTrip": "Trip.com에서 보기",
+      "airportPickupPartnerMrt": "마이리얼트립에서 보기",
       "slots": {
         "entry": "입국",
         "airport": "공항→시내",

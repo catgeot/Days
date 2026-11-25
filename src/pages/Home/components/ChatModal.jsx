@@ -30,7 +30,6 @@ import {
   normalizeAccessDepartureUserText,
 } from '../../../utils/resolveDestinationFromChat';
 import BookingActionCards from '../../../components/chat/BookingActionCards';
-import AirportPickupLegRow from '../../../shared/affiliate/AirportPickupLegRow.jsx';
 import {
   airportPickupRowForPlace,
   isGettingThereUserText,
@@ -2266,11 +2265,11 @@ const ChatModal = ({
                         ? messages[idx - 1].text?.text
                         : messages[idx - 1].text) ?? ''
                     : '';
-                const pickupHref = isModelMsg && isGettingThereUserText(priorUserText)
+                const airportPickup = isModelMsg && isGettingThereUserText(priorUserText)
                   ? airportPickupRowForPlace({
                       ...(activeSessionPlace || {}),
                       slug: activeSessionPlace?.slug || msgSlug || undefined,
-                    })?.href
+                    })
                   : null;
                 const showPlannerFollowUp =
                   isModelMsg &&
@@ -2319,9 +2318,6 @@ const ChatModal = ({
                     ) : (
                       <div style={{ whiteSpace: 'pre-wrap' }}>{displayMsgText}</div>
                     )}
-                    {pickupHref ? (
-                      <AirportPickupLegRow href={pickupHref} light={isMooniUi} />
-                    ) : null}
                     {isModelMsg ? (
                       <MooniTruncatedContinue
                         truncated={Boolean(msg.truncated)}
@@ -2390,6 +2386,7 @@ const ChatModal = ({
                         userText={priorUserText}
                         itineraryBookingCompact={Boolean(msg.bookingMeta?.itineraryBookingCompact)}
                         bubbleVariant={isMooniUi ? 'light' : 'dark'}
+                        airportPickup={airportPickup}
                         onPlannerNavigate={handlePlannerNavigate}
                       />
                     )}

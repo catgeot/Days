@@ -395,8 +395,9 @@ function FactSlotBody({ slot, slug, locale, light }) {
           <FactValue slot={slot} slug={slug} locale={locale} light={light} />
           {slot.id === 'airport' ? (
             <AirportPickupLegRow
-              href={airportPickupRowForPlace({ slug })?.href}
+              row={airportPickupRowForPlace({ slug })}
               light={light}
+              className="mt-3"
             />
           ) : null}
           {showWarn ? (

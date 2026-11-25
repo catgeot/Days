@@ -75,10 +75,21 @@ test('flag on shows Khao Lak HKT and hides a Korean place', () => {
   withFlag('1', () => {
     const khaoLak = airportPickupRowForPlace({ slug: 'khao-lak' });
     assert.equal(khaoLak?.iata, 'HKT');
+    assert.equal(khaoLak?.partner, 'trip');
+    assert.equal(khaoLak?.placeKo, '카오락');
+    assert.equal(khaoLak?.placeEn, 'Khao Lak');
     assert.match(khaoLak?.href || '', /\/airport-transfers\/phuket\/airport-hkt\//);
     const bangkok = airportPickupRowForPlace({ slug: 'bangkok' });
     assert.equal(bangkok?.iata, 'BKK');
+    assert.equal(bangkok?.partner, 'trip');
+    assert.equal(bangkok?.placeKo, '방콕');
     assert.match(bangkok?.href || '', /\/airport-transfers\/bangkok\/airport-bkk\//);
+    const tokyo = airportPickupRowForPlace({ slug: 'tokyo' });
+    assert.equal(tokyo?.iata, 'HND');
+    assert.equal(tokyo?.partner, 'mrt');
+    assert.equal(tokyo?.placeKo, '도쿄');
+    assert.match(tokyo?.href || '', /myrealtrip\.com\/search/);
+    assert.match(tokyo?.href || '', /HND/);
     assert.equal(airportPickupRowForPlace({ slug: 'seoul' }), null);
     assert.equal(airportPickupRowForPlace({ lat: 35.17, lng: 129.07, country: '대한민국' }), null);
   });

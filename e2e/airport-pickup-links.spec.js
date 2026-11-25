@@ -39,7 +39,10 @@ async function openAirportFact(page) {
   await airport.locator('button').click();
   const row = airport.locator('[data-airport-pickup-row]');
   await expect(row).toBeVisible({ timeout: 30_000 });
-  await expect(row).toHaveText('공항 픽업·차량 예약');
+  await expect(row).toContainText('푸켓국제공항(HKT)');
+  await expect(row).toContainText('카오락');
+  await expect(row).toContainText('픽업·차량 예약');
+  await expect(row).toContainText('Trip.com에서 보기');
   const href = await row.getAttribute('href');
   expect(href).toContain('/airport-transfers/phuket/airport-hkt/');
   expect(href).toContain('Allianceid=8182427');
@@ -70,6 +73,45 @@ async function openMooniAccess(page, slug) {
   return reply;
 }
 
+async function expectLegAfterFlight(reply, { title, place, partner, hrefPart }) {
+  const section = reply.locator('[data-mooni-transport-section]');
+  await expect(section).toBeVisible();
+  const pickup = section.locator('[data-airport-pickup-row]');
+  await expect(pickup).toBeVisible();
+  await expect(pickup).toContainText(title);
+  await expect(pickup).toContainText(place);
+  await expect(pickup).toContainText('픽업·차량 예약');
+  await expect(pickup).toContainText(partner);
+  const href = await pickup.getAttribute('href');
+  expect(href).toContain(hrefPart);
+  const flight = section.getByRole('button', { name: /항공권/ }).first();
+  await expect(flight).toBeVisible();
+  const followsFlight = await flight.evaluate((flightEl) => {
+    const row = flightEl.parentElement?.querySelector('[data-airport-pickup-row]');
+    if (!row) return false;
+    return Boolean(flightEl.compareDocumentPosition(row) & Node.DOCUMENT_POSITION_FOLLOWING);
+  });
+  expect(followsFlight).toBe(true);
+  return pickup;
+}
+
+async function frameTransport(page, pickup, width) {
+  await frame(page, width);
+  await pickup.evaluate((el) => {
+    const section = el.closest('[data-mooni-transport-section]') || el;
+    let node = el.parentElement;
+    while (node) {
+      const style = getComputedStyle(node);
+      const scrolls = /(auto|scroll)/.test(style.overflowY) || node.scrollHeight > node.clientHeight + 8;
+      if (scrolls) {
+        const top = section.getBoundingClientRect().top - node.getBoundingClientRect().top + node.scrollTop;
+        node.scrollTop = Math.max(0, top - 8);
+      }
+      node = node.parentElement;
+    }
+  });
+}
+
 test.describe('airport pickup row (flag on)', () => {
   test.beforeAll(() => {
     mkdirSync(OUT, { recursive: true });
@@ -92,19 +134,45 @@ test.describe('airport pickup row (flag on)', () => {
     await frame(page, 390);
 
     const khaoReply = await openMooniAccess(page, 'khao-lak');
-    const khaoPickup = khaoReply.locator('[data-airport-pickup-row]');
-    await expect(khaoPickup).toBeVisible();
-    await expect(khaoPickup).toHaveText('공항 픽업·차량 예약');
-    const href = await khaoPickup.getAttribute('href');
-    expect(href).toContain('/airport-hkt/');
+    const khaoPickup = await expectLegAfterFlight(khaoReply, {
+      title: '푸켓국제공항(HKT)',
+      place: '카오락',
+      partner: 'Trip.com에서 보기',
+      hrefPart: '/airport-hkt/',
+    });
     await expect(khaoReply.getByRole('link', { name: /코레일|버스타고|Korail|BUSTAGO/ })).toHaveCount(0);
-    await khaoPickup.evaluate((el) => el.scrollIntoView({ block: 'center' }));
-    await frame(page, 390);
-    await reveal(khaoPickup);
+    await frameTransport(page, khaoPickup, 390);
     await shot(page, 'khao-lak-mooni-pickup', 390);
-    await frame(page, 1280);
-    await reveal(khaoPickup);
+    await frameTransport(page, khaoPickup, 1280);
     await shot(page, 'khao-lak-mooni-pickup', 1280);
+    await frame(page, 390);
+
+    const bangkokReply = await openMooniAccess(page, 'bangkok');
+    const bangkokPickup = await expectLegAfterFlight(bangkokReply, {
+      title: '수완나품국제공항(BKK)',
+      place: '방콕',
+      partner: 'Trip.com에서 보기',
+      hrefPart: '/airport-transfers/bangkok/airport-bkk/',
+    });
+    await frameTransport(page, bangkokPickup, 390);
+    await shot(page, 'bangkok-mooni-pickup', 390);
+    await frameTransport(page, bangkokPickup, 1280);
+    await shot(page, 'bangkok-mooni-pickup', 1280);
+    await frame(page, 390);
+
+    const tokyoReply = await openMooniAccess(page, 'tokyo');
+    const tokyoPickup = await expectLegAfterFlight(tokyoReply, {
+      title: '하네다공항(HND)',
+      place: '도쿄',
+      partner: '마이리얼트립에서 보기',
+      hrefPart: 'myrealtrip.com/search',
+    });
+    const tokyoHref = await tokyoPickup.getAttribute('href');
+    expect(new URL(tokyoHref).searchParams.get('q')).toBe('HND 공항 픽업');
+    expect(tokyoHref).toContain('mylink_id=2640202');
+    expect(tokyoHref).toContain('utm_source=mktpartner');
+    await frameTransport(page, tokyoPickup, 390);
+    await shot(page, 'tokyo-mooni-mrt', 390);
     await frame(page, 390);
 
     const seoulReply = await openMooniAccess(page, 'seoul');
