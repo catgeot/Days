@@ -30,6 +30,10 @@ import {
   normalizeAccessDepartureUserText,
 } from '../../../utils/resolveDestinationFromChat';
 import BookingActionCards from '../../../components/chat/BookingActionCards';
+import {
+  airportPickupRowForPlace,
+  isGettingThereUserText,
+} from '../../../utils/airportPickupLinks.js';
 import DestinationResolutionChips from '../../../components/chat/DestinationResolutionChips';
 import MooniPlannerFollowUp from '../../../components/chat/MooniPlannerFollowUp';
 import MooniTruncatedContinue from '../../../components/chat/MooniTruncatedContinue';
@@ -2261,6 +2265,12 @@ const ChatModal = ({
                         ? messages[idx - 1].text?.text
                         : messages[idx - 1].text) ?? ''
                     : '';
+                const airportPickup = isModelMsg && isGettingThereUserText(priorUserText)
+                  ? airportPickupRowForPlace({
+                      ...(activeSessionPlace || {}),
+                      slug: activeSessionPlace?.slug || msgSlug || undefined,
+                    })
+                  : null;
                 const showPlannerFollowUp =
                   isModelMsg &&
                   Boolean(msgSlug) &&
@@ -2376,6 +2386,7 @@ const ChatModal = ({
                         userText={priorUserText}
                         itineraryBookingCompact={Boolean(msg.bookingMeta?.itineraryBookingCompact)}
                         bubbleVariant={isMooniUi ? 'light' : 'dark'}
+                        airportPickup={airportPickup}
                         onPlannerNavigate={handlePlannerNavigate}
                       />
                     )}

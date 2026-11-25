@@ -1269,6 +1269,31 @@ export function getTripcomTrainUrl(options = {}) {
   return `${origin}/trains/?${params.toString()}`;
 }
 
+/**
+ * Trip.com airport-transfer listing. Same Allianceid/SID/locale/curr as {@link getTripcomTrainUrl}.
+ * `citySlug` must be a listing path that stays on the city page (generic home titles are not listings).
+ *
+ * @param {string} citySlug
+ * @param {string} iata
+ * @param {{ partnerLocale?: 'ko-KR' | 'en-US', campaign?: string }} [options]
+ * @returns {string}
+ */
+export function buildTripcomAirportTransferUrl(citySlug, iata, options = {}) {
+  const slug = String(citySlug || '').trim().toLowerCase();
+  const code = String(iata || '').trim().toLowerCase();
+  if (!/^[a-z0-9-]+$/.test(slug) || !/^[a-z]{3}$/.test(code)) return '';
+  const partnerLocale = options.partnerLocale ?? getTripcomPartnerLocale();
+  const origin = resolveTripcomSiteOrigin(partnerLocale);
+  const params = new URLSearchParams({
+    locale: partnerLocale,
+    curr: resolveTripcomCurrency(partnerLocale),
+    Allianceid: TRIPCOM_KR_PARTNER.allianceId,
+    SID: TRIPCOM_KR_PARTNER.sid,
+  });
+  params.set('trip_sub1', options.campaign || 'airport-pickup');
+  return `${origin}/airport-transfers/${slug}/airport-${code}/?${params.toString()}`;
+}
+
 /** Klook 사이트 홈 제휴 URL */
 export function getKlookSiteHomeUrl() {
   return getKlookAffiliateUrl(KLOOK_SITE_HOME_TARGET);
