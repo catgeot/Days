@@ -127,7 +127,8 @@ After applying `update.sql` to a local mirror of the corpus, each **outbound URL
 
 ## Artifact SHA256
 
-- REPORT.md: cd8b0525125c0d646eedfcf817d8a54ac452480b635249debb8ca30594b250a4
-- backup.json: 18f7c34b334a89ea4e9447f42a777bebda23f52604b18af5a49e1ee783916040
-- update.sql: 441369b5ca036942dd74e2d382a7f2a64436ecd7248191b2e5c072d00a203bfe
-- rollback.sql: b375b9f498b214e3a61672221f1804ce998bc2e2f75bac2ee644a18c26b3216f
+See `SHA256SUMS` in this directory (computed with `sha256sum` on the four bundle files).
+
+## Git
+
+Branch `ops/link-audit-final7d` · bundle commit: `a786785c6606d2bb6003cc103be3c3d97e0515b7`
