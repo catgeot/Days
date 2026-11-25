@@ -21,6 +21,7 @@ const TrustLinkBar = ({ variant = 'fixed', className = '' }) => {
           ? `pointer-events-none relative z-[1] w-auto max-w-[min(18.5rem,calc(100vw-0.5rem))] ${className}`.trim()
           : `pointer-events-none fixed bottom-[max(0.4rem,env(safe-area-inset-bottom,0px))] left-1/2 z-[50] w-[min(36rem,calc(100vw-5.5rem))] -translate-x-1/2 ${className}`.trim()
       }
+      data-testid="home-about-row"
       aria-label={t('home.footerModal.trustBar.aria')}
     >
       <div

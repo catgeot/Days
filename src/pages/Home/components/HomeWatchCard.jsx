@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { X } from 'lucide-react';
@@ -6,6 +6,7 @@ import { LOGBOOK_REVIEW_HUB_ROWS_STORAGE_KEY } from '../../../logbookOfficialRev
 import { buildLogbookReviewerFilterHref } from '../../../logbookOfficialReviews/logbookReviewFilterUrl.js';
 import { trackEvent } from '../../../shared/analytics/trackEvent.js';
 import {
+  isGateoHomeMonthlySwitchEnabled,
   isGateoHomeWatchCardEnabled,
   isGateoSelfReelsEnabled,
 } from '../../../shared/gateoFeatureFlags.js';
@@ -15,11 +16,14 @@ import {
   buildHomeWatchMonthlyDestinations,
   buildHomeWatchSlots,
   dismissHomeWatchCard,
+  homeMonthlySwitchState,
   homeWatchClickParams,
   homeWatchDismissParams,
   homeWatchSlotCountForWidth,
   homeWatchViewParams,
   isHomeWatchDismissed,
+  layoutHomeMonthlyCard,
+  resolveHomeMonthlyPreviewStartDay,
   resolveHomeWatchReelsPoster,
   shouldHideHomeWatchCard,
 } from '../lib/homeWatchCardModel.js';
@@ -62,6 +66,85 @@ function useHomeWatchChromeFlags() {
   return flags;
 }
 
+function snapMonthlyScroller(el) {
+  const tile = el.querySelector('li');
+  if (!tile) return;
+  const gap = Number.parseFloat(getComputedStyle(el).columnGap) || 0;
+  const step = tile.getBoundingClientRect().width + gap;
+  if (step <= 0) return;
+  const max = Math.max(0, el.scrollWidth - el.clientWidth);
+  const index = Math.round(el.scrollLeft / step);
+  const left = Math.min(max, Math.max(0, index * step));
+  el.scrollTo({ left, behavior: 'auto' });
+}
+
+function useMonthlyTileDrag(ref, enabled) {
+  useEffect(() => {
+    const el = ref.current;
+    if (!enabled || !el) return undefined;
+    let pointerId = null;
+    let startX = 0;
+    let startLeft = 0;
+    let moved = false;
+    const onDown = (event) => {
+      if (pointerId != null) return;
+      if (!el.contains(event.target)) return;
+      if (event.button !== 0 && event.pointerType === 'mouse') return;
+      pointerId = event.pointerId;
+      startX = event.clientX;
+      startLeft = el.scrollLeft;
+      moved = false;
+    };
+    const onMove = (event) => {
+      if (pointerId == null || event.pointerId !== pointerId) return;
+      const dx = event.clientX - startX;
+      if (Math.abs(dx) > 4) moved = true;
+      if (!moved) return;
+      el.scrollLeft = startLeft - dx;
+      event.preventDefault();
+    };
+    const end = (event) => {
+      if (pointerId == null || event.pointerId !== pointerId) return;
+      pointerId = null;
+      if (moved) snapMonthlyScroller(el);
+    };
+    const onClick = (event) => {
+      if (!moved) return;
+      event.preventDefault();
+      event.stopPropagation();
+      moved = false;
+    };
+    const onWheel = (event) => {
+      if (!el.contains(event.target) && event.target !== el) return;
+      if (el.scrollWidth <= el.clientWidth) return;
+      if (Math.abs(event.deltaX) > Math.abs(event.deltaY)) return;
+      el.scrollLeft += event.deltaY;
+      snapMonthlyScroller(el);
+      event.preventDefault();
+    };
+    const onDragStart = (event) => {
+      if (!el.contains(event.target)) return;
+      event.preventDefault();
+    };
+    window.addEventListener('pointerdown', onDown, true);
+    window.addEventListener('pointermove', onMove, true);
+    window.addEventListener('pointerup', end, true);
+    window.addEventListener('pointercancel', end, true);
+    window.addEventListener('dragstart', onDragStart, true);
+    el.addEventListener('click', onClick, true);
+    el.addEventListener('wheel', onWheel, { capture: true, passive: false });
+    return () => {
+      window.removeEventListener('pointerdown', onDown, true);
+      window.removeEventListener('pointermove', onMove, true);
+      window.removeEventListener('pointerup', end, true);
+      window.removeEventListener('pointercancel', end, true);
+      window.removeEventListener('dragstart', onDragStart, true);
+      el.removeEventListener('click', onClick, true);
+      el.removeEventListener('wheel', onWheel, true);
+    };
+  }, [enabled]);
+}
+
 function useHomeWatchSlotCount() {
   const [count, setCount] = useState(() =>
     homeWatchSlotCountForWidth(typeof window === 'undefined' ? 390 : window.innerWidth),
@@ -84,6 +167,8 @@ function WatchSlotLink({ slot, className, ariaLabel, onActivate, children }) {
         rel="noopener noreferrer"
         className={className}
         aria-label={ariaLabel}
+        draggable={false}
+        onDragStart={(event) => event.preventDefault()}
         onClick={onActivate}
       >
         {children}
@@ -91,7 +176,14 @@ function WatchSlotLink({ slot, className, ariaLabel, onActivate, children }) {
     );
   }
   return (
-    <Link to={slot.href} className={className} aria-label={ariaLabel} onClick={onActivate}>
+    <Link
+      to={slot.href}
+      className={className}
+      aria-label={ariaLabel}
+      draggable={false}
+      onDragStart={(event) => event.preventDefault()}
+      onClick={onActivate}
+    >
       {children}
     </Link>
   );
@@ -193,14 +285,25 @@ const HomeWatchCard = ({
   const isEnUi = String(i18n.language || '')
     .toLowerCase()
     .startsWith('en');
-  const { pathname } = useLocation();
+  const { pathname, search } = useLocation();
   const { siteNotice, mooniChat } = useHomeWatchChromeFlags();
   const slotCount = useHomeWatchSlotCount();
   const cardRef = useRef(null);
+  const scrollerRef = useRef(null);
   const viewedRef = useRef(false);
   const [dismissed, setDismissed] = useState(() => isHomeWatchDismissed());
+  const [viewNext, setViewNext] = useState(false);
   const [globeDrag, setGlobeDrag] = useState(false);
   const enabled = isGateoHomeWatchCardEnabled();
+  const monthly = enabled && isGateoHomeMonthlySwitchEnabled(search);
+  const previewStartDay = resolveHomeMonthlyPreviewStartDay(search);
+  const schedule = useMemo(
+    () => homeMonthlySwitchState(new Date(), previewStartDay),
+    [previewStartDay, viewNext, monthly],
+  );
+  const viewingNext = monthly && viewNext && schedule.previewOpen;
+  const monthKey = viewingNext ? schedule.nextMonthKey : schedule.currentMonthKey;
+  useMonthlyTileDrag(scrollerRef, monthly);
 
   const slots = useMemo(() => {
     if (!enabled) return [];
@@ -211,12 +314,13 @@ const HomeWatchCard = ({
     }));
     return buildHomeWatchSlots({
       continueItems,
-      destinations: buildHomeWatchMonthlyDestinations(new Date(), rows),
+      destinations: buildHomeWatchMonthlyDestinations(new Date(), rows, monthly ? monthKey : undefined),
       reelsEnabled: isGateoSelfReelsEnabled(),
       slotCount,
       reelsPoster: isGateoSelfReelsEnabled() ? resolveHomeWatchReelsPoster() : '',
+      limitDestinations: !monthly,
     });
-  }, [enabled, slotCount]);
+  }, [enabled, monthly, monthKey, slotCount]);
 
   const hidden = shouldHideHomeWatchCard({
     placeCard: isPlaceCardVisible || pathname.startsWith('/place'),
@@ -226,6 +330,85 @@ const HomeWatchCard = ({
     siteNotice,
   });
   const shown = enabled && !hidden && !dismissed && slots.length > 0;
+
+  useLayoutEffect(() => {
+    const card = cardRef.current;
+    if (!monthly || !shown || !card) {
+      if (card) {
+        card.style.left = '';
+        card.style.right = '';
+        card.style.bottom = '';
+        delete card.dataset.monthlyPlaced;
+      }
+      return undefined;
+    }
+    let frame = 0;
+    const apply = () => {
+      const safeProbe = card.querySelector('[data-testid="safe-area-probe"]');
+      const safeBottom = safeProbe ? safeProbe.getBoundingClientRect().height : 0;
+      const mooniEl = document.querySelector('[data-testid="mooni-fab-open"]');
+      const mooniRect = mooniEl ? mooniEl.getBoundingClientRect() : null;
+      const mooni = mooniRect && mooniRect.width > 0 && mooniRect.height > 0 ? mooniRect : null;
+      const obstacles = [];
+      for (const sel of [
+        '[data-testid="home-about-row"]',
+        '[data-testid="home-category-bar"]',
+        '[data-testid="home-bottom-chat"]',
+        '[data-testid="home-bottom-account"]',
+      ]) {
+        for (const el of document.querySelectorAll(sel)) {
+          const rect = el.getBoundingClientRect();
+          if (rect.width > 0 && rect.height > 0) obstacles.push(rect);
+        }
+      }
+      const place = layoutHomeMonthlyCard({
+        viewportWidth: window.innerWidth,
+        viewportHeight: window.innerHeight,
+        safeBottom,
+        mooni,
+        obstacles,
+      });
+      const left = `${place.left}px`;
+      const right = `${place.right}px`;
+      const bottom = `${place.bottom}px`;
+      if (card.style.left === left && card.style.right === right && card.style.bottom === bottom) {
+        card.dataset.monthlyPlaced = '1';
+        return;
+      }
+      card.style.left = left;
+      card.style.right = right;
+      card.style.bottom = bottom;
+      card.dataset.monthlyPlaced = '1';
+    };
+    const schedule = () => {
+      if (frame) return;
+      frame = window.requestAnimationFrame(() => {
+        frame = 0;
+        apply();
+      });
+    };
+    apply();
+    const observer = new ResizeObserver(schedule);
+    observer.observe(document.body);
+    for (const sel of [
+      '[data-testid="mooni-fab-open"]',
+      '[data-testid="home-about-row"]',
+      '[data-testid="home-category-bar"]',
+      '[data-testid="home-bottom-chat"]',
+      '[data-testid="home-bottom-account"]',
+    ]) {
+      for (const el of document.querySelectorAll(sel)) observer.observe(el);
+    }
+    const mutation = new MutationObserver(schedule);
+    mutation.observe(document.body, { childList: true, subtree: true });
+    window.addEventListener('resize', schedule);
+    return () => {
+      window.cancelAnimationFrame(frame);
+      observer.disconnect();
+      mutation.disconnect();
+      window.removeEventListener('resize', schedule);
+    };
+  }, [monthly, shown, slots.length]);
 
   useEffect(() => {
     if (!shown || viewedRef.current) return;
@@ -253,6 +436,16 @@ const HomeWatchCard = ({
 
   if (!shown) return null;
 
+  const viewedMonth = viewingNext ? schedule.nextMonth : schedule.month;
+  const linkMonth = viewingNext ? schedule.month : schedule.nextMonth;
+  const monthToken = (month) => t(`home.watchCard.months.${month}`);
+  const title = monthly
+    ? t('home.watchCard.monthTitle', { month: monthToken(viewedMonth) })
+    : t('home.watchCard.title');
+  const switchLabel = monthly && schedule.previewOpen
+    ? t('home.watchCard.seeMonth', { month: monthToken(linkMonth) })
+    : '';
+
   const trackSlot = (slotType) => {
     trackEvent('home_watch_card_click', homeWatchClickParams(slotType));
   };
@@ -268,29 +461,64 @@ const HomeWatchCard = ({
       ref={cardRef}
       data-testid="home-watch-card"
       data-slot-count={slots.length}
+      data-month-key={monthly ? monthKey : undefined}
+      data-monthly-switch={monthly ? '1' : undefined}
+      data-preview-open={monthly && schedule.previewOpen ? '1' : undefined}
       data-globe-drag-passthrough={globeDrag ? 'true' : 'false'}
-      aria-label={t('home.watchCard.title')}
+      aria-label={title}
       className={`pointer-events-none fixed z-[54] box-border h-[85px] ${
         globeDrag ? '[&_*]:!pointer-events-none' : ''
-      } left-3 right-3 bottom-[14.25rem] min-[1280px]:left-[300px] min-[1280px]:right-[300px] min-[1280px]:bottom-[110px]`}
+      } ${
+        monthly
+          ? 'home-monthly-card left-3 right-3 min-[1280px]:left-[300px]'
+          : 'left-3 right-3 bottom-[14.25rem] min-[1280px]:left-[300px] min-[1280px]:right-[300px] min-[1280px]:bottom-[110px]'
+      }`}
       style={{ height: HOME_WATCH_CARD_LAYOUT.mobile.height }}
     >
+      {monthly ? (
+        <div
+          data-testid="safe-area-probe"
+          aria-hidden="true"
+          className="pointer-events-none absolute left-0 top-0 w-px opacity-0"
+          style={{ height: 'env(safe-area-inset-bottom, 0px)' }}
+        />
+      ) : null}
       <div className="pointer-events-none flex h-full min-h-0 flex-col rounded-2xl border border-white/15 bg-black/55 px-1.5 pb-1 pt-0.5 shadow-lg backdrop-blur-md motion-reduce:transition-none">
         <div className="flex h-4 shrink-0 items-center justify-between gap-1 px-0.5">
-          <h2 className="truncate text-[10px] font-bold leading-none tracking-wide text-white/90">
-            {t('home.watchCard.title')}
+          <h2 className={`${monthly ? 'min-w-0 ' : ''}truncate text-[10px] font-bold leading-none tracking-wide text-white/90`}>
+            {title}
           </h2>
-          <button
-            type="button"
-            data-testid="home-watch-dismiss"
-            className="pointer-events-auto flex h-4 w-4 shrink-0 items-center justify-center rounded-full text-white/80 hover:bg-white/10 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-white motion-reduce:transition-none"
-            aria-label={t('home.watchCard.dismiss')}
-            onClick={onDismiss}
-          >
-            <X size={12} aria-hidden="true" />
-          </button>
+          <div className="flex shrink-0 items-center gap-1">
+            {switchLabel ? (
+              <button
+                type="button"
+                data-testid="home-monthly-switch"
+                className="pointer-events-auto shrink-0 border-0 bg-transparent p-0 text-[10px] font-semibold leading-none text-white/90 shadow-none rounded-none underline-offset-2 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-white"
+                onClick={() => setViewNext((current) => !current)}
+              >
+                {switchLabel}
+              </button>
+            ) : null}
+            <button
+              type="button"
+              data-testid="home-watch-dismiss"
+              className="pointer-events-auto flex h-4 w-4 shrink-0 items-center justify-center rounded-full text-white/80 hover:bg-white/10 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-white motion-reduce:transition-none"
+              aria-label={t('home.watchCard.dismiss')}
+              onClick={onDismiss}
+            >
+              <X size={12} aria-hidden="true" />
+            </button>
+          </div>
         </div>
-        <ul className="flex min-h-0 flex-1 gap-1">
+        <ul
+          ref={monthly ? scrollerRef : undefined}
+          data-testid={monthly ? 'home-monthly-scroller' : undefined}
+          className={
+            monthly
+              ? 'pointer-events-auto flex min-h-0 min-w-0 flex-1 touch-none gap-1 overflow-x-auto snap-x snap-mandatory overscroll-x-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden'
+              : 'flex min-h-0 flex-1 gap-1'
+          }
+        >
           {slots.map((slot, index) => {
             const label = slot.name || (slot.nameKey ? t(slot.nameKey) : t('home.watchCard.reelsTitle'));
             const subtitle = slot.subtitleKey
@@ -309,7 +537,11 @@ const HomeWatchCard = ({
                 data-testid={`home-watch-slot-${slot.type}`}
                 data-slot-type={slot.type}
                 data-slug={slot.slug || undefined}
-                className="relative min-w-0 flex-1 overflow-hidden rounded-xl border border-white/10 bg-black/40"
+                className={
+                  monthly
+                    ? 'relative h-full w-[5.25rem] shrink-0 snap-start overflow-hidden rounded-xl border border-white/10 bg-black/40 min-[1280px]:w-[12rem]'
+                    : 'relative min-w-0 flex-1 overflow-hidden rounded-xl border border-white/10 bg-black/40'
+                }
               >
                 <WatchSlotLink
                   slot={slot}
