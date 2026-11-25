@@ -92,7 +92,7 @@ assert.equal(overlaid.country_en, 'Greece');
 assert.equal(overlaid.name_en, 'Zakynthos');
 assert.equal(visitedSpotNeedsGeoCountry(overlaid), false);
 const gallery = resolveGalleryStockQuery(overlaid);
-assert.equal(gallery.primaryQuery, 'Zakynthos');
+assert.equal(gallery.primaryQuery, 'Zakynthos Greece');
 assert.match(gallery.backupQuery, /Greece/);
 
 const caribbeanSaba = {
@@ -126,7 +126,7 @@ const reverseOnly = overlayGeoFieldsOnVisitedSpot(spot, [
 ]);
 assert.equal(reverseOnly.country, '그리스');
 assert.equal(reverseOnly.country_en, 'Greece');
-assert.equal(resolveGalleryStockQuery(reverseOnly).primaryQuery, 'Zakynthos');
+assert.equal(resolveGalleryStockQuery(reverseOnly).primaryQuery, 'Zakynthos Greece');
 
 const tinianSpot = visitedRowToSearchSpot({
   place_id: 'tinian',

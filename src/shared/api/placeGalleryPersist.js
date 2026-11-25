@@ -185,6 +185,12 @@ export function buildPersistPlaceGalleryArgs({ placeId, mode, images, imageUrl }
   };
 }
 
+/** Single persist_place_gallery call. `rpc` is supabase.rpc or a test double. */
+export function commitGalleryPersistRpc(rpc, args) {
+  if (!rpc || !args) return Promise.resolve(null);
+  return rpc('persist_place_gallery', args);
+}
+
 export function droppedGalleryIds(data) {
   const raw = data?.dropped_ids;
   if (!Array.isArray(raw)) return [];
