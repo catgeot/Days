@@ -1527,3 +1527,64 @@ jobs:
           CI: true
           DEV_SSL: '0'
         run: npx playwright test -c playwright.config.tour-modal-region-search.js --reporter=line
+
+  airport-pickup-links-e2e:
+    name: Airport pickup links E2E (WebKit 390)
+    runs-on: ubuntu-24.04
+    needs: lint-and-build
+    timeout-minutes: 30
+    container:
+      image: mcr.microsoft.com/playwright:v1.60.0-jammy
+      options: --ipc=host
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Playwright — airport pickup row
+        env:
+          VITE_SUPABASE_URL: https://example.supabase.co
+          VITE_SUPABASE_ANON_KEY: e2e-anon-placeholder
+          VITE_GATEO_AIRPORT_PICKUP_LINKS: '1'
+          VITE_MAPBOX_TOKEN: pk.e2e-airport-pickup
+          CI: true
+          DEV_SSL: '0'
+        run: npx playwright test -c playwright.config.airport-pickup.js --project=webkit-390 --reporter=line
+
+  airport-pickup-links-off-e2e:
+    name: Airport pickup links flag off E2E (WebKit 390)
+    runs-on: ubuntu-24.04
+    needs: lint-and-build
+    timeout-minutes: 30
+    container:
+      image: mcr.microsoft.com/playwright:v1.60.0-jammy
+      options: --ipc=host
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Playwright — pickup row absent when flag is unset
+        env:
+          VITE_SUPABASE_URL: https://example.supabase.co
+          VITE_SUPABASE_ANON_KEY: e2e-anon-placeholder
+          VITE_MAPBOX_TOKEN: pk.e2e-airport-pickup
+          CI: true
+          DEV_SSL: '0'
+        run: npx playwright test -c playwright.config.airport-pickup-off.js --project=webkit-390 --reporter=line

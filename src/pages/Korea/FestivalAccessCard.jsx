@@ -2,6 +2,8 @@ import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 're
 import { Loader2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { splitCardAccessNumberTokens } from '../../components/chat/mooniAccessNumberToken.js';
+import AirportPickupLegRow from '../../shared/affiliate/AirportPickupLegRow.jsx';
+import { airportPickupRowForPlace } from '../../utils/airportPickupLinks.js';
 import {
   bookingLink,
   buildAccessView,
@@ -287,6 +289,7 @@ function SegmentGroups({ cards, locale, trainDate, t }) {
  *   detailSettled?: boolean,
  *   onAskMooni?: ((event: React.MouseEvent) => void) | null,
  *   onTransportFacts?: (facts: Record<string, unknown> | null) => void,
+ *   destination?: { lat?: number, lng?: number, slug?: string, country?: string } | null,
  * }} props
  */
 export default function FestivalAccessCard({
@@ -296,6 +299,7 @@ export default function FestivalAccessCard({
   detailSettled = false,
   onAskMooni = null,
   onTransportFacts = null,
+  destination = null,
 }) {
   const { t, i18n } = useTranslation();
   const locale = i18n.language;
@@ -360,6 +364,7 @@ export default function FestivalAccessCard({
       <p className="text-[11px] font-bold tracking-widest text-stone-400 uppercase">
         {t('korea.festival.detail.accessTitle')}
       </p>
+      <AirportPickupLegRow row={airportPickupRowForPlace(destination)} light />
       <div
         className="space-y-2 rounded-2xl border border-stone-200 bg-stone-50 p-3"
         data-festival-access-status={phase}

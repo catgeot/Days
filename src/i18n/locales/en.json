@@ -966,6 +966,11 @@
       "unverified": "Unverified: {{items}}",
       "aiGenerated": "AI-generated · no source",
       "aiGeneratedDated": "AI-generated · no source · {{date}}",
+      "airportPickup": "Book an airport pickup",
+      "airportPickupLeg": "{{airport}} ({{iata}}) → {{place}} pickup",
+      "airportPickupLegNoPlace": "{{airport}} ({{iata}}) pickup",
+      "airportPickupPartnerTrip": "View on Trip.com",
+      "airportPickupPartnerMrt": "View on MyRealTrip",
       "slots": {
         "entry": "Entry",
         "airport": "Airport to city",
