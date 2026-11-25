@@ -29,6 +29,13 @@ import { LOGBOOK_REVIEW_HUB_SESSION_KEY } from '../../src/logbookOfficialReviews
 import { LOGBOOK_REVIEW_HUB_ROWS_STORAGE_KEY } from '../../src/logbookOfficialReviews/logbookReviewHubListCache.js';
 import { MONTHLY_PICKS } from '../../src/pages/Home/data/spotTraits.js';
 import {
+  HOME_WATCH_CONTINUE_PHOTO_FALLBACK,
+  continuePlaceSlugFromHref,
+  fetchHomeWatchContinuePlacePhoto,
+  homeWatchContinueDisplayUrl,
+  resolveHomeWatchContinueLockedPhoto,
+} from '../../src/pages/Home/lib/homeWatchContinuePhoto.js';
+import {
   HOME_WATCH_DISMISS_KEY,
   HOME_WATCH_DISMISS_MS,
   buildHomeWatchSlots,
@@ -253,6 +260,64 @@ test('home watch analytics params carry slot type only', () => {
     ...homeWatchDismissParams(),
   });
   assert.equal(blob.includes('kyoto') || blob.includes('교토'), false);
+});
+
+const KHAO_LAK_PHOTO =
+  'https://images.unsplash.com/photo-1645051049747-265f8c124875?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400';
+const BUSAN_PHOTO = 'https://tong.visitkorea.or.kr/cms/resource/01/2947001_image2_1.jpg';
+
+test('continue place photo follows the place-card source and falls back when empty', async () => {
+  assert.equal(continuePlaceSlugFromHref('/place/khao-lak'), 'khao-lak');
+  assert.equal(continuePlaceSlugFromHref('https://www.klook.com/activity/1'), '');
+  assert.equal(resolveHomeWatchContinueLockedPhoto('khao-lak').kind, 'lookup');
+  assert.equal(resolveHomeWatchContinueLockedPhoto('busan').kind, 'lookup');
+
+  let calls = 0;
+  const beach = await fetchHomeWatchContinuePlacePhoto('nang-thong-beach', async () => {
+    calls += 1;
+    return [];
+  });
+  assert.match(beach, /Khao_Lak_light_beacon/);
+  assert.equal(calls, 0);
+
+  const lockedEmpty = await fetchHomeWatchContinuePlacePhoto('bang-niang-market', async () => {
+    calls += 1;
+    return [{ place_id: 'bang-niang-market', image_url: KHAO_LAK_PHOTO, gallery_urls: [] }];
+  });
+  assert.equal(lockedEmpty, '');
+  assert.equal(calls, 0);
+  assert.equal(HOME_WATCH_CONTINUE_PHOTO_FALLBACK.includes('og-image.png'), true);
+
+  const khao = await fetchHomeWatchContinuePlacePhoto('khao-lak', async (candidates) => {
+    calls += 1;
+    assert.equal(candidates.includes('khao-lak'), true);
+    return [{ place_id: 'khao-lak', image_url: KHAO_LAK_PHOTO, gallery_urls: [] }];
+  });
+  assert.equal(khao, KHAO_LAK_PHOTO);
+  const khaoSrc = homeWatchContinueDisplayUrl(khao);
+  assert.match(khaoSrc, /photo-1645051049747-265f8c124875/);
+  assert.match(khaoSrc, /[?&]w=480(?:&|$)/);
+
+  const busan = await fetchHomeWatchContinuePlacePhoto('busan', async () => [
+    {
+      place_id: 'busan',
+      image_url: '',
+      gallery_urls: [{ urls: { regular: BUSAN_PHOTO } }],
+    },
+  ]);
+  assert.equal(busan, BUSAN_PHOTO);
+  assert.equal(homeWatchContinueDisplayUrl(busan), BUSAN_PHOTO);
+
+  const missing = await fetchHomeWatchContinuePlacePhoto('khao-lak', async () => []);
+  assert.equal(missing, '');
+  assert.equal(calls, 1);
+
+  await assert.rejects(
+    () => fetchHomeWatchContinuePlacePhoto('khao-lak', async () => {
+      throw new Error('place_stats down');
+    }),
+    /place_stats down/,
+  );
 });
 
 test('rectsOverlap measures MOONi clearance', () => {

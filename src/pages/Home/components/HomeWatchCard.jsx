@@ -23,6 +23,13 @@ import {
   shouldHideHomeWatchCard,
 } from '../lib/homeWatchCardModel.js';
 import { readHomeWatchContinueItems } from '../lib/homeWatchContinue.js';
+import {
+  HOME_WATCH_CONTINUE_PHOTO_FALLBACK,
+  continuePlaceSlugFromHref,
+  fetchHomeWatchContinuePlacePhoto,
+  homeWatchContinueDisplayUrl,
+  resolveHomeWatchContinueLockedPhoto,
+} from '../lib/homeWatchContinuePhoto.js';
 
 function readReviewRows() {
   if (typeof sessionStorage === 'undefined') return [];
@@ -86,6 +93,88 @@ function WatchSlotLink({ slot, className, ariaLabel, onActivate, children }) {
     <Link to={slot.href} className={className} aria-label={ariaLabel} onClick={onActivate}>
       {children}
     </Link>
+  );
+}
+
+function useHomeWatchContinuePhoto(slug) {
+  const locked = useMemo(() => resolveHomeWatchContinueLockedPhoto(slug), [slug]);
+  const [remote, setRemote] = useState({ slug: '', status: 'loading', imageUrl: '' });
+
+  useEffect(() => {
+    if (!slug || locked.kind !== 'lookup') return undefined;
+    let cancel = false;
+    setRemote({ slug, status: 'loading', imageUrl: '' });
+    fetchHomeWatchContinuePlacePhoto(slug)
+      .then((imageUrl) => {
+        if (cancel) return;
+        setRemote({
+          slug,
+          status: imageUrl ? 'ready' : 'empty',
+          imageUrl: imageUrl || '',
+        });
+      })
+      .catch((error) => {
+        if (cancel) return;
+        console.error('home watch continue photo', slug, error);
+        setRemote({ slug, status: 'error', imageUrl: '' });
+      });
+    return () => {
+      cancel = true;
+    };
+  }, [slug, locked.kind]);
+
+  if (!slug || locked.kind === 'skip') return { state: 'skip', src: '' };
+  if (locked.kind === 'photo') {
+    return { state: 'photo', src: homeWatchContinueDisplayUrl(locked.imageUrl) };
+  }
+  if (locked.kind === 'empty') {
+    return { state: 'fallback', src: HOME_WATCH_CONTINUE_PHOTO_FALLBACK };
+  }
+  if (remote.slug !== slug || remote.status === 'loading') return { state: 'loading', src: '' };
+  if (remote.status === 'ready') {
+    return { state: 'photo', src: homeWatchContinueDisplayUrl(remote.imageUrl) };
+  }
+  if (remote.status === 'error') {
+    return { state: 'error', src: HOME_WATCH_CONTINUE_PHOTO_FALLBACK };
+  }
+  return { state: 'fallback', src: HOME_WATCH_CONTINUE_PHOTO_FALLBACK };
+}
+
+function HomeWatchContinuePhoto({ href }) {
+  const slug = continuePlaceSlugFromHref(href);
+  const photo = useHomeWatchContinuePhoto(slug);
+  const [broken, setBroken] = useState(false);
+  const reportedRef = useRef(false);
+
+  useEffect(() => {
+    setBroken(false);
+    reportedRef.current = false;
+  }, [slug, photo.src, photo.state]);
+
+  if (!slug || photo.state === 'loading' || photo.state === 'skip') return null;
+  const failed = broken || photo.state === 'error';
+  const src = failed ? HOME_WATCH_CONTINUE_PHOTO_FALLBACK : photo.src;
+  if (!src) return null;
+  const imageState = failed ? 'error' : photo.state === 'photo' ? 'photo' : 'fallback';
+
+  return (
+    <img
+      src={src}
+      alt=""
+      aria-hidden="true"
+      data-testid="home-watch-continue-photo"
+      data-image-state={imageState}
+      data-photo-slug={slug}
+      className="absolute inset-0 h-full w-full object-cover"
+      draggable={false}
+      onError={() => {
+        if (!reportedRef.current) {
+          reportedRef.current = true;
+          console.error('home watch continue photo failed to load', slug);
+        }
+        setBroken(true);
+      }}
+    />
   );
 }
 
@@ -223,6 +312,12 @@ const HomeWatchCard = ({
                   className="pointer-events-auto absolute inset-0 z-[1] rounded-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-white"
                 />
                 <div className="pointer-events-none relative z-0 flex h-full min-w-0 flex-col justify-end">
+                  {slot.type === 'continue' && continuePlaceSlugFromHref(slot.href) ? (
+                    <>
+                      <div className="absolute inset-0 bg-gradient-to-br from-slate-800 to-slate-950" />
+                      <HomeWatchContinuePhoto href={slot.href} />
+                    </>
+                  ) : null}
                   {slot.type === 'destination' || slot.type === 'reels' ? (
                     slot.poster || slot.imageUrl ? (
                       <img

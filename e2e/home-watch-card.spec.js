@@ -247,4 +247,110 @@ test.describe('home watch card', () => {
     await expect(page).toHaveURL(/\/place\/kyoto/);
     await expect(page.getByTestId('home-watch-card')).toHaveCount(0);
   });
+
+  test('continue slot shows a place photo or the site fallback', async ({ page }, testInfo) => {
+    const width = testInfo.project.use.viewport?.width ?? 390;
+    const khaoPhoto =
+      'https://images.unsplash.com/photo-1645051049747-265f8c124875?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400';
+    const busanPhoto = 'https://tong.visitkorea.or.kr/cms/resource/01/2947001_image2_1.jpg';
+    const cases = [
+      {
+        slug: 'khao-lak',
+        name: '카오락',
+        imageUrl: khaoPhoto,
+        state: 'photo',
+        src: /photo-1645051049747-265f8c124875/,
+      },
+      {
+        slug: 'busan',
+        name: '부산',
+        imageUrl: busanPhoto,
+        state: 'photo',
+        src: /tong\.visitkorea\.or\.kr\/cms\/resource\/01\/2947001_image2_1\.jpg/,
+      },
+      {
+        slug: 'bang-niang-market',
+        name: '방니앙 시장',
+        imageUrl: '',
+        state: 'fallback',
+        src: /og-image\.png/,
+      },
+    ];
+
+    await page.route(/\/rest\/v1\/place_stats/i, async (route) => {
+      const url = decodeURIComponent(route.request().url());
+      const hit = cases.find((row) => row.imageUrl && url.includes(row.slug));
+      if (!hit) {
+        await route.continue();
+        return;
+      }
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify([
+          {
+            place_id: hit.slug,
+            image_url: hit.imageUrl,
+            gallery_urls: [{ urls: { regular: hit.imageUrl, small: hit.imageUrl } }],
+          },
+        ]),
+      });
+    });
+
+    for (const row of cases) {
+      await page.addInitScript((payload) => {
+        localStorage.setItem('gateo_recent_visited_destinations', JSON.stringify([payload]));
+      }, { name: row.name, slug: row.slug });
+      await page.goto('/', { waitUntil: 'domcontentloaded' });
+      const slot = page.getByTestId('home-watch-slot-continue');
+      await expect(slot).toContainText(row.name);
+      await expect(slot).toContainText('최근에 보신 장소예요');
+      const photo = slot.getByTestId('home-watch-continue-photo');
+      await expect(photo).toHaveAttribute('data-image-state', row.state);
+      await expect(photo).toHaveAttribute('src', row.src);
+      await expect(photo).toHaveAttribute('data-photo-slug', row.slug);
+      await expect.poll(() => photo.evaluate((img, state) => (
+        img.getAttribute('data-image-state') === state && img.complete ? img.naturalWidth : 0
+      ), row.state)).toBeGreaterThan(0);
+      const file = width >= 1280
+        ? `/opt/cursor/artifacts/home-watch-continue-${row.slug}-1280.png`
+        : `/opt/cursor/artifacts/home-watch-continue-${row.slug}-390.png`;
+      await page.screenshot({
+        path: file,
+        clip: width >= 1280 ? undefined : { x: 0, y: 0, width: 390, height: 844 },
+      });
+    }
+  });
+
+  test('continue slot swaps a broken place photo for the fallback', async ({ page }) => {
+    const broken = 'https://example.invalid/khao-lak-missing.jpg';
+    await page.route(/\/rest\/v1\/place_stats/i, async (route) => {
+      const url = decodeURIComponent(route.request().url());
+      if (!url.includes('khao-lak')) {
+        await route.continue();
+        return;
+      }
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify([
+          { place_id: 'khao-lak', image_url: broken, gallery_urls: [] },
+        ]),
+      });
+    });
+    await page.route(broken, (route) => route.abort());
+    await page.addInitScript(() => {
+      localStorage.setItem(
+        'gateo_recent_visited_destinations',
+        JSON.stringify([{ name: '카오락', slug: 'khao-lak' }]),
+      );
+    });
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
+    const photo = page.getByTestId('home-watch-slot-continue').getByTestId('home-watch-continue-photo');
+    await expect(photo).toHaveAttribute('data-image-state', 'error');
+    await expect(photo).toHaveAttribute('src', /og-image\.png/);
+    await expect.poll(async () => photo.evaluate((img) => (
+      img.getAttribute('data-image-state') === 'error' && img.complete ? img.naturalWidth : 0
+    ))).toBeGreaterThan(0);
+  });
 });
