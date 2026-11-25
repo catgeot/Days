@@ -108,9 +108,9 @@ Corpus: **155** reviews + **39** reports.
 
 ## Artifact SHA256
 
-- REPORT.md: 22750d1ae273547b7b8d6c2e5bd959cca5e4df1cb7605c7550c685b4d3ba4b5a
+- REPORT.md: 6f68ecff6e3659e1242548fc8482f68c5d43a06c90c9da1d687d645548cecea8
 - backup.json: 094e042692ec60e0597bffcd8b275dea209f2739218c998139d8c2c7f1d746af
 - update.sql: 871cd05992e71b6fbb316207c427a464889b00be27682de51d5880f94397cfec
 - rollback.sql: 64f8e320b41c1a17efead51c6363ff93e94f162e5400cbbcb3c38154b6be7597
 
-Branch: `ops/link-audit-final6` · commit: `d30ae888f34ad625928034cd61430d5980d668cb`
+Branch: `ops/link-audit-final6` · commit: `9b04bfcdf34ad625928034cd61430d5980d668cb`
