@@ -19,9 +19,9 @@ export const HOME_WATCH_CARD_LAYOUT = {
 };
 
 /**
- * Solid band behind every tile caption. A bottom gradient left live captions
- * at about 3.6–4.3:1 on bright photos. 0.86 black stays ≥4.5:1 for white,
- * white/80, and amber-100 even when the photo under the band is white.
+ * Opaque color behind each caption line (label, name, taste chip, subtitle).
+ * The line hugs the text. A full-width slab covered more than half of the 85px tile.
+ * 0.86 black stays ≥4.5:1 for white, white/80, and amber-100 even on a white photo.
  */
 export const HOME_WATCH_CAPTION_BAND = 'rgba(0,0,0,0.86)';
 

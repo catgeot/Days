@@ -338,21 +338,31 @@ const HomeWatchCard = ({
                     )
                   ) : null}
                   <div
-                    className="relative z-[1] px-1.5 pb-1 pt-3"
-                    style={{ backgroundColor: HOME_WATCH_CAPTION_BAND }}
+                    className="relative z-[1] flex w-fit max-w-full flex-col items-start px-0.5"
                     data-testid="home-watch-caption-band"
                   >
                     {slot.type === 'continue' ? (
-                      <p data-caption-role="label" className="truncate text-[9px] font-semibold leading-none text-white">
+                      <p
+                        data-caption-role="label"
+                        className="max-w-full truncate rounded-sm px-1 text-[9px] font-semibold leading-none text-white"
+                        style={{ backgroundColor: HOME_WATCH_CAPTION_BAND, boxDecorationBreak: 'clone', WebkitBoxDecorationBreak: 'clone' }}
+                      >
                         {t('home.watchCard.continueLabel')}
                       </p>
                     ) : null}
-                    <p data-caption-role="name" className="truncate text-[11px] font-bold leading-tight text-white">{label}</p>
+                    <p
+                      data-caption-role="name"
+                      className="max-w-full truncate rounded-sm px-1 text-[11px] font-bold leading-none text-white"
+                      style={{ backgroundColor: HOME_WATCH_CAPTION_BAND, boxDecorationBreak: 'clone', WebkitBoxDecorationBreak: 'clone' }}
+                    >
+                      {label}
+                    </p>
                     {slot.type === 'destination' && (slot.reason || slot.reasonEn) ? (
                       <span
                         data-testid="home-watch-taste"
                         data-caption-role="chip"
-                        className="mt-0.5 inline-block max-w-full truncate rounded bg-black/70 px-1 py-0.5 text-[8px] font-semibold leading-none text-amber-100"
+                        className="inline-block max-w-full truncate rounded-sm px-1 text-[8px] font-semibold leading-none text-amber-100"
+                        style={{ backgroundColor: HOME_WATCH_CAPTION_BAND, boxDecorationBreak: 'clone', WebkitBoxDecorationBreak: 'clone' }}
                         aria-label={t('home.watchCard.tasteAria', { name: label })}
                       >
                         {isEnUi ? slot.reasonEn || slot.reason : slot.reason}
@@ -361,9 +371,10 @@ const HomeWatchCard = ({
                     {subtitle && slot.type !== 'destination' ? (
                       <p
                         data-caption-role="subtitle"
-                        className={`truncate text-[9px] leading-tight ${
+                        className={`max-w-full truncate rounded-sm px-1 text-[9px] leading-none ${
                           slot.type === 'continue' ? 'text-white' : 'text-white/80'
                         }`}
+                        style={{ backgroundColor: HOME_WATCH_CAPTION_BAND, boxDecorationBreak: 'clone', WebkitBoxDecorationBreak: 'clone' }}
                       >
                         {subtitle}
                       </p>

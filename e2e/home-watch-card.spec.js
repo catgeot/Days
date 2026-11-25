@@ -37,9 +37,15 @@ async function expectCaptionBands(page) {
   expect(count).toBe(await slots.count());
   for (let i = 0; i < count; i += 1) {
     const band = bands.nth(i);
-    await expect(band).toHaveCSS('background-color', 'rgba(0, 0, 0, 0.86)');
+    await expect(band).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
     const lines = band.locator('[data-caption-role]');
-    expect(await lines.count()).toBeGreaterThan(0);
+    const lineCount = await lines.count();
+    expect(lineCount).toBeGreaterThan(0);
+    for (let line = 0; line < lineCount; line += 1) {
+      await expect(lines.nth(line)).toHaveCSS('background-color', 'rgba(0, 0, 0, 0.86)');
+    }
+    const bandBox = await box(band);
+    expect(bandBox.height, `caption band is ${bandBox.height}px`).toBeLessThan(42.5);
   }
   const card = page.getByTestId('home-watch-card');
   const cardBox = await box(card);
@@ -348,6 +354,7 @@ test.describe('home watch card', () => {
       });
     });
 
+    const contrastRows = [];
     for (const row of cases) {
       await page.addInitScript((payload) => {
         localStorage.setItem('gateo_recent_visited_destinations', JSON.stringify([payload]));
@@ -382,6 +389,60 @@ test.describe('home watch card', () => {
         path: file,
         clip: width >= 1280 ? undefined : { x: 0, y: 0, width: 390, height: 844 },
       });
+      const table = await page.evaluate(() => {
+        const lum = (rgb) => {
+          const [r, g, b] = rgb.map((c) => {
+            const x = c / 255;
+            return x <= 0.03928 ? x / 12.92 : ((x + 0.055) / 1.055) ** 2.4;
+          });
+          return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+        };
+        const ratio = (fg, bg) => {
+          const l1 = lum(fg);
+          const l2 = lum(bg);
+          return (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
+        };
+        const parse = (color) => {
+          const match = String(color || '').match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/);
+          if (!match) return null;
+          const alpha = match[4] == null ? 1 : Number(match[4]);
+          const rgb = [Number(match[1]), Number(match[2]), Number(match[3])];
+          if (alpha >= 0.99) return rgb;
+          return rgb.map((channel) => Math.round(channel * alpha + 255 * (1 - alpha)));
+        };
+        const wanted = ['khao-lak', 'busan', 'bang-niang-market', 'kyoto', 'chiang-mai'];
+        return [...document.querySelectorAll('[data-testid^="home-watch-slot-"]')].flatMap((slot) => {
+          const href = slot.querySelector('a')?.getAttribute('href') || '';
+          const slug = slot.getAttribute('data-slug') || href.split('/').filter(Boolean).pop() || '';
+          if (!wanted.includes(slug)) return [];
+          const photo = slot.querySelector('[data-photo-fallback], img');
+          return [...slot.querySelectorAll('[data-caption-role]')].map((el) => {
+            const fg = parse(getComputedStyle(el).color);
+            const bg = parse(getComputedStyle(el).backgroundColor);
+            return {
+              slug,
+              role: el.getAttribute('data-caption-role'),
+              text: (el.textContent || '').trim(),
+              color: getComputedStyle(el).color,
+              band: getComputedStyle(el).backgroundColor,
+              contrast: fg && bg ? Math.round(ratio(fg, bg) * 100) / 100 : null,
+              photo: photo?.getAttribute('data-photo-fallback') || (photo?.getAttribute('src') ? 'photo' : ''),
+            };
+          });
+        });
+      });
+      for (const entry of table) {
+        if (!contrastRows.some((row) => row.slug === entry.slug && row.role === entry.role && row.text === entry.text)) {
+          contrastRows.push(entry);
+        }
+      }
+    }
+    fs.writeFileSync(
+      `/opt/cursor/artifacts/home-watch-contrast-${width}.json`,
+      JSON.stringify(contrastRows, null, 2),
+    );
+    for (const entry of contrastRows) {
+      expect(entry.contrast, `${entry.slug} ${entry.role}`).toBeGreaterThanOrEqual(4.5);
     }
   });
 

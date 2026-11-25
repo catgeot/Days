@@ -1,4 +1,5 @@
 import { KO, EN } from '../../i18n/mooniPromptBundleData.js';
+import { festivalAccessRouteHasKoreanGroundLeg } from '../../pages/Home/lib/overseasMyLocationAsk.js';
 import { listCityAttractionHubs, resolveCityAttractionHub } from '../../pages/Home/lib/cityAttractionHubs.js';
 import {
   englishLodgingAreaLabel,
@@ -578,9 +579,26 @@ function isAllowedFestivalBareUrl(url) {
   return false;
 }
 
-/** Client footer for festival_access — booking links the model may omit. */
-export function appendFestivalAccessBookingLinks(text, locale = 'ko') {
+function dropKoreanTransitFooterParagraph(text, locale = 'ko') {
+  const en = String(locale || '').slice(0, 2) === 'en';
+  const marker = en ? /^Check train and bus schedules on\b/i : /^열차·버스 시각은\b/;
+  return String(text || '')
+    .split(/\n\n+/)
+    .filter((part) => !marker.test(part.trim()))
+    .join('\n\n')
+    .trim();
+}
+
+/**
+ * Client footer for festival_access — booking links the model may omit.
+ * Pass `userText` so an overseas hop with no Korean ground leg does not get the Korail line.
+ * See festivalAccessRouteHasKoreanGroundLeg.
+ */
+export function appendFestivalAccessBookingLinks(text, locale = 'ko', userText = '') {
   const body = stripEchoedAccessAutoFooter(String(text || '').trim(), locale);
+  if (!festivalAccessRouteHasKoreanGroundLeg(userText)) {
+    return dropKoreanTransitFooterParagraph(body, locale);
+  }
   if (shouldSkipFestivalAccessBookingFooterAppend(body)) return body;
   const en = String(locale || '').slice(0, 2) === 'en';
   const domains = festivalAccessBookingDomainsInText(body);
@@ -3513,7 +3531,7 @@ export function polishFestivalModelReply(reply, options = {}) {
     text = ensureFestivalAccessPeriodLine(text, options);
     text = reorderAccessPeriodBeforeGateoLink(text, periodShort);
     text = stripEchoedAccessAutoFooter(text, options.locale);
-    text = appendFestivalAccessBookingLinks(text, options.locale);
+    text = appendFestivalAccessBookingLinks(text, options.locale, options.userText);
     text = dedupeFestivalAccessBookingFooters(text, options.locale);
     text = stripDuplicateAccessPeriodLines(text, periodShort);
     text = rewriteLeadingBareFestivalPeriod(text, options);

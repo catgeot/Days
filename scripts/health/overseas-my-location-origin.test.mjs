@@ -10,6 +10,7 @@ import {
 } from '../../src/pages/Home/lib/koreaOriginGeolocation.js';
 import {
   buildOverseasMyLocationAsk,
+  festivalAccessRouteHasKoreanGroundLeg,
   overseasMyLocationBubbleText,
   overseasMyLocationModelHint,
   parseOverseasMyLocationAsk,
@@ -28,6 +29,10 @@ import { myLocationSendRequest } from '../../src/pages/Home/lib/myLocationAccess
 import { resolveFlightDepartureIataForBooking } from '../../src/utils/resolveDepartureIataFromChat.js';
 import { resolveChatBookingActions } from '../../src/utils/chatBookingResolver.js';
 import { chooseReverseLocalityFeature } from '../../src/pages/Home/lib/mapboxGeocodeSuggestions.js';
+import {
+  appendFestivalAccessBookingLinks,
+  polishFestivalModelReply,
+} from '../../src/shared/korea/mooniKoreaFestivalReplyPolish.js';
 
 const KHAO_LAK = { lat: 8.6374, lng: 98.2475 };
 const BANGKOK = { lat: 13.7563, lng: 100.5018 };
@@ -259,6 +264,97 @@ test('overseas sentence is sent once and the departure chip stays short', () => 
     buildFestivalAccessAskText({ ko: domestic.askKo, en: domestic.askEn }, 'en'),
     'How do I get from Seoul to this festival by public transit and by car?',
   );
+});
+
+test('district reverse names become the nearest known city and keep the airport', async () => {
+  const districts = [
+    ['프라나콘', 'Phra Nakhon', 13.7563, 100.5018, '방콕', 'Bangkok', 'BKK'],
+    ['따꾸아빠군', 'Takua Pa', 8.8295, 98.3648, '카오락', 'Khao Lak', 'HKT'],
+    ['므앙치앙마이군', 'Mueang Chiang Mai', 18.7883, 98.9853, '치앙마이', 'Chiang Mai', 'CNX'],
+    ['므앙끄라비군', 'Mueang Krabi', 8.0863, 98.9063, '크라비', 'Krabi', 'KBV'],
+    ['Central Water Catchment', 'Central Water Catchment', 1.3521, 103.8198, '싱가포르', 'Singapore', 'SIN'],
+  ];
+  for (const [ko, en, lat, lng, city, cityEn, iata] of districts) {
+    const found = await resolveMyLocationOrigin(lat, lng, {
+      reverseGeocode: async () => placeHit(ko, ko === 'Central Water Catchment' ? '싱가포르' : '태국', en, en === 'Singapore' ? 'Singapore' : 'Thailand'),
+    });
+    assert.equal(found.city, city, ko);
+    assert.equal(found.cityEn, cityEn, ko);
+    assert.equal(found.originIata, iata, ko);
+    assert.equal(found.originIata, resolveFlightOriginFromCoords(lat, lng, {
+      excludeIatas: KOREA_AIRPORT_IATAS,
+    })?.iata, ko);
+    const request = myLocationSendRequest({
+      kind: 'festival',
+      found,
+      destination: HAEUNDAE,
+    });
+    assert.match(request.chipKo, new RegExp(city));
+    assert.doesNotMatch(request.chipKo, new RegExp(ko.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+    assert.match(request.sentenceKo, new RegExp(city));
+    assert.equal(request.departureIata, iata);
+  }
+});
+
+test('korean transit footer follows the domestic ground leg', () => {
+  const chuncheon = '춘천에서 이 축제장까지 대중교통과 차로 가는 법을 알려줘';
+  const landed = buildOverseasMyLocationAsk({
+    locale: 'ko',
+    kind: 'festival',
+    city: '카오락',
+    country: '태국',
+    originLabel: '푸켓국제공항',
+    originIata: 'HKT',
+    arrivalLabel: '김해국제공항',
+    arrivalIata: 'PUS',
+  });
+  const abroad = buildOverseasMyLocationAsk({
+    locale: 'ko',
+    kind: 'place',
+    city: '방콕',
+    country: '태국',
+    originLabel: '수완나품국제공항',
+    originIata: 'BKK',
+    arrivalLabel: '푸켓국제공항',
+    arrivalIata: 'HKT',
+  });
+  const sameAirport = buildOverseasMyLocationAsk({
+    locale: 'ko',
+    kind: 'place',
+    city: '방콕',
+    country: '태국',
+    originLabel: '수완나품국제공항',
+    originIata: 'BKK',
+  });
+  assert.equal(festivalAccessRouteHasKoreanGroundLeg(chuncheon), true);
+  assert.equal(festivalAccessRouteHasKoreanGroundLeg(landed), true);
+  assert.equal(festivalAccessRouteHasKoreanGroundLeg(abroad), false);
+  assert.equal(festivalAccessRouteHasKoreanGroundLeg(sameAirport), false);
+
+  const reply = '공항에서 행사장까지 이어서 안내해요.';
+  const withFooter = `${reply}\n\n열차·버스 시각은 [코레일](https://www.letskorail.com/)에서 편하게 확인할 수 있어요.`;
+  assert.match(appendFestivalAccessBookingLinks(reply, 'ko', chuncheon), /열차·버스 시각은/);
+  assert.match(appendFestivalAccessBookingLinks(reply, 'ko', landed), /열차·버스 시각은/);
+  assert.doesNotMatch(appendFestivalAccessBookingLinks(reply, 'ko', abroad), /열차·버스 시각은/);
+  assert.doesNotMatch(appendFestivalAccessBookingLinks(withFooter, 'ko', abroad), /열차·버스 시각은/);
+  assert.match(appendFestivalAccessBookingLinks(reply, 'ko'), /열차·버스 시각은/);
+
+  const polishedAbroad = polishFestivalModelReply(reply, {
+    contentId: '4108260',
+    chipId: 'festival_access',
+    locale: 'ko',
+    userText: abroad,
+    festivalTitle: '테스트',
+  });
+  assert.doesNotMatch(polishedAbroad, /열차·버스 시각은/);
+  const polishedHome = polishFestivalModelReply(reply, {
+    contentId: '4108260',
+    chipId: 'festival_access',
+    locale: 'ko',
+    userText: chuncheon,
+    festivalTitle: '테스트',
+  });
+  assert.match(polishedHome, /열차·버스 시각은/);
 });
 
 test('reverse geocode prefers a known locality and otherwise keeps the district', () => {
