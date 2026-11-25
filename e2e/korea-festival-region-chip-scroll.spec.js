@@ -44,6 +44,41 @@ async function dismissLocHint(page) {
   }
 }
 
+function hubListScroller(page) {
+  return page.locator('main');
+}
+
+async function waitHubListScrollRange(main, minMaxTop, timeout = 5_000) {
+  await expect
+    .poll(async () => main.evaluate((el) => Math.max(0, el.scrollHeight - el.clientHeight)), {
+      timeout,
+    })
+    .toBeGreaterThan(minMaxTop);
+}
+
+/** Re-apply scroll until layout and filter-driven scroll resets have settled. */
+async function pinHubListScrollTop(main, targetTop, minTop, timeout = 5_000) {
+  await waitHubListScrollRange(main, minTop, timeout);
+  await expect
+    .poll(
+      async () =>
+        main.evaluate(
+          (el, args) => {
+            const max = Math.max(0, el.scrollHeight - el.clientHeight);
+            if (max < args.minTop) return 0;
+            const want = Math.min(args.targetTop, max);
+            el.scrollTop = want;
+            el.dispatchEvent(new Event('scroll', { bubbles: true }));
+            return el.scrollTop;
+          },
+          { targetTop, minTop },
+        ),
+      { timeout },
+    )
+    .toBeGreaterThan(minTop);
+  return main.evaluate((el) => el.scrollTop);
+}
+
 async function stubFestivalApi(page) {
   await page.route('**/functions/v1/tourapi-proxy**', async (route) => {
     let action = '';
@@ -91,6 +126,8 @@ test.describe('Korea festival region chip scroll reset', () => {
     await expect(page.locator('main [data-festival-id]').first()).toBeVisible({
       timeout: 30_000,
     });
+    await expect(page.locator('main [data-festival-id]')).toHaveCount(72, { timeout: 30_000 });
+    await waitHubListScrollRange(hubListScroller(page), 2_000, 30_000);
   });
 
   test('switching region after long scroll shows list top cards (WebKit 390)', async ({
@@ -119,12 +156,8 @@ test.describe('Korea festival region chip scroll reset', () => {
   });
 
   test('map close keeps a mid-list scroll near 860 (WebKit 390)', async ({ page }) => {
-    const main = page.locator('main');
-    await main.evaluate((el) => {
-      el.scrollTo({ top: 860, behavior: 'instant' });
-    });
-    const before = await main.evaluate((el) => el.scrollTop);
-    expect(before).toBeGreaterThan(700);
+    const main = hubListScroller(page);
+    const before = await pinHubListScrollTop(main, 860, 700);
     expect(before).toBeLessThan(1000);
 
     await page.getByRole('button', { name: '지도로 위치·동선 보기' }).evaluate((el) => el.click());
@@ -142,14 +175,9 @@ test.describe('Korea festival region chip scroll reset', () => {
   });
 
   test('map close keeps deep list scroll (WebKit 390, tall fixture)', async ({ page }) => {
-    const main = page.locator('main');
+    const main = hubListScroller(page);
     const targetTop = 2214;
-    await main.evaluate((el, top) => {
-      el.scrollTop = top;
-      if (el.scrollTop < top) el.scrollTop = el.scrollHeight;
-      el.dispatchEvent(new Event('scroll', { bubbles: true }));
-    }, targetTop);
-    const deepTop = await main.evaluate((el) => el.scrollTop);
+    const deepTop = await pinHubListScrollTop(main, targetTop, 2000);
     expect(deepTop).toBeGreaterThan(2000);
 
     const mapOpenBtn = page.getByRole('button', { name: '지도로 위치·동선 보기' });
@@ -178,15 +206,14 @@ test.describe('Korea festival region chip scroll reset', () => {
   });
 
   test('map close keeps top after flick from deep scroll to 0', async ({ page }) => {
-    const main = page.locator('main');
-    await main.evaluate((el) => {
-      el.scrollTop = 2500;
-      if (el.scrollTop < 2000) el.scrollTop = el.scrollHeight;
-    });
+    const main = hubListScroller(page);
+    await pinHubListScrollTop(main, 2500, 2000);
     await main.evaluate((el) => {
       el.scrollTop = 0;
     });
-    expect(await main.evaluate((el) => el.scrollTop)).toBeLessThan(8);
+    await expect
+      .poll(async () => main.evaluate((el) => el.scrollTop), { timeout: 5_000 })
+      .toBeLessThan(8);
 
     await page.getByRole('button', { name: '지도로 위치·동선 보기' }).click();
     await expect(page.getByRole('button', { name: /지도 닫기|목록으로/ }).first()).toBeVisible({
@@ -202,15 +229,14 @@ test.describe('Korea festival region chip scroll reset', () => {
   });
 
   test('favorites close keeps top after flick from deep scroll to 0', async ({ page }) => {
-    const main = page.locator('main');
-    await main.evaluate((el) => {
-      el.scrollTop = 2500;
-      if (el.scrollTop < 2000) el.scrollTop = el.scrollHeight;
-    });
+    const main = hubListScroller(page);
+    await pinHubListScrollTop(main, 2500, 2000);
     await main.evaluate((el) => {
       el.scrollTop = 0;
     });
-    expect(await main.evaluate((el) => el.scrollTop)).toBeLessThan(8);
+    await expect
+      .poll(async () => main.evaluate((el) => el.scrollTop), { timeout: 5_000 })
+      .toBeLessThan(8);
 
     const favToggle = page.getByRole('button', { name: '즐겨찾기·본 항목' });
     await favToggle.click();
@@ -224,14 +250,9 @@ test.describe('Korea festival region chip scroll reset', () => {
   });
 
   test('map open via keyboard Enter keeps list scroll', async ({ page }) => {
-    const main = page.locator('main');
+    const main = hubListScroller(page);
     const targetTop = 1800;
-    await main.evaluate((el, top) => {
-      el.scrollTop = top;
-      if (el.scrollTop < top - 50) el.scrollTop = el.scrollHeight;
-      el.dispatchEvent(new Event('scroll', { bubbles: true }));
-    }, targetTop);
-    const deepTop = await main.evaluate((el) => el.scrollTop);
+    const deepTop = await pinHubListScrollTop(main, targetTop, 1200);
     expect(deepTop).toBeGreaterThan(1200);
 
     const mapBtn = page.getByRole('button', { name: '지도로 위치·동선 보기' });
@@ -250,12 +271,8 @@ test.describe('Korea festival region chip scroll reset', () => {
   });
 
   test('favorites close keeps list scroll position', async ({ page }) => {
-    const main = page.locator('main');
-    await main.evaluate((el) => {
-      el.scrollTop = 800;
-    });
-    const deepTop = await main.evaluate((el) => el.scrollTop);
-    expect(deepTop).toBeGreaterThan(600);
+    const main = hubListScroller(page);
+    const deepTop = await pinHubListScrollTop(main, 800, 600);
     expect(deepTop).toBeLessThan(950);
 
     const favToggle = page.getByRole('button', { name: '즐겨찾기·본 항목' });
