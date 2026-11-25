@@ -66,6 +66,27 @@ function useHomeWatchChromeFlags() {
   return flags;
 }
 
+/** Taste line plus the caption band's horizontal padding, the tile border, and 2px slack. */
+function monthlyTileWidthPx(scroller, viewportWidth) {
+  const lines = scroller.querySelectorAll('[data-caption-role="name"], [data-testid="home-watch-taste"]');
+  let needed = 0;
+  for (const el of lines) {
+    const cs = getComputedStyle(el);
+    const probe = document.createElement('span');
+    probe.textContent = el.textContent || '';
+    probe.style.cssText = `position:absolute;left:0;top:0;visibility:hidden;white-space:nowrap;font:${cs.font};letter-spacing:${cs.letterSpacing};padding:${cs.paddingTop} ${cs.paddingRight} ${cs.paddingBottom} ${cs.paddingLeft};`;
+    document.body.appendChild(probe);
+    needed = Math.max(needed, probe.getBoundingClientRect().width);
+    probe.remove();
+  }
+  const gap = Number.parseFloat(getComputedStyle(scroller).columnGap) || 0;
+  const peek = 16;
+  const threeAcross = Math.floor((scroller.clientWidth - peek - gap * 2) / 3);
+  const fit = Math.ceil(needed + 8);
+  if (viewportWidth >= 1280) return Math.max(fit, 192);
+  return Math.max(fit, threeAcross);
+}
+
 function snapMonthlyScroller(el) {
   const tile = el.querySelector('li');
   if (!tile) return;
@@ -371,13 +392,16 @@ const HomeWatchCard = ({
       const left = `${place.left}px`;
       const right = `${place.right}px`;
       const bottom = `${place.bottom}px`;
-      if (card.style.left === left && card.style.right === right && card.style.bottom === bottom) {
-        card.dataset.monthlyPlaced = '1';
-        return;
+      if (card.style.left !== left) card.style.left = left;
+      if (card.style.right !== right) card.style.right = right;
+      if (card.style.bottom !== bottom) card.style.bottom = bottom;
+      const scroller = scrollerRef.current;
+      if (scroller) {
+        const tile = `${monthlyTileWidthPx(scroller, window.innerWidth)}px`;
+        for (const li of scroller.querySelectorAll(':scope > li')) {
+          if (li.style.width !== tile) li.style.width = tile;
+        }
       }
-      card.style.left = left;
-      card.style.right = right;
-      card.style.bottom = bottom;
       card.dataset.monthlyPlaced = '1';
     };
     const schedule = () => {
@@ -408,7 +432,7 @@ const HomeWatchCard = ({
       mutation.disconnect();
       window.removeEventListener('resize', schedule);
     };
-  }, [monthly, shown, slots.length]);
+  }, [monthly, shown, slots.length, monthKey]);
 
   useEffect(() => {
     if (!shown || viewedRef.current) return;
@@ -539,7 +563,7 @@ const HomeWatchCard = ({
                 data-slug={slot.slug || undefined}
                 className={
                   monthly
-                    ? 'relative h-full w-[5.25rem] shrink-0 snap-start overflow-hidden rounded-xl border border-white/10 bg-black/40 min-[1280px]:w-[12rem]'
+                    ? 'relative h-full w-[6.5rem] shrink-0 snap-start overflow-hidden rounded-xl border border-white/10 bg-black/40 min-[1280px]:w-[12rem]'
                     : 'relative min-w-0 flex-1 overflow-hidden rounded-xl border border-white/10 bg-black/40'
                 }
               >
@@ -593,7 +617,9 @@ const HomeWatchCard = ({
                       <span
                         data-testid="home-watch-taste"
                         data-caption-role="chip"
-                        className="inline-block max-w-full truncate rounded-sm px-1 text-[8px] font-semibold leading-none text-amber-100"
+                        className={`inline-block max-w-full rounded-sm px-1 text-[8px] font-semibold leading-none text-amber-100 ${
+                          monthly ? 'whitespace-nowrap' : 'truncate'
+                        }`}
                         style={{ backgroundColor: HOME_WATCH_CAPTION_BAND, boxDecorationBreak: 'clone', WebkitBoxDecorationBreak: 'clone' }}
                         aria-label={t('home.watchCard.tasteAria', { name: label })}
                       >

@@ -30,6 +30,20 @@ async function openHome(page, path, time) {
   await page.goto(path, { waitUntil: 'domcontentloaded' });
 }
 
+async function expectCaptionsFit(page) {
+  const tastes = page.getByTestId('home-watch-taste');
+  const count = await tastes.count();
+  expect(count).toBeGreaterThan(0);
+  for (let i = 0; i < count; i += 1) {
+    const fit = await tastes.nth(i).evaluate((el) => ({
+      scroll: el.scrollWidth,
+      client: el.clientWidth,
+      text: el.textContent || '',
+    }));
+    expect(fit.scroll, fit.text).toBeLessThanOrEqual(fit.client);
+  }
+}
+
 async function visibleBox(page, testId) {
   const locator = page.locator(`[data-testid="${testId}"]:visible`);
   if ((await locator.count()) === 0) return null;
@@ -127,6 +141,11 @@ test.describe('home monthly destinations', () => {
     if (await hint.count()) {
       await expect(hint).toBeHidden({ timeout: 8_000 });
     }
+    await page.evaluate(() => {
+      const btn = document.querySelector('button[aria-label="말풍선 닫기"]');
+      const bubble = btn?.parentElement?.parentElement;
+      if (bubble) bubble.style.display = 'none';
+    });
     if (project === 'chromium-home-monthly-390') {
       await page.screenshot({
         path: '/opt/cursor/artifacts/home-monthly-390.png',
@@ -139,6 +158,19 @@ test.describe('home monthly destinations', () => {
         clip: { x: 0, y: 0, width: 1280, height: 800 },
       });
     }
+    if (project === 'chromium-home-monthly-375') {
+      await page.screenshot({
+        path: '/opt/cursor/artifacts/home-monthly-375.png',
+        clip: { x: 0, y: 0, width: 375, height: 667 },
+      });
+    }
+    if (project === 'chromium-home-monthly-430') {
+      await page.screenshot({
+        path: '/opt/cursor/artifacts/home-monthly-430.png',
+        clip: { x: 0, y: 0, width: 430, height: 932 },
+      });
+    }
+    await expectCaptionsFit(page);
 
     const scroller = page.getByTestId('home-monthly-scroller');
     const before = await scroller.evaluate((el) => ({
@@ -157,6 +189,7 @@ test.describe('home monthly destinations', () => {
     await expect(card).toHaveAttribute('data-month-key', '2026-12');
     await expect(page.locator('[data-slug="sapporo"]')).toHaveCount(1);
     await expect(page.locator('[data-slug="kyoto"]')).toHaveCount(0);
+    await expectCaptionsFit(page);
     if (project === 'chromium-home-monthly-390') {
       await page.screenshot({
         path: '/opt/cursor/artifacts/home-monthly-390-december.png',
@@ -220,8 +253,10 @@ test.describe('home monthly destinations', () => {
     await expect(card).toContainText('November picks');
     const link = page.getByTestId('home-monthly-switch');
     await expect(link).toHaveText('See December ▸');
+    await expectCaptionsFit(page);
     await link.click();
     await expect(card).toContainText('December picks');
     await expect(link).toHaveText('See November ▸');
+    await expectCaptionsFit(page);
   });
 });
