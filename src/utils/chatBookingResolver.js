@@ -12,7 +12,7 @@ import {
   getDestinationBookingProfile,
   resolveBookingLegsForIntent,
 } from './destinationBookingProfile.js';
-import { resolveDepartureFromChat } from './resolveDepartureIataFromChat.js';
+import { resolveFlightDepartureIataForBooking } from './resolveDepartureIataFromChat.js';
 import {
   resolveBookingActions as resolveLegacyBookingActions,
   resolveFerryActions,
@@ -166,6 +166,7 @@ export function refreshStoredBookingActionLabels(
     chatHistory = [],
     userText = '',
     essentialGuide = null,
+    tripSession = null,
   } = {}
 ) {
   if (!actions?.length) return actions;
@@ -177,9 +178,12 @@ export function refreshStoredBookingActionLabels(
     essentialGuide,
     profile,
   });
-  const departureIata = resolveDepartureFromChat(userText, chatHistory, {
+  const departureIata = resolveFlightDepartureIataForBooking({
+    userText,
+    chatHistory,
+    tripSession,
     excludeIata: arrivalIata,
-  })?.iata;
+  });
   if (!arrivalIata) return actions;
 
   const nextLabel = formatChatFlightCtaLabel(destinationName);
@@ -305,9 +309,12 @@ export function resolveChatBookingActions(params) {
     essentialGuide,
     profile,
   });
-  const departureIata = resolveDepartureFromChat(userText, chatHistory, {
+  const departureIata = resolveFlightDepartureIataForBooking({
+    userText,
+    chatHistory,
+    tripSession,
     excludeIata: arrivalIataForDepart,
-  })?.iata;
+  });
 
   if (legs.includes('flight')) {
     const arrivalIata = arrivalIataForDepart;

@@ -142,7 +142,7 @@ export async function locateNearestOriginCity() {
       geo.getCurrentPosition(
         (position) => resolve(position),
         () => resolve(null),
-        { enableHighAccuracy: false, timeout: 8000, maximumAge: 60000 },
+        { enableHighAccuracy: false, timeout: 8000, maximumAge: 0 },
       );
     });
     const lat = pos?.coords?.latitude;

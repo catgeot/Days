@@ -19,7 +19,57 @@ async function saveShot(page, name, width) {
   return path;
 }
 
-async function installGemini(context, calls, { status = 200, mockText = 'E2E-MOCK-9f3a 춘천에서 축제장까지' } = {}) {
+const MY_LOCATION_BUBBLE_KO = '내 위치에서 이 축제장까지 가는 법을 알려줘';
+const MY_LOCATION_BUBBLE_EN = 'How do I get from my location to this festival?';
+
+function contrastRatio(fg, bg) {
+  const lum = (rgb) => {
+    const [r, g, b] = rgb.map((c) => {
+      const x = c / 255;
+      return x <= 0.03928 ? x / 12.92 : ((x + 0.055) / 1.055) ** 2.4;
+    });
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+  };
+  const l1 = lum(fg);
+  const l2 = lum(bg);
+  return (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
+}
+
+function parseRgb(color) {
+  const match = String(color || '').match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/);
+  if (!match) return null;
+  const alpha = match[4] == null ? 1 : Number(match[4]);
+  const rgb = [Number(match[1]), Number(match[2]), Number(match[3])];
+  if (alpha >= 0.99) return rgb;
+  return rgb.map((channel) => Math.round(channel * alpha + 255 * (1 - alpha)));
+}
+
+async function readPaint(locator, pseudo = null) {
+  return locator.evaluate((el, which) => {
+    const paint = which ? getComputedStyle(el, which) : getComputedStyle(el);
+    let node = el;
+    let bg = getComputedStyle(el).backgroundColor;
+    while (node && (!bg || bg === 'rgba(0, 0, 0, 0)' || bg === 'transparent')) {
+      node = node.parentElement;
+      if (!node) break;
+      bg = getComputedStyle(node).backgroundColor;
+    }
+    return { fg: which ? paint.color : getComputedStyle(el).color, bg };
+  }, pseudo);
+}
+
+async function expectContrast(locator, min, label) {
+  const paint = await readPaint(locator);
+  const fg = parseRgb(paint.fg);
+  const bg = parseRgb(paint.bg);
+  expect(fg, `${label} fg ${paint.fg}`).toBeTruthy();
+  expect(bg, `${label} bg ${paint.bg}`).toBeTruthy();
+  const ratio = contrastRatio(fg, bg);
+  expect(ratio, `${label} ${paint.fg} on ${paint.bg} = ${ratio.toFixed(2)}`).toBeGreaterThanOrEqual(min);
+  return ratio;
+}
+
+async function installGemini(context, calls, { status = 200, mockText = 'E2E-MOCK-9f3a 춘천에서 축제장까지', payloads = null } = {}) {
   await context.route(/\/functions\/v1\/gemini-proxy/i, async (route) => {
     const request = route.request();
     if (request.method() === 'OPTIONS') {
@@ -37,12 +87,15 @@ async function installGemini(context, calls, { status = 200, mockText = 'E2E-MOC
       return;
     }
     let task = '';
+    let json = null;
     try {
-      task = String(request.postDataJSON()?.task || '');
+      json = request.postDataJSON();
+      task = String(json?.task || '');
     } catch {
       task = '';
     }
     calls.push(task);
+    if (payloads && task === 'mooni_chat' && json) payloads.push(json);
     if (status !== 200) {
       await route.fulfill({
         status,
@@ -67,8 +120,9 @@ async function openOriginDock(page, context, {
   geminiStatus = 200,
   festivalId = FESTIVAL_ID,
   mockText,
+  payloads = null,
 } = {}) {
-  if (calls) await installGemini(context, calls, { status: geminiStatus, mockText });
+  if (calls) await installGemini(context, calls, { status: geminiStatus, mockText, payloads });
   await enableMooniE2eLoggedIn(page);
   await page.addInitScript((language) => {
     try {
@@ -300,17 +354,24 @@ async function mockReverseGeocode(context) {
     const url = new URL(route.request().url());
     const lang = url.searchParams.get('language') || 'ko';
     const ko = lang.startsWith('ko');
-    const bangkok = url.pathname.includes('100.5018');
+    const places = [
+      ['100.5018', '방콕', 'Bangkok', '태국', 'Thailand'],
+      ['98.9853', '치앙마이', 'Chiang Mai', '태국', 'Thailand'],
+      ['98.9063', '크라비', 'Krabi', '태국', 'Thailand'],
+      ['103.8198', '싱가포르', 'Singapore', '싱가포르', 'Singapore'],
+      ['98.2475', '카오락', 'Khao Lak', '태국', 'Thailand'],
+    ];
+    const hit = places.find(([lng]) => url.pathname.includes(lng)) || places[4];
     await route.fulfill({
       status: 200,
       contentType: 'application/json',
       body: JSON.stringify({
         features: [{
-          id: bangkok ? 'place.bangkok' : 'place.khaolak',
-          text: bangkok ? (ko ? '방콕' : 'Bangkok') : (ko ? '카오락' : 'Khao Lak'),
+          id: `place.${hit[1]}`,
+          text: ko ? hit[1] : hit[2],
           place_type: ['place'],
-          center: bangkok ? [100.5018, 13.7563] : [98.2475, 8.6374],
-          context: [{ id: 'country.th', text: ko ? '태국' : 'Thailand' }],
+          center: [Number(hit[0]), 0],
+          context: [{ id: 'country.x', text: ko ? hit[3] : hit[4] }],
         }],
       }),
     });
@@ -325,30 +386,39 @@ async function saveOverseasShot(page, name, width) {
   });
 }
 
-async function openLocatedOrigin(page, context, { latitude, longitude, lang = 'ko', festivalId } = {}) {
+async function openLocatedOrigin(page, context, { latitude, longitude, lang = 'ko', festivalId, payloads = null } = {}) {
   await context.grantPermissions(['geolocation']);
   await context.setGeolocation({ latitude, longitude });
   await mockReverseGeocode(context);
   const calls = [];
-  await openOriginDock(page, context, { calls, lang, festivalId });
+  await openOriginDock(page, context, { calls, lang, festivalId, payloads });
   await page.getByTestId('mooni-origin-locate').click();
   return calls;
 }
 
 test('Khao Lak my-location stays in Thailand and flies HKT, not Seogwipo', async ({ page, context }, testInfo) => {
   test.skip(testInfo.project.name.includes('webkit'), 'captures are chromium 390 and 1280');
-  const calls = await openLocatedOrigin(page, context, { latitude: 8.6374, longitude: 98.2475 });
+  const payloads = [];
+  const calls = await openLocatedOrigin(page, context, { latitude: 8.6374, longitude: 98.2475, payloads });
   const input = page.getByTestId('mooni-origin-input');
   await expect(input).toHaveValue('카오락 · 태국 (내 위치)');
   await expect(page.getByTestId('mooni-festival-access-dock')).toHaveAttribute('data-origin-kind', 'overseas');
   await expect(input).not.toHaveValue(/서귀포|제주/);
   await input.press('Enter');
-  const bubble = page.getByText(/카오락 · 태국에서/).first();
+  const bubble = page.getByTestId('mooni-user-bubble').last();
   await expect(bubble).toBeVisible({ timeout: 30_000 });
-  await expect(bubble).toContainText('HKT');
-  await expect(bubble).toContainText('ICN');
+  await expect(bubble).toHaveText(MY_LOCATION_BUBBLE_KO);
+  await expect(bubble).not.toContainText('HKT');
+  await expect(bubble).not.toContainText('ICN');
   await expect(bubble).not.toContainText('서귀포');
   expect((await bubble.innerText()).match(/알려줘/g)).toHaveLength(1);
+  const sent = payloads.at(-1);
+  expect(sent?.params?.userText || '').toContain('HKT');
+  expect(sent?.params?.userText || '').toContain('ICN');
+  expect(sent?.params?.userText || '').toContain('카오락');
+  expect(sent?.params?.tripSession?.departureIata).toBe('HKT');
+  expect(sent?.params?.tripSession?.arrivalIata).toBe('ICN');
+  expect(sent?.params?.koreaFestivalHint || '').toContain('HKT');
   const chip = page.getByTestId('mooni-destination-resolution');
   await expect(chip).toContainText('카오락 · 태국 (HKT → ICN)');
   await expect(chip).not.toContainText('알려줘');
@@ -359,17 +429,23 @@ test('Khao Lak my-location stays in Thailand and flies HKT, not Seogwipo', async
 
 test('Bangkok my-location uses Suvarnabhumi, not Don Mueang or a Korean city', async ({ page, context }, testInfo) => {
   test.skip(testInfo.project.name.includes('webkit'), 'captures are chromium 390 and 1280');
-  await openLocatedOrigin(page, context, { latitude: 13.7563, longitude: 100.5018 });
+  const payloads = [];
+  await openLocatedOrigin(page, context, { latitude: 13.7563, longitude: 100.5018, payloads });
   const input = page.getByTestId('mooni-origin-input');
   await expect(input).toHaveValue('방콕 · 태국 (내 위치)');
   await expect(input).not.toHaveValue(/서귀포/);
   await input.press('Enter');
-  const bubble = page.getByText(/방콕 · 태국에서/).first();
+  const bubble = page.getByTestId('mooni-user-bubble').last();
   await expect(bubble).toBeVisible({ timeout: 30_000 });
-  await expect(bubble).toContainText('BKK');
+  await expect(bubble).toHaveText(MY_LOCATION_BUBBLE_KO);
+  await expect(bubble).not.toContainText('BKK');
   await expect(bubble).not.toContainText('DMK');
   await expect(bubble).not.toContainText('서귀포');
   expect((await bubble.innerText()).match(/알려줘/g)).toHaveLength(1);
+  const sent = payloads.at(-1);
+  expect(sent?.params?.userText || '').toContain('BKK');
+  expect(sent?.params?.userText || '').toContain('방콕');
+  expect(sent?.params?.tripSession?.departureIata).toBe('BKK');
   const chip = page.getByTestId('mooni-destination-resolution');
   await expect(chip).toContainText('방콕 · 태국 (BKK → ICN)');
   await expect(chip).not.toContainText('알려줘');
@@ -379,17 +455,21 @@ test('Bangkok my-location uses Suvarnabhumi, not Don Mueang or a Korean city', a
 
 test('domestic Seoul my-location still names Seoul and stays on the ground ask', async ({ page, context }, testInfo) => {
   test.skip(!testInfo.project.name.includes('chromium-390'), 'one domestic geolocation check');
-  const calls = await openLocatedOrigin(page, context, { latitude: 37.5665, longitude: 126.978 });
+  const payloads = [];
+  const calls = await openLocatedOrigin(page, context, { latitude: 37.5665, longitude: 126.978, payloads });
   const input = page.getByTestId('mooni-origin-input');
   await expect(input).toHaveValue('서울 · 특별시 (내 위치)');
   await expect(page.getByTestId('mooni-festival-access-dock')).toHaveAttribute('data-origin-kind', 'domestic');
   await input.press('Enter');
-  const seoulBubble = page.getByText(/서울에서 이 축제장까지 대중교통과 차로/).first();
+  const seoulBubble = page.getByTestId('mooni-user-bubble').last();
   await expect(seoulBubble).toBeVisible({ timeout: 30_000 });
-  await expect(seoulBubble).toHaveText('서울에서 이 축제장까지 대중교통과 차로 가는 법을 알려줘');
-  expect((await seoulBubble.innerText()).match(/알려줘/g)).toHaveLength(1);
+  await expect(seoulBubble).toHaveText(MY_LOCATION_BUBBLE_KO);
+  await expect(seoulBubble).not.toContainText('ICN');
+  const sent = payloads.at(-1);
+  expect(sent?.params?.userText || '').toContain('서울에서 이 축제장까지 대중교통과 차로');
+  expect(sent?.params?.tripSession?.departureIata).toBe('ICN');
   const seoulChip = page.getByTestId('mooni-destination-resolution');
-  await expect(seoulChip).toContainText('서울');
+  await expect(seoulChip).toContainText('서울 (ICN)');
   await expect(seoulChip).not.toContainText('대중교통');
   expect(calls.filter((task) => task === 'mooni_chat')).toEqual(['mooni_chat']);
   await saveOverseasShot(page, 'seoul-390.png', 390);
@@ -398,7 +478,8 @@ test('domestic Seoul my-location still names Seoul and stays on the ground ask',
 test('Haeundae light festival from Khao Lak flies HKT to PUS', async ({ page, context }, testInfo) => {
   test.skip(testInfo.project.name.includes('webkit'), 'captures are chromium 390 and 1280');
   const calls = [];
-  await installGemini(context, calls, { mockText: 'E2E-MOCK-9f3a 해운대에서 축제장까지' });
+  const payloads = [];
+  await installGemini(context, calls, { mockText: 'E2E-MOCK-9f3a 해운대에서 축제장까지', payloads });
   await enableMooniE2eLoggedIn(page);
   await page.addInitScript(() => {
     try {
@@ -418,12 +499,32 @@ test('Haeundae light festival from Khao Lak flies HKT to PUS', async ({ page, co
   const input = page.getByTestId('mooni-origin-input');
   await expect(input).toHaveValue('카오락 · 태국 (내 위치)');
   await input.press('Enter');
-  const bubble = page.getByText(/카오락 · 태국에서/).first();
+  const bubble = page.getByTestId('mooni-user-bubble').last();
   await expect(bubble).toBeVisible({ timeout: 30_000 });
-  await expect(bubble).toContainText('HKT');
-  await expect(bubble).toContainText('PUS');
+  await expect(bubble).toHaveText(MY_LOCATION_BUBBLE_KO);
+  await expect(bubble).not.toContainText('HKT');
+  await expect(bubble).not.toContainText('PUS');
   await expect(bubble).not.toContainText('서귀포');
   expect((await bubble.innerText()).match(/알려줘/g)).toHaveLength(1);
+  const sent = payloads.at(-1);
+  expect(sent?.params?.userText || '').toContain('HKT');
+  expect(sent?.params?.userText || '').toContain('PUS');
+  expect(sent?.params?.userText || '').toContain('카오락');
+  expect(sent?.params?.tripSession?.departureIata).toBe('HKT');
+  expect(sent?.params?.tripSession?.arrivalIata).toBe('PUS');
+  expect(sent?.params?.koreaFestivalHint || '').toContain('HKT');
+  if (testInfo.project.name.includes('chromium-390')) {
+    await expectContrast(bubble, 4.5, 'user bubble');
+    await expectContrast(page.getByTestId('mooni-origin-locate'), 3, 'festival locate');
+    await expectContrast(page.locator('[data-festival-origin="seoul"]'), 4.5, 'festival chip');
+    await expectContrast(page.getByTestId('mooni-destination-resolution'), 4.5, 'origin chip');
+    await expectContrast(page.getByText('Me', { exact: true }).last(), 4.5, 'me label');
+    await expectContrast(page.getByRole('link', { name: '코레일' }), 4.5, 'reply link');
+    await expectContrast(page.getByText('MOONi', { exact: true }).first(), 4.5, 'mooni label');
+    const placeholder = await readPaint(page.getByTestId('mooni-origin-input'), '::placeholder');
+    const placeholderRatio = contrastRatio(parseRgb(placeholder.fg), parseRgb(placeholder.bg));
+    expect(placeholderRatio, `festival placeholder ${placeholderRatio.toFixed(2)}`).toBeGreaterThanOrEqual(4.5);
+  }
   const chip = page.getByTestId('mooni-destination-resolution');
   await expect(chip).toContainText('카오락 · 태국 (HKT → PUS)');
   await expect(chip).not.toContainText('알려줘');
@@ -433,15 +534,148 @@ test('Haeundae light festival from Khao Lak flies HKT to PUS', async ({ page, co
 
 test('English Khao Lak ask is not wrapped twice and the chip stays short', async ({ page, context }, testInfo) => {
   test.skip(testInfo.project.name.includes('webkit'), 'captures are chromium 390 and 1280');
-  await openLocatedOrigin(page, context, { latitude: 8.6374, longitude: 98.2475, lang: 'en' });
+  const payloads = [];
+  await openLocatedOrigin(page, context, { latitude: 8.6374, longitude: 98.2475, lang: 'en', payloads });
   const input = page.getByTestId('mooni-origin-input');
   await expect(input).toHaveValue('Khao Lak · Thailand (my location)');
   await input.press('Enter');
-  const bubble = page.getByText(/How do I get from Khao Lak, Thailand/).first();
+  const bubble = page.getByTestId('mooni-user-bubble').last();
   await expect(bubble).toBeVisible({ timeout: 30_000 });
+  await expect(bubble).toHaveText(MY_LOCATION_BUBBLE_EN);
   expect((await bubble.innerText()).match(/How do I get from/g)).toHaveLength(1);
   await expect(bubble).not.toContainText('public transit');
   const chip = page.getByTestId('mooni-destination-resolution');
   await expect(chip).toContainText('Khao Lak · Thailand (HKT → ICN)');
   await expect(chip).not.toContainText('How do I get from');
+  const sent = payloads.at(-1);
+  expect(sent?.params?.userText || '').toContain('Khao Lak');
+  expect(sent?.params?.userText || '').toContain('HKT');
+  expect(sent?.params?.userText || '').toContain('ICN');
+  expect(sent?.params?.tripSession?.departureIata).toBe('HKT');
+});
+
+test('Khao Lak place origin locate icon meets contrast', async ({ page, context }, testInfo) => {
+  await installGemini(context, []);
+  await page.goto('/place/khao-lak/gallery?lang=ko', { waitUntil: 'domcontentloaded', timeout: 120_000 });
+  const hint = page.getByRole('button', { name: /말풍선 닫기|Close hint bubble/i });
+  if (await hint.isVisible({ timeout: 3000 }).catch(() => false)) await hint.click();
+  const mooniBtn = page.locator('.place-header-mooni-btn').first();
+  await expect(mooniBtn).toBeVisible({ timeout: 60_000 });
+  await mooniBtn.click();
+  await expect(page.getByLabel(/채팅 닫기|Close chat/i)).toBeVisible({ timeout: 60_000 });
+  const dock = page.locator('[data-testid="mooni-quick-replies"]:visible').first();
+  await expect(dock).toBeVisible({ timeout: 60_000 });
+  await expectContrast(dock.getByRole('button').first(), 4.5, 'topic chip');
+  await dock.getByRole('button', { name: /✈️\s*가는 방법/ }).click({ force: true });
+  const expand = page.getByRole('button', { name: /출발지 검색 펼치기|Expand departure search/i });
+  if (await expand.isVisible({ timeout: 8_000 }).catch(() => false)) await expand.click();
+  const input = page.locator('input[aria-autocomplete="list"]').first();
+  await expect(input).toBeVisible({ timeout: 30_000 });
+  await expectContrast(page.getByTestId('flight-origin-locate'), 3, 'place locate');
+  await expectContrast(input.locator('xpath=preceding-sibling::*[name()="svg"]').first(), 3, 'place search icon');
+  await expectContrast(input, 4.5, 'place origin input');
+  const placeholder = await readPaint(input, '::placeholder');
+  const placeholderRatio = contrastRatio(parseRgb(placeholder.fg), parseRgb(placeholder.bg));
+  expect(placeholderRatio, `place placeholder ${placeholderRatio.toFixed(2)}`).toBeGreaterThanOrEqual(4.5);
+  const collapse = page.getByRole('button', { name: /출발지 검색 접기/ });
+  if (await collapse.isVisible().catch(() => false)) {
+    await expectContrast(collapse, 4.5, 'collapse search');
+  }
+  const width = testInfo.project.name.includes('1280') ? 1280 : 390;
+  await saveOverseasShot(page, `khao-lak-place-origin-${width}.png`, width);
+});
+
+const SHARED_ORIGINS = [
+  { latitude: 13.7563, longitude: 100.5018, city: '방콕', iata: 'BKK' },
+  { latitude: 18.7883, longitude: 98.9853, city: '치앙마이', iata: 'CNX' },
+  { latitude: 8.0863, longitude: 98.9063, city: '크라비', iata: 'KBV' },
+  { latitude: 1.3521, longitude: 103.8198, city: '싱가포르', iata: 'SIN' },
+  { latitude: 37.8813, longitude: 127.7298, city: '춘천', iata: 'ICN', domestic: true },
+];
+
+test('festival my-location uses the same airports on every origin', async ({ page, context }) => {
+  await mockReverseGeocode(context);
+  for (const origin of SHARED_ORIGINS) {
+    const payloads = [];
+    await openLocatedOrigin(page, context, { ...origin, payloads });
+    const input = page.getByTestId('mooni-origin-input');
+    await expect(input).toHaveValue(new RegExp(origin.city));
+    await input.press('Enter');
+    const bubble = page.getByTestId('mooni-user-bubble').last();
+    await expect(bubble).toBeVisible({ timeout: 30_000 });
+    await expect(bubble).toHaveText(MY_LOCATION_BUBBLE_KO);
+    await expect(bubble).not.toContainText(origin.iata);
+    await expect.poll(() => {
+      const row = [...payloads].reverse().find((item) => {
+        const text = String(item?.params?.userText || '');
+        if (!text.includes(`${origin.city}에서`) && !text.includes(`${origin.city} ·`)) return false;
+        return origin.domestic || text.includes(origin.iata);
+      });
+      return row?.params?.tripSession?.departureIata || '';
+    }, { timeout: 30_000 }).toBe(origin.iata);
+    const sent = [...payloads].reverse().find((item) => {
+      const text = String(item?.params?.userText || '');
+      if (!text.includes(`${origin.city}에서`) && !text.includes(`${origin.city} ·`)) return false;
+      return origin.domestic || text.includes(origin.iata);
+    });
+    const chip = page.getByTestId('mooni-destination-resolution').last();
+    await expect(chip).toContainText(origin.city);
+    await expect(chip).toContainText(origin.iata);
+    if (!origin.domestic) {
+      expect(sent?.params?.userText || '').toContain(origin.iata);
+      await expect(chip).toContainText(`${origin.iata} →`);
+    }
+  }
+});
+
+test('place-card my-location flight button uses the real origin airport', async ({ page, context }, testInfo) => {
+  await context.grantPermissions(['geolocation']);
+  await mockReverseGeocode(context);
+  const payloads = [];
+  await installGemini(context, [], { payloads });
+  for (const origin of SHARED_ORIGINS) {
+    payloads.length = 0;
+    await context.setGeolocation({ latitude: origin.latitude, longitude: origin.longitude });
+    await page.goto('/place/khao-lak/gallery?lang=ko', { waitUntil: 'domcontentloaded', timeout: 120_000 });
+    const hint = page.getByRole('button', { name: /말풍선 닫기|Close hint bubble/i });
+    if (await hint.isVisible({ timeout: 3000 }).catch(() => false)) await hint.click();
+    const mooniBtn = page.locator('.place-header-mooni-btn').first();
+    await expect(mooniBtn).toBeVisible({ timeout: 60_000 });
+    await mooniBtn.click();
+    await expect(page.getByLabel(/채팅 닫기|Close chat/i)).toBeVisible({ timeout: 60_000 });
+    const dock = page.locator('[data-testid="mooni-quick-replies"]:visible').first();
+    await expect(dock).toBeVisible({ timeout: 60_000 });
+    await dock.getByRole('button', { name: /✈️\s*가는 방법/ }).click({ force: true });
+    const expand = page.getByRole('button', { name: /출발지 검색 펼치기|Expand departure search/i });
+    if (await expand.isVisible({ timeout: 8_000 }).catch(() => false)) await expand.click();
+    await page.getByTestId('flight-origin-locate').click();
+    const bubble = page.getByTestId('mooni-user-bubble').last();
+    await expect(bubble).toBeVisible({ timeout: 30_000 });
+    await expect(bubble).toHaveText('내 위치에서 이 여행지까지 가는 법을 알려줘');
+    await expect(bubble).not.toContainText(origin.iata);
+    await expect.poll(() => {
+      const row = [...payloads].reverse().find((item) => {
+        const text = String(item?.params?.userText || '');
+        if (!text.includes(origin.city) || !text.includes('에서')) return false;
+        return origin.domestic || text.includes(origin.iata);
+      });
+      return row?.params?.tripSession?.departureIata || '';
+    }, { timeout: 30_000 }).toBe(origin.iata);
+    const sent = [...payloads].reverse().find((item) => {
+      const text = String(item?.params?.userText || '');
+      if (!text.includes(origin.city) || !text.includes('에서')) return false;
+      return origin.domestic || text.includes(origin.iata);
+    });
+    expect(sent?.params?.userText || '', origin.city).toContain(origin.iata);
+    const chip = page.getByTestId('mooni-destination-resolution').last();
+    await expect(chip).toContainText(origin.city);
+    await expect(chip).toContainText(`${origin.iata} → HKT`);
+    const flight = page.getByRole('button', { name: new RegExp(`${origin.iata}.*HKT`) });
+    await expect(flight).toBeVisible({ timeout: 30_000 });
+    if (origin.iata !== 'ICN') await expect(flight).not.toContainText('ICN');
+    if (origin.iata === 'BKK') {
+      const width = testInfo.project.name.includes('1280') ? 1280 : 390;
+      await saveOverseasShot(page, `khao-lak-place-flight-${width}.png`, width);
+    }
+  }
 });

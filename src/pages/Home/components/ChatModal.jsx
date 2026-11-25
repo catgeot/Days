@@ -122,8 +122,9 @@ import {
 import { TripcomFlightSearchProvider } from '../../../components/PlaceCard/tabs/planner/TripcomFlightSearchContext';
 import FlightOriginSelector from './FlightOriginSelector';
 import { getFlightCinemaOriginOption } from '../lib/flightCinemaOriginOptions';
-import { arrivalAirportForAccessDestination } from '../lib/koreaOriginGeolocation.js';
-import { buildOverseasMyLocationAsk } from '../lib/overseasMyLocationAsk.js';
+import { arrivalAirportForAccessDestination, locateNearestOriginCity } from '../lib/koreaOriginGeolocation.js';
+import { buildOverseasMyLocationAsk, overseasMyLocationBubbleText } from '../lib/overseasMyLocationAsk.js';
+import { myLocationSendRequest } from '../lib/myLocationAccess.js';
 import {
   persistFlightOriginIata,
   resolveDefaultFlightOriginIataForLocation,
@@ -1213,7 +1214,8 @@ const ChatModal = ({
           : null;
 
     const turnAt = Date.now();
-    const bubbleText = mooniUserBubbleText(cleanText);
+    const forcedBubble = String(sendOptions?.bubbleText || '').trim();
+    const bubbleText = forcedBubble || mooniUserBubbleText(cleanText);
     const promptText = bubbleText !== cleanText ? cleanText : '';
     const userMsg = {
       role: 'user',
@@ -1316,6 +1318,8 @@ const ChatModal = ({
         locale: i18n.language,
       });
       const nextSession = prepared.session;
+      const explicitDepartureIata = String(sendOptions?.departureIata || '').trim().toUpperCase();
+      if (explicitDepartureIata.length === 3) nextSession.departureIata = explicitDepartureIata;
       const chipFacts = prepared.chipFacts;
       tripSessionRef.current = nextSession;
       persistMooniTripSession(nextSession, { slug, destinationName: destName });
@@ -1702,6 +1706,20 @@ const ChatModal = ({
     }) || buildAccessRouteAskText(code, option);
   }, [activeSessionPlace?.lat, activeSessionPlace?.lng, i18n.language]);
 
+  const locatePlaceMyLocation = useCallback(async () => {
+    const found = await locateNearestOriginCity();
+    if (!found?.ok || (!found.overseas && !found.city)) {
+      throw Object.assign(new Error('not_found'), { code: 'not_found' });
+    }
+    if (found.overseas) return { iata: found.originIata, overseas: found };
+    const gateway = myLocationSendRequest({
+      kind: 'place',
+      found,
+      destination: activeSessionPlace,
+    })?.departureIata || 'ICN';
+    return { iata: gateway, domesticCity: found.city };
+  }, [activeSessionPlace]);
+
   const handleAccessOriginSelect = useCallback(
     (iata, geo) => {
       const code = String(iata ?? '').trim().toUpperCase();
@@ -1710,12 +1728,39 @@ const ChatModal = ({
       setAccessOriginIata(code);
       setAccessOriginSearchOpen(false);
       setAccessOriginSearchActive(false);
+      const destination = {
+        lat: activeSessionPlace?.lat,
+        lng: activeSessionPlace?.lng,
+      };
+      const located = geo?.overseas?.originIata
+        ? { ...geo.overseas, originIata: geo.overseas.originIata }
+        : geo?.domesticCity
+          ? { city: geo.domesticCity }
+          : null;
+      if (located) {
+        const request = myLocationSendRequest({ kind: 'place', found: located, destination });
+        if (request?.sentenceKo) {
+          const english = String(i18n.language || '').slice(0, 2) === 'en';
+          overseasAccessRef.current = geo?.overseas || null;
+          handleSend(
+            english ? request.sentenceEn : request.sentenceKo,
+            PERSONA_TYPES.PLANNER,
+            {
+              chipId: MOONI_CHIP_IDS.ACCESS_ORIGIN,
+              departureLabel: english ? request.chipEn : request.chipKo,
+              departureIata: request.departureIata,
+              bubbleText: overseasMyLocationBubbleText('place', i18n.language),
+            },
+          );
+          return;
+        }
+      }
       const overseas = geo?.overseas?.originIata === code ? geo.overseas : null;
       overseasAccessRef.current = overseas;
       const askText = placeAccessAskText(code, overseas);
       handleSend(askText, PERSONA_TYPES.PLANNER, { chipId: MOONI_CHIP_IDS.ACCESS_ORIGIN });
     },
-    [handleSend, placeAccessAskText]
+    [activeSessionPlace?.lat, activeSessionPlace?.lng, handleSend, i18n.language, placeAccessAskText]
   );
 
   const handleAskWithAccessOrigin = useCallback(() => {
@@ -1729,6 +1774,28 @@ const ChatModal = ({
   const handleFestivalAccessOrigin = useCallback(async (origin) => {
     if (origin?.rememberOnly) {
       if (origin.chipId) setFestivalAccessId(origin.chipId);
+      return;
+    }
+    if (origin?.fromMyLocation && origin.city) {
+      const request = myLocationSendRequest({
+        kind: 'festival',
+        found: { city: origin.city },
+        destination: {
+          lat: mooniPlaceContext?.festivalContext?.lat,
+          lng: mooniPlaceContext?.festivalContext?.lng,
+        },
+      });
+      if (!request?.sentenceKo) return;
+      const english = String(i18n.language || '').slice(0, 2) === 'en';
+      const askText = english ? request.sentenceEn : request.sentenceKo;
+      const departureLabel = english ? request.chipEn : request.chipKo;
+      const ok = await handleSend(askText, PERSONA_TYPES.PLANNER, {
+        chipId: MOONI_CHIP_IDS.FESTIVAL_ACCESS,
+        departureLabel,
+        departureIata: request.departureIata,
+        bubbleText: overseasMyLocationBubbleText('festival', i18n.language),
+      });
+      if (ok && origin.cityId) writeDomesticOriginCityId(origin.cityId);
       return;
     }
     const request = festivalOriginSendRequest(origin);
@@ -1764,7 +1831,7 @@ const ChatModal = ({
       lastSentOriginRef.current = key;
       if (request.cityId) writeDomesticOriginCityId(request.cityId);
     }
-  }, [handleSend, i18n.language, originInputOn, t]);
+  }, [handleSend, i18n.language, mooniPlaceContext?.festivalContext?.lat, mooniPlaceContext?.festivalContext?.lng, originInputOn, t]);
 
   const topicDockChipsProps = useMemo(
     () => ({
@@ -1853,7 +1920,7 @@ const ChatModal = ({
         <div className={`hidden md:flex w-72 flex-col ${tone(fresh, 'bg-gray-900 border-r border-gray-700', 'bg-white border-r border-cyan-200/90')}`}>
           <div className={`p-5 flex items-center justify-between gap-2 ${tone(fresh, 'border-b border-gray-800', 'border-b border-cyan-100')}`}>
             <div className="flex items-center gap-2 min-w-0">
-              <MessageSquare size={18} className={tone(fresh, 'text-blue-400', 'text-cyan-500')} />
+              <MessageSquare size={18} className={tone(fresh, 'text-blue-400', 'text-cyan-800')} />
               <span className={`font-bold text-sm truncate ${tone(fresh, 'text-gray-100', 'text-slate-900')}`}>{t('mooni.chat.history')}</span>
             </div>
             {typeof onStartNewChat === 'function' ? (
@@ -1957,7 +2024,7 @@ const ChatModal = ({
                  >
                    {isMooniUi ? mooniHeaderLabel : (introDestinationRaw || 'MOONi')}
                  </span>
-                 <span className={`hidden md:block text-[11px] font-medium leading-tight truncate ${tone(fresh, 'text-cyan-300/80', 'text-cyan-600')}`}>
+                 <span className={`hidden md:block text-[11px] font-medium leading-tight truncate ${tone(fresh, 'text-cyan-300/80', 'text-cyan-800')}`}>
                    {isMooniUi
                      ? festivalMooniHeaderSubtitle
                        ? `${festivalMooniHeaderSubtitle} · ${currentPersona}`
@@ -1970,7 +2037,7 @@ const ChatModal = ({
                          : `${t('mooni.chat.travelAiHelper')} · ${currentPersona}`
                      : `${t('mooni.chat.travelChat', { destination: introDestinationRaw || t('place.fallback.destination') })} · ${currentPersona}`}
                  </span>
-                 <span className={`md:hidden text-[10px] font-medium leading-none mt-0.5 truncate ${tone(fresh, 'text-gray-400', 'text-slate-500')}`}>
+                 <span className={`md:hidden text-[10px] font-medium leading-none mt-0.5 truncate ${tone(fresh, 'text-gray-400', 'text-slate-700')}`}>
                    {isMooniUi ? t('mooni.chat.mooniSessionTitle') : t('mooni.chat.travelSessionTitle')}
                  </span>
                </div>
@@ -2093,10 +2160,10 @@ const ChatModal = ({
                       ).trim()
                 ) && (
                 <div className="flex flex-col items-start w-full mb-3">
-                  <span className="text-[10px] font-bold mb-1 px-1 text-amber-400 uppercase tracking-wider">
+                  <span className={`text-[10px] font-bold mb-1 px-1 uppercase tracking-wider ${tone(fresh, 'text-amber-300', 'text-amber-900')}`}>
                     {t('worldEventDetail.mooniSeed.label')}
                   </span>
-                  <div className="w-full p-3 rounded-2xl text-sm shadow-md bg-amber-950/40 border border-amber-500/20 text-amber-50 rounded-tl-sm leading-relaxed whitespace-pre-wrap">
+                  <div className={`w-full p-3 rounded-2xl text-sm shadow-md rounded-tl-sm leading-relaxed whitespace-pre-wrap ${tone(fresh, 'bg-amber-950 border border-amber-500/40 text-amber-50', 'bg-amber-50 border border-amber-800 text-amber-950')}`}>
                     {mooniPlaceContext.eventContext.seedText}
                   </div>
                 </div>
@@ -2111,7 +2178,7 @@ const ChatModal = ({
                       : initialQuery?.text || initialQuery?.display || initialQuery?.query || '',
                 }) && (
                 <div className="flex flex-col items-start w-full mb-3">
-                  <span className={`text-[10px] font-bold mb-1 px-1 uppercase tracking-wider ${tone(fresh, 'text-cyan-400', 'text-cyan-600')}`}>MOONi</span>
+                  <span className={`text-[10px] font-bold mb-1 px-1 uppercase tracking-wider ${tone(fresh, 'text-cyan-400', 'text-cyan-800')}`}>MOONi</span>
                   <div
                     data-testid="mooni-festival-opening"
                     className={`w-full p-4 rounded-2xl text-base shadow-md rounded-tl-sm leading-relaxed ${tone(fresh, 'bg-gray-800 text-gray-200', 'bg-white/90 border border-cyan-100 text-slate-700')}`}
@@ -2122,16 +2189,16 @@ const ChatModal = ({
               )}
               {isMooniUi && messages.length === 0 && !isLoading && placeIntroTarget && (
                 <div className="flex flex-col items-start w-full">
-                  <span className={`text-[10px] font-bold mb-1 px-1 uppercase tracking-wider ${tone(fresh, 'text-cyan-400', 'text-cyan-600')}`}>MOONi</span>
+                  <span className={`text-[10px] font-bold mb-1 px-1 uppercase tracking-wider ${tone(fresh, 'text-cyan-400', 'text-cyan-800')}`}>MOONi</span>
                   <div className={`w-full p-4 rounded-2xl text-base shadow-md rounded-tl-sm leading-relaxed ${tone(fresh, 'bg-gray-800 text-gray-200', 'bg-white/90 border border-cyan-100 text-slate-700')}`}>
                     {placeIntroLoading && !placeIntro && (
-                      <div className={`flex items-center gap-2 text-sm ${tone(fresh, 'text-gray-400', 'text-slate-500')}`}>
+                      <div className={`flex items-center gap-2 text-sm ${tone(fresh, 'text-gray-400', 'text-slate-700')}`}>
                         <Loader2 className="animate-spin shrink-0" size={18} />
                         <span>{t('mooni.chat.placeIntroLoading')}</span>
                       </div>
                     )}
                     {placeIntroError && (
-                      <p className="text-sm text-red-400 mb-2">{placeIntroError}</p>
+                      <p className="text-sm text-red-800 mb-2">{placeIntroError}</p>
                     )}
                     {(!placeIntroLoading || placeIntro) && (
                       <p className="whitespace-pre-wrap">
@@ -2150,7 +2217,7 @@ const ChatModal = ({
                 !placeIntroTarget &&
                 !festivalMooniOpening && (
                 <div className="flex flex-col items-start w-full">
-                  <span className={`text-[10px] font-bold mb-1 px-1 uppercase tracking-wider ${tone(fresh, 'text-cyan-400', 'text-cyan-600')}`}>MOONi</span>
+                  <span className={`text-[10px] font-bold mb-1 px-1 uppercase tracking-wider ${tone(fresh, 'text-cyan-400', 'text-cyan-800')}`}>MOONi</span>
                   <div className={`w-full p-4 rounded-2xl text-base shadow-md rounded-tl-sm leading-relaxed ${tone(fresh, 'bg-gray-800 text-gray-200', 'bg-white/90 border border-cyan-100 text-slate-700')}`}>
                     {buildMooniIntroWithHint('', null)}
                   </div>
@@ -2214,10 +2281,10 @@ const ChatModal = ({
                 >
                   <span className={`text-[10px] font-bold mb-1 px-1 uppercase tracking-wider inline-flex items-center gap-1.5 ${
                     msg.role === 'user'
-                      ? tone(fresh, 'text-blue-400', 'text-sky-600')
+                      ? tone(fresh, 'text-blue-400', 'text-sky-800')
                       : msg.role === 'error'
-                        ? 'text-red-400'
-                        : tone(fresh, 'text-cyan-400', 'text-cyan-600')
+                        ? tone(fresh, 'text-red-300', 'text-red-800')
+                        : tone(fresh, 'text-cyan-400', 'text-cyan-800')
                   }`}>
                     {msg.role === 'user' && account.avatarUrl ? (
                       <img src={account.avatarUrl} alt="" className="w-9 h-9 rounded-full object-cover shrink-0" />
@@ -2225,12 +2292,12 @@ const ChatModal = ({
                     {msg.role === 'user' ? 'Me' : 'MOONi'}
                   </span>
                   <div
-                    data-testid={isModelMsg ? 'mooni-model-reply' : undefined}
+                    data-testid={isModelMsg ? 'mooni-model-reply' : msg.role === 'user' ? 'mooni-user-bubble' : undefined}
                     className={`p-4 rounded-2xl text-base shadow-md w-full ${
                     msg.role === 'user'
-                      ? tone(fresh, 'max-w-full md:max-w-[80%] bg-blue-600 text-white rounded-tr-sm', 'max-w-full md:max-w-[80%] bg-gradient-to-br from-sky-700 to-cyan-700 text-white rounded-tr-sm')
+                      ? tone(fresh, 'max-w-full md:max-w-[80%] bg-blue-600 text-white rounded-tr-sm', 'max-w-full md:max-w-[80%] bg-cyan-800 bg-gradient-to-br from-sky-700 to-cyan-700 text-white rounded-tr-sm')
                       : msg.role === 'error'
-                        ? 'bg-red-950/50 text-red-200 rounded-tl-sm'
+                        ? tone(fresh, 'bg-red-950 text-red-50 rounded-tl-sm', 'bg-red-50 border border-red-800 text-red-950 rounded-tl-sm')
                         : tone(fresh, 'bg-gray-800 text-gray-200 rounded-tl-sm leading-relaxed', 'bg-white/90 border border-cyan-100 text-slate-700 rounded-tl-sm leading-relaxed')
                   }`}>
                     {isModelMsg ? (
@@ -2281,13 +2348,16 @@ const ChatModal = ({
                           chatHistory: messages
                             .slice(0, idx)
                             .filter((m) => m.role === 'user')
-                            .map((m) => ({ text: m.text, departureLabel: m.departureLabel })),
+                            .map((m) => ({
+                              text: messageTextPlain(m),
+                              mooniPromptText: m.mooniPromptText,
+                              departureLabel: m.departureLabel,
+                            })),
                           userText:
                             messages[idx - 1]?.role === 'user'
-                              ? (typeof messages[idx - 1].text === 'object'
-                                  ? messages[idx - 1].text?.text
-                                  : messages[idx - 1].text) ?? ''
+                              ? messageTextPlain(messages[idx - 1])
                               : '',
+                          tripSession: tripSessionRef.current,
                           essentialGuide:
                             (msg.bookingMeta?.slug ?? boundDestinationSlug) === effectiveQuickReplySlug
                               ? topicEssentialGuide
@@ -2322,6 +2392,7 @@ const ChatModal = ({
                             : null
                         }
                         onPlannerNavigate={handlePlannerNavigate}
+                        variant={isMooniUi ? 'light' : 'dark'}
                       />
                     )}
                   </div>
@@ -2330,8 +2401,8 @@ const ChatModal = ({
               })}
               {isLoading && (
                 <div className="flex gap-4 items-center">
-                  <Loader2 size={20} className={`animate-spin ${tone(fresh, 'text-blue-400', 'text-cyan-500')}`} />
-                  <span className={`text-sm animate-pulse font-medium ${tone(fresh, 'text-blue-300', 'text-cyan-600')}`}>{loadingStatus}</span>
+                  <Loader2 size={20} className={`animate-spin ${tone(fresh, 'text-blue-400', 'text-cyan-800')}`} />
+                  <span className={`text-sm font-medium ${tone(fresh, 'text-blue-300', 'text-cyan-800')}`}>{loadingStatus}</span>
                 </div>
               )}
               <div ref={messagesEndRef} />
@@ -2365,6 +2436,7 @@ const ChatModal = ({
                       composerSurface={fresh ? 'light' : 'dark'}
                       selectedIata={accessOriginIata}
                       disabled={isLoading}
+                      locateOrigin={locatePlaceMyLocation}
                       onSelect={handleAccessOriginSelect}
                       onCollapseRequest={() => {
                         setAccessOriginSearchOpen(false);
@@ -2377,7 +2449,7 @@ const ChatModal = ({
                       <div className="min-w-0 flex-1">
                         <FlightOriginSelector
                           variant="chat-header"
-                          headerSurface={fresh ? 'dark' : 'light'}
+                          headerSurface={fresh ? 'light' : 'dark'}
                           selectedIata={accessOriginIata}
                           disabled={isLoading}
                           onExpandRequest={() => setAccessOriginSearchOpen(true)}
@@ -2557,12 +2629,12 @@ const ChatModal = ({
                             ? tone(
                                 fresh,
                                 'w-full bg-gray-800 text-white text-[16px] leading-normal pl-3.5 pr-10 py-2.5 rounded-full border border-gray-600 focus:outline-none focus:border-blue-500 placeholder:text-gray-500 transition-[padding] duration-150',
-                                'w-full bg-white text-slate-800 text-[16px] leading-normal pl-3.5 pr-10 py-2.5 rounded-full border border-cyan-200 focus:outline-none focus:border-cyan-400 placeholder:text-slate-400 transition-[padding] duration-150',
+                                'w-full bg-white text-slate-800 text-[16px] leading-normal pl-3.5 pr-10 py-2.5 rounded-full border border-cyan-200 focus:outline-none focus:border-cyan-400 placeholder:text-slate-600 transition-[padding] duration-150',
                               )
                             : tone(
                                 fresh,
                                 'w-full h-8 bg-gray-800/80 text-white text-[16px] leading-none pl-3 pr-8 py-0 rounded-full border border-gray-700 focus:outline-none focus:border-blue-500 placeholder:text-gray-500 placeholder:text-[12px] transition-[padding] duration-150',
-                                'w-full h-8 bg-white text-slate-800 text-[16px] leading-none pl-3 pr-8 py-0 rounded-full border border-cyan-200 focus:outline-none focus:border-cyan-400 placeholder:text-slate-400 placeholder:text-[12px] transition-[padding] duration-150',
+                                'w-full h-8 bg-white text-slate-800 text-[16px] leading-none pl-3 pr-8 py-0 rounded-full border border-cyan-200 focus:outline-none focus:border-cyan-400 placeholder:text-slate-600 placeholder:text-[12px] transition-[padding] duration-150',
                               )
                         }
                         disabled={isLoading}
@@ -2614,7 +2686,7 @@ const ChatModal = ({
                         className={tone(
                           fresh,
                           'w-full min-h-[36px] bg-gray-700/95 text-white text-sm font-medium pl-3.5 pr-11 py-2 rounded-full border border-cyan-400/45 shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_0_0_1px_rgba(34,211,238,0.08)] focus:outline-none focus:border-cyan-300/80 focus:ring-1 focus:ring-cyan-400/35 placeholder:text-gray-300/90',
-                          'w-full min-h-[36px] bg-white text-slate-800 text-sm font-medium pl-3.5 pr-11 py-2 rounded-full border border-cyan-300 shadow-[0_0_0_1px_rgba(34,211,238,0.12)] focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-300 placeholder:text-slate-400',
+                          'w-full min-h-[36px] bg-white text-slate-800 text-sm font-medium pl-3.5 pr-11 py-2 rounded-full border border-cyan-300 shadow-[0_0_0_1px_rgba(34,211,238,0.12)] focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-300 placeholder:text-slate-600',
                         )}
                         disabled={isLoading}
                       />
@@ -2659,7 +2731,7 @@ const ChatModal = ({
                     className={tone(
                       fresh,
                       'w-full bg-gray-800 md:bg-gray-700/95 text-white text-[16px] md:text-base md:font-medium pl-5 pr-14 py-3.5 md:py-2.5 rounded-full border border-gray-600 md:border-cyan-400/45 md:shadow-[inset_0_1px_0_rgba(255,255,255,0.06),0_0_0_1px_rgba(34,211,238,0.08)] focus:outline-none focus:border-blue-500 md:focus:border-cyan-300/80 md:focus:ring-1 md:focus:ring-cyan-400/35 placeholder:text-gray-500 md:placeholder:text-gray-300/90',
-                      'w-full bg-white text-slate-800 text-[16px] md:text-base md:font-medium pl-5 pr-14 py-3.5 md:py-2.5 rounded-full border border-cyan-200 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-300 placeholder:text-slate-400',
+                      'w-full bg-white text-slate-800 text-[16px] md:text-base md:font-medium pl-5 pr-14 py-3.5 md:py-2.5 rounded-full border border-cyan-200 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-300 placeholder:text-slate-600',
                     )}
                     disabled={isLoading}
                     autoFocus={!effectiveQuickReplySlug}

@@ -57,7 +57,7 @@ export default function MooniQuickReplyChips({
             {backLabelText}
           </button>
           {parentL1Label ? (
-            <span className={`text-[11px] font-medium break-keep min-w-0 ${fresh ? 'text-cyan-600' : 'text-cyan-400/75'}`}>
+            <span className={`text-[11px] font-medium break-keep min-w-0 ${fresh ? 'text-cyan-800' : 'text-cyan-200'}`}>
               {parentL1Label}
             </span>
           ) : null}

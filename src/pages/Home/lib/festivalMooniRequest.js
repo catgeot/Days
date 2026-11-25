@@ -98,6 +98,8 @@ export function prepareFestivalMooniChatPayload({
     ? domesticFestivalGroundOrigin(cleanText, departureLabel)
     : null;
   if (groundOrigin) clearDomesticAirportDeparture(nextSession);
+  const labeledGateway = String(departureLabel || '').match(/\(([A-Z]{3})\)/);
+  if (labeledGateway) nextSession.departureIata = labeledGateway[1];
 
   let chipFacts = extractMooniChipPromptFacts({
     chipId,

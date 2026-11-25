@@ -38,15 +38,15 @@ const PARTNER_HANDOFF_PROVIDERS = new Set([
 
 const TRANSPORT_PROVIDER_STYLES = {
   trip_com: 'bg-blue-600 hover:bg-blue-700 text-white border-blue-500',
-  direct_ferries: 'bg-sky-600 hover:bg-sky-700 text-white border-sky-500',
+  direct_ferries: 'bg-sky-700 hover:bg-sky-800 text-white border-sky-800',
   direct: 'bg-gray-700 hover:bg-gray-600 text-white border-gray-600',
-  klook_ferry: 'bg-orange-600 hover:bg-orange-700 text-white border-orange-500',
+  klook_ferry: 'bg-orange-700 hover:bg-orange-800 text-white border-orange-800',
 };
 
 const PREP_PROVIDER_STYLES = {
-  klook: 'bg-orange-600 hover:bg-orange-700 text-white border-orange-500',
+  klook: 'bg-orange-700 hover:bg-orange-800 text-white border-orange-800',
   official: 'bg-indigo-600 hover:bg-indigo-700 text-white border-indigo-500',
-  pre_travel: 'bg-amber-600 hover:bg-amber-700 text-white border-amber-500',
+  pre_travel: 'bg-amber-700 hover:bg-amber-800 text-white border-amber-800',
 };
 
 /**
@@ -153,7 +153,7 @@ const BookingActionCards = ({
           onClick={() => onPlannerNavigate(flightPlannerPath)}
           className={plannerButtonClass}
         >
-          <MapPin size={14} className="shrink-0 opacity-90" />
+          <MapPin size={14} className="shrink-0 opacity-100" />
           {label}
         </button>
       );
@@ -161,7 +161,7 @@ const BookingActionCards = ({
 
     return (
       <Link to={flightPlannerPath} className={plannerButtonClass}>
-        <MapPin size={14} className="shrink-0 opacity-90" />
+        <MapPin size={14} className="shrink-0 opacity-100" />
         {label}
       </Link>
     );
@@ -181,7 +181,7 @@ const BookingActionCards = ({
         onClick={() => onPlannerNavigate(plannerPath)}
         className={plannerButtonClass}
       >
-        <MapPin size={14} className="shrink-0 opacity-90" />
+        <MapPin size={14} className="shrink-0 opacity-100" />
         {label}
       </button>
     );
@@ -225,11 +225,11 @@ const BookingActionCards = ({
             className={`inline-flex w-full flex-col items-stretch gap-1 rounded-lg border px-3 py-2.5 text-xs font-bold break-keep transition-colors pointer-events-auto ${TRANSPORT_PROVIDER_STYLES.trip_com}`}
           >
             <span className="inline-flex w-full items-center justify-center gap-1.5">
-              <Plane size={14} className="shrink-0 opacity-90" />
+              <Plane size={14} className="shrink-0 opacity-100" />
               {action.label}
             </span>
             {action.routeHint ? (
-              <span className="text-[10px] font-normal opacity-90 text-center">
+              <span className="text-[10px] font-normal opacity-100 text-center">
                 {action.routeHint}
               </span>
             ) : null}
@@ -265,7 +265,7 @@ const BookingActionCards = ({
                 }`}
               >
                 {action.label}
-                <ExternalLink size={12} className="shrink-0 opacity-80" />
+                <ExternalLink size={12} className="shrink-0" />
               </a>
             ))}
           </div>
@@ -301,11 +301,11 @@ const BookingActionCards = ({
               rel={linkRel}
               className={`inline-flex w-full sm:w-auto items-center justify-center gap-1.5 rounded-lg border px-3 py-2 text-xs font-bold break-keep transition-colors pointer-events-auto ${
                 PREP_PROVIDER_STYLES[action.provider] ??
-                'bg-amber-600 hover:bg-amber-700 text-white border-amber-500'
+                'bg-amber-700 hover:bg-amber-800 text-white border-amber-800'
               }`}
             >
               {action.label}
-              <ExternalLink size={12} className="shrink-0 opacity-80" />
+              <ExternalLink size={12} className="shrink-0" />
             </a>
           ))}
         </div>
@@ -383,6 +383,7 @@ const BookingActionCards = ({
           essentialGuide={essentialGuide}
           onPlannerNavigate={onPlannerNavigate}
           className="mt-0"
+          variant={bubbleVariant}
         />
       ) : null}
       {showPlannerPrimary ? renderPlannerPrimary() : null}

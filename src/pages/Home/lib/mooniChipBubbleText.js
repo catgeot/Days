@@ -3,6 +3,10 @@
  * Restored threads that still store the instruction map back to the same label.
  */
 import { FESTIVAL_CHIP_BUBBLES } from './mooniChipInstruction.js';
+import {
+  overseasMyLocationBubbleText,
+  parseOverseasMyLocationAsk,
+} from './overseasMyLocationAsk.js';
 
 export { FESTIVAL_CHIP_BUBBLES } from './mooniChipInstruction.js';
 
@@ -14,6 +18,11 @@ function compact(value) {
 export function mooniUserBubbleText(text) {
   const raw = compact(text);
   if (!raw) return '';
+  const overseas = parseOverseasMyLocationAsk(raw);
+  if (overseas) {
+    const en = raw.startsWith('How do I get from ');
+    return overseasMyLocationBubbleText(overseas.kind, en ? 'en' : 'ko');
+  }
   const row = FESTIVAL_CHIP_BUBBLES.find((item) => item.sendKo === raw || item.sendEn === raw);
   if (!row) return raw;
   return row.sendEn === raw ? row.bubbleEn : row.bubbleKo;

@@ -32,7 +32,7 @@ export default function DestinationResolutionChips({
                 : 'border-slate-600/80 bg-slate-800/95 text-slate-50'
             }`}
           >
-            <PlaneTakeoff size={12} className="shrink-0 opacity-90" aria-hidden="true" />
+            <PlaneTakeoff size={12} className="shrink-0" aria-hidden="true" />
             {t('mooni.resolution.departure')} · {departureLabel}
           </span>
         )}
@@ -82,7 +82,7 @@ export default function DestinationResolutionChips({
                 : 'border-amber-500/35 bg-amber-950/30 text-amber-100 hover:border-amber-400/60 hover:bg-amber-900/40'
             }`}
           >
-            <MapPin size={12} className="shrink-0 opacity-80" />
+            <MapPin size={12} className="shrink-0" />
             {localizeMooniPlaceLabel(c, i18n.language)}
           </button>
         ))}

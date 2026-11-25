@@ -15,7 +15,7 @@ import {
 import { canShowMrtTnaStrip, resolveMrtTnaQuery } from './mrtTnaQuery.js';
 import { resolveTravelSpotFromLocation } from './travelSpotResolve.js';
 import { getDestinationBookingProfile } from './destinationBookingProfile.js';
-import { resolveDepartureFromChat } from './resolveDepartureIataFromChat.js';
+import { resolveFlightDepartureIataForBooking } from './resolveDepartureIataFromChat.js';
 import { i18n } from '../i18n/config.js';
 import { extractItineraryStayDates } from './chatItineraryDates.js';
 
@@ -183,9 +183,12 @@ export function resolveItineraryBookingActions(params) {
     essentialGuide,
     profile,
   });
-  const departureIata = resolveDepartureFromChat(userText, chatHistory, {
+  const departureIata = resolveFlightDepartureIataForBooking({
+    userText,
+    chatHistory,
+    tripSession,
     excludeIata: arrivalIata,
-  })?.iata;
+  });
 
   /** @type {Array<object>} */
   const actions = [];

@@ -57,6 +57,7 @@ export default function FlightOriginSelector({
   onCollapseRequest,
   initialExpanded = false,
   onSearchActiveChange,
+  locateOrigin = null,
 }) {
   const { t, i18n } = useTranslation();
   const listboxId = useId();
@@ -293,7 +294,7 @@ export default function FlightOriginSelector({
     (iata, geo) => {
       const code = String(iata ?? '').trim().toUpperCase();
       if (code.length !== 3) return;
-      onSelect?.(code, geo?.overseas ? geo : undefined);
+      onSelect?.(code, geo?.overseas || geo?.domesticCity ? geo : undefined);
       setGeoError(null);
       if (isBar) setBarExpanded(false);
       onCollapseRequest?.();
@@ -316,7 +317,9 @@ export default function FlightOriginSelector({
     setGeoError(null);
     setGeoPending(true);
     try {
-      const resolved = await resolveOriginFromGeolocation();
+      const resolved = locateOrigin
+        ? await locateOrigin()
+        : await resolveOriginFromGeolocation();
       handleSelect(resolved.iata, resolved);
     } catch (err) {
       const code = err?.code && GEO_ERROR_KEYS[err.code] ? err.code : 'unavailable';
@@ -324,7 +327,7 @@ export default function FlightOriginSelector({
     } finally {
       setGeoPending(false);
     }
-  }, [disabled, geoPending, handleSelect, t]);
+  }, [disabled, geoPending, handleSelect, locateOrigin, t]);
 
   const inputClass = isBar
     ? 'min-h-[44px] w-full rounded-md border border-white/15 bg-white/5 py-2 pl-7 pr-11 text-[16px] md:text-xs font-medium text-white placeholder:text-white/35 focus:border-sky-300/50 focus:outline-none focus:ring-1 focus:ring-sky-300/30'
@@ -377,20 +380,25 @@ export default function FlightOriginSelector({
     ? 'text-[11px] font-bold text-slate-900 break-keep'
     : 'text-[11px] font-bold text-sky-100 break-keep';
 
-  const barCollapseClass =
-    'inline-flex shrink-0 items-center gap-1 rounded-md border border-white/25 bg-white/10 px-2.5 py-1 text-[11px] font-bold text-white/90 transition-colors hover:border-sky-300/45 hover:bg-sky-500/15 hover:text-white motion-safe:active:scale-[0.98]';
+  const barCollapseClass = isLightComposer
+    ? 'inline-flex shrink-0 items-center gap-1 rounded-md border border-slate-500 bg-white px-2.5 py-1 text-[11px] font-bold text-slate-900 transition-colors hover:border-slate-700 hover:bg-slate-100 motion-safe:active:scale-[0.98]'
+    : 'inline-flex shrink-0 items-center gap-1 rounded-md border border-white/25 bg-white/10 px-2.5 py-1 text-[11px] font-bold text-white transition-colors hover:border-sky-300/45 hover:bg-sky-500/15 hover:text-white motion-safe:active:scale-[0.98]';
 
   const selectedClass = isBar
     ? 'text-xs font-bold text-sky-100 tabular-nums'
     : 'text-xs font-bold text-sky-100 tabular-nums';
 
-  const geoButtonClass = isBar
-    ? 'inline-flex min-h-[40px] shrink-0 items-center justify-center gap-1.5 rounded-md border border-violet-300/40 bg-violet-500/15 px-3 text-sm font-semibold text-violet-100 transition-colors hover:border-violet-200/55 hover:bg-violet-500/25'
-    : 'inline-flex min-h-[44px] shrink-0 items-center justify-center gap-1 rounded-lg border border-violet-400/35 bg-violet-500/10 px-2.5 text-xs font-semibold text-violet-200 transition-colors hover:border-violet-300/50 hover:bg-violet-500/15';
+  const geoButtonClass = isLightComposer
+    ? 'inline-flex min-h-[44px] shrink-0 items-center justify-center gap-1 rounded-lg border border-violet-800 bg-violet-50 px-2.5 text-xs font-semibold text-violet-950 transition-colors hover:border-violet-950 hover:bg-violet-100'
+    : isBar
+      ? 'inline-flex min-h-[40px] shrink-0 items-center justify-center gap-1.5 rounded-md border border-violet-300/40 bg-violet-500/15 px-3 text-sm font-semibold text-violet-100 transition-colors hover:border-violet-200/55 hover:bg-violet-500/25'
+      : 'inline-flex min-h-[44px] shrink-0 items-center justify-center gap-1 rounded-lg border border-violet-400/35 bg-violet-500/10 px-2.5 text-xs font-semibold text-violet-200 transition-colors hover:border-violet-300/50 hover:bg-violet-500/15';
 
-  const geoInlineClass = isSummary || isSummaryPanel
-    ? `${geoButtonClass} absolute right-1 top-1/2 h-10 min-h-0 w-10 -translate-y-1/2 border-sky-400/35 bg-sky-500/15 p-0 text-sky-100`
-    : `${geoButtonClass} absolute right-1 top-1/2 h-10 min-h-0 w-10 -translate-y-1/2 p-0`;
+  const geoInlineClass = isLightComposer
+    ? 'absolute right-1 top-1/2 inline-flex h-10 min-h-0 w-10 -translate-y-1/2 items-center justify-center rounded-lg border border-violet-800 bg-violet-50 p-0 text-violet-950'
+    : isSummary || isSummaryPanel
+      ? `${geoButtonClass} absolute right-1 top-1/2 h-10 min-h-0 w-10 -translate-y-1/2 border-sky-400/35 bg-sky-500/15 p-0 text-sky-100`
+      : `${geoButtonClass} absolute right-1 top-1/2 h-10 min-h-0 w-10 -translate-y-1/2 p-0`;
 
   const geoIconSize = isBar ? 16 : 18;
 
@@ -415,7 +423,7 @@ export default function FlightOriginSelector({
             onClick={() => handleSelect(row.iata)}
           >
             <span className="min-w-0 truncate font-semibold break-keep">{row.label}</span>
-            <span className="shrink-0 font-bold tabular-nums opacity-80">{row.iata}</span>
+            <span className={`shrink-0 font-bold tabular-nums ${isLightComposer ? 'text-slate-800' : 'opacity-80'}`}>{row.iata}</span>
           </button>
         </li>
       );
@@ -621,7 +629,7 @@ export default function FlightOriginSelector({
               isBar
                 ? 'left-2.5 text-white/40'
                 : isLightComposer
-                  ? 'left-3 text-slate-500'
+                  ? 'left-3 text-slate-700'
                   : isSummary || isSummaryPanel
                     ? 'left-3 text-sky-300/75'
                     : 'left-2.5 text-gray-500'
@@ -694,6 +702,7 @@ export default function FlightOriginSelector({
           {!isBar ? (
             <button
               type="button"
+              data-testid="flight-origin-locate"
               disabled={disabled || geoPending}
               onClick={handleUseMyLocation}
               className={`${geoInlineClass} ${disabled || geoPending ? 'opacity-60 cursor-wait' : ''}`}
@@ -725,7 +734,7 @@ export default function FlightOriginSelector({
       {listboxPortal}
 
       {geoError ? (
-        <p className={`text-[10px] font-medium break-keep ${isBar ? 'text-rose-200/90' : 'text-rose-300/90'}`}>
+        <p className={`text-[10px] font-medium break-keep ${isLightComposer ? 'text-rose-800' : isBar ? 'text-rose-200' : 'text-rose-300'}`}>
           {geoError}
         </p>
       ) : null}
