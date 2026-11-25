@@ -555,7 +555,6 @@ test('English Khao Lak ask is not wrapped twice and the chip stays short', async
 });
 
 test('Khao Lak place origin locate icon meets contrast', async ({ page, context }, testInfo) => {
-  test.skip(testInfo.project.name.includes('webkit'), 'contrast is measured on chromium');
   await installGemini(context, []);
   await page.goto('/place/khao-lak/gallery?lang=ko', { waitUntil: 'domcontentloaded', timeout: 120_000 });
   const hint = page.getByRole('button', { name: /말풍선 닫기|Close hint bubble/i });
