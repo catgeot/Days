@@ -2,6 +2,8 @@
 import { mkdirSync } from 'node:fs';
 import { test, expect } from './fixtures.js';
 import { installMooniGeminiMock } from './mooni-gemini-mock.js';
+import { installFestivalTourApiFixtures } from './mooni-festival-tourapi-fixture.js';
+import { enableMooniE2eLoggedIn, openFestivalMooni } from './mooni-festival-chip-helpers.js';
 
 const OUT = '/opt/cursor/artifacts';
 
@@ -184,5 +186,63 @@ test.describe('airport pickup row (flag on)', () => {
     await frame(page, 1280);
     await reveal(seoulReply);
     await shot(page, 'seoul-mooni-no-pickup', 1280);
+  });
+
+  test('domestic festival access answer has no pickup row', async ({ page, context }) => {
+    await installFestivalTourApiFixtures(context);
+    await enableMooniE2eLoggedIn(page);
+    await openFestivalMooni(page);
+    await page.getByRole('button', { name: /가는 법/ }).first().click({ force: true });
+    await expect(page.getByTestId('mooni-festival-access-dock')).toBeVisible();
+    await page.locator('[data-festival-origin="seoul"]').click({ force: true });
+    await expect(page.getByText(/서울에서 이 축제장까지/).first()).toBeVisible();
+    const reply = page.getByTestId('mooni-model-reply').last();
+    await expect(reply).toBeVisible();
+    await expect(reply).toContainText('E2E-MOCK-9f3a');
+    await expect(reply.locator('[data-airport-pickup-row]')).toHaveCount(0);
+    await expect(page.locator('[data-airport-pickup-row]')).toHaveCount(0);
+  });
+
+  test('overseas my-location answer places the pickup row after the flight button', async ({ page, context }) => {
+    await context.grantPermissions(['geolocation']);
+    await context.setGeolocation({ latitude: 13.7563, longitude: 100.5018 });
+    await context.route(/api\.mapbox\.com\/geocoding\/v5\/mapbox\.places\//i, async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          features: [{
+            id: 'place.bangkok',
+            text: '방콕',
+            place_type: ['place'],
+            center: [100.5018, 13.7563],
+            context: [{ id: 'country.th', text: '태국' }],
+          }],
+        }),
+      });
+    });
+    await page.goto('/place/khao-lak?lang=ko', { waitUntil: 'domcontentloaded' });
+    const hint = page.getByRole('button', { name: /말풍선 닫기|Close hint bubble/i });
+    if (await hint.isVisible({ timeout: 3_000 }).catch(() => false)) await hint.click();
+    const mooniBtn = page.locator('.place-header-mooni-btn').first();
+    await expect(mooniBtn).toBeVisible({ timeout: 60_000 });
+    await mooniBtn.click();
+    await expect(page.getByLabel(/채팅 닫기|Close chat/i)).toBeVisible({ timeout: 60_000 });
+    const dock = page.locator('[data-testid="mooni-quick-replies"]:visible').first();
+    await expect(dock).toBeVisible({ timeout: 60_000 });
+    await dock.getByRole('button', { name: /✈️\s*가는 방법/ }).click({ force: true });
+    const expand = page.getByRole('button', { name: /출발지 검색 펼치기|Expand departure search/i });
+    if (await expand.isVisible({ timeout: 8_000 }).catch(() => false)) await expand.click();
+    await page.getByTestId('flight-origin-locate').click();
+    const bubble = page.getByTestId('mooni-user-bubble').last();
+    await expect(bubble).toHaveText('내 위치에서 이 여행지까지 가는 법을 알려줘');
+    const reply = page.getByTestId('mooni-model-reply').last();
+    await expectLegAfterFlight(reply, {
+      title: '푸켓국제공항(HKT)',
+      place: '카오락',
+      partner: 'Trip.com에서 보기',
+      hrefPart: '/airport-hkt/',
+    });
+    await expect(reply.getByRole('link', { name: /코레일|버스타고|Korail|BUSTAGO/ })).toHaveCount(0);
   });
 });

@@ -50,6 +50,15 @@ test('Korean airports return null', () => {
   assert.equal(buildAirportPickupUrl('CJU'), null);
 });
 
+test('Don Mueang has no verified Trip.com listing and uses MyRealTrip search', () => {
+  const href = buildAirportPickupUrl('DMK');
+  assert.ok(href);
+  const url = new URL(href);
+  assert.equal(url.hostname, 'www.myrealtrip.com');
+  assert.equal(url.pathname, '/search');
+  assert.equal(url.searchParams.get('q'), 'DMK 공항 픽업');
+});
+
 test('overseas hub without a verified Trip.com listing uses MyRealTrip search', () => {
   const href = buildAirportPickupUrl('NRT');
   assert.ok(href);

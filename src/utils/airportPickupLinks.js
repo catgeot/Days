@@ -7,13 +7,13 @@ import { isGateoAirportPickupLinksEnabled } from '../shared/gateoFeatureFlags.js
 import travelSpotList from '../pages/Home/data/travelSpots-list.json';
 
 /**
- * Trip.com listing paths whose <title> is the city pickup page, not the generic
- * 「전문 공항픽업」 home. Checked 2026-11-25. Unlisted airports use MyRealTrip search.
+ * Trip.com paths that stayed on the airport URL and whose title named that city's
+ * pickup (WebKit, 2026-11-25). DMK hit the verification wall and is not listed.
+ * Unlisted overseas hubs use MyRealTrip search.
  */
 const TRIP_AIRPORT_TRANSFER_CITY = {
   HKT: 'phuket',
   BKK: 'bangkok',
-  DMK: 'bangkok',
   CAI: 'cairo',
   KIX: 'osaka',
   SIN: 'singapore',
