@@ -45,6 +45,8 @@ import {
 import { buildPlaceReviewsHref } from '../../../utils/placeReviewFocus.js';
 import { snapshotGalleryScrollForPlaceBack } from './placeScrollMemory.js';
 import { getPlaceStableKey } from '../../../utils/travelSpotResolve.js';
+import { airportPickupRowForPlace } from '../../../utils/airportPickupLinks.js';
+import AirportPickupLegRow from '../../../shared/affiliate/AirportPickupLegRow.jsx';
 
 function usePlaceGallerySectionOpen(sectionId, placeKey, defaultOpen = false) {
   const routeLocation = useLocation();
@@ -391,6 +393,12 @@ function FactSlotBody({ slot, slug, locale, light }) {
             <FreshnessCheckedChip slot={slot} locale={locale} light={light} />
           ) : null}
           <FactValue slot={slot} slug={slug} locale={locale} light={light} />
+          {slot.id === 'airport' ? (
+            <AirportPickupLegRow
+              href={airportPickupRowForPlace({ slug })?.href}
+              light={light}
+            />
+          ) : null}
           {showWarn ? (
             <FreshnessWarnBanner slot={slot} locale={locale} light={light} />
           ) : null}

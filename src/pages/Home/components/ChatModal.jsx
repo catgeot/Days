@@ -30,6 +30,11 @@ import {
   normalizeAccessDepartureUserText,
 } from '../../../utils/resolveDestinationFromChat';
 import BookingActionCards from '../../../components/chat/BookingActionCards';
+import AirportPickupLegRow from '../../../shared/affiliate/AirportPickupLegRow.jsx';
+import {
+  airportPickupRowForPlace,
+  isGettingThereUserText,
+} from '../../../utils/airportPickupLinks.js';
 import DestinationResolutionChips from '../../../components/chat/DestinationResolutionChips';
 import MooniPlannerFollowUp from '../../../components/chat/MooniPlannerFollowUp';
 import MooniTruncatedContinue from '../../../components/chat/MooniTruncatedContinue';
@@ -2261,6 +2266,12 @@ const ChatModal = ({
                         ? messages[idx - 1].text?.text
                         : messages[idx - 1].text) ?? ''
                     : '';
+                const pickupHref = isModelMsg && isGettingThereUserText(priorUserText)
+                  ? airportPickupRowForPlace({
+                      ...(activeSessionPlace || {}),
+                      slug: activeSessionPlace?.slug || msgSlug || undefined,
+                    })?.href
+                  : null;
                 const showPlannerFollowUp =
                   isModelMsg &&
                   Boolean(msgSlug) &&
@@ -2308,6 +2319,9 @@ const ChatModal = ({
                     ) : (
                       <div style={{ whiteSpace: 'pre-wrap' }}>{displayMsgText}</div>
                     )}
+                    {pickupHref ? (
+                      <AirportPickupLegRow href={pickupHref} light={isMooniUi} />
+                    ) : null}
                     {isModelMsg ? (
                       <MooniTruncatedContinue
                         truncated={Boolean(msg.truncated)}

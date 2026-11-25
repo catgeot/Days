@@ -2928,6 +2928,7 @@ export default function FestivalDetailSheet({
             detailSettled={!detailLoading}
             onAskMooni={festivalMooni.enabled ? festivalMooni.openInline : null}
             onTransportFacts={setAccessFacts}
+            destination={festivalLngLat(item?.mapx, item?.mapy)}
           />
 
           {overview ? (

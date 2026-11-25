@@ -966,6 +966,7 @@
       "unverified": "Unverified: {{items}}",
       "aiGenerated": "AI-generated · no source",
       "aiGeneratedDated": "AI-generated · no source · {{date}}",
+      "airportPickup": "Book an airport pickup",
       "slots": {
         "entry": "Entry",
         "airport": "Airport to city",

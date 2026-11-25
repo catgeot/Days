@@ -42,6 +42,8 @@ export const GATEO_ENV_FLAG_NAMES = {
   HOME_WATCH_CARD: 'VITE_GATEO_HOME_WATCH_CARD',
   /** Last home-watch slot becomes a /reels poster. Default off. */
   SELF_REELS: 'VITE_GATEO_SELF_REELS',
+  /** Overseas airport → lodging pickup row (MyRealTrip / Trip.com). Default off. */
+  AIRPORT_PICKUP_LINKS: 'VITE_GATEO_AIRPORT_PICKUP_LINKS',
 };
 
 /** @param {string} name */
@@ -245,6 +247,11 @@ export function isGateoHomeWatchCardEnabled() {
 /** Self-hosted reels poster on the home watch card. Default off. */
 export function isGateoSelfReelsEnabled() {
   return readGateoEnvFlag(GATEO_ENV_FLAG_NAMES.SELF_REELS);
+}
+
+/** Airport pickup booking row on overseas arrival → lodging legs. Default off. */
+export function isGateoAirportPickupLinksEnabled() {
+  return readGateoEnvFlag(GATEO_ENV_FLAG_NAMES.AIRPORT_PICKUP_LINKS);
 }
 
 /** Festival departure-city field. Unset is on. The string `"0"` is the only off switch. */
