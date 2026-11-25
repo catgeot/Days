@@ -151,7 +151,9 @@ After applying `update.sql` to a local mirror of the corpus, each **outbound URL
 
 ## Artifact SHA256
 
-- REPORT.md: d5a5677cbdc9ba8ce1010c47b46ce81aac0e2f4a36b12cda0a512a73abb1f454
-- backup.json: 97b8a4c44742b5b1e7189cb6bc72a2c4bff4d708d93f9483cd64ad1ca364e2d3
-- update.sql: a5828d88abc2394f15dcbcc3c3a86f64d9f57105ff435b12b110c5e471b79986
-- rollback.sql: b375b9f498b214e3a61672221f1804ce998bc2e2f75bac2ee644a18c26b3216f
+- REPORT.md: `86214ec1f522b2d729451b8f002816809f918910f615c6aa5dacddf6e2517b29`
+- backup.json: `97b8a4c44742b5b1e7189cb6bc72a2c4bff4d708d93f9483cd64ad1ca364e2d3`
+- update.sql: `a5828d88abc2394f15dcbcc3c3a86f64d9f57105ff435b12b110c5e471b79986`
+- rollback.sql: `b375b9f498b214e3a61672221f1804ce998bc2e2f75bac2ee644a18c26b3216f`
+
+Branch tip (`git rev-parse HEAD` after push): `0967c0255b0addf632ea59a3029099664a1c52ca` on `ops/link-audit-final7c`
