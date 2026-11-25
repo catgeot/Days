@@ -14,8 +14,8 @@ function photo(id) {
     id,
     width: 1600,
     height: 1000,
-    alt_description: 'harbor landscape',
-    description: 'harbor landscape',
+    alt_description: 'QA Gallery Writer harbor in Testland',
+    description: 'QA Gallery Writer harbor in Testland',
     urls: {
       small: `https://images.unsplash.com/${id}/small`,
       regular: `https://images.unsplash.com/${id}/regular`,

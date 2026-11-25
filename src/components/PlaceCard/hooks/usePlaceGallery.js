@@ -15,6 +15,7 @@ import { trackGalleryPhotoReport } from '../../../shared/analytics/galleryPhotoR
 import {
   GALLERY_REPORT_REASONS,
   buildPersistPlaceGalleryArgs,
+  commitGalleryPersistRpc,
   droppedGalleryIds,
   galleryAdminFromProbe,
   galleryModerateFailureReason,
@@ -52,8 +53,14 @@ import { pickKoreanNameGallery } from '../../../utils/placeStatsNameGallery.js';
 import { lookupTourContentIdByName } from '../../../utils/tourKeywordPick.js';
 import { resolveGalleryStockQuery, isLatinPlaceName } from '../../../pages/Home/lib/uiPlaceAssetQuery.js';
 import {
+  GALLERY_MAX_IMAGES,
+  capPersistedGalleryImages,
+  filterGalleryImagesForPersist,
   filterGalleryIncomingForSave,
+  galleryReplaceOmitsOnlyAllowed,
+  galleryTargetRequiresPositivePersist,
   galleryUnsplashSearchQuery,
+  planThinStockGalleryPersist,
   resolveGallerySaveTarget,
   unsplashGallerySearchPage,
 } from '../../../utils/gallerySaveGuard.js';
@@ -81,8 +88,6 @@ import {
 const CACHE_VERSION = 'v1.25';
 const CACHE_TTL = 1000 * 60 * 60 * 24;
 
-/** 장소 갤러리 UI·세션 캐시 상한 (Pexels 다중 쿼리 백필 과다 방지) */
-const GALLERY_MAX_IMAGES = 60;
 /** fetchPexelsBatch 1회 호출당 최대 신규 장수 */
 const GALLERY_PEXELS_BATCH_LIMIT = 20;
 
@@ -871,6 +876,8 @@ export const usePlaceGallery = (locationSource, options = {}) => {
     };
 
     const pexelsQueries = resolvePexelsQueries(primaryQuery, backupQuery, koreanName, spotSlugForDb);
+    let thinStockStored = null;
+    const overseasPersist = galleryTargetRequiresPositivePersist(galleryTarget);
 
     const persistGallery = (mode, images, imageUrl) => {
       const placeId = resolveGalleryPersistPlaceId(
@@ -878,34 +885,75 @@ export const usePlaceGallery = (locationSource, options = {}) => {
         canonicalStatsIdRef.current,
       );
       if (!placeId) return;
-      const payloadImages = imagesForGalleryPersist(
-        mode,
-        mode === 'replace' ? { storage: images } : { fresh: images },
+      let payloadMode = mode;
+      let payloadImages = imagesForGalleryPersist(
+        payloadMode,
+        payloadMode === 'replace' ? { storage: images } : { fresh: images },
       );
-      if (mode === 'replace' && galleryPersistDropsStoredImages(payloadImages, allImagesRef.current)) {
+      if (
+        payloadMode === 'replace' &&
+        !thumbnailOnly &&
+        thinStockStored?.length &&
+        overseasPersist
+      ) {
+        const plan = planThinStockGalleryPersist({
+          stored: thinStockStored,
+          incoming: images,
+          target: galleryTarget,
+          max: GALLERY_MAX_IMAGES,
+        });
+        if (plan.mode !== 'merge_keep_hero' || !plan.images.length) return;
+        payloadMode = plan.mode;
+        payloadImages = plan.images;
+      } else if (payloadMode !== 'thumb' && overseasPersist) {
+        payloadImages = filterGalleryImagesForPersist(payloadImages, galleryTarget);
+      }
+      if (payloadMode !== 'thumb' && Array.isArray(payloadImages)) {
+        payloadImages = capPersistedGalleryImages(payloadImages, GALLERY_MAX_IMAGES);
+        if (payloadMode === 'merge_keep_hero' || payloadMode === 'append') {
+          const baseLen = Array.isArray(loadedStatsGalleryRef.current)
+            ? loadedStatsGalleryRef.current.length
+            : 0;
+          const room = Math.max(0, GALLERY_MAX_IMAGES - Math.min(baseLen, GALLERY_MAX_IMAGES));
+          payloadImages = payloadImages.slice(0, room);
+        }
+      }
+      if (
+        payloadMode === 'replace' &&
+        galleryPersistDropsStoredImages(payloadImages, allImagesRef.current) &&
+        !galleryReplaceOmitsOnlyAllowed(
+          payloadImages,
+          allImagesRef.current,
+          galleryTarget,
+          GALLERY_MAX_IMAGES,
+        )
+      ) {
         console.error('⚠️ persist_place_gallery refused: storage list was filtered');
         return;
       }
-      if (mode === 'replace') {
+      if (payloadMode === 'replace') {
         const skipReason = skipPersistPlaceGalleryReplaceReason(
           loadedStatsGalleryRef.current,
           payloadImages,
         );
         if (skipReason) return;
       }
-      if (mode !== 'thumb' && (!Array.isArray(payloadImages) || payloadImages.length === 0)) return;
-      if (mode === 'thumb' && !imageUrl) return;
+      if (payloadMode !== 'thumb' && (!Array.isArray(payloadImages) || payloadImages.length === 0)) return;
+      if (payloadMode === 'thumb' && !imageUrl) return;
       const args = buildPersistPlaceGalleryArgs({
         placeId,
-        mode,
+        mode: payloadMode,
         images: payloadImages,
         imageUrl,
       });
       const runAtCall = runId;
-      supabase.rpc('persist_place_gallery', args).then(({ data, error }) => {
+      commitGalleryPersistRpc(
+        (name, rpcArgs) => supabase.rpc(name, rpcArgs),
+        args,
+      ).then(({ data, error }) => {
         if (error) {
           if (runAtCall === galleryLoadSeqRef.current) {
-            console.error('⚠️ persist_place_gallery', mode, error);
+            console.error('⚠️ persist_place_gallery', payloadMode, error);
           }
           return;
         }
@@ -1178,6 +1226,7 @@ export const usePlaceGallery = (locationSource, options = {}) => {
                   '⚠️ place_stats stock gallery — official Tour contentId (skip DB short-circuit)',
                 );
               } else if (isThinStockGallery(gallerySlice)) {
+                thinStockStored = gallerySlice;
                 console.warn(
                   '⚠️ place_stats thin stock-only gallery — live Unsplash/Pexels refetch',
                 );
@@ -1418,6 +1467,14 @@ export const usePlaceGallery = (locationSource, options = {}) => {
           }
           finalResults = merged;
         }
+        if (
+          !thumbnailOnly &&
+          !forceRefresh &&
+          thinStockStored?.length &&
+          overseasPersist
+        ) {
+          finalResults = mergeGalleryAppend(thinStockStored, finalResults).merged;
+        }
 
         if (isStale()) return;
 
@@ -1434,6 +1491,14 @@ export const usePlaceGallery = (locationSource, options = {}) => {
           }
         }
         if (!forceRefresh) writeGallerySwrAt(stablePlaceKey);
+      } else if (!forceRefresh && overseasPersist && thinStockStored?.length && !isStale()) {
+        processAndSetImages(thinStockStored);
+        saveToSmartCache(CACHE_KEY, allImagesRef.current);
+        if (allImagesRef.current.length > 0) {
+          markFetchDone();
+          finishLoading();
+          writeGallerySwrAt(stablePlaceKey);
+        }
       } else if (tourSeed.length > 0 && !forceRefresh) {
         console.warn('⚠️ 스톡 0 — Tour 선드롭 유지');
       } else if (
