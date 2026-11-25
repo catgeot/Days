@@ -299,7 +299,7 @@ export const TRAVEL_SPOTS = [
     "category": "paradise",
     "showOnGlobe": true,
     "denseRegion": null,
-    "desc": "쿡 제도의 숨겨진 보석으로, 터키석빛 라군과 모래톱 섬이 이어지는 남태평양의 고요한 섬입니다.",
+    "desc": "쿡 제도의 숨겨진 보석으로, 터키석빛 라군과 모래톱 섬이 이어지는 남태평양의 고요한 섬이에요.",
     "keywords": [
       "휴양",
       "자연/오지",

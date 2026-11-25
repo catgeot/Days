@@ -62,8 +62,13 @@ test('hook uses gallery_active_exclusion_keys only (no gallery_excluded_keys)', 
   assert.match(hook, /readGalleryHiddenIds\(placeKey, localStorage\)/);
   assert.match(hook, /galleryAtMax: images\.length >= GALLERY_MAX_IMAGES/);
 
-  const persistAt = hook.indexOf("supabase.rpc('persist_place_gallery'");
+  const persistAt = hook.indexOf('commitGalleryPersistRpc(');
   assert.ok(persistAt > 0);
+  const persistHelper = readFileSync(
+    join(root, 'src/shared/api/placeGalleryPersist.js'),
+    'utf8',
+  );
+  assert.match(persistHelper, /rpc\('persist_place_gallery'/);
   const persistBlock = hook.slice(persistAt, persistAt + 1200);
   const cacheWrite = persistBlock.indexOf('sessionCacheAfterDroppedIds');
   const staleReturn = persistBlock.indexOf('runAtCall !== galleryLoadSeqRef.current');

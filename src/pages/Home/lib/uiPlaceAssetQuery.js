@@ -12,6 +12,20 @@ const PLACEHOLDER_COUNTRY = new Set([
   '',
 ]);
 
+const KR_COUNTRY_RE = /^(한국|대한민국|korea|south\s*korea|republic of korea)$/i;
+
+/** Latin country for an overseas stock query. Domestic and placeholder countries stay empty. */
+function latinOverseasCountry(targetSpot) {
+  if (!targetSpot || typeof targetSpot !== 'object') return '';
+  const countryEn = String(targetSpot.country_en || '').trim();
+  const country = String(targetSpot.country || '').trim();
+  if (KR_COUNTRY_RE.test(countryEn) || KR_COUNTRY_RE.test(country)) return '';
+  const latin = pickLatinPlaceName({ name_en: countryEn, name: country });
+  if (!latin || PLACEHOLDER_COUNTRY.has(latin) || KR_COUNTRY_RE.test(latin)) return '';
+  if (!countryEn && !isLatinPlaceName(country)) return '';
+  return latin;
+}
+
 export function isLatinPlaceName(value) {
   return isUrlSafeEnglishLabel(value);
 }
@@ -225,7 +239,7 @@ export function resolveGalleryStockQuery(targetSpot, fallbackDictionary = {}) {
     (typeof targetSpot === 'object'
       ? dictionaryEnglish(String(targetSpot?.name_en || '').trim(), fallbackDictionary)
       : '');
-  const primaryQuery = latin || fromDict || '';
+  let primaryQuery = latin || fromDict || '';
 
   let backupQuery = '';
   if (typeof targetSpot === 'object' && primaryQuery) {
@@ -252,6 +266,10 @@ export function resolveGalleryStockQuery(targetSpot, fallbackDictionary = {}) {
       backupQuery = `${primaryQuery} ${regionEn}`;
     } else if (country && country !== primaryQuery && !PLACEHOLDER_COUNTRY.has(country)) {
       backupQuery = `${primaryQuery} ${country}`;
+    }
+    const overseasCountry = latinOverseasCountry(targetSpot);
+    if (overseasCountry && !primaryQuery.toLowerCase().includes(overseasCountry.toLowerCase())) {
+      primaryQuery = `${primaryQuery} ${overseasCountry}`;
     }
   }
 
