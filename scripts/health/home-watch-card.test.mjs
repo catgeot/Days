@@ -29,7 +29,8 @@ import { LOGBOOK_REVIEW_HUB_SESSION_KEY } from '../../src/logbookOfficialReviews
 import { LOGBOOK_REVIEW_HUB_ROWS_STORAGE_KEY } from '../../src/logbookOfficialReviews/logbookReviewHubListCache.js';
 import { MONTHLY_PICKS } from '../../src/pages/Home/data/spotTraits.js';
 import {
-  HOME_WATCH_CONTINUE_PHOTO_FALLBACK,
+  HOME_WATCH_CONTINUE_FALLBACK_CLASS,
+  HOME_WATCH_CONTINUE_SCRIM_CLASS,
   continuePlaceSlugFromHref,
   fetchHomeWatchContinuePlacePhoto,
   homeWatchContinueDisplayUrl,
@@ -262,6 +263,34 @@ test('home watch analytics params carry slot type only', () => {
   assert.equal(blob.includes('kyoto') || blob.includes('교토'), false);
 });
 
+function channelLin(channel) {
+  const s = channel / 255;
+  return s <= 0.04045 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
+}
+
+function relLum(rgb) {
+  return 0.2126 * channelLin(rgb[0]) + 0.7152 * channelLin(rgb[1]) + 0.0722 * channelLin(rgb[2]);
+}
+
+function contrastRatio(fg, bg) {
+  const lighter = Math.max(relLum(fg), relLum(bg));
+  const darker = Math.min(relLum(fg), relLum(bg));
+  return (lighter + 0.05) / (darker + 0.05);
+}
+
+function overWhite(alpha) {
+  const v = Math.round(255 * (1 - alpha));
+  return [v, v, v];
+}
+
+function blend(fg, bg, alpha) {
+  return fg.map((channel, index) => Math.round(channel * alpha + bg[index] * (1 - alpha)));
+}
+
+function contrastOnWhitePhoto(fg, scrimAlpha) {
+  return contrastRatio(fg, overWhite(scrimAlpha));
+}
+
 const KHAO_LAK_PHOTO =
   'https://images.unsplash.com/photo-1645051049747-265f8c124875?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400';
 const BUSAN_PHOTO = 'https://tong.visitkorea.or.kr/cms/resource/01/2947001_image2_1.jpg';
@@ -286,7 +315,17 @@ test('continue place photo follows the place-card source and falls back when emp
   });
   assert.equal(lockedEmpty, '');
   assert.equal(calls, 0);
-  assert.equal(HOME_WATCH_CONTINUE_PHOTO_FALLBACK.includes('og-image.png'), true);
+  assert.equal(HOME_WATCH_CONTINUE_FALLBACK_CLASS.includes('og-image'), false);
+  assert.match(HOME_WATCH_CONTINUE_FALLBACK_CLASS, /from-slate-800/);
+  assert.match(HOME_WATCH_CONTINUE_FALLBACK_CLASS, /to-slate-950/);
+  const scrimStops = [...HOME_WATCH_CONTINUE_SCRIM_CLASS.matchAll(/black\/(\d+)/g)].map((match) => Number(match[1]));
+  assert.ok(scrimStops.length >= 2);
+  const lightest = Math.min(...scrimStops) / 100;
+  assert.ok(lightest >= 0.7);
+  assert.ok(contrastOnWhitePhoto([255, 255, 255], lightest) >= 4.5);
+  assert.ok(contrastOnWhitePhoto([0xba, 0xe6, 0xfd], lightest) >= 4.5);
+  const fadedWhite = blend([255, 255, 255], overWhite(lightest), 0.8);
+  assert.ok(contrastRatio(fadedWhite, overWhite(lightest)) >= 4.5);
 
   const khao = await fetchHomeWatchContinuePlacePhoto('khao-lak', async (candidates) => {
     calls += 1;

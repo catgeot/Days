@@ -24,7 +24,8 @@ import {
 } from '../lib/homeWatchCardModel.js';
 import { readHomeWatchContinueItems } from '../lib/homeWatchContinue.js';
 import {
-  HOME_WATCH_CONTINUE_PHOTO_FALLBACK,
+  HOME_WATCH_CONTINUE_FALLBACK_CLASS,
+  HOME_WATCH_CONTINUE_SCRIM_CLASS,
   continuePlaceSlugFromHref,
   fetchHomeWatchContinuePlacePhoto,
   homeWatchContinueDisplayUrl,
@@ -127,17 +128,13 @@ function useHomeWatchContinuePhoto(slug) {
   if (locked.kind === 'photo') {
     return { state: 'photo', src: homeWatchContinueDisplayUrl(locked.imageUrl) };
   }
-  if (locked.kind === 'empty') {
-    return { state: 'fallback', src: HOME_WATCH_CONTINUE_PHOTO_FALLBACK };
-  }
+  if (locked.kind === 'empty') return { state: 'fallback', src: '' };
   if (remote.slug !== slug || remote.status === 'loading') return { state: 'loading', src: '' };
   if (remote.status === 'ready') {
     return { state: 'photo', src: homeWatchContinueDisplayUrl(remote.imageUrl) };
   }
-  if (remote.status === 'error') {
-    return { state: 'error', src: HOME_WATCH_CONTINUE_PHOTO_FALLBACK };
-  }
-  return { state: 'fallback', src: HOME_WATCH_CONTINUE_PHOTO_FALLBACK };
+  if (remote.status === 'error') return { state: 'error', src: '' };
+  return { state: 'fallback', src: '' };
 }
 
 function HomeWatchContinuePhoto({ href }) {
@@ -153,17 +150,26 @@ function HomeWatchContinuePhoto({ href }) {
 
   if (!slug || photo.state === 'loading' || photo.state === 'skip') return null;
   const failed = broken || photo.state === 'error';
-  const src = failed ? HOME_WATCH_CONTINUE_PHOTO_FALLBACK : photo.src;
-  if (!src) return null;
   const imageState = failed ? 'error' : photo.state === 'photo' ? 'photo' : 'fallback';
+  if (imageState !== 'photo' || !photo.src) {
+    return (
+      <div
+        data-testid="home-watch-continue-photo"
+        data-image-state={imageState}
+        data-photo-slug={slug}
+        data-photo-fallback="gradient"
+        className={HOME_WATCH_CONTINUE_FALLBACK_CLASS}
+      />
+    );
+  }
 
   return (
     <img
-      src={src}
+      src={photo.src}
       alt=""
       aria-hidden="true"
       data-testid="home-watch-continue-photo"
-      data-image-state={imageState}
+      data-image-state="photo"
       data-photo-slug={slug}
       className="absolute inset-0 h-full w-full object-cover"
       draggable={false}
@@ -331,9 +337,15 @@ const HomeWatchCard = ({
                       <div className="absolute inset-0 bg-gradient-to-br from-slate-800 to-slate-950" />
                     )
                   ) : null}
-                  <div className="relative z-[1] bg-gradient-to-t from-black/80 via-black/45 to-transparent px-1.5 pb-1 pt-3">
+                  <div className={`relative z-[1] px-1.5 pb-1 pt-3 ${
+                    slot.type === 'continue'
+                      ? HOME_WATCH_CONTINUE_SCRIM_CLASS
+                      : 'bg-gradient-to-t from-black/80 via-black/45 to-transparent'
+                  }`}
+                  data-testid={slot.type === 'continue' ? 'home-watch-continue-scrim' : undefined}
+                  >
                     {slot.type === 'continue' ? (
-                      <p className="truncate text-[9px] font-semibold leading-none text-sky-200">
+                      <p className="truncate text-[9px] font-semibold leading-none text-white">
                         {t('home.watchCard.continueLabel')}
                       </p>
                     ) : null}
@@ -348,7 +360,12 @@ const HomeWatchCard = ({
                       </span>
                     ) : null}
                     {subtitle && slot.type !== 'destination' ? (
-                      <p className="truncate text-[9px] leading-tight text-white/80">{subtitle}</p>
+                      <p className={`truncate text-[9px] leading-tight ${
+                        slot.type === 'continue' ? 'text-white' : 'text-white/80'
+                      }`}
+                      >
+                        {subtitle}
+                      </p>
                     ) : null}
                   </div>
                 </div>

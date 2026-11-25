@@ -273,7 +273,6 @@ test.describe('home watch card', () => {
         name: '방니앙 시장',
         imageUrl: '',
         state: 'fallback',
-        src: /og-image\.png/,
       },
     ];
 
@@ -307,11 +306,22 @@ test.describe('home watch card', () => {
       await expect(slot).toContainText('최근에 보신 장소예요');
       const photo = slot.getByTestId('home-watch-continue-photo');
       await expect(photo).toHaveAttribute('data-image-state', row.state);
-      await expect(photo).toHaveAttribute('src', row.src);
       await expect(photo).toHaveAttribute('data-photo-slug', row.slug);
-      await expect.poll(() => photo.evaluate((img, state) => (
-        img.getAttribute('data-image-state') === state && img.complete ? img.naturalWidth : 0
-      ), row.state)).toBeGreaterThan(0);
+      if (row.state === 'photo') {
+        await expect(photo).toHaveAttribute('src', row.src);
+        await expect.poll(() => photo.evaluate((img, state) => (
+          img.getAttribute('data-image-state') === state && img.complete ? img.naturalWidth : 0
+        ), row.state)).toBeGreaterThan(0);
+      } else {
+        await expect(photo).toHaveAttribute('data-photo-fallback', 'gradient');
+        await expect(photo).toHaveClass(/from-slate-800/);
+        await expect(photo).toHaveClass(/to-slate-950/);
+        await expect(slot.locator('img')).toHaveCount(0);
+        await expect(slot.locator('text=/GATEO|og-image/')).toHaveCount(0);
+      }
+      const scrim = slot.getByTestId('home-watch-continue-scrim');
+      await expect(scrim).toHaveClass(/to-black\/70/);
+      await expect(scrim).toHaveClass(/from-black\/90/);
       const file = width >= 1280
         ? `/opt/cursor/artifacts/home-watch-continue-${row.slug}-1280.png`
         : `/opt/cursor/artifacts/home-watch-continue-${row.slug}-390.png`;
@@ -346,11 +356,12 @@ test.describe('home watch card', () => {
       );
     });
     await page.goto('/', { waitUntil: 'domcontentloaded' });
-    const photo = page.getByTestId('home-watch-slot-continue').getByTestId('home-watch-continue-photo');
+    const slot = page.getByTestId('home-watch-slot-continue');
+    const photo = slot.getByTestId('home-watch-continue-photo');
     await expect(photo).toHaveAttribute('data-image-state', 'error');
-    await expect(photo).toHaveAttribute('src', /og-image\.png/);
-    await expect.poll(async () => photo.evaluate((img) => (
-      img.getAttribute('data-image-state') === 'error' && img.complete ? img.naturalWidth : 0
-    ))).toBeGreaterThan(0);
+    await expect(photo).toHaveAttribute('data-photo-fallback', 'gradient');
+    await expect(photo).toHaveClass(/from-slate-800/);
+    await expect(slot.locator('img')).toHaveCount(0);
+    await expect(slot).toContainText('카오락');
   });
 });

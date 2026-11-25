@@ -2,10 +2,22 @@ import { curatedPlaceGallery } from '../../../data/curatedPlaceGalleries.js';
 import { pickImageFromPlaceStatsRows } from '../../DailyReport/lib/curationImageResolve.js';
 import { buildPlaceDbIdCandidates } from '../../../utils/travelSpotResolve.js';
 import { resolveListImageUrl } from '../../../utils/listImageUrl.js';
-import { DEFAULT_OG_IMAGE } from './placeSeoOg.js';
 
-/** Same site image place SEO uses when a place has no gallery photo. */
-export const HOME_WATCH_CONTINUE_PHOTO_FALLBACK = DEFAULT_OG_IMAGE;
+/**
+ * Place cards with no photo use a category gradient and no bitmap
+ * (SpotThumbnailCard). This card's empty destination tile is the same idea
+ * without a wordmark: slate gradient, no text or logo.
+ */
+export const HOME_WATCH_CONTINUE_FALLBACK_CLASS =
+  'absolute inset-0 bg-gradient-to-br from-slate-800 to-slate-950';
+
+/**
+ * Lightest stop under the continue label. Destination tiles fade to transparent,
+ * which leaves the extra continue lines on the bright part of a photo.
+ * black/70 over white still clears 4.5:1 for white and sky-200 text.
+ */
+export const HOME_WATCH_CONTINUE_SCRIM_CLASS =
+  'bg-gradient-to-t from-black/90 via-black/80 to-black/70';
 
 const PLACE_STATS_QUERY_MS = 8_000;
 const LIST_PHOTO_WIDTH = 480;
