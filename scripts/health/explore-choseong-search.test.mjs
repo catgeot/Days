@@ -14,6 +14,9 @@ import {
   resetExploreChoseongIndexForTests,
 } from '../../src/pages/Home/lib/exploreChoseongMatch.js';
 import { buildLocalSearchSuggestions } from '../../src/pages/Home/lib/searchSuggestions.js';
+import { resolveExploreSearchRepresentativeThumbUrl } from '../../src/pages/Home/lib/placeSeoOg.js';
+import { hubToSuggestion } from '../../src/pages/Home/lib/cityAttractionHubs.js';
+import { resolveCityAttractionHub } from '../../src/pages/Home/lib/cityAttractionHubs.js';
 import {
   buildExploreFestivalSuggestionsFromPool,
   exploreFestivalChoseongIndexBuildCount,
@@ -122,6 +125,37 @@ test('choseong ㅅㅇ travel-spot rows with a city hub reuse hub scenic thumb', 
     (item) => !String(item.thumbUrl || item.imageUrl || '').trim(),
   );
   assert.ok(withoutThumb.length < items.length, 'at least one choseong row has a scenic thumb');
+});
+
+test('choseong ㅅㅇ 시애틀 keeps icon when slug OG is generic pool only', () => {
+  resetExploreChoseongIndexForTests();
+  const items = withChoseongFlag('', () => buildLocalSearchSuggestions('ㅅㅇ'));
+  const seattle = items.find((item) => item.name === '시애틀' && item.kind === 'spot');
+  assert.ok(seattle);
+  assert.equal(String(seattle.thumbUrl || seattle.imageUrl || '').trim(), '');
+  assert.equal(resolveExploreSearchRepresentativeThumbUrl({ slug: 'seattle', kind: 'spot' }), null);
+});
+
+test('choseong ㅅㅇ 산야 hub has no site-wide static representative (icon fallback)', () => {
+  resetExploreChoseongIndexForTests();
+  const hub = resolveCityAttractionHub('sanya');
+  const row = hubToSuggestion(hub);
+  assert.equal(resolveExploreSearchRepresentativeThumbUrl(row), null);
+  const items = withChoseongFlag('', () => buildLocalSearchSuggestions('ㅅㅇ'));
+  const sanya = items.find((item) => item.name === '산야' && item.source === 'hub');
+  assert.ok(sanya);
+  assert.equal(String(sanya.thumbUrl || sanya.imageUrl || '').trim(), '');
+});
+
+test('choseong ㅅㅇ 수영 district hub has no static representative (icon fallback)', () => {
+  resetExploreChoseongIndexForTests();
+  const hub = resolveCityAttractionHub('suyeong');
+  const row = hubToSuggestion(hub);
+  assert.equal(resolveExploreSearchRepresentativeThumbUrl(row), null);
+  const items = withChoseongFlag('', () => buildLocalSearchSuggestions('ㅅㅇ'));
+  const suyeong = items.find((item) => item.name === '수영' && item.source === 'hub');
+  assert.ok(suyeong);
+  assert.equal(String(suyeong.thumbUrl || suyeong.imageUrl || '').trim(), '');
 });
 
 test('completed and english explore results stay the same when choseong is on', () => {

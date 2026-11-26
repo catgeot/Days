@@ -12,7 +12,10 @@ import {
   getKindLabel,
   placeUrlSlug,
 } from './cityAttractionHubs.js';
-import { resolveExploreSearchCardThumbUrl } from './placeSeoOg.js';
+import {
+  resolveExploreSearchCardThumbUrl,
+  resolveExploreSearchRepresentativeThumbUrl,
+} from './placeSeoOg.js';
 import {
   scenicAreaCodeForHubId,
   scenicRegionForAreaCode,
@@ -386,6 +389,16 @@ export function resolveSearchScenicMedia(item) {
   ) {
     const hub = resolveCityAttractionHub(hubId);
     for (const attraction of hub?.attractions || []) {
+      const attThumb = resolveExploreSearchCardThumbUrl({
+        thumbnail: attraction.thumbnail,
+      });
+      if (attThumb) {
+        const cid = memberContentId({}, attraction);
+        return {
+          imageUrl: attThumb,
+          contentId: /^\d{1,32}$/.test(String(cid || '')) ? cid : null,
+        };
+      }
       const sub = resolveSearchScenicMediaForAttraction(
         hubId,
         String(attraction.name || '').trim(),
@@ -405,7 +418,19 @@ export function resolveSearchScenicMedia(item) {
     }
   }
 
-  return resolveSearchScenicMediaForAttraction(hubId, name, item.contentId, item);
+  const resolved = resolveSearchScenicMediaForAttraction(
+    hubId,
+    name,
+    item.contentId,
+    item,
+  );
+  if (resolved.imageUrl) return resolved;
+  const representative = resolveExploreSearchRepresentativeThumbUrl(item);
+  const repCard = resolveExploreSearchCardThumbUrl({ thumbnail: representative });
+  if (repCard) {
+    return { imageUrl: repCard, contentId: resolved.contentId };
+  }
+  return resolved;
 }
 
 /**
@@ -782,6 +807,18 @@ export function enrichSearchCandidateScenicMedia(item, locale = 'ko') {
     });
     if (exploreThumb) {
       next = { ...next, imageUrl: exploreThumb, thumbUrl: exploreThumb };
+    }
+  }
+  const afterExplicitThumb = Boolean(
+    String(
+      next.imageUrl || next.thumbUrl || next.firstImage || next.image_url || '',
+    ).trim(),
+  );
+  if (!afterExplicitThumb) {
+    const representative = resolveExploreSearchRepresentativeThumbUrl(next);
+    const repCard = resolveExploreSearchCardThumbUrl({ thumbnail: representative });
+    if (repCard) {
+      next = { ...next, imageUrl: repCard, thumbUrl: repCard };
     }
   }
   if (
