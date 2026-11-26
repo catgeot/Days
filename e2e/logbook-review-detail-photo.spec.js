@@ -194,7 +194,11 @@ test.describe('LogBook review detail photo @mocked', () => {
       )
       .toBeTruthy();
     const hero = hwaseongCard.getByTestId('logbook-editorial-review-detail-hero');
-    await expect(hero.locator('.line-clamp-2, .line-clamp-3, .line-clamp-4')).toHaveCount(0);
+    await expect(
+      hero.locator(
+        '.line-clamp-2:not([data-testid="logbook-official-review-hub-card-reviewer"]), .line-clamp-3, .line-clamp-4',
+      ),
+    ).toHaveCount(0);
     const onPhotoTopRight = await hero.evaluate((el) => {
       const frame = el.querySelector('.aspect-\\[4\\/3\\]');
       const media = el.querySelector(

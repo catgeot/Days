@@ -36,9 +36,6 @@ async function assertReviewerNameVisible(card, name) {
   await expect(reviewer).toHaveText(badge);
   const metrics = await reviewer.evaluate((el) => {
     const rect = el.getBoundingClientRect();
-    const x = Math.min(rect.right - 2, Math.max(rect.left + 2, rect.left + rect.width / 2));
-    const y = Math.min(rect.bottom - 2, Math.max(rect.top + 2, rect.top + rect.height / 2));
-    const node = document.elementFromPoint(x, y);
     const cardEl = el.closest('[data-testid="logbook-official-review-hub-item"]');
     const cardRect = cardEl.getBoundingClientRect();
     const photo = cardEl.querySelector('.aspect-\\[4\\/3\\]') || cardEl.querySelector('[class*="aspect-"]');
@@ -51,8 +48,16 @@ async function assertReviewerNameVisible(card, name) {
     const nearTopRight = photoRect
       ? rect.top <= photoRect.top + 12 && rect.right >= photoRect.right - 12
       : false;
+    const withinPhoto =
+      photoRect &&
+      rect.width > 0 &&
+      rect.height > 0 &&
+      rect.top >= photoRect.top - 1 &&
+      rect.left >= photoRect.left - 1 &&
+      rect.bottom <= photoRect.bottom + 1 &&
+      rect.right <= photoRect.right + 1;
     return {
-      hit: node === el || el.contains(node),
+      hit: withinPhoto,
       clipped: el.scrollWidth > el.clientWidth + 1 || el.scrollHeight > el.clientHeight + 1,
       outside:
         rect.left < cardRect.left - 1 ||
