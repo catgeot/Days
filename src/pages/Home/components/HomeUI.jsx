@@ -365,6 +365,9 @@ const HomeUI = React.memo(({
         isPlaceCardVisible={isPlaceCardVisible}
         isTourCinema={isTourCinema}
         isFlightCinema={isFlightCinema}
+        yieldToMobileGlobeMenu={Boolean(
+          !isMdUp && faceRegionsOpen && mobileRegionsExpanded && selectedCategory,
+        )}
       />
       <div className="fixed top-0 left-0 right-0 z-[100] p-4 md:p-6 flex flex-col gap-2 md:grid md:grid-cols-12 md:items-start md:gap-3 pointer-events-none w-full max-md:overflow-x-clip">
         <div
@@ -505,6 +508,7 @@ const HomeUI = React.memo(({
         <TrustLinkBar variant="stack" />
         {!hideExploreChrome && faceRegionsOpen && selectedCategory && (
           <div
+            data-testid="home-globe-country-menu"
             className="flex flex-col items-start gap-1.5 animate-fade-in-right"
             onPointerDown={(event) => event.stopPropagation()}
             onTouchStart={(event) => event.stopPropagation()}

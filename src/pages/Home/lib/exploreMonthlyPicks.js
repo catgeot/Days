@@ -169,9 +169,14 @@ export function resolveExploreMonthlyPickHeroUrl(spot) {
   return resolveListImageUrl(raw, { role: 'list', width: 640 });
 }
 
-export function monthlyPickDisplayName(spot, slug = '') {
+export function monthlyPickDisplayName(spot, slug = '', language = 'ko') {
+  const isEn = String(language || '')
+    .trim()
+    .toLowerCase()
+    .startsWith('en');
+  const lang = isEn ? 'en' : 'ko';
   return (
-    getLocalizedPlaceName(spot, 'ko') ||
+    getLocalizedPlaceName(spot, lang) ||
     String(spot?.name || slug || '').trim()
   );
 }

@@ -147,7 +147,7 @@ test('monthly card layout clears the about row and the MOONi button', () => {
   };
   assert.ok(card.bottom <= about.top);
   assert.ok(about.top - card.bottom <= 16);
-  assert.ok(card.right <= mooni.left);
+  assert.ok(card.right > mooni.left, 'mobile bar spans the full viewport width');
   assert.ok(card.bottom <= nav.top);
 });
 
@@ -169,8 +169,8 @@ test('monthly card width stays fixed when MOONi moves', () => {
   });
   assert.equal(docked.left, dragged.left);
   assert.equal(docked.right, dragged.right);
-  assert.equal(docked.right, 108);
-  assert.equal(390 - docked.right, 282);
+  assert.equal(docked.right, HOME_WATCH_CARD_LAYOUT.mobile.side);
+  assert.equal(390 - docked.right, 378);
 });
 
 test('monthly mode keeps every destination tile in the scroller', () => {

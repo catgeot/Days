@@ -97,8 +97,13 @@ test.describe('home monthly destinations', () => {
     await expect(link).toHaveCSS('border-radius', '0px');
     await expect(link).toHaveCSS('border-top-width', '0px');
     const cardBox = await box(card);
-    expect(cardBox.height).toBeGreaterThanOrEqual(85);
-    expect(cardBox.height).toBeLessThan(86);
+    if (width >= 1280) {
+      expect(cardBox.height).toBeGreaterThanOrEqual(85);
+      expect(cardBox.height).toBeLessThan(86);
+    } else {
+      expect(cardBox.height).toBeGreaterThanOrEqual(96);
+      expect(cardBox.height).toBeLessThan(97);
+    }
 
     const hint = page.getByText('여행을 찾아봐요');
     if (await hint.count()) {
@@ -251,6 +256,11 @@ test.describe('home monthly destinations', () => {
     const card = page.getByTestId('home-watch-card');
     await expect(card).toBeVisible({ timeout: 60_000 });
     await expect(card).toContainText('November picks');
+    const scroller = page.getByTestId('home-monthly-scroller');
+    const names = scroller.locator('[data-caption-role="name"]');
+    await expect(names.first()).toContainText('Kyoto');
+    await expect(names.nth(1)).toContainText('Chiang Mai');
+    await expect(names.nth(2)).toContainText('Phu Quoc');
     const link = page.getByTestId('home-monthly-switch');
     await expect(link).toHaveText('See December ▸');
     await expectCaptionsFit(page);

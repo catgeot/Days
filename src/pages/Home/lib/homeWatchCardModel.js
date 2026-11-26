@@ -16,7 +16,7 @@ export const HOME_WATCH_DISMISS_MS = 7 * 24 * 60 * 60 * 1000;
 
 export const HOME_WATCH_CARD_LAYOUT = {
   /** 390: above the category bar, footer links, and the MOONi intro bubble. */
-  mobile: { bottom: 228, height: 85, side: 12, slots: 3, maxWidth: 1279 },
+  mobile: { bottom: 228, height: 96, side: 12, slots: 3, maxWidth: 1279 },
   desktop: { left: 300, bottom: 110, height: 85, minWidth: 1280, slots: 4 },
 };
 
@@ -36,12 +36,9 @@ export const HOME_WATCH_CAPTION_BAND = 'rgba(0,0,0,0.86)';
 export const HOME_MONTHLY_PREVIEW_START_DAY = 1;
 export const HOME_MONTHLY_PREVIEW_START_QUERY = 'home_monthly_preview_start';
 export const HOME_MONTHLY_CARD_GAP = 8;
-/**
- * Fixed right inset. Matches `.home-monthly-card` and clears the docked MOONi.
- * A dragged MOONi overlays this box; its live position must not change the width.
- */
+/** Mobile matches `left` inset (full width); desktop clears the docked MOONi. */
 export const HOME_MONTHLY_CARD_RIGHT = {
-  mobile: 108,
+  mobile: HOME_WATCH_CARD_LAYOUT.mobile.side,
   desktop: 120,
 };
 
@@ -118,13 +115,22 @@ export function layoutHomeMonthlyCard({
     if (!overlapsX) continue;
     bottom = Math.max(bottom, height - rect.top + gap);
   }
+  const cardHeight = desktop
+    ? HOME_WATCH_CARD_LAYOUT.desktop.height
+    : HOME_WATCH_CARD_LAYOUT.mobile.height;
   return {
     left,
     right,
     bottom,
-    height: HOME_WATCH_CARD_LAYOUT.mobile.height,
-    top: height - bottom - HOME_WATCH_CARD_LAYOUT.mobile.height,
+    height: cardHeight,
+    top: height - bottom - cardHeight,
   };
+}
+
+export function homeWatchCardHeightForWidth(width) {
+  return Number(width) >= HOME_WATCH_CARD_LAYOUT.desktop.minWidth
+    ? HOME_WATCH_CARD_LAYOUT.desktop.height
+    : HOME_WATCH_CARD_LAYOUT.mobile.height;
 }
 
 export function homeWatchSlotCountForWidth(width) {
@@ -249,8 +255,10 @@ export function shouldHideHomeWatchCard({
   mooniChat = false,
   cinema = false,
   siteNotice = false,
+  /** Mobile globe country/subregion menu open — yields the highlights bar. */
+  mobileGlobeRegionsMenu = false,
 } = {}) {
-  return Boolean(placeCard || explore || mooniChat || cinema || siteNotice);
+  return Boolean(placeCard || explore || mooniChat || cinema || siteNotice || mobileGlobeRegionsMenu);
 }
 
 export function isHomeWatchDismissed(now = Date.now(), storage = defaultStorage()) {
@@ -302,14 +310,14 @@ export function reviewerForPlaceSlug(slug, rows) {
   return normalizePersonaLabel(matches[0]?.persona_label);
 }
 
-export function buildHomeWatchMonthlyDestinations(now = new Date(), rows = [], monthKey) {
+export function buildHomeWatchMonthlyDestinations(now = new Date(), rows = [], monthKey, language = 'ko') {
   const resolvedKey = monthKey
     ? resolveExploreV2MonthlyPickKey(monthKey)
     : resolveExploreV2MonthlyPickKey(resolveExploreCurrentMonthPickKey(now));
   const cards = partitionExploreMonthlyPickCardsByHero(buildVisibleMonthlyPickCards(resolvedKey)).withHero;
   return cards.map(({ entry, spot, imageUrl }) => {
     const slug = String(spot?.slug || entry?.slug || '').trim();
-    const name = monthlyPickDisplayName(spot, slug);
+    const name = monthlyPickDisplayName(spot, slug, language);
     const reviewer = reviewerForPlaceSlug(slug, rows);
     return {
       slug,

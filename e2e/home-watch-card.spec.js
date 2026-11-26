@@ -49,8 +49,14 @@ async function expectCaptionBands(page) {
   }
   const card = page.getByTestId('home-watch-card');
   const cardBox = await box(card);
-  expect(cardBox.height).toBeGreaterThanOrEqual(85);
-  expect(cardBox.height).toBeLessThan(86);
+  const width = cardBox.width > 500 ? 1280 : 390;
+  if (width >= 1280) {
+    expect(cardBox.height).toBeGreaterThanOrEqual(85);
+    expect(cardBox.height).toBeLessThan(86);
+  } else {
+    expect(cardBox.height).toBeGreaterThanOrEqual(96);
+    expect(cardBox.height).toBeLessThan(97);
+  }
 }
 
 async function captionProbe(page) {

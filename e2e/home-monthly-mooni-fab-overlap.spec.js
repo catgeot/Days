@@ -201,6 +201,49 @@ test.describe('home monthly card vs MOONi FAB drop', () => {
     expect(hit.onTile, `elementFromPoint returned ${hit.testId}`).toBe(true);
   });
 
+  test('default and corner drops stay clear of the monthly bar on 390', async ({ page }, testInfo) => {
+    const width = testInfo.project.use.viewport?.width ?? 0;
+    test.skip(width !== 390, '390 mobile viewport only');
+
+    const card = await openHome(page);
+    const artifactDir = process.env.CI ? null : '/opt/cursor/artifacts';
+    if (artifactDir) fs.mkdirSync(artifactDir, { recursive: true });
+
+    const assertClear = async (label) => {
+      await page.evaluate(() => new Promise((resolve) => {
+        requestAnimationFrame(() => requestAnimationFrame(resolve));
+      }));
+      const fabBox = await box(page.getByTestId('mooni-fab-open'));
+      const shellBox = await box(fabShell(page));
+      const cardBox = await box(card);
+      expect(overlaps(fabBox, cardBox), `${label}: fab intersects card`).toBe(false);
+      expect(overlaps(shellBox, cardBox), `${label}: shell intersects card`).toBe(false);
+      if (artifactDir && label) {
+        const slug = label.replace(/[^a-z0-9]+/gi, '-').toLowerCase();
+        await page.screenshot({
+          path: `${artifactDir}/mooni-fab-${slug}-390-${testInfo.project.name}.png`,
+          clip: { x: 0, y: 0, width: 390, height: 844 },
+        });
+      }
+    };
+
+    await assertClear('default');
+
+    const dropPoints = await page.evaluate(() => ({
+      center: { x: window.innerWidth / 2, y: window.innerHeight * 0.55 },
+      bottomLeft: { x: 28, y: window.innerHeight - 16 },
+      bottomRight: { x: window.innerWidth - 28, y: window.innerHeight - 16 },
+      midLeft: { x: 28, y: window.innerHeight * 0.48 },
+      midRight: { x: window.innerWidth - 28, y: window.innerHeight * 0.48 },
+    }));
+
+    for (const [label, point] of Object.entries(dropPoints)) {
+      await dragMooni(page, [point]);
+      expect(await page.evaluate(() => document.documentElement.classList.contains('mooni-fab-dragging'))).toBe(false);
+      await assertClear(label);
+    }
+  });
+
   test('dismissed monthly card keeps the main drop position', async ({ page }) => {
     const card = await openHome(page);
     const tile = page.getByTestId('home-monthly-scroller').locator('li').first();
