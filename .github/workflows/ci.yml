@@ -1,4 +1,4 @@
-# PR·main — lint(src no-undef) + production build gate + 7 blocking jobs (incl. Festival hero credit)
+# PR·main — lint(src no-undef) + production build gate + 8 blocking jobs (incl. Festival hero credit)
 # Playwright image tag must match package-lock @playwright/test version (currently 1.60.0).
 # Jobs on mcr.microsoft.com/playwright:*-jammy must not run `playwright install --with-deps`
 # (browsers + OS libraries are preinstalled; --with-deps re-runs apt and flakes on mirror sync).
@@ -259,4 +259,33 @@ jobs:
           VITE_SUPABASE_ANON_KEY: e2e-anon-placeholder
           CI: true
         run: npm run test:e2e:editorial-blog-head-meta
+
+  safari-tab-reload-e2e:
+    name: Safari tab reload E2E (Chromium 390)
+    runs-on: ubuntu-24.04
+    needs: lint-and-build
+    timeout-minutes: 30
+    container:
+      image: mcr.microsoft.com/playwright:v1.60.0-jammy
+      options: --ipc=host
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Playwright — safari tab reload
+        env:
+          VITE_SUPABASE_URL: https://example.supabase.co
+          VITE_SUPABASE_ANON_KEY: e2e-anon-placeholder
+          CI: true
+          DEV_SSL: '0'
+        run: npx playwright test -c playwright.config.safari-tab-reload.js --reporter=line
 

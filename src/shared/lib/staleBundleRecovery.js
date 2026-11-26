@@ -59,17 +59,62 @@ export function clearStaleBundleReloadGuard(storage, bundleId) {
   }
 }
 
+export const STALE_BUNDLE_BANNER_EVENT = 'gateo:stale-bundle-banner';
+
 /**
+ * Same-origin path + query. External or unparseable URLs are not navigation targets.
+ * @param {string} url
+ * @param {string} [baseHref]
+ * @returns {string}
+ */
+export function canonicalAppTarget(url, baseHref = 'http://localhost/') {
+  try {
+    const base = new URL(baseHref);
+    const parsed = new URL(String(url || ''), base);
+    if (parsed.origin !== base.origin) return '';
+    return `${parsed.pathname}${parsed.search}`;
+  } catch {
+    return '';
+  }
+}
+
+/** @param {string} bundleId @param {string} target */
+export function staleBundleAssignGuardId(bundleId, target) {
+  return `${bundleId}|${target}`;
+}
+
+/** Pathname only. Query edits on the open screen are not a new document. */
+export function appPathname(canon) {
+  const value = String(canon || '');
+  const q = value.indexOf('?');
+  return q === -1 ? value : value.slice(0, q);
+}
+
+/**
+ * Open tab (no target) shows the update banner. A navigation target is hard-loaded
+ * once per bundle id + target; a repeated failure shows the banner instead of looping.
  * @param {Storage} storage
  * @param {string} bundleId
  * @param {number} [now]
- * @returns {'reload' | 'fallback'}
+ * @param {{ target?: string }} [opts]
+ * @returns {'banner' | 'assign' | 'fallback'}
  */
-export function decideStaleBundleRecoveryAction(storage, bundleId, now = Date.now()) {
-  const guard = readStaleBundleReloadGuard(storage, bundleId);
-  if (!guard) return 'reload';
+export function decideStaleBundleRecoveryAction(storage, bundleId, now = Date.now(), opts = {}) {
+  const target = String(opts?.target || '');
+  if (!target) return 'banner';
+  const guard = readStaleBundleReloadGuard(storage, staleBundleAssignGuardId(bundleId, target));
+  if (!guard) return 'assign';
   if (now - guard.at < STALE_BUNDLE_RELOAD_COOLDOWN_MS) return 'fallback';
   return 'fallback';
+}
+
+/**
+ * @param {Window | null | undefined} [win]
+ */
+export function requestStaleBundleBanner(win = typeof window !== 'undefined' ? window : null) {
+  if (!win) return;
+  win.__GATEO_STALE_BUNDLE_BANNER__ = true;
+  win.dispatchEvent?.(new Event(STALE_BUNDLE_BANNER_EVENT));
 }
 
 /**
@@ -119,13 +164,10 @@ function isChunkLoadMessage(message) {
 }
 
 /**
- * WebKit emits vite:preloadError a few milliseconds after beforeunload when
- * location.assign aborts an in-flight import. The measured gap was ~10ms.
- * 2000ms covers that race, including a slow event loop, and still returns
- * recovery quickly when the document stays (tel:/mailto:, a download, or a
- * cancelled beforeunload prompt). An ignored signal is not replayed: at the
- * deadline a slow assign can still be this document, and reloading then would
- * cancel /place. The next failure after the window reloads.
+ * WebKit emits vite:preloadError a few milliseconds after pagehide when
+ * a real document navigation aborts an in-flight import. The measured gap was ~10ms.
+ * 2000ms covers that race. pagehide / visibility hidden arm this window so
+ * bfcache is not blocked by beforeunload. An ignored signal is not replayed.
  */
 export const STALE_BUNDLE_LEAVE_WINDOW_MS = 2000;
 
@@ -208,32 +250,51 @@ export function shouldIgnoreStaleBundleSignal(signal = {}) {
 }
 
 /**
+ * @param {Document | null | undefined} [doc]
+ */
+export function presentStaleBundleRecoveryUi(doc = typeof document !== 'undefined' ? document : null) {
+  const win = doc?.defaultView || (typeof window !== 'undefined' ? window : null);
+  requestStaleBundleBanner(win);
+  if (doc && isRecoveryDocumentBlank(doc)) showStaleBundleFallback(doc);
+}
+
+function isRecoveryDocumentBlank(doc) {
+  const root = doc.getElementById?.('root');
+  if (root) return root.childElementCount === 0;
+  return (doc.body?.childElementCount ?? 0) === 0;
+}
+
+/**
  * @param {unknown} reason
  * @param {Storage} storage
  * @param {string} bundleId
- * @param {{ reload?: () => void, now?: number }} [opts]
- * @returns {'reload' | 'fallback' | 'ignore'}
+ * @param {{ assign?: (url: string) => void, showBanner?: () => void, now?: number, target?: string }} [opts]
+ * @returns {'banner' | 'assign' | 'fallback'}
  */
 export function handleStaleBundleLoadFailure(reason, storage, bundleId, opts = {}) {
-  const reload = opts.reload ?? (() => {
-    if (typeof window !== 'undefined') window.location.reload();
-  });
   const now = opts.now ?? Date.now();
-  const action = decideStaleBundleRecoveryAction(storage, bundleId, now);
-  if (action === 'fallback') {
-    if (typeof document !== 'undefined') showStaleBundleFallback(document);
-    return 'fallback';
+  const target = String(opts.target || '');
+  const action = decideStaleBundleRecoveryAction(storage, bundleId, now, { target });
+  if (action === 'assign') {
+    markStaleBundleReloadAttempt(storage, staleBundleAssignGuardId(bundleId, target), now);
+    const assign = opts.assign ?? ((url) => {
+      if (typeof window !== 'undefined') window.location.assign(url);
+    });
+    assign(target);
+    return 'assign';
   }
-  markStaleBundleReloadAttempt(storage, bundleId, now);
-  reload();
-  return 'reload';
+  const showBanner = opts.showBanner ?? (() => presentStaleBundleRecoveryUi());
+  showBanner();
+  return action;
 }
 
 /**
  * @param {{
  *   storage?: Storage,
- *   reload?: () => void,
+ *   assign?: (url: string) => void,
+ *   showBanner?: () => void,
  *   getBundleId?: () => string,
+ *   getNavTarget?: () => string,
  * }} [opts]
  */
 export function installStaleBundleRecovery(opts = {}) {
@@ -244,6 +305,10 @@ export function installStaleBundleRecovery(opts = {}) {
   const now = opts.now ?? (() => Date.now());
   const schedule = opts.schedule ?? ((ms, fn) => target.setTimeout(fn, ms));
   const cancelTimer = opts.cancel ?? ((id) => target.clearTimeout(id));
+  const bootHref = target.location?.href || 'http://localhost/';
+  const bootPath = canonicalAppTarget(bootHref, bootHref);
+  let herePath = appPathname(bootPath);
+  let pendingTarget = '';
   let handling = false;
   let leavingUntil = 0;
   let leaveTimer = null;
@@ -265,15 +330,43 @@ export function installStaleBundleRecovery(opts = {}) {
     });
   };
 
+  // Festival chips and other in-page filters use replaceState on the same pathname.
+  // That must not become an assign target. Only a pathname change (pushState,
+  // popstate, or a link click) hard-loads the next screen.
+  const rememberPathChange = (url, base) => {
+    const canon = canonicalAppTarget(url, base || target.location?.href || bootHref);
+    const nextPath = appPathname(canon);
+    if (!canon || !nextPath || nextPath === herePath) return '';
+    herePath = nextPath;
+    pendingTarget = canon;
+    return canon;
+  };
+
+  const noteSameDocumentUrl = (url, base) => {
+    const canon = canonicalAppTarget(url, base || target.location?.href || bootHref);
+    const nextPath = appPathname(canon);
+    if (nextPath && nextPath !== herePath) herePath = nextPath;
+  };
+
+  const resolveTarget = () => {
+    if (typeof opts.getNavTarget === 'function') {
+      const forced = canonicalAppTarget(opts.getNavTarget() || '', bootHref);
+      if (forced) return forced;
+    }
+    return pendingTarget;
+  };
+
   const onFailure = (reason) => {
     if (shouldIgnoreStaleBundleSignal({ now: now(), leavingUntil })) return;
-    // A chunk failed before the boot grace elapsed. Keep the one-reload guard.
+    // A chunk failed before the boot grace elapsed. Keep the one-shot assign guard.
     cancelStaleBundleBootClear();
     if (handling) return;
     handling = true;
     try {
       handleStaleBundleLoadFailure(reason, storage, getBundleId(), {
-        reload: opts.reload,
+        assign: opts.assign,
+        showBanner: opts.showBanner,
+        target: resolveTarget(),
         now: now(),
       });
     } finally {
@@ -281,11 +374,59 @@ export function installStaleBundleRecovery(opts = {}) {
     }
   };
 
+  const onPageShow = () => {
+    clearLeave();
+    pendingTarget = '';
+    const landed = canonicalAppTarget(target.location?.href || bootHref, bootHref);
+    const landedPath = appPathname(landed);
+    if (landedPath) herePath = landedPath;
+  };
+
+  const onVisibility = () => {
+    const state = typeof opts.getVisibilityState === 'function'
+      ? opts.getVisibilityState()
+      : target.document?.visibilityState;
+    if (state === 'hidden') armLeave();
+    else if (state === 'visible') clearLeave();
+  };
+
+  const onClick = (event) => {
+    if (!event || event.defaultPrevented || event.button) return;
+    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    const node = event.target?.closest?.('a[href]');
+    if (!node || node.target === '_blank' || node.hasAttribute?.('download')) return;
+    rememberPathChange(node.href || node.getAttribute?.('href') || '', target.location?.href || bootHref);
+  };
+
+  const onPopState = () => {
+    rememberPathChange(target.location?.href || '', bootHref);
+  };
+
+  const history = target.history;
+  const originalPush = history?.pushState;
+  const originalReplace = history?.replaceState;
+  if (history && typeof originalPush === 'function' && !history.__gateoStaleNav) {
+    history.__gateoStaleNav = true;
+    history.pushState = function pushState(state, title, url) {
+      const base = target.location?.href || bootHref;
+      if (url != null) rememberPathChange(url, base);
+      return originalPush.apply(this, arguments);
+    };
+    if (typeof originalReplace === 'function') {
+      history.replaceState = function replaceState(state, title, url) {
+        const base = target.location?.href || bootHref;
+        const result = originalReplace.apply(this, arguments);
+        if (url != null) noteSameDocumentUrl(url, base);
+        return result;
+      };
+    }
+  }
+
   // Vite 7 rethrows inside __vitePreload when this event is not cancelled, and
   // fulfills the import with undefined when it is. React.lazy then reads
   // _result.default and WebKit reports y._result.default. lazyDefault keeps that
-  // undefined fulfillment pending. Cancel here and reload ourselves outside the
-  // leave window so an abort during assign does not bounce /explore.
+  // undefined fulfillment pending. Cancel here. An open tab shows the update
+  // banner; a navigation whose chunk 404s hard-loads that target once.
   const onPreloadError = (event) => {
     event?.preventDefault?.();
     onFailure(event?.payload ?? event);
@@ -304,19 +445,31 @@ export function installStaleBundleRecovery(opts = {}) {
     onFailure(event.error ?? event.message);
   };
 
-  target.addEventListener('beforeunload', armLeave, true);
-  target.addEventListener('pageshow', clearLeave, true);
+  const doc = target.document;
+  target.addEventListener('pagehide', armLeave, true);
+  target.addEventListener('pageshow', onPageShow, true);
+  target.addEventListener('visibilitychange', onVisibility, true);
+  target.addEventListener('popstate', onPopState);
+  if (doc?.addEventListener) doc.addEventListener('click', onClick, true);
   target.addEventListener('vite:preloadError', onPreloadError);
   target.addEventListener('unhandledrejection', onUnhandledRejection);
   target.addEventListener('error', onError, true);
 
   return () => {
     clearLeave();
-    target.removeEventListener('beforeunload', armLeave, true);
-    target.removeEventListener('pageshow', clearLeave, true);
+    target.removeEventListener('pagehide', armLeave, true);
+    target.removeEventListener('pageshow', onPageShow, true);
+    target.removeEventListener('visibilitychange', onVisibility, true);
+    target.removeEventListener('popstate', onPopState);
+    if (doc?.removeEventListener) doc.removeEventListener('click', onClick, true);
     target.removeEventListener('vite:preloadError', onPreloadError);
     target.removeEventListener('unhandledrejection', onUnhandledRejection);
     target.removeEventListener('error', onError, true);
+    if (history && originalPush && history.pushState !== originalPush) {
+      history.pushState = originalPush;
+      if (originalReplace) history.replaceState = originalReplace;
+      delete history.__gateoStaleNav;
+    }
   };
 }
 

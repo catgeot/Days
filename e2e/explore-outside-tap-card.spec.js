@@ -1,5 +1,5 @@
 // 검색 팝오버를 바깥 탭으로 닫은 직후 컬렉션 카드를 탭하면 /place 한 번만 연다.
-// WebKit은 이동 중 끊긴 dynamic import를 vite:preloadError로 보고, 그 reload가 /explore를 다시 연다.
+// WebKit은 이동 중 끊긴 dynamic import를 vite:preloadError로 보고, 열린 탭에서는 새로고침 대신 업데이트 배너를 띄운다.
 import { test, expect } from './fixtures.js';
 
 const PNG = Buffer.from(
@@ -206,8 +206,8 @@ test.describe('explore outside tap then card', () => {
     expectErrorsClean(errors);
   });
 
-  test('취소된 beforeunload 뒤 창이 지나면 청크 오류는 다시 새로고침한다', async ({ page, context, browserName }) => {
-    test.skip(browserName !== 'chromium', 'Chromium beforeunload probe');
+  test('취소된 이동 뒤 청크 오류는 새로고침하지 않고 업데이트 배너를 보여 준다', async ({ page, context, browserName }) => {
+    test.skip(browserName !== 'chromium', 'Chromium leave probe');
     test.setTimeout(45_000);
     const hold = holds.get(context);
     hold.on = false;
@@ -223,28 +223,18 @@ test.describe('explore outside tap then card', () => {
     });
     page.on('dialog', (dialog) => dialog.dismiss());
     await input.click();
-    const armedAt = Date.now();
     await page.evaluate(() => {
       window.location.assign('/place/rome');
     });
     await expect.poll(() => page.url(), { timeout: 5_000 }).toContain('/explore');
     expect(await page.evaluate(() => window.__leaveProbe)).toBe('alive');
 
-    await page.evaluate(() => window.dispatchEvent(new Event('vite:preloadError')));
-    await page.waitForTimeout(400);
+    await expect.poll(async () => {
+      await page.evaluate(() => window.dispatchEvent(new Event('vite:preloadError')));
+      return page.locator('[data-site-update-notice]').count();
+    }, { timeout: 4_000 }).toBeGreaterThan(0);
     expect(page.url()).toContain('/explore');
     expect(await page.evaluate(() => window.__leaveProbe)).toBe('alive');
-
-    const remain = 2_000 - (Date.now() - armedAt) + 300;
-    await page.waitForTimeout(Math.max(remain, 300));
-    await page.evaluate(() => {
-      window.__blockLeave = false;
-    });
-    const reloaded = page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 15_000 });
-    await page.evaluate(() => window.dispatchEvent(new Event('vite:preloadError'))).catch(() => {});
-    await reloaded;
-    await expect(page).toHaveURL(/\/explore/);
-    expect(await page.evaluate(() => window.__leaveProbe)).toBeUndefined();
   });
 
   test('브라우저 뒤로가기도 팝오버를 다시 열지 않는다', async ({ page, context }) => {

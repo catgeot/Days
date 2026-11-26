@@ -73,6 +73,7 @@ import { LocaleProvider } from './i18n/LocaleProvider';
 import AppHistoryRecorder from './shared/navigation/AppHistoryRecorder';
 import { installLogbookBlogReturnPopGuard } from './shared/navigation/logbookBlogReturnNavigate.js';
 import { installPersistedBlankPageReload } from './shared/lib/persistedBlankPageReload.js';
+import SiteUpdateBanner from './shared/components/SiteUpdateBanner';
 import { recordInstagramVisitIfLanding } from './pages/Korea/socialPromoInstagramSession.js';
 
 function SocialPromoInstagramVisitCapture() {
@@ -133,6 +134,7 @@ function App() {
       <BrowserRouter>
         <LocaleProvider>
         <RouteTracker />
+        <SiteUpdateBanner />
         <PersistedBlankPageReload />
         <SocialPromoInstagramVisitCapture />
         <AppHistoryRecorder />
