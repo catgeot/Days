@@ -1646,6 +1646,7 @@ jobs:
           VITE_SUPABASE_URL: https://example.supabase.co
           VITE_SUPABASE_ANON_KEY: e2e-anon-placeholder
           VITE_MAPBOX_TOKEN: pk.e2e-access-origin
+          VITE_GATEO_AIRPORT_PICKUP_LINKS: '1'
           CI: true
           DEV_SSL: '0'
         run: npx playwright test -c playwright.config.access-origin-default.js --project=webkit-390 --reporter=line

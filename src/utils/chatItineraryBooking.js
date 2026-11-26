@@ -16,6 +16,7 @@ import { canShowMrtTnaStrip, resolveMrtTnaQuery } from './mrtTnaQuery.js';
 import { resolveTravelSpotFromLocation } from './travelSpotResolve.js';
 import { getDestinationBookingProfile } from './destinationBookingProfile.js';
 import { resolveFlightDepartureIataForBooking } from './resolveDepartureIataFromChat.js';
+import { shouldShowChatFlightSearchCta } from './chatFlightSearchCta.js';
 import { i18n } from '../i18n/config.js';
 import { extractItineraryStayDates } from './chatItineraryDates.js';
 
@@ -196,7 +197,7 @@ export function resolveItineraryBookingActions(params) {
   const stay = buildStayAction(location, dateOpts);
   if (stay) actions.push(stay);
 
-  if (arrivalIata) {
+  if (arrivalIata && shouldShowChatFlightSearchCta(departureIata, arrivalIata)) {
     const flightUrl = buildTripcomPlannerFlightUrl(locationPayload, {
       essentialGuide,
       tracking: 'chat-flight',

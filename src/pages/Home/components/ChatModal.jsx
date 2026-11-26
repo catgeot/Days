@@ -2375,9 +2375,9 @@ const ChatModal = ({
                         onSelectCandidate={(c) => handleSelectDestinationCandidate(c, idx)}
                       />
                     )}
-                    {msg.role === 'model' && cardActions?.length > 0 && (
+                    {msg.role === 'model' && (cardActions?.length > 0 || airportPickup?.href) && (
                       <BookingActionCards
-                        actions={refreshStoredBookingActionLabels(cardActions, {
+                        actions={refreshStoredBookingActionLabels(cardActions ?? [], {
                           slug: msg.bookingMeta?.slug ?? boundDestinationSlug,
                           destinationName: msgDestinationName,
                           chatHistory: messages
