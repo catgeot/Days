@@ -15,10 +15,7 @@ export default function CloudPreviewWorkLog() {
 
   useEffect(() => {
     setVisible(
-      previewDebugChromeAllowed(window.location.hostname, {
-        dev: import.meta.env.DEV === true,
-        search: window.location.search,
-      }) &&
+      previewDebugChromeAllowed(window.location.hostname, { dev: import.meta.env.DEV === true }) &&
         cloudPreviewProject.active &&
         cloudPreviewWorkLog.length > 0,
     );
