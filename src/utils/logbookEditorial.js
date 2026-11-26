@@ -8,6 +8,8 @@ export const LOGBOOK_EDITORIAL_DISCLOSURE_KO = `${LOGBOOK_EDITORIAL_BADGE_KO} ·
 
 export const LOGBOOK_EDITORIAL_PUBLISH_STATUSES = ['draft', 'published', 'archived'];
 
+export const LOGBOOK_EDITORIAL_SECONDARY_LABEL_MAX = 60;
+
 export function isEditorialLogbook(report) {
   return Boolean(report?.is_editorial);
 }
@@ -32,8 +34,26 @@ export function editorialLogbookBadgeLabel(locale) {
   return lang.startsWith('en') ? LOGBOOK_EDITORIAL_BADGE_EN : LOGBOOK_EDITORIAL_BADGE_KO;
 }
 
-export function editorialLogbookSecondaryNotice(locale) {
+export function normalizeEditorialSecondaryLabelInput(raw) {
+  if (typeof raw !== 'string') return null;
+  const trimmed = raw.trim();
+  if (!trimmed) return null;
+  return trimmed.length > LOGBOOK_EDITORIAL_SECONDARY_LABEL_MAX
+    ? trimmed.slice(0, LOGBOOK_EDITORIAL_SECONDARY_LABEL_MAX)
+    : trimmed;
+}
+
+/** @param {string | Record<string, unknown> | null | undefined} reportOrLocale */
+export function editorialLogbookSecondaryNotice(reportOrLocale) {
+  const report =
+    reportOrLocale != null && typeof reportOrLocale === 'object' ? reportOrLocale : {};
+  const locale = editorialLogbookBadgeLocale(
+    typeof reportOrLocale === 'string' ? { locale: reportOrLocale } : report,
+  );
   const lang = String(locale || 'ko').toLowerCase();
+  const key = lang.startsWith('en') ? 'editorial_secondary_label_en' : 'editorial_secondary_label';
+  const custom = normalizeEditorialSecondaryLabelInput(report[key]);
+  if (custom) return custom;
   return lang.startsWith('en') ? LOGBOOK_EDITORIAL_SECONDARY_EN : LOGBOOK_EDITORIAL_SECONDARY_KO;
 }
 

@@ -93,7 +93,7 @@ export default defineConfig({
         ? '1'
         : '',
     ),
-    'import.meta.env.VITE_GATEO_PREVIEW_DEBUG_CHROME': JSON.stringify(
+    'import.meta.env.VITE_GATEO_PREVIEW_DEBUG_CHROME_BUNDLED': JSON.stringify(
       process.env.VERCEL_ENV === 'preview' ? '1' : '',
     ),
   },
@@ -145,6 +145,17 @@ export default defineConfig({
       output: {
         // 🚨 [강화] 수동으로 이름표를 붙여주는 대신, 패키지 이름에 따라 자동으로 쪼개주는 함수 적용
         manualChunks(id) {
+          if (
+            /[\\/]src[\\/]shared[\\/]cloudPreview[\\/]/.test(id)
+            && (
+              id.includes('PreviewDebugChrome')
+              || id.includes('CloudPreviewWorkLog')
+              || id.includes('FlightDebugPanel')
+              || id.includes('cloudPreviewWorkLog')
+            )
+          ) {
+            return 'preview-debug-chrome';
+          }
           if (id.includes('node_modules')) {
             if (
               id.includes('node_modules/react-dom')

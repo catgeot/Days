@@ -118,6 +118,29 @@ test.describe('home watch card', () => {
     await expect(card).toContainText('지금 볼 거리');
     if (width < 1280) {
       await expectTasteLabelsFit(page);
+      await expect(page.locator('html')).toHaveAttribute('data-home-watch-globe-lift', '1');
+      const shellTransform = await page.getByTestId('home-globe-shell').evaluate(
+        (el) => window.getComputedStyle(el).transform,
+      );
+      expect(shellTransform).not.toBe('none');
+      const search = page.getByRole('button', { name: /여행지 검색|Search on 3D globe/ }).first();
+      const searchHit = await search.evaluate((el) => {
+        const r = el.getBoundingClientRect();
+        const target = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
+        return Boolean(target && (el === target || el.contains(target)));
+      });
+      expect(searchHit).toBe(true);
+    } else {
+      await expect(page.locator('html')).not.toHaveAttribute('data-home-watch-globe-lift', '1');
+      const shellLiftY = await page.getByTestId('home-globe-shell').evaluate((el) => {
+        const raw = window.getComputedStyle(el).transform;
+        if (!raw || raw === 'none') return 0;
+        const matrix = raw.match(/matrix\(([^)]+)\)/);
+        if (!matrix) return 0;
+        const parts = matrix[1].split(',').map((part) => Number(part.trim()));
+        return parts.length === 6 ? parts[5] : 0;
+      });
+      expect(Math.abs(shellLiftY)).toBeLessThan(0.5);
     }
 
     const cardBox = await box(card);
@@ -167,10 +190,7 @@ test.describe('home watch card', () => {
     const view = await page.evaluate(() =>
       (window.__gateoGaEvents || []).find((event) => event.name === 'home_watch_card_view'),
     );
-    expect(view.params).toEqual({
-      slot_count: width >= 1280 ? 4 : 3,
-      traffic_type: 'internal',
-    });
+    expect(view.params).toEqual({ slot_count: width >= 1280 ? 4 : 3 });
     expect(JSON.stringify(view.params)).not.toMatch(/kyoto|교토|jeju|제주/);
 
     const hint = page.getByText('여행을 찾아봐요');
@@ -220,7 +240,7 @@ test.describe('home watch card', () => {
     const click = await page.evaluate(() =>
       (window.__gateoGaEvents || []).find((event) => event.name === 'home_watch_card_click'),
     );
-    expect(click?.params).toEqual({ slot_type: 'destination', traffic_type: 'internal' });
+    expect(click?.params).toEqual({ slot_type: 'destination' });
   });
 
   test('continue slot routes to the saved place', async ({ page }) => {
@@ -265,13 +285,14 @@ test.describe('home watch card', () => {
         (event) => event.name === 'home_watch_card_click' && event.params?.slot_type === 'reviewer',
       ),
     );
-    expect(click?.params).toEqual({ slot_type: 'reviewer', traffic_type: 'internal' });
+    expect(click?.params).toEqual({ slot_type: 'reviewer' });
   });
 
   test('dismiss hides the card for 7 days on this device', async ({ page }) => {
     await gotoHome(page);
     await page.getByTestId('home-watch-dismiss').click();
     await expect(page.getByTestId('home-watch-card')).toHaveCount(0);
+    await expect(page.locator('html')).not.toHaveAttribute('data-home-watch-globe-lift', '1');
     const until = await page.evaluate(() => Number(localStorage.getItem('gateo:home-watch-card:dismissed-until')));
     const delta = until - Date.now();
     expect(delta).toBeGreaterThan(7 * 24 * 60 * 60 * 1000 - 60_000);
@@ -279,7 +300,7 @@ test.describe('home watch card', () => {
     const dismissEvent = await page.evaluate(() =>
       (window.__gateoGaEvents || []).find((event) => event.name === 'home_watch_card_dismiss'),
     );
-    expect(dismissEvent?.params).toEqual({ traffic_type: 'internal' });
+    expect(dismissEvent?.params).toEqual({});
     await page.reload({ waitUntil: 'domcontentloaded' });
     await expect(page.getByTestId('home-watch-card')).toHaveCount(0);
     await page.evaluate(() => {

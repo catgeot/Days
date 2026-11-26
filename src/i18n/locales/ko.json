@@ -2229,6 +2229,7 @@
       "syncing": "우주의 기록을 동기화하는 중...",
       "countPrivate": "총 {{count}}개의 기억이 빛나고 있습니다.",
       "countPublic": "우주 여행자들의 {{count}}개 기록이 공유되고 있습니다.",
+      "countPublicCombined": "여행 기록 {{total}}개가 공유되고 있어요(기행문 {{travelogues}} · 리뷰 {{reviews}})",
       "countPublicFiltered": "'{{location}}' 지역의 공개된 기록 {{count}}개",
       "tabMine": "내 기록",
       "tabFeed": "탐험 피드",
