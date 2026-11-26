@@ -81,6 +81,7 @@ test.describe('Home quick link — 축제', () => {
     await waitGlobe(page);
     const collapsed = visibleQuickLinks(page);
     await expect(collapsed).toBeVisible({ timeout: 60_000 });
+    await expect(collapsed).toHaveText(/축제\s*·\s*행사\s*·\s*명승\s*·\s*추천/);
     await expect(collapsed).toContainText('추천');
     await expect(collapsed).not.toContainText('리뷰');
     await page.getByRole('button', { name: /바로가기 메뉴 펼치기|Expand quick links/i }).click();
@@ -99,6 +100,7 @@ test.describe('Home quick link — 축제', () => {
     await waitGlobe(page);
     const collapsed = visibleQuickLinks(page);
     await expect(collapsed).toBeVisible({ timeout: 60_000 });
+    await expect(collapsed).toHaveText(/축제\s*·\s*행사\s*·\s*명승\s*·\s*리뷰/);
     await expect(collapsed).toContainText('리뷰');
     await expect(collapsed).not.toContainText('추천');
     await expect(collapsed).toHaveAttribute(
@@ -218,6 +220,7 @@ test.describe('Home quick link — 축제', () => {
     await page.getByRole('button', { name: /동행별 추천/ }).first().click();
     const link = page.getByTestId('mooni-companion-curation-link').locator('visible=true').first();
     await expect(link).toBeVisible({ timeout: 60_000 });
+    await expect(link).toHaveText('취향에 맞는 여행지 더 찾기 → AI 큐레이션');
     await page.evaluate(() => {
       document.addEventListener('click', (event) => {
         const node = event.target instanceof Element ? event.target : null;

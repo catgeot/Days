@@ -68,11 +68,17 @@ test('ko and en home.quickLinks keep curation and add review hub labels', () => 
   assert.equal(en.home.quickLinks.reviewHub.short, 'Reviews');
   assert.equal(en.home.quickLinks.reviewHub.label, 'Review hub');
   assert.equal(en.home.quickLinks.navigateTo, 'Go to {{label}}');
-  assert.equal(ko.mooni.chat.companionCurationLink, '취향에 맞는 숨은 낙원 더 찾기 → AI 큐레이션');
+  assert.equal(ko.mooni.chat.companionCurationLink, '취향에 맞는 여행지 더 찾기 → AI 큐레이션');
   assert.equal(
     en.mooni.chat.companionCurationLink,
-    'Find more hidden paradises for your taste → AI curation',
+    'Find more destinations for your taste → AI curation',
   );
+  const collapsed = (pack, fourthKey) =>
+    [pack.festival.short, pack.worldEvents.short, pack.scenic.short, pack[fourthKey].short].join(' · ');
+  assert.equal(collapsed(ko.home.quickLinks, 'curation'), '축제 · 행사 · 명승 · 추천');
+  assert.equal(collapsed(ko.home.quickLinks, 'reviewHub'), '축제 · 행사 · 명승 · 리뷰');
+  assert.equal(collapsed(en.home.quickLinks, 'curation'), 'Fest · Events · Scenic · Pick');
+  assert.equal(collapsed(en.home.quickLinks, 'reviewHub'), 'Fest · Events · Scenic · Reviews');
 });
 
 test('quicklink events fire for real users and carry traffic_type internal for QA, webdriver, and crawler', () => {
@@ -238,7 +244,7 @@ test('rendered companion link is absent when the flag is off and sends the click
     );
   });
   assert.equal(window.document.querySelector('[data-testid="mooni-companion-curation-link"]'), null);
-  assert.equal(window.document.body.textContent.includes('취향에 맞는 숨은 낙원'), false);
+  assert.equal(window.document.body.textContent.includes('취향에 맞는 여행지'), false);
 
   await act(async () => {
     reactRoot.unmount();
@@ -256,7 +262,7 @@ test('rendered companion link is absent when the flag is off and sends the click
   const link = window.document.querySelector('[data-testid="mooni-companion-curation-link"]');
   assert.ok(link, window.document.body.innerHTML);
   assert.equal(link.getAttribute('href'), '/blog/curation');
-  assert.equal(link.textContent, '취향에 맞는 숨은 낙원 더 찾기 → AI 큐레이션');
+  assert.equal(link.textContent, '취향에 맞는 여행지 더 찾기 → AI 큐레이션');
 
   Object.defineProperty(window.navigator, 'webdriver', { configurable: true, get: () => false });
   window.addEventListener('click', (event) => event.preventDefault(), true);

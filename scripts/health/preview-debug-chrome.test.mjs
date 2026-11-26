@@ -14,7 +14,14 @@ test('work log and mobile widget log stay off production hosts', () => {
   assert.equal(previewDebugChromeAllowed('www.gateo.kr', { dev: true }), false);
   assert.equal(previewDebugChromeAllowed('days-catgeots-projects.vercel.app'), false);
   assert.equal(previewDebugChromeAllowed('days.vercel.app'), false);
-  assert.equal(previewDebugChromeAllowed(preview), true);
+  assert.equal(previewDebugChromeAllowed(preview), false);
+  assert.equal(previewDebugChromeAllowed(preview, { search: '?devlog=1' }), true);
+  assert.equal(previewDebugChromeAllowed(preview, { search: '?devlog=yes' }), false);
+  assert.equal(previewDebugChromeAllowed('www.gateo.kr', { search: '?devlog=1' }), false);
+  assert.equal(
+    previewDebugChromeAllowed('days-catgeots-projects.vercel.app', { search: '?foo=1&devlog=1' }),
+    true,
+  );
   assert.equal(previewDebugChromeAllowed('localhost'), true);
   assert.equal(previewDebugChromeAllowed('127.0.0.1', { dev: false }), true);
   assert.equal(previewDebugChromeAllowed('example.com', { dev: true }), true);
@@ -30,6 +37,8 @@ test('work log and mobile widget log stay off production hosts', () => {
     'production hosts return before a debug query can enable the widget log',
   );
   assert.match(work, /previewDebugChromeAllowed\(/);
+  assert.match(work, /search: window\.location\.search/);
+  assert.match(gate, /search: window\.location\.search/);
   assert.match(panel, /if \(!enabled\) return null/);
   assert.match(work, /if \(!visible\) return null/);
 
