@@ -1,5 +1,11 @@
 const QA_STORAGE_KEY = 'gateo_qa';
 const GA_MEASUREMENT_ID = 'G-7949KKNHRX';
+export const GATEO_GA_PRODUCTION_HOST = 'www.gateo.kr';
+
+/** @param {string} [hostname] */
+export function isGateoGaProductionHost(hostname) {
+  return String(hostname ?? '') === GATEO_GA_PRODUCTION_HOST;
+}
 const BOT_UA_RE = /bot|crawler|spider|slurp|headless|lighthouse|preview/i;
 
 function defaultTrafficEnv() {
@@ -76,7 +82,10 @@ export function isGateoQaTraffic(env) {
 /**
  * @param {Parameters<typeof readGateoTrafficSignals>[0]} [env]
  */
-export function shouldSkipGateoGaLoad(env) {
+export function shouldSkipGateoGaLoad(env = defaultTrafficEnv()) {
+  const win = env.window;
+  const hostname = env.hostname ?? win?.location?.hostname ?? '';
+  if (!isGateoGaProductionHost(hostname)) return true;
   return isGateoQaTraffic(env);
 }
 
