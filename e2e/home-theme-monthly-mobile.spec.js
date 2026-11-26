@@ -124,49 +124,54 @@ test.describe('home theme monthly mobile layout', () => {
     await expect(card).toBeVisible({ timeout: 15_000 });
     await shot(page, 'home-theme-390-mooni-default', vw, vh);
 
-    const dragged = await page.evaluate(async () => {
-      const fab = document.querySelector('[data-testid="mooni-fab-open"]');
-      const start = fab.getBoundingClientRect();
-      const from = { x: start.left + start.width / 2, y: start.top + start.height / 2 };
-      const to = { x: window.innerWidth / 2, y: 430 };
-      const pointerId = 21;
-      const dispatch = (type, x, y) => {
-        fab.dispatchEvent(new PointerEvent(type, {
-          bubbles: true,
-          cancelable: true,
-          composed: true,
-          pointerId,
-          pointerType: 'touch',
-          isPrimary: true,
-          button: 0,
-          buttons: type === 'pointerup' ? 0 : 1,
-          clientX: x,
-          clientY: y,
-          view: window,
-        }));
-      };
-      dispatch('pointerdown', from.x, from.y);
-      for (let i = 1; i <= 16; i += 1) {
-        dispatch(
-          'pointermove',
-          from.x + ((to.x - from.x) * i) / 16,
-          from.y + ((to.y - from.y) * i) / 16,
-        );
-      }
-      dispatch('pointerup', to.x, to.y);
-      await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
-      const cardEl = document.querySelector('[data-testid="home-watch-card"]');
-      const nextFab = fab.getBoundingClientRect();
-      const cardRect = cardEl?.getBoundingClientRect();
-      const hit = cardRect
-        && nextFab.left < cardRect.right
-        && nextFab.right > cardRect.left
-        && nextFab.top < cardRect.bottom
-        && nextFab.bottom > cardRect.top;
-      return { hit: Boolean(hit), x: nextFab.left + nextFab.width / 2 };
-    });
-    expect(dragged.hit).toBe(false);
-    await shot(page, 'home-theme-390-mooni-dragged', vw, vh);
+    const dragFabTo = async (to, shotName) => {
+      const dragged = await page.evaluate(async ({ target }) => {
+        const fab = document.querySelector('[data-testid="mooni-fab-open"]');
+        const start = fab.getBoundingClientRect();
+        const from = { x: start.left + start.width / 2, y: start.top + start.height / 2 };
+        const pointerId = 21;
+        const dispatch = (type, x, y) => {
+          fab.dispatchEvent(new PointerEvent(type, {
+            bubbles: true,
+            cancelable: true,
+            composed: true,
+            pointerId,
+            pointerType: 'touch',
+            isPrimary: true,
+            button: 0,
+            buttons: type === 'pointerup' ? 0 : 1,
+            clientX: x,
+            clientY: y,
+            view: window,
+          }));
+        };
+        dispatch('pointerdown', from.x, from.y);
+        for (let i = 1; i <= 16; i += 1) {
+          dispatch(
+            'pointermove',
+            from.x + ((target.x - from.x) * i) / 16,
+            from.y + ((target.y - from.y) * i) / 16,
+          );
+        }
+        dispatch('pointerup', target.x, target.y);
+        await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+        const cardEl = document.querySelector('[data-testid="home-watch-card"]');
+        const nextFab = fab.getBoundingClientRect();
+        const cardRect = cardEl?.getBoundingClientRect();
+        const hit = cardRect
+          && nextFab.left < cardRect.right
+          && nextFab.right > cardRect.left
+          && nextFab.top < cardRect.bottom
+          && nextFab.bottom > cardRect.top;
+        return { hit: Boolean(hit) };
+      }, { target: to });
+      expect(dragged.hit).toBe(false);
+      if (shotName) await shot(page, shotName, vw, vh);
+    };
+
+    await dragFabTo({ x: vw / 2, y: 430 }, 'home-theme-390-mooni-dragged-center');
+    await dragFabTo({ x: 28, y: vh - 16 }, 'home-theme-390-mooni-dragged-bottom-left');
+    await dragFabTo({ x: vw - 28, y: vh - 16 }, 'home-theme-390-mooni-dragged-bottom-right');
 
     const scroller = page.getByTestId('home-monthly-scroller');
     const swipe = await touchSwipeScroller(page);
@@ -175,6 +180,26 @@ test.describe('home theme monthly mobile layout', () => {
     const dest = page.getByTestId('home-watch-slot-destination').first();
     await dest.locator('a').click({ force: true });
     await page.waitForURL(/\/place\//, { timeout: 60_000 });
+  });
+
+  test('390 English monthly tile names match locale', async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name !== 'webkit-theme-monthly-390');
+    const vw = 390;
+    const vh = 844;
+    await page.clock.install({ time: new Date(NOVEMBER_AT) });
+    await page.addInitScript(() => {
+      try {
+        sessionStorage.setItem('gateo_mooni_intro_seen', '1');
+      } catch {
+        /* ignore */
+      }
+    });
+    await page.goto('/?home_monthly_switch=1&lang=en', { waitUntil: 'domcontentloaded' });
+    const card = await readyMonthlyCard(page);
+    await expect(card).toContainText('November picks');
+    const names = page.getByTestId('home-monthly-scroller').locator('[data-caption-role="name"]');
+    await expect(names.first()).toContainText('Kyoto');
+    await shot(page, 'home-theme-390-en-monthly', vw, vh);
   });
 
   test('1280 desktop monthly geometry unchanged', async ({ page }, testInfo) => {

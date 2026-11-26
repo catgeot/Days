@@ -256,6 +256,11 @@ test.describe('home monthly destinations', () => {
     const card = page.getByTestId('home-watch-card');
     await expect(card).toBeVisible({ timeout: 60_000 });
     await expect(card).toContainText('November picks');
+    const scroller = page.getByTestId('home-monthly-scroller');
+    const names = scroller.locator('[data-caption-role="name"]');
+    await expect(names.first()).toContainText('Kyoto');
+    await expect(names.nth(1)).toContainText('Chiang Mai');
+    await expect(names.nth(2)).toContainText('Phuket');
     const link = page.getByTestId('home-monthly-switch');
     await expect(link).toHaveText('See December ▸');
     await expectCaptionsFit(page);

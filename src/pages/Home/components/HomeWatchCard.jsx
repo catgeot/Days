@@ -347,13 +347,18 @@ const HomeWatchCard = ({
     }));
     return buildHomeWatchSlots({
       continueItems,
-      destinations: buildHomeWatchMonthlyDestinations(new Date(), rows, monthly ? monthKey : undefined),
+      destinations: buildHomeWatchMonthlyDestinations(
+        new Date(),
+        rows,
+        monthly ? monthKey : undefined,
+        i18n.language,
+      ),
       reelsEnabled: isGateoSelfReelsEnabled(),
       slotCount,
       reelsPoster: isGateoSelfReelsEnabled() ? resolveHomeWatchReelsPoster() : '',
       limitDestinations: !monthly,
     });
-  }, [enabled, monthly, monthKey, slotCount]);
+  }, [enabled, monthly, monthKey, slotCount, i18n.language]);
 
   const [cardHeightPx, setCardHeightPx] = useState(() =>
     homeWatchCardHeightForWidth(typeof window === 'undefined' ? 390 : window.innerWidth),

@@ -213,19 +213,40 @@ export function mooniFabHintExtraMarginBottom(options) {
   return Math.max(0, total - baseGap);
 }
 
-/** Lift the FAB when its resting box intersects the watch card (full-width mobile bar). */
-export function mooniFabBottomClearOfWatchCard(fabRect, gap = HOME_MONTHLY_CARD_GAP) {
-  if (typeof document === 'undefined' || !fabRect || fabRect.width < 1 || fabRect.height < 1) {
-    return null;
-  }
-  const card = document.querySelector(
-    '[data-testid="home-watch-card"]:not([data-home-watch-yielded="1"])',
+/**
+ * When the FAB overlaps the placed monthly card, one of its tiles, or a header
+ * control, raise `bottom` so the FAB rests `gap` px above that obstacle.
+ * `right` stays put. No overlap (card dismissed or absent) returns `pos`.
+ */
+export function mooniFabPositionAboveMonthlyCard({
+  pos,
+  fabRect,
+  cardRect = null,
+  obstacles = [],
+  viewportHeight,
+  gap = HOME_MONTHLY_CARD_GAP,
+} = {}) {
+  if (!pos || typeof pos.right !== 'number' || typeof pos.bottom !== 'number') return pos;
+  if (!fabRect || fabRect.width < 1 || fabRect.height < 1) return pos;
+  const height = Number(viewportHeight);
+  if (!Number.isFinite(height) || height < 1) return pos;
+
+  const card = cardRect && cardRect.width >= 1 && cardRect.height >= 1 ? cardRect : null;
+  const extras = (Array.isArray(obstacles) ? obstacles : []).filter(
+    (obs) => obs && obs.width >= 1 && obs.height >= 1,
   );
-  if (!card) return null;
-  const cardRect = card.getBoundingClientRect();
-  if (cardRect.width < 1 || cardRect.height < 1) return null;
-  if (!rectsOverlap(fabRect, cardRect, 0.5)) return null;
-  return Math.max(0, window.innerHeight - cardRect.top + (Number(gap) || 0));
+  const hitCard = Boolean(card && rectsOverlap(fabRect, card));
+  const hitExtras = extras.filter((obs) => rectsOverlap(fabRect, obs));
+  if (!hitCard && hitExtras.length === 0) return pos;
+
+  const tops = [];
+  if (card) tops.push(card.top);
+  for (const obs of hitExtras) tops.push(obs.top);
+  const ceiling = Math.min(...tops);
+  const pad = Number.isFinite(Number(gap)) ? Number(gap) : 0;
+  const bottom = height - ceiling + pad;
+  if (!(bottom > pos.bottom)) return pos;
+  return { right: pos.right, bottom };
 }
 
 export function shouldHideHomeWatchCard({
@@ -289,14 +310,14 @@ export function reviewerForPlaceSlug(slug, rows) {
   return normalizePersonaLabel(matches[0]?.persona_label);
 }
 
-export function buildHomeWatchMonthlyDestinations(now = new Date(), rows = [], monthKey) {
+export function buildHomeWatchMonthlyDestinations(now = new Date(), rows = [], monthKey, language = 'ko') {
   const resolvedKey = monthKey
     ? resolveExploreV2MonthlyPickKey(monthKey)
     : resolveExploreV2MonthlyPickKey(resolveExploreCurrentMonthPickKey(now));
   const cards = partitionExploreMonthlyPickCardsByHero(buildVisibleMonthlyPickCards(resolvedKey)).withHero;
   return cards.map(({ entry, spot, imageUrl }) => {
     const slug = String(spot?.slug || entry?.slug || '').trim();
-    const name = monthlyPickDisplayName(spot, slug);
+    const name = monthlyPickDisplayName(spot, slug, language);
     const reviewer = reviewerForPlaceSlug(slug, rows);
     return {
       slug,

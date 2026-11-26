@@ -7,6 +7,7 @@ import {
   isHomeMonthlySwitchQueryEnabled,
 } from '../../src/shared/gateoFeatureFlags.js';
 import {
+  HOME_MONTHLY_CARD_GAP,
   HOME_MONTHLY_PREVIEW_START_DAY,
   HOME_WATCH_CARD_LAYOUT,
   buildHomeWatchSlots,
@@ -14,6 +15,7 @@ import {
   layoutHomeMonthlyCard,
   mooniFabHintExtraMarginBottom,
   mooniFabHintMarginBottom,
+  mooniFabPositionAboveMonthlyCard,
   rectsOverlap,
   resolveHomeMonthlyPreviewStartDay,
 } from '../../src/pages/Home/lib/homeWatchCardModel.js';
@@ -186,4 +188,61 @@ test('monthly mode keeps every destination tile in the scroller', () => {
   assert.deepEqual(all.map((slot) => slot.slug), ['sapporo', 'vienna', 'hong-kong', 'seoul']);
   const limited = buildHomeWatchSlots({ destinations, slotCount: 3 });
   assert.equal(limited.length, 3);
+});
+
+test('mooni fab rest position clears the monthly card and keeps its horizontal side', () => {
+  const viewportHeight = 844;
+  const card = { left: 12, top: 560, right: 282, bottom: 645, width: 270, height: 85 };
+  const tile = { left: 16, top: 584, right: 120, bottom: 640, width: 104, height: 56 };
+  const header = { left: 40, top: 540, right: 100, bottom: 568, width: 60, height: 28 };
+  const fab = { left: 24, top: 550, right: 104, bottom: 662, width: 80, height: 112 };
+  const pos = { right: 286, bottom: viewportHeight - fab.bottom };
+  const next = mooniFabPositionAboveMonthlyCard({
+    pos,
+    fabRect: fab,
+    cardRect: card,
+    obstacles: [tile, header],
+    viewportHeight,
+  });
+  assert.equal(next.right, pos.right);
+  assert.equal(next.bottom, viewportHeight - header.top + HOME_MONTHLY_CARD_GAP);
+  const shift = next.bottom - pos.bottom;
+  const moved = {
+    left: fab.left,
+    right: fab.right,
+    top: fab.top - shift,
+    bottom: fab.bottom - shift,
+    width: fab.width,
+    height: fab.height,
+  };
+  assert.equal(rectsOverlap(moved, card), false);
+  assert.equal(rectsOverlap(moved, tile), false);
+  assert.equal(rectsOverlap(moved, header), false);
+});
+
+test('mooni fab rest position stays on the drop when the monthly card is absent or clear', () => {
+  const pos = { right: 16, bottom: 32 };
+  const fab = { left: 294, top: 680, right: 374, bottom: 812, width: 80, height: 132 };
+  const card = { left: 12, top: 560, right: 282, bottom: 645, width: 270, height: 85 };
+  const tile = { left: 16, top: 584, right: 120, bottom: 640, width: 104, height: 56 };
+  assert.deepEqual(
+    mooniFabPositionAboveMonthlyCard({
+      pos,
+      fabRect: fab,
+      cardRect: null,
+      obstacles: [],
+      viewportHeight: 844,
+    }),
+    pos,
+  );
+  assert.deepEqual(
+    mooniFabPositionAboveMonthlyCard({
+      pos,
+      fabRect: fab,
+      cardRect: card,
+      obstacles: [tile],
+      viewportHeight: 844,
+    }),
+    pos,
+  );
 });

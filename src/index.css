@@ -57,6 +57,19 @@ body {
   animation: mooni-float 3s ease-in-out infinite;
 }
 
+/* FAB only — iOS long-press callout. Not applied to the page. */
+.mooni-fab,
+.mooni-fab * {
+  -webkit-touch-callout: none;
+}
+
+/* Document root, only while the FAB is dragging. */
+html.mooni-fab-dragging,
+html.mooni-fab-dragging * {
+  -webkit-user-select: none !important;
+  user-select: none !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .mooni-float {
     animation: none;
