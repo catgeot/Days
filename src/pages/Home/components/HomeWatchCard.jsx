@@ -27,6 +27,7 @@ import {
   resolveHomeMonthlyPreviewStartDay,
   resolveHomeWatchReelsPoster,
   shouldHideHomeWatchCard,
+  syncHomeWatchGlobeLift,
 } from '../lib/homeWatchCardModel.js';
 import { readHomeWatchContinueItems } from '../lib/homeWatchContinue.js';
 import {
@@ -379,6 +380,16 @@ const HomeWatchCard = ({
     mobileGlobeRegionsMenu: yieldToMobileGlobeMenu,
   });
   const shown = enabled && !hidden && !dismissed && slots.length > 0;
+
+  useLayoutEffect(() => {
+    const apply = () => syncHomeWatchGlobeLift({ shown, viewportWidth: window.innerWidth });
+    apply();
+    window.addEventListener('resize', apply);
+    return () => {
+      window.removeEventListener('resize', apply);
+      syncHomeWatchGlobeLift({ shown: false });
+    };
+  }, [shown]);
 
   useLayoutEffect(() => {
     const card = cardRef.current;

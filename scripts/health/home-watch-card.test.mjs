@@ -49,13 +49,29 @@ import {
   homeWatchViewParams,
   isHomeWatchDismissed,
   rectsOverlap,
+  shouldApplyHomeWatchGlobeLift,
   shouldHideHomeWatchCard,
+  HOME_WATCH_MOBILE_GLOBE_LIFT_PX,
 } from '../../src/pages/Home/lib/homeWatchCardModel.js';
 
 const HOME_WATCH_TASTE_MAX_KO = 16;
 const HOME_WATCH_TASTE_MAX_EN = 18;
 
 const NOW = 1_763_900_000_000;
+
+test('mobile globe lift applies only when the home watch bar is on screen', () => {
+  assert.equal(HOME_WATCH_MOBILE_GLOBE_LIFT_PX, 60);
+  assert.equal(shouldApplyHomeWatchGlobeLift(390, true), true);
+  assert.equal(shouldApplyHomeWatchGlobeLift(1279, true), true);
+  assert.equal(shouldApplyHomeWatchGlobeLift(1280, true), false);
+  assert.equal(shouldApplyHomeWatchGlobeLift(390, false), false);
+  const css = fs.readFileSync(new URL('../../src/index.css', import.meta.url), 'utf8');
+  assert.match(css, /data-home-watch-globe-lift/);
+  assert.match(css, /\.gateo-home-globe-shell/);
+  const home = fs.readFileSync(new URL('../../src/pages/Home/index.jsx', import.meta.url), 'utf8');
+  assert.match(home, /gateo-home-globe-shell/);
+  assert.match(home, /data-testid="home-globe-shell"/);
+});
 
 test('home watch card defaults on unless env or query disables', () => {
   const cardKey = GATEO_ENV_FLAG_NAMES.HOME_WATCH_CARD;

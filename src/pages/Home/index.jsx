@@ -2071,7 +2071,7 @@ function Home() {
       {isPlaceCardSummaryVisible && serviceModalSummaryActive && selectedLocation ? (
         <HomePlaceSummaryDocumentHead location={selectedLocation} />
       ) : null}
-      <div className="w-full h-full">
+      <div className="gateo-home-globe-shell w-full h-full" data-testid="home-globe-shell">
         <HomeGlobe
           ref={globeRef}
           onGlobeClick={handleGlobeClick}

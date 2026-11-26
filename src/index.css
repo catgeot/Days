@@ -47,6 +47,33 @@ body {
   touch-action: none;
 }
 
+/* 모바일: 「지금 볼 거리」 바가 있을 때만 지구본 셸을 위로 (search·메뉴 z-index 유지) */
+.gateo-home-globe-shell {
+  transform: translate3d(0, 0, 0);
+  transition: transform 0.35s ease;
+}
+
+@media (max-width: 1279px) {
+  .gateo-home-globe-shell {
+    --home-globe-mobile-base-lift: 10px;
+    transform: translate3d(0, calc(-1 * var(--home-globe-mobile-base-lift)), 0);
+  }
+
+  html[data-home-watch-globe-lift='1'] .gateo-home-globe-shell {
+    transform: translate3d(
+      0,
+      calc(-1 * (var(--home-watch-globe-lift, 60px) + var(--home-globe-mobile-base-lift, 10px))),
+      0
+    );
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gateo-home-globe-shell {
+    transition: none;
+  }
+}
+
 @keyframes mooni-float {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-6px); }
