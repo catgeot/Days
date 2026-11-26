@@ -131,6 +131,7 @@ export default defineConfig({
         /patrol-explore-empty\.spec\.js/,
         /patrol-festival-tours\.spec\.js/,
         /patrol-blog-bottom\.spec\.js/,
+        /logbook-article-body-center\.spec\.js/,
         /explore-seowon-search\.spec\.js/,
         /explore-suggest-rank\.spec\.js/,
         /agency-home-link\.spec\.js/,
@@ -449,7 +450,7 @@ export default defineConfig({
     },
     {
       name: 'webkit-logbook-article-pad',
-      testMatch: /patrol-blog-bottom\.spec\.js/,
+      testMatch: /patrol-blog-bottom\.spec\.js|logbook-article-body-center\.spec\.js/,
       timeout: 180_000,
       use: {
         ...devices['Desktop Safari'],

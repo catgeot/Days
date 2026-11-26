@@ -19,12 +19,24 @@ const badge = readFileSync(
 test('PublicViewer editorial header clears fixed back on narrow viewports', () => {
   assert.match(publicViewer, /logbookDetailBack/);
   assert.match(publicViewer, /LOGBOOK_ARTICLE_PAGE_PAD/);
-  assert.match(publicViewer, /LOGBOOK_ARTICLE_INLINE_CLEARANCE/);
+  assert.match(publicViewer, /LOGBOOK_ARTICLE_END_CLEARANCE/);
   assert.match(detail, /LOGBOOK_ARTICLE_PAGE_PAD/);
-  assert.match(detail, /LOGBOOK_ARTICLE_INLINE_CLEARANCE/);
+  assert.doesNotMatch(publicViewer, /max-md:!pr-/);
+  assert.doesNotMatch(detail, /max-md:!pr-/);
+  assert.doesNotMatch(clearance, /LOGBOOK_ARTICLE_INLINE_CLEARANCE/);
+  assert.match(clearance, /LOGBOOK_ARTICLE_CREDIT_CLEARANCE/);
+  assert.match(clearance, /LOGBOOK_ARTICLE_END_CLEARANCE/);
   assert.match(clearance, /safe-area-inset-bottom/);
   assert.match(clearance, /safe-area-inset-right/);
   assert.match(clearance, /pb-\[calc\(max\(6\.5rem,env\(safe-area-inset-bottom,0px\)\+5\.5rem\)\)\]/);
+  assert.match(
+    clearance,
+    /max-md:mr-\[calc\(2\.75rem\+max\(0\.75rem,env\(safe-area-inset-right,0px\)\)\)\]/,
+  );
+  assert.match(
+    clearance,
+    /max-md:mx-\[calc\(2\.75rem\+max\(0\.75rem,env\(safe-area-inset-right,0px\)\)\)\]/,
+  );
   assert.match(publicViewer, /data-editorial-logbook-badge-header/);
   assert.match(
     publicViewer,

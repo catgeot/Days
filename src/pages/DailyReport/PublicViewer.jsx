@@ -28,7 +28,7 @@ import { isLogbookReportOwner } from './utils/logbookReportOwner';
 import { buildEditorialLogbookJsonLd } from './lib/logbookEditorialJsonLd';
 import SEO from '../../components/SEO';
 import {
-  LOGBOOK_ARTICLE_INLINE_CLEARANCE,
+  LOGBOOK_ARTICLE_END_CLEARANCE,
   LOGBOOK_ARTICLE_PAGE_PAD,
 } from './logbookArticleClearance.js';
 import { resolveLogbookFeedExcerpt } from '../../utils/logbookDek';
@@ -343,8 +343,8 @@ const PublicViewer = () => {
         <div
           className={
             editorial
-              ? `bg-white sm:bg-white/60 sm:backdrop-blur-xl border-0 sm:border sm:border-gray-200/90 p-0 sm:p-10 rounded-none sm:rounded-3xl shadow-none sm:shadow-sm mt-0 sm:mt-8 ${LOGBOOK_ARTICLE_INLINE_CLEARANCE}`
-              : `bg-white/60 backdrop-blur-xl border border-gray-200 p-6 sm:p-10 rounded-3xl shadow-sm mt-8 ${LOGBOOK_ARTICLE_INLINE_CLEARANCE}`
+              ? 'bg-white sm:bg-white/60 sm:backdrop-blur-xl border-0 sm:border sm:border-gray-200/90 p-0 sm:p-10 rounded-none sm:rounded-3xl shadow-none sm:shadow-sm mt-0 sm:mt-8'
+              : 'bg-white/60 backdrop-blur-xl border border-gray-200 p-6 sm:p-10 rounded-3xl shadow-sm mt-8'
           }
         >
           {editorial ? (
@@ -468,7 +468,7 @@ const PublicViewer = () => {
 
           <LogbookComments report={report} onCountChange={setCommentCount} />
 
-          <div data-logbook-article-end className="mt-16 pt-8 border-t border-gray-200 text-center flex flex-col items-center">
+          <div data-logbook-article-end className={`mt-16 pt-8 border-t border-gray-200 text-center flex flex-col items-center ${LOGBOOK_ARTICLE_END_CLEARANCE}`}>
             <p className="text-gray-500 text-sm font-medium mb-6">{t('logbook.public.ctaBody')}</p>
             <div className="flex flex-col sm:flex-row gap-3">
               <button
