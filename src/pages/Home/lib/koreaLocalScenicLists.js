@@ -337,6 +337,17 @@ function resolveSearchScenicMediaForAttraction(hubId, name, contentId, extra = {
   return { imageUrl, contentId: resolvedContentId };
 }
 
+function resolveSearchScenicMediaViaHubId(hubId, item) {
+  const id = String(hubId || '').trim();
+  if (!id || !resolveCityAttractionHub(id)) return null;
+  return resolveSearchScenicMedia({
+    kind: 'city',
+    source: 'hub',
+    hubId: id,
+    name: item?.name,
+  });
+}
+
 export function resolveSearchScenicMedia(item) {
   if (!item || typeof item !== 'object') {
     return { imageUrl: null, contentId: null };
@@ -349,6 +360,23 @@ export function resolveSearchScenicMedia(item) {
     String(
       item.imageUrl || item.thumbUrl || item.firstImage || item.image_url || '',
     ).trim() || null;
+
+  if (!existing) {
+    const source = String(item.source || '');
+    const slug = String(item.slug || '').trim();
+    if (item.kind === 'spot' && source === 'ssot' && slug) {
+      const viaHub = resolveSearchScenicMediaViaHubId(slug, item);
+      if (viaHub?.imageUrl) return viaHub;
+    }
+    if (item.kind === 'settlement' && hubId) {
+      const viaHub = resolveSearchScenicMediaViaHubId(hubId, item);
+      if (viaHub?.imageUrl) return viaHub;
+    }
+    if (item.kind === 'city' && source === 'cities' && slug) {
+      const viaHub = resolveSearchScenicMediaViaHubId(slug, item);
+      if (viaHub?.imageUrl) return viaHub;
+    }
+  }
 
   if (
     !existing &&

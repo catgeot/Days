@@ -110,6 +110,20 @@ test('choseong queries suggest 서울·제주·경복궁 and the place index is 
   assert.ok(jeju.every((item) => hangulChoseong(item.name).startsWith('ㅈㅈ')));
 });
 
+test('choseong ㅅㅇ travel-spot rows with a city hub reuse hub scenic thumb', () => {
+  resetExploreChoseongIndexForTests();
+  const items = withChoseongFlag('', () => buildLocalSearchSuggestions('ㅅㅇ'));
+  const seoul = items.find((item) => item.name === '서울' && item.kind === 'spot');
+  assert.ok(seoul, '서울 choseong spot row');
+  const thumb = String(seoul.thumbUrl || seoul.imageUrl || '').trim();
+  assert.ok(thumb, '서울 choseong card must carry a representative photo');
+  assert.equal(String(seoul.contentId || ''), '126508');
+  const withoutThumb = items.filter(
+    (item) => !String(item.thumbUrl || item.imageUrl || '').trim(),
+  );
+  assert.ok(withoutThumb.length < items.length, 'at least one choseong row has a scenic thumb');
+});
+
 test('completed and english explore results stay the same when choseong is on', () => {
   const queries = ['서울', 'Seoul', '제주', 'jeju', '부산', '속초', 'ㄱ'];
   for (const query of queries) {

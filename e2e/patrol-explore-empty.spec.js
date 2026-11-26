@@ -102,18 +102,20 @@ test.describe('Patrol explore empty and photo-less cards', () => {
       await expect(empty).toHaveCount(0);
     });
 
-    test(`choseong cards without photos use the empty gradient @${viewport.label}`, async ({ page }) => {
+    test(`choseong 서울 result card shows a photo when hub scenic exists @${viewport.label}`, async ({ page }) => {
       await page.setViewportSize({ width: viewport.width, height: viewport.height });
       await page.goto('/explore?lang=ko');
       const input = page.getByRole('textbox', { name: /예: 속초|e\.g\. Sokcho/i }).first();
       await expect(input).toBeVisible({ timeout: 60_000 });
       await input.fill(CHOSEONG);
       await input.press('Enter');
-      const card = page.locator('[data-search-result-card]').first();
-      await expect(card).toBeVisible({ timeout: 30_000 });
-      await expect(page.locator('[data-search-thumb-empty="gradient"]').first()).toBeVisible();
+      const seoulCard = page
+        .locator('[data-search-result-card][data-search-result-name="서울"]')
+        .first();
+      await expect(seoulCard).toBeVisible({ timeout: 30_000 });
+      await expect(seoulCard.locator('img[src]').first()).toBeVisible({ timeout: 15_000 });
       await page.screenshot({
-        path: `/opt/cursor/artifacts/explore-choseong-after-${viewport.label}.png`,
+        path: `/opt/cursor/artifacts/explore-choseong-results-${viewport.label}.png`,
         clip: { x: 0, y: 0, width: viewport.width, height: viewport.height },
       });
     });
