@@ -133,6 +133,8 @@ import {
   persistFlightOriginIata,
   resolveDefaultFlightOriginIataForLocation,
 } from '../lib/flightOriginPreference';
+import { readGrantedUserOriginCoords } from '../lib/knownUserOriginCoords.js';
+import { writeLocationSuccess } from '../../Korea/festivalLocationHint.js';
 import {
   hasMooniTripSessionFacts,
   hydrateMooniTripSession,
@@ -242,6 +244,8 @@ const ChatModal = ({
   const [accessOriginIata, setAccessOriginIata] = useState(() =>
     resolveDefaultFlightOriginIataForLocation(mooniPlaceContext),
   );
+  const accessOriginTouchedRef = useRef(false);
+  const accessPlaceKey = String(mooniPlaceContext?.slug || mooniPlaceContext?.id || '');
   const originInputOn = isGateoMooniOriginInputEnabled();
   const [festivalAccessId, setFestivalAccessId] = useState(() => (
     isGateoMooniOriginInputEnabled() ? '' : 'incheon'
@@ -695,14 +699,34 @@ const ChatModal = ({
       setMobileDockInputFocused(false);
       setAccessOriginSearchOpen(false);
       setAccessOriginSearchActive(false);
+      accessOriginTouchedRef.current = false;
       if (mobileDockBlurTimerRef.current) {
         clearTimeout(mobileDockBlurTimerRef.current);
         mobileDockBlurTimerRef.current = null;
       }
-    } else {
-      setAccessOriginIata(resolveDefaultFlightOriginIataForLocation(mooniPlaceContext));
+      return undefined;
     }
-  }, [isOpen]);
+    if (accessOriginTouchedRef.current) return undefined;
+    const place = mooniPlaceContextRef.current;
+    setAccessOriginIata(resolveDefaultFlightOriginIataForLocation(place));
+    let cancelled = false;
+    (async () => {
+      const coords = await readGrantedUserOriginCoords();
+      if (cancelled || accessOriginTouchedRef.current || !coords) return;
+      try {
+        writeLocationSuccess(window.localStorage, coords.lat, coords.lng);
+      } catch {
+        /* private mode */
+      }
+      setAccessOriginIata(resolveDefaultFlightOriginIataForLocation(place, {
+        userLat: coords.lat,
+        userLng: coords.lng,
+      }));
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [isOpen, accessPlaceKey]);
 
   useEffect(() => {
     return () => {
@@ -1728,6 +1752,7 @@ const ChatModal = ({
     (iata, geo) => {
       const code = String(iata ?? '').trim().toUpperCase();
       if (code.length !== 3) return;
+      accessOriginTouchedRef.current = true;
       persistFlightOriginIata(code);
       setAccessOriginIata(code);
       setAccessOriginSearchOpen(false);
@@ -2421,7 +2446,7 @@ const ChatModal = ({
 
             <div className={`shrink-0 min-w-0 overflow-hidden pb-[max(0.75rem,env(safe-area-inset-bottom,0px))] ${tone(fresh, 'bg-gray-900 border-t border-gray-800', 'bg-white/85 border-t border-cyan-100')}`}>
               {showAccessOriginDock ? (
-                <div className={`px-3 md:px-4 pt-3 md:pt-2 pb-2 md:pb-1.5 space-y-2 md:space-y-1.5 ${tone(fresh, 'border-b border-gray-800/80', 'border-b border-cyan-100')}`}>
+                <div data-testid="mooni-access-origin-dock" className={`px-3 md:px-4 pt-3 md:pt-2 pb-2 md:pb-1.5 space-y-2 md:space-y-1.5 ${tone(fresh, 'border-b border-gray-800/80', 'border-b border-cyan-100')}`}>
                   <div className="flex items-center gap-2 min-w-0 flex-wrap">
                     <button
                       type="button"

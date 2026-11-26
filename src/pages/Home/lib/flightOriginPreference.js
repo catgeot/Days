@@ -5,6 +5,8 @@ import {
 import { isKoreaDomesticDestIata, KOREA_AIRPORT_IATAS } from '../../../utils/koreaAirportIatas.js';
 import { resolveCinemaDestIata } from '../../../utils/rentalAirportMatch.js';
 import { isDomesticKoreaLocationForTourApi } from '../../../utils/tourApiMatch.js';
+import { resolveFlightOriginIataFromCoords } from './flightOriginFromCoords.js';
+import { resolveKnownUserOriginCoords } from './knownUserOriginCoords.js';
 
 const STORAGE_KEY = 'gateo.flightOriginIata';
 
@@ -82,10 +84,13 @@ export function resolveDefaultFlightOriginIata(options = {}) {
 
 /**
  * 장소카드·MOONi 출발지 기본값 — 장소의 도착 공항으로 국내선 여부를 판단한다.
+ * 알고 있는 사용자 좌표가 있고 저장된 출발이 없거나 인천(기본값)이면 그 좌표의 공항을 쓴다.
+ * 인천이 아닌 저장값은 사용자가 고른 출발이라 유지한다.
  * @param {Record<string, unknown> | null | undefined} location
+ * @param {{ userLat?: number, userLng?: number }} [options]
  * @returns {string}
  */
-export function resolveDefaultFlightOriginIataForLocation(location) {
+export function resolveDefaultFlightOriginIataForLocation(location, options = {}) {
   let destIata = null;
   if (location) {
     try {
@@ -97,6 +102,14 @@ export function resolveDefaultFlightOriginIataForLocation(location) {
   const domesticPlace =
     KOREA_AIRPORT_IATAS.has(String(destIata ?? '').trim().toUpperCase()) &&
     isDomesticKoreaLocationForTourApi(location);
+  const coords = resolveKnownUserOriginCoords(options);
+  const stored = getStoredFlightOriginIata();
+  if (coords && (!stored || stored === 'ICN')) {
+    const fromCoords = resolveFlightOriginIataFromCoords(coords.lat, coords.lng);
+    if (fromCoords) {
+      return preferDomesticFlightOriginIata(fromCoords, destIata, { domesticPlace });
+    }
+  }
   return resolveDefaultFlightOriginIata({ destIata, domesticPlace });
 }
 
