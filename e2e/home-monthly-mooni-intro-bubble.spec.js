@@ -1,8 +1,13 @@
 import fs from 'node:fs';
 import { test, expect } from './fixtures.js';
+import { MOONI_INTRO_LINES_KO } from './mooniIntroLinesKo.mjs';
 
 const NOVEMBER_AT = '2026-11-25T03:00:00.000Z';
-const INTRO_KO = /안녕! 3D 지구본과 AI로 여행지를 찾아봐요/;
+/** 레이아웃 회귀용 고정 intro — `mooni.lines.intro` SSOT 인덱스 */
+const LAYOUT_INTRO_INDEX = MOONI_INTRO_LINES_KO.findIndex((line) =>
+  line.includes('3D 지구본과 AI로 여행지를 찾아봐요'),
+);
+const LAYOUT_INTRO_KO = MOONI_INTRO_LINES_KO[LAYOUT_INTRO_INDEX];
 
 function overlaps(a, b) {
   if (!a || !b || a.width < 1 || b.width < 1) return false;
@@ -41,16 +46,22 @@ async function elementFromPointHit(page, locator) {
   });
 }
 
-async function openHomeWithMooniIntro(page, path, time) {
+async function openHomeWithMooniIntro(page, path, time, { introIndex } = {}) {
   if (time) await page.clock.install({ time: new Date(time) });
-  await page.addInitScript(() => {
-    try {
-      localStorage.removeItem('gateo_mooni_intro_seen');
-      localStorage.removeItem('gateo_mooni_fab_pos');
-    } catch {
-      /* ignore */
-    }
-  });
+  await page.addInitScript(
+    ({ introIndex: forcedIntro }) => {
+      try {
+        sessionStorage.removeItem('gateo_mooni_intro_seen');
+        localStorage.removeItem('gateo_mooni_fab_pos');
+      } catch {
+        /* ignore */
+      }
+      if (typeof forcedIntro === 'number' && Number.isInteger(forcedIntro)) {
+        globalThis.__GATEO_MOONI_INTRO_INDEX__ = forcedIntro;
+      }
+    },
+    { introIndex },
+  );
   await page.goto(path, { waitUntil: 'domcontentloaded' });
 }
 
@@ -69,14 +80,16 @@ test.describe('home monthly card vs MOONi intro bubble', () => {
   test('webkit 390 — bubble clears header; 12월 보기 is hit-testable', async ({ page }, testInfo) => {
     test.skip(testInfo.project.name !== 'webkit-home-monthly-390', 'webkit 390');
 
-    await openHomeWithMooniIntro(page, '/?home_monthly_switch=1', NOVEMBER_AT);
+    await openHomeWithMooniIntro(page, '/?home_monthly_switch=1', NOVEMBER_AT, {
+      introIndex: LAYOUT_INTRO_INDEX,
+    });
     const card = page.getByTestId('home-watch-card');
     await expect(card).toBeVisible({ timeout: 60_000 });
     await expect(card).toHaveAttribute('data-monthly-placed', '1', { timeout: 60_000 });
 
     const hint = page.getByTestId('mooni-fab-hint');
     await expect(hint).toBeVisible({ timeout: 30_000 });
-    await expect(hint.getByText(INTRO_KO)).toBeVisible();
+    await expect(hint).toContainText(LAYOUT_INTRO_KO);
 
     const link = page.getByTestId('home-monthly-switch');
     await expect(link).toHaveText('12월 보기 ▸');
