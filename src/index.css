@@ -661,6 +661,27 @@ body {
   }
 }
 
+/* Native horizontal pan. snap-stop stays normal so a flick can cross tiles.
+   The scroller is not a descendant of backdrop-filter (that layer is a sibling). */
+.home-monthly-scroller {
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-x;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+}
+
+.home-monthly-scroller > li,
+.home-monthly-scroller a {
+  touch-action: pan-x;
+}
+
+.home-monthly-scroller > li {
+  scroll-snap-align: start;
+  scroll-snap-stop: normal;
+}
+
 .place-review-focus-current {
   outline: 2px solid rgba(59, 130, 246, 0.55);
   outline-offset: 2px;

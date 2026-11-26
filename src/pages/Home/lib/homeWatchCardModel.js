@@ -36,6 +36,14 @@ export const HOME_WATCH_CAPTION_BAND = 'rgba(0,0,0,0.86)';
 export const HOME_MONTHLY_PREVIEW_START_DAY = 1;
 export const HOME_MONTHLY_PREVIEW_START_QUERY = 'home_monthly_preview_start';
 export const HOME_MONTHLY_CARD_GAP = 8;
+/**
+ * Fixed right inset. Matches `.home-monthly-card` and clears the docked MOONi.
+ * A dragged MOONi overlays this box; its live position must not change the width.
+ */
+export const HOME_MONTHLY_CARD_RIGHT = {
+  mobile: 108,
+  desktop: 120,
+};
 
 /** @param {string | null | undefined} search */
 export function resolveHomeMonthlyPreviewStartDay(
@@ -82,26 +90,24 @@ export function homeMonthlySwitchState(
 }
 
 /**
- * Flag-on placement: sit just above the bottom About row / nav / chat,
- * and stop short of the MOONi button. `obstacles` are viewport rects.
+ * Flag-on placement: sit just above the bottom About row / nav / chat.
+ * Width stays on the fixed inset. `obstacles` are viewport rects.
+ * `mooni` is accepted and ignored so a dragged button cannot reflow the card.
  */
 export function layoutHomeMonthlyCard({
   viewportWidth,
   viewportHeight,
   safeBottom = 0,
-  mooni = null,
   obstacles = [],
   gap = HOME_MONTHLY_CARD_GAP,
 } = {}) {
   const width = Number(viewportWidth) || 0;
   const height = Number(viewportHeight) || 0;
-  const left = width >= HOME_WATCH_CARD_LAYOUT.desktop.minWidth
+  const desktop = width >= HOME_WATCH_CARD_LAYOUT.desktop.minWidth;
+  const left = desktop
     ? HOME_WATCH_CARD_LAYOUT.desktop.left
     : HOME_WATCH_CARD_LAYOUT.mobile.side;
-  let right = HOME_WATCH_CARD_LAYOUT.mobile.side;
-  if (mooni && mooni.width > 0 && mooni.height > 0 && mooni.left < width) {
-    right = Math.max(right, width - mooni.left + gap);
-  }
+  const right = desktop ? HOME_MONTHLY_CARD_RIGHT.desktop : HOME_MONTHLY_CARD_RIGHT.mobile;
   const cardLeft = left;
   const cardRight = width - right;
   let bottom = Math.max(0, Number(safeBottom) || 0) + gap;
