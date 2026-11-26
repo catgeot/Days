@@ -14,8 +14,8 @@ import {
   isQuicklinkReviewTabActive,
   isQuicklinkReviewTabQueryEnabled,
 } from '../../src/shared/gateoFeatureFlags.js';
+import { shouldMarkGateoInternalTraffic } from '../../src/shared/analytics/gateoGaQa.js';
 import {
-  isQuicklinkInternalTraffic,
   trackMooniCurationLinkClick,
   trackQuicklinkClick,
 } from '../../src/shared/analytics/quicklinkAnalytics.js';
@@ -75,75 +75,77 @@ test('ko and en home.quickLinks keep curation and add review hub labels', () => 
   );
 });
 
-test('quicklink_click and mooni_curation_link_click are not sent for internal traffic', () => {
-  const calls = [];
-  const gtag = (...args) => {
-    calls.push(args);
+test('quicklink events fire for real users and carry traffic_type internal for QA, webdriver, and crawler', () => {
+  const sent = [];
+  const dataLayer = [];
+  const realWindow = globalThis.window;
+  globalThis.window = {
+    gtag: (...args) => {
+      sent.push(args);
+      if (args[0] === 'event') dataLayer.push(args);
+    },
+    location: { search: '' },
+    dataLayer,
   };
-  const base = {
-    window: { gtag, location: { search: '' }, __gateoGaEvents: [] },
+  const realUser = {
     navigator: { webdriver: false, userAgent: 'Mozilla/5.0' },
     localStorage: { getItem: () => null },
     userAgent: 'Mozilla/5.0',
     webdriver: false,
     search: '',
   };
-  const sent = [];
-  const realTrack = globalThis.window;
-  globalThis.window = {
-    gtag: (...args) => sent.push(args),
-    location: { search: '' },
-  };
 
-  assert.equal(trackQuicklinkClick('festival', base), true);
-  assert.equal(trackMooniCurationLinkClick(base), true);
+  assert.equal(shouldMarkGateoInternalTraffic(realUser), false);
+  assert.equal(trackQuicklinkClick('festival', realUser), true);
+  assert.equal(trackMooniCurationLinkClick(realUser), true);
+  for (const item of ['world_events', 'scenic', 'curation', 'review_hub']) {
+    assert.equal(trackQuicklinkClick(item, realUser), true);
+  }
   assert.deepEqual(
     sent.map((args) => ({ name: args[1], params: args[2] })),
     [
-      {
-        name: 'quicklink_click',
-        params: { item: 'festival', surface: 'home_menu', expanded: true },
-      },
-      {
-        name: 'mooni_curation_link_click',
-        params: { from_chip: 'companion' },
-      },
+      { name: 'quicklink_click', params: { item: 'festival', surface: 'home_menu', expanded: true } },
+      { name: 'mooni_curation_link_click', params: { from_chip: 'companion' } },
+      { name: 'quicklink_click', params: { item: 'world_events', surface: 'home_menu', expanded: true } },
+      { name: 'quicklink_click', params: { item: 'scenic', surface: 'home_menu', expanded: true } },
+      { name: 'quicklink_click', params: { item: 'curation', surface: 'home_menu', expanded: true } },
+      { name: 'quicklink_click', params: { item: 'review_hub', surface: 'home_menu', expanded: true } },
     ],
   );
-
-  sent.length = 0;
-  for (const item of ['world_events', 'scenic', 'review_hub', 'curation']) {
-    assert.equal(trackQuicklinkClick(item, base), true);
-    assert.equal(sent.at(-1)[2].item, item);
-    assert.equal(sent.at(-1)[2].surface, 'home_menu');
-    assert.equal(sent.at(-1)[2].expanded, true);
+  assert.equal(dataLayer.length, sent.length);
+  for (const params of sent.map((args) => args[2])) {
+    assert.equal(Object.hasOwn(params, 'traffic_type'), false);
   }
 
-  sent.length = 0;
-  assert.equal(isQuicklinkInternalTraffic({ ...base, webdriver: true }), true);
-  assert.equal(trackQuicklinkClick('festival', { ...base, webdriver: true }), false);
-  assert.equal(
-    trackMooniCurationLinkClick({ ...base, search: '?crawler=1', webdriver: false }),
-    false,
-  );
-  assert.equal(
-    trackQuicklinkClick('curation', {
-      ...base,
-      search: '?qa=1',
-      localStorage: { getItem: (key) => (key === 'gateo_qa' ? null : null) },
-    }),
-    false,
-  );
-  assert.equal(
-    trackMooniCurationLinkClick({
-      ...base,
-      localStorage: { getItem: (key) => (key === 'gateo_qa' ? '1' : null) },
-    }),
-    false,
-  );
-  assert.equal(sent.length, 0);
-  assert.equal(calls.length, 0);
-  globalThis.window = realTrack;
+  function marked(env, item = 'festival') {
+    sent.length = 0;
+    dataLayer.length = 0;
+    assert.equal(shouldMarkGateoInternalTraffic(env), true);
+    assert.equal(trackQuicklinkClick(item, env), true);
+    assert.equal(trackMooniCurationLinkClick(env), true);
+    assert.equal(sent[0][2].traffic_type, 'internal');
+    assert.equal(sent[1][2].traffic_type, 'internal');
+    assert.equal(sent[0][2].item, item);
+    assert.equal(sent[0][2].surface, 'home_menu');
+    assert.equal(sent[0][2].expanded, true);
+    assert.deepEqual(sent[1][2], { from_chip: 'companion', traffic_type: 'internal' });
+    assert.deepEqual(dataLayer[0], sent[0]);
+  }
+
+  marked({ ...realUser, webdriver: true });
+  marked({ ...realUser, search: '?crawler=1', webdriver: false }, 'curation');
+  marked({
+    ...realUser,
+    search: '?qa=1',
+    webdriver: false,
+  }, 'review_hub');
+  marked({
+    ...realUser,
+    webdriver: false,
+    localStorage: { getItem: (key) => (key === 'gateo_qa' ? '1' : null) },
+  });
+
+  globalThis.window = realWindow;
 });
 
 test('MOONi companion curation link is absent unless the flag is on and the chip is companion', () => {
@@ -256,6 +258,7 @@ test('rendered companion link is absent when the flag is off and sends the click
   assert.equal(link.getAttribute('href'), '/blog/curation');
   assert.equal(link.textContent, '취향에 맞는 숨은 낙원 더 찾기 → AI 큐레이션');
 
+  Object.defineProperty(window.navigator, 'webdriver', { configurable: true, get: () => false });
   window.addEventListener('click', (event) => event.preventDefault(), true);
   await act(async () => {
     link.dispatchEvent(new window.MouseEvent('click', { bubbles: true, cancelable: true }));
@@ -263,6 +266,7 @@ test('rendered companion link is absent when the flag is off and sends the click
   assert.deepEqual(sent, [
     ['event', 'mooni_curation_link_click', { from_chip: 'companion' }],
   ]);
+  assert.equal(Object.hasOwn(sent[0][2], 'traffic_type'), false);
 
   await act(async () => {
     onRoot.unmount();

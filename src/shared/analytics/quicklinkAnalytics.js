@@ -1,41 +1,29 @@
-import { shouldSkipGateoAutomatedTraffic } from './gateoGaQa.js';
 import { trackEvent } from './trackEvent.js';
 
-/** @param {{ window?: Window, navigator?: Navigator, localStorage?: Storage, search?: string, userAgent?: string, webdriver?: boolean }} [env] */
-export function isQuicklinkInternalTraffic(env) {
-  if (shouldSkipGateoAutomatedTraffic(env)) return true;
-  const search =
-    env?.search ??
-    env?.window?.location?.search ??
-    (typeof window !== 'undefined' ? window.location.search : '');
-  try {
-    return new URLSearchParams(String(search || '')).get('crawler') === '1';
-  } catch {
-    return false;
-  }
-}
-
 /**
- * Home quick-link click. Internal traffic (QA, webdriver, `?crawler=1`, bot UA) is not sent.
+ * Home quick-link click. Live with the review-tab flag off or on.
+ * The fourth tile is `curation` when the flag is off and `review_hub` when it is on.
  * @param {string} item festival | world_events | scenic | review_hub | curation
- * @param {Parameters<typeof isQuicklinkInternalTraffic>[0]} [env]
+ * @param {Parameters<typeof trackEvent>[2]} [env]
  */
 export function trackQuicklinkClick(item, env) {
-  if (isQuicklinkInternalTraffic(env)) return false;
-  trackEvent('quicklink_click', {
-    item,
-    surface: 'home_menu',
-    expanded: true,
-  });
+  trackEvent(
+    'quicklink_click',
+    {
+      item,
+      surface: 'home_menu',
+      expanded: true,
+    },
+    env,
+  );
   return true;
 }
 
 /**
- * MOONi companion-answer curation link. Not sent for internal traffic.
- * @param {Parameters<typeof isQuicklinkInternalTraffic>[0]} [env]
+ * MOONi companion-answer curation link. The control is flag-gated; this event is not.
+ * @param {Parameters<typeof trackEvent>[2]} [env]
  */
 export function trackMooniCurationLinkClick(env) {
-  if (isQuicklinkInternalTraffic(env)) return false;
-  trackEvent('mooni_curation_link_click', { from_chip: 'companion' });
+  trackEvent('mooni_curation_link_click', { from_chip: 'companion' }, env);
   return true;
 }
