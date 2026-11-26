@@ -38,7 +38,6 @@ import DestinationResolutionChips from '../../../components/chat/DestinationReso
 import MooniPlannerFollowUp from '../../../components/chat/MooniPlannerFollowUp';
 import MooniTruncatedContinue from '../../../components/chat/MooniTruncatedContinue';
 import MooniQuickReplyChips from '../../../components/chat/MooniQuickReplyChips';
-import MooniCompanionCurationLink from '../../../components/chat/MooniCompanionCurationLink';
 import {
   sanitizeMooniModelReply,
   shouldShowMooniPlannerFollowUp,
@@ -1251,7 +1250,6 @@ const ChatModal = ({
       text: bubbleText,
       ...(promptText ? { mooniPromptText: promptText } : {}),
       mooniAt: turnAt,
-      ...(chipId ? { chipId } : {}),
       ...(departureLabel && chipDestination ? { departureLabel } : {}),
     };
 
@@ -1591,7 +1589,6 @@ const ChatModal = ({
             : {}),
           ...destinationPickExtras,
           plannerFollowUp,
-          replyChipId: chipId || null,
           bookingMeta:
             booking.show || plannerFollowUp
               ? {
@@ -2293,12 +2290,6 @@ const ChatModal = ({
                         ? messages[idx - 1].text?.text
                         : messages[idx - 1].text) ?? ''
                     : '';
-                const replyChipId = isModelMsg
-                  ? (msg.replyChipId ||
-                      msg.bookingMeta?.chipId ||
-                      (messages[idx - 1]?.role === 'user' ? messages[idx - 1].chipId : null) ||
-                      null)
-                  : null;
                 const airportPickup = isModelMsg && isGettingThereUserText(priorUserText)
                   ? airportPickupRowForPlace({
                       ...(activeSessionPlace || {}),
@@ -2440,12 +2431,6 @@ const ChatModal = ({
                         variant={isMooniUi ? 'light' : 'dark'}
                       />
                     )}
-                    {isModelMsg ? (
-                      <MooniCompanionCurationLink
-                        chipId={replyChipId}
-                        variant={isMooniUi ? 'light' : 'dark'}
-                      />
-                    ) : null}
                   </div>
                 </div>
                 );

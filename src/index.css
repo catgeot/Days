@@ -187,26 +187,6 @@ html.mooni-fab-dragging * {
   animation: quick-links-twinkle-curation 5.6s ease-in-out infinite;
 }
 
-@keyframes quick-links-twinkle-reviewHub {
-  0%, 24%, 100% {
-    color: rgba(196, 181, 253, 0.75);
-    text-shadow: none;
-    filter: brightness(0.92);
-  }
-  12% {
-    color: #ddd6fe;
-    text-shadow:
-      0 0 10px rgba(167, 139, 250, 0.75),
-      0 0 16px rgba(139, 92, 246, 0.55);
-    filter: brightness(1.2);
-  }
-}
-
-.quick-links-collapsed-item-reviewHub {
-  display: inline-block;
-  animation: quick-links-twinkle-reviewHub 5.6s ease-in-out infinite;
-}
-
 /* 홈 좌상단 바로가기 접힘 배너 — 호흡하는 앰비언트 글로우 & 테두리 */
 @keyframes quick-links-banner-breathe {
   0%, 100% {
@@ -247,11 +227,6 @@ html.mooni-fab-dragging * {
   .quick-links-collapsed-item-curation {
     animation: none;
     color: #7dd3fc;
-    filter: none;
-  }
-  .quick-links-collapsed-item-reviewHub {
-    animation: none;
-    color: #c4b5fd;
     filter: none;
   }
   .quick-links-banner-breathe {

@@ -46,11 +46,6 @@ import { isGateoLogbookReviewFilterEnabled } from '../../../utils/logbookReviewF
 import { logbookPlaceKey } from '../../../utils/logbookReadingMeta.js';
 import { resolveLogbookBlogLocationReviewFilter } from '../../../logbookOfficialReviews/logbookBlogLocationReviewFilter.js';
 import { trackEvent } from '../../../shared/analytics/trackEvent.js';
-import {
-  REVIEW_HUB_ANCHOR_ID,
-  REVIEW_HUB_HASH,
-  reviewHubArrivalDelta,
-} from '../../../logbookOfficialReviews/logbookReviewHubArrival.js';
 import LogbookOfficialReviewFilter from './LogbookOfficialReviewFilter.jsx';
 import LogbookOfficialReviewCardGrid from './LogbookOfficialReviewCardGrid.jsx';
 
@@ -241,7 +236,6 @@ const LogbookOfficialReviewHubCard = ({ blogLocationFilter = '' }) => {
   const [filterCitySlug, setFilterCitySlug] = useState(initialCitySlug);
   const { enabled, rows, isLoading, loadFailed, totalCount, retry } = useLogbookOfficialReviewHub();
   const didRestoreScroll = useRef(false);
-  const arrivalScrollDone = useRef(false);
   const skipExpandedPersist = useRef(true);
   const expandedRef = useRef(expanded);
   const defaultHubToggleSent = useRef(false);
@@ -292,29 +286,6 @@ const LogbookOfficialReviewHubCard = ({ blogLocationFilter = '' }) => {
     const session = readMatchingLogbookReviewHubSession(location.pathname, location.search);
     const target = Number(session?.scrollY);
     const room = scrollRoot.scrollHeight - scrollRoot.clientHeight;
-    const hashArrival = window.location.hash === REVIEW_HUB_HASH;
-    if (hashArrival) {
-      if (!arrivalScrollDone.current) {
-        const hubEl = document.getElementById(REVIEW_HUB_ANCHOR_ID);
-        if (hubEl instanceof HTMLElement) {
-          const delta = reviewHubArrivalDelta({
-            hubRect: hubEl.getBoundingClientRect(),
-            rootRect: scrollRoot.getBoundingClientRect(),
-            scrollTop: scrollRoot.scrollTop,
-            userMoved: scrollRoot.scrollTop > 8,
-          });
-          if (delta) scrollRoot.scrollTop += delta;
-          arrivalScrollDone.current = true;
-          scrollAnchorRef.current = captureLogbookHubScrollAnchor(scrollRoot);
-          didRestoreScroll.current = true;
-        }
-      } else if (scrollAnchorRef.current) {
-        holdLogbookHubScrollAnchor(scrollRoot, scrollAnchorRef.current);
-        scrollAnchorRef.current = captureLogbookHubScrollAnchor(scrollRoot);
-      }
-      return undefined;
-    }
-
     const canRestore =
       expanded &&
       rows.length > 0 &&
@@ -495,7 +466,6 @@ const LogbookOfficialReviewHubCard = ({ blogLocationFilter = '' }) => {
   if (loadFailed) {
     return (
       <section
-        id={REVIEW_HUB_ANCHOR_ID}
         className={HUB_CARD_LAYOUT_CLASS}
         aria-label={hubTitle}
         data-testid="logbook-official-review-hub"
@@ -540,7 +510,6 @@ const LogbookOfficialReviewHubCard = ({ blogLocationFilter = '' }) => {
 
   return (
     <section
-      id={REVIEW_HUB_ANCHOR_ID}
       className={HUB_CARD_LAYOUT_CLASS}
       aria-label={hubTitle}
       data-testid="logbook-official-review-hub"
