@@ -1,6 +1,7 @@
 import {
   LOGBOOK_EDITORIAL_DISCLOSURE_KO,
   LOGBOOK_EDITORIAL_PUBLISH_STATUSES,
+  normalizeEditorialSecondaryLabelInput,
 } from '../../src/utils/logbookEditorial.js';
 
 export function validateEditorialLogbookPayload(payload) {
@@ -52,6 +53,10 @@ export function validateEditorialLogbookPayload(payload) {
     is_public: status === 'published',
     is_deleted: false,
     disclosure_badge: String(payload.disclosure_badge || '').trim() || LOGBOOK_EDITORIAL_DISCLOSURE_KO,
+    editorial_secondary_label: normalizeEditorialSecondaryLabelInput(payload.editorial_secondary_label),
+    editorial_secondary_label_en: normalizeEditorialSecondaryLabelInput(
+      payload.editorial_secondary_label_en,
+    ),
     series: payload.series ? String(payload.series).trim() : null,
     locale: String(payload.locale || 'ko').trim() || 'ko',
     canonical_url: payload.canonical_url ? String(payload.canonical_url).trim() : null,

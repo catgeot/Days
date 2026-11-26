@@ -42,9 +42,13 @@ assert.equal(editorialLogbookBadgeLocale({ locale: null }), 'ko');
 assert.equal(editorialLogbookBadgeLocale({}), 'ko');
 assert.equal(editorialLogbookBadgeLocale({ locale: 'en-US' }), 'en-US');
 assert.equal(editorialLogbookBadgeLabel(editorialLogbookBadgeLocale({})), LOGBOOK_EDITORIAL_BADGE_KO);
+assert.equal(editorialLogbookSecondaryNotice({}), LOGBOOK_EDITORIAL_SECONDARY_KO);
 assert.equal(
-  editorialLogbookSecondaryNotice(editorialLogbookBadgeLocale({})),
-  LOGBOOK_EDITORIAL_SECONDARY_KO,
+  editorialLogbookSecondaryNotice({
+    locale: 'ko',
+    editorial_secondary_label: '대표의 실제 여행 기반 · 에디터 정리',
+  }),
+  '대표의 실제 여행 기반 · 에디터 정리',
 );
 assert.equal(editorialLogbookBadgeLabel(editorialLogbookBadgeLocale({ locale: 'en' })), LOGBOOK_EDITORIAL_BADGE_EN);
 assert.equal(
@@ -52,7 +56,7 @@ assert.equal(
   'GATEO 에디터',
 );
 assert.equal(
-  editorialLogbookSecondaryNotice(editorialLogbookBadgeLocale({ locale: undefined })),
+  editorialLogbookSecondaryNotice({ locale: undefined, editorial_secondary_label: '' }),
   'AI 보조 · 실제 방문기 아님',
 );
 assert.ok(
