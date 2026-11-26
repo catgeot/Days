@@ -293,12 +293,12 @@ export const MONTHLY_PICKS = {
     },
     {
       slug: 'hawaii',
-      reason: '혹등고래 12~5월',
-      reason_en: 'Whales Dec–May',
+      reason: '혼등고래 1~3월 절정',
+      reason_en: 'Whale peak Jan–Mar',
       sources: [
         {
-          url: 'https://www.gohawaii.com/experiences/adventure/whale-watching',
-          label: 'Go Hawaii',
+          url: 'https://hawaiihumpbackwhale.noaa.gov/visit/boating.html',
+          label: 'NOAA 하와이 혼등고래 보호구역',
         },
       ],
       checked: '2026-11-17',
