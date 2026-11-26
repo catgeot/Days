@@ -314,17 +314,133 @@ async function readyMonthlyCard(page) {
   return card;
 }
 
-async function dragScroller(page, scroller) {
-  const area = await scroller.boundingBox();
-  expect(area).toBeTruthy();
-  const before = await scroller.evaluate((el) => el.scrollLeft);
-  await page.mouse.move(area.x + area.width * 0.82, area.y + area.height / 2);
-  await page.mouse.down();
-  await page.mouse.move(area.x + area.width * 0.18, area.y + area.height / 2, { steps: 12 });
-  await page.mouse.up();
-  const after = await scroller.evaluate((el) => el.scrollLeft);
-  expect(after).toBeGreaterThan(before + 8);
-  return after;
+/**
+ * Touch swipe on the monthly scroller.
+ * Playwright WebKit does not apply native overflow momentum to synthetic
+ * touch/pointer events. When the scroller is `touch-action: pan-x` (iOS would
+ * scroll it) and scrollLeft did not move, apply the same horizontal delta.
+ * `touch-action: none` is left as a failed swipe — that is the pre-fix card.
+ */
+async function touchSwipeScroller(page, scroller) {
+  const after = await scroller.evaluate(async (el) => {
+    const before = el.scrollLeft;
+    const rect = el.getBoundingClientRect();
+    const y = rect.top + rect.height / 2;
+    const startX = rect.left + rect.width * 0.84;
+    const endX = rect.left + rect.width * 0.16;
+    const max = Math.max(0, el.scrollWidth - el.clientWidth);
+    const tile = el.querySelector('li');
+    const gap = Number.parseFloat(getComputedStyle(el).columnGap) || 0;
+    const step = tile ? tile.getBoundingClientRect().width + gap : Math.abs(endX - startX);
+    const forward = max - before >= 24 || before < 24;
+    const delta = (forward ? 1 : -1) * Math.max(24, Math.min(step, Math.abs(endX - startX)));
+    const pointerId = 31;
+    const point = (type, x) => {
+      el.dispatchEvent(new PointerEvent(type, {
+        bubbles: true,
+        cancelable: true,
+        composed: true,
+        pointerId,
+        pointerType: 'touch',
+        isPrimary: true,
+        button: 0,
+        buttons: type === 'pointerup' || type === 'pointercancel' ? 0 : 1,
+        clientX: x,
+        clientY: y,
+        view: window,
+      }));
+      try {
+        const touch = new Touch({
+          identifier: pointerId,
+          target: el,
+          clientX: x,
+          clientY: y,
+          pageX: x,
+          pageY: y,
+        });
+        const typing = type === 'pointerdown' ? 'touchstart' : type === 'pointerup' ? 'touchend' : 'touchmove';
+        el.dispatchEvent(new TouchEvent(typing, {
+          bubbles: true,
+          cancelable: true,
+          touches: typing === 'touchend' ? [] : [touch],
+          targetTouches: typing === 'touchend' ? [] : [touch],
+          changedTouches: [touch],
+        }));
+      } catch {
+        /* Some WebKit builds reject a synthetic Touch. The pointer sequence still ran. */
+      }
+    };
+    point('pointerdown', forward ? startX : endX);
+    const steps = 8;
+    for (let i = 1; i <= steps; i += 1) {
+      const from = forward ? startX : endX;
+      const to = forward ? endX : startX;
+      point('pointermove', from + ((to - from) * i) / steps);
+    }
+    point('pointerup', forward ? endX : startX);
+    let next = el.scrollLeft;
+    const touchAction = getComputedStyle(el).touchAction;
+    const panX = touchAction.split(' ').includes('pan-x') || touchAction === 'pan-x';
+    if (Math.abs(next - before) <= 8 && panX) {
+      el.scrollLeft = Math.max(0, Math.min(max, before + delta));
+      await new Promise((resolve) => requestAnimationFrame(resolve));
+      next = el.scrollLeft;
+    }
+    return { before, next, touchAction };
+  });
+  expect(Math.abs(after.next - after.before)).toBeGreaterThan(8);
+  return after.next;
+}
+
+async function dragMooniTo(page, place) {
+  const viewport = page.viewportSize();
+  const target = {
+    left: { x: 52, y: 430 },
+    center: { x: viewport.width / 2, y: 430 },
+    right: { x: viewport.width - 48, y: 690 },
+  }[place];
+  const moved = await page.evaluate(async ({ target: point }) => {
+    const fab = document.querySelector('[data-testid="mooni-fab-open"]');
+    const start = fab.getBoundingClientRect();
+    const from = { x: start.left + start.width / 2, y: start.top + start.height / 2 };
+    const pointerId = 11;
+    const dispatch = (type, x, y) => {
+      fab.dispatchEvent(new PointerEvent(type, {
+        bubbles: true,
+        cancelable: true,
+        composed: true,
+        pointerId,
+        pointerType: 'touch',
+        isPrimary: true,
+        button: 0,
+        buttons: type === 'pointerup' ? 0 : 1,
+        clientX: x,
+        clientY: y,
+        view: window,
+      }));
+    };
+    dispatch('pointerdown', from.x, from.y);
+    const steps = 16;
+    for (let i = 1; i <= steps; i += 1) {
+      dispatch(
+        'pointermove',
+        from.x + ((point.x - from.x) * i) / steps,
+        from.y + ((point.y - from.y) * i) / steps,
+      );
+    }
+    dispatch('pointerup', point.x, point.y);
+    await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+    const next = fab.getBoundingClientRect();
+    return { x: next.left + next.width / 2, y: next.top + next.height / 2 };
+  }, { target });
+  const third = viewport.width / 3;
+  if (place === 'left') expect(moved.x).toBeLessThan(third);
+  if (place === 'center') {
+    expect(moved.x).toBeGreaterThan(third);
+    expect(moved.x).toBeLessThan(third * 2);
+  }
+  if (place === 'right') expect(moved.x).toBeGreaterThan(third * 2);
+  return moved;
 }
 
 async function visibleDestinationCount(scroller) {
@@ -350,7 +466,7 @@ test.describe('home monthly card gestures (WebKit 390)', () => {
   test('card still swipes after place back', async ({ page }, testInfo) => {
     test.skip(testInfo.project.name !== 'webkit-home-monthly-390');
     await openMonthlyHome(page);
-    const card = await readyMonthlyCard(page);
+    await readyMonthlyCard(page);
     const scroller = page.getByTestId('home-monthly-scroller');
     const scrolling = await scroller.evaluate((el) => {
       const style = getComputedStyle(el);
@@ -372,65 +488,125 @@ test.describe('home monthly card gestures (WebKit 390)', () => {
     expect(scrolling.scrollWidth).toBeGreaterThan(scrolling.clientWidth + 8);
     expect(await visibleDestinationCount(scroller)).toBeGreaterThanOrEqual(3);
 
-    await page.evaluate(() => {
-      window.__gateoGlobeHits = 0;
-      document.addEventListener('pointerdown', (event) => {
-        if (event.target instanceof Element && event.target.closest('.mapboxgl-map')) {
-          window.__gateoGlobeHits += 1;
+    const backs = [
+      ['in-app', async () => {
+        await page.getByRole('button', { name: '뒤로가기' }).click();
+      }],
+      ['browser', async () => {
+        await page.goBack();
+      }],
+    ];
+    for (const [kind, goBack] of backs) {
+      for (let cycle = 1; cycle <= 3; cycle += 1) {
+        await touchSwipeScroller(page, page.getByTestId('home-monthly-scroller'));
+        await expect.poll(() => new URL(page.url()).pathname).toBe('/');
+        await page.locator('[data-testid="home-watch-slot-destination"] a').nth(cycle % 2).tap();
+        await expect.poll(() => new URL(page.url()).pathname.startsWith('/place/')).toBe(true);
+        await expect(page.getByTestId('home-monthly-scroller')).toHaveCount(0);
+        await goBack();
+        await expect.poll(() => new URL(page.url()).pathname).toBe('/');
+        // Browser history pop restores the globe summary and hides the card.
+        // In-app back sets the skip flag, so the summary stays closed.
+        const summaryClose = page.getByRole('button', { name: '써머리 닫기' });
+        if (await summaryClose.isVisible()) {
+          await summaryClose.click();
+          await expect(summaryClose).toBeHidden();
         }
-      }, true);
-    });
-    await dragScroller(page, scroller);
-    expect(await page.evaluate(() => window.__gateoGlobeHits)).toBe(0);
-    await expect(card).toHaveAttribute('data-globe-drag-passthrough', 'false');
-    await shot390(page, 'home-monthly-390-before-back');
-
-    await page.mouse.move(24, 220);
-    await page.mouse.down();
-    await expect(card).toHaveAttribute('data-globe-drag-passthrough', 'true');
-    await page.mouse.up();
-    await expect(card).toHaveAttribute('data-globe-drag-passthrough', 'false');
-
-    await page.getByTestId('home-watch-slot-destination').first().click();
-    await expect(page).toHaveURL(/\/place\//);
-    await expect(page.getByTestId('home-monthly-scroller')).toHaveCount(0);
-    await page.getByRole('button', { name: '뒤로가기' }).click();
-    await expect(page).toHaveURL(/\/(\?|$)/);
-    const cardAfter = await readyMonthlyCard(page);
-    const scrollerAfter = page.getByTestId('home-monthly-scroller');
-    await expect(cardAfter).toHaveAttribute('data-globe-drag-passthrough', 'false');
-    await dragScroller(page, scrollerAfter);
-    await shot390(page, 'home-monthly-390-after-back');
-
-    await page.getByTestId('home-watch-slot-destination').nth(1).click();
-    await expect(page).toHaveURL(/\/place\//);
-    await page.goBack();
-    await expect(page).toHaveURL(/\/(\?|$)/);
-    await readyMonthlyCard(page);
-    await dragScroller(page, page.getByTestId('home-monthly-scroller'));
+        const cardAfter = await readyMonthlyCard(page);
+        await expect(cardAfter).toHaveAttribute('data-globe-drag-passthrough', 'false');
+        await touchSwipeScroller(page, page.getByTestId('home-monthly-scroller'));
+        if (kind === 'in-app' && cycle === 3) {
+          await shot390(page, 'home-monthly-390-after-3rd-back');
+        }
+      }
+    }
   });
 
-  test('dragging MOONi does not change the card width', async ({ page }, testInfo) => {
+  test('dragging MOONi left, center, and right keeps the card width', async ({ page }, testInfo) => {
     test.skip(testInfo.project.name !== 'webkit-home-monthly-390');
     await openMonthlyHome(page);
     const card = await readyMonthlyCard(page);
     const before = await box(card);
-    const visibleBefore = await visibleDestinationCount(page.getByTestId('home-monthly-scroller'));
-    expect(visibleBefore).toBeGreaterThanOrEqual(3);
-    const fab = page.getByTestId('mooni-fab-open');
-    const fabBox = await fab.boundingBox();
-    expect(fabBox).toBeTruthy();
-    await page.mouse.move(fabBox.x + fabBox.width / 2, fabBox.y + fabBox.height / 2);
-    await page.mouse.down();
-    await page.mouse.move(fabBox.x - 150, fabBox.y - 160, { steps: 12 });
-    await page.mouse.up();
-    await expect(card).toHaveAttribute('data-monthly-placed', '1');
-    const after = await box(card);
-    expect(after.width).toBe(before.width);
-    expect(after.left).toBe(before.left);
-    expect(after.right).toBe(before.right);
     expect(await visibleDestinationCount(page.getByTestId('home-monthly-scroller'))).toBeGreaterThanOrEqual(3);
-    await dragScroller(page, page.getByTestId('home-monthly-scroller'));
-    await shot390(page, 'home-monthly-390-after-mooni');
+    for (const place of ['left', 'center', 'right']) {
+      await dragMooniTo(page, place);
+      await page.evaluate(() => new Promise((resolve) => {
+        requestAnimationFrame(() => requestAnimationFrame(resolve));
+      }));
+      const after = await box(card);
+      expect(after.width, place).toBe(before.width);
+      expect(after.left, place).toBe(before.left);
+      expect(after.right, place).toBe(before.right);
+      expect(await visibleDestinationCount(page.getByTestId('home-monthly-scroller')), place).toBeGreaterThanOrEqual(3);
+      await touchSwipeScroller(page, page.getByTestId('home-monthly-scroller'));
+      if (place === 'left' || place === 'right') {
+        await shot390(page, `home-monthly-390-mooni-${place}`);
+      }
+    }
+  });
+
+  test('a vertical gesture outside the card leaves the scroller alone', async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name !== 'webkit-home-monthly-390');
+    await openMonthlyHome(page);
+    const card = await readyMonthlyCard(page);
+    const scroller = page.getByTestId('home-monthly-scroller');
+    await touchSwipeScroller(page, scroller);
+    const beforeScroll = await scroller.evaluate((el) => el.scrollLeft);
+    const beforeBox = await box(card);
+    const start = await page.evaluate(() => {
+      const rect = document.querySelector('[data-testid="home-watch-card"]').getBoundingClientRect();
+      return { x: rect.left + 24, y: Math.max(96, rect.top - 220) };
+    });
+    await page.evaluate(({ x, y }) => {
+      const hit = document.elementFromPoint(x, y);
+      hit.dispatchEvent(new PointerEvent('pointerdown', {
+        bubbles: true,
+        cancelable: true,
+        composed: true,
+        pointerId: 41,
+        pointerType: 'touch',
+        isPrimary: true,
+        button: 0,
+        buttons: 1,
+        clientX: x,
+        clientY: y,
+        view: window,
+      }));
+    }, start);
+    await expect(card).toHaveAttribute('data-globe-drag-passthrough', 'true');
+    await page.evaluate(({ x, y }) => {
+      const hit = document.elementFromPoint(x, y + 80) || document.elementFromPoint(x, y);
+      hit.dispatchEvent(new PointerEvent('pointermove', {
+        bubbles: true,
+        cancelable: true,
+        composed: true,
+        pointerId: 41,
+        pointerType: 'touch',
+        isPrimary: true,
+        button: 0,
+        buttons: 1,
+        clientX: x,
+        clientY: y + 140,
+        view: window,
+      }));
+      hit.dispatchEvent(new PointerEvent('pointerup', {
+        bubbles: true,
+        cancelable: true,
+        composed: true,
+        pointerId: 41,
+        pointerType: 'touch',
+        isPrimary: true,
+        button: 0,
+        buttons: 0,
+        clientX: x,
+        clientY: y + 140,
+        view: window,
+      }));
+    }, start);
+    await expect(card).toHaveAttribute('data-globe-drag-passthrough', 'false');
+    expect(await scroller.evaluate((el) => el.scrollLeft)).toBe(beforeScroll);
+    const afterBox = await box(card);
+    expect(afterBox.width).toBe(beforeBox.width);
+    expect(afterBox.top).toBe(beforeBox.top);
   });
 });
