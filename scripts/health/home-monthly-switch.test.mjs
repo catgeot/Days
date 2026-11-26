@@ -108,6 +108,28 @@ test('monthly card layout clears the about row and the MOONi button', () => {
   assert.ok(card.bottom <= nav.top);
 });
 
+test('monthly card width stays fixed when MOONi moves', () => {
+  const about = { left: 8, right: 240, top: 742, bottom: 770, width: 232, height: 28 };
+  const docked = layoutHomeMonthlyCard({
+    viewportWidth: 390,
+    viewportHeight: 844,
+    safeBottom: 34,
+    mooni: { left: 294, right: 374, top: 680, bottom: 812, width: 80, height: 132 },
+    obstacles: [about],
+  });
+  const dragged = layoutHomeMonthlyCard({
+    viewportWidth: 390,
+    viewportHeight: 844,
+    safeBottom: 34,
+    mooni: { left: 48, right: 128, top: 360, bottom: 492, width: 80, height: 132 },
+    obstacles: [about],
+  });
+  assert.equal(docked.left, dragged.left);
+  assert.equal(docked.right, dragged.right);
+  assert.equal(docked.right, 108);
+  assert.equal(390 - docked.right, 282);
+});
+
 test('monthly mode keeps every destination tile in the scroller', () => {
   const destinations = ['sapporo', 'vienna', 'hong-kong', 'seoul'].map((slug) => ({
     slug,

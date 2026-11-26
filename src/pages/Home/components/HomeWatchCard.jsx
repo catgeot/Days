@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { X } from 'lucide-react';
@@ -99,18 +99,20 @@ function snapMonthlyScroller(el) {
   el.scrollTo({ left, behavior: 'auto' });
 }
 
-function useMonthlyTileDrag(ref, enabled) {
+function useMonthlyTileDrag(element, enabled) {
   useEffect(() => {
-    const el = ref.current;
+    const el = element;
     if (!enabled || !el) return undefined;
+    // Touch stays on the native scroller (pan-x, momentum, snap). Mouse has no
+    // overflow drag, and this effect must rebind when the place route recreates the node.
     let pointerId = null;
     let startX = 0;
     let startLeft = 0;
     let moved = false;
     const onDown = (event) => {
+      if (event.pointerType !== 'mouse' || event.button !== 0) return;
       if (pointerId != null) return;
       if (!el.contains(event.target)) return;
-      if (event.button !== 0 && event.pointerType === 'mouse') return;
       pointerId = event.pointerId;
       startX = event.clientX;
       startLeft = el.scrollLeft;
@@ -119,7 +121,10 @@ function useMonthlyTileDrag(ref, enabled) {
     const onMove = (event) => {
       if (pointerId == null || event.pointerId !== pointerId) return;
       const dx = event.clientX - startX;
-      if (Math.abs(dx) > 4) moved = true;
+      if (Math.abs(dx) > 4) {
+        if (!moved) el.style.scrollSnapType = 'none';
+        moved = true;
+      }
       if (!moved) return;
       el.scrollLeft = startLeft - dx;
       event.preventDefault();
@@ -127,6 +132,7 @@ function useMonthlyTileDrag(ref, enabled) {
     const end = (event) => {
       if (pointerId == null || event.pointerId !== pointerId) return;
       pointerId = null;
+      el.style.scrollSnapType = '';
       if (moved) snapMonthlyScroller(el);
     };
     const onClick = (event) => {
@@ -155,6 +161,7 @@ function useMonthlyTileDrag(ref, enabled) {
     el.addEventListener('click', onClick, true);
     el.addEventListener('wheel', onWheel, { capture: true, passive: false });
     return () => {
+      el.style.scrollSnapType = '';
       window.removeEventListener('pointerdown', onDown, true);
       window.removeEventListener('pointermove', onMove, true);
       window.removeEventListener('pointerup', end, true);
@@ -163,7 +170,7 @@ function useMonthlyTileDrag(ref, enabled) {
       el.removeEventListener('click', onClick, true);
       el.removeEventListener('wheel', onWheel, true);
     };
-  }, [enabled]);
+  }, [element, enabled]);
 }
 
 function useHomeWatchSlotCount() {
@@ -310,7 +317,10 @@ const HomeWatchCard = ({
   const { siteNotice, mooniChat } = useHomeWatchChromeFlags();
   const slotCount = useHomeWatchSlotCount();
   const cardRef = useRef(null);
-  const scrollerRef = useRef(null);
+  const [scrollerEl, setScrollerEl] = useState(null);
+  const setScrollerNode = useCallback((node) => {
+    setScrollerEl((current) => (current === node ? current : node));
+  }, []);
   const viewedRef = useRef(false);
   const [dismissed, setDismissed] = useState(() => isHomeWatchDismissed());
   const [viewNext, setViewNext] = useState(false);
@@ -324,7 +334,7 @@ const HomeWatchCard = ({
   );
   const viewingNext = monthly && viewNext && schedule.previewOpen;
   const monthKey = viewingNext ? schedule.nextMonthKey : schedule.currentMonthKey;
-  useMonthlyTileDrag(scrollerRef, monthly);
+  useMonthlyTileDrag(scrollerEl, monthly);
 
   const slots = useMemo(() => {
     if (!enabled) return [];
@@ -367,9 +377,6 @@ const HomeWatchCard = ({
     const apply = () => {
       const safeProbe = card.querySelector('[data-testid="safe-area-probe"]');
       const safeBottom = safeProbe ? safeProbe.getBoundingClientRect().height : 0;
-      const mooniEl = document.querySelector('[data-testid="mooni-fab-open"]');
-      const mooniRect = mooniEl ? mooniEl.getBoundingClientRect() : null;
-      const mooni = mooniRect && mooniRect.width > 0 && mooniRect.height > 0 ? mooniRect : null;
       const obstacles = [];
       for (const sel of [
         '[data-testid="home-about-row"]',
@@ -386,7 +393,6 @@ const HomeWatchCard = ({
         viewportWidth: window.innerWidth,
         viewportHeight: window.innerHeight,
         safeBottom,
-        mooni,
         obstacles,
       });
       const left = `${place.left}px`;
@@ -395,7 +401,7 @@ const HomeWatchCard = ({
       if (card.style.left !== left) card.style.left = left;
       if (card.style.right !== right) card.style.right = right;
       if (card.style.bottom !== bottom) card.style.bottom = bottom;
-      const scroller = scrollerRef.current;
+      const scroller = scrollerEl;
       if (scroller) {
         const tile = `${monthlyTileWidthPx(scroller, window.innerWidth)}px`;
         for (const li of scroller.querySelectorAll(':scope > li')) {
@@ -415,7 +421,6 @@ const HomeWatchCard = ({
     const observer = new ResizeObserver(schedule);
     observer.observe(document.body);
     for (const sel of [
-      '[data-testid="mooni-fab-open"]',
       '[data-testid="home-about-row"]',
       '[data-testid="home-category-bar"]',
       '[data-testid="home-bottom-chat"]',
@@ -432,7 +437,7 @@ const HomeWatchCard = ({
       mutation.disconnect();
       window.removeEventListener('resize', schedule);
     };
-  }, [monthly, shown, slots.length, monthKey]);
+  }, [monthly, shown, slots.length, monthKey, scrollerEl]);
 
   useEffect(() => {
     if (!shown || viewedRef.current) return;
@@ -490,8 +495,12 @@ const HomeWatchCard = ({
       data-preview-open={monthly && schedule.previewOpen ? '1' : undefined}
       data-globe-drag-passthrough={globeDrag ? 'true' : 'false'}
       aria-label={title}
-      className={`pointer-events-none fixed z-[54] box-border h-[85px] ${
-        globeDrag ? '[&_*]:!pointer-events-none' : ''
+      className={`fixed z-[54] box-border h-[85px] ${
+        globeDrag
+          ? '!pointer-events-none [&_*]:!pointer-events-none'
+          : monthly
+            ? 'pointer-events-auto touch-pan-x'
+            : 'pointer-events-none'
       } ${
         monthly
           ? 'home-monthly-card left-3 right-3 min-[1280px]:left-[300px]'
@@ -507,7 +516,12 @@ const HomeWatchCard = ({
           style={{ height: 'env(safe-area-inset-bottom, 0px)' }}
         />
       ) : null}
-      <div className="pointer-events-none flex h-full min-h-0 flex-col rounded-2xl border border-white/15 bg-black/55 px-1.5 pb-1 pt-0.5 shadow-lg backdrop-blur-md motion-reduce:transition-none">
+      <div className="pointer-events-none relative flex h-full min-h-0 flex-col">
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 rounded-2xl border border-white/15 bg-black/55 shadow-lg backdrop-blur-md"
+        />
+        <div className="relative z-[1] flex h-full min-h-0 flex-col px-1.5 pb-1 pt-0.5">
         <div className="flex h-4 shrink-0 items-center justify-between gap-1 px-0.5">
           <h2 className={`${monthly ? 'min-w-0 ' : ''}truncate text-[10px] font-bold leading-none tracking-wide text-white/90`}>
             {title}
@@ -535,11 +549,11 @@ const HomeWatchCard = ({
           </div>
         </div>
         <ul
-          ref={monthly ? scrollerRef : undefined}
+          ref={monthly ? setScrollerNode : undefined}
           data-testid={monthly ? 'home-monthly-scroller' : undefined}
           className={
             monthly
-              ? 'pointer-events-auto flex min-h-0 min-w-0 flex-1 touch-none gap-1 overflow-x-auto snap-x snap-mandatory overscroll-x-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden'
+              ? 'home-monthly-scroller pointer-events-auto flex min-h-0 min-w-0 flex-1 gap-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden'
               : 'flex min-h-0 flex-1 gap-1'
           }
         >
@@ -658,6 +672,7 @@ const HomeWatchCard = ({
             );
           })}
         </ul>
+        </div>
       </div>
     </section>
   );

@@ -260,3 +260,177 @@ test.describe('home monthly destinations', () => {
     await expectCaptionsFit(page);
   });
 });
+
+function keepMonthlyFlagOnHome() {
+  const keep = (url) => {
+    if (url == null) return url;
+    try {
+      const next = new URL(String(url), window.location.origin);
+      if (next.pathname === '/' && !next.searchParams.has('home_monthly_switch')) {
+        next.searchParams.set('home_monthly_switch', '1');
+        return `${next.pathname}${next.search}${next.hash}`;
+      }
+    } catch {
+      /* keep the original url */
+    }
+    return url;
+  };
+  const push = history.pushState.bind(history);
+  const replace = history.replaceState.bind(history);
+  history.pushState = (state, title, url) => push(state, title, keep(url));
+  history.replaceState = (state, title, url) => replace(state, title, keep(url));
+}
+
+async function openMonthlyHome(page) {
+  await page.addInitScript(keepMonthlyFlagOnHome);
+  await openHome(page, '/?home_monthly_switch=1', NOVEMBER_AT);
+}
+
+async function hideMooniHint(page) {
+  const hint = page.getByText('여행을 찾아봐요');
+  if (await hint.count()) {
+    await expect(hint).toBeHidden({ timeout: 8_000 });
+  }
+  const closeHint = page.getByRole('button', { name: '말풍선 닫기' });
+  if (await closeHint.count()) {
+    await closeHint.click();
+    await expect(closeHint).toBeHidden({ timeout: 8_000 });
+  }
+  await page.evaluate(() => {
+    const btn = document.querySelector('button[aria-label="말풍선 닫기"]');
+    const bubble = btn?.parentElement?.parentElement;
+    if (bubble) bubble.style.display = 'none';
+  });
+}
+
+async function readyMonthlyCard(page) {
+  const card = page.getByTestId('home-watch-card');
+  await expect(card).toBeVisible({ timeout: 60_000 });
+  await expect(card).toHaveAttribute('data-monthly-placed', '1', { timeout: 60_000 });
+  await expect(card).toHaveAttribute('data-monthly-switch', '1');
+  await hideMooniHint(page);
+  await expect(page.locator('.mapboxgl-canvas')).toBeVisible();
+  await expect(page.locator('.mapboxgl-ctrl-logo')).toBeVisible({ timeout: 20_000 });
+  return card;
+}
+
+async function dragScroller(page, scroller) {
+  const area = await scroller.boundingBox();
+  expect(area).toBeTruthy();
+  const before = await scroller.evaluate((el) => el.scrollLeft);
+  await page.mouse.move(area.x + area.width * 0.82, area.y + area.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(area.x + area.width * 0.18, area.y + area.height / 2, { steps: 12 });
+  await page.mouse.up();
+  const after = await scroller.evaluate((el) => el.scrollLeft);
+  expect(after).toBeGreaterThan(before + 8);
+  return after;
+}
+
+async function visibleDestinationCount(scroller) {
+  return scroller.evaluate((el) => {
+    const view = el.getBoundingClientRect();
+    return [...el.querySelectorAll('[data-slot-type="destination"]')].filter((tile) => {
+      const rect = tile.getBoundingClientRect();
+      const width = Math.min(rect.right, view.right) - Math.max(rect.left, view.left);
+      return width >= 48;
+    }).length;
+  });
+}
+
+function shot390(page, name) {
+  fs.mkdirSync('/opt/cursor/artifacts', { recursive: true });
+  return page.screenshot({
+    path: `/opt/cursor/artifacts/${name}.png`,
+    clip: { x: 0, y: 0, width: 390, height: 844 },
+  });
+}
+
+test.describe('home monthly card gestures (WebKit 390)', () => {
+  test('card still swipes after place back', async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name !== 'webkit-home-monthly-390');
+    await openMonthlyHome(page);
+    const card = await readyMonthlyCard(page);
+    const scroller = page.getByTestId('home-monthly-scroller');
+    const scrolling = await scroller.evaluate((el) => {
+      const style = getComputedStyle(el);
+      const tile = el.querySelector('li');
+      return {
+        touchAction: style.touchAction,
+        snap: style.scrollSnapType,
+        snapStop: tile ? getComputedStyle(tile).scrollSnapStop : '',
+        overflowX: style.overflowX,
+        scrollWidth: el.scrollWidth,
+        clientWidth: el.clientWidth,
+      };
+    });
+    expect(scrolling.touchAction).toBe('pan-x');
+    expect(scrolling.snap).toContain('x');
+    expect(scrolling.snap).toContain('mandatory');
+    expect(scrolling.snapStop).toBe('normal');
+    expect(scrolling.overflowX).toBe('auto');
+    expect(scrolling.scrollWidth).toBeGreaterThan(scrolling.clientWidth + 8);
+    expect(await visibleDestinationCount(scroller)).toBeGreaterThanOrEqual(3);
+
+    await page.evaluate(() => {
+      window.__gateoGlobeHits = 0;
+      document.addEventListener('pointerdown', (event) => {
+        if (event.target instanceof Element && event.target.closest('.mapboxgl-map')) {
+          window.__gateoGlobeHits += 1;
+        }
+      }, true);
+    });
+    await dragScroller(page, scroller);
+    expect(await page.evaluate(() => window.__gateoGlobeHits)).toBe(0);
+    await expect(card).toHaveAttribute('data-globe-drag-passthrough', 'false');
+    await shot390(page, 'home-monthly-390-before-back');
+
+    await page.mouse.move(24, 220);
+    await page.mouse.down();
+    await expect(card).toHaveAttribute('data-globe-drag-passthrough', 'true');
+    await page.mouse.up();
+    await expect(card).toHaveAttribute('data-globe-drag-passthrough', 'false');
+
+    await page.getByTestId('home-watch-slot-destination').first().click();
+    await expect(page).toHaveURL(/\/place\//);
+    await expect(page.getByTestId('home-monthly-scroller')).toHaveCount(0);
+    await page.getByRole('button', { name: '뒤로가기' }).click();
+    await expect(page).toHaveURL(/\/(\?|$)/);
+    const cardAfter = await readyMonthlyCard(page);
+    const scrollerAfter = page.getByTestId('home-monthly-scroller');
+    await expect(cardAfter).toHaveAttribute('data-globe-drag-passthrough', 'false');
+    await dragScroller(page, scrollerAfter);
+    await shot390(page, 'home-monthly-390-after-back');
+
+    await page.getByTestId('home-watch-slot-destination').nth(1).click();
+    await expect(page).toHaveURL(/\/place\//);
+    await page.goBack();
+    await expect(page).toHaveURL(/\/(\?|$)/);
+    await readyMonthlyCard(page);
+    await dragScroller(page, page.getByTestId('home-monthly-scroller'));
+  });
+
+  test('dragging MOONi does not change the card width', async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name !== 'webkit-home-monthly-390');
+    await openMonthlyHome(page);
+    const card = await readyMonthlyCard(page);
+    const before = await box(card);
+    const visibleBefore = await visibleDestinationCount(page.getByTestId('home-monthly-scroller'));
+    expect(visibleBefore).toBeGreaterThanOrEqual(3);
+    const fab = page.getByTestId('mooni-fab-open');
+    const fabBox = await fab.boundingBox();
+    expect(fabBox).toBeTruthy();
+    await page.mouse.move(fabBox.x + fabBox.width / 2, fabBox.y + fabBox.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(fabBox.x - 150, fabBox.y - 160, { steps: 12 });
+    await page.mouse.up();
+    await expect(card).toHaveAttribute('data-monthly-placed', '1');
+    const after = await box(card);
+    expect(after.width).toBe(before.width);
+    expect(after.left).toBe(before.left);
+    expect(after.right).toBe(before.right);
+    expect(await visibleDestinationCount(page.getByTestId('home-monthly-scroller'))).toBeGreaterThanOrEqual(3);
+    await dragScroller(page, page.getByTestId('home-monthly-scroller'));
+    await shot390(page, 'home-monthly-390-after-mooni');
+  });
+});
