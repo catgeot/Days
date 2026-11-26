@@ -1,3 +1,4 @@
+import { REVIEW_HUB_HASH } from '../logbookOfficialReviews/logbookReviewHubArrival.js';
 import {
   GATEO_ENV_FLAG_NAMES,
   isGateoLogbookReviewHubEnabled,
@@ -38,7 +39,9 @@ export function isGateoLogbookReviewFilterEnabled() {
 /** Hub must be on for filter UI; preview may use `?logbook_review_hub=1` when env hub is OFF. */
 export function isLogbookOfficialReviewHubActive() {
   if (isGateoLogbookReviewHubEnabled()) return true;
-  return readTruthyQueryParam(LOGBOOK_REVIEW_HUB_PREVIEW_QUERY_PARAM);
+  if (readTruthyQueryParam(LOGBOOK_REVIEW_HUB_PREVIEW_QUERY_PARAM)) return true;
+  if (typeof window !== 'undefined' && window.location.hash === REVIEW_HUB_HASH) return true;
+  return false;
 }
 
 export {

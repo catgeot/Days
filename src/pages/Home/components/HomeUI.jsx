@@ -9,6 +9,7 @@ import {
   CalendarDays,
   Globe2,
   Map,
+  Star,
   ChevronDown,
   ChevronUp,
   User,
@@ -34,6 +35,7 @@ import { CATEGORY_LABELS } from './SearchDiscovery/constants';
 import { getLocalizedPlaceName } from '../../../components/PlaceCard/common/locationDisplay';
 import TrustLinkBar from '../../../shared/layout/TrustLinkBar';
 import HomeWatchCard from './HomeWatchCard';
+import { REVIEW_HUB_HREF } from '../../../logbookOfficialReviews/logbookReviewHubArrival.js';
 
 const MOBILE_QUICK_LINK_DEFS = [
   {
@@ -69,6 +71,15 @@ const MOBILE_QUICK_LINK_DEFS = [
     iconWrapClass: 'border-sky-400/35 bg-sky-500/15 text-sky-300 group-hover:bg-sky-500/25',
   },
 ];
+
+const REVIEW_HUB_QUICK_LINK = {
+  key: 'reviewHub',
+  to: REVIEW_HUB_HREF,
+  icon: Star,
+  chipClass:
+    'border-violet-400/50 bg-[#16101c] shadow-[0_0_18px_rgba(167,139,250,0.28)] hover:border-violet-300/75 hover:bg-[#1c1424]',
+  iconWrapClass: 'border-violet-300/40 bg-violet-500/20 text-violet-200 group-hover:bg-violet-500/30',
+};
 
 /** 모바일 활성 카테고리 — 테마색 글로우 (배포본과 동일) */
 const CATEGORY_ACTIVE_MOBILE = {
@@ -144,7 +155,9 @@ const HomeUI = React.memo(({
   const { t, i18n } = useTranslation();
   const mobileQuickLinks = React.useMemo(
     () =>
-      MOBILE_QUICK_LINK_DEFS.map((item) => ({
+      MOBILE_QUICK_LINK_DEFS.map((item) =>
+        item.key === 'curation' ? REVIEW_HUB_QUICK_LINK : item,
+      ).map((item) => ({
         ...item,
         shortLabel: t(`home.quickLinks.${item.key}.short`),
         label: t(`home.quickLinks.${item.key}.label`),

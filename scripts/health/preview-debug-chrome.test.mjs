@@ -31,7 +31,7 @@ test('work log and mobile widget log stay off production hosts', () => {
   );
   assert.match(work, /previewDebugChromeAllowed\(/);
   assert.match(panel, /if \(!enabled\) return null/);
-  assert.match(work, /if \(!visible\) return null/);
+  assert.match(work, /if \(!visible \|\| !workLogPack\) return null/);
 
   const app = readFileSync(join(root, 'src/App.jsx'), 'utf8');
   assert.match(app, /isPreviewDebugChromeBundled/);
@@ -44,7 +44,18 @@ test('work log and mobile widget log stay off production hosts', () => {
   );
   assert.match(
     bundledGate,
-    /import\.meta\.env\.DEV \|\| import\.meta\.env\.VITE_GATEO_PREVIEW_DEBUG_CHROME === '1'/,
-    'operational PROD build (import.meta.env.PROD, no preview env) must not set bundled gate',
+    /import\.meta\.env\.DEV \|\| import\.meta\.env\.VITE_GATEO_PREVIEW_DEBUG_CHROME_BUNDLED === '1'/,
+    'operational PROD build must gate preview chrome on vite define only (VERCEL_ENV=preview)',
   );
+
+  const viteConfig = readFileSync(join(root, 'vite.config.js'), 'utf8');
+  assert.match(viteConfig, /VITE_GATEO_PREVIEW_DEBUG_CHROME_BUNDLED/);
+  assert.match(viteConfig, /VERCEL_ENV === 'preview'/);
+  assert.match(work, /import\('\.\/cloudPreviewWorkLog\.js'\)/);
+  assert.doesNotMatch(work, /from '\.\/cloudPreviewWorkLog'/);
+
+  const workLogSsot = readFileSync(join(root, 'src/shared/cloudPreview/cloudPreviewWorkLog.js'), 'utf8');
+  for (const needle of ['모바일 위젯 로그', '작업 로그 닫기', 'cloud-preview-work-log-panel']) {
+    assert.doesNotMatch(workLogSsot, new RegExp(needle), `preview work-log SSOT must not embed guard needle: ${needle}`);
+  }
 });

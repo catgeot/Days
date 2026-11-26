@@ -178,6 +178,10 @@
       "curation": {
         "short": "추천",
         "label": "AI 큐레이션"
+      },
+      "reviewHub": {
+        "short": "리뷰",
+        "label": "리뷰 창고"
       }
     },
     "globe": {
@@ -2646,6 +2650,7 @@
       "placeholderOrType": "또는 직접 입력…",
       "placeholderDirect": "직접 입력…",
       "topicPrompt": "무엇부터 도와드릴까요?",
+      "companionCurationLink": "취향에 맞는 여행지 더 찾기 → AI 큐레이션",
       "backTopic": "다른 주제",
       "mooniSessionTitle": "MOONi 여행 대화",
       "travelSessionTitle": "여행 대화",

@@ -38,6 +38,7 @@ import DestinationResolutionChips from '../../../components/chat/DestinationReso
 import MooniPlannerFollowUp from '../../../components/chat/MooniPlannerFollowUp';
 import MooniTruncatedContinue from '../../../components/chat/MooniTruncatedContinue';
 import MooniQuickReplyChips from '../../../components/chat/MooniQuickReplyChips';
+import MooniCompanionCurationLink from '../../../components/chat/MooniCompanionCurationLink';
 import {
   sanitizeMooniModelReply,
   shouldShowMooniPlannerFollowUp,
@@ -1250,6 +1251,7 @@ const ChatModal = ({
       text: bubbleText,
       ...(promptText ? { mooniPromptText: promptText } : {}),
       mooniAt: turnAt,
+      ...(chipId ? { chipId } : {}),
       ...(departureLabel && chipDestination ? { departureLabel } : {}),
     };
 
@@ -1579,6 +1581,7 @@ const ChatModal = ({
             geminiParams,
             stripPhantomTicketMention,
           },
+          ...(chipId ? { replyChipId: chipId } : {}),
           frozenBookingActions: booking.show ? booking.actions : null,
           bookingActions: booking.show ? booking.actions : null,
           ...(chipDestination
@@ -2296,6 +2299,7 @@ const ChatModal = ({
                       slug: activeSessionPlace?.slug || msgSlug || undefined,
                     })
                   : null;
+                const replyChipId = isModelMsg ? msg.replyChipId ?? msg.bookingMeta?.chipId : null;
                 const showPlannerFollowUp =
                   isModelMsg &&
                   Boolean(msgSlug) &&
@@ -2350,6 +2354,12 @@ const ChatModal = ({
                         continueAttempts={msg.continueAttempts ?? 0}
                         isContinuing={mooniContinuingIdx === idx}
                         onContinue={() => handleMooniContinueReading(idx)}
+                        variant={isMooniUi ? 'light' : 'dark'}
+                      />
+                    ) : null}
+                    {isModelMsg ? (
+                      <MooniCompanionCurationLink
+                        chipId={replyChipId}
                         variant={isMooniUi ? 'light' : 'dark'}
                       />
                     ) : null}

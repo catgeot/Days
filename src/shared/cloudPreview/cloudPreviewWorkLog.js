@@ -300,7 +300,7 @@ export const cloudPreviewWorkLog = [
     session: '프로필 #5, 헤더 터치 가림',
     title: '본문 스크롤이 헤더를 덮던 문제',
     detail:
-      '모바일 /blog에서 본문 flex h-full 때문에 스크롤 영역이 헤더와 겹쳐 우상단 프로필 탭이 막혔습니다. min-h-0·sticky z-100 헤더로 수정. Preview 하단 「모바일 위젯 로그」에 blog.header.layout(overlap)·blog.header.tap(hit)이 찍힙니다 — overlap false·hit profile-btn이면 정상.',
+      '모바일 /blog에서 본문 flex h-full 때문에 스크롤 영역이 헤더와 겹쳐 우상단 프로필 탭이 막혔습니다. min-h-0·sticky z-100 헤더로 수정. Preview 하단 flight-debug 패널에 blog.header.layout(overlap)·blog.header.tap(hit)이 찍힙니다 — overlap false·hit profile-btn이면 정상.',
     at: '2026-09-27T11:05:00.000Z',
   },
   {
