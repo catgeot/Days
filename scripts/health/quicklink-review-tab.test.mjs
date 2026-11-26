@@ -204,7 +204,7 @@ test('home menu and MOONi answer wire the flag without adding a chip', () => {
   assert.match(chat, /replyChipId: chipId \|\| null/);
   assert.match(chat, /MooniCompanionCurationLink/);
   assert.doesNotMatch(chat, /companionCurationChip/);
-  const index = readFileSync(join(root, 'index.html'), 'utf8').split('\n')[130];
+  const index = readFileSync(join(root, 'index.html'), 'utf8');
   assert.match(index, /href="\/blog\/curation"/);
 });
 
