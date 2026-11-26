@@ -83,6 +83,13 @@ export function staleBundleAssignGuardId(bundleId, target) {
   return `${bundleId}|${target}`;
 }
 
+/** Pathname only. Query edits on the open screen are not a new document. */
+export function appPathname(canon) {
+  const value = String(canon || '');
+  const q = value.indexOf('?');
+  return q === -1 ? value : value.slice(0, q);
+}
+
 /**
  * Open tab (no target) shows the update banner. A navigation target is hard-loaded
  * once per bundle id + target; a repeated failure shows the banner instead of looping.
@@ -300,6 +307,7 @@ export function installStaleBundleRecovery(opts = {}) {
   const cancelTimer = opts.cancel ?? ((id) => target.clearTimeout(id));
   const bootHref = target.location?.href || 'http://localhost/';
   const bootPath = canonicalAppTarget(bootHref, bootHref);
+  let herePath = appPathname(bootPath);
   let pendingTarget = '';
   let handling = false;
   let leavingUntil = 0;
@@ -322,10 +330,22 @@ export function installStaleBundleRecovery(opts = {}) {
     });
   };
 
-  const rememberNav = (url) => {
-    const canon = canonicalAppTarget(url, target.location?.href || bootHref);
-    if (!canon) return;
-    pendingTarget = canon === bootPath ? '' : canon;
+  // Festival chips and other in-page filters use replaceState on the same pathname.
+  // That must not become an assign target. Only a pathname change (pushState,
+  // popstate, or a link click) hard-loads the next screen.
+  const rememberPathChange = (url, base) => {
+    const canon = canonicalAppTarget(url, base || target.location?.href || bootHref);
+    const nextPath = appPathname(canon);
+    if (!canon || !nextPath || nextPath === herePath) return '';
+    herePath = nextPath;
+    pendingTarget = canon;
+    return canon;
+  };
+
+  const noteSameDocumentUrl = (url, base) => {
+    const canon = canonicalAppTarget(url, base || target.location?.href || bootHref);
+    const nextPath = appPathname(canon);
+    if (nextPath && nextPath !== herePath) herePath = nextPath;
   };
 
   const resolveTarget = () => {
@@ -357,6 +377,9 @@ export function installStaleBundleRecovery(opts = {}) {
   const onPageShow = () => {
     clearLeave();
     pendingTarget = '';
+    const landed = canonicalAppTarget(target.location?.href || bootHref, bootHref);
+    const landedPath = appPathname(landed);
+    if (landedPath) herePath = landedPath;
   };
 
   const onVisibility = () => {
@@ -372,11 +395,11 @@ export function installStaleBundleRecovery(opts = {}) {
     if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
     const node = event.target?.closest?.('a[href]');
     if (!node || node.target === '_blank' || node.hasAttribute?.('download')) return;
-    rememberNav(node.href || node.getAttribute?.('href') || '');
+    rememberPathChange(node.href || node.getAttribute?.('href') || '', target.location?.href || bootHref);
   };
 
   const onPopState = () => {
-    rememberNav(target.location?.href || '');
+    rememberPathChange(target.location?.href || '', bootHref);
   };
 
   const history = target.history;
@@ -385,14 +408,15 @@ export function installStaleBundleRecovery(opts = {}) {
   if (history && typeof originalPush === 'function' && !history.__gateoStaleNav) {
     history.__gateoStaleNav = true;
     history.pushState = function pushState(state, title, url) {
-      const result = originalPush.apply(this, arguments);
-      if (url != null) rememberNav(url);
-      return result;
+      const base = target.location?.href || bootHref;
+      if (url != null) rememberPathChange(url, base);
+      return originalPush.apply(this, arguments);
     };
     if (typeof originalReplace === 'function') {
       history.replaceState = function replaceState(state, title, url) {
+        const base = target.location?.href || bootHref;
         const result = originalReplace.apply(this, arguments);
-        if (url != null) rememberNav(url);
+        if (url != null) noteSameDocumentUrl(url, base);
         return result;
       };
     }

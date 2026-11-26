@@ -45,6 +45,31 @@ test.describe('safari tab reload recovery', () => {
     await expect(page.getByRole('button', { name: /테마 대분류 · 음악/ })).toBeVisible();
   });
 
+  test('festival chip replace then vite:preloadError shows the banner without assigning', async ({ page }) => {
+    test.setTimeout(120_000);
+    await page.goto('/korea');
+    const timeMajor = page.getByRole('button', { name: /시간 대분류/ });
+    await expect(timeMajor).toBeVisible({ timeout: 60_000 });
+    await page.evaluate(() => {
+      window.__stay = 'chip-tab';
+    });
+
+    await page.locator('[data-region-id="all"]').click();
+    await expect.poll(() => new URL(page.url()).searchParams.get('region')).toBe('all');
+    await timeMajor.click();
+    await page.locator('[data-period-id="weekend"]').click();
+    await expect.poll(() => new URL(page.url()).searchParams.get('time')).toBe('weekend');
+
+    await page.evaluate(() => window.dispatchEvent(new Event('vite:preloadError')));
+    await expect(page.locator('[data-site-update-notice]')).toBeVisible();
+    expect(await page.evaluate(() => window.__stay)).toBe('chip-tab');
+    const stayed = new URL(page.url());
+    expect(stayed.pathname).toBe('/korea');
+    expect(stayed.searchParams.get('region')).toBe('all');
+    expect(stayed.searchParams.get('time')).toBe('weekend');
+    await expect(page.getByRole('button', { name: '새로고침' })).toBeVisible();
+  });
+
   test('vite:preloadError on an open tab shows the update banner and does not reload', async ({ page }) => {
     test.setTimeout(90_000);
     await page.goto('/about');

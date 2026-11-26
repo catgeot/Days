@@ -64,7 +64,7 @@ export function useSiteUpdateBanner() {
   }, []);
 
   return {
-    refreshVisible: refreshVisible || staleBundleVisible,
+    refreshVisible,
     staleBundleVisible,
     closeRefresh,
     reload,

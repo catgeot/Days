@@ -318,6 +318,54 @@ describe('staleBundleRecovery guard', () => {
     uninstall();
   });
 
+  it('same-pathname replaceState and query-only push show the banner without assigning', () => {
+    const clock = createLeaveClock();
+    const assigned = [];
+    let banners = 0;
+    const location = { href: 'http://localhost/korea', origin: 'http://localhost' };
+    clock.target.location = location;
+    clock.target.history = {
+      pushState(_state, _title, url) {
+        location.href = new URL(url, location.href).href;
+      },
+      replaceState(_state, _title, url) {
+        location.href = new URL(url, location.href).href;
+      },
+    };
+    const uninstall = installStaleBundleRecovery({
+      window: clock.target,
+      storage: mockStorage(),
+      getBundleId: () => '/assets/index-korea-filter.js',
+      now: clock.now,
+      schedule: clock.schedule,
+      cancel: clock.cancel,
+      showBanner: () => {
+        banners += 1;
+      },
+      assign: (url) => {
+        assigned.push(url);
+      },
+    });
+
+    clock.target.history.replaceState({}, '', '/korea?region=all&time=weekend');
+    clock.dispatch('vite:preloadError', { preventDefault() {} });
+    assert.equal(location.href, 'http://localhost/korea?region=all&time=weekend');
+    assert.deepEqual(assigned, []);
+    assert.equal(banners, 1);
+
+    clock.target.history.pushState({}, '', '/korea?taste=music');
+    clock.dispatch('vite:preloadError', { preventDefault() {} });
+    assert.equal(location.href, 'http://localhost/korea?taste=music');
+    assert.deepEqual(assigned, []);
+    assert.equal(banners, 2);
+
+    clock.target.history.pushState({}, '', '/blog');
+    clock.dispatch('vite:preloadError', { preventDefault() {} });
+    assert.deepEqual(assigned, ['/blog']);
+    assert.equal(banners, 2);
+    uninstall();
+  });
+
   it('boot success keeps the reload guard until the grace period runs', () => {
     const storage = mockStorage();
     const bundleId = '/assets/index-boot.js';
