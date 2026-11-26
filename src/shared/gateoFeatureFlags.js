@@ -46,6 +46,8 @@ export const GATEO_ENV_FLAG_NAMES = {
   HOME_MONTHLY_SWITCH: 'VITE_GATEO_HOME_MONTHLY_SWITCH',
   /** Overseas airport → lodging pickup row (MyRealTrip / Trip.com). Default off. */
   AIRPORT_PICKUP_LINKS: 'VITE_GATEO_AIRPORT_PICKUP_LINKS',
+  /** Home quick-link slot 4 becomes «리뷰 창고» and MOONi companion gets a curation link. Default off. */
+  QUICKLINK_REVIEW_TAB: 'VITE_GATEO_QUICKLINK_REVIEW_TAB',
 };
 
 /** @param {string} name */
@@ -281,6 +283,46 @@ export function isGateoHomeMonthlySwitchEnabled(search) {
 /** Airport pickup booking row on overseas arrival → lodging legs. Default off. */
 export function isGateoAirportPickupLinksEnabled() {
   return readGateoEnvFlag(GATEO_ENV_FLAG_NAMES.AIRPORT_PICKUP_LINKS);
+}
+
+export const QUICKLINK_REVIEW_TAB_QUERY_PARAM = 'quicklink_review_tab';
+
+/** Env enables only the exact string `1`. Unset, `true`, and `yes` stay off. */
+export function isGateoQuicklinkReviewTabEnvEnabled() {
+  const name = GATEO_ENV_FLAG_NAMES.QUICKLINK_REVIEW_TAB;
+  const raw = import.meta.env?.[name] ?? globalThis.__VITE_ENV__?.[name];
+  return String(raw ?? '').trim() === '1';
+}
+
+/**
+ * Preview override. Same acceptance as `?logbook_review_hub=1` (`1` or `true`).
+ * @param {string | null | undefined} search
+ */
+export function isQuicklinkReviewTabQueryEnabled(search) {
+  try {
+    const value = new URLSearchParams(String(search || '').replace(/^\?/, '')).get(
+      QUICKLINK_REVIEW_TAB_QUERY_PARAM,
+    );
+    return value === '1' || value === 'true';
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Home «리뷰 창고» quick link + MOONi companion curation link.
+ * Production default off. Preview: `?quicklink_review_tab=1`.
+ * @param {string | null | undefined} [search]
+ */
+export function isQuicklinkReviewTabActive(search) {
+  if (isGateoQuicklinkReviewTabEnvEnabled()) return true;
+  const source =
+    search != null
+      ? search
+      : typeof window !== 'undefined'
+        ? window.location.search
+        : '';
+  return isQuicklinkReviewTabQueryEnabled(source);
 }
 
 /** Festival departure-city field. Unset is on. The string `"0"` is the only off switch. */

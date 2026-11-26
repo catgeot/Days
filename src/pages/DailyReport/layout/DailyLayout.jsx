@@ -1,4 +1,5 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { REVIEW_HUB_HASH } from '../../../logbookOfficialReviews/logbookReviewHubArrival.js';
 import {
   buildLogbookHubReturnTo,
   readLogbookReviewHubSession,
@@ -47,6 +48,7 @@ const DailyLayout = () => {
 
   useLayoutEffect(() => {
     if (!location.pathname.startsWith('/blog')) return undefined;
+    if (location.hash === REVIEW_HUB_HASH) return undefined;
     const session = readLogbookReviewHubSession();
     if (typeof session?.scrollY !== 'number' || session.scrollY <= 0) return undefined;
     const current = buildLogbookHubReturnTo(location.pathname, location.search);
