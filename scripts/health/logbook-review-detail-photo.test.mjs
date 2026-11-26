@@ -46,6 +46,9 @@ test('hub cards — city/date + 2-line bold title, no faint excerpt', () => {
   );
   assert.doesNotMatch(hero, /editorialReviewDetailSummary/);
   assert.doesNotMatch(hero, /line-clamp-3/);
+  assert.match(hero, /LogbookOfficialReviewPersonaPhotoBadge/);
+  assert.match(hero, /logbook-editorial-review-detail-hero-reviewer/);
+  assert.doesNotMatch(hero, /bottom-2 left-2/);
 });
 
 test('shared thumb picks wikimedia 960', () => {
