@@ -9,7 +9,8 @@
 - 동행 답변 링크 문구는 «취향에 맞는 여행지 더 찾기 → AI 큐레이션». 영어는 “Find more destinations for your taste → AI curation”.
 - 작업 로그·모바일 위젯 로그는 `www.gateo.kr`에서 항상 숨김. `*.vercel.app` Preview는 URL에 `?devlog=1`이 있을 때만 보임. localhost와 Vite dev는 그대로 보임.
 - 장소가 없는 홈 MOONi는 디스커버리 칩만 보인다. L1/L2 «동행별 추천»은 장소가 묶인 뒤에만 나오고, 그때 답변 끝에 큐레이션 링크가 붙는다.
-- `www.gateo.kr/blog`에는 리뷰 허브가 있다. 이 Preview 환경에는 `VITE_GATEO_LOGBOOK_REVIEW_HUB`가 없어서 `/blog#review-hub`만으로는 허브가 안 그려진다. Preview에서 허브를 보려면 `?logbook_review_hub=1`을 붙인다. 1280에서 펼친 메뉴가 좌측 «휴양» 레일과 겹치는 것은 `www.gateo.kr`에도 있어서 이 PR에서 고치지 않았다.
+- «리뷰 창고»는 `/blog#review-hub`로 간다. 그 앵커가 현재 «GATEO 리뷰어 리뷰» 섹션이다. 큰 사진 2열 카드와 전체·국내·해외 칩은 같은 섹션에서 `VITE_GATEO_LOGBOOK_REVIEW_FILTER`가 켜질 때만 그려지고, 필터가 꺼지면 작은 썸네일 목록이 나온다. 프로덕션은 HUB와 FILTER가 둘 다 `"1"`이라 라이브 `/blog`가 카드다. 이 Preview에는 두 env가 없다. `?logbook_review_hub=1`만 붙이면 허브의 옛 목록이 보인다. 같은 디자인을 Preview에서 보려면 `?logbook_review_hub=1&logbook_filter=1#review-hub`. 링크 href는 그대로 두었다. 로그인은 카드 레이아웃을 바꾸지 않는다. 브랜치는 main보다 뒤처져 있으나, 그 커밋은 허브 카드를 바꾸지 않아 rebase하지 않았다.
+- 1280에서 펼친 메뉴가 좌측 «휴양» 레일과 겹치는 것은 `www.gateo.kr`에도 있어서 이 PR에서 고치지 않았다.
 - `quicklink_click`은 플래그와 상관없이 4개 타일 클릭마다 나간다. OFF의 네 번째는 `curation`, ON은 `review_hub`. `mooni_curation_link_click`은 동행 답변 링크가 있을 때(플래그 ON) 나간다. QA·webdriver·`?crawler=1`은 이벤트를 막지 않고 `traffic_type:'internal'`만 붙인다.
 
 ## 가는 방법 출발 기본값
