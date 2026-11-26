@@ -17,10 +17,7 @@ import { contentHasLogbookPhotoPlaceholders } from './utils/logbookMarkdownSnipp
 import { fetchSamePlaceCount, logbookPlaceKey, logbookReadingMinutes } from '../../utils/logbookReadingMeta';
 import LogbookReadFacts from './components/LogbookReadFacts';
 import AppOutlineBackButton from '../../shared/navigation/AppOutlineBackButton';
-import {
-  LOGBOOK_ARTICLE_INLINE_CLEARANCE,
-  LOGBOOK_ARTICLE_PAGE_PAD,
-} from './logbookArticleClearance.js';
+import { LOGBOOK_ARTICLE_PAGE_PAD } from './logbookArticleClearance.js';
 import { hardNavigateAppBack } from '../../shared/navigation/hardAppBack';
 import {
   ARTICLE_DASHBOARD_SCROLL_SELECTOR,
@@ -361,7 +358,7 @@ const Detail = () => {
             </button>
         </div>
 
-        <div className={`bg-white/60 backdrop-blur-xl border border-gray-200 p-6 sm:p-10 rounded-3xl shadow-sm ${LOGBOOK_ARTICLE_INLINE_CLEARANCE}`}>
+        <div className="bg-white/60 backdrop-blur-xl border border-gray-200 p-6 sm:p-10 rounded-3xl shadow-sm">
           <div className="flex flex-wrap items-center gap-3 mb-6">
             <span className="text-xs font-bold text-blue-600 bg-blue-50 border border-blue-100 px-3 py-1.5 rounded-full uppercase tracking-wider">{formatLogbookDisplayDate(report)}</span>
             <span className="text-gray-500 text-sm flex items-center gap-1 font-medium"><MapPin size={14} className="text-gray-400"/> {report.location}</span>
