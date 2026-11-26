@@ -26,6 +26,22 @@ export const EXPLORE_MONTHLY_PICK_VERIFIED_HERO_URLS = {
     'https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Sydney_habour_bridge_%26_opera_house_fireworks_new_year_eve_2008.jpg/1280px-Sydney_habour_bridge_%26_opera_house_fireworks_new_year_eve_2008.jpg',
   reykjavik:
     'https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Northern_Lights_above_Iceland_%28Unsplash%29.jpg/1280px-Northern_Lights_above_Iceland_%28Unsplash%29.jpg',
+  okinawa:
+    'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Nago-jyo_Park_Sakura.JPG/1280px-Nago-jyo_Park_Sakura.JPG',
+  'kuala-lumpur':
+    'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Batu_Caves_Temple_Cave_Stairs_2015.jpg/1280px-Batu_Caves_Temple_Cave_Stairs_2015.jpg',
+  'banff-national-park':
+    'https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Frozen_Lake_Louise_in_Banff_1.jpg/1280px-Frozen_Lake_Louise_in_Banff_1.jpg',
+  zermatt:
+    'https://upload.wikimedia.org/wikipedia/commons/thumb/b/bf/Matterhorn_in_winter_with_Zermatt_village.jpg/1280px-Matterhorn_in_winter_with_Zermatt_village.jpg',
+  maldives:
+    'https://upload.wikimedia.org/wikipedia/commons/thumb/7/70/Water_bungalow_at_sunset_-_Rannalhi%2C_Maldives_-_2016.jpg/1280px-Water_bungalow_at_sunset_-_Rannalhi%2C_Maldives_-_2016.jpg',
+  hawaii:
+    'https://upload.wikimedia.org/wikipedia/commons/thumb/8/88/HIHWNMS_--_Breaching_Humpback_Whale_%2836619848411%29.jpg/1280px-HIHWNMS_--_Breaching_Humpback_Whale_%2836619848411%29.jpg',
+  bangkok:
+    'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/Templo_Wat_Arun%2C_Bangkok%2C_Tailandia%2C_2013-08-22%2C_DD_30.jpg/1280px-Templo_Wat_Arun%2C_Bangkok%2C_Tailandia%2C_2013-08-22%2C_DD_30.jpg',
+  perth:
+    'https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Perth_%28AU%29%2C_Elizabeth_Quay_--_2019_--_0331-3.jpg/1280px-Perth_%28AU%29%2C_Elizabeth_Quay_--_2019_--_0331-3.jpg',
 };
 
 /** object-position for object-fit:cover — 사진별 주제(단풍·랜턴 등)에 맞춤 */
@@ -42,6 +58,14 @@ export const EXPLORE_MONTHLY_PICK_HERO_OBJECT_POSITION = {
   seoul: '50% 45%',
   sydney: '50% 38%',
   reykjavik: '50% 30%',
+  okinawa: '50% 30%',
+  'kuala-lumpur': '50% 42%',
+  'banff-national-park': '50% 38%',
+  zermatt: '32% 42%',
+  maldives: '35% 48%',
+  hawaii: '58% 48%',
+  bangkok: '42% 42%',
+  perth: '50% 38%',
 };
 
 /** 로드 전 그리드 variant·종횡비 힌트(1280px 썸 경로 기준 ffprobe) */
@@ -58,6 +82,14 @@ export const EXPLORE_MONTHLY_PICK_HERO_INTRINSIC_SIZE = {
   seoul: { width: 1280, height: 1920 },
   sydney: { width: 1280, height: 960 },
   reykjavik: { width: 1280, height: 853 },
+  okinawa: { width: 1280, height: 853 },
+  'kuala-lumpur': { width: 1280, height: 1920 },
+  'banff-national-park': { width: 1280, height: 960 },
+  zermatt: { width: 1280, height: 853 },
+  maldives: { width: 1280, height: 864 },
+  hawaii: { width: 1280, height: 853 },
+  bangkok: { width: 1280, height: 855 },
+  perth: { width: 1280, height: 853 },
 };
 
 /**
@@ -129,5 +161,49 @@ export const EXPLORE_MONTHLY_PICK_PHOTO_CREDIT = {
     en: 'By Vincent Guth (Unsplash) · CC0 1.0',
     filePageUrl:
       'https://commons.wikimedia.org/wiki/File:Northern_Lights_above_Iceland_(Unsplash).jpg',
+  },
+  okinawa: {
+    ko: '저작 아라츠크 · CC BY-SA 4.0',
+    en: 'By アラツク · CC BY-SA 4.0',
+    filePageUrl: 'https://commons.wikimedia.org/wiki/File:Nago-jyo_Park_Sakura.JPG',
+  },
+  'kuala-lumpur': {
+    ko: '저작 KQuhen · CC BY-SA 4.0',
+    en: 'By KQuhen · CC BY-SA 4.0',
+    filePageUrl: 'https://commons.wikimedia.org/wiki/File:Batu_Caves_Temple_Cave_Stairs_2015.jpg',
+  },
+  'banff-national-park': {
+    ko: '저작 Rschroeder1985 · CC0 1.0',
+    en: 'By Rschroeder1985 · CC0 1.0',
+    filePageUrl: 'https://commons.wikimedia.org/wiki/File:Frozen_Lake_Louise_in_Banff_1.jpg',
+  },
+  zermatt: {
+    ko: '저작 Deralpinbergsteiger · CC BY-SA 4.0',
+    en: 'By Deralpinbergsteiger · CC BY-SA 4.0',
+    filePageUrl: 'https://commons.wikimedia.org/wiki/File:Matterhorn_in_winter_with_Zermatt_village.jpg',
+  },
+  maldives: {
+    ko: '저작 Saumesh Kumar · CC0 1.0',
+    en: 'By Saumesh Kumar · CC0 1.0',
+    filePageUrl:
+      'https://commons.wikimedia.org/wiki/File:Water_bungalow_at_sunset_-_Rannalhi,_Maldives_-_2016.jpg',
+  },
+  hawaii: {
+    ko: '저작 National Marine Sanctuaries · 퍼블릭 도메인',
+    en: 'By National Marine Sanctuaries · Public domain',
+    filePageUrl:
+      'https://commons.wikimedia.org/wiki/File:HIHWNMS_--_Breaching_Humpback_Whale_(36619848411).jpg',
+  },
+  bangkok: {
+    ko: '저작 Diego Delso · CC BY-SA 3.0',
+    en: 'By Diego Delso · CC BY-SA 3.0',
+    filePageUrl:
+      'https://commons.wikimedia.org/wiki/File:Templo_Wat_Arun,_Bangkok,_Tailandia,_2013-08-22,_DD_30.jpg',
+  },
+  perth: {
+    ko: '저작 Dietmar Rabich · CC BY-SA 4.0',
+    en: 'By Dietmar Rabich · CC BY-SA 4.0',
+    filePageUrl:
+      'https://commons.wikimedia.org/wiki/File:Perth_(AU),_Elizabeth_Quay_--_2019_--_0331-3.jpg',
   },
 };

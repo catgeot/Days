@@ -221,4 +221,114 @@ export const MONTHLY_PICKS = {
       estimate: false,
     },
   ],
+  '2027-01': [
+    {
+      slug: 'okinawa',
+      reason: '나고 벚꽃 1/30~',
+      reason_en: 'Nago sakura 1/30–',
+      sources: [
+        {
+          url: 'https://nagomun.or.jp/recommend/18205/',
+          label: '나고시관광협회',
+        },
+      ],
+      checked: '2026-11-17',
+      estimate: false,
+    },
+    {
+      slug: 'kuala-lumpur',
+      reason: '타이푸삼 순례 1/22',
+      reason_en: 'Thaipusam Jan 22',
+      sources: [
+        {
+          url: 'https://www.timeanddate.com/holidays/malaysia/thaipusam',
+          label: '타임앤데이트(2차)',
+        },
+        {
+          url: 'https://ecentral.my/wp-content/uploads/2026/10/HKA_2027.pdf',
+          label: '공휴일표 사본(2차)',
+        },
+      ],
+      checked: '2026-11-17',
+      estimate: false,
+    },
+    {
+      slug: 'banff-national-park',
+      reason: '스노데이즈 1/21~2/7',
+      reason_en: 'SnowDays 1/21–2/7',
+      sources: [
+        {
+          url: 'https://www.banfflakelouise.com/events/snowdays',
+          label: '밴프·레이크루이스 관광청',
+        },
+      ],
+      checked: '2026-11-17',
+      estimate: false,
+    },
+    {
+      slug: 'zermatt',
+      reason: '스키 시즌 ~4/30',
+      reason_en: 'Ski season to 4/30',
+      sources: [
+        {
+          url: 'https://snow.myswitzerland.com/snow_reports/zermatt-matterhorn-ski-paradise-170/',
+          label: '스위스관광청',
+        },
+      ],
+      checked: '2026-11-17',
+      estimate: false,
+    },
+    {
+      slug: 'maldives',
+      reason: '11~4월 건기',
+      reason_en: 'Dry season Nov–Apr',
+      sources: [
+        {
+          url: 'https://visitmaldives.com/en/maldives/travel-information',
+          label: '비짓 몰디브',
+        },
+      ],
+      checked: '2026-11-17',
+      estimate: false,
+    },
+    {
+      slug: 'hawaii',
+      reason: '혹등고래 12~5월',
+      reason_en: 'Whales Dec–May',
+      sources: [
+        {
+          url: 'https://www.gohawaii.com/experiences/adventure/whale-watching',
+          label: 'Go Hawaii',
+        },
+      ],
+      checked: '2026-11-17',
+      estimate: false,
+    },
+    {
+      slug: 'bangkok',
+      reason: '11~2월 시원한 건기',
+      reason_en: 'Cool dry Nov–Feb',
+      sources: [
+        {
+          url: 'https://www.tatnews.org/2020/11/thailands-comfortable-cooler-months-of-november-february-are-a-fantastic-time-to-travel/',
+          label: '태국관광청(2020)',
+        },
+      ],
+      checked: '2026-11-17',
+      estimate: false,
+    },
+    {
+      slug: 'perth',
+      reason: '프린지 1/20~2/14',
+      reason_en: 'Fringe 1/20–2/14',
+      sources: [
+        {
+          url: 'https://fringeworld.com.au/',
+          label: 'FRINGE WORLD',
+        },
+      ],
+      checked: '2026-11-17',
+      estimate: false,
+    },
+  ],
 };
