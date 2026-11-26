@@ -14,13 +14,23 @@ export function isProductionSiteHost(hostname) {
 }
 
 /**
- * 작업 로그·모바일 위젯 로그. Dev, localhost, or a Vercel git-branch preview.
- * Production hosts stay hidden even when a debug query or localStorage flag is set.
+ * Preview work log · flight mobile debug panel.
+ * www.gateo.kr / gateo.kr never show them, even with ?devlog=1.
+ * A *.vercel.app preview shows them only when the URL has ?devlog=1.
+ * Localhost and a Vite dev server still show them.
+ * @param {string} [hostname]
+ * @param {{ dev?: boolean, search?: string }} [options]
  */
-export function previewDebugChromeAllowed(hostname, { dev = false } = {}) {
+export function previewDebugChromeAllowed(hostname, { dev = false, search = '' } = {}) {
   if (isProductionSiteHost(hostname)) return false;
-  if (dev) return true;
   const host = String(hostname || '').trim().toLowerCase();
-  if (host === 'localhost' || host === '127.0.0.1') return true;
-  return host.endsWith('.vercel.app') && host.includes('-git-');
+  if (host.endsWith('.vercel.app')) {
+    try {
+      return new URLSearchParams(String(search || '')).get('devlog') === '1';
+    } catch {
+      return false;
+    }
+  }
+  if (dev) return true;
+  return host === 'localhost' || host === '127.0.0.1';
 }

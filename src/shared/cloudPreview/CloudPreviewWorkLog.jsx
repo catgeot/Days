@@ -1,28 +1,45 @@
 import React, { useEffect, useState } from 'react';
 import { ChevronDown, ClipboardList, X } from 'lucide-react';
-import {
-  cloudPreviewProject,
-  cloudPreviewSessionLabel,
-  cloudPreviewWorkLog,
-} from './cloudPreviewWorkLog';
 import { cloudQaShareUrl } from './cloudQaShareLinks';
 import { previewDebugChromeAllowed } from './isCloudPreviewSurface';
 
 export default function CloudPreviewWorkLog() {
+  const [workLogPack, setWorkLogPack] = useState(null);
   const [visible, setVisible] = useState(false);
   const [open, setOpen] = useState(false);
   const [expandedId, setExpandedId] = useState(null);
 
   useEffect(() => {
-    setVisible(
-      previewDebugChromeAllowed(window.location.hostname, { dev: import.meta.env.DEV === true }) &&
-        cloudPreviewProject.active &&
-        cloudPreviewWorkLog.length > 0,
-    );
+    let cancelled = false;
+    import('./cloudPreviewWorkLog.js').then((mod) => {
+      if (cancelled) return;
+      setWorkLogPack({
+        cloudPreviewProject: mod.cloudPreviewProject,
+        cloudPreviewWorkLog: mod.cloudPreviewWorkLog,
+        cloudPreviewSessionLabel: mod.cloudPreviewSessionLabel,
+      });
+    });
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
-  if (!visible) return null;
+  useEffect(() => {
+    if (!workLogPack) return undefined;
+    setVisible(
+      previewDebugChromeAllowed(window.location.hostname, {
+        dev: import.meta.env.DEV === true,
+        search: window.location.search,
+      }) &&
+        workLogPack.cloudPreviewProject.active &&
+        workLogPack.cloudPreviewWorkLog.length > 0,
+    );
+    return undefined;
+  }, [workLogPack]);
 
+  if (!visible || !workLogPack) return null;
+
+  const { cloudPreviewProject, cloudPreviewWorkLog, cloudPreviewSessionLabel } = workLogPack;
   const sessionLabel = cloudPreviewSessionLabel();
   const shareUrl = cloudPreviewProject.qaShareSlug
     ? cloudQaShareUrl(cloudPreviewProject.qaShareSlug)
