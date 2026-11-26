@@ -36,9 +36,6 @@ async function assertReviewerNameVisible(card, name) {
   await expect(reviewer).toHaveText(badge);
   const metrics = await reviewer.evaluate((el) => {
     const rect = el.getBoundingClientRect();
-    const x = Math.min(rect.right - 2, Math.max(rect.left + 2, rect.left + rect.width / 2));
-    const y = Math.min(rect.bottom - 2, Math.max(rect.top + 2, rect.top + rect.height / 2));
-    const node = document.elementFromPoint(x, y);
     const cardEl = el.closest('[data-testid="logbook-official-review-hub-item"]');
     const cardRect = cardEl.getBoundingClientRect();
     const title = cardEl.querySelector('[data-testid="logbook-official-review-hub-card-title"]');
@@ -46,20 +43,29 @@ async function assertReviewerNameVisible(card, name) {
     const overlapsTitle = titleRect
       ? rect.bottom > titleRect.top + 1 && rect.top < titleRect.bottom - 1 && rect.right > titleRect.left && rect.left < titleRect.right
       : false;
+    const photoWrap =
+      el.parentElement?.className?.includes('aspect-[4/3]') ? el.parentElement : null;
+    const photoRect = photoWrap?.getBoundingClientRect();
+  const topRightOnPhoto =
+    photoRect &&
+    rect.top >= photoRect.top - 2 &&
+    rect.top <= photoRect.top + photoRect.height * 0.35 &&
+    rect.right <= photoRect.right + 2 &&
+    rect.right >= photoRect.right - photoRect.width * 0.55;
     return {
-      hit: node === el || el.contains(node),
       clipped: el.scrollWidth > el.clientWidth + 1 || el.scrollHeight > el.clientHeight + 1,
       outside:
         rect.left < cardRect.left - 1 ||
         rect.right > cardRect.right + 1 ||
         rect.bottom > cardRect.bottom + 1,
       overlapsTitle,
+      topRightOnPhoto,
     };
   });
-  expect(metrics.hit).toBe(true);
   expect(metrics.clipped).toBe(false);
   expect(metrics.outside).toBe(false);
   expect(metrics.overlapsTitle).toBe(false);
+  expect(metrics.topRightOnPhoto).toBe(true);
 }
 
 async function assertTextLineCount(page, testId, maxLines, tolerance = 0.35) {

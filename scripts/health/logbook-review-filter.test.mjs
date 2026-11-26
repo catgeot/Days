@@ -191,9 +191,17 @@ test('hub card wires filter flag without forced scroll', () => {
   assert.doesNotMatch(grid, /logbook-official-review-hub-card-summary/);
   assert.match(grid, /line-clamp-2/);
   assert.doesNotMatch(grid, /line-clamp-1/);
-  assert.match(grid, /z-\[2\]/);
-  assert.match(grid, /logbook-official-review-hub-card-reviewer/);
+  assert.match(grid, /LogbookOfficialReviewPersonaPhotoBadge/);
+  assert.doesNotMatch(grid, /bottom-2 left-2/);
+  assert.doesNotMatch(grid, /logbook-official-review-hub-card-reviewer/);
   assert.match(grid, /formatGateoReviewerBadge/);
+  const badge = readFileSync(
+    join(healthRoot, 'src/logbookOfficialReviews/LogbookOfficialReviewPersonaPhotoBadge.jsx'),
+    'utf8',
+  );
+  assert.match(badge, /top-2 right-2/);
+  assert.match(badge, /LOGBOOK_OFFICIAL_REVIEW_PERSONA_PHOTO_BADGE_CLASS/);
+  assert.match(badge, /logbook-official-review-hub-card-reviewer/);
   assert.doesNotMatch(grid, /sr-only/);
   assert.match(grid, /buildPlaceReviewsHref/);
   assert.doesNotMatch(hub, /scrollIntoView/);
