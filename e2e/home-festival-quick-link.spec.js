@@ -40,7 +40,8 @@ test.describe('Home quick link — 리뷰 창고', () => {
     await page.goto('/', { waitUntil: 'domcontentloaded' });
     await waitGlobe(page);
     await openReviewHubFromHome(page);
-    await expect(page.locator('#review-hub').first()).toBeAttached({ timeout: 60_000 });
+    await page.getByTestId('logbook-official-review-hub').waitFor({ state: 'visible', timeout: 60_000 });
+    await expect(page.locator('#review-hub').first()).toBeAttached();
     await page.screenshot({
       path: `/opt/cursor/artifacts/home-review-hub-${testInfo.project.name}-fresh.png`,
       clip: { x: 0, y: 0, width: testInfo.project.use.viewport?.width ?? 390, height: 480 },

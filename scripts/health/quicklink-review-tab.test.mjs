@@ -8,7 +8,8 @@ import { createRoot } from 'react-dom/client';
 import { JSDOM } from 'jsdom';
 import { MemoryRouter } from 'react-router-dom';
 
-import { reviewHubArrivalDelta } from '../../src/logbookOfficialReviews/logbookReviewHubArrival.js';
+import { REVIEW_HUB_HASH, reviewHubArrivalDelta } from '../../src/logbookOfficialReviews/logbookReviewHubArrival.js';
+import { isLogbookOfficialReviewHubActive } from '../../src/utils/logbookReviewFilterFlag.js';
 import MooniCompanionCurationLink, {
   shouldShowMooniCompanionCurationLink,
 } from '../../src/components/chat/MooniCompanionCurationLink.jsx';
@@ -40,6 +41,15 @@ test('MOONi companion curation link shows only for the companion chip', () => {
   assert.equal(shouldShowMooniCompanionCurationLink('companion'), true);
   assert.equal(shouldShowMooniCompanionCurationLink('food'), false);
   assert.equal(shouldShowMooniCompanionCurationLink(null), false);
+});
+
+test('review hub hash activates the logbook hub without preview query params', () => {
+  const prev = globalThis.window;
+  globalThis.window = { location: { hash: REVIEW_HUB_HASH, search: '' } };
+  assert.equal(isLogbookOfficialReviewHubActive(), true);
+  globalThis.window.location.hash = '#other';
+  assert.equal(isLogbookOfficialReviewHubActive(), false);
+  globalThis.window = prev;
 });
 
 test('arrival scroll moves once only when the hub is below the first screen', () => {
