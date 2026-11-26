@@ -2,6 +2,14 @@
 
 이전: [`2026-11-13-project-log.md`](./2026-11-13-project-log.md)
 
+## 홈 바로가기 리뷰 창고 (플래그 기본 OFF)
+
+- 코드 `a89fdb803` · 브랜치 `cursor/quicklink-review-tab-31b5` · PR [#928](https://github.com/catgeot/Days/pull/928).
+- `?quicklink_review_tab=1`일 때만 네 번째 바로가기가 «리뷰 창고»(`/blog#review-hub`). 끄면 «AI 큐레이션»(`/blog/curation`) 그대로. 항목은 4개.
+- 장소가 없는 홈 MOONi는 디스커버리 칩만 보인다. L1/L2 «동행별 추천»은 장소가 묶인 뒤에만 나오고, 그때 답변 끝에 큐레이션 링크가 붙는다.
+- `www.gateo.kr/blog`에는 리뷰 허브가 있다. 이 Preview 환경에는 `VITE_GATEO_LOGBOOK_REVIEW_HUB`가 없어서 `/blog#review-hub`만으로는 허브가 안 그려진다. Preview에서 허브를 보려면 `?logbook_review_hub=1`을 붙인다.
+- 새 이벤트 `quicklink_click` · `mooni_curation_link_click`은 QA·webdriver·`?crawler=1`에서 보내지 않는다.
+
 ## 가는 방법 출발 기본값
 
 - `/place/khao-lak` «가는 방법»이 위치가 카오락이어도 `서울 (ICN)`을 출발로 두던 문제를 고쳤다. 알고 있는 좌표·저장된 위치가 있으면 그 공항을 쓰고, 구간은 숨기지 않는다.
