@@ -1,5 +1,8 @@
-import { withGateoTrafficType } from './gateoGaQa.js';
-
+/**
+ * GA4 custom event. No-ops when gtag is missing and never throws.
+ * @param {string} name
+ * @param {Record<string, unknown>} [params]
+ */
 /**
  * One event when a closed MOONi surface becomes open. Close and repeat true are ignored.
  * @param {boolean} wasOpen
@@ -12,19 +15,10 @@ export function trackMooniOpenIfRising(wasOpen, open, params) {
   return true;
 }
 
-/**
- * GA4 custom event. No-ops when gtag is missing and never throws.
- * QA, `navigator.webdriver`, and `?crawler=1` get `traffic_type: 'internal'`.
- * Real visitors do not.
- * @param {string} name
- * @param {Record<string, unknown>} [params]
- * @param {Parameters<typeof withGateoTrafficType>[1]} [env]
- */
-export function trackEvent(name, params, env) {
+export function trackEvent(name, params) {
   try {
     if (typeof window === 'undefined') return;
-    const sentParams = withGateoTrafficType(params, env);
-    const payload = { name, params: sentParams };
+    const payload = { name, params: params ?? {} };
     if (Array.isArray(window.__gateoGaEvents)) {
       window.__gateoGaEvents.push(payload);
     }
@@ -34,7 +28,7 @@ export function trackEvent(name, params, env) {
     }
     const gtag = window.gtag;
     if (typeof gtag !== 'function') return;
-    gtag('event', name, sentParams);
+    gtag('event', name, params);
   } catch {
     // analytics must not break the page
   }

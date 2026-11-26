@@ -60,7 +60,7 @@ const HOME_WATCH_TASTE_MAX_EN = 18;
 const NOW = 1_763_900_000_000;
 
 test('mobile globe lift applies only when the home watch bar is on screen', () => {
-  assert.equal(HOME_WATCH_MOBILE_GLOBE_LIFT_PX, 52);
+  assert.equal(HOME_WATCH_MOBILE_GLOBE_LIFT_PX, 60);
   assert.equal(shouldApplyHomeWatchGlobeLift(390, true), true);
   assert.equal(shouldApplyHomeWatchGlobeLift(1279, true), true);
   assert.equal(shouldApplyHomeWatchGlobeLift(1280, true), false);

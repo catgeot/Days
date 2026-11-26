@@ -2,6 +2,7 @@ import React, {
   useRef,
   useState,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useCallback,
   forwardRef,
@@ -23,6 +24,7 @@ import {
   nextOverlayClickGuardUntil,
 } from '../lib/globeOverlayClickGuard';
 import { normalizeLngNear } from '../lib/globeLngUtils';
+import { resolvePlaceCardGlobeFlyPadding } from '../lib/homePlaceCardGlobePadding.js';
 import {
   GLOBE_FACE_REGION_DEFAULT_ZOOM,
   GLOBE_FACE_REGION_FLY_MS,
@@ -504,6 +506,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   const globeOverlaysRevealedRef = useRef(false);
   const placeCardOpenRef = useRef(placeCardOpen);
   placeCardOpenRef.current = placeCardOpen;
+  const lastPinFocusRef = useRef(null);
   const globeLabelsSettledRef = useRef(false);
   const resumeRotateAfterLabelsTimerRef = useRef(null);
   const basemapLabelsAppliedRef = useRef(false);
@@ -1530,10 +1533,20 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     }, waitMs);
   }, [tryResumeAutoRotate]);
 
+  const resolvePinFocusPadding = useCallback((options = {}) => {
+    if (options.padding) return options.padding;
+    if (options.placeCardPadding === false) return undefined;
+    const usePadding = options.placeCardPadding === true || placeCardOpenRef.current;
+    if (!usePadding) return undefined;
+    return resolvePlaceCardGlobeFlyPadding();
+  }, []);
+
   const executeFocus = useCallback((lat, lng, options = {}) => {
     const map = mapRef.current?.getMap();
     if (!map || pauseRender) return false;
     if (!isGlobeMapStyleReady(map)) return false;
+
+    lastPinFocusRef.current = { lat, lng };
 
     const currentCenter = map.getCenter();
     const currentZoom = map.getZoom();
@@ -1546,23 +1559,38 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       ? GLOBE_VIEW.flyZoom
       : Math.max(currentZoom, GLOBE_VIEW.flyZoom);
     const flyDuration = GLOBE_VIEW.orientFlyDuration;
+    const padding = resolvePinFocusPadding(options);
 
     if (isAlreadyNearTarget && !forceFlyZoom && Math.abs(currentZoom - targetZoom) < 0.05) {
+      if (padding) {
+        try {
+          map.easeTo({
+            center: [normalizedLng, lat],
+            padding,
+            duration: 420,
+            essential: true,
+          });
+        } catch {
+          // fall through
+        }
+      }
       flushPendingGateoMarkerSource(map);
       clearGlobeCameraBusy(map);
-      scheduleOrientRotateResume(map, 0);
+      scheduleOrientRotateResume(map, padding ? 420 : 0);
       return true;
     }
 
     try {
       cameraAnimatingRef.current = true;
-      map.flyTo({
+      const flyOpts = {
         center: [normalizedLng, lat],
         zoom: targetZoom,
         pitch: GLOBE_VIEW.default.pitch,
         duration: flyDuration,
-        essential: true
-      });
+        essential: true,
+      };
+      if (padding) flyOpts.padding = padding;
+      map.flyTo(flyOpts);
       map.once('moveend', () => {
         cameraAnimatingRef.current = false;
         try {
@@ -1593,7 +1621,23 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
 
     scheduleOrientRotateResume(map, flyDuration);
     return true;
-  }, [applyPlaceLabelVisibility, pauseRender, scheduleOrientRotateResume]);
+  }, [applyPlaceLabelVisibility, pauseRender, resolvePinFocusPadding, scheduleOrientRotateResume]);
+
+  useLayoutEffect(() => {
+    if (!placeCardOpen) return undefined;
+    const target = lastPinFocusRef.current;
+    if (!target) return undefined;
+    let inner;
+    const outer = requestAnimationFrame(() => {
+      inner = requestAnimationFrame(() => {
+        executeFocus(target.lat, target.lng, { placeCardPadding: true });
+      });
+    });
+    return () => {
+      cancelAnimationFrame(outer);
+      if (inner) cancelAnimationFrame(inner);
+    };
+  }, [placeCardOpen, executeFocus]);
 
   /** TOUR_READY pivot — ease center only; pitch/zoom/bearing unchanged (no flyTo). */
   const pivotTourExplore = useCallback((location) => {

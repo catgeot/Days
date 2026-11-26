@@ -21,7 +21,7 @@ export const HOME_WATCH_CARD_LAYOUT = {
 };
 
 /** Mobile-only globe nudge when the default home watch bar is on screen (clears bottom crowding). */
-export const HOME_WATCH_MOBILE_GLOBE_LIFT_PX = 52;
+export const HOME_WATCH_MOBILE_GLOBE_LIFT_PX = 60;
 export const HOME_WATCH_GLOBE_LIFT_DATA_ATTR = 'homeWatchGlobeLift';
 export const HOME_WATCH_GLOBE_LIFT_CSS_VAR = '--home-watch-globe-lift';
 

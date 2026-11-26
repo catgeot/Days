@@ -54,8 +54,17 @@ body {
 }
 
 @media (max-width: 1279px) {
+  .gateo-home-globe-shell {
+    --home-globe-mobile-base-lift: 10px;
+    transform: translate3d(0, calc(-1 * var(--home-globe-mobile-base-lift)), 0);
+  }
+
   html[data-home-watch-globe-lift='1'] .gateo-home-globe-shell {
-    transform: translate3d(0, calc(-1 * var(--home-watch-globe-lift, 52px)), 0);
+    transform: translate3d(
+      0,
+      calc(-1 * (var(--home-watch-globe-lift, 60px) + var(--home-globe-mobile-base-lift, 10px))),
+      0
+    );
   }
 }
 

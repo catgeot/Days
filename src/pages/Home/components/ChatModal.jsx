@@ -1581,6 +1581,7 @@ const ChatModal = ({
             geminiParams,
             stripPhantomTicketMention,
           },
+          ...(chipId ? { replyChipId: chipId } : {}),
           frozenBookingActions: booking.show ? booking.actions : null,
           bookingActions: booking.show ? booking.actions : null,
           ...(chipDestination
@@ -1591,7 +1592,6 @@ const ChatModal = ({
             : {}),
           ...destinationPickExtras,
           plannerFollowUp,
-          replyChipId: chipId || null,
           bookingMeta:
             booking.show || plannerFollowUp
               ? {
@@ -2293,18 +2293,13 @@ const ChatModal = ({
                         ? messages[idx - 1].text?.text
                         : messages[idx - 1].text) ?? ''
                     : '';
-                const replyChipId = isModelMsg
-                  ? (msg.replyChipId ||
-                      msg.bookingMeta?.chipId ||
-                      (messages[idx - 1]?.role === 'user' ? messages[idx - 1].chipId : null) ||
-                      null)
-                  : null;
                 const airportPickup = isModelMsg && isGettingThereUserText(priorUserText)
                   ? airportPickupRowForPlace({
                       ...(activeSessionPlace || {}),
                       slug: activeSessionPlace?.slug || msgSlug || undefined,
                     })
                   : null;
+                const replyChipId = isModelMsg ? msg.replyChipId ?? msg.bookingMeta?.chipId : null;
                 const showPlannerFollowUp =
                   isModelMsg &&
                   Boolean(msgSlug) &&
@@ -2359,6 +2354,12 @@ const ChatModal = ({
                         continueAttempts={msg.continueAttempts ?? 0}
                         isContinuing={mooniContinuingIdx === idx}
                         onContinue={() => handleMooniContinueReading(idx)}
+                        variant={isMooniUi ? 'light' : 'dark'}
+                      />
+                    ) : null}
+                    {isModelMsg ? (
+                      <MooniCompanionCurationLink
+                        chipId={replyChipId}
                         variant={isMooniUi ? 'light' : 'dark'}
                       />
                     ) : null}
@@ -2440,12 +2441,6 @@ const ChatModal = ({
                         variant={isMooniUi ? 'light' : 'dark'}
                       />
                     )}
-                    {isModelMsg ? (
-                      <MooniCompanionCurationLink
-                        chipId={replyChipId}
-                        variant={isMooniUi ? 'light' : 'dark'}
-                      />
-                    ) : null}
                   </div>
                 </div>
                 );

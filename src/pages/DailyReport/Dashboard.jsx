@@ -12,6 +12,8 @@ import { useDashboardData } from './hooks/useDashboardData';
 import { logbookPlaceKey, reportMatchesLogbookPlace } from '../../utils/logbookReadingMeta';
 import { isLogbookOfficialReviewHubActive } from '../../utils/logbookReviewFilterFlag.js';
 import { trackEvent } from '../../shared/analytics/trackEvent.js';
+import { useLogbookOfficialReviewHub } from '../../logbookOfficialReviews/useLogbookOfficialReviewHub.js';
+import { resolveLogbookPublicDashboardSubtitle } from './logbookPublicDashboardSubtitle.js';
 
 const Dashboard = () => {
   const { t } = useTranslation();
@@ -47,8 +49,29 @@ const Dashboard = () => {
     handlePrevMonth, handleNextMonth, isPublicMode, user
   } = useDashboardData() || {};
 
+  const {
+    enabled: officialReviewHubEnabled,
+    isLoading: officialReviewsLoading,
+    loadFailed: officialReviewsLoadFailed,
+    totalCount: officialReviewCount,
+  } = useLogbookOfficialReviewHub();
+
   // URL 파라미터가 있을 경우 리포트 필터링
   const filteredReports = (reports || []).filter((report) => reportMatchesLogbookPlace(report, locationFilter));
+
+  const publicSubtitle =
+    isPublicMode &&
+    resolveLogbookPublicDashboardSubtitle({
+      reportsLoading: Boolean(loading),
+      travelogueCount: (reports || []).length,
+      reviewHubEnabled: officialReviewHubEnabled,
+      reviewsLoading: officialReviewsLoading,
+      reviewsLoadFailed: officialReviewsLoadFailed,
+      reviewCount: officialReviewCount,
+      locationFilter,
+      filteredTravelogueCount: filteredReports.length,
+      t,
+    });
 
   const handleWriteClick = () => {
     trackEvent('logbook_write_click', {
@@ -92,11 +115,11 @@ const Dashboard = () => {
                 </h2>
               </div>
               <p className="text-gray-500 mt-1.5 text-sm font-medium flex flex-wrap gap-2 items-center">
-                 {loading ? t('logbook.dashboard.syncing') : (
-                   isPublicMode
-                    ? (locationFilter ? t('logbook.dashboard.countPublicFiltered', { location: locationFilter, count: filteredReports.length }) : t('logbook.dashboard.countPublic', { count: reports.length }))
-                    : t('logbook.dashboard.countPrivate', { count: reports.length })
-                 )}
+                {isPublicMode
+                  ? publicSubtitle
+                  : loading
+                    ? t('logbook.dashboard.syncing')
+                    : t('logbook.dashboard.countPrivate', { count: reports.length })}
               </p>
             </div>
 
