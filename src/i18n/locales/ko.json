@@ -805,6 +805,10 @@
         "desc": "{{name}}에서 열리는 행사·축제 일정과 여행 준비 정보를 확인하세요."
       }
     },
+    "monthlyReason": {
+      "kicker": "{{month}}월에 고른 이유예요",
+      "source": "출처"
+    },
     "summary": {
       "flightLoading": "조회 중…",
       "flightRefreshing": "갱신 중…",

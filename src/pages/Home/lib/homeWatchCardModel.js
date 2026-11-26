@@ -390,7 +390,9 @@ export function buildHomeWatchMonthlyDestinations(now = new Date(), rows = [], m
       imageUrl,
       reason: String(entry?.reason || '').trim(),
       reasonEn: String(entry?.reason_en || '').trim(),
-      href: slug ? `/place/${getPlaceUrlParam(spot) || slug}` : '',
+      href: slug
+        ? `/place/${getPlaceUrlParam(spot) || slug}?monthly=${encodeURIComponent(resolvedKey)}`
+        : '',
       reviewer,
       reviewerHref: reviewer ? buildLogbookReviewerFilterHref(reviewer) : '',
     };

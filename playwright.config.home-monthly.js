@@ -47,7 +47,7 @@ export default defineConfig({
     },
     {
       name: 'webkit-home-monthly-390',
-      testMatch: /home-monthly-(destinations|mooni-intro-bubble|mooni-fab-overlap)\.spec\.js/,
+      testMatch: /home-monthly-(destinations|mooni-intro-bubble|mooni-fab-overlap|place-reason)\.spec\.js/,
       use: {
         ...devices['Desktop Safari'],
         viewport: { width: 390, height: 844 },

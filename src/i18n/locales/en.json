@@ -1035,6 +1035,10 @@
         "desc": "See events and festivals in {{name}} and plan your trip around them."
       }
     },
+    "monthlyReason": {
+      "kicker": "Why we picked it for {{month}}",
+      "source": "Source"
+    },
     "summary": {
       "flightLoading": "Searching…",
       "flightRefreshing": "Updating…",

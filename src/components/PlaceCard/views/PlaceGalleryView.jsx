@@ -45,6 +45,10 @@ import { resolveGalleryOverviewLocaleNotices } from '../common/galleryOverviewLo
 import PlaceWorldEventsSection from '../common/PlaceWorldEventsSection';
 import PlaceGalleryFactsAndStories from '../common/PlaceGalleryFactsAndStories';
 import { usePlaceDesktopLeftInfoLayout } from '../common/usePlaceDesktopLeftInfoLayout';
+import {
+  readPlaceMonthlyPickKey,
+  resolvePlaceMonthlyPick,
+} from '../../../pages/Home/lib/placeMonthlyReason.js';
 import PlaceEditorialTravelogueCard from '../common/PlaceEditorialTravelogueCard';
 import PlaceScenicGateway from '../common/PlaceScenicGateway';
 import PlaceCrossLinksSection from '../common/PlaceCrossLinksSection';
@@ -1035,15 +1039,23 @@ const PlaceGalleryView = React.memo(({
       }),
     [locale, location, showDescriptionInKoreanLabel, curationOverview, fixedOverview],
   );
+  const hasMonthlyReason = Boolean(
+    resolvePlaceMonthlyPick({
+      slug: location?.slug || location?.canonical_slug,
+      now: new Date(),
+      monthKey: readPlaceMonthlyPickKey(routerLocation.search),
+    }),
+  );
   const showMobileGalleryOverview = useMemo(
     () =>
+      hasMonthlyReason ||
       shouldShowMobileGalleryOverviewSection({
         curationOverview,
         fixedOverview,
         overviewQuery,
         localeNotices,
       }),
-    [curationOverview, fixedOverview, overviewQuery, localeNotices],
+    [hasMonthlyReason, curationOverview, fixedOverview, overviewQuery, localeNotices],
   );
   const hasPlaceOverview = Boolean(curationOverview || fixedOverview);
   const { mountInGallery } = usePlaceDesktopLeftInfoLayout();

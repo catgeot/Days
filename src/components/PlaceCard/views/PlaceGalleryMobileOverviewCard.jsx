@@ -2,6 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Sparkles } from 'lucide-react';
 import PlaceOverviewProse from '../common/PlaceOverviewProse';
+import PlaceMonthlyReasonBox from '../common/PlaceMonthlyReasonBox';
 import {
   hasGalleryOverviewBody,
   resolveGalleryOverviewLocaleNotices,
@@ -40,6 +41,7 @@ export default function PlaceGalleryMobileOverviewCard({
         noticeOnly ? 'px-4 py-3' : 'px-4 py-4'
       }`}
     >
+      <PlaceMonthlyReasonBox location={location} />
       <PlaceGalleryLocaleNoticeChips
         showDescriptionInKoreanLabel={notices.showDescriptionInKoreanLabel}
         showKoreanGuideNotice={notices.showKoreanGuideNotice}

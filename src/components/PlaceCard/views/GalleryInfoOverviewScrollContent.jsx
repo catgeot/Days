@@ -9,6 +9,7 @@ import { isExploreRestaurantItem } from '../../../shared/search/tourRestaurantDe
 import PlaceCrossLinksSection from '../common/PlaceCrossLinksSection';
 import PlaceGalleryFactsAndStories from '../common/PlaceGalleryFactsAndStories';
 import PlaceGalleryLocaleNoticeChips from './PlaceGalleryLocaleNoticeChips';
+import PlaceMonthlyReasonBox from '../common/PlaceMonthlyReasonBox';
 
 export default function GalleryInfoOverviewScrollContent({
   selectedPlace,
@@ -97,6 +98,7 @@ export default function GalleryInfoOverviewScrollContent({
 
   return (
     <div className="animate-fade-in space-y-5">
+      <PlaceMonthlyReasonBox location={selectedPlace} />
       {restaurantPin ? <PlaceRestaurantMapOutbound location={selectedPlace} /> : null}
       <div className="space-y-4">
         <PlaceGalleryLocaleNoticeChips
