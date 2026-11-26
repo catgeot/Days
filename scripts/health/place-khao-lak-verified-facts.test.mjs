@@ -49,8 +49,8 @@ test('khao-lak city has seven slots with itinerary place names', () => {
   assert.equal(airport.checkedAt, '2026-11-11');
 
   const safety = KHAO_LAK_CITY_FACTS.slots.find((slot) => slot.id === 'safety');
-  assert.equal(safety.checkedOn, '2026-11-23');
-  assert.equal(safety.checkedAt, '2026-11-23');
+  assert.equal(safety.checkedOn, '2026-11-26');
+  assert.equal(safety.checkedAt, '2026-11-26');
   assert.match(safety.value, /팡아주·푸켓은 1단계\(여행유의\)/);
 
   assert.equal(resolveKhaoLakVerifiedFacts('khao-lak').slug, 'khao-lak');
