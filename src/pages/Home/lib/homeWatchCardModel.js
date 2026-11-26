@@ -207,6 +207,42 @@ export function mooniFabHintExtraMarginBottom(options) {
   return Math.max(0, total - baseGap);
 }
 
+/**
+ * When the FAB overlaps the placed monthly card, one of its tiles, or a header
+ * control, raise `bottom` so the FAB rests `gap` px above that obstacle.
+ * `right` stays put. No overlap (card dismissed or absent) returns `pos`.
+ */
+export function mooniFabPositionAboveMonthlyCard({
+  pos,
+  fabRect,
+  cardRect = null,
+  obstacles = [],
+  viewportHeight,
+  gap = HOME_MONTHLY_CARD_GAP,
+} = {}) {
+  if (!pos || typeof pos.right !== 'number' || typeof pos.bottom !== 'number') return pos;
+  if (!fabRect || fabRect.width < 1 || fabRect.height < 1) return pos;
+  const height = Number(viewportHeight);
+  if (!Number.isFinite(height) || height < 1) return pos;
+
+  const card = cardRect && cardRect.width >= 1 && cardRect.height >= 1 ? cardRect : null;
+  const extras = (Array.isArray(obstacles) ? obstacles : []).filter(
+    (obs) => obs && obs.width >= 1 && obs.height >= 1,
+  );
+  const hitCard = Boolean(card && rectsOverlap(fabRect, card));
+  const hitExtras = extras.filter((obs) => rectsOverlap(fabRect, obs));
+  if (!hitCard && hitExtras.length === 0) return pos;
+
+  const tops = [];
+  if (card) tops.push(card.top);
+  for (const obs of hitExtras) tops.push(obs.top);
+  const ceiling = Math.min(...tops);
+  const pad = Number.isFinite(Number(gap)) ? Number(gap) : 0;
+  const bottom = height - ceiling + pad;
+  if (!(bottom > pos.bottom)) return pos;
+  return { right: pos.right, bottom };
+}
+
 export function shouldHideHomeWatchCard({
   placeCard = false,
   explore = false,
