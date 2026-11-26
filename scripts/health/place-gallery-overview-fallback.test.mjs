@@ -411,7 +411,8 @@ test('Home gallery PR drift guard; MOONi session wiring line allowlist', () => {
           /routeLocation\.pathname\.startsWith\('\/explore'\)/.test(diff)) ||
         (/selectedFromSearch\?\.kind === 'festival'/.test(diff) &&
           /selectedFromSearch\?\.festivalContentId/.test(diff)) ||
-        (/handleMooniPlannerHandoff/.test(diff) && /mooniChatPlannerReturn/.test(diff)))
+        (/handleMooniPlannerHandoff/.test(diff) && /mooniChatPlannerReturn/.test(diff)) ||
+        (/gateo-home-globe-shell/.test(diff) && /home-globe-shell/.test(diff)))
     ) {
       return;
     }
