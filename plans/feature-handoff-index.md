@@ -14,6 +14,20 @@
 
 ## 활성 목록
 
+### 월간 카드 장소 이유
+
+| | |
+|--|--|
+| **상태** | **#1 코드 완료 · 병합 전** · `e70467fbb` · PR [#929](https://github.com/catgeot/Days/pull/929) · CI 46건 통과 |
+| **브랜치** | `cursor/monthly-place-reason-a9a0` |
+| **플랜** | 별도 플랜 없음 |
+| **일지** | [`2026-11-26-project-log.md`](./2026-11-26-project-log.md) |
+| **PROD** | 병합 전. 확인은 홈 `/?home_monthly_switch=1` → 푸꾸옥 |
+| **소유** | `PlaceMonthlyReasonBox` · `placeMonthlyReason.js` · `MONTHLY_PICKS` `best` |
+| **금지** | 카드 짧은 `reason` 문구 늘리기 · 출처 없는 날씨·날짜 추가 · `vercel.json` 변경 · feature에 `plans/**` 커밋 |
+
+**다음 제시어 없음** (코드 작업 끝). 병합은 PR #929. 확인은 소개문 위 «11월 건기 시작»과 출처.
+
 ### 명승 본문 — 종료
 
 | | |

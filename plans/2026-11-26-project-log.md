@@ -16,3 +16,10 @@
 - EN 월간 타일 지명: `buildHomeWatchMonthlyDestinations(..., i18n.language)`.
 - E2E: `home-monthly-mooni-fab-overlap` 코너 매트릭스 · `home-theme-monthly-mobile` EN·코너 캡처.
 - 로컬: overlap 6/6 (chromium+webkit 390), theme monthly mobile PASS, EN destinations PASS; `npm run build` PASS.
+
+## 월간 카드 장소 이유
+
+- 홈 월간 카드로 연 장소(이번·다음 달 12곳) 소개문 위에 선정 이유·시기·출처 상자를 넣었다. 카드 짧은 문구는 그대로 두고, 장소 페이지에 없던 시기 설명만 공식 출처로 채웠다.
+- 코드 `e70467fbb` · 브랜치 `cursor/monthly-place-reason-a9a0` · PR [#929](https://github.com/catgeot/Days/pull/929). CI 46건 통과(run 45780935329).
+- 단위 `scripts/health/place-monthly-reason.test.mjs` · WebKit 390 `e2e/home-monthly-place-reason.spec.js`.
+- 사람 확인: `/?home_monthly_switch=1`에서 푸꾸옥을 열면 소개문 위에 «11월 건기 시작»과 베트남 관광청 출처가 있는지. `lang=en`이면 «Dry season·Nov». 병합 전이라 프로덕션에는 없다.
