@@ -16,6 +16,7 @@
           if (navigator.webdriver) disabled = true;
           if (localStorage.getItem('gateo_qa') === '1') disabled = true;
           if (new URLSearchParams(location.search).get('qa') === '1') disabled = true;
+          if (location.hostname !== 'www.gateo.kr') disabled = true;
         } catch (e) {}
         if (disabled) {
           window.__GATEO_GA_DISABLED__ = true;
