@@ -31,13 +31,13 @@ export const MONTHLY_PICKS = {
       slug: 'chiang-mai',
       reason: '11/23~25 이펭·건기',
       reason_en: 'Yi Peng Nov 23–25',
-      best: '시내에서는 하늘 풍등을 날리지 말라고 관광경찰이 안내해요. 11월은 북부가 서늘해지는 계절이에요.',
-      best_en: 'Tourist police ask you not to release sky lanterns in the city. November is when the north turns cool.',
+      best: '11월 23일부터 25일까지 이펭 축제가 열려요. 11월은 서늘한 계절이고, 11월부터 2월은 건기예요. 시내 하늘 풍등은 지정된 곳과 시간만 가능해요.',
+      best_en: 'The Yi Peng festival runs 23–25 November. November is the cool season, and November to February is the dry season. Release sky lanterns only in designated places and at permitted times.',
       sources: [
         {
-          url: 'https://chiangmaipost.net/event/33-chiang-mai-tourist-police-public-announcement-yi-peng-festival-2026',
-          label: '치앙마이 포스트',
-          label_en: 'Chiang Mai Post',
+          url: 'https://www.cmcity.go.th/News/36390-%E0%B9%80%E0%B8%9B%E0%B8%B4%E0%B8%94%E0%B8%87%E0%B8%B2%E0%B8%99%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B9%80%E0%B8%9E%E0%B8%93%E0%B8%B5%E0%B9%80%E0%B8%94%E0%B8%B7%E0%B8%AD%E0%B8%99%E0%B8%A2%E0%B8%B5%E0%B9%88%E0%B9%80%E0%B8%9B%E0%B9%87%E0%B8%87%E0%B9%80%E0%B8%8A%E0%B8%B5%E0%B8%A2%E0%B8%87%E0%B9%83%E0%B8%AB%E0%B8%A1%E0%B9%88%20%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B8%88%E0%B8%B3%E0%B8%9B%E0%B8%B5%202569%20%E0%B8%AD%E0%B8%A2%E0%B9%88%E0%B8%B2%E0%B8%87%E0%B9%80%E0%B8%9B%E0%B9%87%E0%B8%99%E0%B8%97%E0%B8%B2%E0%B8%87%E0%B8%81%E0%B8%B2%E0%B8%A3%20%E0%B8%A0%E0%B8%B2%E0%B8%A2.html',
+          label: '치앙마이시',
+          label_en: 'Chiang Mai City',
         },
         {
           url: 'https://www.tourismthailand.org/Articles/thailand-november',
@@ -46,11 +46,16 @@ export const MONTHLY_PICKS = {
         },
         {
           url: 'https://www.thailandtravel.or.jp/about/calendar/',
-          label: '태국관광청',
-          label_en: 'Tourism Authority of Thailand',
+          label: '태국관광청·건기',
+          label_en: 'Tourism Authority of Thailand · dry season',
+        },
+        {
+          url: 'https://chiangmaipost.net/event/33-chiang-mai-tourist-police-public-announcement-yi-peng-festival-2026',
+          label: '치앙마이 포스트',
+          label_en: 'Chiang Mai Post',
         },
       ],
-      checked: '2026-11-01',
+      checked: '2026-11-26',
       estimate: false,
     },
     {
@@ -94,26 +99,16 @@ export const MONTHLY_PICKS = {
       slug: 'dubai',
       reason: '11월 피트니스·산책',
       reason_en: 'Nov fitness walks',
-      best: '11월에는 두바이 피트니스 챌린지가 열려요. 30일 동안 하루 30분을 움직이고, 마리나 워크와 주메이라 트랙을 걷기 좋아요.',
-      best_en: 'November is the Dubai Fitness Challenge: 30 minutes a day for 30 days. Marina Walk and the Jumeirah track are easy walks.',
+      best: '10월 31일부터 11월 29일까지 30x30이에요. 30일 동안 하루 30분을 움직여요.',
+      best_en: 'From 31 October to 29 November, 30x30 is 30 minutes a day for 30 days.',
       sources: [
         {
-          url: 'https://www.visitdubai.com/en/-/media/Images/pdf/2026/dubai-city-guide-en-2026.pdf',
-          label: '두바이 관광청',
-          label_en: 'Visit Dubai',
-        },
-        {
-          url: 'https://www.visitdubai.com/en/articles/dubai-in-november-weather-guide',
-          label: '두바이 관광청·11월 날씨',
-          label_en: 'Visit Dubai · November weather',
-        },
-        {
-          url: 'https://weatherspark.com/y/105470/Average-Weather-in-Dubai-United-Arab-Emirates-Year-Round',
-          label: '웨더스파크',
-          label_en: 'WeatherSpark',
+          url: 'https://www.dubaifitnesschallenge.com/en/',
+          label: '두바이 피트니스 챌린지',
+          label_en: 'Dubai Fitness Challenge',
         },
       ],
-      checked: '2026-11-01',
+      checked: '2026-11-26',
       estimate: false,
     },
     {
@@ -148,26 +143,16 @@ export const MONTHLY_PICKS = {
       slug: 'sapporo',
       reason: '오도리 일루 11/20~',
       reason_en: 'Odori lights Nov–',
-      best: '11월 20일부터 3월 14일까지 오도리 공원 조명이 켜져요. 자정까지라서 밤산책이 좋아요.',
-      best_en: 'Odori Park stays lit from 20 November to 14 March, until midnight, so a late walk works.',
+      best: '오도리 회장은 2026년 11월 20일부터 12월 25일까지예요. 16:30부터 22:00까지 켜지고, 12월 23일부터 25일만 24:00까지예요.',
+      best_en: 'The Odori venue runs from 20 November to 25 December 2026, 16:30–22:00, and until 24:00 only on 23–25 December.',
       sources: [
-        {
-          url: 'https://www.sapporo.travel/en/event/event-list/sapporo_white_illumination/',
-          label: '삿포로 관광',
-          label_en: 'Sapporo Tourism',
-        },
         {
           url: 'https://www.sapporo.travel/white-illumination/event/illumination/odori/',
           label: '오도리 회장',
           label_en: 'Odori venue',
         },
-        {
-          url: 'https://www.visit-hokkaido.jp/en/event/detail_11003.html',
-          label: '홋카이도 관광',
-          label_en: 'Visit Hokkaido',
-        },
       ],
-      checked: '2026-11-10',
+      checked: '2026-11-26',
       estimate: false,
     },
     {

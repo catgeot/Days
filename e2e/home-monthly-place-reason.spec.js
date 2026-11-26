@@ -59,4 +59,13 @@ test.describe('monthly card place reason', () => {
     await expect(reason).toContainText('Why we picked it for November');
     await expect(reason).toContainText('Source');
   });
+
+  test('a direct place visit does not show the monthly reason', async ({ page }) => {
+    await page.clock.install({ time: new Date(NOVEMBER_AT) });
+    await page.goto('/place/phu-quoc', { waitUntil: 'domcontentloaded' });
+    await expect(page).toHaveURL(/\/place\/phu-quoc$/, { timeout: 60_000 });
+    const card = page.locator('[data-place-gallery-mobile-overview]:visible');
+    await expect(card.getByText('몰디브')).toBeVisible({ timeout: 60_000 });
+    await expect(page.getByTestId('place-monthly-reason')).toHaveCount(0);
+  });
 });
