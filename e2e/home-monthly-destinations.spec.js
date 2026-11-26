@@ -97,8 +97,13 @@ test.describe('home monthly destinations', () => {
     await expect(link).toHaveCSS('border-radius', '0px');
     await expect(link).toHaveCSS('border-top-width', '0px');
     const cardBox = await box(card);
-    expect(cardBox.height).toBeGreaterThanOrEqual(85);
-    expect(cardBox.height).toBeLessThan(86);
+    if (width >= 1280) {
+      expect(cardBox.height).toBeGreaterThanOrEqual(85);
+      expect(cardBox.height).toBeLessThan(86);
+    } else {
+      expect(cardBox.height).toBeGreaterThanOrEqual(96);
+      expect(cardBox.height).toBeLessThan(97);
+    }
 
     const hint = page.getByText('여행을 찾아봐요');
     if (await hint.count()) {

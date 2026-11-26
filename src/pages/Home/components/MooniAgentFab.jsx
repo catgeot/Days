@@ -17,6 +17,7 @@ import {
 import {
   MOONI_FAB_HINT_BASE_GAP,
   MOONI_FAB_HINT_MAX_WIDTH,
+  mooniFabBottomClearOfWatchCard,
   mooniFabHintExtraMarginBottom,
 } from '../lib/homeWatchCardModel.js';
 
@@ -254,6 +255,41 @@ export default function MooniAgentFab({
     window.addEventListener('resize', onResize);
     return () => window.removeEventListener('resize', onResize);
   }, []);
+
+  useLayoutEffect(() => {
+    if (isDragging || isChatOpen || isZenMode || isTourActive || hideForStayPanel) return undefined;
+    let frame = 0;
+    const apply = () => {
+      const root = rootRef.current;
+      if (!root) return;
+      const fabRect = root.getBoundingClientRect();
+      const minBottom = mooniFabBottomClearOfWatchCard(fabRect);
+      if (minBottom == null) return;
+      setPos((prev) => {
+        if (prev.bottom >= minBottom - 0.5) return prev;
+        const next = clampPosition({ ...prev, bottom: minBottom });
+        return next.bottom === prev.bottom ? prev : next;
+      });
+    };
+    const schedule = () => {
+      if (frame) return;
+      frame = window.requestAnimationFrame(() => {
+        frame = 0;
+        apply();
+      });
+    };
+    apply();
+    const observer = new ResizeObserver(schedule);
+    observer.observe(document.body);
+    const card = document.querySelector('[data-testid="home-watch-card"]');
+    if (card) observer.observe(card);
+    window.addEventListener('resize', schedule);
+    return () => {
+      window.cancelAnimationFrame(frame);
+      observer.disconnect();
+      window.removeEventListener('resize', schedule);
+    };
+  }, [isDragging, isChatOpen, isZenMode, isTourActive, hideForStayPanel, pos.right, pos.bottom]);
 
   const hintVisibleForLayout =
   (!isZenMode && !isChatOpen && !isTourActive && !hideForStayPanel) &&

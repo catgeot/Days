@@ -650,7 +650,7 @@ body {
 /* Flag-on home monthly card. JS measures the About row; this keeps the first paint
    above the bottom chrome and inside the iPhone safe area. */
 .home-monthly-card {
-  right: 6.75rem;
+  right: 0.75rem;
   bottom: calc(env(safe-area-inset-bottom, 0px) + 8.75rem);
 }
 

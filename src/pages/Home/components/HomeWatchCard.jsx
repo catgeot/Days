@@ -23,6 +23,7 @@ import {
   homeWatchViewParams,
   isHomeWatchDismissed,
   layoutHomeMonthlyCard,
+  homeWatchCardHeightForWidth,
   resolveHomeMonthlyPreviewStartDay,
   resolveHomeWatchReelsPoster,
   shouldHideHomeWatchCard,
@@ -308,6 +309,7 @@ const HomeWatchCard = ({
   isPlaceCardVisible = false,
   isTourCinema = false,
   isFlightCinema = false,
+  yieldToMobileGlobeMenu = false,
 }) => {
   const { t, i18n } = useTranslation();
   const isEnUi = String(i18n.language || '')
@@ -353,12 +355,23 @@ const HomeWatchCard = ({
     });
   }, [enabled, monthly, monthKey, slotCount]);
 
+  const [cardHeightPx, setCardHeightPx] = useState(() =>
+    homeWatchCardHeightForWidth(typeof window === 'undefined' ? 390 : window.innerWidth),
+  );
+  useEffect(() => {
+    const apply = () => setCardHeightPx(homeWatchCardHeightForWidth(window.innerWidth));
+    apply();
+    window.addEventListener('resize', apply);
+    return () => window.removeEventListener('resize', apply);
+  }, []);
+
   const hidden = shouldHideHomeWatchCard({
     placeCard: isPlaceCardVisible || pathname.startsWith('/place'),
     explore: pathname === '/explore' || pathname.startsWith('/explore/'),
     mooniChat,
     cinema: isTourCinema || isFlightCinema,
     siteNotice,
+    mobileGlobeRegionsMenu: yieldToMobileGlobeMenu,
   });
   const shown = enabled && !hidden && !dismissed && slots.length > 0;
 
@@ -495,7 +508,8 @@ const HomeWatchCard = ({
       data-preview-open={monthly && schedule.previewOpen ? '1' : undefined}
       data-globe-drag-passthrough={globeDrag ? 'true' : 'false'}
       aria-label={title}
-      className={`fixed z-[54] box-border h-[85px] ${
+      data-home-watch-yielded={yieldToMobileGlobeMenu ? '1' : undefined}
+      className={`fixed z-[54] box-border ${
         globeDrag
           ? '!pointer-events-none [&_*]:!pointer-events-none'
           : monthly
@@ -506,7 +520,7 @@ const HomeWatchCard = ({
           ? 'home-monthly-card left-3 right-3 min-[1280px]:left-[300px]'
           : 'left-3 right-3 bottom-[14.25rem] min-[1280px]:left-[300px] min-[1280px]:right-[300px] min-[1280px]:bottom-[110px]'
       }`}
-      style={{ height: HOME_WATCH_CARD_LAYOUT.mobile.height }}
+      style={{ height: `${cardHeightPx}px` }}
     >
       {monthly ? (
         <div
@@ -577,7 +591,7 @@ const HomeWatchCard = ({
                 data-slug={slot.slug || undefined}
                 className={
                   monthly
-                    ? 'relative h-full w-[6.5rem] shrink-0 snap-start overflow-hidden rounded-xl border border-white/10 bg-black/40 min-[1280px]:w-[12rem]'
+                    ? 'relative h-full w-[7.25rem] shrink-0 snap-start overflow-hidden rounded-xl border border-white/10 bg-black/40 min-[1280px]:w-[12rem] min-[1280px]:h-full'
                     : 'relative min-w-0 flex-1 overflow-hidden rounded-xl border border-white/10 bg-black/40'
                 }
               >
