@@ -7,7 +7,6 @@ import ChatModal from './components/ChatModal';
 import MooniAgentFab from './components/MooniAgentFab';
 import SearchDiscoveryModal from './components/SearchDiscoveryModal';
 import LogoPanel from './components/LogoPanel';
-import SiteUpdateBanner from '../../shared/components/SiteUpdateBanner';
 import HomePlaceCardSummary from './components/HomePlaceCardSummary';
 import HomeDocumentHead from './HomeDocumentHead';
 import HomePlaceSummaryDocumentHead from './HomePlaceSummaryDocumentHead.jsx';
@@ -2100,7 +2099,6 @@ function Home() {
       </div>
 
       <div className={`relative z-10 transition-opacity duration-1000 ${isZenMode ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
-        <SiteUpdateBanner />
         <HomeUI
           homeChromeEpoch={homeChromeEpoch}
           onSearch={handleSmartSearch} onTickerClick={handleSmartSearch}

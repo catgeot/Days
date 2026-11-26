@@ -13,8 +13,10 @@ function isHomeNoticeSurface(pathname) {
 function SiteUpdateBanner() {
   const { t } = useTranslation();
   const location = useLocation();
-  const { refreshVisible, closeRefresh, reload } = useSiteUpdateBanner();
-  const showSurface = refreshVisible && isHomeNoticeSurface(location.pathname);
+  const { refreshVisible, staleBundleVisible, closeRefresh, reload } = useSiteUpdateBanner();
+  const showSurface = Boolean(
+    staleBundleVisible || (refreshVisible && isHomeNoticeSurface(location.pathname)),
+  );
   const anchorRect = useSiteNoticeAnchorRect(showSurface);
 
   if (!showSurface) return null;

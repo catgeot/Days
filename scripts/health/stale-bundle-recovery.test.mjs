@@ -15,6 +15,7 @@ import {
   resetLazyChunkTracking,
   scheduleStaleBundleBootClear,
   shouldIgnoreStaleBundleSignal,
+  staleBundleAssignGuardId,
   staleBundleGuardKey,
   trackLazyChunkLoad,
 } from '../../src/shared/lib/staleBundleRecovery.js';
@@ -92,44 +93,86 @@ describe('staleBundleRecovery guard', () => {
     assert.equal(getEntryBundleId(doc), '/assets/index-v_YRsKNe.js');
   });
 
-  it('reloads once then falls back within cooldown', () => {
+  it('open tab shows the banner; a navigation target assigns once then falls back', () => {
     const storage = mockStorage();
     const bundleId = '/assets/index-abc.js';
+    const target = '/place/rome';
     const t0 = 1_000_000;
+    const guardId = staleBundleAssignGuardId(bundleId, target);
 
-    assert.equal(decideStaleBundleRecoveryAction(storage, bundleId, t0), 'reload');
+    assert.equal(decideStaleBundleRecoveryAction(storage, bundleId, t0), 'banner');
+    assert.equal(
+      decideStaleBundleRecoveryAction(storage, bundleId, t0, { target }),
+      'assign',
+    );
 
-    markStaleBundleReloadAttempt(storage, bundleId, t0);
-    assert.deepEqual(readStaleBundleReloadGuard(storage, bundleId), { at: t0 });
+    markStaleBundleReloadAttempt(storage, guardId, t0);
+    assert.deepEqual(readStaleBundleReloadGuard(storage, guardId), { at: t0 });
 
     assert.equal(
-      decideStaleBundleRecoveryAction(storage, bundleId, t0 + 1_000),
+      decideStaleBundleRecoveryAction(storage, bundleId, t0 + 1_000, { target }),
       'fallback',
     );
     assert.equal(
-      decideStaleBundleRecoveryAction(storage, bundleId, t0 + STALE_BUNDLE_RELOAD_COOLDOWN_MS + 1),
+      decideStaleBundleRecoveryAction(
+        storage,
+        bundleId,
+        t0 + STALE_BUNDLE_RELOAD_COOLDOWN_MS + 1,
+        { target },
+      ),
       'fallback',
+    );
+    assert.equal(
+      decideStaleBundleRecoveryAction(storage, bundleId, t0 + 1_000, { target: '/blog' }),
+      'assign',
     );
   });
 
-  it('handleStaleBundleLoadFailure triggers reload once only', () => {
+  it('handleStaleBundleLoadFailure shows a banner on an open tab and assigns a target once', () => {
     const storage = mockStorage();
     const bundleId = '/assets/index-deadbeef.js';
-    let reloadCount = 0;
-    const reload = () => {
-      reloadCount += 1;
+    const target = '/blog';
+    let banners = 0;
+    const assigned = [];
+    const showBanner = () => {
+      banners += 1;
+    };
+    const assign = (url) => {
+      assigned.push(url);
     };
 
     assert.equal(
-      handleStaleBundleLoadFailure(new Error('chunk'), storage, bundleId, { reload, now: 100 }),
-      'reload',
+      handleStaleBundleLoadFailure(new Error('chunk'), storage, bundleId, {
+        showBanner,
+        assign,
+        now: 100,
+      }),
+      'banner',
     );
-    assert.equal(reloadCount, 1);
+    assert.equal(banners, 1);
+    assert.deepEqual(assigned, []);
+
     assert.equal(
-      handleStaleBundleLoadFailure(new Error('chunk'), storage, bundleId, { reload, now: 200 }),
+      handleStaleBundleLoadFailure(new Error('chunk'), storage, bundleId, {
+        showBanner,
+        assign,
+        target,
+        now: 200,
+      }),
+      'assign',
+    );
+    assert.deepEqual(assigned, [target]);
+    assert.equal(
+      handleStaleBundleLoadFailure(new Error('chunk'), storage, bundleId, {
+        showBanner,
+        assign,
+        target,
+        now: 300,
+      }),
       'fallback',
     );
-    assert.equal(reloadCount, 1);
+    assert.equal(banners, 2);
+    assert.deepEqual(assigned, [target]);
   });
 
   it('ignores chunk signals only inside the leave window', () => {
@@ -143,9 +186,10 @@ describe('staleBundleRecovery guard', () => {
     assert.equal(shouldIgnoreStaleBundleSignal(), false);
   });
 
-  it('beforeunload then a document that stays reloads once the window ends', () => {
+  it('pagehide then a document that stays shows the banner once the window ends', () => {
     const clock = createLeaveClock();
-    let reloads = 0;
+    let banners = 0;
+    const assigned = [];
     const uninstall = installStaleBundleRecovery({
       window: clock.target,
       storage: mockStorage(),
@@ -153,31 +197,64 @@ describe('staleBundleRecovery guard', () => {
       now: clock.now,
       schedule: clock.schedule,
       cancel: clock.cancel,
-      reload: () => {
-        reloads += 1;
+      showBanner: () => {
+        banners += 1;
+      },
+      assign: (url) => {
+        assigned.push(url);
       },
     });
 
-    clock.dispatch('beforeunload');
+    clock.dispatch('pagehide');
     clock.dispatch('vite:preloadError', { preventDefault() {} });
-    assert.equal(reloads, 0);
+    assert.equal(banners, 0);
+    assert.deepEqual(assigned, []);
 
     clock.advance(STALE_BUNDLE_LEAVE_WINDOW_MS - 1);
     clock.dispatch('vite:preloadError', { preventDefault() {} });
-    assert.equal(reloads, 0);
+    assert.equal(banners, 0);
 
     clock.advance(1);
-    assert.equal(reloads, 0);
+    assert.equal(banners, 0);
     clock.dispatch('vite:preloadError', { preventDefault() {} });
-    assert.equal(reloads, 1);
+    assert.equal(banners, 1);
+    assert.deepEqual(assigned, []);
 
+    uninstall();
+  });
+
+  it('visibility hidden arms the same leave window as pagehide', () => {
+    const clock = createLeaveClock();
+    let banners = 0;
+    let hidden = true;
+    const uninstall = installStaleBundleRecovery({
+      window: clock.target,
+      storage: mockStorage(),
+      getBundleId: () => '/assets/index-vis.js',
+      now: clock.now,
+      schedule: clock.schedule,
+      cancel: clock.cancel,
+      getVisibilityState: () => (hidden ? 'hidden' : 'visible'),
+      showBanner: () => {
+        banners += 1;
+      },
+    });
+
+    clock.dispatch('visibilitychange');
+    clock.dispatch('vite:preloadError', { preventDefault() {} });
+    assert.equal(banners, 0);
+    hidden = false;
+    clock.dispatch('visibilitychange');
+    clock.dispatch('vite:preloadError', { preventDefault() {} });
+    assert.equal(banners, 1);
     uninstall();
   });
 
   it('pageshow clears the leave window for a bfcache or cancelled stay', () => {
     for (const persisted of [true, false]) {
       const clock = createLeaveClock();
-      let reloads = 0;
+      let banners = 0;
+      const assigned = [];
       const uninstall = installStaleBundleRecovery({
         window: clock.target,
         storage: mockStorage(),
@@ -185,17 +262,60 @@ describe('staleBundleRecovery guard', () => {
         now: clock.now,
         schedule: clock.schedule,
         cancel: clock.cancel,
-        reload: () => {
-          reloads += 1;
+        showBanner: () => {
+          banners += 1;
+        },
+        assign: (url) => {
+          assigned.push(url);
         },
       });
 
-      clock.dispatch('beforeunload');
+      clock.dispatch('pagehide');
       clock.dispatch('pageshow', { persisted });
       clock.dispatch('vite:preloadError', { preventDefault() {} });
-      assert.equal(reloads, 1, `persisted=${persisted}`);
+      assert.equal(banners, 1, `persisted=${persisted}`);
+      assert.deepEqual(assigned, []);
       uninstall();
     }
+  });
+
+  it('history push to another screen assigns that target once', () => {
+    const clock = createLeaveClock();
+    const assigned = [];
+    let banners = 0;
+    const location = { href: 'http://localhost/about', origin: 'http://localhost' };
+    clock.target.location = location;
+    clock.target.history = {
+      pushState(_state, _title, url) {
+        location.href = new URL(url, location.href).href;
+      },
+      replaceState(_state, _title, url) {
+        location.href = new URL(url, location.href).href;
+      },
+    };
+    const uninstall = installStaleBundleRecovery({
+      window: clock.target,
+      storage: mockStorage(),
+      getBundleId: () => '/assets/index-nav.js',
+      now: clock.now,
+      schedule: clock.schedule,
+      cancel: clock.cancel,
+      showBanner: () => {
+        banners += 1;
+      },
+      assign: (url) => {
+        assigned.push(url);
+      },
+    });
+
+    clock.target.history.pushState({}, '', '/blog');
+    clock.dispatch('vite:preloadError', { preventDefault() {} });
+    assert.deepEqual(assigned, ['/blog']);
+    clock.target.history.pushState({}, '', '/blog');
+    clock.dispatch('vite:preloadError', { preventDefault() {} });
+    assert.deepEqual(assigned, ['/blog']);
+    assert.equal(banners, 1);
+    uninstall();
   });
 
   it('boot success keeps the reload guard until the grace period runs', () => {
@@ -220,28 +340,41 @@ describe('staleBundleRecovery guard', () => {
     assert.equal(scheduledMs, STALE_BUNDLE_BOOT_CLEAR_MS);
     assert.deepEqual(readStaleBundleReloadGuard(storage, bundleId), { at: 10 });
 
+    const target = '/place/rome';
+    const guardId = staleBundleAssignGuardId(bundleId, target);
+    markStaleBundleReloadAttempt(storage, guardId, 10);
     const clock = createLeaveClock();
-    let reloads = 0;
+    const assigned = [];
+    let banners = 0;
     const uninstall = installStaleBundleRecovery({
       window: clock.target,
       storage,
       getBundleId: () => bundleId,
+      getNavTarget: () => target,
       now: clock.now,
       schedule: clock.schedule,
       cancel: clock.cancel,
-      reload: () => {
-        reloads += 1;
+      showBanner: () => {
+        banners += 1;
+      },
+      assign: (url) => {
+        assigned.push(url);
       },
     });
     clock.dispatch('vite:preloadError', { preventDefault() {} });
-    assert.equal(reloads, 0);
+    assert.deepEqual(assigned, []);
+    assert.equal(banners, 1);
     assert.equal(cancelled, true);
-    assert.deepEqual(readStaleBundleReloadGuard(storage, bundleId), { at: 10 });
+    assert.deepEqual(readStaleBundleReloadGuard(storage, guardId), { at: 10 });
 
     clearFn();
     assert.equal(readStaleBundleReloadGuard(storage, bundleId), null);
+    assert.deepEqual(readStaleBundleReloadGuard(storage, guardId), { at: 10 });
     clock.dispatch('vite:preloadError', { preventDefault() {} });
-    assert.equal(reloads, 1);
+    assert.deepEqual(assigned, []);
+    clearStaleBundleReloadGuard(storage, guardId);
+    clock.dispatch('vite:preloadError', { preventDefault() {} });
+    assert.deepEqual(assigned, [target]);
     uninstall();
     cancelStaleBundleBootClear();
   });
@@ -268,7 +401,7 @@ describe('staleBundleRecovery guard', () => {
       cancel: clock.cancel,
       reload: () => {},
     });
-    clock.dispatch('beforeunload');
+    clock.dispatch('pagehide');
     clock.dispatch('vite:preloadError', { preventDefault() {} });
     assert.equal(bootCancels, 0);
     uninstall();
@@ -317,13 +450,15 @@ describe('staleBundleRecovery guard', () => {
     resetLazyChunkTracking();
   });
 
-  it('clearStaleBundleReloadGuard allows a fresh reload decision', () => {
+  it('clearStaleBundleReloadGuard allows a fresh assign decision', () => {
     const storage = mockStorage();
     const bundleId = '/assets/index-new.js';
-    markStaleBundleReloadAttempt(storage, bundleId, 500);
-    clearStaleBundleReloadGuard(storage, bundleId);
-    assert.equal(readStaleBundleReloadGuard(storage, bundleId), null);
-    assert.equal(decideStaleBundleRecoveryAction(storage, bundleId, 600), 'reload');
+    const target = '/blog';
+    const guardId = staleBundleAssignGuardId(bundleId, target);
+    markStaleBundleReloadAttempt(storage, guardId, 500);
+    clearStaleBundleReloadGuard(storage, guardId);
+    assert.equal(readStaleBundleReloadGuard(storage, guardId), null);
+    assert.equal(decideStaleBundleRecoveryAction(storage, bundleId, 600, { target }), 'assign');
     assert.equal(staleBundleGuardKey(bundleId), 'gateo:stale-bundle-reload:/assets/index-new.js');
   });
 });

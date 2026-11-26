@@ -204,6 +204,10 @@ import KoreaFestivalMap, {
 } from './KoreaFestivalMap';
 import FestivalDetailSheet from './FestivalDetailSheet';
 import {
+  readFestivalHubFilterQuery,
+  writeFestivalHubFilterQuery,
+} from './festivalHubFilterQuery.js';
+import {
   festivalIdFromSearchParams,
   searchParamsWithoutFestival,
   searchParamsWithFestival,
@@ -1297,15 +1301,24 @@ export default function KoreaFestivalHub() {
   }, []);
 
   const dateChipEnabled = isGateoFestivalDateChipEnabled();
-  const [timeTab, setTimeTab] = useState(defaultFestivalHubTimeTab);
+  const initialHubFiltersRef = useRef(
+    /** @type {ReturnType<typeof readFestivalHubFilterQuery> | undefined} */ (undefined),
+  );
+  if (initialHubFiltersRef.current === undefined) {
+    initialHubFiltersRef.current = readFestivalHubFilterQuery(searchParams, {
+      defaultTime: defaultFestivalHubTimeTab(),
+      defaultArea: initialRegionChoice?.areaCode ?? DEFAULT_AREA_CODE,
+      dateChip: dateChipEnabled,
+    });
+  }
+  const initialHubFilters = initialHubFiltersRef.current;
+  const [timeTab, setTimeTab] = useState(initialHubFilters.timeTab);
   const [customRange, setCustomRange] = useState(
     /** @type {{ start: string, end: string } | null} */ (null),
   );
   const [dateSheetOpen, setDateSheetOpen] = useState(false);
-  const [tasteId, setTasteId] = useState('all');
-  const [areaCode, setAreaCode] = useState(
-    () => initialRegionChoice?.areaCode ?? DEFAULT_AREA_CODE,
-  );
+  const [tasteId, setTasteId] = useState(initialHubFilters.tasteId);
+  const [areaCode, setAreaCode] = useState(initialHubFilters.areaCode);
   const [cityName, setCityName] = useState(
     () => initialRegionChoice?.cityName ?? 'all',
   );
@@ -1378,7 +1391,10 @@ export default function KoreaFestivalHub() {
     ),
   );
   const [geoPermission, setGeoPermission] = useState('unsupported');
-  const userRegionExplicitRef = useRef(Boolean(initialRegionChoice?.explicit));
+  const userRegionExplicitRef = useRef(
+    Boolean(initialRegionChoice?.explicit) || initialHubFilters.regionExplicit,
+  );
+  const urlTasteRef = useRef(initialHubFilters.tasteId);
   const userRegionOverrideRef = useRef(false);
   const persistExplicitRegionChoice = useCallback((nextAreaCode, nextCityName) => {
     userRegionExplicitRef.current = true;
@@ -1501,6 +1517,16 @@ export default function KoreaFestivalHub() {
     });
     return undefined;
   }, [selectedForSheet?.contentId, selectedForSheet?.mapx, selectedForSheet?.mapy]);
+
+  const writeHubFilters = useCallback((patch) => {
+    setSearchParams((prev) => {
+      const next = writeFestivalHubFilterQuery(prev, {
+        defaultTime: defaultFestivalHubTimeTab(),
+        ...patch,
+      });
+      return next.toString() === prev.toString() ? prev : next;
+    }, { replace: true });
+  }, [setSearchParams]);
 
   const clearFestivalFromUrl = useCallback(() => {
     festivalDetailPushedRef.current = false;
@@ -2049,9 +2075,11 @@ export default function KoreaFestivalHub() {
 
   useEffect(() => {
     if (dateChipEnabled) return;
+    if (loading) return;
     if (tasteId === 'all') return;
+    if (tasteId === urlTasteRef.current && urlTasteRef.current !== 'all') return;
     if (!tasteChips.some((chip) => chip.id === tasteId)) setTasteId('all');
-  }, [tasteId, tasteChips, dateChipEnabled]);
+  }, [tasteId, tasteChips, dateChipEnabled, loading]);
 
   const tastedItems = useMemo(
     () => filterByTaste(afterRegion, tasteId),
@@ -2906,7 +2934,8 @@ export default function KoreaFestivalHub() {
   const resetListFilters = () => {
     userRegionOverrideRef.current = true;
     persistExplicitRegionChoice(DEFAULT_AREA_CODE, 'all');
-    setTimeTab(defaultFestivalHubTimeTab());
+    const nextTime = defaultFestivalHubTimeTab();
+    setTimeTab(nextTime);
     setCustomRange(null);
     setTasteId('all');
     setAreaCode(DEFAULT_AREA_CODE);
@@ -2914,7 +2943,13 @@ export default function KoreaFestivalHub() {
     setChipPanel('region');
     clearSearchFilter();
     clearNear();
-    clearFestivalFromUrl();
+    writeHubFilters({
+      time: nextTime,
+      taste: 'all',
+      region: DEFAULT_AREA_CODE,
+      touchRegion: true,
+      clearFestival: true,
+    });
     setPersonalTab(null);
   };
 
@@ -2930,7 +2965,7 @@ export default function KoreaFestivalHub() {
     setTimeTab(id);
     setChipPanel('time');
     clearSearchFilter();
-    clearFestivalFromUrl();
+    writeHubFilters({ time: id, clearFestival: true });
   };
 
   const applyCustomRange = (range) => {
@@ -2939,14 +2974,16 @@ export default function KoreaFestivalHub() {
     setChipPanel('time');
     setDateSheetOpen(false);
     clearSearchFilter();
-    clearFestivalFromUrl();
+    writeHubFilters({ time: 'date', clearFestival: true });
   };
 
   const clearPeriod = () => {
-    setTimeTab(festivalHubTimeTabAfterClearPeriod());
+    const nextTime = festivalHubTimeTabAfterClearPeriod();
+    setTimeTab(nextTime);
     setCustomRange(null);
     setDateSheetOpen(false);
     setChipPanel('time');
+    writeHubFilters({ time: nextTime });
   };
 
   const selectTaste = (id) => {
@@ -2954,7 +2991,7 @@ export default function KoreaFestivalHub() {
     setTasteId(id);
     setChipPanel('taste');
     clearSearchFilter();
-    clearFestivalFromUrl();
+    writeHubFilters({ taste: id, clearFestival: true });
   };
 
   const selectSido = (id) => {
@@ -2965,7 +3002,7 @@ export default function KoreaFestivalHub() {
     setChipPanel('region');
     clearSearchFilter();
     clearNear();
-    clearFestivalFromUrl();
+    writeHubFilters({ region: id, touchRegion: true, clearFestival: true });
   };
 
   const selectCity = (id) => {
@@ -3610,6 +3647,7 @@ export default function KoreaFestivalHub() {
                   <>
                     <button
                       type="button"
+                      data-region-id="all"
                       onClick={() => selectSido('all')}
                       className={chipClass(areaCode === 'all')}
                       aria-pressed={areaCode === 'all'}
@@ -3621,6 +3659,7 @@ export default function KoreaFestivalHub() {
                       <button
                         key={s.id}
                         type="button"
+                        data-region-id={s.id}
                         onClick={() => selectSido(s.id)}
                         className={chipClass(areaCode === s.id)}
                         aria-pressed={areaCode === s.id}
@@ -3642,6 +3681,7 @@ export default function KoreaFestivalHub() {
                   <>
                     <button
                       type="button"
+                      data-taste-id="all"
                       onClick={() => selectTaste('all')}
                       className={chipClass(tasteId === 'all')}
                       aria-pressed={tasteId === 'all'}
@@ -3653,6 +3693,7 @@ export default function KoreaFestivalHub() {
                       <button
                         key={t.id}
                         type="button"
+                        data-taste-id={t.id}
                         onClick={() => selectTaste(t.id)}
                         className={chipClass(tasteId === t.id)}
                         aria-pressed={tasteId === t.id}
