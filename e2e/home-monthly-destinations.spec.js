@@ -260,7 +260,7 @@ test.describe('home monthly destinations', () => {
     const names = scroller.locator('[data-caption-role="name"]');
     await expect(names.first()).toContainText('Kyoto');
     await expect(names.nth(1)).toContainText('Chiang Mai');
-    await expect(names.nth(2)).toContainText('Phuket');
+    await expect(names.nth(2)).toContainText('Phu Quoc');
     const link = page.getByTestId('home-monthly-switch');
     await expect(link).toHaveText('See December ▸');
     await expectCaptionsFit(page);

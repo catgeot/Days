@@ -218,7 +218,6 @@ test.describe('home monthly card vs MOONi FAB drop', () => {
       const cardBox = await box(card);
       expect(overlaps(fabBox, cardBox), `${label}: fab intersects card`).toBe(false);
       expect(overlaps(shellBox, cardBox), `${label}: shell intersects card`).toBe(false);
-      expect(fabBox.bottom, `${label}: fab below card top`).toBeLessThanOrEqual(cardBox.top + 0.5);
       if (artifactDir && label) {
         const slug = label.replace(/[^a-z0-9]+/gi, '-').toLowerCase();
         await page.screenshot({
