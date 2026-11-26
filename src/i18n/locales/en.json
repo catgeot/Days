@@ -2466,6 +2466,7 @@
       "syncing": "Syncing your logbook...",
       "countPrivate": "{{count}} memories are shining.",
       "countPublic": "{{count}} stories shared by travelers.",
+      "countPublicCombined": "{{total}} travel records shared ({{travelogues}} travelogues · {{reviews}} reviews)",
       "countPublicFiltered": "{{count}} public entries in '{{location}}'",
       "tabMine": "My entries",
       "tabFeed": "Explore feed",
