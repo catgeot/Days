@@ -96,6 +96,23 @@ test.describe('home theme monthly mobile layout', () => {
 
     await openMonthlyHome(page);
     const card = await readyMonthlyCard(page);
+    await expect(page.locator('html')).toHaveAttribute('data-home-watch-globe-lift', '1');
+    const mapLifted = await page.locator('.gateo-globe-map').first().evaluate(
+      (el) => window.getComputedStyle(el).transform,
+    );
+    expect(mapLifted).not.toBe('none');
+    const toolbar = page.getByRole('toolbar', { name: '지도 도구' });
+    if (await toolbar.count()) {
+      const search = page.getByRole('button', { name: /여행지 검색|Search on 3D globe/ }).first();
+      const share = page.getByRole('button', { name: '현재 위치 공유' });
+      await expect(search).toBeVisible();
+      await expect(share).toBeVisible();
+      const searchBottom = await search.evaluate((el) => el.getBoundingClientRect().bottom);
+      const shareTop = await share.evaluate((el) => el.getBoundingClientRect().top);
+      expect(shareTop).toBeGreaterThanOrEqual(searchBottom - 1);
+      expect(shareTop).toBeGreaterThanOrEqual(52);
+    }
+    await shot(page, 'home-390-watch-bar-map-tools', vw, vh);
     const cardClosed = await box(card);
     expect(cardClosed.height).toBeGreaterThanOrEqual(96);
     expect(cardClosed.height).toBeLessThan(97);

@@ -119,10 +119,14 @@ test.describe('home watch card', () => {
     if (width < 1280) {
       await expectTasteLabelsFit(page);
       await expect(page.locator('html')).toHaveAttribute('data-home-watch-globe-lift', '1');
+      const mapTransform = await page.locator('.gateo-globe-map').first().evaluate(
+        (el) => window.getComputedStyle(el).transform,
+      );
+      expect(mapTransform).not.toBe('none');
       const shellTransform = await page.getByTestId('home-globe-shell').evaluate(
         (el) => window.getComputedStyle(el).transform,
       );
-      expect(shellTransform).not.toBe('none');
+      expect(shellTransform === 'none' || shellTransform === 'matrix(1, 0, 0, 1, 0, 0)').toBe(true);
       const search = page.getByRole('button', { name: /여행지 검색|Search on 3D globe/ }).first();
       const searchHit = await search.evaluate((el) => {
         const r = el.getBoundingClientRect();
@@ -130,6 +134,15 @@ test.describe('home watch card', () => {
         return Boolean(target && (el === target || el.contains(target)));
       });
       expect(searchHit).toBe(true);
+      const mapTools = page.getByRole('toolbar', { name: '지도 도구' });
+      if (await mapTools.count()) {
+        const share = page.getByRole('button', { name: '현재 위치 공유' });
+        await expect(share).toBeVisible();
+        const searchBottom = await search.evaluate((el) => el.getBoundingClientRect().bottom);
+        const shareTop = await share.evaluate((el) => el.getBoundingClientRect().top);
+        expect(shareTop).toBeGreaterThanOrEqual(searchBottom - 1);
+        expect(shareTop).toBeGreaterThanOrEqual(52);
+      }
     } else {
       await expect(page.locator('html')).not.toHaveAttribute('data-home-watch-globe-lift', '1');
       const shellLiftY = await page.getByTestId('home-globe-shell').evaluate((el) => {

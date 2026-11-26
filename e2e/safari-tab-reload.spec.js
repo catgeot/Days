@@ -1,4 +1,13 @@
+import fs from 'node:fs';
 import { test, expect } from './fixtures.js';
+
+async function shot(page, name, width, height) {
+  fs.mkdirSync('/opt/cursor/artifacts', { recursive: true });
+  await page.screenshot({
+    path: `/opt/cursor/artifacts/${name}.png`,
+    clip: { x: 0, y: 0, width, height },
+  });
+}
 
 test.describe('safari tab reload recovery', () => {
   test('festival chips persist in the URL across reload without a history entry', async ({ page }) => {
@@ -61,7 +70,10 @@ test.describe('safari tab reload recovery', () => {
     await expect.poll(() => new URL(page.url()).searchParams.get('time')).toBe('weekend');
 
     await page.evaluate(() => window.dispatchEvent(new Event('vite:preloadError')));
-    await expect(page.locator('[data-site-update-notice]')).toBeVisible();
+    const notice = page.locator('[data-site-update-notice]');
+    await expect(notice).toBeVisible();
+    const panelBg = await notice.evaluate((el) => window.getComputedStyle(el).backgroundColor);
+    expect(panelBg).not.toBe('rgba(0, 0, 0, 0)');
     expect(await page.evaluate(() => window.__stay)).toBe('chip-tab');
     const stayed = new URL(page.url());
     expect(stayed.pathname).toBe('/korea');
@@ -78,7 +90,18 @@ test.describe('safari tab reload recovery', () => {
       window.__stay = 'open-tab';
     });
     await page.evaluate(() => window.dispatchEvent(new Event('vite:preloadError')));
-    await expect(page.locator('[data-site-update-notice]')).toBeVisible();
+    const notice = page.locator('[data-site-update-notice]');
+    await expect(notice).toBeVisible();
+    const panelBg = await notice.evaluate((el) => window.getComputedStyle(el).backgroundColor);
+    const alpha = await notice.evaluate((el) => {
+      const m = window.getComputedStyle(el).backgroundColor.match(/rgba?\([^)]+\)/);
+      if (!m) return -1;
+      const parts = m[0].replace(/rgba?\(|\)|\s/g, '').split(',');
+      return parts.length === 4 ? Number(parts[3]) : 1;
+    });
+    expect(panelBg).not.toBe('rgba(0, 0, 0, 0)');
+    expect(alpha).toBeGreaterThan(0.1);
+    await shot(page, 'about-390-site-update-notice', 390, 844);
     expect(await page.evaluate(() => window.__stay)).toBe('open-tab');
     await expect(page).toHaveURL(/\/about/);
     await expect(page.getByRole('button', { name: '새로고침' })).toBeVisible();

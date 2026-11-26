@@ -67,10 +67,17 @@ test('mobile globe lift applies only when the home watch bar is on screen', () =
   assert.equal(shouldApplyHomeWatchGlobeLift(390, false), false);
   const css = fs.readFileSync(new URL('../../src/index.css', import.meta.url), 'utf8');
   assert.match(css, /data-home-watch-globe-lift/);
-  assert.match(css, /\.gateo-home-globe-shell/);
+  assert.match(css, /\.gateo-home-globe-shell \.gateo-globe-map/);
+  assert.doesNotMatch(css, /data-home-watch-globe-lift[\s\S]{0,120}\.gateo-home-globe-shell \{\s*transform/);
   const home = fs.readFileSync(new URL('../../src/pages/Home/index.jsx', import.meta.url), 'utf8');
   assert.match(home, /gateo-home-globe-shell/);
   assert.match(home, /data-testid="home-globe-shell"/);
+  const banner = fs.readFileSync(
+    new URL('../../src/shared/components/SiteUpdateBanner.jsx', import.meta.url),
+    'utf8',
+  );
+  assert.doesNotMatch(banner, /bg-slate-950\/78|bg-black\/82/);
+  assert.match(banner, /bg-slate-950\/(?:80|90|95)/);
 });
 
 test('home watch card defaults on unless env or query disables', () => {
