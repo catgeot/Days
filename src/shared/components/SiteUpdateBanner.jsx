@@ -43,7 +43,7 @@ function SiteUpdateBanner() {
     >
       <div
         style={panelStyle}
-        className={`pointer-events-auto absolute flex flex-col animate-fade-in-down overflow-y-auto rounded-[1.5rem] bg-slate-950/78 backdrop-blur-2xl border border-blue-200/25 shadow-[0_20px_56px_rgba(0,0,0,0.72),0_0_0_1px_rgba(147,197,253,0.14),0_0_28px_rgba(59,130,246,0.14)] max-md:max-h-[min(70dvh,calc(100dvh-6rem))] ${
+        className={`pointer-events-auto absolute z-[1] flex flex-col animate-fade-in-down overflow-y-auto rounded-[1.5rem] bg-slate-950/90 backdrop-blur-2xl border border-blue-200/25 shadow-[0_20px_56px_rgba(0,0,0,0.72),0_0_0_1px_rgba(147,197,253,0.14),0_0_28px_rgba(59,130,246,0.14)] max-md:max-h-[min(70dvh,calc(100dvh-6rem))] ${
           anchored
             ? ''
             : 'top-4 max-md:inset-x-4 max-md:w-auto max-md:max-w-none max-md:translate-x-0 md:left-1/2 md:-translate-x-1/2 w-[calc(100vw-2rem)] md:max-w-md'
@@ -55,7 +55,7 @@ function SiteUpdateBanner() {
       >
         <div
           style={headerStyle}
-          className="flex shrink-0 items-center justify-between gap-3 bg-black/82 px-4 md:px-5"
+          className="flex shrink-0 items-center justify-between gap-3 bg-black/80 px-4 md:px-5"
         >
           <p className="text-[11px] md:text-xs font-bold tracking-[0.18em] uppercase text-blue-300 break-keep">
             {t('layout.siteNotice.refreshHeader')}
