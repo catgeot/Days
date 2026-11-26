@@ -1,5 +1,7 @@
 # PR·main — lint(src no-undef) + production build gate
 # Playwright image tag must match package-lock @playwright/test version (currently 1.60.0).
+# Jobs on mcr.microsoft.com/playwright:*-jammy must not run `playwright install --with-deps`
+# (browsers + OS libraries are preinstalled; --with-deps re-runs apt and flakes on mirror sync).
 name: CI
 
 on:
@@ -465,7 +467,20 @@ jobs:
             echo "Skip festival road Wonju E2E: VITE_MAPBOX_TOKEN secret not set"
             exit 0
           fi
-          npx playwright install --with-deps webkit
+          export DEBIAN_FRONTEND=noninteractive
+          install_pw=0
+          for attempt in 1 2 3 4 5; do
+            if npx playwright install --with-deps webkit; then
+              install_pw=1
+              break
+            fi
+            echo "playwright install --with-deps attempt ${attempt} failed; retrying apt in 20s"
+            sleep 20
+          done
+          if [ "$install_pw" != 1 ]; then
+            echo "playwright install --with-deps failed after 5 attempts"
+            exit 1
+          fi
           npx vite preview --host 127.0.0.1 --port 5173 --strictPort > /tmp/vite-festival-road.log 2>&1 &
           ready=0
           for _ in $(seq 1 90); do
@@ -962,9 +977,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Install Playwright browsers (Chromium + WebKit)
-        run: npx playwright install --with-deps webkit chromium
-
       - name: Playwright — logbook-review-filter-cards
         env:
           VITE_SUPABASE_URL: https://example.supabase.co
@@ -993,9 +1005,6 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-
-      - name: Install Playwright browsers (Chromium)
-        run: npx playwright install --with-deps chromium
 
       - name: Playwright — place-review-view-increment
         env:
@@ -1026,9 +1035,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Install Playwright browsers (Chromium + WebKit)
-        run: npx playwright install --with-deps webkit chromium
-
       - name: Playwright — detail hero credit (Chromium 390 · WebKit 390)
         env:
           VITE_SUPABASE_URL: https://example.supabase.co
@@ -1058,9 +1064,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Install Playwright browsers (Chromium + WebKit)
-        run: npx playwright install --with-deps webkit chromium
-
       - name: Playwright — place-review-deeplink-order
         env:
           VITE_SUPABASE_URL: https://example.supabase.co
@@ -1089,9 +1092,6 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-
-      - name: Install Playwright browsers (Chromium)
-        run: npx playwright install --with-deps chromium
 
       - name: Playwright — place reviews deep link and chip clearance
         env:
@@ -1125,9 +1125,6 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-
-      - name: Install Playwright browsers (Chromium + WebKit)
-        run: npx playwright install --with-deps webkit chromium
 
       - name: Playwright — logbook-review-hub-navigation
         env:
