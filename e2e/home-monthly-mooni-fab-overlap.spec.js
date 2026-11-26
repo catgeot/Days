@@ -218,6 +218,24 @@ test.describe('home monthly card vs MOONi FAB drop', () => {
       const cardBox = await box(card);
       expect(overlaps(fabBox, cardBox), `${label}: fab intersects card`).toBe(false);
       expect(overlaps(shellBox, cardBox), `${label}: shell intersects card`).toBe(false);
+      const bar = page.getByTestId('home-category-bar');
+      const barBox = await box(bar);
+      expect(overlaps(fabBox, barBox), `${label}: fab intersects category bar`).toBe(false);
+      expect(overlaps(shellBox, barBox), `${label}: shell intersects category bar`).toBe(false);
+      const buttons = bar.getByRole('button');
+      const btnCount = await buttons.count();
+      for (let i = 0; i < btnCount; i += 1) {
+        const btnBox = await box(buttons.nth(i));
+        expect(overlaps(fabBox, btnBox), `${label}: fab intersects bar button ${i}`).toBe(false);
+        const hit = await buttons.nth(i).evaluate((el) => {
+          const r = el.getBoundingClientRect();
+          const x = r.left + r.width / 2;
+          const y = r.top + r.height / 2;
+          const target = document.elementFromPoint(x, y);
+          return Boolean(target && (target === el || el.contains(target)));
+        });
+        expect(hit, `${label}: elementFromPoint bar button ${i}`).toBe(true);
+      }
       if (artifactDir && label) {
         const slug = label.replace(/[^a-z0-9]+/gi, '-').toLowerCase();
         await page.screenshot({
@@ -285,18 +303,22 @@ test.describe('home monthly card vs MOONi FAB drop', () => {
     expect(gesture).toBeTruthy();
     expect(Math.abs(gesture.lastX - tileAt.x)).toBeLessThanOrEqual(1);
     expect(Math.abs(gesture.lastY - tileAt.y)).toBeLessThanOrEqual(1);
-    const expected = await expectedMainDrop(
+    const rawExpected = await expectedMainDrop(
       page,
       start,
       { x: gesture.x, y: gesture.y },
       { x: gesture.lastX, y: gesture.lastY },
     );
     const actual = await readShellPos(page);
-    expect(actual.right).toBe(expected.right);
-    expect(actual.bottom).toBe(expected.bottom);
+    expect(actual.right).toBe(rawExpected.right);
 
     const fabBox = await box(page.getByTestId('mooni-fab-open'));
+    const barBox = await box(page.locator('[data-testid="home-category-bar"]:visible').first());
+    const aboutBox = await box(page.locator('[data-testid="home-about-row"]:visible').first());
+    expect(overlaps(fabBox, barBox)).toBe(false);
+    expect(overlaps(fabBox, aboutBox)).toBe(false);
     expect(overlaps(fabBox, formerCard)).toBe(true);
+    expect(actual.bottom).toBeGreaterThanOrEqual(rawExpected.bottom);
     expect(await page.evaluate(() => document.documentElement.classList.contains('mooni-fab-dragging'))).toBe(false);
     expect(await selectionText(page)).toBe('');
   });

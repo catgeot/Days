@@ -213,6 +213,41 @@ export function mooniFabHintExtraMarginBottom(options) {
   return Math.max(0, total - baseGap);
 }
 
+export const MOONI_FAB_MOBILE_CHROME_SELECTORS = [
+  '[data-testid="home-category-bar"]',
+  '[data-testid="home-about-row"]',
+  '[data-testid="home-globe-country-menu"]',
+];
+
+/**
+ * When the FAB overlaps any obstacle, raise `bottom` so the FAB rests `gap` px above it.
+ * `right` stays put. No overlap returns `pos`.
+ */
+export function mooniFabPositionAboveObstacles({
+  pos,
+  fabRect,
+  obstacles = [],
+  viewportHeight,
+  gap = HOME_MONTHLY_CARD_GAP,
+} = {}) {
+  if (!pos || typeof pos.right !== 'number' || typeof pos.bottom !== 'number') return pos;
+  if (!fabRect || fabRect.width < 1 || fabRect.height < 1) return pos;
+  const height = Number(viewportHeight);
+  if (!Number.isFinite(height) || height < 1) return pos;
+
+  const list = (Array.isArray(obstacles) ? obstacles : []).filter(
+    (obs) => obs && obs.width >= 1 && obs.height >= 1,
+  );
+  const hits = list.filter((obs) => rectsOverlap(fabRect, obs));
+  if (!hits.length) return pos;
+
+  const ceiling = Math.min(...hits.map((obs) => obs.top));
+  const pad = Number.isFinite(Number(gap)) ? Number(gap) : 0;
+  const bottom = height - ceiling + pad;
+  if (!(bottom > pos.bottom + 0.5)) return pos;
+  return { right: pos.right, bottom };
+}
+
 /**
  * When the FAB overlaps the placed monthly card, one of its tiles, or a header
  * control, raise `bottom` so the FAB rests `gap` px above that obstacle.
@@ -226,27 +261,57 @@ export function mooniFabPositionAboveMonthlyCard({
   viewportHeight,
   gap = HOME_MONTHLY_CARD_GAP,
 } = {}) {
-  if (!pos || typeof pos.right !== 'number' || typeof pos.bottom !== 'number') return pos;
-  if (!fabRect || fabRect.width < 1 || fabRect.height < 1) return pos;
-  const height = Number(viewportHeight);
-  if (!Number.isFinite(height) || height < 1) return pos;
+  const merged = [];
+  if (cardRect && cardRect.width >= 1 && cardRect.height >= 1) merged.push(cardRect);
+  for (const obs of Array.isArray(obstacles) ? obstacles : []) {
+    if (obs && obs.width >= 1 && obs.height >= 1) merged.push(obs);
+  }
+  return mooniFabPositionAboveObstacles({
+    pos,
+    fabRect,
+    obstacles: merged,
+    viewportHeight,
+    gap,
+  });
+}
 
-  const card = cardRect && cardRect.width >= 1 && cardRect.height >= 1 ? cardRect : null;
-  const extras = (Array.isArray(obstacles) ? obstacles : []).filter(
-    (obs) => obs && obs.width >= 1 && obs.height >= 1,
-  );
-  const hitCard = Boolean(card && rectsOverlap(fabRect, card));
-  const hitExtras = extras.filter((obs) => rectsOverlap(fabRect, obs));
-  if (!hitCard && hitExtras.length === 0) return pos;
+/** @param {(typeof document)['querySelectorAll']} root */
+export function collectMooniFabObstacleRects(selectors, root = document) {
+  const rects = [];
+  for (const sel of selectors) {
+    for (const el of root.querySelectorAll(sel)) {
+      const rect = el.getBoundingClientRect();
+      if (rect.width >= 1 && rect.height >= 1) rects.push(rect);
+    }
+  }
+  return rects;
+}
 
-  const tops = [];
-  if (card) tops.push(card.top);
-  for (const obs of hitExtras) tops.push(obs.top);
-  const ceiling = Math.min(...tops);
-  const pad = Number.isFinite(Number(gap)) ? Number(gap) : 0;
-  const bottom = height - ceiling + pad;
-  if (!(bottom > pos.bottom)) return pos;
-  return { right: pos.right, bottom };
+export function mooniFabPositionClearingObstacles({
+  pos,
+  fabRect,
+  obstacles = [],
+  viewportHeight,
+  gap = HOME_MONTHLY_CARD_GAP,
+  resolveFabRect,
+  maxPasses = 12,
+} = {}) {
+  if (!pos || !fabRect || fabRect.width < 1) return pos;
+  let current = pos;
+  let rect = fabRect;
+  for (let pass = 0; pass < maxPasses; pass += 1) {
+    const next = mooniFabPositionAboveObstacles({
+      pos: current,
+      fabRect: rect,
+      obstacles,
+      viewportHeight,
+      gap,
+    });
+    if (Math.abs(next.bottom - current.bottom) < 0.5) return current;
+    current = next;
+    rect = typeof resolveFabRect === 'function' ? resolveFabRect(current) : rect;
+  }
+  return current;
 }
 
 export function shouldHideHomeWatchCard({

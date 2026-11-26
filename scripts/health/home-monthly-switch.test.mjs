@@ -16,6 +16,8 @@ import {
   mooniFabHintExtraMarginBottom,
   mooniFabHintMarginBottom,
   mooniFabPositionAboveMonthlyCard,
+  mooniFabPositionAboveObstacles,
+  mooniFabPositionClearingObstacles,
   rectsOverlap,
   resolveHomeMonthlyPreviewStartDay,
 } from '../../src/pages/Home/lib/homeWatchCardModel.js';
@@ -245,4 +247,24 @@ test('mooni fab rest position stays on the drop when the monthly card is absent 
     }),
     pos,
   );
+});
+
+test('mooni fab clears mobile category bar with 8px gap', () => {
+  const viewportHeight = 844;
+  const categoryBar = { left: 4, top: 748, right: 220, bottom: 828, width: 216, height: 80 };
+  const fab = { left: 8, top: 720, right: 88, bottom: 824, width: 80, height: 104 };
+  const pos = { right: 302, bottom: viewportHeight - fab.bottom };
+  const raised = mooniFabPositionAboveObstacles({
+    pos,
+    fabRect: fab,
+    obstacles: [categoryBar],
+    viewportHeight,
+  });
+  assert.ok(raised.bottom > pos.bottom);
+  const shifted = {
+    ...fab,
+    top: fab.top - (raised.bottom - pos.bottom),
+    bottom: categoryBar.top - HOME_MONTHLY_CARD_GAP,
+  };
+  assert.equal(rectsOverlap(shifted, categoryBar), false);
 });

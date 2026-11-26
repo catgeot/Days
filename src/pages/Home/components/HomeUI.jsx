@@ -505,7 +505,9 @@ const HomeUI = React.memo(({
          ${isPlaceCardVisible && !isFlightCinema ? 'max-lg:hidden' : ''}
          ${isFlightCinema ? 'max-lg:hidden' : ''}`}
       >
-        <TrustLinkBar variant="stack" />
+        {!hideExploreChrome && faceRegionsOpen && selectedCategory ? null : (
+          <TrustLinkBar variant="stack" />
+        )}
         {!hideExploreChrome && faceRegionsOpen && selectedCategory && (
           <div
             data-testid="home-globe-country-menu"
