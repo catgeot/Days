@@ -29,9 +29,8 @@ export const HOME_WATCH_CAPTION_BAND = 'rgba(0,0,0,0.86)';
 
 /**
  * KST day-of-month when next month's home card opens (inclusive).
- * 1 = the 1st, so the preview of next month is available all month
- * (December from Nov 1; January from Dec 1). Retune with the January data PR.
- * /explore keeps its own 15/20-day rule.
+ * 1 = the 1st (December from Nov 1; January from Dec 1). The switch flag stays off by default.
+ * Explore uses the same 1st, except the 2026-11→12 preview still opens on the 20th.
  */
 export const HOME_MONTHLY_PREVIEW_START_DAY = 1;
 export const HOME_MONTHLY_PREVIEW_START_QUERY = 'home_monthly_preview_start';

@@ -24,6 +24,7 @@ import {
   resolveExploreNextMonthPreviewPickKey,
   resolveExploreV2MonthlyPickKey,
   seoulExploreCalendarParts,
+  monthlyPickDisplayName,
 } from '../../src/pages/Home/lib/exploreMonthlyPicks.js';
 import {
   GATEO_ENV_FLAG_NAMES,
@@ -49,6 +50,17 @@ const DEC_EXPECTED_SLUGS = [
   'seoul',
   'sydney',
   'reykjavik',
+];
+const JAN_MONTH_KEY = '2027-01';
+const JAN_EXPECTED_SLUGS = [
+  'okinawa',
+  'kuala-lumpur',
+  'banff-national-park',
+  'zermatt',
+  'maldives',
+  'hawaii',
+  'bangkok',
+  'perth',
 ];
 
 /** @param {number} y @param {number} m @param {number} d @param {number} [h] @param {number} [min] @param {number} [sec] */
@@ -116,6 +128,50 @@ test('MONTHLY_PICKS 2026-12 has six slugs in TRAVEL_SPOTS with sources and check
       assert.ok(source.label.length > 0 && source.label !== '출처');
     }
     assert.match(String(entry.checked || ''), /^\d{4}-\d{2}-\d{2}$/);
+  }
+});
+
+test('MONTHLY_PICKS 2027-01 has eight confirmed slugs and not angkor-wat', () => {
+  const entries = MONTHLY_PICKS[JAN_MONTH_KEY];
+  assert.ok(Array.isArray(entries));
+  assert.equal(entries.length, 8);
+
+  const spotSlugs = new Set(TRAVEL_SPOTS.map((s) => String(s.slug || '').toLowerCase()));
+  const slugs = entries.map((e) => e.slug);
+  assert.deepEqual(slugs, JAN_EXPECTED_SLUGS);
+  assert.equal(slugs.includes('angkor-wat'), false);
+
+  const banff = TRAVEL_SPOTS.find((s) => s.slug === 'banff-national-park');
+  assert.equal(monthlyPickDisplayName(banff, 'banff-national-park'), '밴프 국립공원');
+
+  for (const entry of entries) {
+    assert.ok(spotSlugs.has(entry.slug), `missing TRAVEL_SPOTS slug ${entry.slug}`);
+    assert.ok(typeof entry.reason === 'string' && entry.reason.trim().length > 0);
+    assert.ok(typeof entry.reason_en === 'string' && entry.reason_en.trim().length > 0);
+    assert.ok(entry.reason.length <= 16, `${entry.slug} summary too long: ${entry.reason}`);
+    assert.ok(entry.reason_en.length <= 18, `${entry.slug} en summary too long: ${entry.reason_en}`);
+    assert.match(entry.reason, /월|\//, `${entry.slug} summary should say when`);
+    assert.equal(entry.estimate, false);
+    assert.ok(Array.isArray(entry.sources) && entry.sources.length >= 1);
+    for (const raw of entry.sources) {
+      const source = normalizeMonthlyPickSource(raw);
+      assert.ok(source, `invalid source ${JSON.stringify(raw)}`);
+      assert.ok(isValidMonthlyPickSource(source.url), `invalid url ${source.url}`);
+      assert.ok(source.label.length > 0 && source.label !== '출처');
+    }
+    assert.match(String(entry.checked || ''), /^\d{4}-\d{2}-\d{2}$/);
+  }
+});
+
+test('2027-01 monthly picks resolve verified heroes', () => {
+  const cards = buildVisibleMonthlyPickCards(JAN_MONTH_KEY);
+  const { withHero, excluded } = partitionExploreMonthlyPickCardsByHero(cards);
+  assert.deepEqual(excluded, []);
+  assert.equal(withHero.length, 8);
+  for (const slug of JAN_EXPECTED_SLUGS) {
+    const url = resolveExploreMonthlyPickHeroUrl({ slug });
+    assert.ok(url, `no hero for ${slug}`);
+    assert.match(url, /^https:\/\//);
   }
 });
 
@@ -206,12 +262,36 @@ test('KST monthly pick schedule: Nov 2026 Dec preview from 20th, then Dec curren
 
   const decFirst = instantAtKst(2026, 12, 1, 0, 0, 0);
   assert.equal(resolveExploreCurrentMonthPickKey(decFirst), '2026-12');
-  assert.equal(isExploreNextMonthPreviewWindowOpen(decFirst), false);
-  assert.equal(resolveExploreNextMonthPreviewPickKey(decFirst), null);
+  assert.equal(exploreNextMonthPreviewMinDay(decFirst), 1);
+  assert.equal(isExploreNextMonthPreviewWindowOpen(decFirst), true);
+  assert.equal(resolveExploreNextMonthPreviewPickKey(decFirst), '2027-01');
 
   const janPreview = instantAtKst(2026, 12, 15, 0, 0, 0);
-  assert.equal(exploreNextMonthPreviewMinDay(janPreview), 15);
+  assert.equal(exploreNextMonthPreviewMinDay(janPreview), 1);
   assert.equal(isExploreNextMonthPreviewWindowOpen(janPreview), true);
+  assert.equal(resolveExploreNextMonthPreviewPickKey(janPreview), '2027-01');
+});
+
+test('January preview stays closed on Nov 30 KST and opens from Dec 1 00:00', () => {
+  const nov30 = getExploreMonthlyPickSchedule(instantAtKst(2026, 11, 30, 23, 59, 59));
+  assert.equal(nov30.currentMonthKey, '2026-11');
+  assert.equal(nov30.currentPickKey, '2026-11');
+  assert.equal(nov30.previewPickKey, '2026-12');
+  assert.notEqual(nov30.previewPickKey, '2027-01');
+
+  const dec1 = getExploreMonthlyPickSchedule(instantAtKst(2026, 12, 1, 0, 0, 0));
+  assert.equal(dec1.currentMonthKey, '2026-12');
+  assert.equal(dec1.currentPickKey, '2026-12');
+  assert.equal(exploreNextMonthPreviewMinDay(instantAtKst(2026, 12, 1, 0, 0, 0)), 1);
+  assert.equal(dec1.showPreview, true);
+  assert.equal(dec1.previewPickKey, '2027-01');
+
+  const dec15 = getExploreMonthlyPickSchedule(instantAtKst(2026, 12, 15, 12, 0, 0));
+  assert.equal(dec15.currentMonthKey, '2026-12');
+  assert.equal(dec15.currentPickKey, '2026-12');
+  assert.equal(exploreNextMonthPreviewMinDay(instantAtKst(2026, 12, 15, 12, 0, 0)), 1);
+  assert.equal(dec15.showPreview, true);
+  assert.equal(dec15.previewPickKey, '2027-01');
 });
 
 test('UTC instant can differ from KST calendar day at preview boundary', () => {
@@ -236,7 +316,7 @@ test('schedule uses month keys only when data exists (no previous-month fallback
   const decFirst = getExploreMonthlyPickSchedule(instantAtKst(2026, 12, 1));
   assert.equal(decFirst.currentMonthKey, '2026-12');
   assert.equal(decFirst.currentPickKey, '2026-12');
-  assert.equal(decFirst.previewPickKey, null);
+  assert.equal(decFirst.previewPickKey, '2027-01');
 });
 
 test('preview row appears when next month data exists (injected picks)', () => {

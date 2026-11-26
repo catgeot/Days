@@ -65,11 +65,28 @@ test('home monthly preview window follows KST month boundaries', () => {
   assert.equal(onDay.windowOpen, true);
   assert.equal(onDay.previewOpen, true);
 
+  const nov30 = homeMonthlySwitchState(new Date('2026-11-30T14:59:59.000Z'), 1);
+  assert.equal(nov30.currentMonthKey, '2026-11');
+  assert.equal(nov30.nextMonthKey, '2026-12');
+  assert.equal(nov30.previewOpen, true);
+
+  const dec1 = homeMonthlySwitchState(new Date('2026-11-30T15:00:00.000Z'), 1);
+  assert.equal(dec1.currentMonthKey, '2026-12');
+  assert.equal(dec1.day, 1);
+  assert.equal(dec1.nextMonthKey, '2027-01');
+  assert.equal(dec1.previewOpen, true);
+
+  const dec15 = homeMonthlySwitchState(new Date('2026-12-14T15:00:00.000Z'), 1);
+  assert.equal(dec15.currentMonthKey, '2026-12');
+  assert.equal(dec15.day, 15);
+  assert.equal(dec15.nextMonthKey, '2027-01');
+  assert.equal(dec15.previewOpen, true);
+
   const decEnd = homeMonthlySwitchState(new Date('2026-12-31T14:59:59.000Z'), 1);
   assert.equal(decEnd.currentMonthKey, '2026-12');
   assert.equal(decEnd.nextMonthKey, '2027-01');
   assert.equal(decEnd.windowOpen, true);
-  assert.equal(decEnd.previewOpen, false);
+  assert.equal(decEnd.previewOpen, true);
 
   const janStart = homeMonthlySwitchState(new Date('2026-12-31T15:00:00.000Z'), 1);
   assert.equal(janStart.currentMonthKey, '2027-01');

@@ -38,7 +38,8 @@ export function resolveExploreCurrentMonthPickKey(now = new Date()) {
 }
 
 /**
- * KST 기준 미리보기 시작일(월 중 day, inclusive). 일반 15일. 2026-11→12만 20일.
+ * KST 기준 미리보기 시작일(월 중 day, inclusive). 기본 1일(전달 1일 00:00).
+ * 2026-11→12만 20일. 현재 월 전환은 매월 1일 00:00 KST.
  * @param {Date} [now]
  * @param {Record<string, unknown>} [picks]
  */
@@ -52,7 +53,7 @@ export function exploreNextMonthPreviewMinDay(now = new Date(), picks = MONTHLY_
   ) {
     return 20;
   }
-  return 15;
+  return 1;
 }
 
 /** KST minDay 00:00 ~ 말일 23:59:59 */
