@@ -17,8 +17,10 @@ import {
 import {
   MOONI_FAB_HINT_BASE_GAP,
   MOONI_FAB_HINT_MAX_WIDTH,
+  MOONI_FAB_MOBILE_CHROME_SELECTORS,
+  collectMooniFabObstacleRects,
   mooniFabHintExtraMarginBottom,
-  mooniFabPositionAboveMonthlyCard,
+  mooniFabPositionClearingObstacles,
 } from '../lib/homeWatchCardModel.js';
 
 /** 인트로·넛지 말풍선 — X 없이 자동 닫힘 (기존 넛지 4.5s → 4s) */
@@ -134,24 +136,29 @@ const MONTHLY_CARD_SELECTOR = '[data-testid="home-watch-card"][data-monthly-swit
 function positionClearingMonthlyCard(rest, root) {
   const clamped = clampPosition(rest);
   if (!root || typeof document === 'undefined') return clamped;
-  const card = document.querySelector(MONTHLY_CARD_SELECTOR);
-  if (!card) return clamped;
-  const cardRect = card.getBoundingClientRect();
-  if (cardRect.width < 1 || cardRect.height < 1) return clamped;
   const obstacles = [];
-  for (const el of card.querySelectorAll(MONTHLY_FAB_OBSTACLE_SELECTOR)) {
-    const rect = el.getBoundingClientRect();
-    if (rect.width >= 1 && rect.height >= 1) obstacles.push(rect);
+  const card = document.querySelector(MONTHLY_CARD_SELECTOR);
+  if (card) {
+    const cardRect = card.getBoundingClientRect();
+    if (cardRect.width >= 1 && cardRect.height >= 1) obstacles.push(cardRect);
+    for (const el of card.querySelectorAll(MONTHLY_FAB_OBSTACLE_SELECTOR)) {
+      const rect = el.getBoundingClientRect();
+      if (rect.width >= 1 && rect.height >= 1) obstacles.push(rect);
+    }
+  }
+  if (isMobileViewport()) {
+    obstacles.push(...collectMooniFabObstacleRects(MOONI_FAB_MOBILE_CHROME_SELECTORS));
   }
   const fabRect = rectForPos(root, clamped);
   if (fabRect.width < 1 || fabRect.height < 1) return clamped;
-  return clampPosition(mooniFabPositionAboveMonthlyCard({
+  const cleared = mooniFabPositionClearingObstacles({
     pos: clamped,
     fabRect,
-    cardRect,
     obstacles,
     viewportHeight: window.innerHeight,
-  }));
+    resolveFabRect: (pos) => rectForPos(root, pos),
+  });
+  return clampPosition(cleared);
 }
 
 function canUseHoverPeek() {
@@ -369,6 +376,17 @@ export default function MooniAgentFab({
     };
     attachCard();
 
+    const watchMobileChrome = () => {
+      if (!isMobileViewport()) return;
+      for (const sel of MOONI_FAB_MOBILE_CHROME_SELECTORS) {
+        for (const el of document.querySelectorAll(sel)) {
+          if (observed.has(el)) continue;
+          observed.add(el);
+          observer.observe(el);
+        }
+      }
+    };
+
     const onBodyMutation = (records) => {
       let relevant = false;
       for (const record of records) {
@@ -376,6 +394,12 @@ export default function MooniAgentFab({
         if (nodes.some((node) => node.nodeType === 1 && (
           node.matches?.('[data-testid="home-watch-card"]')
           || node.querySelector?.('[data-testid="home-watch-card"]')
+          || node.matches?.('[data-testid="home-globe-country-menu"]')
+          || node.querySelector?.('[data-testid="home-globe-country-menu"]')
+          || node.matches?.('[data-testid="home-category-bar"]')
+          || node.querySelector?.('[data-testid="home-category-bar"]')
+          || node.matches?.('[data-testid="home-about-row"]')
+          || node.querySelector?.('[data-testid="home-about-row"]')
         ))) {
           relevant = true;
           break;
@@ -383,10 +407,12 @@ export default function MooniAgentFab({
       }
       if (!relevant) return;
       attachCard();
+      watchMobileChrome();
       schedule();
     };
     const bodyMutation = new MutationObserver(onBodyMutation);
     bodyMutation.observe(document.body, { childList: true, subtree: true });
+    watchMobileChrome();
     window.addEventListener('resize', schedule);
     return () => {
       window.cancelAnimationFrame(frame);

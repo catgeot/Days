@@ -46,6 +46,9 @@ async function selectionText(page) {
   return page.evaluate(() => window.getSelection()?.toString() ?? '');
 }
 
+/** WebKit may report fractional `style.bottom`; matches MooniAgentFab layout, not raw clamp only. */
+const FAB_REST_BOTTOM_TOLERANCE_PX = 1;
+
 /** Main `clampPosition` in MooniAgentFab.jsx — dismissed / no-card drops must match it. */
 async function expectedMainDrop(page, start, from, to) {
   return page.evaluate(({ start, from, to }) => {
@@ -65,6 +68,105 @@ async function expectedMainDrop(page, start, from, to) {
       bottom: Math.min(Math.max(start.bottom - dy, minBottom), maxBottom),
     };
   }, { start, from, to });
+}
+
+/**
+ * `positionClearingMonthlyCard` after drop — clamp + monthly (if placed) + mobile chrome obstacles.
+ * Uses geometry from `pos` only (not current shell style) so expectations match pre-render math.
+ */
+async function expectedFabRestPosition(page, rawPos) {
+  return page.evaluate((rawPos) => {
+    const GAP = 8;
+    const mobile = window.matchMedia('(max-width: 767px)').matches;
+    const FAB_W = mobile ? 80 : 96;
+    const FAB_H = mobile ? 104 : 120;
+    const edgeOverflow = mobile ? 28 : 0;
+    const edge = 8;
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+
+    const toRect = (r) => ({
+      left: r.left,
+      right: r.right,
+      top: r.top,
+      bottom: r.bottom,
+      width: r.width,
+      height: r.height,
+    });
+
+    const clampPosition = (pos) => {
+      const minBottom = mobile ? -edgeOverflow : edge;
+      const minRight = mobile ? 0 : edge;
+      const maxRight = Math.max(minRight, vw - FAB_W - edge + edgeOverflow);
+      const maxBottom = Math.max(minBottom, vh - FAB_H - edge);
+      return {
+        right: Math.min(Math.max(pos.right, minRight), maxRight),
+        bottom: Math.min(Math.max(pos.bottom, minBottom), maxBottom),
+      };
+    };
+
+    const fabRectForPos = (pos) => ({
+      left: vw - pos.right - FAB_W,
+      right: vw - pos.right,
+      top: vh - pos.bottom - FAB_H,
+      bottom: vh - pos.bottom,
+      width: FAB_W,
+      height: FAB_H,
+    });
+
+    const rectsOverlap = (a, b) => (
+      a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top
+    );
+
+    const positionAboveObstacles = (pos, fabRect, obstacles) => {
+      const hits = obstacles.filter((obs) => obs && obs.width >= 1 && rectsOverlap(fabRect, obs));
+      if (!hits.length) return pos;
+      const ceiling = Math.min(...hits.map((obs) => obs.top));
+      const bottom = vh - ceiling + GAP;
+      if (!(bottom > pos.bottom + 0.5)) return pos;
+      return { right: pos.right, bottom };
+    };
+
+    const obstacles = [];
+    const card = document.querySelector(
+      '[data-testid="home-watch-card"][data-monthly-switch="1"][data-monthly-placed="1"]',
+    );
+    if (card) {
+      const cardRect = card.getBoundingClientRect();
+      if (cardRect.width >= 1 && cardRect.height >= 1) obstacles.push(toRect(cardRect));
+      const innerSelectors = [
+        '[data-testid^="home-watch-slot-"]',
+        '[data-testid="home-monthly-switch"]',
+        '[data-testid="home-watch-dismiss"]',
+        'h2',
+      ].join(', ');
+      for (const el of card.querySelectorAll(innerSelectors)) {
+        const rect = el.getBoundingClientRect();
+        if (rect.width >= 1 && rect.height >= 1) obstacles.push(toRect(rect));
+      }
+    }
+    if (mobile) {
+      for (const sel of [
+        '[data-testid="home-category-bar"]',
+        '[data-testid="home-about-row"]',
+        '[data-testid="home-globe-country-menu"]',
+      ]) {
+        for (const el of document.querySelectorAll(sel)) {
+          const rect = el.getBoundingClientRect();
+          if (rect.width >= 1 && rect.height >= 1) obstacles.push(toRect(rect));
+        }
+      }
+    }
+
+    let pos = clampPosition(rawPos);
+    for (let pass = 0; pass < 12; pass += 1) {
+      const fabRect = fabRectForPos(pos);
+      const next = positionAboveObstacles(pos, fabRect, obstacles);
+      if (Math.abs(next.bottom - pos.bottom) < 0.5) break;
+      pos = clampPosition(next);
+    }
+    return pos;
+  }, rawPos);
 }
 
 async function openHome(page) {
@@ -218,6 +320,24 @@ test.describe('home monthly card vs MOONi FAB drop', () => {
       const cardBox = await box(card);
       expect(overlaps(fabBox, cardBox), `${label}: fab intersects card`).toBe(false);
       expect(overlaps(shellBox, cardBox), `${label}: shell intersects card`).toBe(false);
+      const bar = page.getByTestId('home-category-bar');
+      const barBox = await box(bar);
+      expect(overlaps(fabBox, barBox), `${label}: fab intersects category bar`).toBe(false);
+      expect(overlaps(shellBox, barBox), `${label}: shell intersects category bar`).toBe(false);
+      const buttons = bar.getByRole('button');
+      const btnCount = await buttons.count();
+      for (let i = 0; i < btnCount; i += 1) {
+        const btnBox = await box(buttons.nth(i));
+        expect(overlaps(fabBox, btnBox), `${label}: fab intersects bar button ${i}`).toBe(false);
+        const hit = await buttons.nth(i).evaluate((el) => {
+          const r = el.getBoundingClientRect();
+          const x = r.left + r.width / 2;
+          const y = r.top + r.height / 2;
+          const target = document.elementFromPoint(x, y);
+          return Boolean(target && (target === el || el.contains(target)));
+        });
+        expect(hit, `${label}: elementFromPoint bar button ${i}`).toBe(true);
+      }
       if (artifactDir && label) {
         const slug = label.replace(/[^a-z0-9]+/gi, '-').toLowerCase();
         await page.screenshot({
@@ -285,17 +405,24 @@ test.describe('home monthly card vs MOONi FAB drop', () => {
     expect(gesture).toBeTruthy();
     expect(Math.abs(gesture.lastX - tileAt.x)).toBeLessThanOrEqual(1);
     expect(Math.abs(gesture.lastY - tileAt.y)).toBeLessThanOrEqual(1);
-    const expected = await expectedMainDrop(
+    const rawExpected = await expectedMainDrop(
       page,
       start,
       { x: gesture.x, y: gesture.y },
       { x: gesture.lastX, y: gesture.lastY },
     );
+    const clearedExpected = await expectedFabRestPosition(page, rawExpected);
     const actual = await readShellPos(page);
-    expect(actual.right).toBe(expected.right);
-    expect(actual.bottom).toBe(expected.bottom);
+    expect(actual.right).toBe(clearedExpected.right);
+    expect(Math.abs(actual.bottom - clearedExpected.bottom)).toBeLessThanOrEqual(
+      FAB_REST_BOTTOM_TOLERANCE_PX,
+    );
 
     const fabBox = await box(page.getByTestId('mooni-fab-open'));
+    const barBox = await box(page.locator('[data-testid="home-category-bar"]:visible').first());
+    const aboutBox = await box(page.locator('[data-testid="home-about-row"]:visible').first());
+    expect(overlaps(fabBox, barBox)).toBe(false);
+    expect(overlaps(fabBox, aboutBox)).toBe(false);
     expect(overlaps(fabBox, formerCard)).toBe(true);
     expect(await page.evaluate(() => document.documentElement.classList.contains('mooni-fab-dragging'))).toBe(false);
     expect(await selectionText(page)).toBe('');
