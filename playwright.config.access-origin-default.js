@@ -13,7 +13,7 @@ export default defineConfig({
   expect: { timeout: 45_000 },
   reporter: [['list']],
   webServer: {
-    command: `BROWSER=none DEV_SSL=0 VITE_SUPABASE_URL=https://example.supabase.co VITE_SUPABASE_ANON_KEY=e2e-anon-placeholder npx vite --host 127.0.0.1 --port ${port} --strictPort`,
+    command: `BROWSER=none DEV_SSL=0 VITE_GATEO_AIRPORT_PICKUP_LINKS=1 VITE_SUPABASE_URL=https://example.supabase.co VITE_SUPABASE_ANON_KEY=e2e-anon-placeholder npx vite --host 127.0.0.1 --port ${port} --strictPort`,
     url: `${base}/`,
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,

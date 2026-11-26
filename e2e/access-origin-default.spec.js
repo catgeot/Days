@@ -156,3 +156,33 @@ test('English Khao Lak access chip uses the Phuket label', async ({ page, contex
   await expect(chip).not.toContainText('Seoul (ICN)');
   await expect(chip).not.toContainText('푸켓');
 });
+
+test('Khao Lak at Phuket omits HKT→HKT flight CTA but keeps airport pickup', async ({ page, context }) => {
+  const dock = await openAccessDock(page, context, {
+    path: '/place/khao-lak?lang=ko',
+    coords: { lat: 8.6475, lng: 98.2483 },
+    storage: {
+      success: { at: Date.now(), lat: 8.65, lng: 98.25 },
+    },
+  });
+  await dock.getByRole('button', { name: '물어보기' }).click();
+  await expect(page.getByText('E2E-MOCK').first()).toBeVisible({ timeout: 90_000 });
+  const transport = page.locator('[data-mooni-transport-section]').last();
+  await expect(transport).toBeVisible({ timeout: 30_000 });
+  await expect(transport.getByRole('button', { name: /항공권 검색/i })).toHaveCount(0);
+  await expect(page.locator('[data-airport-pickup-row]').first()).toBeVisible();
+});
+
+test('Khao Lak from Seoul shows ICN→HKT flight CTA', async ({ page, context }) => {
+  const dock = await openAccessDock(page, context, {
+    path: '/place/khao-lak?lang=ko',
+    coords: { lat: 37.5665, lng: 126.978 },
+  });
+  const chip = dock.getByRole('button', { name: /출발지 검색 펼치기/ });
+  await expect(chip).toContainText('서울 (ICN)');
+  await dock.getByRole('button', { name: '물어보기' }).click();
+  await expect(page.getByText('E2E-MOCK').first()).toBeVisible({ timeout: 90_000 });
+  const transport = page.locator('[data-mooni-transport-section]').last();
+  await expect(transport).toBeVisible({ timeout: 30_000 });
+  await expect(transport.getByRole('button', { name: /ICN.*HKT.*항공권 검색/i })).toBeVisible();
+});

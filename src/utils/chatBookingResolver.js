@@ -23,7 +23,10 @@ import { resolveItineraryBookingActions } from './chatItineraryBooking.js';
 import { shouldCollapseItineraryBooking } from './chatIntentClassifier.js';
 import { buildPlacePlannerPath } from './placePlannerPath.js';
 import { getMooniPlannerCtaLabel } from './placePlannerFocus.js';
+import { shouldShowChatFlightSearchCta } from './chatFlightSearchCta.js';
 import { i18n } from '../i18n/config.js';
+
+export { shouldShowChatFlightSearchCta } from './chatFlightSearchCta.js';
 
 const HUB_BY_IATA = new Map(
   RENTAL_AIRPORT_HUBS.map((hub) => [hub.iata.toUpperCase(), hub.officialKo])
@@ -33,6 +36,11 @@ function lookupAirportKo(iata) {
   const code = String(iata ?? '').trim().toUpperCase();
   if (code.length !== 3) return null;
   return HUB_BY_IATA.get(code) ?? null;
+}
+
+function normalizeBookingIata(value) {
+  const code = String(value ?? '').trim().toUpperCase();
+  return /^[A-Z]{3}$/.test(code) ? code : '';
 }
 
 const FERRY_PROVIDERS = new Set(['twelve_go', 'direct']);
@@ -193,13 +201,19 @@ export function refreshStoredBookingActionLabels(
     destinationName,
   });
 
-  return actions.map((action) => {
-    if (action.provider !== 'trip_com' || action.type !== 'trip_flight') {
-      return action;
-    }
-    if (action.label === nextLabel && action.routeHint === nextRouteHint) return action;
-    return { ...action, label: nextLabel, routeHint: nextRouteHint };
-  });
+  return actions
+    .filter((action) => {
+      if (action.provider !== 'trip_com' || action.type !== 'trip_flight') return true;
+      const depart = normalizeBookingIata(action.departureIata ?? departureIata);
+      return shouldShowChatFlightSearchCta(depart, arrivalIata);
+    })
+    .map((action) => {
+      if (action.provider !== 'trip_com' || action.type !== 'trip_flight') {
+        return action;
+      }
+      if (action.label === nextLabel && action.routeHint === nextRouteHint) return action;
+      return { ...action, label: nextLabel, routeHint: nextRouteHint };
+    });
 }
 
 /**
@@ -318,11 +332,14 @@ export function resolveChatBookingActions(params) {
 
   if (legs.includes('flight')) {
     const arrivalIata = arrivalIataForDepart;
-    const flightUrl = buildTripcomPlannerFlightUrl(locationPayload, {
-      essentialGuide,
-      tracking: 'chat-flight',
-      departureIata,
-    });
+    const showFlightCta = shouldShowChatFlightSearchCta(departureIata, arrivalIata);
+    const flightUrl = showFlightCta
+      ? buildTripcomPlannerFlightUrl(locationPayload, {
+          essentialGuide,
+          tracking: 'chat-flight',
+          departureIata,
+        })
+      : null;
     if (flightUrl) {
       actions.push({
         type: 'trip_flight',
