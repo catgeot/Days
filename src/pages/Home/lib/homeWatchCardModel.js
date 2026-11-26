@@ -20,6 +20,32 @@ export const HOME_WATCH_CARD_LAYOUT = {
   desktop: { left: 300, bottom: 110, height: 85, minWidth: 1280, slots: 4 },
 };
 
+/** Mobile-only globe nudge when the default home watch bar is on screen (clears bottom crowding). */
+export const HOME_WATCH_MOBILE_GLOBE_LIFT_PX = 52;
+export const HOME_WATCH_GLOBE_LIFT_DATA_ATTR = 'homeWatchGlobeLift';
+export const HOME_WATCH_GLOBE_LIFT_CSS_VAR = '--home-watch-globe-lift';
+
+export function shouldApplyHomeWatchGlobeLift(viewportWidth, shown) {
+  if (!shown) return false;
+  return Number(viewportWidth) < HOME_WATCH_CARD_LAYOUT.desktop.minWidth;
+}
+
+export function syncHomeWatchGlobeLift({
+  shown = false,
+  viewportWidth = typeof window === 'undefined' ? 390 : window.innerWidth,
+  doc = typeof document === 'undefined' ? null : document,
+} = {}) {
+  if (!doc?.documentElement) return;
+  const root = doc.documentElement;
+  if (shouldApplyHomeWatchGlobeLift(viewportWidth, shown)) {
+    root.dataset[HOME_WATCH_GLOBE_LIFT_DATA_ATTR] = '1';
+    root.style.setProperty(HOME_WATCH_GLOBE_LIFT_CSS_VAR, `${HOME_WATCH_MOBILE_GLOBE_LIFT_PX}px`);
+    return;
+  }
+  delete root.dataset[HOME_WATCH_GLOBE_LIFT_DATA_ATTR];
+  root.style.removeProperty(HOME_WATCH_GLOBE_LIFT_CSS_VAR);
+}
+
 /**
  * Opaque color behind each caption line (label, name, taste chip, subtitle).
  * The line hugs the text. A full-width slab covered more than half of the 85px tile.
