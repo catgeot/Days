@@ -261,7 +261,7 @@ jobs:
         run: npm run test:e2e:editorial-blog-head-meta
 
   safari-tab-reload-e2e:
-    name: Safari tab reload E2E (Chromium 390)
+    name: Safari tab reload E2E (Chromium · WebKit 390)
     runs-on: ubuntu-24.04
     needs: lint-and-build
     timeout-minutes: 30

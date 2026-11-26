@@ -29,8 +29,8 @@
     },
     "siteNotice": {
       "refreshHeader": "Update",
-      "refreshTitle": "A new version is available",
-      "refreshBody": "Refresh the page to use the latest features.",
+      "refreshTitle": "The site has been updated",
+      "refreshBody": "Refresh to get the latest features.",
       "close": "Close",
       "reload": "Refresh"
     },

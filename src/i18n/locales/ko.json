@@ -29,7 +29,7 @@
     },
     "siteNotice": {
       "refreshHeader": "업데이트 안내",
-      "refreshTitle": "새 버전이 배포되었습니다",
+      "refreshTitle": "사이트가 업데이트됐어요",
       "refreshBody": "새로고침하면 최신 기능을 사용할 수 있어요.",
       "close": "닫기",
       "reload": "새로고침"

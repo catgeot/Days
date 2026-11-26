@@ -76,8 +76,8 @@ test('mobile globe lift applies only when the home watch bar is on screen', () =
     new URL('../../src/shared/components/SiteUpdateBanner.jsx', import.meta.url),
     'utf8',
   );
-  assert.doesNotMatch(banner, /bg-slate-950\/78|bg-black\/82/);
-  assert.match(banner, /bg-slate-950\/(?:80|90|95)/);
+  assert.doesNotMatch(banner, /backdrop-blur|bg-slate-950\/|bg-black\/(?:20|80|82)/);
+  assert.match(banner, /bg-\[#020617\]/);
 });
 
 test('home watch card defaults on unless env or query disables', () => {
