@@ -1,4 +1,6 @@
 import { PLACE_SEO_OG_IMAGE_OVERRIDES } from '../../../data/placeSeoOgImageOverrides.js';
+import { curatedPlaceGalleryUrls } from '../../../data/curatedPlaceGalleries.js';
+import { TRAVEL_SPOTS } from '../data/travelSpots.js';
 
 export const DEFAULT_OG_IMAGE = 'https://www.gateo.kr/og-image.png';
 
@@ -60,6 +62,56 @@ export function resolveExploreSearchCardThumbUrl(location) {
   if (!location || typeof location !== 'object') return null;
   const direct = String(location.thumbnail || location.image || '').trim();
   if (direct && !isGenericPlaceOgImageUrl(direct)) return direct;
+  return null;
+}
+
+function exploreSearchSlugKeys(item) {
+  const keys = new Set();
+  const push = (raw) => {
+    const key = String(raw || '')
+      .trim()
+      .toLowerCase()
+      .replace(/^spot-/, '')
+      .replace(/^hub-/, '')
+      .replace(/^city-/, '');
+    if (key) keys.add(key);
+  };
+  push(item.slug);
+  push(item.hubId);
+  const id = String(item.id || '').trim();
+  if (id.startsWith('spot-')) push(id.slice('spot-'.length));
+  if (id.startsWith('hub-')) push(id.slice('hub-'.length));
+  return [...keys];
+}
+
+/**
+ * /place·SpotThumbnailCard·OG 슬러그 SSOT와 동일한 대표 사진 (해시 풀·DEFAULT_OG 제외).
+ * @param {object} item
+ */
+export function resolveExploreSearchRepresentativeThumbUrl(item) {
+  if (!item || typeof item !== 'object') return null;
+  for (const key of exploreSearchSlugKeys(item)) {
+    const override = PLACE_SEO_OG_IMAGE_OVERRIDES[key];
+    if (override) {
+      const fromOverride = resolveExploreSearchCardThumbUrl({ thumbnail: override });
+      if (fromOverride) return fromOverride;
+    }
+    const curated = curatedPlaceGalleryUrls(key);
+    if (curated?.[0]) {
+      const fromCurated = resolveExploreSearchCardThumbUrl({ thumbnail: curated[0] });
+      if (fromCurated) return fromCurated;
+    }
+    const spot = TRAVEL_SPOTS.find(
+      (row) => String(row.slug || '').trim().toLowerCase() === key,
+    );
+    if (spot) {
+      const fromSpot = resolveExploreSearchCardThumbUrl({
+        thumbnail: spot.thumbnail || spot.image,
+        image: spot.image,
+      });
+      if (fromSpot) return fromSpot;
+    }
+  }
   return null;
 }
 
