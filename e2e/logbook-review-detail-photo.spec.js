@@ -195,15 +195,24 @@ test.describe('LogBook review detail photo @mocked', () => {
       .toBeTruthy();
     const hero = hwaseongCard.getByTestId('logbook-editorial-review-detail-hero');
     await expect(hero.locator('.line-clamp-2, .line-clamp-3, .line-clamp-4')).toHaveCount(0);
-    const stacked = await hero.evaluate((el) => {
-      const media = el.querySelector('[data-testid="logbook-editorial-review-detail-hero-photo"], [data-testid="logbook-editorial-review-detail-hero-fallback"]');
-      const badge = el.querySelector('.text-indigo-800');
-      if (!media || !badge) return null;
-      const mediaBox = media.getBoundingClientRect();
+    const onPhotoTopRight = await hero.evaluate((el) => {
+      const frame = el.querySelector('.aspect-\\[4\\/3\\]');
+      const media = el.querySelector(
+        '[data-testid="logbook-editorial-review-detail-hero-photo"], [data-testid="logbook-editorial-review-detail-hero-fallback"]',
+      );
+      const badge = el.querySelector('[data-testid="logbook-official-review-hub-card-reviewer"]');
+      if (!frame || !media || !badge) return null;
+      const frameBox = frame.getBoundingClientRect();
       const badgeBox = badge.getBoundingClientRect();
-      return badgeBox.top >= mediaBox.bottom - 1;
+      const nearTop = badgeBox.top <= frameBox.top + 14;
+      const nearRight = badgeBox.right >= frameBox.right - 14;
+      const overlapsMedia =
+        badgeBox.top < frameBox.bottom && badgeBox.bottom > frameBox.top;
+      return { nearTop, nearRight, overlapsMedia };
     });
-    expect(stacked).toBe(true);
+    expect(onPhotoTopRight?.nearTop).toBe(true);
+    expect(onPhotoTopRight?.nearRight).toBe(true);
+    expect(onPhotoTopRight?.overlapsMedia).toBe(true);
     await assertStoredHeroCredit(hwaseongCard);
   });
 

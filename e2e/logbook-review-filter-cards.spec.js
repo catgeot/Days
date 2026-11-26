@@ -41,10 +41,15 @@ async function assertReviewerNameVisible(card, name) {
     const node = document.elementFromPoint(x, y);
     const cardEl = el.closest('[data-testid="logbook-official-review-hub-item"]');
     const cardRect = cardEl.getBoundingClientRect();
+    const photo = cardEl.querySelector('.aspect-\\[4\\/3\\]') || cardEl.querySelector('[class*="aspect-"]');
+    const photoRect = photo?.getBoundingClientRect();
     const title = cardEl.querySelector('[data-testid="logbook-official-review-hub-card-title"]');
     const titleRect = title?.getBoundingClientRect();
     const overlapsTitle = titleRect
       ? rect.bottom > titleRect.top + 1 && rect.top < titleRect.bottom - 1 && rect.right > titleRect.left && rect.left < titleRect.right
+      : false;
+    const nearTopRight = photoRect
+      ? rect.top <= photoRect.top + 12 && rect.right >= photoRect.right - 12
       : false;
     return {
       hit: node === el || el.contains(node),
@@ -54,12 +59,14 @@ async function assertReviewerNameVisible(card, name) {
         rect.right > cardRect.right + 1 ||
         rect.bottom > cardRect.bottom + 1,
       overlapsTitle,
+      nearTopRight,
     };
   });
   expect(metrics.hit).toBe(true);
   expect(metrics.clipped).toBe(false);
   expect(metrics.outside).toBe(false);
   expect(metrics.overlapsTitle).toBe(false);
+  expect(metrics.nearTopRight).toBe(true);
 }
 
 async function assertTextLineCount(page, testId, maxLines, tolerance = 0.35) {

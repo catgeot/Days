@@ -8,6 +8,7 @@ import { formatLogbookDisplayDate } from '../utils/logbookDisplayDate';
 import { resolveLogbookReviewPlaceDisplayName } from './logbookReviewPlaceLabel.js';
 import { pickEditorialReviewHubThumbPair } from './editorialReviewHubThumb.js';
 import { LogbookOfficialReviewHubCardMedia } from './LogbookOfficialReviewHubCardMedia.jsx';
+import { GateoReviewerPhotoBadge } from './GateoReviewerPhotoBadge.jsx';
 
 function HeroImageCredits({ images }) {
   const credits = collectUniqueEditorialReviewImageCredits(images);
@@ -69,6 +70,7 @@ export default function LogbookEditorialReviewDetailHero({ review, onImageClick 
         photoTestId="logbook-editorial-review-detail-hero-photo"
         fallbackTestId="logbook-editorial-review-detail-hero-fallback"
       />
+      <GateoReviewerPhotoBadge label={badgeLabel} />
     </div>
   );
 
@@ -88,12 +90,11 @@ export default function LogbookEditorialReviewDetailHero({ review, onImageClick 
             <HeroImageCredits images={[heroImage]} />
           </>
         ) : null}
-        <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1">
-          <span className="text-[11px] font-semibold text-indigo-800 bg-indigo-50 border border-indigo-100 px-2 py-0.5 rounded-md">
-            {badgeLabel}
-          </span>
-          {dateLabel ? <span className="text-xs text-gray-400">{dateLabel}</span> : null}
-        </div>
+        {dateLabel ? (
+          <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1">
+            <span className="text-xs text-gray-400">{dateLabel}</span>
+          </div>
+        ) : null}
       </div>
     </div>
   );

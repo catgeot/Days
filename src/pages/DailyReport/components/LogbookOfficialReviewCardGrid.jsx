@@ -14,6 +14,7 @@ import { buildPlaceReviewsHref } from '../../../utils/placeReviewFocus.js';
 import { resolveLogbookReviewPlaceDisplayName } from '../../../logbookOfficialReviews/logbookReviewPlaceLabel.js';
 import { pickEditorialReviewHubThumb } from '../../../logbookOfficialReviews/editorialReviewHubThumb.js';
 import { LogbookOfficialReviewHubCardMedia } from '../../../logbookOfficialReviews/LogbookOfficialReviewHubCardMedia.jsx';
+import { GateoReviewerPhotoBadge } from '../../../logbookOfficialReviews/GateoReviewerPhotoBadge.jsx';
 
 const CARD_TITLE_MAX = 72;
 
@@ -92,13 +93,7 @@ export default function LogbookOfficialReviewCardGrid({
                   preparingLabel={preparingLabel}
                   preferEager={index < 3}
                 />
-                {/* Photo layer is z-[1], so this name stays under the image unless it stacks above. */}
-                <span
-                  className="absolute bottom-2 left-2 z-[2] max-w-[calc(100%-1rem)] rounded-md bg-black/55 px-2 py-0.5 text-[10px] font-bold leading-tight text-white line-clamp-2 break-keep"
-                  data-testid="logbook-official-review-hub-card-reviewer"
-                >
-                  {badgeLabel}
-                </span>
+                <GateoReviewerPhotoBadge label={badgeLabel} />
               </div>
               <div className="flex min-w-0 flex-1 flex-col gap-1 px-2.5 py-2.5">
                 <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
