@@ -1,4 +1,4 @@
-# PR·main — lint(src no-undef) + production build gate + 6 blocking E2E jobs
+# PR·main — lint(src no-undef) + production build gate + 7 blocking jobs (incl. Festival hero credit)
 # Playwright image tag must match package-lock @playwright/test version (currently 1.60.0).
 # Jobs on mcr.microsoft.com/playwright:*-jammy must not run `playwright install --with-deps`
 # (browsers + OS libraries are preinstalled; --with-deps re-runs apt and flakes on mirror sync).
@@ -66,6 +66,50 @@ jobs:
             exit 1
           fi
 
+  festival-hero-credit-e2e:
+    name: Festival hero credit E2E (WebKit)
+    runs-on: ubuntu-24.04
+    needs: lint-and-build
+    timeout-minutes: 30
+    container:
+      image: mcr.microsoft.com/playwright:v1.60.0-jammy
+      options: --ipc=host
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Festival hero credit E2E (WebKit)
+        env:
+          VITE_SUPABASE_URL: https://example.supabase.co
+          VITE_SUPABASE_ANON_KEY: e2e-anon-placeholder
+          DEV_SSL: '0'
+        run: |
+          npx vite --host 127.0.0.1 --port 5173 --strictPort > /tmp/vite-festival.log 2>&1 &
+          ready=0
+          for _ in $(seq 1 90); do
+            if curl -sf -o /dev/null http://127.0.0.1:5173/; then
+              ready=1
+              break
+            fi
+            sleep 2
+          done
+          if [ "$ready" != 1 ]; then
+            cat /tmp/vite-festival.log
+            exit 1
+          fi
+          SMOKE_SITE_URL=http://127.0.0.1:5173 npx playwright test e2e/korea-festival-hero-credit-en.spec.js --project=webkit-festival-hero-credit -g "direct \\?lang=en" --reporter=line
 
   explore-place-hard-back-e2e:
     name: Explore place hard back E2E (Chromium 1280·1024 · WebKit 390)
