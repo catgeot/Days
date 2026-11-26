@@ -112,7 +112,28 @@ async function openParadiseCountryMenu(page) {
   await page.getByRole('button', { name: '휴양', exact: true }).click();
   const menu = page.getByTestId('home-globe-country-menu');
   await expect(menu).toBeVisible({ timeout: 30_000 });
+  await expect(menu.getByRole('listbox', { name: '나라·지역 탐색' })).toBeVisible();
   return menu;
+}
+
+async function assertFabClearsMenuRegionChips(page, menu, label) {
+  const fabBox = await box(page.getByTestId('mooni-fab-open'));
+  const shellBox = await box(fabShell(page));
+  const options = menu.locator('[role="option"]');
+  const count = await options.count();
+  expect(count).toBeGreaterThanOrEqual(17);
+  for (let i = 0; i < count; i += 1) {
+    const chip = options.nth(i);
+    await chip.evaluate((el) => {
+      el.scrollIntoView({ block: 'nearest', inline: 'center' });
+    });
+    await page.evaluate(() => new Promise((resolve) => {
+      requestAnimationFrame(() => requestAnimationFrame(resolve));
+    }));
+    const chipBox = await box(chip);
+    expect(overlaps(fabBox, chipBox), `${label}: fab vs region chip ${i}`).toBe(false);
+    expect(overlaps(shellBox, chipBox), `${label}: shell vs region chip ${i}`).toBe(false);
+  }
 }
 
 test.describe('home MOONi mobile chrome overlap (WebKit 390)', () => {
@@ -169,6 +190,7 @@ test.describe('home MOONi mobile chrome overlap (WebKit 390)', () => {
     expect(overlaps(fabMenuBr, menuBox2)).toBe(false);
     gaps.menuBr = gapAbove(fabMenuBr, menuBox2);
     await assertFabClearsCategoryBar(page, 'menu-bottom-right');
+    await assertFabClearsMenuRegionChips(page, menu, 'menu-bottom-right');
     await shot(page, 'fix-390-menu-open-br');
 
     testInfo.annotations.push({
