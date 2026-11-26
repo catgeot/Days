@@ -14,6 +14,8 @@ import {
   persistFlightOriginIata,
   resolveDefaultFlightOriginIataForLocation,
 } from '../lib/flightOriginPreference.js';
+import { readGrantedUserOriginCoords } from '../lib/knownUserOriginCoords.js';
+import { writeLocationSuccess } from '../../Korea/festivalLocationHint.js';
 import { shouldResolveFlightRouteViaEdge } from '../../../utils/rentalAirportMatch.js';
 import { resolveFlightRouteHubsForCinema } from '../../../utils/resolveFlightRouteEdge.js';
 import {
@@ -65,6 +67,7 @@ export default function HomePlaceCardSummary({
   const [selectedOriginIata, setSelectedOriginIata] = useState(() =>
     resolveDefaultFlightOriginIataForLocation(location)
   );
+  const originTouchedRef = useRef(false);
   const [isImmersed, setIsImmersed] = useState(false);
   const [stayOpen, setStayOpen] = useState(false);
   const [tourOpen, setTourOpen] = useState(false);
@@ -143,7 +146,27 @@ export default function HomePlaceCardSummary({
   }, [pendingServiceModalOpen, location, slug, onPendingServiceModalOpenConsumed]);
 
   useEffect(() => {
-    queueMicrotask(() => setSelectedOriginIata(resolveDefaultFlightOriginIataForLocation(location)));
+    originTouchedRef.current = false;
+    let cancelled = false;
+    queueMicrotask(() => {
+      if (!cancelled) setSelectedOriginIata(resolveDefaultFlightOriginIataForLocation(location));
+    });
+    (async () => {
+      const coords = await readGrantedUserOriginCoords();
+      if (cancelled || originTouchedRef.current || !coords) return;
+      try {
+        writeLocationSuccess(window.localStorage, coords.lat, coords.lng);
+      } catch {
+        /* private mode */
+      }
+      setSelectedOriginIata(resolveDefaultFlightOriginIataForLocation(location, {
+        userLat: coords.lat,
+        userLng: coords.lng,
+      }));
+    })();
+    return () => {
+      cancelled = true;
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps -- 장소가 바뀔 때만 기본값 재계산 (사용자 선택 유지)
   }, [location?.id]);
 
@@ -391,6 +414,7 @@ export default function HomePlaceCardSummary({
 
   const handleSelectOrigin = (iata) => {
     const code = String(iata ?? 'ICN').trim().toUpperCase();
+    originTouchedRef.current = true;
     setSelectedOriginIata(code);
     persistFlightOriginIata(code);
   };
