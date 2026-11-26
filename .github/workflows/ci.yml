@@ -1427,7 +1427,9 @@ jobs:
           VITE_SUPABASE_ANON_KEY: e2e-anon-placeholder
           CI: true
           DEV_SSL: '0'
-        run: npx playwright test -c playwright.config.explore-choseong.js --reporter=line
+        run: |
+          npx playwright test -c playwright.config.explore-choseong.js --reporter=line
+          npx playwright test -c playwright.config.explore-choseong-result-photo.js --reporter=line
 
   explore-suggest-rank-e2e:
     name: Explore suggest rank E2E (Chromium+WebKit 390·1280)
