@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { X } from 'lucide-react';
 import mooniChar from '../../../assets/MOONI_transparent.webp';
@@ -14,6 +14,11 @@ import {
   pickIntroLine,
   pickPeekLine,
 } from '../lib/mooniLines';
+import {
+  MOONI_FAB_HINT_BASE_GAP,
+  MOONI_FAB_HINT_MAX_WIDTH,
+  mooniFabHintExtraMarginBottom,
+} from '../lib/homeWatchCardModel.js';
 
 /** 인트로·넛지 말풍선 — X 없이 자동 닫힘 (기존 넛지 4.5s → 4s) */
 const HINT_AUTO_DISMISS_MS = 4_000;
@@ -24,7 +29,7 @@ const FAB_ESTIMATE = { width: 96, height: 120 };
 /** 모바일 실측 근사 (72px 캐릭터 + 패딩) — 과대 추정 시 좌측 여백이 남음 */
 const FAB_ESTIMATE_MOBILE = { width: 80, height: 104 };
 /** 말풍선 max-w와 맞춤 — 좌측 여유 부족 시 우측으로 반전 */
-const HINT_MAX_WIDTH = 220;
+const HINT_MAX_WIDTH = MOONI_FAB_HINT_MAX_WIDTH;
 /** 좌·우·상단 여백 */
 const EDGE_PADDING = 8;
 /**
@@ -104,6 +109,7 @@ export default function MooniAgentFab({
 }) {
   const { t } = useTranslation();
   const rootRef = useRef(null);
+  const hintRef = useRef(null);
   const dragRef = useRef(null);
   const hintTimerRef = useRef(null);
   const nudgeDismissTimerRef = useRef(null);
@@ -127,6 +133,7 @@ export default function MooniAgentFab({
   const [reactText, setReactText] = useState('');
   const [isDragging, setIsDragging] = useState(false);
   const [isPressPeek, setIsPressPeek] = useState(false);
+  const [hintExtraMarginBottom, setHintExtraMarginBottom] = useState(0);
 
   useEffect(() => {
     showHintRef.current = showHint;
@@ -247,6 +254,71 @@ export default function MooniAgentFab({
     window.addEventListener('resize', onResize);
     return () => window.removeEventListener('resize', onResize);
   }, []);
+
+  const hintVisibleForLayout =
+  (!isZenMode && !isChatOpen && !isTourActive && !hideForStayPanel) &&
+    (showHint || Boolean(peekText) || Boolean(reactText));
+
+  useLayoutEffect(() => {
+    if (!hintVisibleForLayout) {
+      setHintExtraMarginBottom(0);
+      return undefined;
+    }
+
+    let frame = 0;
+    const measure = () => {
+      const fabRoot = rootRef.current;
+      const hintEl = hintRef.current;
+      if (!fabRoot || !hintEl) {
+        setHintExtraMarginBottom(0);
+        return;
+      }
+      const monthlyCard = document.querySelector(
+        '[data-testid="home-watch-card"][data-monthly-switch="1"][data-monthly-placed="1"]',
+      );
+      if (!monthlyCard) {
+        setHintExtraMarginBottom(0);
+        return;
+      }
+      const fabRect = fabRoot.getBoundingClientRect();
+      const hintRect = hintEl.getBoundingClientRect();
+      if (fabRect.width < 1 || hintRect.height < 1) {
+        setHintExtraMarginBottom(0);
+        return;
+      }
+      const hintOnRight = shouldPlaceHintOnRight(pos.right);
+      const cardRect = monthlyCard.getBoundingClientRect();
+      const extra = mooniFabHintExtraMarginBottom({
+        fabRect,
+        hintWidth: Math.min(hintRect.width || HINT_MAX_WIDTH, HINT_MAX_WIDTH),
+        hintHeight: hintRect.height,
+        hintOnRight,
+        baseGap: MOONI_FAB_HINT_BASE_GAP,
+        obstacles: [cardRect],
+      });
+      setHintExtraMarginBottom(extra);
+    };
+
+    const schedule = () => {
+      if (frame) return;
+      frame = window.requestAnimationFrame(() => {
+        frame = 0;
+        measure();
+      });
+    };
+
+    measure();
+    const observer = new ResizeObserver(schedule);
+    observer.observe(document.body);
+    const card = document.querySelector('[data-testid="home-watch-card"]');
+    if (card) observer.observe(card);
+    window.addEventListener('resize', schedule);
+    return () => {
+      window.cancelAnimationFrame(frame);
+      observer.disconnect();
+      window.removeEventListener('resize', schedule);
+    };
+  }, [hintVisibleForLayout, pos.right, pos.bottom, showHint, peekText, reactText, hintPhase, introText, nudgeMessage]);
 
   useEffect(() => () => {
     if (hintTimerRef.current) clearTimeout(hintTimerRef.current);
@@ -401,10 +473,16 @@ export default function MooniAgentFab({
       <div className="relative flex flex-col items-center">
         {hintVisible && (
           <div
-            className={`absolute bottom-full mb-2 animate-fade-in-up pointer-events-auto ${
+            ref={hintRef}
+            data-testid="mooni-fab-hint"
+            className={`absolute bottom-full animate-fade-in-up pointer-events-auto ${
               hintOnRight ? 'left-0' : 'right-0'
             }`}
-            style={{ width: 'max-content', maxWidth: HINT_MAX_WIDTH }}
+            style={{
+              width: 'max-content',
+              maxWidth: HINT_MAX_WIDTH,
+              marginBottom: MOONI_FAB_HINT_BASE_GAP + hintExtraMarginBottom,
+            }}
           >
             <div className="relative rounded-2xl border border-cyan-400/30 bg-black/70 backdrop-blur-xl px-4 py-3 text-sm text-gray-100 shadow-[0_8px_32px_rgba(34,211,238,0.15)]">
               <p className={`leading-snug ${showCloseButton ? 'pr-5' : ''}`}>{hintText}</p>

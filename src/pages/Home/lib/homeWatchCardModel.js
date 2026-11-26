@@ -144,6 +144,69 @@ export function rectsOverlap(a, b, padding = 0) {
   );
 }
 
+export const MOONI_FAB_HINT_BASE_GAP = 8;
+export const MOONI_FAB_HINT_MAX_WIDTH = 220;
+
+/**
+ * Margin below the MOONi hint (above the FAB) so the hint box clears `obstacles`.
+ * `hintOnRight` mirrors MooniAgentFab placement relative to the FAB.
+ */
+export function mooniFabHintMarginBottom({
+  fabRect,
+  hintWidth = MOONI_FAB_HINT_MAX_WIDTH,
+  hintHeight,
+  hintOnRight = false,
+  baseGap = MOONI_FAB_HINT_BASE_GAP,
+  obstacles = [],
+  clearanceGap = HOME_MONTHLY_CARD_GAP,
+} = {}) {
+  const fab = fabRect;
+  const height = Number(hintHeight) || 0;
+  if (!fab || fab.width < 1 || fab.height < 1 || height < 1) return baseGap;
+  const width = Math.min(Math.max(1, Number(hintWidth) || MOONI_FAB_HINT_MAX_WIDTH), MOONI_FAB_HINT_MAX_WIDTH);
+  let marginBottom = Math.max(0, Number(baseGap) || 0);
+  const pad = Number(clearanceGap) || 0;
+
+  const computeHint = () => {
+    const hintLeft = hintOnRight ? fab.left : fab.right - width;
+    const hintRight = hintOnRight ? fab.left + width : fab.right;
+    const hintBottom = fab.top - marginBottom;
+    return {
+      left: hintLeft,
+      right: hintRight,
+      top: hintBottom - height,
+      bottom: hintBottom,
+      width,
+      height,
+    };
+  };
+
+  let changed = true;
+  while (changed) {
+    changed = false;
+    const hint = computeHint();
+    for (const obs of obstacles) {
+      if (!obs || obs.width < 1 || obs.height < 1) continue;
+      if (!rectsOverlap(hint, obs)) continue;
+      const shift = hint.bottom - obs.top + pad;
+      if (shift > 0.5) {
+        marginBottom += shift;
+        changed = true;
+        break;
+      }
+    }
+  }
+
+  return marginBottom;
+}
+
+/** Pixels to add beyond `baseGap` (Tailwind mb-2) for inline style. */
+export function mooniFabHintExtraMarginBottom(options) {
+  const baseGap = Math.max(0, Number(options?.baseGap) || MOONI_FAB_HINT_BASE_GAP);
+  const total = mooniFabHintMarginBottom(options);
+  return Math.max(0, total - baseGap);
+}
+
 export function shouldHideHomeWatchCard({
   placeCard = false,
   explore = false,

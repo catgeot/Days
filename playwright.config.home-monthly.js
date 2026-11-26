@@ -5,7 +5,7 @@ const baseURL = `http://127.0.0.1:${port}`;
 
 export default defineConfig({
   testDir: './e2e',
-  testMatch: /home-monthly-destinations\.spec\.js/,
+  testMatch: /home-monthly-(destinations|mooni-intro-bubble)\.spec\.js/,
   fullyParallel: false,
   forbidOnly: Boolean(process.env.CI),
   retries: process.env.CI ? 1 : 0,
