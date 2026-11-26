@@ -29,5 +29,13 @@ export default defineConfig({
         deviceScaleFactor: 1,
       },
     },
+    {
+      name: 'webkit',
+      use: {
+        browserName: 'webkit',
+        viewport: { width: 390, height: 844 },
+        deviceScaleFactor: 1,
+      },
+    },
   ],
 });

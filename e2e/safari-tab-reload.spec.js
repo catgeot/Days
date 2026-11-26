@@ -9,6 +9,22 @@ async function shot(page, name, width, height) {
   });
 }
 
+async function backgroundAlpha(locator) {
+  return locator.evaluate((el) => {
+    const bg = window.getComputedStyle(el).backgroundColor;
+    const m = bg.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/);
+    if (!m) return -1;
+    return m[4] == null ? 1 : Number(m[4]);
+  });
+}
+
+async function expectSiteNoticeFullyOpaque(notice) {
+  const panelAlpha = await backgroundAlpha(notice);
+  const headerAlpha = await backgroundAlpha(notice.locator('[data-site-update-notice-header]'));
+  expect(panelAlpha).toBeGreaterThanOrEqual(0.99);
+  expect(headerAlpha).toBeGreaterThanOrEqual(0.99);
+}
+
 test.describe('safari tab reload recovery', () => {
   test('festival chips persist in the URL across reload without a history entry', async ({ page }) => {
     test.setTimeout(120_000);
@@ -72,8 +88,8 @@ test.describe('safari tab reload recovery', () => {
     await page.evaluate(() => window.dispatchEvent(new Event('vite:preloadError')));
     const notice = page.locator('[data-site-update-notice]');
     await expect(notice).toBeVisible();
-    const panelBg = await notice.evaluate((el) => window.getComputedStyle(el).backgroundColor);
-    expect(panelBg).not.toBe('rgba(0, 0, 0, 0)');
+    await expect(page.getByText('사이트가 업데이트됐어요')).toBeVisible();
+    await expectSiteNoticeFullyOpaque(notice);
     expect(await page.evaluate(() => window.__stay)).toBe('chip-tab');
     const stayed = new URL(page.url());
     expect(stayed.pathname).toBe('/korea');
@@ -82,7 +98,10 @@ test.describe('safari tab reload recovery', () => {
     await expect(page.getByRole('button', { name: '새로고침' })).toBeVisible();
   });
 
-  test('vite:preloadError on an open tab shows the update banner and does not reload', async ({ page }) => {
+  test('vite:preloadError on an open tab shows the update banner and does not reload', async ({
+    page,
+    browserName,
+  }) => {
     test.setTimeout(90_000);
     await page.goto('/about');
     await expect(page.locator('h1')).toBeVisible({ timeout: 60_000 });
@@ -92,16 +111,11 @@ test.describe('safari tab reload recovery', () => {
     await page.evaluate(() => window.dispatchEvent(new Event('vite:preloadError')));
     const notice = page.locator('[data-site-update-notice]');
     await expect(notice).toBeVisible();
-    const panelBg = await notice.evaluate((el) => window.getComputedStyle(el).backgroundColor);
-    const alpha = await notice.evaluate((el) => {
-      const m = window.getComputedStyle(el).backgroundColor.match(/rgba?\([^)]+\)/);
-      if (!m) return -1;
-      const parts = m[0].replace(/rgba?\(|\)|\s/g, '').split(',');
-      return parts.length === 4 ? Number(parts[3]) : 1;
-    });
-    expect(panelBg).not.toBe('rgba(0, 0, 0, 0)');
-    expect(alpha).toBeGreaterThan(0.1);
-    await shot(page, 'about-390-site-update-notice', 390, 844);
+    await expect(page.getByText('사이트가 업데이트됐어요')).toBeVisible();
+    await expectSiteNoticeFullyOpaque(notice);
+    if (browserName === 'webkit') {
+      await shot(page, 'about-390-site-update-notice-webkit', 390, 844);
+    }
     expect(await page.evaluate(() => window.__stay)).toBe('open-tab');
     await expect(page).toHaveURL(/\/about/);
     await expect(page.getByRole('button', { name: '새로고침' })).toBeVisible();
