@@ -12,6 +12,9 @@ import {
   buildHomeWatchSlots,
   homeMonthlySwitchState,
   layoutHomeMonthlyCard,
+  mooniFabHintExtraMarginBottom,
+  mooniFabHintMarginBottom,
+  rectsOverlap,
   resolveHomeMonthlyPreviewStartDay,
 } from '../../src/pages/Home/lib/homeWatchCardModel.js';
 
@@ -82,6 +85,44 @@ test('home monthly preview window follows KST month boundaries', () => {
   });
   assert.equal(missingNext.windowOpen, true);
   assert.equal(missingNext.previewOpen, false);
+});
+
+test('mooni fab hint margin clears the monthly card at default and dragged FAB positions', () => {
+  const card = { left: 12, right: 270, top: 571, bottom: 656, width: 258, height: 85 };
+  const hintHeight = 58;
+  const hintWidth = 198;
+  const positions = [
+    { label: 'right', fab: { left: 294, right: 374, top: 680, bottom: 812, width: 80, height: 132 } },
+    { label: 'center', fab: { left: 155, right: 235, top: 700, bottom: 832, width: 80, height: 132 } },
+    { label: 'left', fab: { left: 16, right: 96, top: 720, bottom: 852, width: 80, height: 132 } },
+  ];
+  for (const { label, fab } of positions) {
+    const hintOnRight = fab.left < 198 + 8;
+    const marginBottom = mooniFabHintMarginBottom({
+      fabRect: fab,
+      hintWidth,
+      hintHeight,
+      hintOnRight,
+      obstacles: [card],
+    });
+    assert.ok(marginBottom > 8, `${label}: expected extra clearance above base gap`);
+    const hintLeft = hintOnRight ? fab.left : fab.right - hintWidth;
+    const hint = {
+      left: hintLeft,
+      right: hintLeft + hintWidth,
+      top: fab.top - marginBottom - hintHeight,
+      bottom: fab.top - marginBottom,
+    };
+    assert.equal(rectsOverlap(hint, card), false, `${label}: hint still overlaps monthly card`);
+    const extra = mooniFabHintExtraMarginBottom({
+      fabRect: fab,
+      hintWidth,
+      hintHeight,
+      hintOnRight,
+      obstacles: [card],
+    });
+    assert.equal(extra + 8, marginBottom);
+  }
 });
 
 test('monthly card layout clears the about row and the MOONi button', () => {
