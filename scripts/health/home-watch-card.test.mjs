@@ -316,7 +316,7 @@ test('continue place photo follows the place-card source and falls back when emp
   assert.equal(HOME_WATCH_CONTINUE_FALLBACK_CLASS.includes('og-image'), false);
   assert.match(HOME_WATCH_CONTINUE_FALLBACK_CLASS, /from-slate-800/);
   assert.match(HOME_WATCH_CONTINUE_FALLBACK_CLASS, /to-slate-950/);
-  assert.equal(HOME_WATCH_CARD_LAYOUT.mobile.height, 85);
+  assert.equal(HOME_WATCH_CARD_LAYOUT.mobile.height, 96);
   assert.equal(HOME_WATCH_CARD_LAYOUT.desktop.height, 85);
   assert.equal(HOME_WATCH_CAPTION_BAND, 'rgba(0,0,0,0.86)');
   const cardSrc = fs.readFileSync(new URL('../../src/pages/Home/components/HomeWatchCard.jsx', import.meta.url), 'utf8');
