@@ -28,9 +28,27 @@ function pickFromFlatPool(pool, lastIndex) {
   return { text: pool[index], index };
 }
 
+function readGateoMooniIntroIndexOverride() {
+  if (typeof globalThis === 'undefined') return null;
+  const raw = globalThis.__GATEO_MOONI_INTRO_INDEX__;
+  if (typeof raw !== 'number' || !Number.isInteger(raw)) return null;
+  return raw;
+}
+
 /** 세션 intro — 단일 줄 */
 export function pickIntroLine(lastIndex = -1) {
-  return pickFromFlatPool(getLinePool('mooni.lines.intro'), lastIndex);
+  const pool = getLinePool('mooni.lines.intro');
+  const forcedIndex = readGateoMooniIntroIndexOverride();
+  if (forcedIndex != null && pool.length > 0) {
+    const index = Math.min(Math.max(0, forcedIndex), pool.length - 1);
+    return { text: pool[index], index };
+  }
+  return pickFromFlatPool(pool, lastIndex);
+}
+
+/** E2E·health — ko intro pool (i18n `mooni.lines.intro`와 동기) */
+export function getMooniIntroLinePool() {
+  return getLinePool('mooni.lines.intro');
 }
 
 /** 호버·누르고 있기 peek */
