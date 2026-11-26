@@ -8,3 +8,11 @@
 - 코드 `dcac4366d` · 브랜치 `cursor/access-origin-default-2dbb` · PR [#920](https://github.com/catgeot/Days/pull/920).
 - 단위 `scripts/health/access-origin-default.test.mjs`는 main 해석기에서 FAIL(ICN), 수정 후 PASS. WebKit E2E `e2e/access-origin-default.spec.js`는 카오락·도쿄·제주를 390·1280에서 PASS.
 - 사람 확인: Preview에서 카오락 위치를 둔 뒤 «가는 방법» 칩이 `푸켓 (HKT)`인지, 제주에 있으면 `제주 (CJU)`인지 본다.
+
+## 홈 테마 월간 모바일 (#923) — main 병합·MOONi QA 후속
+
+- 브랜치 `cursor/home-theme-monthly-mobile-716c` · head `7ab737d8d` (merge `1af78d0d0` + E2E 보강).
+- `origin/main` 병합: #924 MOONi 스냅·#925 인트로/health SSOT 반영; #923 96px 전폭·지구본 메뉴 yield 유지; 중복 `mooniFabBottomClearOfWatchCard` 제거.
+- EN 월간 타일 지명: `buildHomeWatchMonthlyDestinations(..., i18n.language)`.
+- E2E: `home-monthly-mooni-fab-overlap` 코너 매트릭스 · `home-theme-monthly-mobile` EN·코너 캡처.
+- 로컬: overlap 6/6 (chromium+webkit 390), theme monthly mobile PASS, EN destinations PASS; `npm run build` PASS.
