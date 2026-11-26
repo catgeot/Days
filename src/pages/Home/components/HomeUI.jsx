@@ -6,6 +6,7 @@ import {
   PenTool,
   Leaf,
   Sparkles,
+  Star,
   CalendarDays,
   Globe2,
   Map,
@@ -34,10 +35,14 @@ import { CATEGORY_LABELS } from './SearchDiscovery/constants';
 import { getLocalizedPlaceName } from '../../../components/PlaceCard/common/locationDisplay';
 import TrustLinkBar from '../../../shared/layout/TrustLinkBar';
 import HomeWatchCard from './HomeWatchCard';
+import { isQuicklinkReviewTabActive } from '../../../shared/gateoFeatureFlags.js';
+import { trackQuicklinkClick } from '../../../shared/analytics/quicklinkAnalytics.js';
+import { REVIEW_HUB_HREF } from '../../../logbookOfficialReviews/logbookReviewHubArrival.js';
 
 const MOBILE_QUICK_LINK_DEFS = [
   {
     key: 'festival',
+    analyticsItem: 'festival',
     to: '/korea',
     icon: CalendarDays,
     chipClass:
@@ -46,6 +51,7 @@ const MOBILE_QUICK_LINK_DEFS = [
   },
   {
     key: 'worldEvents',
+    analyticsItem: 'world_events',
     to: '/world-events',
     icon: Globe2,
     chipClass:
@@ -54,6 +60,7 @@ const MOBILE_QUICK_LINK_DEFS = [
   },
   {
     key: 'scenic',
+    analyticsItem: 'scenic',
     to: '/korea/theme/scenic',
     icon: Map,
     chipClass:
@@ -62,6 +69,7 @@ const MOBILE_QUICK_LINK_DEFS = [
   },
   {
     key: 'curation',
+    analyticsItem: 'curation',
     to: '/blog/curation',
     icon: Sparkles,
     chipClass:
@@ -69,6 +77,16 @@ const MOBILE_QUICK_LINK_DEFS = [
     iconWrapClass: 'border-sky-400/35 bg-sky-500/15 text-sky-300 group-hover:bg-sky-500/25',
   },
 ];
+
+const REVIEW_HUB_QUICK_LINK = {
+  key: 'reviewHub',
+  analyticsItem: 'review_hub',
+  to: REVIEW_HUB_HREF,
+  icon: Star,
+  chipClass:
+    'border-violet-400/50 bg-[#16101c] shadow-[0_0_18px_rgba(167,139,250,0.28)] hover:border-violet-300/75 hover:bg-[#1c1424]',
+  iconWrapClass: 'border-violet-300/40 bg-violet-500/20 text-violet-200 group-hover:bg-violet-500/30',
+};
 
 /** 모바일 활성 카테고리 — 테마색 글로우 (배포본과 동일) */
 const CATEGORY_ACTIVE_MOBILE = {
@@ -142,19 +160,21 @@ const HomeUI = React.memo(({
   onTourBarStartTour,
 }) => {
   const { t, i18n } = useTranslation();
-  const mobileQuickLinks = React.useMemo(
-    () =>
-      MOBILE_QUICK_LINK_DEFS.map((item) => ({
-        ...item,
-        shortLabel: t(`home.quickLinks.${item.key}.short`),
-        label: t(`home.quickLinks.${item.key}.label`),
-      })),
-    [t],
-  );
+  const { pathname, search } = useLocation();
+  const reviewTabActive = isQuicklinkReviewTabActive(search);
+  const mobileQuickLinks = React.useMemo(() => {
+    const defs = reviewTabActive
+      ? MOBILE_QUICK_LINK_DEFS.map((item) => (item.key === 'curation' ? REVIEW_HUB_QUICK_LINK : item))
+      : MOBILE_QUICK_LINK_DEFS;
+    return defs.map((item) => ({
+      ...item,
+      shortLabel: t(`home.quickLinks.${item.key}.short`),
+      label: t(`home.quickLinks.${item.key}.label`),
+    }));
+  }, [t, reviewTabActive]);
   const categoryLabel = (id) => t(`home.category.${id}`, { defaultValue: CATEGORY_LABELS[id] || id });
   const [, setInputValue] = useState('');
   const navigate = useNavigate();
-  const { pathname } = useLocation();
   const showGlobeHomeControls = shouldShowGlobeHomeControls({
     pathname,
     isPlaceCardVisible,
@@ -238,7 +258,10 @@ const HomeUI = React.memo(({
       <Link
         key={item.to}
         to={item.to}
-        onClick={() => setMobileQuickLinksExpanded(false)}
+        onClick={() => {
+          trackQuicklinkClick(item.analyticsItem);
+          setMobileQuickLinksExpanded(false);
+        }}
         className={`group relative flex w-auto max-w-[14rem] items-center gap-2 rounded-xl border px-2.5 py-1.5 transition-colors touch-manipulation ${item.chipClass} ${linkClassName}`}
         aria-label={t('home.quickLinks.navigateTo', { label: item.label })}
       >
@@ -288,6 +311,7 @@ const HomeUI = React.memo(({
           onFaceRegionsDismiss?.();
           setMobileQuickLinksExpanded(true);
         }}
+        data-testid="home-quick-links"
         className="quick-links-banner-breathe group relative flex w-auto max-w-[15.5rem] md:w-max md:max-w-none items-center gap-1.5 rounded-xl border border-white/20 bg-[#101010]/95 px-2.5 py-1.5 backdrop-blur-sm transition-all hover:border-amber-400/60 hover:bg-[#161616] touch-manipulation active:scale-[0.98]"
         aria-label={`${t('home.quickLinks.expandMenu')} — ${mobileQuickLinks.map((item) => item.label).join(', ')}`}
         title={t('home.quickLinks.expandMenu')}
@@ -300,7 +324,7 @@ const HomeUI = React.memo(({
         />
       </button>
     ) : (
-      <div className="flex flex-col items-start gap-2">
+      <div className="flex flex-col items-start gap-2" data-testid="home-quick-links">
         <div className="flex max-w-[17.5rem] items-stretch gap-1.5">
           {renderMobileQuickLink(mobileQuickLinkFirst, 'min-w-0 flex-1 max-w-none')}
           <button

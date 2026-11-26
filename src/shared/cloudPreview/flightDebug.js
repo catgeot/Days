@@ -47,7 +47,10 @@ export function armFlightDebugSession() {
 
 export function isFlightDebugEnabled() {
   if (typeof window === 'undefined') return false;
-  if (!previewDebugChromeAllowed(window.location.hostname, { dev: import.meta.env.DEV === true })) {
+  if (!previewDebugChromeAllowed(window.location.hostname, {
+    dev: import.meta.env.DEV === true,
+    search: window.location.search,
+  })) {
     return false;
   }
   try {

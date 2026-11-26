@@ -80,6 +80,33 @@ export function isGateoQaTraffic(env) {
 }
 
 /**
+ * QA marker (`gateo_qa` / `?qa=1`), `navigator.webdriver`, or `?crawler=1`.
+ * Real visitors are unmarked.
+ * @param {Parameters<typeof readGateoTrafficSignals>[0]} [env]
+ */
+export function shouldMarkGateoInternalTraffic(env) {
+  if (isGateoQaTraffic(env)) return true;
+  const win = env?.window;
+  const search = env?.search ?? win?.location?.search ?? (typeof window !== 'undefined' ? window.location.search : '');
+  try {
+    return new URLSearchParams(String(search || '')).get('crawler') === '1';
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Copies params and adds `traffic_type: 'internal'` only for automated traffic.
+ * @param {Record<string, unknown>} [params]
+ * @param {Parameters<typeof readGateoTrafficSignals>[0]} [env]
+ */
+export function withGateoTrafficType(params, env) {
+  const base = params && typeof params === 'object' ? { ...params } : {};
+  if (!shouldMarkGateoInternalTraffic(env)) return base;
+  return { ...base, traffic_type: 'internal' };
+}
+
+/**
  * @param {Parameters<typeof readGateoTrafficSignals>[0]} [env]
  */
 export function shouldSkipGateoGaLoad(env = defaultTrafficEnv()) {
