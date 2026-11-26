@@ -18,6 +18,7 @@ import {
   MOONI_FAB_HINT_BASE_GAP,
   MOONI_FAB_HINT_MAX_WIDTH,
   mooniFabHintExtraMarginBottom,
+  mooniFabPositionAboveMonthlyCard,
 } from '../lib/homeWatchCardModel.js';
 
 /** 인트로·넛지 말풍선 — X 없이 자동 닫힘 (기존 넛지 4.5s → 4s) */
@@ -94,6 +95,65 @@ function clampPosition(pos) {
   };
 }
 
+function samePos(a, b) {
+  return !!a && !!b
+    && Math.abs(a.right - b.right) < 0.5
+    && Math.abs(a.bottom - b.bottom) < 0.5;
+}
+
+function clearDocumentSelection() {
+  const selection = typeof window.getSelection === 'function' ? window.getSelection() : null;
+  if (selection && selection.rangeCount) selection.removeAllRanges();
+}
+
+function rectForPos(root, pos) {
+  const rect = root.getBoundingClientRect();
+  const renderedRight = Number.parseFloat(root.style.right);
+  const renderedBottom = Number.parseFloat(root.style.bottom);
+  const dRight = Number.isFinite(renderedRight) ? pos.right - renderedRight : 0;
+  const dBottom = Number.isFinite(renderedBottom) ? pos.bottom - renderedBottom : 0;
+  return {
+    left: rect.left - dRight,
+    right: rect.right - dRight,
+    top: rect.top - dBottom,
+    bottom: rect.bottom - dBottom,
+    width: rect.width,
+    height: rect.height,
+  };
+}
+
+const MONTHLY_FAB_OBSTACLE_SELECTOR = [
+  '[data-testid^="home-watch-slot-"]',
+  '[data-testid="home-monthly-switch"]',
+  '[data-testid="home-watch-dismiss"]',
+  'h2',
+].join(', ');
+
+const MONTHLY_CARD_SELECTOR = '[data-testid="home-watch-card"][data-monthly-switch="1"][data-monthly-placed="1"]';
+
+function positionClearingMonthlyCard(rest, root) {
+  const clamped = clampPosition(rest);
+  if (!root || typeof document === 'undefined') return clamped;
+  const card = document.querySelector(MONTHLY_CARD_SELECTOR);
+  if (!card) return clamped;
+  const cardRect = card.getBoundingClientRect();
+  if (cardRect.width < 1 || cardRect.height < 1) return clamped;
+  const obstacles = [];
+  for (const el of card.querySelectorAll(MONTHLY_FAB_OBSTACLE_SELECTOR)) {
+    const rect = el.getBoundingClientRect();
+    if (rect.width >= 1 && rect.height >= 1) obstacles.push(rect);
+  }
+  const fabRect = rectForPos(root, clamped);
+  if (fabRect.width < 1 || fabRect.height < 1) return clamped;
+  return clampPosition(mooniFabPositionAboveMonthlyCard({
+    pos: clamped,
+    fabRect,
+    cardRect,
+    obstacles,
+    viewportHeight: window.innerHeight,
+  }));
+}
+
 function canUseHoverPeek() {
   if (typeof window === 'undefined') return true;
   return window.matchMedia('(hover: hover) and (pointer: fine)').matches;
@@ -111,6 +171,8 @@ export default function MooniAgentFab({
   const rootRef = useRef(null);
   const hintRef = useRef(null);
   const dragRef = useRef(null);
+  const dragGuardRef = useRef(null);
+  const isDraggingRef = useRef(false);
   const hintTimerRef = useRef(null);
   const nudgeDismissTimerRef = useRef(null);
   const pressPeekTimerRef = useRef(null);
@@ -125,6 +187,7 @@ export default function MooniAgentFab({
   const reactTextRef = useRef('');
 
   const [pos, setPos] = useState(() => clampPosition(loadPosition() ?? DEFAULT_POS));
+  const restRef = useRef(pos);
   const [hintPhase, setHintPhase] = useState(() => (introSeenOnMount.current ? null : 'intro'));
   const [showHint, setShowHint] = useState(() => !introSeenOnMount.current);
   const [introText, setIntroText] = useState('');
@@ -249,10 +312,90 @@ export default function MooniAgentFab({
     wasChatOpenRef.current = isChatOpen;
   }, [isChatOpen, showHint, hintPhase, scheduleNextNudge]);
 
-  useEffect(() => {
-    const onResize = () => setPos((prev) => clampPosition(prev));
-    window.addEventListener('resize', onResize);
-    return () => window.removeEventListener('resize', onResize);
+  useLayoutEffect(() => {
+    let frame = 0;
+    let inner = 0;
+    const apply = () => {
+      if (isDraggingRef.current) return;
+      const clampedRest = clampPosition(restRef.current);
+      if (!samePos(clampedRest, restRef.current)) restRef.current = clampedRest;
+      const next = positionClearingMonthlyCard(restRef.current, rootRef.current);
+      setPos((prev) => (samePos(prev, next) ? prev : next));
+    };
+    const schedule = () => {
+      if (frame) return;
+      frame = window.requestAnimationFrame(() => {
+        frame = 0;
+        inner = window.requestAnimationFrame(() => {
+          inner = 0;
+          apply();
+        });
+      });
+    };
+    apply();
+
+    const observed = new Set();
+    const observer = new ResizeObserver(schedule);
+    observer.observe(document.body);
+    if (rootRef.current) observer.observe(rootRef.current);
+    const watchCard = (card) => {
+      if (!card) return;
+      if (!observed.has(card)) {
+        observed.add(card);
+        observer.observe(card);
+      }
+      for (const el of card.querySelectorAll(MONTHLY_FAB_OBSTACLE_SELECTOR)) {
+        if (observed.has(el)) continue;
+        observed.add(el);
+        observer.observe(el);
+      }
+    };
+
+    let cardAttrTarget = null;
+    const cardMutation = new MutationObserver(schedule);
+    const attachCard = () => {
+      const card = document.querySelector('[data-testid="home-watch-card"][data-monthly-switch="1"]');
+      watchCard(card);
+      if (card === cardAttrTarget) return;
+      cardMutation.disconnect();
+      cardAttrTarget = card;
+      if (!card) return;
+      cardMutation.observe(card, {
+        attributes: true,
+        attributeFilter: ['style', 'data-monthly-placed'],
+        childList: true,
+        subtree: true,
+      });
+    };
+    attachCard();
+
+    const onBodyMutation = (records) => {
+      let relevant = false;
+      for (const record of records) {
+        const nodes = [...record.addedNodes, ...record.removedNodes];
+        if (nodes.some((node) => node.nodeType === 1 && (
+          node.matches?.('[data-testid="home-watch-card"]')
+          || node.querySelector?.('[data-testid="home-watch-card"]')
+        ))) {
+          relevant = true;
+          break;
+        }
+      }
+      if (!relevant) return;
+      attachCard();
+      schedule();
+    };
+    const bodyMutation = new MutationObserver(onBodyMutation);
+    bodyMutation.observe(document.body, { childList: true, subtree: true });
+    window.addEventListener('resize', schedule);
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.cancelAnimationFrame(inner);
+      observer.disconnect();
+      cardMutation.disconnect();
+      bodyMutation.disconnect();
+      window.removeEventListener('resize', schedule);
+    };
   }, []);
 
   const hintVisibleForLayout =
@@ -325,6 +468,8 @@ export default function MooniAgentFab({
     clearNudgeDismissTimer();
     clearPressPeekTimer();
     clearDragReactTimer();
+    dragGuardRef.current?.();
+    dragGuardRef.current = null;
   }, [clearNudgeDismissTimer, clearPressPeekTimer, clearDragReactTimer]);
 
   const dismissHint = useCallback(() => {
@@ -364,6 +509,35 @@ export default function MooniAgentFab({
     setPeekText(text);
   }, [showHint, isDragging, reactText]);
 
+  const stopDragGuards = () => {
+    dragGuardRef.current?.();
+    dragGuardRef.current = null;
+  };
+
+  const startDragGuards = () => {
+    if (dragGuardRef.current) return;
+    const root = document.documentElement;
+    root.classList.add('mooni-fab-dragging');
+    const blockIfCancelable = (event) => {
+      if (event.cancelable) event.preventDefault();
+      clearDocumentSelection();
+    };
+    const onSelectStart = (event) => {
+      event.preventDefault();
+    };
+    document.addEventListener('selectstart', onSelectStart, true);
+    document.addEventListener('pointermove', blockIfCancelable, { capture: true, passive: false });
+    document.addEventListener('touchmove', blockIfCancelable, { capture: true, passive: false });
+    clearDocumentSelection();
+    dragGuardRef.current = () => {
+      document.removeEventListener('selectstart', onSelectStart, true);
+      document.removeEventListener('pointermove', blockIfCancelable, { capture: true });
+      document.removeEventListener('touchmove', blockIfCancelable, { capture: true });
+      root.classList.remove('mooni-fab-dragging');
+      clearDocumentSelection();
+    };
+  };
+
   const onFabPointerDown = (event) => {
     if (event.button !== 0) return;
     dragRef.current = {
@@ -398,9 +572,12 @@ export default function MooniAgentFab({
 
     if (!drag.moved && (Math.abs(dx) > DRAG_THRESHOLD || Math.abs(dy) > DRAG_THRESHOLD)) {
       drag.moved = true;
+      isDraggingRef.current = true;
       clearPressPeekTimer();
       clearPeek();
       setIsDragging(true);
+      startDragGuards();
+      if (event.cancelable) event.preventDefault();
 
       const { text, index } = pickDragReactLine(lastDragReactIndexRef.current);
       lastDragReactIndexRef.current = index;
@@ -409,26 +586,35 @@ export default function MooniAgentFab({
 
     if (!drag.moved) return;
 
+    if (event.cancelable) event.preventDefault();
+    clearDocumentSelection();
+    queueMicrotask(clearDocumentSelection);
+
     const next = clampPosition({
       right: drag.startRight - dx,
       bottom: drag.startBottom - dy,
     });
+    drag.lastPos = next;
     setPos(next);
   };
 
-  const onFabPointerUp = (event) => {
+  const finishDrag = (event, target) => {
     const drag = dragRef.current;
-    if (!drag || drag.pointerId !== event.pointerId) return;
+    if (!drag || (event && drag.pointerId !== event.pointerId)) return;
 
-    event.currentTarget.releasePointerCapture(event.pointerId);
+    if (target?.hasPointerCapture?.(event.pointerId)) {
+      target.releasePointerCapture(event.pointerId);
+    }
     clearPressPeekTimer();
 
     if (drag.moved) {
-      setPos((current) => {
-        const clamped = clampPosition(current);
-        savePosition(clamped);
-        return clamped;
+      const clamped = clampPosition(drag.lastPos ?? {
+        right: drag.startRight,
+        bottom: drag.startBottom,
       });
+      restRef.current = clamped;
+      savePosition(clamped);
+      setPos(positionClearingMonthlyCard(clamped, rootRef.current));
     } else if (drag.pressPeekActivated || isPressPeek) {
       clearPeek();
     } else {
@@ -436,14 +622,29 @@ export default function MooniAgentFab({
     }
 
     dragRef.current = null;
+    isDraggingRef.current = false;
     setIsDragging(false);
+    stopDragGuards();
+  };
+
+  const onFabPointerUp = (event) => {
+    finishDrag(event, event.currentTarget);
   };
 
   const onFabPointerCancel = () => {
+    const drag = dragRef.current;
+    if (drag?.moved && drag.lastPos) {
+      const clamped = clampPosition(drag.lastPos);
+      restRef.current = clamped;
+      savePosition(clamped);
+      setPos(positionClearingMonthlyCard(clamped, rootRef.current));
+    }
     dragRef.current = null;
+    isDraggingRef.current = false;
     clearPressPeekTimer();
     clearPeek();
     setIsDragging(false);
+    stopDragGuards();
   };
 
   if (isZenMode || isChatOpen || isTourActive || hideForStayPanel) return null;
@@ -466,8 +667,8 @@ export default function MooniAgentFab({
   return (
     <div
       ref={rootRef}
-      style={{ right: pos.right, bottom: pos.bottom }}
-      className="fixed z-[58] pointer-events-auto touch-none select-none"
+      style={{ right: pos.right, bottom: pos.bottom, WebkitTouchCallout: 'none' }}
+      className="mooni-fab fixed z-[58] pointer-events-auto touch-none select-none"
       aria-label={t('mooni.fab.ariaHelper')}
     >
       <div className="relative flex flex-col items-center">

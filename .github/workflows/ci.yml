@@ -1304,13 +1304,14 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Playwright — home monthly destinations
+      - name: Playwright — home monthly destinations and MOONi card overlap
         env:
           VITE_SUPABASE_URL: https://example.supabase.co
           VITE_SUPABASE_ANON_KEY: e2e-anon-placeholder
           VITE_MAPBOX_TOKEN: pk.e2e-home-monthly-placeholder
           CI: true
           DEV_SSL: '0'
+        # e2e/home-monthly-mooni-fab-overlap.spec.js runs on the WebKit 390 and Chromium 390 projects.
         run: npx playwright test -c playwright.config.home-monthly.js --reporter=line
 
   travelogue-fullpage-nav-e2e:
