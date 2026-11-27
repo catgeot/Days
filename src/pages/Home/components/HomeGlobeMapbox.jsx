@@ -123,7 +123,7 @@ import {
   resetGlobeMapStyleLatch,
   whenGlobeMapStyleReady,
 } from '../lib/globeMapStyleGuard.js';
-import { canResumeGlobeAutoRotate } from '../lib/globeRotateResume.js';
+import { canResumeGlobeAutoRotate, globeSpinDeltaSeconds } from '../lib/globeRotateResume.js';
 import { passesGlobeTierPolicy } from '../lib/globeSpotVisibility';
 import { flushCurationGlobeSyncIfPending } from '../lib/curationPlaceBridge.js';
 import { useLocale } from '../../../i18n/LocaleProvider';
@@ -202,6 +202,10 @@ const GLOBE_CLICK_TOLERANCE_PX = 3;
 const DRAG_CLICK_GUARD_MS = 180;
 /** Drag/tap clears autoRotateRef. interactionRef alone does not spin — restart after the gesture. */
 const GLOBE_GESTURE_ROTATE_RESUME_MS = 450;
+/** iOS can drop touchend. A stuck interaction flag must not freeze spin for the rest of the visit. */
+const GLOBE_GESTURE_IDLE_CLEAR_MS = 2500;
+/** Safari globe init and an interrupted flyTo can leave isMoving true with no moveend. */
+const GLOBE_STUCK_MOVING_MS = 400;
 const PLACE_LABEL_LAYER_HINTS = [
   'place-label',
   'settlement',
@@ -490,6 +494,8 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   const rotationTimer = useRef(null);
   const rotateResumeRetryRef = useRef(0);
   const gestureResumeTimerRef = useRef(null);
+  const labelSpinDeadlineRef = useRef(0);
+  const lastRotateTickAtRef = useRef(0);
   /** 써머리「이 지역 보기」몰입 중 — 자전 금지·exitImmerse 대상 */
   const immerseActiveRef = useRef(false);
   /** @type {React.MutableRefObject<{ iso?: string, iso3166_2?: string, bbox?: number[], settleZoom?: number } | null>} */
@@ -626,7 +632,8 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     if (hardStop) return;
     if (!(snap.mapMoving || snap.cameraAnimating || snap.globeCameraBusy)) return;
     // One retry misses a flyTo/inertia that is still moving. Keep waiting while
-    // the only blockers are camera motion, then give up so a stuck isMoving cannot spin forever.
+    // the only blockers are camera motion. A sticky isMoving (no moveend on iOS)
+    // must not give up — stop the camera and spin.
     let left = 8;
     const token = rotateResumeRetryRef.current + 1;
     rotateResumeRetryRef.current = token;
@@ -644,7 +651,21 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
         || again.placeCardOpen || !again.labelsSettled;
       if (blocked) return;
       left -= 1;
-      if (left <= 0) return;
+      if (left <= 0) {
+        if (again.mapMoving && !again.cameraAnimating && !again.globeCameraBusy) {
+          try {
+            live.stop();
+          } catch {
+            // stop() throws if the map was removed mid-retry
+          }
+        }
+        const zoom = live.getZoom?.();
+        const cleared = canResumeGlobeAutoRotate({ ...again, mapMoving: false });
+        if (cleared && Number.isFinite(zoom) && zoom <= GLOBE_VIEW.rotateZoomThreshold) {
+          autoRotateRef.current = true;
+        }
+        return;
+      }
       if (!(again.mapMoving || again.cameraAnimating || again.globeCameraBusy)) return;
       window.setTimeout(retry, 400);
     };
@@ -660,6 +681,43 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       tryResumeAutoRotate(mapRef.current?.getMap?.());
     }, GLOBE_GESTURE_ROTATE_RESUME_MS);
   }, [tryResumeAutoRotate]);
+
+  useEffect(() => {
+    let idle = 0;
+    const clearIdle = () => {
+      if (idle) window.clearTimeout(idle);
+      idle = 0;
+    };
+    const armIdle = () => {
+      clearIdle();
+      idle = window.setTimeout(() => {
+        idle = 0;
+        if (!interactionRef.current || userPausedRotateRef.current) return;
+        interactionRef.current = false;
+        tryResumeAutoRotate(mapRef.current?.getMap?.());
+      }, GLOBE_GESTURE_IDLE_CLEAR_MS);
+    };
+    const endStuck = () => {
+      if (!interactionRef.current) return;
+      clearIdle();
+      endUserGesture();
+    };
+    window.addEventListener('touchstart', armIdle, true);
+    window.addEventListener('touchmove', armIdle, true);
+    window.addEventListener('touchend', endStuck, true);
+    window.addEventListener('touchcancel', endStuck, true);
+    window.addEventListener('pointerup', endStuck, true);
+    window.addEventListener('pointercancel', endStuck, true);
+    return () => {
+      clearIdle();
+      window.removeEventListener('touchstart', armIdle, true);
+      window.removeEventListener('touchmove', armIdle, true);
+      window.removeEventListener('touchend', endStuck, true);
+      window.removeEventListener('touchcancel', endStuck, true);
+      window.removeEventListener('pointerup', endStuck, true);
+      window.removeEventListener('pointercancel', endStuck, true);
+    };
+  }, [endUserGesture, tryResumeAutoRotate]);
 
   const toggleReachBoundaries = useCallback(() => {
     setReachBoundariesVisible((prev) => {
@@ -1584,6 +1642,29 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     }, 3000);
     return () => window.clearTimeout(timer);
   }, [beginFirstLabelSettle, mapReady, pauseRender]);
+
+  // Callback identity churn used to reset the settle timer forever on iOS, so
+  // labels never settled and every resume path (including 우주로 복귀) stayed still.
+  useEffect(() => {
+    if (pauseRender || !mapReady || labelSpinDeadlineRef.current) return undefined;
+    labelSpinDeadlineRef.current = window.setTimeout(() => {
+      labelSpinDeadlineRef.current = 0;
+      const map = mapRef.current?.getMap?.();
+      if (!map || map._removed) return;
+      globeLabelsSettledRef.current = true;
+      if (
+        !userPausedRotateRef.current
+        && !interactionRef.current
+        && !tourActiveRef.current
+        && !immerseActiveRef.current
+        && !flightCinemaActiveRef.current
+      ) {
+        autoRotateRef.current = true;
+      }
+      tryResumeAutoRotate(map);
+    }, 2200);
+    return undefined;
+  }, [mapReady, pauseRender, tryResumeAutoRotate]);
 
   useEffect(() => {
     if (import.meta.env.DEV && prevStyleTransitioningRef.current && !isStyleTransitioning) {
@@ -2800,32 +2881,71 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   }, [pauseRender, mapReady, applyPendingFocus]);
 
   useEffect(() => {
-    const tick = (ts) => {
-      const map = mapRef.current?.getMap();
-      if (!map || pauseRender) {
-        rotationFrameRef.current = requestAnimationFrame(tick);
+    let movingSince = 0;
+
+    const spinOnce = (map, now) => {
+      const zoom = map.getZoom?.();
+      const zoomOk = Number.isFinite(zoom) && zoom <= GLOBE_VIEW.rotateZoomThreshold;
+      const snap = buildRotateResumeSnapshot(map);
+      const blocked = snap.pauseRender || snap.userPausedRotate || snap.interaction
+        || snap.tourActive || snap.immerseActive || snap.flightCinemaActive
+        || snap.cameraAnimating || snap.globeCameraBusy
+        || snap.placeCardOpen || !snap.labelsSettled;
+      if (!autoRotateRef.current || !zoomOk || blocked) {
+        movingSince = 0;
+        spinOnce.lastWall = now;
         return;
       }
-
-      const shouldRotate = autoRotateRef.current
-        && canResumeGlobeAutoRotate(buildRotateResumeSnapshot(map))
-        && map.getZoom() <= GLOBE_VIEW.rotateZoomThreshold;
-      if (shouldRotate) {
-        const speed = isZenMode ? 1.8 : 3;
-        const center = map.getCenter();
-        const lastTs = tick.lastTs || ts;
-        const delta = (ts - lastTs) / 1000;
-        tick.lastTs = ts;
-        map.jumpTo({ center: [center.lng - delta * speed, center.lat] });
+      if (snap.mapMoving) {
+        if (!movingSince) movingSince = now;
+        if (now - movingSince < GLOBE_STUCK_MOVING_MS) {
+          spinOnce.lastWall = now;
+          return;
+        }
+        try {
+          map.stop();
+        } catch {
+          // A removed map throws. The next tick no-ops.
+        }
       } else {
-        tick.lastTs = ts;
+        movingSince = 0;
       }
+      const deltaSec = globeSpinDeltaSeconds(now, spinOnce.lastWall);
+      spinOnce.lastWall = now;
+      if (!(deltaSec > 0)) return;
+      const speed = isZenMode ? 1.8 : 3;
+      const center = map.getCenter();
+      try {
+        map.jumpTo({ center: [center.lng - deltaSec * speed, center.lat] });
+        map.triggerRepaint?.();
+      } catch {
+        // jumpTo throws after style teardown.
+      }
+    };
 
+    const tick = () => {
+      const now = performance.now();
+      lastRotateTickAtRef.current = now;
+      const map = mapRef.current?.getMap();
+      if (map && !pauseRender) spinOnce(map, now);
+      else spinOnce.lastWall = now;
       rotationFrameRef.current = requestAnimationFrame(tick);
     };
 
+    // iOS can leave requestAnimationFrame unscheduled until a gesture. setInterval
+    // still runs in the foreground, so idle spin does not depend on the rAF chain.
+    const heartbeat = window.setInterval(() => {
+      const now = performance.now();
+      if (now - lastRotateTickAtRef.current < 250) return;
+      const map = mapRef.current?.getMap();
+      if (!map || pauseRender || map._removed) return;
+      lastRotateTickAtRef.current = now;
+      spinOnce(map, now);
+    }, 200);
+
     rotationFrameRef.current = requestAnimationFrame(tick);
     return () => {
+      window.clearInterval(heartbeat);
       if (rotationFrameRef.current) cancelAnimationFrame(rotationFrameRef.current);
       if (rotationTimer.current) clearTimeout(rotationTimer.current);
     };
@@ -2841,6 +2961,10 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     if (gestureResumeTimerRef.current) {
       window.clearTimeout(gestureResumeTimerRef.current);
       gestureResumeTimerRef.current = null;
+    }
+    if (labelSpinDeadlineRef.current) {
+      window.clearTimeout(labelSpinDeadlineRef.current);
+      labelSpinDeadlineRef.current = 0;
     }
     firstLabelPumpTimersRef.current.forEach((id) => window.clearTimeout(id));
     firstLabelPumpTimersRef.current = [];

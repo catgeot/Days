@@ -235,3 +235,72 @@ test('home globe rotates on a repeat visit, after a drag, and after return to sp
   await markRotationProbe(page);
   await waitForRotation(page);
 });
+
+test('home globe keeps spinning when rAF timestamps are frozen', async ({ page }) => {
+  await page.addInitScript(() => {
+    const orig = window.requestAnimationFrame.bind(window);
+    let frozen = 0;
+    window.requestAnimationFrame = (cb) => orig(() => {
+      if (!frozen) frozen = performance.now();
+      cb(frozen);
+    });
+  });
+  await page.goto('/');
+  await expect(page.locator('.mapboxgl-canvas')).toBeVisible();
+  await page.waitForFunction(() => typeof window.__gateoGlobeApi?.getMapView === 'function');
+  await markRotationProbe(page);
+  await waitForRotation(page);
+});
+
+test('home globe keeps spinning after requestAnimationFrame stops', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.locator('.mapboxgl-canvas')).toBeVisible();
+  await page.waitForFunction(() => typeof window.__gateoGlobeApi?.getMapView === 'function');
+  await markRotationProbe(page);
+  await waitForRotation(page);
+  await page.evaluate(() => {
+    window.requestAnimationFrame = () => 0;
+  });
+  await page.waitForTimeout(400);
+  await markRotationProbe(page);
+  await waitForRotation(page);
+});
+
+test.describe('reduced motion', () => {
+  test.use({ reducedMotion: 'reduce' });
+
+  test('home globe stays still when reduced motion is requested', async ({ page }) => {
+    // WebKit does not apply context reducedMotion to matchMedia. iOS Reduce Motion does.
+    await page.addInitScript(() => {
+      const orig = window.matchMedia.bind(window);
+      window.matchMedia = (query) => {
+        if (String(query).includes('prefers-reduced-motion')) {
+          return {
+            matches: true,
+            media: String(query),
+            onchange: null,
+            addEventListener() {},
+            removeEventListener() {},
+            addListener() {},
+            removeListener() {},
+            dispatchEvent() { return false; },
+          };
+        }
+        return orig(query);
+      };
+    });
+    await page.goto('/');
+    await expect(page.locator('.mapboxgl-canvas')).toBeVisible();
+    await page.waitForFunction(() => typeof window.__gateoGlobeApi?.getMapView === 'function');
+    const reduced = await page.evaluate(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    expect(reduced).toBe(true);
+    await page.waitForTimeout(2500);
+    const start = await page.evaluate(() => window.__gateoGlobeApi.getMapView().center.lng);
+    await page.waitForTimeout(4000);
+    const end = await page.evaluate(() => window.__gateoGlobeApi.getMapView().center.lng);
+    let delta = end - start;
+    if (delta > 180) delta -= 360;
+    if (delta < -180) delta += 360;
+    expect(Math.abs(delta)).toBeLessThan(0.35);
+  });
+});

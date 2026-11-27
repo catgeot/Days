@@ -43,11 +43,10 @@ export default defineConfig({
     {
       name: 'webkit-globe-390',
       use: {
-        ...devices['Desktop Safari'],
+        ...devices['iPhone 13'],
         viewport: { width: 390, height: 844 },
         deviceScaleFactor: 1,
-        isMobile: true,
-        hasTouch: true,
+        locale: 'ko-KR',
       },
     },
     {
