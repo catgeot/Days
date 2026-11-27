@@ -216,6 +216,48 @@ export function buildSocialLinkCards(rows) {
   };
 }
 
+const TOUR_SLUG_RE = /^tour-(\d{1,32})$/;
+
+/**
+ * A place target resolves when the slug is in the local catalog, or it is a
+ * `tour-{contentId}` the place route hydrates. A named slug that is in neither
+ * is missing. Festival ids are numeric links to `/korea`.
+ */
+export function socialTargetResolves(target, catalog = {}) {
+  if (!target) return false;
+  if (target.type === 'festival') return /^\d+$/.test(String(target.id || '').trim());
+  const slug = String(target.slug || '').trim().toLowerCase();
+  if (!slug) return false;
+  if (catalog?.places?.has(slug)) return true;
+  return TOUR_SLUG_RE.test(slug);
+}
+
+/**
+ * Drop secondaries the site cannot open. A missing main removes the card.
+ * @param {object[]} cards
+ */
+export function resolveSocialLinkCards(cards, catalog = {}) {
+  const missingMains = [];
+  const kept = [];
+  for (const card of cards) {
+    const targets = Array.isArray(card.targets) ? card.targets : [];
+    const main = targets[0];
+    if (!socialTargetResolves(main, catalog)) {
+      missingMains.push({
+        campaignId: card.campaignId,
+        target: main ? socialTargetKey([main]) : '',
+      });
+      continue;
+    }
+    const nextTargets = [main];
+    for (const target of targets.slice(1)) {
+      if (socialTargetResolves(target, catalog)) nextTargets.push(target);
+    }
+    kept.push({ ...card, targets: nextTargets });
+  }
+  return { cards: kept, missingMains };
+}
+
 function placeRecord(catalog, slug) {
   const key = String(slug || '').trim().toLowerCase();
   if (!key || !catalog?.places) return null;
@@ -242,7 +284,8 @@ function photoCreditFor(imageUrl, explicit) {
  * @param {{ places?: Map<string, { name?: string, imageUrl?: string | null }>, festivals?: Map<string, object> }} [catalog]
  */
 export function enrichSocialCards(cards, catalog = {}) {
-  return cards.map((card) => {
+  const { cards: resolved } = resolveSocialLinkCards(cards, catalog);
+  return resolved.map((card) => {
     const targets = card.targets.map((target, index) => {
       if (target.type === 'festival') {
         const fest = festivalRecord(catalog, target.id);

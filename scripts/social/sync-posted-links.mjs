@@ -5,7 +5,12 @@
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { buildSocialLinkCards, enrichSocialCards, parsePostedLinksMarkdown } from './postedLinksModel.mjs';
+import {
+  buildSocialLinkCards,
+  enrichSocialCards,
+  parsePostedLinksMarkdown,
+  resolveSocialLinkCards,
+} from './postedLinksModel.mjs';
 
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 export const DEFAULT_POSTED_LINKS_INPUT = join(repoRoot, 'data/social/posted-links.md');
@@ -112,7 +117,23 @@ export function syncPostedLinks({
   }
 
   const resolvedCatalog = catalog === undefined ? loadSocialPlaceCatalog() : catalog;
-  const cards = enrichSocialCards(built.cards, resolvedCatalog || { places: new Map(), festivals: new Map() });
+  const usableCatalog = resolvedCatalog || { places: new Map(), festivals: new Map() };
+  const resolved = resolveSocialLinkCards(built.cards, usableCatalog);
+  if (resolved.missingMains.length) {
+    const detail = resolved.missingMains
+      .map((row) => `${row.campaignId} ${row.target}`)
+      .join(', ');
+    return {
+      ok: false,
+      error: `대표 대상이 없는 카드: ${detail}`,
+      missingSource: false,
+      cards: [],
+      skipped: built.skipped,
+      excluded: built.excluded,
+      missingMains: resolved.missingMains,
+    };
+  }
+  const cards = enrichSocialCards(resolved.cards, usableCatalog);
   writeJsonIfChanged(outputPath, {
     source: 'data/social/posted-links.md',
     missingSource: false,

@@ -5,10 +5,12 @@ import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
+import { createHash } from 'node:crypto';
 import {
   buildSocialLinkCards,
   enrichSocialCards,
   parsePostedLinksMarkdown,
+  resolveSocialLinkCards,
 } from '../social/postedLinksModel.mjs';
 import { loadSocialPlaceCatalog, syncPostedLinks } from '../social/sync-posted-links.mjs';
 import { socialTargetHref } from '../../src/pages/Social/socialLinksView.js';
@@ -75,7 +77,7 @@ test('bullets under the table are ignored and an empty region uses the place reg
   const cards = enrichSocialCards(built.cards, catalog);
   assert.equal(cards.find((card) => card.campaignId === 'reel-05').region, '제주');
   assert.equal(cards.find((card) => card.campaignId === 'reel-10').region, '전북 샘플');
-  assert.equal(cards.find((card) => card.campaignId === 'reel-02').region, '');
+  assert.equal(cards.find((card) => card.campaignId === 'reel-02'), undefined);
 });
 
 test('same 홍보번호 with different targets fails', () => {
@@ -211,19 +213,96 @@ test('catalog hero is the scenic photo and a missing slug stays without a photo'
   assert.match(hero.photoUrl, /visitkorea\.or\.kr/);
   assert.equal(hero.photoCredit.kind, 'kto');
   assert.equal(hero.targets[1].name, '소수서원');
-  const plain = cards.find((card) => card.campaignId === 'reel-02');
-  assert.equal(plain.photoUrl, null);
+  assert.equal(cards.find((card) => card.campaignId === 'reel-02'), undefined);
   const fest = cards.find((card) => card.campaignId === 'fest-638576');
   assert.equal(fest.targets[0].eventEndDate, '20261108');
   assert.match(fest.photoUrl, /^https:\/\//);
 });
 
-test('committed social json stays empty until posted-links.md exists', () => {
+test('an unknown named secondary is dropped and an unknown main removes the card', () => {
+  const catalog = loadSocialPlaceCatalog(root);
+  const resolved = resolveSocialLinkCards(
+    [
+      {
+        campaignId: 'reel-07',
+        firstPostedAt: '2026-11-04',
+        title: '샘플',
+        region: '',
+        targets: [
+          { type: 'place', slug: 'gaesimsa' },
+          { type: 'place', slug: 'not-a-real-slug' },
+        ],
+      },
+      {
+        campaignId: 'reel-02',
+        firstPostedAt: '2026-11-01',
+        title: '샘플 없는 대표',
+        region: '',
+        targets: [{ type: 'place', slug: 'not-a-real-slug' }],
+      },
+    ],
+    catalog,
+  );
+  assert.deepEqual(
+    resolved.cards[0].targets.map((target) => target.slug),
+    ['gaesimsa'],
+  );
+  assert.deepEqual(resolved.missingMains, [
+    { campaignId: 'reel-02', target: 'place:not-a-real-slug' },
+  ]);
+});
+
+test('posted-links.md matches the published file and builds the live cards', () => {
+  const postedPath = join(root, 'data/social/posted-links.md');
+  const bytes = readFileSync(postedPath);
+  assert.equal(
+    createHash('sha256').update(bytes).digest('hex'),
+    '0b450729453e06fbac104fac2fa79f1bc82594d8dce1e963068ab80fc4417424',
+  );
+  const parsed = parsePostedLinksMarkdown(bytes.toString('utf8'));
+  assert.equal(parsed.ok, true);
+  assert.equal(parsed.rows.length, 39);
+  const built = buildSocialLinkCards(parsed.rows);
+  assert.equal(built.ok, true);
+  const catalog = loadSocialPlaceCatalog(root);
+  const resolved = resolveSocialLinkCards(built.cards, catalog);
+  assert.deepEqual(resolved.missingMains, []);
+  const cards = enrichSocialCards(resolved.cards, catalog);
+  assert.deepEqual(
+    cards.map((card) => card.campaignId),
+    [
+      'reel-14',
+      'reel-13',
+      'reel-10',
+      'reel-11',
+      'fest-2048902',
+      'reel-09',
+      'reel-06',
+      'reel-08',
+      'reel-07',
+      'reel-05',
+      'reel-03',
+      'reel-04',
+      'reel-02',
+      'reel-01',
+    ],
+  );
+  const reel06 = cards.find((card) => card.campaignId === 'reel-06');
+  assert.deepEqual(
+    reel06.targets.map((target) => target.slug),
+    ['tour-127240', 'tour-128113', 'tour-990000000002'],
+  );
+  assert.equal(cards.find((card) => card.campaignId === 'reel-08').targets[0].slug, 'hwaseong-fortress');
+  assert.equal(cards.find((card) => card.campaignId === 'reel-10').region, '전북 고창');
+  assert.equal(cards.find((card) => card.campaignId === 'reel-01').region, '');
   const generated = JSON.parse(
     readFileSync(join(root, 'src/pages/Social/data/socialLinks.generated.json'), 'utf8'),
   );
-  assert.equal(generated.missingSource, true);
-  assert.deepEqual(generated.cards, []);
+  assert.equal(generated.missingSource, false);
+  assert.deepEqual(
+    generated.cards.map((card) => card.campaignId),
+    cards.map((card) => card.campaignId),
+  );
   const syncSource = readFileSync(scriptPath, 'utf8');
   assert.equal(syncSource.includes('posted-log.md'), true);
   assert.equal(syncSource.includes("readFileSync(join(root, 'posted-log.md')"), false);

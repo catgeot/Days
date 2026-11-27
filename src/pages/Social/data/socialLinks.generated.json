@@ -1,5 +1,262 @@
 {
   "source": "data/social/posted-links.md",
-  "missingSource": true,
-  "cards": []
+  "missingSource": false,
+  "cards": [
+    {
+      "campaignId": "reel-14",
+      "firstPostedAt": "2026-11-27",
+      "title": "영주 소수서원",
+      "region": "경북 영주",
+      "photoUrl": "https://tong.visitkorea.or.kr/cms/resource/51/3588851_image2_1.jpg",
+      "photoCredit": {
+        "kind": "kto",
+        "label": "한국관광공사"
+      },
+      "targets": [
+        {
+          "type": "place",
+          "slug": "tour-126201"
+        }
+      ]
+    },
+    {
+      "campaignId": "reel-13",
+      "firstPostedAt": "2026-11-23",
+      "title": "순천 선암사",
+      "region": "전남 순천",
+      "photoUrl": null,
+      "photoCredit": null,
+      "targets": [
+        {
+          "type": "place",
+          "slug": "tour-126369"
+        }
+      ]
+    },
+    {
+      "campaignId": "reel-10",
+      "firstPostedAt": "2026-11-20",
+      "title": "고창·화순·강화 고인돌 유적",
+      "region": "전북 고창",
+      "photoUrl": "https://tong.visitkorea.or.kr/cms/resource/22/3018322_image2_1.jpg",
+      "photoCredit": {
+        "kind": "kto",
+        "label": "한국관광공사"
+      },
+      "targets": [
+        {
+          "type": "place",
+          "slug": "gochang-dolmen-sites"
+        },
+        {
+          "type": "place",
+          "slug": "tour-127190"
+        },
+        {
+          "type": "place",
+          "slug": "tour-2765210"
+        }
+      ]
+    },
+    {
+      "campaignId": "reel-11",
+      "firstPostedAt": "2026-11-18",
+      "title": "한국의 갯벌",
+      "region": "전라",
+      "photoUrl": "https://tong.visitkorea.or.kr/cms/resource/23/3083123_image2_1.jpg",
+      "photoCredit": {
+        "kind": "kto",
+        "label": "한국관광공사"
+      },
+      "targets": [
+        {
+          "type": "place",
+          "slug": "tour-2615234"
+        }
+      ]
+    },
+    {
+      "campaignId": "fest-2048902",
+      "firstPostedAt": "2026-11-17",
+      "title": "해운대 빛축제",
+      "region": "부산 해운대구",
+      "photoUrl": null,
+      "photoCredit": null,
+      "targets": [
+        {
+          "type": "festival",
+          "id": "2048902"
+        }
+      ]
+    },
+    {
+      "campaignId": "reel-09",
+      "firstPostedAt": "2026-11-16",
+      "title": "조선왕릉",
+      "region": "수도권",
+      "photoUrl": "https://tong.visitkorea.or.kr/cms/resource/04/4066104_image2_1.jpg",
+      "photoCredit": {
+        "kind": "kto",
+        "label": "한국관광공사"
+      },
+      "targets": [
+        {
+          "type": "place",
+          "slug": "donggureung-royal-tombs"
+        }
+      ]
+    },
+    {
+      "campaignId": "reel-06",
+      "firstPostedAt": "2026-11-11",
+      "title": "공주 황새바위 순교탑",
+      "region": "",
+      "photoUrl": null,
+      "photoCredit": null,
+      "targets": [
+        {
+          "type": "place",
+          "slug": "tour-127240"
+        },
+        {
+          "type": "place",
+          "slug": "tour-128113"
+        },
+        {
+          "type": "place",
+          "slug": "tour-990000000002"
+        }
+      ]
+    },
+    {
+      "campaignId": "reel-08",
+      "firstPostedAt": "2026-11-09",
+      "title": "수원 화성",
+      "region": "수도권",
+      "photoUrl": "https://tong.visitkorea.or.kr/cms/resource_photo/97/3478597_image2_1.jpg",
+      "photoCredit": {
+        "kind": "kto",
+        "label": "한국관광공사"
+      },
+      "targets": [
+        {
+          "type": "place",
+          "slug": "hwaseong-fortress"
+        }
+      ]
+    },
+    {
+      "campaignId": "reel-07",
+      "firstPostedAt": "2026-11-04",
+      "title": "국립백두대간수목원",
+      "region": "경상",
+      "photoUrl": "https://tong.visitkorea.or.kr/cms/resource/34/3073134_image2_1.jpg",
+      "photoCredit": {
+        "kind": "kto",
+        "label": "한국관광공사"
+      },
+      "targets": [
+        {
+          "type": "place",
+          "slug": "tour-2508220"
+        },
+        {
+          "type": "place",
+          "slug": "gaesimsa",
+          "name": "개심사"
+        }
+      ]
+    },
+    {
+      "campaignId": "reel-05",
+      "firstPostedAt": "2026-11-03",
+      "title": "한라산 백록담",
+      "region": "제주",
+      "photoUrl": "https://tong.visitkorea.or.kr/cms/resource_photo/41/3460441_image2_1.jpg",
+      "photoCredit": {
+        "kind": "kto",
+        "label": "한국관광공사"
+      },
+      "targets": [
+        {
+          "type": "place",
+          "slug": "hallasan-national-park"
+        }
+      ]
+    },
+    {
+      "campaignId": "reel-03",
+      "firstPostedAt": "2026-11-02",
+      "title": "해미순교성지",
+      "region": "",
+      "photoUrl": null,
+      "photoCredit": null,
+      "targets": [
+        {
+          "type": "place",
+          "slug": "tour-918805"
+        },
+        {
+          "type": "place",
+          "slug": "tour-129663"
+        }
+      ]
+    },
+    {
+      "campaignId": "reel-04",
+      "firstPostedAt": "2026-10-31",
+      "title": "성산일출봉",
+      "region": "제주",
+      "photoUrl": "https://tong.visitkorea.or.kr/cms/resource/82/2944282_image2_1.bmp",
+      "photoCredit": {
+        "kind": "kto",
+        "label": "한국관광공사"
+      },
+      "targets": [
+        {
+          "type": "place",
+          "slug": "seongsan-ilchulbong"
+        },
+        {
+          "type": "place",
+          "slug": "tour-126434"
+        },
+        {
+          "type": "place",
+          "slug": "tour-126444"
+        }
+      ]
+    },
+    {
+      "campaignId": "reel-02",
+      "firstPostedAt": "2026-10-30",
+      "title": "무창포 해수욕장 바닷길",
+      "region": "충청",
+      "photoUrl": "https://tong.visitkorea.or.kr/cms/resource/13/3513913_image2_1.jpg",
+      "photoCredit": {
+        "kind": "kto",
+        "label": "한국관광공사"
+      },
+      "targets": [
+        {
+          "type": "place",
+          "slug": "muchangpo-beach"
+        }
+      ]
+    },
+    {
+      "campaignId": "reel-01",
+      "firstPostedAt": "2026-10-29",
+      "title": "제주 추자도",
+      "region": "",
+      "photoUrl": null,
+      "photoCredit": null,
+      "targets": [
+        {
+          "type": "place",
+          "slug": "tour-127863"
+        }
+      ]
+    }
+  ]
 }
