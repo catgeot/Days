@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { useSocialCardPhotos } from './useSocialCardPhotos.js';
 import { Helmet } from 'react-helmet-async';
 import { Link, Navigate, useLocation } from 'react-router-dom';
 import Logo from '../Home/components/Logo';
@@ -47,12 +48,25 @@ function markCardViewed(campaignId) {
   return true;
 }
 
-function SocialPhoto({ url, fallback, credit, className }) {
+function SocialPhoto({ url, fallback, credit, className, onBroken }) {
+  const [failed, setFailed] = useState(false);
   const label = credit?.label || '';
+  useEffect(() => {
+    setFailed(false);
+  }, [url]);
+  const showImage = Boolean(url) && !failed;
   return (
     <div className={`relative overflow-hidden bg-[#2c261f] ${className}`}>
-      {url ? (
-        <img src={url} alt="" className="absolute inset-0 h-full w-full object-cover" />
+      {showImage ? (
+        <img
+          src={url}
+          alt=""
+          className="absolute inset-0 h-full w-full object-cover"
+          onError={() => {
+            setFailed(true);
+            onBroken?.();
+          }}
+        />
       ) : (
         <span
           data-testid="social-photo-fallback"
@@ -153,7 +167,7 @@ function TogetherLine({ card, index, now, className = '' }) {
   );
 }
 
-function HeroCard({ card, index, now }) {
+function HeroCard({ card, index, now, photo }) {
   const placeLabel = card.targets[0]?.type === 'festival' ? '이 축제 보기' : '이 여행지 보기';
   const together = togetherTargets(card).length > 0;
   return (
@@ -165,10 +179,11 @@ function HeroCard({ card, index, now }) {
       <SocialCardLink card={card} index={index} now={now} hero>
         <div className="lg:grid lg:grid-cols-2 lg:items-center lg:gap-8">
           <SocialPhoto
-            url={card.photoUrl}
+            url={photo.url}
             fallback={card.region || card.title}
-            credit={card.photoCredit}
+            credit={photo.credit}
             className="aspect-[16/10] w-full rounded-2xl"
+            onBroken={photo.onBroken}
           />
           <div className="pt-3 lg:pt-0">
             <DateLine card={card} now={now} hero />
@@ -186,42 +201,82 @@ function HeroCard({ card, index, now }) {
           </div>
         </div>
       </SocialCardLink>
-      <TogetherLine card={card} index={index} now={now} className="mt-3" />
+      {together ? <TogetherLine card={card} index={index} now={now} className="mt-3" /> : null}
     </div>
   );
 }
 
-function ListCard({ card, index, now }) {
+function SocialThumbLink({ card, index, now, photo, className, children }) {
+  const href = socialTargetHref(card.targets[0]);
+  const params = socialCardEventParams(card, index, now, 'primary');
+  return (
+    <Link
+      to={href}
+      data-testid="social-card-thumb"
+      data-campaign={card.campaignId}
+      onClick={() => trackSocial('social_card_click', params)}
+      className={`block shrink-0 self-stretch text-inherit no-underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white ${className || ''}`}
+    >
+      {children}
+    </Link>
+  );
+}
+
+function ListCard({ card, index, now, photo }) {
   const ended = socialCardState(card, now) === 'ended';
+  const together = togetherTargets(card).length > 0;
+  const body = (
+    <div className="flex min-w-0 flex-1 flex-col justify-center py-2 pr-3">
+      <DateLine card={card} now={now} />
+      <h3 className="mt-0.5 break-keep text-[15px] font-semibold leading-snug">{card.title}</h3>
+      {card.region ? (
+        <p data-testid="social-region" className="break-keep text-xs text-white/60">
+          {card.region}
+        </p>
+      ) : null}
+      <span className="mt-1 text-sm text-white/80">보기 ›</span>
+    </div>
+  );
   return (
     <div
       data-testid="social-card-shell"
       data-campaign={card.campaignId}
-      className={`flex min-h-[88px] flex-col overflow-hidden rounded-2xl bg-white/[0.04] ${
+      className={`flex min-h-[88px] items-stretch overflow-hidden rounded-2xl bg-white/[0.04] ${
         ended ? 'opacity-60' : ''
       }`}
     >
-      <SocialCardLink card={card} index={index} now={now}>
-        <div className="flex min-h-[88px] flex-1 items-stretch gap-3">
-          <SocialPhoto
-            url={card.photoUrl}
-            fallback={card.region || card.title}
-            credit={card.photoCredit}
-            className="min-h-[88px] w-[104px] shrink-0 self-stretch"
-          />
-          <div className="flex min-w-0 flex-1 flex-col justify-center py-2 pr-3">
-            <DateLine card={card} now={now} />
-            <h3 className="mt-0.5 break-keep text-[15px] font-semibold leading-snug">{card.title}</h3>
-            {card.region ? (
-              <p data-testid="social-region" className="break-keep text-xs text-white/60">
-                {card.region}
-              </p>
-            ) : null}
-            <span className="mt-1 text-sm text-white/80">보기 ›</span>
+      {together ? (
+        <>
+          <SocialThumbLink card={card} index={index} now={now} photo={photo} className="w-[104px]">
+            <SocialPhoto
+              url={photo.url}
+              fallback={card.region || card.title}
+              credit={photo.credit}
+              className="h-full min-h-full w-full"
+              onBroken={photo.onBroken}
+            />
+          </SocialThumbLink>
+          <div className="flex min-w-0 flex-1 flex-col">
+            <SocialCardLink card={card} index={index} now={now}>
+              {body}
+            </SocialCardLink>
+            <TogetherLine card={card} index={index} now={now} className="px-3 pb-3 pt-1" />
           </div>
-        </div>
-      </SocialCardLink>
-      <TogetherLine card={card} index={index} now={now} className="px-3 pb-3" />
+        </>
+      ) : (
+        <SocialCardLink card={card} index={index} now={now}>
+          <div className="flex min-h-[88px] w-full items-stretch gap-3">
+            <SocialPhoto
+              url={photo.url}
+              fallback={card.region || card.title}
+              credit={photo.credit}
+              className="min-h-[88px] w-[104px] shrink-0 self-stretch"
+              onBroken={photo.onBroken}
+            />
+            {body}
+          </div>
+        </SocialCardLink>
+      )}
     </div>
   );
 }
@@ -248,12 +303,14 @@ export default function SocialLinksPage({ cards, now }) {
   const [expanded, setExpanded] = useState(false);
   const clock = useMemo(() => (now instanceof Date ? now : new Date()), [now]);
   const source = Array.isArray(cards) ? cards : generated.cards || [];
+  const socialEnabled = isGateoSocialLinksEnabled(location.search);
   const view = useMemo(
     () => visibleSocialCards(source, expanded, clock),
     [source, expanded, clock],
   );
+  const { photoForCard, markBroken } = useSocialCardPhotos(socialEnabled ? view.visible : []);
 
-  if (!isGateoSocialLinksEnabled(location.search)) {
+  if (!socialEnabled) {
     return <Navigate to="/" replace />;
   }
 
@@ -263,6 +320,14 @@ export default function SocialLinksPage({ cards, now }) {
   const past = rest.filter((card) => socialCardState(card, clock) !== 'ended');
   const ended = rest.filter((card) => socialCardState(card, clock) === 'ended');
   const indexOf = (card) => visible.findIndex((item) => item.campaignId === card.campaignId);
+  const bindPhoto = (card) => {
+    const resolved = photoForCard(card);
+    return {
+      url: resolved.url,
+      credit: resolved.credit,
+      onBroken: () => markBroken(card.campaignId),
+    };
+  };
 
   return (
     <div className="min-h-screen overflow-y-auto bg-black text-white">
@@ -287,13 +352,19 @@ export default function SocialLinksPage({ cards, now }) {
           <EmptyState />
         ) : (
           <div className="flex flex-col gap-6">
-            {hero ? <HeroCard card={hero} index={indexOf(hero)} now={clock} /> : null}
+            {hero ? <HeroCard card={hero} index={indexOf(hero)} now={clock} photo={bindPhoto(hero)} /> : null}
             {past.length ? (
               <section>
                 <h2 className="mb-3 text-sm font-semibold text-white/80">지난 게시물</h2>
                 <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
                   {past.map((card) => (
-                    <ListCard key={card.campaignId} card={card} index={indexOf(card)} now={clock} />
+                    <ListCard
+                      key={card.campaignId}
+                      card={card}
+                      index={indexOf(card)}
+                      now={clock}
+                      photo={bindPhoto(card)}
+                    />
                   ))}
                 </div>
               </section>
@@ -303,7 +374,13 @@ export default function SocialLinksPage({ cards, now }) {
                 <h2 className="mb-3 text-sm font-semibold text-white/80">지난 축제</h2>
                 <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
                   {ended.map((card) => (
-                    <ListCard key={card.campaignId} card={card} index={indexOf(card)} now={clock} />
+                    <ListCard
+                      key={card.campaignId}
+                      card={card}
+                      index={indexOf(card)}
+                      now={clock}
+                      photo={bindPhoto(card)}
+                    />
                   ))}
                 </div>
               </section>

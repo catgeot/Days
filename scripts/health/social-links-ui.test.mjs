@@ -50,6 +50,7 @@ class IntersectionObserverStub {
 setGlobal('IntersectionObserver', IntersectionObserverStub);
 window.IntersectionObserver = IntersectionObserverStub;
 window.__GATEO_GA_DISABLED__ = true;
+globalThis.__GATEO_DISABLE_SOCIAL_PHOTO_FETCH__ = true;
 window.__GATEO_GA_EVENTS__ = [];
 globalThis.__VITE_ENV__ = {
   ...(globalThis.__VITE_ENV__ || {}),
@@ -227,15 +228,35 @@ test('together line stays inside its card shell', async () => {
   for (const line of lines) {
     const shell = line.closest('[data-testid="social-card-shell"]');
     assert.ok(shell);
-    assert.equal(line.parentElement, shell);
+    assert.equal(shell.contains(line), true);
     assert.match(shell.className, /rounded-2xl/);
     assert.match(shell.className, /bg-white\/\[0\.04\]/);
     assert.ok(shell.querySelector('[data-testid="social-hero"], [data-testid="social-card"]'));
-    assert.equal(shell.parentElement.contains(line), true);
-    assert.notEqual(line.parentElement, shell.parentElement);
   }
   const listShell = document.querySelector('[data-campaign="reel-07"]');
   assert.match(listShell.parentElement.className, /grid/);
+});
+
+test('broken repo photo falls back to centered placeholder', async () => {
+  await render('/social?social_links=1', {
+    cards: [
+      {
+        campaignId: 'reel-broken',
+        firstPostedAt: '2026-11-27',
+        title: '깨진 이미지',
+        region: '제주',
+        photoUrl: 'https://example.invalid/gateo-social-broken.jpg',
+        photoCredit: null,
+        targets: [{ type: 'place', slug: 'seongsan-ilchulbong' }],
+      },
+    ],
+    now: NOW,
+  });
+  const img = document.querySelector('[data-testid="social-hero"] img');
+  assert.ok(img);
+  img.dispatchEvent(new window.Event('error'));
+  await act(async () => {});
+  assert.ok(document.querySelector('[data-testid="social-photo-fallback"]'));
 });
 
 test('missing photo centers the region or the place name', async () => {
@@ -270,7 +291,7 @@ test('missing photo centers the region or the place name', async () => {
   assert.match(heroFallback.parentElement.className, /aspect-\[16\/10\]/);
   const listFallback = document.querySelector('[data-testid="social-card"] [data-testid="social-photo-fallback"]');
   assert.equal(listFallback.textContent, '해미순교성지');
-  assert.match(listFallback.parentElement.className, /min-h-\[88px\]/);
+  assert.match(listFallback.parentElement.className, /self-stretch/);
 });
 
 test('empty region hides the region line', async () => {
