@@ -4,10 +4,15 @@ import { STALE_BUNDLE_BANNER_EVENT } from '../lib/staleBundleRecovery.js';
 const POLL_MS = 10 * 60 * 1000;
 
 async function fetchBuildId() {
-  const res = await fetch(`/version.json?ts=${Date.now()}`, { cache: 'no-store' });
-  if (!res.ok) return null;
-  const data = await res.json();
-  return data?.buildId ?? null;
+  try {
+    const res = await fetch(`/version.json?ts=${Date.now()}`, { cache: 'no-store' });
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data?.buildId ?? null;
+  } catch {
+    // WebKit reports a blocked poll as an unhandled "Load failed" rejection.
+    return null;
+  }
 }
 
 /** PROD 배포 감지 전용. 릴리스 노트 자동 팝업은 쓰지 않음(FooterModal Updates). */
