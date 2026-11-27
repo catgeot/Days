@@ -1,0 +1,204 @@
+import assert from 'node:assert/strict';
+import { spawnSync } from 'node:child_process';
+import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { dirname, join } from 'node:path';
+import test from 'node:test';
+import { fileURLToPath } from 'node:url';
+import {
+  buildSocialLinkCards,
+  enrichSocialCards,
+  parsePostedLinksMarkdown,
+} from '../social/postedLinksModel.mjs';
+import { loadSocialPlaceCatalog, syncPostedLinks } from '../social/sync-posted-links.mjs';
+import { socialTargetHref } from '../../src/pages/Social/socialLinksView.js';
+
+const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
+const samplePath = join(root, 'scripts/social/fixtures/posted-links.sample.md');
+const scriptPath = join(root, 'scripts/social/sync-posted-links.mjs');
+
+function cells(postedOn, channel, url, campaignId, target, title, region, status) {
+  return [postedOn, channel, url, campaignId, target, title, region, status];
+}
+
+test('sample fixture merges IG+FB, drops X deleted unconfirmed, keeps target order', () => {
+  const parsed = parsePostedLinksMarkdown(readFileSync(samplePath, 'utf8'));
+  assert.equal(parsed.ok, true);
+  const built = buildSocialLinkCards(parsed.rows);
+  assert.equal(built.ok, true);
+  assert.deepEqual(
+    built.cards.map((card) => card.campaignId),
+    ['reel-03', 'fest-638576', 'reel-10', 'reel-02'],
+  );
+  assert.equal(built.cards[0].firstPostedAt, '2026-11-27');
+  assert.deepEqual(built.cards[0].targets, [
+    { type: 'place', slug: 'seongsan-ilchulbong' },
+    { type: 'place', slug: 'tour-126201' },
+  ]);
+  assert.equal(built.cards[0].targets.length >= 1 && built.cards[0].targets.length <= 3, true);
+  assert.equal(new Set(built.cards.map((card) => card.campaignId)).size, built.cards.length);
+  assert.equal(built.excluded.some((row) => row.reason === 'x'), true);
+  assert.equal(built.excluded.some((row) => row.reason === 'deleted'), true);
+  assert.equal(built.excluded.some((row) => row.reason === 'unconfirmed'), true);
+  assert.equal(
+    built.cards.some((card) => card.campaignId === 'reel-13' || card.campaignId === 'reel-08'),
+    false,
+  );
+  assert.equal(built.skipped.some((row) => row.reason === 'bad-targets'), true);
+  for (const card of built.cards) {
+    assert.ok(card.title);
+    assert.ok(card.region);
+    assert.match(card.campaignId, /^(?:reel-\d+|fest-\d+)$/);
+  }
+});
+
+test('same 홍보번호 with different targets fails', () => {
+  const built = buildSocialLinkCards([
+    {
+      line: 2,
+      cells: cells(
+        '2026-11-01',
+        'IG',
+        'https://example.com/a',
+        'reel-04',
+        'place:seongsan-ilchulbong',
+        '샘플',
+        '제주',
+        'live',
+      ),
+    },
+    {
+      line: 3,
+      cells: cells(
+        '2026-11-01',
+        'FB',
+        'https://example.com/b',
+        'reel-04',
+        'place:tour-126201',
+        '샘플',
+        '제주',
+        'live',
+      ),
+    },
+  ]);
+  assert.equal(built.ok, false);
+  assert.match(built.error, /reel-04/);
+});
+
+test('card list caps at 30 newest', () => {
+  const rows = [];
+  for (let day = 1; day <= 31; day += 1) {
+    rows.push({
+      line: day,
+      cells: cells(
+        `2026-01-${String(day).padStart(2, '0')}`,
+        'IG',
+        `https://example.com/${day}`,
+        `reel-${day}`,
+        'place:seongsan-ilchulbong',
+        `샘플 ${day}`,
+        '제주',
+        'live',
+      ),
+    });
+  }
+  rows.push({
+    line: 40,
+    cells: cells(
+      '2026-01-31',
+      'X',
+      'https://example.com/x',
+      'reel-31',
+      'place:seongsan-ilchulbong',
+      '샘플',
+      '제주',
+      'live',
+    ),
+  });
+  const built = buildSocialLinkCards(rows);
+  assert.equal(built.ok, true);
+  assert.equal(built.cards.length, 30);
+  assert.equal(built.cards[0].campaignId, 'reel-31');
+  assert.equal(
+    built.cards.some((card) => card.campaignId === 'reel-1'),
+    false,
+  );
+  assert.equal(built.excluded.some((row) => row.reason === 'x'), true);
+});
+
+test('wrong header fails and internal hrefs have no utm', () => {
+  const parsed = parsePostedLinksMarkdown('| 게시일 | 채널 |\n| --- | --- |\n');
+  assert.equal(parsed.ok, false);
+  assert.equal(socialTargetHref({ type: 'place', slug: 'tour-126201' }), '/place/tour-126201');
+  assert.equal(socialTargetHref({ type: 'festival', id: '2048902' }), '/korea?festival=2048902');
+  assert.equal(socialTargetHref({ type: 'place', slug: 'tour-126201' }).includes('utm_'), false);
+});
+
+test('missing posted-links.md writes an empty list and ignores posted-log.md', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'social-links-'));
+  const input = join(dir, 'posted-links.md');
+  const output = join(dir, 'socialLinks.generated.json');
+  writeFileSync(
+    join(dir, 'posted-log.md'),
+    '| 2026-11-27 | 01 | IG 릴스 | https://example.com/secret | 비고 |\n',
+    'utf8',
+  );
+  const result = syncPostedLinks({
+    inputPath: input,
+    outputPath: output,
+    catalog: { places: new Map(), festivals: new Map() },
+  });
+  assert.equal(result.ok, true);
+  assert.equal(result.missingSource, true);
+  assert.deepEqual(result.cards, []);
+  const written = JSON.parse(readFileSync(output, 'utf8'));
+  assert.deepEqual(written.cards, []);
+  assert.equal(JSON.stringify(written).includes('secret'), false);
+
+  const spawned = spawnSync(process.execPath, [scriptPath, input, output], { encoding: 'utf8' });
+  assert.equal(spawned.status, 0, spawned.stderr);
+
+  const conflict = join(dir, 'conflict.md');
+  writeFileSync(
+    conflict,
+    [
+      '| 게시일 | 채널 | 게시 URL | 홍보번호 | 대상 | 표시 이름 | 지역 | 상태 |',
+      '| --- | --- | --- | --- | --- | --- | --- | --- |',
+      '| 2026-11-01 | IG | https://example.com/a | reel-04 | place:seongsan-ilchulbong | 샘플 | 제주 | live |',
+      '| 2026-11-01 | FB | https://example.com/b | reel-04 | place:tour-126201 | 샘플 | 제주 | live |',
+    ].join('\n'),
+    'utf8',
+  );
+  const failed = spawnSync(process.execPath, [scriptPath, conflict, join(dir, 'nope.json')], {
+    encoding: 'utf8',
+  });
+  assert.equal(failed.status, 1);
+  assert.match(failed.stderr, /reel-04/);
+});
+
+test('catalog hero is the scenic photo and a missing slug stays without a photo', () => {
+  const catalog = loadSocialPlaceCatalog(root);
+  const parsed = parsePostedLinksMarkdown(readFileSync(samplePath, 'utf8'));
+  const built = buildSocialLinkCards(parsed.rows);
+  const cards = enrichSocialCards(built.cards, catalog);
+  const hero = cards.find((card) => card.campaignId === 'reel-03');
+  assert.match(hero.photoUrl, /visitkorea\.or\.kr/);
+  assert.equal(hero.photoCredit.kind, 'kto');
+  assert.equal(hero.targets[1].name, '소수서원');
+  const plain = cards.find((card) => card.campaignId === 'reel-02');
+  assert.equal(plain.photoUrl, null);
+  const fest = cards.find((card) => card.campaignId === 'fest-638576');
+  assert.equal(fest.targets[0].eventEndDate, '20261108');
+  assert.match(fest.photoUrl, /^https:\/\//);
+});
+
+test('committed social json stays empty until posted-links.md exists', () => {
+  const generated = JSON.parse(
+    readFileSync(join(root, 'src/pages/Social/data/socialLinks.generated.json'), 'utf8'),
+  );
+  assert.equal(generated.missingSource, true);
+  assert.deepEqual(generated.cards, []);
+  const syncSource = readFileSync(scriptPath, 'utf8');
+  assert.equal(syncSource.includes('posted-log.md'), true);
+  assert.equal(syncSource.includes("readFileSync(join(root, 'posted-log.md')"), false);
+});
