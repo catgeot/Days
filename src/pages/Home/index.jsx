@@ -24,7 +24,7 @@ import { useGlobeLogic } from './hooks/useGlobeLogic';
 import { useTravelData } from './hooks/useTravelData';
 import { useSearchEngine } from './hooks/useSearchEngine';
 import { useHomeHandlers } from './hooks/useHomeHandlers';
-import { formatUrlName, getPlaceUrlParam } from './lib/formatUrlName';
+import { formatUrlName, getPlaceUrlParam, resolvePlaceUrlParamForPath } from './lib/formatUrlName';
 import { resolvePlaceCardHref } from './lib/placeCardHref.js';
 import { cachePlaceLocation, mergeCachedPlaceIfCoordsMatch } from './lib/placeLocationCache';
 import { enrichJoseonRoyalTombsPromoPin } from './lib/joseonRoyalTombsPromoCopy.js';
@@ -1144,7 +1144,9 @@ function Home() {
         ? `/${tab.trim().toLowerCase()}`
         : '';
 
-    const param = getPlaceUrlParam(prepared);
+    const livePathForParam = typeof window !== 'undefined' ? window.location.pathname : routeLocation.pathname;
+    const pathSlugForParam = livePathForParam.match(/\/place\/([^/?#]+)/)?.[1] || '';
+    const param = resolvePlaceUrlParamForPath(prepared, pathSlugForParam);
     if (!param) {
       if (targetPlace.lat != null && targetPlace.lng != null) {
         navigate(`/place/city-${targetPlace.lat}-${targetPlace.lng}${tabSuffix}`);
@@ -1474,7 +1476,7 @@ function Home() {
             { selectedLocation: selectedLocationRef.current },
           );
 
-          const canonicalParam = getPlaceUrlParam(focusTarget);
+          const canonicalParam = resolvePlaceUrlParamForPath(focusTarget, normalizedTargetSlug);
           const preserveSearchCoordUrl =
             normalizedTargetSlug.startsWith('search-') &&
             focusTarget?.uiPlace &&

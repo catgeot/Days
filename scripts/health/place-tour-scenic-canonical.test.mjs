@@ -1,7 +1,11 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { getPlaceUrlParam, koreaTourContentPlaceParam } from '../../src/pages/Home/lib/formatUrlName.js';
+import {
+  getPlaceUrlParam,
+  koreaTourContentPlaceParam,
+  resolvePlaceUrlParamForPath,
+} from '../../src/pages/Home/lib/formatUrlName.js';
 import {
   getVisibleKoreaScenicSpotByContentId,
   resolveKoreaScenicCatalogPlacePinFromTourContentId,
@@ -21,9 +25,14 @@ test('tour-126547 → gochang-dolmen-sites canonical', () => {
   const fromSlug = resolvePlaceTargetFromSlug('tour-126547');
   assert.equal(fromSlug?.slug, 'gochang-dolmen-sites');
   assert.equal(getPlaceUrlParam(fromSlug), 'gochang-dolmen-sites');
+  assert.equal(resolvePlaceUrlParamForPath(fromSlug, 'tour-126547'), 'gochang-dolmen-sites');
+  assert.equal(
+    placeCanonicalPath(resolvePlaceUrlParamForPath(fromSlug, 'tour-126547')),
+    '/place/gochang-dolmen-sites',
+  );
 });
 
-test('tourapi pin with scenic contentId — getPlaceUrlParam prefers placeSlug', () => {
+test('tour-* URL 세그먼트만 scenic placeSlug — tourapi 탐색 param은 tour 유지', () => {
   const tourapiPin = {
     contentId: '126547',
     source: 'tourapi',
@@ -32,20 +41,35 @@ test('tourapi pin with scenic contentId — getPlaceUrlParam prefers placeSlug',
     name: '고창 고인돌 유적',
     country_en: 'South Korea',
   };
-  assert.equal(getPlaceUrlParam(tourapiPin), 'gochang-dolmen-sites');
+  assert.equal(getPlaceUrlParam(tourapiPin), 'tour-126547');
+  assert.equal(resolvePlaceUrlParamForPath(tourapiPin, 'tour-126547'), 'gochang-dolmen-sites');
 });
 
 test('ambiguous scenic contentId — no canonical overwrite', () => {
   assert.equal(getVisibleKoreaScenicSpotByContentId('125449'), null);
   assert.equal(resolveUniqueKoreaScenicPlaceSlugForContentId('125449'), null);
+  const ambiguousPin = {
+    contentId: '125449',
+    source: 'tourapi',
+    slug: 'tour-125449',
+    name: '남한산성',
+  };
+  assert.equal(getPlaceUrlParam(ambiguousPin), 'tour-125449');
+  assert.equal(resolvePlaceUrlParamForPath(ambiguousPin, 'tour-125449'), 'tour-125449');
+});
+
+test('hub attraction contentId — placeUrlSlug 유지 (scenic placeSlug로 덮지 않음)', () => {
+  const scenic = getVisibleKoreaScenicSpotByContentId('128526');
+  assert.equal(scenic?.placeSlug, 'donggung-palace-and-wolji-pond');
   assert.equal(
     getPlaceUrlParam({
-      contentId: '125449',
-      source: 'tourapi',
-      slug: 'tour-125449',
-      name: '남한산성',
+      contentId: '128526',
+      source: 'hub',
+      slug: 'apji-duckweed',
+      canonical_slug: 'apji-duckweed',
+      name: '압지부평',
     }),
-    'tour-125449',
+    'apji-duckweed',
   );
 });
 

@@ -74,6 +74,24 @@ export function sanitizeTourContentIdEnglishFallback(value) {
 }
 
 /**
+ * 브라우저 `/place/:slug` 세그먼트가 `tour-{contentId}`일 때만 scenic placeSlug canonical.
+ * 탐색·허브 핀의 getPlaceUrlParam( placeUrlSlug ) 은 변경하지 않는다.
+ * @param {object | null | undefined} loc
+ * @param {string | null | undefined} pathSlug — URL :slug 세그먼트
+ */
+export function resolvePlaceUrlParamForPath(loc, pathSlug) {
+  const pathKey = String(pathSlug ?? '').trim().toLowerCase();
+  const tourMatch = pathKey.match(/^tour-(\d{1,32})$/);
+  if (!tourMatch) return getPlaceUrlParam(loc);
+
+  const scenicCanonicalSlug = resolveUniqueKoreaScenicPlaceSlugForContentId(tourMatch[1]);
+  if (scenicCanonicalSlug && !uiPlacePoiCollidesWithCatalogParam(loc, scenicCanonicalSlug)) {
+    return scenicCanonicalSlug;
+  }
+  return pathKey || getPlaceUrlParam(loc);
+}
+
+/**
  * `/place/...` 라우팅용. SSOT slug(canonical) 우선 — 숫자 id(700)·지오코딩 보조지명(ruul) URL 통일.
  */
 export function getPlaceUrlParam(loc) {
@@ -83,10 +101,6 @@ export function getPlaceUrlParam(loc) {
   const source = String(merged.source ?? '').trim().toLowerCase();
 
   const tourContentParam = koreaTourContentPlaceParam(merged.contentId);
-  const scenicCanonicalSlug = resolveUniqueKoreaScenicPlaceSlugForContentId(merged.contentId);
-  if (scenicCanonicalSlug && !uiPlacePoiCollidesWithCatalogParam(merged, scenicCanonicalSlug)) {
-    return scenicCanonicalSlug;
-  }
   if (tourContentParam && source === 'tourapi') {
     return tourContentParam;
   }
