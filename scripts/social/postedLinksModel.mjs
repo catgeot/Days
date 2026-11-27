@@ -100,9 +100,12 @@ export function parsePostedLinksMarkdown(markdown) {
   if (headerIndex === -1) return { ok: true, rows: [] };
 
   const rows = [];
+  // 표 아래 삭제·댓글 불릿은 행이 아니에요. 표가 아닌 첫 줄에서 읽기를 멈춰요.
   for (let index = headerIndex + 1; index < lines.length; index += 1) {
+    if (!String(lines[index] ?? '').trim()) continue;
     const cells = splitTableRow(lines[index]);
-    if (!cells || isSeparator(cells)) continue;
+    if (!cells) break;
+    if (isSeparator(cells)) continue;
     rows.push({ line: index + 1, cells });
   }
   return { ok: true, rows };
@@ -132,7 +135,6 @@ function classifyRow(row) {
   const parsedTargets = parseSocialTargets(targetRaw);
   if (!parsedTargets.ok) return { kind: 'skipped', line, reason: 'bad-targets' };
   if (!String(title || '').trim()) return { kind: 'skipped', line, reason: 'missing-title' };
-  if (!String(region || '').trim()) return { kind: 'skipped', line, reason: 'missing-region' };
   return {
     kind: 'live',
     line,
@@ -140,7 +142,7 @@ function classifyRow(row) {
     channel,
     campaignId: String(campaignId).trim(),
     title: String(title).trim(),
-    region: String(region).trim(),
+    region: String(region || '').trim(),
     targets: parsedTargets.targets,
     targetKey: socialTargetKey(parsedTargets.targets),
   };
@@ -186,11 +188,16 @@ export function buildSocialLinkCards(rows) {
     }
     const byDate = [...list].sort((a, b) => a.postedOn.localeCompare(b.postedOn) || a.line - b.line);
     const latest = [...list].sort((a, b) => b.postedOn.localeCompare(a.postedOn) || b.line - a.line)[0];
+    const region =
+      [...list]
+        .sort((a, b) => b.postedOn.localeCompare(a.postedOn) || b.line - a.line)
+        .map((row) => row.region)
+        .find(Boolean) || '';
     cards.push({
       campaignId,
       firstPostedAt: byDate[0].postedOn,
       title: latest.title,
-      region: latest.region,
+      region,
       targets: latest.targets.map((target) => ({ ...target })),
     });
   }
@@ -256,11 +263,15 @@ export function enrichSocialCards(cards, catalog = {}) {
     const primary = targets[0] || null;
     const photoUrl = primary?.imageUrl || null;
     const photoCredit = photoCreditFor(photoUrl, primary?.imageCredit);
+    let region = String(card.region || '').trim();
+    if (!region && primary?.type === 'place') {
+      region = String(placeRecord(catalog, primary.slug)?.region || '').trim();
+    }
     return {
       campaignId: card.campaignId,
       firstPostedAt: card.firstPostedAt,
       title: card.title,
-      region: card.region,
+      region,
       photoUrl,
       photoCredit,
       targets: targets.map((target) => {

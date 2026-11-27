@@ -15,6 +15,7 @@ import { socialTargetHref } from '../../src/pages/Social/socialLinksView.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const samplePath = join(root, 'scripts/social/fixtures/posted-links.sample.md');
+const bulletsPath = join(root, 'scripts/social/fixtures/posted-links-bullets.md');
 const scriptPath = join(root, 'scripts/social/sync-posted-links.mjs');
 
 function cells(postedOn, channel, url, campaignId, target, title, region, status) {
@@ -50,6 +51,31 @@ test('sample fixture merges IG+FB, drops X deleted unconfirmed, keeps target ord
     assert.ok(card.region);
     assert.match(card.campaignId, /^(?:reel-\d+|fest-\d+)$/);
   }
+});
+
+test('bullets under the table are ignored and an empty region uses the place region', () => {
+  const parsed = parsePostedLinksMarkdown(readFileSync(bulletsPath, 'utf8'));
+  assert.equal(parsed.ok, true);
+  assert.equal(parsed.rows.length, 4);
+  assert.equal(
+    parsed.rows.some((row) => row.cells.some((cell) => String(cell).includes('reel-99'))),
+    false,
+  );
+  const built = buildSocialLinkCards(parsed.rows);
+  assert.equal(built.ok, true);
+  assert.deepEqual(
+    built.cards.map((card) => card.campaignId),
+    ['reel-05', 'reel-10', 'reel-02'],
+  );
+  assert.equal(built.cards.find((card) => card.campaignId === 'reel-05').region, '');
+  assert.equal(built.cards.find((card) => card.campaignId === 'reel-10').region, '전북 샘플');
+  assert.equal(built.skipped.some((row) => row.reason === 'missing-region'), false);
+
+  const catalog = loadSocialPlaceCatalog(root);
+  const cards = enrichSocialCards(built.cards, catalog);
+  assert.equal(cards.find((card) => card.campaignId === 'reel-05').region, '제주');
+  assert.equal(cards.find((card) => card.campaignId === 'reel-10').region, '전북 샘플');
+  assert.equal(cards.find((card) => card.campaignId === 'reel-02').region, '');
 });
 
 test('same 홍보번호 with different targets fails', () => {

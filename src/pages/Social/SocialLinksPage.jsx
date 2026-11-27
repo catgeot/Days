@@ -53,11 +53,11 @@ function SocialPhoto({ url, region, credit, className }) {
     <div className={`relative overflow-hidden bg-[#2c261f] ${className}`}>
       {url ? (
         <img src={url} alt="" className="h-full w-full object-cover" />
-      ) : (
+      ) : region ? (
         <div className="flex h-full w-full items-center justify-center px-2 text-center text-xs text-white/80 break-keep">
           {region}
         </div>
-      )}
+      ) : null}
       {label ? (
         <span className="pointer-events-none absolute bottom-1 left-1 max-w-[calc(100%-8px)] truncate text-[10px] leading-none text-white/80">
           {label}
@@ -168,7 +168,11 @@ function HeroCard({ card, index, now }) {
             <h2 className="mt-2 break-keep text-[26px] font-bold leading-snug tracking-tight lg:text-[32px]">
               {card.title}
             </h2>
-            <p className="mt-1 break-keep text-sm text-white/70">{card.region}</p>
+            {card.region ? (
+              <p data-testid="social-region" className="mt-1 break-keep text-sm text-white/70">
+                {card.region}
+              </p>
+            ) : null}
             <span className="mt-4 flex h-12 w-full items-center justify-center rounded-2xl bg-white text-[15px] font-semibold text-black">
               {placeLabel}
             </span>
@@ -194,7 +198,11 @@ function ListCard({ card, index, now }) {
           <div className="flex min-w-0 flex-1 flex-col justify-center py-2 pr-3">
             <DateLine card={card} now={now} />
             <h3 className="mt-0.5 break-keep text-[15px] font-semibold leading-snug">{card.title}</h3>
-            <p className="break-keep text-xs text-white/60">{card.region}</p>
+            {card.region ? (
+              <p data-testid="social-region" className="break-keep text-xs text-white/60">
+                {card.region}
+              </p>
+            ) : null}
             <span className="mt-1 text-sm text-white/80">보기 ›</span>
           </div>
         </div>

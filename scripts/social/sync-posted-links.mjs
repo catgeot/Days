@@ -46,6 +46,7 @@ export function loadSocialPlaceCatalog(root = repoRoot) {
     const record = {
       name: String(spot.name || spot.attractionName || '').trim(),
       imageUrl: String(spot.imageUrl || '').trim() || null,
+      region: String(spot.region || '').trim(),
     };
     remember(spot.placeSlug, record);
     remember(spot.id, record);
@@ -59,6 +60,7 @@ export function loadSocialPlaceCatalog(root = repoRoot) {
       remember(spot.slug, {
         name: String(spot.name || '').trim(),
         imageUrl: null,
+        region: '',
       });
     }
   }

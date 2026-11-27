@@ -192,6 +192,26 @@ test('flag off redirects /social home and records no social events', async () =>
   assert.deepEqual(events('social_card_view'), []);
 });
 
+test('empty region hides the region line', async () => {
+  await render('/social?social_links=1', {
+    cards: [
+      {
+        campaignId: 'reel-20',
+        firstPostedAt: '2026-11-27',
+        title: '샘플 지역없음',
+        region: '',
+        photoUrl: null,
+        photoCredit: null,
+        targets: [{ type: 'place', slug: 'sample-empty-region' }],
+      },
+    ],
+    now: NOW,
+  });
+  const hero = document.querySelector('[data-testid="social-hero"]');
+  assert.match(hero.textContent, /샘플 지역없음/);
+  assert.equal(hero.querySelector('[data-testid="social-region"]'), null);
+});
+
 test('empty list shows the empty state without a more button', async () => {
   await render('/social?social_links=1', { cards: [], now: NOW });
   assert.match(document.body.textContent, /곧 소개할 여행지를 준비하고 있어요/);
