@@ -65,6 +65,33 @@ body {
   html[data-home-watch-globe-lift='1'] .gateo-home-globe-shell .gateo-globe-map {
     top: calc(-1 * (var(--home-watch-globe-lift, 60px) + var(--home-globe-mobile-base-lift, 10px)));
   }
+
+  .gateo-home-globe-shell {
+    --home-mapbox-footer-clearance: calc(
+      max(0.5rem, env(safe-area-inset-bottom, 0px))
+      + 3.8125rem
+      + 0.375rem
+      + 1.5rem
+      + 0.25rem
+    );
+    --home-mapbox-globe-shift: 0px;
+  }
+
+  html[data-home-watch-globe-lift='1'] .gateo-home-globe-shell {
+    --home-mapbox-globe-shift: calc(
+      var(--home-watch-globe-lift, 60px) + var(--home-globe-mobile-base-lift, 10px)
+    );
+  }
+
+  .gateo-home-globe-shell .mapboxgl-ctrl-bottom-left,
+  .gateo-home-globe-shell .mapboxgl-ctrl-bottom-right {
+    z-index: 1;
+    pointer-events: auto;
+    margin-bottom: max(
+      0.25rem,
+      calc(var(--home-mapbox-footer-clearance) - var(--home-mapbox-globe-shift))
+    );
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
