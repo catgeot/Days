@@ -44,6 +44,8 @@ export const GATEO_ENV_FLAG_NAMES = {
   SELF_REELS: 'VITE_GATEO_SELF_REELS',
   /** /social card list. Default off. `?social_links=1` previews the same screen. */
   SOCIAL_LINKS: 'VITE_GATEO_SOCIAL_LINKS',
+  /** Full-screen /social reels player. Default off. `?social_reels=1` previews it. */
+  SOCIAL_REELS: 'VITE_GATEO_SOCIAL_REELS',
   /** Home watch card month title, next-month text switch, and lower placement. Default off. */
   HOME_MONTHLY_SWITCH: 'VITE_GATEO_HOME_MONTHLY_SWITCH',
   /** Overseas airport → lodging pickup row (MyRealTrip / Trip.com). Default off. */
@@ -278,6 +280,33 @@ export function isGateoSocialLinksEnabled(search) {
         ? window.location.search
         : '';
   return isSocialLinksQueryEnabled(source);
+}
+
+export const SOCIAL_REELS_QUERY_PARAM = 'social_reels';
+
+/** @param {string | null | undefined} search */
+export function isSocialReelsQueryEnabled(search) {
+  try {
+    const value = new URLSearchParams(String(search || '').replace(/^\?/, '')).get(
+      SOCIAL_REELS_QUERY_PARAM,
+    );
+    const normalized = String(value || '').trim().toLowerCase();
+    return normalized === '1' || normalized === 'true' || normalized === 'yes';
+  } catch {
+    return false;
+  }
+}
+
+/** On-site reels player. Default off. Env `'1'` or `?social_reels=1` turns it on. */
+export function isGateoSocialReelsEnabled(search) {
+  if (readGateoEnvFlag(GATEO_ENV_FLAG_NAMES.SOCIAL_REELS)) return true;
+  const source =
+    search != null
+      ? search
+      : typeof window !== 'undefined'
+        ? window.location.search
+        : '';
+  return isSocialReelsQueryEnabled(source);
 }
 
 export const HOME_MONTHLY_SWITCH_QUERY_PARAM = 'home_monthly_switch';

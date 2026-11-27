@@ -1,0 +1,622 @@
+import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
+import fs from 'node:fs';
+import test, { after, beforeEach } from 'node:test';
+import { JSDOM } from 'jsdom';
+import React, { act } from 'react';
+import { createRoot } from 'react-dom/client';
+import { HelmetProvider } from 'react-helmet-async';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { fileURLToPath } from 'node:url';
+
+const NOW = new Date('2026-11-27T03:00:00.000Z');
+const FLAG_OFF_HTML_SHA256 = 'f5fd91180dfb5105dd61cbf449ada0c5f5e4dff4279b0690740663003d3ee485';
+
+globalThis.__GATEO_DISABLE_SOCIAL_PHOTO_FETCH__ = true;
+globalThis.__VITE_ENV__ = {
+  ...(globalThis.__VITE_ENV__ || {}),
+  VITE_GATEO_SOCIAL_LINKS: '',
+  VITE_GATEO_SOCIAL_REELS: '',
+};
+
+const { default: SocialLinksPage } = await import('../../src/pages/Social/SocialLinksPage.jsx');
+const {
+  buildSocialReelPlaylist,
+  formatSocialReelCredit,
+  normalizeSocialReel,
+} = await import('../../src/pages/Social/socialReels.js');
+const { createSocialReelSession } = await import('../../src/pages/Social/socialReelPlayback.js');
+const catalog = await import('../../src/pages/Social/data/socialReels.json', { with: { type: 'json' } });
+
+const dom = new JSDOM('<!doctype html><html><head></head><body></body></html>', {
+  url: 'https://www.gateo.kr/social?social_links=1&qa=1',
+});
+const { window } = dom;
+
+function setGlobal(name, value) {
+  Object.defineProperty(globalThis, name, { value, configurable: true, writable: true });
+}
+
+setGlobal('window', window);
+setGlobal('document', window.document);
+setGlobal('navigator', window.navigator);
+setGlobal('localStorage', window.localStorage);
+setGlobal('sessionStorage', window.sessionStorage);
+setGlobal('HTMLElement', window.HTMLElement);
+setGlobal('Element', window.Element);
+setGlobal('Node', window.Node);
+setGlobal('MouseEvent', window.MouseEvent);
+setGlobal('PointerEvent', window.PointerEvent);
+setGlobal('KeyboardEvent', window.KeyboardEvent);
+setGlobal('Event', window.Event);
+setGlobal('IS_REACT_ACT_ENVIRONMENT', true);
+setGlobal('requestAnimationFrame', (cb) => setTimeout(cb, 0));
+setGlobal('cancelAnimationFrame', (id) => clearTimeout(id));
+
+class IntersectionObserverStub {
+  constructor(callback) {
+    this.callback = callback;
+  }
+  observe(element) {
+    this.callback([{ isIntersecting: true, intersectionRatio: 0.75, target: element }]);
+  }
+  unobserve() {}
+  disconnect() {}
+  takeRecords() {
+    return [];
+  }
+}
+setGlobal('IntersectionObserver', IntersectionObserverStub);
+window.IntersectionObserver = IntersectionObserverStub;
+window.__GATEO_GA_DISABLED__ = true;
+window.__GATEO_GA_EVENTS__ = [];
+
+function placeCard(id, day, title, slug) {
+  return {
+    campaignId: id,
+    firstPostedAt: `2026-11-${String(day).padStart(2, '0')}`,
+    title,
+    region: '제주 샘플',
+    photoUrl: `https://example.test/${id}.jpg`,
+    photoCredit: null,
+    targets: [{ type: 'place', slug: slug || id }],
+  };
+}
+
+const sampleCards = [
+  {
+    campaignId: 'reel-14',
+    firstPostedAt: '2026-11-27',
+    title: '샘플 최근',
+    region: '경북 샘플',
+    photoUrl: 'https://tong.visitkorea.or.kr/cms/resource/51/3588851_image2_1.jpg',
+    photoCredit: { kind: 'kto', label: '한국관광공사' },
+    targets: [
+      { type: 'place', slug: 'tour-126201' },
+      { type: 'place', slug: 'tour-127190', name: '화순 고인돌군' },
+    ],
+  },
+  {
+    campaignId: 'fest-9001',
+    firstPostedAt: '2026-11-26',
+    title: '샘플 종료 축제',
+    region: '부산 샘플',
+    photoUrl: null,
+    photoCredit: null,
+    targets: [
+      { type: 'festival', id: '9001', eventStartDate: '20261101', eventEndDate: '20261108' },
+    ],
+  },
+  {
+    campaignId: 'fest-9002',
+    firstPostedAt: '2026-11-25',
+    title: '샘플 곧 시작',
+    region: '부산 샘플',
+    photoUrl: null,
+    photoCredit: null,
+    targets: [
+      { type: 'festival', id: '9002', eventStartDate: '20261128', eventEndDate: '20270110' },
+    ],
+  },
+  {
+    campaignId: 'reel-1',
+    firstPostedAt: '2026-11-01',
+    title: '샘플 지난 장소',
+    region: '제주 샘플',
+    photoUrl: null,
+    photoCredit: null,
+    targets: [{ type: 'place', slug: 'sample-1' }],
+  },
+];
+
+const flagOffReels = [
+  {
+    campaignId: 'reel-14',
+    kind: 'mp4',
+    src: 'https://example.test/reel-14.mp4',
+    poster: 'https://example.test/reel-14.jpg',
+    durationSec: 8,
+    credit: '한국관광공사',
+  },
+];
+
+const orderedCards = [
+  placeCard('reel-new', 20, '새 릴스', 'jeju-new'),
+  placeCard('reel-old', 2, '옛 릴스', 'busan-old'),
+  {
+    campaignId: 'fest-old',
+    firstPostedAt: '2026-11-01',
+    title: '끝난 축제',
+    region: '부산 샘플',
+    photoUrl: 'https://example.test/fest-old.jpg',
+    photoCredit: null,
+    targets: [{ type: 'festival', id: '42', eventStartDate: '20261101', eventEndDate: '20261102' }],
+  },
+];
+
+const orderedReels = [
+  {
+    campaignId: 'fest-old',
+    kind: 'mp4',
+    src: 'https://example.test/fest.mp4',
+    poster: 'https://example.test/fest.jpg',
+    durationSec: 4,
+    credit: '출처: 축제 자료',
+  },
+  {
+    campaignId: 'reel-old',
+    kind: 'mp4',
+    src: 'https://example.test/old.mp4',
+    poster: 'https://example.test/old.jpg',
+    durationSec: 5,
+    credit: '옛 자료',
+  },
+  {
+    campaignId: 'reel-new',
+    kind: 'mp4',
+    src: 'https://example.test/new.mp4',
+    poster: 'https://example.test/new.jpg',
+    durationSec: 6,
+    credit: '한국관광공사',
+  },
+  {
+    campaignId: 'not-a-card',
+    kind: 'mp4',
+    src: 'https://example.test/nope.mp4',
+    poster: 'https://example.test/nope.jpg',
+    durationSec: 3,
+    credit: '없음',
+  },
+  {
+    campaignId: 'reel-new',
+    kind: 'hls',
+    src: 'https://example.test/duplicate.m3u8',
+    poster: 'https://example.test/duplicate.jpg',
+    durationSec: 9,
+    credit: '중복',
+  },
+];
+
+function Harness({ entry, pageProps, nonce }) {
+  return React.createElement(
+    HelmetProvider,
+    null,
+    React.createElement(
+      MemoryRouter,
+      { initialEntries: [entry], key: nonce },
+      React.createElement(
+        Routes,
+        null,
+        React.createElement(Route, {
+          path: '/social',
+          element: React.createElement(SocialLinksPage, pageProps),
+        }),
+        React.createElement(Route, {
+          path: '/',
+          element: React.createElement('div', { 'data-testid': 'home' }, 'home'),
+        }),
+        React.createElement(Route, {
+          path: '/place/:slug',
+          element: React.createElement('div', { 'data-testid': 'place' }, 'place'),
+        }),
+        React.createElement(Route, {
+          path: '/korea',
+          element: React.createElement('div', { 'data-testid': 'korea' }, 'korea'),
+        }),
+      ),
+    ),
+  );
+}
+
+let root;
+let container;
+let renderNonce = 0;
+
+async function render(entry, pageProps) {
+  renderNonce += 1;
+  if (!root) {
+    container = document.createElement('div');
+    document.body.appendChild(container);
+    root = createRoot(container);
+  }
+  await act(async () => {
+    root.render(React.createElement(Harness, { entry, pageProps, nonce: renderNonce }));
+  });
+  await act(async () => {
+    await new Promise((resolve) => setTimeout(resolve, 0));
+  });
+}
+
+function setReducedMotion(on) {
+  window.matchMedia = (query) => ({
+    matches: Boolean(on) && String(query).includes('prefers-reduced-motion'),
+    media: String(query),
+    addEventListener() {},
+    removeEventListener() {},
+    dispatchEvent() {
+      return false;
+    },
+  });
+}
+
+async function openPlayer() {
+  await act(async () => {
+    document.querySelector('[data-testid="social-reels-open"]').click();
+  });
+  await act(async () => {
+    await new Promise((resolve) => setTimeout(resolve, 0));
+  });
+}
+
+function player() {
+  return document.querySelector('[data-testid="social-reel-player"]');
+}
+
+function video() {
+  return document.querySelector('[data-testid="social-reel-video"]');
+}
+
+async function pointerSwipe(dy) {
+  const node = player();
+  await act(async () => {
+    node.dispatchEvent(
+      new window.PointerEvent('pointerdown', {
+        clientX: 80,
+        clientY: 300,
+        pointerId: 1,
+        bubbles: true,
+      }),
+    );
+    node.dispatchEvent(
+      new window.PointerEvent('pointerup', {
+        clientX: 80,
+        clientY: 300 + dy,
+        pointerId: 1,
+        bubbles: true,
+      }),
+    );
+  });
+}
+
+async function key(name) {
+  await act(async () => {
+    window.dispatchEvent(
+      new window.KeyboardEvent('keydown', { key: name, bubbles: true, cancelable: true }),
+    );
+  });
+}
+
+beforeEach(() => {
+  globalThis.__VITE_ENV__.VITE_GATEO_SOCIAL_REELS = '';
+  delete window.__GATEO_SOCIAL_REELS_FIXTURE__;
+  setReducedMotion(false);
+  window.__GATEO_GA_DISABLED__ = true;
+  window.__GATEO_GA_EVENTS__ = [];
+  window.__GATEO_SOCIAL_CARD_VIEWS__ = new Set();
+  window.sessionStorage.clear();
+});
+
+after(async () => {
+  if (root) {
+    await act(async () => {
+      root.unmount();
+    });
+    root = undefined;
+  }
+  if (container?.parentNode) {
+    container.parentNode.removeChild(container);
+    container = undefined;
+  }
+  dom.window.close();
+});
+
+test('shipped reel catalog is empty', () => {
+  assert.deepEqual(catalog.default.reels, []);
+  const source = fs.readFileSync(
+    fileURLToPath(new URL('../../src/pages/Social/socialReelHls.js', import.meta.url)),
+    'utf8',
+  );
+  assert.match(source, /import\('hls\.js'\)/);
+});
+
+test('playlist follows card order, keeps the first row, and prefixes 출처', () => {
+  assert.equal(formatSocialReelCredit('한국관광공사'), '출처: 한국관광공사');
+  assert.equal(formatSocialReelCredit('출처: 이미 있음'), '출처: 이미 있음');
+  assert.equal(formatSocialReelCredit(''), '');
+  assert.equal(normalizeSocialReel({ campaignId: 'a', kind: 'wav', src: 'https://example.test/a.wav' }), null);
+
+  const playlist = buildSocialReelPlaylist(orderedCards, orderedReels, NOW);
+  assert.deepEqual(
+    playlist.map((item) => item.campaignId),
+    ['reel-new', 'reel-old', 'fest-old'],
+  );
+  assert.equal(playlist[0].reel.src, 'https://example.test/new.mp4');
+  assert.equal(playlist[0].reel.kind, 'mp4');
+  assert.equal(playlist[0].href, '/place/jeju-new');
+  assert.equal(playlist[0].placeLabel, '이 여행지 보기');
+  assert.equal(playlist[0].creditText, '출처: 한국관광공사');
+  assert.equal(playlist[2].href, '/korea?festival=42');
+  assert.equal(playlist[2].placeLabel, '이 축제 보기');
+  assert.equal(playlist[2].creditText, '출처: 축제 자료');
+  assert.equal(playlist[0].reel.durationSec, 6);
+});
+
+test('flag off matches the pre-change /social HTML with reel data present', async () => {
+  await render('/social?social_links=1&qa=1', {
+    cards: sampleCards,
+    now: NOW,
+    reels: flagOffReels,
+  });
+  const html = container.innerHTML;
+  assert.equal(createHash('sha256').update(html).digest('hex'), FLAG_OFF_HTML_SHA256);
+  assert.equal(container.querySelectorAll('button').length, 0);
+  assert.equal(document.querySelector('[data-testid="social-reels-open"]'), null);
+  assert.equal(document.querySelector('video'), null);
+  assert.equal(document.querySelector('[data-testid="social-hero"]').getAttribute('href'), '/place/tour-126201');
+});
+
+test('flag on with an empty catalog keeps the entry hidden', async () => {
+  globalThis.__VITE_ENV__.VITE_GATEO_SOCIAL_REELS = '1';
+  await render('/social?social_links=1', { cards: sampleCards, now: NOW });
+  assert.equal(document.querySelector('[data-testid="social-reels-open"]'), null);
+  assert.equal(document.querySelector('video'), null);
+
+  await render('/social?social_links=1&social_reels=1', {
+    cards: sampleCards,
+    now: NOW,
+    reels: [],
+  });
+  assert.equal(document.querySelector('[data-testid="social-reels-open"]'), null);
+});
+
+test('player order, credit, place target, poster preload, and one video element', async () => {
+  await render('/social?social_links=1&social_reels=1', {
+    cards: orderedCards,
+    now: NOW,
+    reels: orderedReels,
+  });
+  assert.equal(document.querySelector('[data-testid="social-reels-open"]').textContent, '지난 릴스 보기');
+  await openPlayer();
+  const node = video();
+  assert.equal(document.querySelectorAll('video').length, 1);
+  assert.equal(player().getAttribute('data-campaign'), 'reel-new');
+  assert.equal(node.muted, true);
+  assert.equal(document.querySelector('[data-testid="social-reel-mute"]').getAttribute('data-muted'), 'true');
+  assert.equal(document.querySelector('[data-testid="social-reel-mute"]').textContent, '소리 켜기');
+  assert.match(node.getAttribute('src'), /new\.mp4$/);
+  assert.equal(node.getAttribute('playsinline'), '');
+  assert.equal(document.querySelector('[data-testid="social-reel-credit"]').textContent, '출처: 한국관광공사');
+  assert.equal(document.querySelector('[data-testid="social-reel-place"]').textContent, '이 여행지 보기');
+  assert.equal(document.querySelector('[data-testid="social-reel-place"]').getAttribute('href'), '/place/jeju-new');
+  assert.equal(
+    document.querySelector('[data-testid="social-reel-next-poster"]').getAttribute('src'),
+    'https://example.test/old.jpg',
+  );
+  assert.match(player().textContent, /위아래 키로 옮겨요/);
+
+  await act(async () => {
+    node.dispatchEvent(new window.Event('ended'));
+  });
+  assert.equal(player().getAttribute('data-campaign'), 'reel-old');
+  assert.equal(document.querySelectorAll('video').length, 1);
+  assert.equal(video(), node);
+  assert.match(node.getAttribute('src'), /old\.mp4$/);
+  assert.equal(document.querySelector('[data-testid="social-reel-credit"]').textContent, '출처: 옛 자료');
+
+  await act(async () => {
+    document.querySelector('[data-testid="social-reel-mute"]').click();
+  });
+  assert.equal(document.querySelector('[data-testid="social-reel-mute"]').textContent, '소리 끄기');
+  assert.equal(document.querySelector('[data-testid="social-reel-mute"]').getAttribute('data-muted'), 'false');
+  assert.equal(video().muted, false);
+});
+
+test('swipe and keyboard move between reels and Esc closes', async () => {
+  await render('/social?social_reels=1&social_links=1', {
+    cards: orderedCards,
+    now: NOW,
+    reels: orderedReels,
+  });
+  await openPlayer();
+  await pointerSwipe(-160);
+  assert.equal(player().getAttribute('data-campaign'), 'reel-old');
+  await pointerSwipe(160);
+  assert.equal(player().getAttribute('data-campaign'), 'reel-new');
+  await pointerSwipe(-20);
+  assert.equal(player().getAttribute('data-campaign'), 'reel-new');
+  await act(async () => {
+    player().dispatchEvent(
+      new window.PointerEvent('pointerdown', { clientX: 10, clientY: 200, pointerId: 2, bubbles: true }),
+    );
+    player().dispatchEvent(
+      new window.PointerEvent('pointerup', { clientX: 200, clientY: 210, pointerId: 2, bubbles: true }),
+    );
+  });
+  assert.equal(player().getAttribute('data-campaign'), 'reel-new');
+
+  await key('ArrowDown');
+  await key('ArrowDown');
+  assert.equal(player().getAttribute('data-campaign'), 'fest-old');
+  assert.equal(document.querySelector('[data-testid="social-reel-place"]').getAttribute('href'), '/korea?festival=42');
+  assert.equal(document.querySelector('[data-testid="social-reel-place"]').textContent, '이 축제 보기');
+  assert.equal(document.querySelector('[data-testid="social-reel-next-poster"]'), null);
+  await act(async () => {
+    video().dispatchEvent(new window.Event('ended'));
+  });
+  assert.equal(player().getAttribute('data-campaign'), 'fest-old');
+
+  await key('ArrowUp');
+  assert.equal(player().getAttribute('data-campaign'), 'reel-old');
+  await key('Escape');
+  assert.equal(player(), null);
+  assert.equal(document.querySelector('[data-testid="social-reels-open"]').textContent, '지난 릴스 보기');
+});
+
+test('reduced motion does not autoplay or advance when the video ends', async () => {
+  setReducedMotion(true);
+  await render('/social?social_reels=1&social_links=1', {
+    cards: orderedCards,
+    now: NOW,
+    reels: orderedReels,
+  });
+  await openPlayer();
+  assert.equal(player().getAttribute('data-reduced-motion'), '1');
+  assert.equal(video().autoplay, false);
+  assert.equal(video().hasAttribute('autoplay'), false);
+  await act(async () => {
+    video().dispatchEvent(new window.Event('ended'));
+  });
+  assert.equal(player().getAttribute('data-campaign'), 'reel-new');
+  await key('ArrowDown');
+  assert.equal(player().getAttribute('data-campaign'), 'reel-old');
+});
+
+test('capture fixture is ignored unless the flag is on', async () => {
+  window.__GATEO_SOCIAL_REELS_FIXTURE__ = flagOffReels;
+  await render('/social?social_links=1', { cards: sampleCards, now: NOW });
+  assert.equal(document.querySelector('[data-testid="social-reels-open"]'), null);
+
+  await render('/social?social_links=1&social_reels=1', { cards: sampleCards, now: NOW });
+  assert.equal(document.querySelector('[data-testid="social-reels-open"]').textContent, '지난 릴스 보기');
+  await openPlayer();
+  assert.equal(player().getAttribute('data-campaign'), 'reel-14');
+  assert.equal(document.querySelector('[data-testid="social-reel-place"]').getAttribute('href'), '/place/tour-126201');
+});
+
+test('mp4 and native HLS set src; other HLS uses the lazy adapter', async () => {
+  const calls = [];
+  class FakeHls {
+    static isSupported() {
+      return true;
+    }
+    loadSource(src) {
+      calls.push(['load', src]);
+    }
+    attachMedia(media) {
+      calls.push(['media', media]);
+    }
+    detachMedia() {
+      calls.push(['detach']);
+    }
+    destroy() {
+      calls.push(['destroy']);
+    }
+  }
+
+  function fakeVideo(canPlay) {
+    const attrs = {};
+    return {
+      attrs,
+      src: '',
+      muted: false,
+      defaultMuted: false,
+      playsInline: false,
+      setAttribute(name, value) {
+        attrs[name] = value;
+      },
+      removeAttribute(name) {
+        delete attrs[name];
+      },
+      canPlayType() {
+        return canPlay;
+      },
+      load() {
+        this.loads = (this.loads || 0) + 1;
+      },
+    };
+  }
+
+  let hlsLoads = 0;
+  const mp4 = fakeVideo('');
+  const mp4Session = createSocialReelSession(mp4, {
+    loadHls: async () => {
+      hlsLoads += 1;
+      return FakeHls;
+    },
+  });
+  const mp4Handle = await mp4Session.attach(
+    { kind: 'mp4', src: 'https://example.test/a.mp4' },
+    { muted: true },
+  );
+  assert.equal(mp4Handle.mode, 'mp4');
+  assert.equal(mp4.src, 'https://example.test/a.mp4');
+  assert.equal(mp4.attrs.playsinline, '');
+  assert.equal(mp4.attrs['webkit-playsinline'], 'true');
+  assert.equal(mp4.attrs.muted, '');
+  assert.equal(hlsLoads, 0);
+  mp4Session.detach();
+  assert.equal(mp4.attrs.src, undefined);
+  assert.ok(mp4.loads >= 1);
+
+  const native = fakeVideo('maybe');
+  const nativeSession = createSocialReelSession(native, {
+    loadHls: async () => {
+      hlsLoads += 1;
+      return FakeHls;
+    },
+  });
+  const nativeHandle = await nativeSession.attach({
+    kind: 'hls',
+    src: 'https://example.test/a.m3u8',
+  });
+  assert.equal(nativeHandle.mode, 'native-hls');
+  assert.equal(native.src, 'https://example.test/a.m3u8');
+  assert.equal(hlsLoads, 0);
+  nativeSession.detach();
+
+  const mse = fakeVideo('');
+  const mseSession = createSocialReelSession(mse, {
+    loadHls: async () => {
+      hlsLoads += 1;
+      return FakeHls;
+    },
+  });
+  const mseHandle = await mseSession.attach({ kind: 'hls', src: 'https://example.test/b.m3u8' });
+  assert.equal(mseHandle.mode, 'hls.js');
+  assert.equal(mse.src, '');
+  assert.equal(hlsLoads, 1);
+  assert.deepEqual(
+    calls.map((entry) => entry[0]),
+    ['load', 'media'],
+  );
+  assert.equal(calls[1][1], mse);
+  mseSession.detach();
+  assert.deepEqual(
+    calls.map((entry) => entry[0]),
+    ['load', 'media', 'detach', 'destroy'],
+  );
+
+  const unsupported = fakeVideo('');
+  const fallback = createSocialReelSession(unsupported, {
+    loadHls: async () =>
+      class {
+        static isSupported() {
+          return false;
+        }
+      },
+  });
+  const fallbackHandle = await fallback.attach({ kind: 'hls', src: 'https://example.test/c.m3u8' });
+  assert.equal(fallbackHandle.mode, 'native-hls');
+  assert.equal(unsupported.src, 'https://example.test/c.m3u8');
+  fallback.detach();
+});
