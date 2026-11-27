@@ -1,12 +1,19 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useSocialCardPhotos } from './useSocialCardPhotos.js';
 import { Helmet } from 'react-helmet-async';
 import { Link, Navigate, useLocation } from 'react-router-dom';
 import Logo from '../Home/components/Logo';
 import { withGateoTrafficType } from '../../shared/analytics/gateoGaQa.js';
 import { trackEvent } from '../../shared/analytics/trackEvent.js';
-import { isGateoSocialLinksEnabled } from '../../shared/gateoFeatureFlags.js';
+import {
+  isGateoSocialLinksEnabled,
+  isGateoSocialReelsEnabled,
+  isSocialReelsQueryEnabled,
+} from '../../shared/gateoFeatureFlags.js';
 import generated from './data/socialLinks.generated.json';
+import SocialReelsPlayer from './SocialReelsPlayer.jsx';
+import { buildSocialReelPlaylist, readSocialReelCatalog } from './socialReels.js';
 import {
   formatSocialPostedDate,
   formatSocialStartBadge,
@@ -309,9 +316,11 @@ function EmptyState() {
   );
 }
 
-export default function SocialLinksPage({ cards, now }) {
+export default function SocialLinksPage({ cards, now, reels }) {
   const location = useLocation();
   const [expanded, setExpanded] = useState(false);
+  const [reelOpen, setReelOpen] = useState(false);
+  const reelOpenRef = useRef(null);
   const clock = useMemo(() => (now instanceof Date ? now : new Date()), [now]);
   const source = Array.isArray(cards) ? cards : generated.cards || [];
   const socialEnabled = isGateoSocialLinksEnabled(location.search);
@@ -320,6 +329,17 @@ export default function SocialLinksPage({ cards, now }) {
     [source, expanded, clock],
   );
   const { photoForCard, markBroken } = useSocialCardPhotos(socialEnabled ? view.visible : []);
+  const reelsEnabled = isGateoSocialReelsEnabled(location.search);
+  const reelQuery = isSocialReelsQueryEnabled(location.search);
+  const reelPlaylist = useMemo(() => {
+    if (!reelsEnabled) return [];
+    return buildSocialReelPlaylist(source, readSocialReelCatalog(reels), clock);
+  }, [reelsEnabled, reels, source, clock]);
+
+  useEffect(() => {
+    if (!reelQuery || reelPlaylist.length === 0) return;
+    setReelOpen(true);
+  }, [reelQuery, reelPlaylist.length]);
 
   if (!socialEnabled) {
     return <Navigate to="/" replace />;
@@ -340,8 +360,22 @@ export default function SocialLinksPage({ cards, now }) {
     };
   };
 
+  const player =
+    reelOpen && reelPlaylist.length > 0 && typeof document !== 'undefined'
+      ? createPortal(
+          <SocialReelsPlayer
+            playlist={reelPlaylist}
+            onClose={() => {
+              setReelOpen(false);
+              reelOpenRef.current?.focus?.();
+            }}
+          />,
+          document.body,
+        )
+      : null;
+
   return (
-    <div className="min-h-screen overflow-y-auto bg-black text-white">
+    <><div className="min-h-screen overflow-y-auto bg-black text-white">
       <Helmet>
         <title>릴스·게시물에 나온 곳 | GATEO</title>
         <meta name="robots" content="noindex" />
@@ -356,7 +390,17 @@ export default function SocialLinksPage({ cards, now }) {
           </h1>
           <p className="mt-1 break-keep text-sm text-white/70">
             인스타그램·페이스북 게시물에 나온 곳이에요.
-          </p>
+          </p>{reelPlaylist.length > 0 ? (
+            <button
+              type="button"
+              ref={reelOpenRef}
+              data-testid="social-reels-open"
+              className="mt-4 inline-flex h-11 items-center rounded-2xl bg-white px-4 text-sm font-semibold text-black"
+              onClick={() => setReelOpen(true)}
+            >
+              지난 릴스 보기
+            </button>
+          ) : null}
         </header>
 
         {visible.length === 0 ? (
@@ -415,6 +459,6 @@ export default function SocialLinksPage({ cards, now }) {
           </div>
         )}
       </div>
-    </div>
+    </div>{player}</>
   );
 }

@@ -195,6 +195,7 @@ export function buildSocialLinkCards(rows) {
         .find(Boolean) || '';
     cards.push({
       campaignId,
+      status: 'live',
       firstPostedAt: byDate[0].postedOn,
       title: latest.title,
       region,
@@ -310,8 +311,10 @@ export function enrichSocialCards(cards, catalog = {}) {
     if (!region && primary?.type === 'place') {
       region = String(placeRecord(catalog, primary.slug)?.region || '').trim();
     }
+    const status = String(card.status || '').trim().toLowerCase() === 'live' ? 'live' : '';
     return {
       campaignId: card.campaignId,
+      ...(status ? { status } : {}),
       firstPostedAt: card.firstPostedAt,
       title: card.title,
       region,

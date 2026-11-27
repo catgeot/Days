@@ -1,0 +1,108 @@
+{
+  "reels": [
+    {
+      "campaignId": "reel-14",
+      "kind": "mp4",
+      "src": "site/reels/reel-14.mp4",
+      "poster": "site/reels/reel-14.jpg",
+      "durationSec": 25.1,
+      "credit": "출처: 국가유산청 '014. 한국의 서원'(2025) | 저작자: 국가유산청 | 라이선스: 공공누리 제1유형 | GATEO 편집"
+    },
+    {
+      "campaignId": "reel-13",
+      "kind": "mp4",
+      "src": "site/reels/reel-13.mp4",
+      "poster": "site/reels/reel-13.jpg",
+      "durationSec": 25.1,
+      "credit": "출처: 국가유산청 '013. 산사, 한국의 산지승원'(2025) | 저작자: 국가유산청 | 라이선스: 공공누리 제1유형 | GATEO 편집"
+    },
+    {
+      "campaignId": "reel-10",
+      "kind": "mp4",
+      "src": "site/reels/reel-10.mp4",
+      "poster": "site/reels/reel-10.jpg",
+      "durationSec": 25.1,
+      "credit": "출처: 국가유산청 '007. 고인돌유적'(2025) | 저작자: 국가유산청 | 라이선스: 공공누리 제1유형 | GATEO 편집"
+    },
+    {
+      "campaignId": "reel-11",
+      "kind": "mp4",
+      "src": "site/reels/reel-11.mp4",
+      "poster": "site/reels/reel-11.jpg",
+      "durationSec": 24.1,
+      "credit": "출처: 국가유산청 '015. 한국의갯벌'(2025)(공공누리 제1유형) | GATEO 편집"
+    },
+    {
+      "campaignId": "reel-09",
+      "kind": "mp4",
+      "src": "site/reels/reel-09.mp4",
+      "poster": "site/reels/reel-09.jpg",
+      "durationSec": 25.1,
+      "credit": "출처: 국가유산청 '009. 조선왕릉'(2025)(공공누리 제1유형) | GATEO 편집"
+    },
+    {
+      "campaignId": "reel-06",
+      "kind": "mp4",
+      "src": "site/reels/reel-06.mp4",
+      "poster": "site/reels/reel-06.jpg",
+      "durationSec": 25,
+      "credit": "출처: 충남문화관광재단(공공누리 제1유형) | GATEO 편집"
+    },
+    {
+      "campaignId": "reel-08",
+      "kind": "mp4",
+      "src": "site/reels/reel-08.mp4",
+      "poster": "site/reels/reel-08.jpg",
+      "durationSec": 25.1,
+      "credit": "출처: 국가유산청 '005. 화성'(2025)(공공누리 제1유형) | GATEO 편집"
+    },
+    {
+      "campaignId": "reel-07",
+      "kind": "mp4",
+      "src": "site/reels/reel-07.mp4",
+      "poster": "site/reels/reel-07.jpg",
+      "durationSec": 25.1,
+      "credit": "출처: 한국수목원정원관리원·충남문화관광재단(공공누리 제1유형) | GATEO 편집"
+    },
+    {
+      "campaignId": "reel-05",
+      "kind": "mp4",
+      "src": "site/reels/reel-05.mp4",
+      "poster": "site/reels/reel-05.jpg",
+      "durationSec": 25.1,
+      "credit": "출처: 제주콘텐츠진흥원(공공누리 제1유형) | GATEO 편집"
+    },
+    {
+      "campaignId": "reel-03",
+      "kind": "mp4",
+      "src": "site/reels/reel-03.mp4",
+      "poster": "site/reels/reel-03.jpg",
+      "durationSec": 25.1,
+      "credit": "출처: 충남문화관광재단(공공누리 제1유형) | GATEO 편집"
+    },
+    {
+      "campaignId": "reel-04",
+      "kind": "mp4",
+      "src": "site/reels/reel-04.mp4",
+      "poster": "site/reels/reel-04.jpg",
+      "durationSec": 25.1,
+      "credit": "출처: 제주콘텐츠진흥원(공공누리 제1유형) | GATEO 편집"
+    },
+    {
+      "campaignId": "reel-02",
+      "kind": "mp4",
+      "src": "site/reels/reel-02.mp4",
+      "poster": "site/reels/reel-02.jpg",
+      "durationSec": 25.1,
+      "credit": "출처: 충남문화관광재단(공공누리 제1유형) | GATEO 편집"
+    },
+    {
+      "campaignId": "reel-01",
+      "kind": "mp4",
+      "src": "site/reels/reel-01.mp4",
+      "poster": "site/reels/reel-01.jpg",
+      "durationSec": 25,
+      "credit": "출처: 제주콘텐츠진흥원(공공누리 제1유형) | GATEO 편집"
+    }
+  ]
+}

@@ -4,6 +4,7 @@
   "cards": [
     {
       "campaignId": "reel-14",
+      "status": "live",
       "firstPostedAt": "2026-11-27",
       "title": "영주 소수서원",
       "region": "경북 영주",
@@ -21,6 +22,7 @@
     },
     {
       "campaignId": "reel-13",
+      "status": "live",
       "firstPostedAt": "2026-11-23",
       "title": "순천 선암사",
       "region": "전남 순천",
@@ -35,6 +37,7 @@
     },
     {
       "campaignId": "reel-10",
+      "status": "live",
       "firstPostedAt": "2026-11-20",
       "title": "고창·화순·강화 고인돌 유적",
       "region": "전북 고창",
@@ -60,6 +63,7 @@
     },
     {
       "campaignId": "reel-11",
+      "status": "live",
       "firstPostedAt": "2026-11-18",
       "title": "한국의 갯벌",
       "region": "전라",
@@ -77,6 +81,7 @@
     },
     {
       "campaignId": "fest-2048902",
+      "status": "live",
       "firstPostedAt": "2026-11-17",
       "title": "해운대 빛축제",
       "region": "부산 해운대구",
@@ -91,6 +96,7 @@
     },
     {
       "campaignId": "reel-09",
+      "status": "live",
       "firstPostedAt": "2026-11-16",
       "title": "조선왕릉",
       "region": "수도권",
@@ -108,6 +114,7 @@
     },
     {
       "campaignId": "reel-06",
+      "status": "live",
       "firstPostedAt": "2026-11-11",
       "title": "공주 황새바위 순교탑",
       "region": "",
@@ -130,6 +137,7 @@
     },
     {
       "campaignId": "reel-08",
+      "status": "live",
       "firstPostedAt": "2026-11-09",
       "title": "수원 화성",
       "region": "수도권",
@@ -147,6 +155,7 @@
     },
     {
       "campaignId": "reel-07",
+      "status": "live",
       "firstPostedAt": "2026-11-04",
       "title": "국립백두대간수목원",
       "region": "경상",
@@ -169,6 +178,7 @@
     },
     {
       "campaignId": "reel-05",
+      "status": "live",
       "firstPostedAt": "2026-11-03",
       "title": "한라산 백록담",
       "region": "제주",
@@ -186,6 +196,7 @@
     },
     {
       "campaignId": "reel-03",
+      "status": "live",
       "firstPostedAt": "2026-11-02",
       "title": "해미순교성지",
       "region": "",
@@ -204,6 +215,7 @@
     },
     {
       "campaignId": "reel-04",
+      "status": "live",
       "firstPostedAt": "2026-10-31",
       "title": "성산일출봉",
       "region": "제주",
@@ -229,6 +241,7 @@
     },
     {
       "campaignId": "reel-02",
+      "status": "live",
       "firstPostedAt": "2026-10-30",
       "title": "무창포 해수욕장 바닷길",
       "region": "충청",
@@ -246,6 +259,7 @@
     },
     {
       "campaignId": "reel-01",
+      "status": "live",
       "firstPostedAt": "2026-10-29",
       "title": "제주 추자도",
       "region": "",
