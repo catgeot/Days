@@ -9,6 +9,11 @@ import {
   rememberLogbookReaderOrigin,
 } from '../../../shared/navigation/logbookDetailBack.js';
 import { classifyLogbookMarkdownHref } from '../../../shared/navigation/logbookMarkdownHref.js';
+import ContentAffiliateMark from '../../../shared/affiliate/ContentAffiliateMark.jsx';
+import {
+  CONTENT_AFFILIATE_LINK_REL,
+  resolveContentAffiliateLink,
+} from '../../../utils/contentAffiliateHref.js';
 import { rewriteLogbookCreditHref } from '../../../utils/commonsSpecialFileThumb.js';
 import { logbookRemarkPlugins } from '../utils/logbookMarkdownRemark.js';
 import { useTranslation } from 'react-i18next';
@@ -55,7 +60,7 @@ const sanitizeSchema = {
 const MARKDOWN_LINK_CLASS =
   'text-blue-600 underline underline-offset-2 hover:text-blue-700 break-words';
 
-function LogbookMarkdownAnchor({ href, children }) {
+function LogbookMarkdownAnchor({ href, children, affiliateSubTag = '' }) {
   const navigate = useNavigate();
   const classified = classifyLogbookMarkdownHref(
     rewriteLogbookCreditHref(href),
@@ -94,9 +99,19 @@ function LogbookMarkdownAnchor({ href, children }) {
     );
   }
   if (classified.kind === 'external') {
+    const resolved = affiliateSubTag
+      ? resolveContentAffiliateLink(classified.href, { subTag: affiliateSubTag })
+      : { href: classified.href, affiliated: false, partner: '' };
     return (
-      <a href={classified.href} target="_blank" rel="noopener noreferrer" className={MARKDOWN_LINK_CLASS}>
+      <a
+        href={resolved.href}
+        target="_blank"
+        rel={resolved.affiliated ? CONTENT_AFFILIATE_LINK_REL : 'noopener noreferrer'}
+        className={MARKDOWN_LINK_CLASS}
+        data-content-affiliate={resolved.partner || undefined}
+      >
         {children}
+        {resolved.affiliated ? <ContentAffiliateMark /> : null}
       </a>
     );
   }
@@ -107,7 +122,10 @@ function LogbookMarkdownAnchor({ href, children }) {
   );
 }
 
-function createMarkdownComponents(readerTypography) {
+function createMarkdownComponents(readerTypography, affiliateSubTag) {
+  const Anchor = (props) => (
+    <LogbookMarkdownAnchor {...props} affiliateSubTag={affiliateSubTag} />
+  );
   if (readerTypography) {
     return {
       h1: ({ children }) => (
@@ -128,7 +146,7 @@ function createMarkdownComponents(readerTypography) {
           {wrapTimeRanges(children)}
         </p>
       ),
-      a: LogbookMarkdownAnchor,
+      a: Anchor,
       strong: ({ children }) => <strong className="font-semibold text-gray-900">{children}</strong>,
       em: ({ children }) => <em className="italic">{children}</em>,
       hr: () => <hr className="my-10 border-0 border-t border-gray-100" />,
@@ -186,7 +204,7 @@ function createMarkdownComponents(readerTypography) {
     p: ({ children }) => (
       <p className="text-lg leading-[1.8] text-gray-800 font-medium mb-6 last:mb-0 break-keep">{wrapTimeRanges(children)}</p>
     ),
-    a: LogbookMarkdownAnchor,
+    a: Anchor,
     strong: ({ children }) => <strong className="font-bold text-gray-900">{children}</strong>,
     em: ({ children }) => <em className="italic">{children}</em>,
     hr: () => <hr className="my-8 border-0 border-t border-gray-200" />,
@@ -225,13 +243,13 @@ function createMarkdownComponents(readerTypography) {
   };
 }
 
-function LogbookMarkdownChunk({ markdown, readerTypography = false }) {
+function LogbookMarkdownChunk({ markdown, readerTypography = false, affiliateSubTag = '' }) {
   const trimmed = markdown?.trim();
   if (!trimmed) return null;
 
   const components = useMemo(
-    () => createMarkdownComponents(readerTypography),
-    [readerTypography],
+    () => createMarkdownComponents(readerTypography, affiliateSubTag),
+    [readerTypography, affiliateSubTag],
   );
 
   return (
@@ -254,6 +272,7 @@ export default function LogbookBody({
   showEditorialImageCredits = false,
   imageMaxWidth = 1200,
   readerTypography = false,
+  affiliateSubTag = '',
 }) {
   const { t } = useTranslation();
   const parts = useMemo(() => splitLogbookPhotoPlaceholders(content), [content]);
@@ -297,6 +316,7 @@ export default function LogbookBody({
             key={`md-${index}`}
             markdown={part}
             readerTypography={readerTypography}
+            affiliateSubTag={affiliateSubTag}
           />
         );
       })}

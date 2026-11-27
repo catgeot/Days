@@ -15,7 +15,7 @@ const previewEnv = {
 
 export default defineConfig({
   testDir: './e2e',
-  testMatch: /travelogue-(fullpage-nav|back-nav)\.spec\.js/,
+  testMatch: /travelogue-(fullpage-nav|back-nav|affiliate-href)\.spec\.js/,
   fullyParallel: false,
   forbidOnly: Boolean(process.env.CI),
   retries: process.env.CI ? 1 : 0,

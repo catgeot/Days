@@ -38,8 +38,10 @@ for (const item of GATEO_TRAVEL_PARTNERS) {
   assert.match(item.href, PARTNER_AFFILIATE_MARK[item.name], `${item.name} Credits 링크는 제휴 URL`);
 }
 const affiliateSrc = read('src/utils/affiliate.js');
-assert.match(affiliateSrc, /allianceId: '8182427'/, 'Trip.com Alliance SSOT와 Credits 값 동기');
-assert.match(affiliateSrc, /sid: '309563143'/, 'Trip.com SID SSOT와 Credits 값 동기');
+const tripcomPartnerSrc = read('src/utils/tripcomKrPartner.js');
+assert.match(tripcomPartnerSrc, /allianceId: '8182427'/, 'Trip.com Alliance SSOT와 Credits 값 동기');
+assert.match(tripcomPartnerSrc, /sid: '309563143'/, 'Trip.com SID SSOT와 Credits 값 동기');
+assert.match(affiliateSrc, /export \{ TRIPCOM_KR_PARTNER \}/, 'affiliate.js re-exports Trip.com partner SSOT');
 assert.match(creditsEn.dataSources[0].name, /Korea Tourism Organization/);
 
 const layout = read('src/shared/layout/MainLayout.jsx');

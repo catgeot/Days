@@ -10,7 +10,7 @@ const ReviewInlineMarkdownBoundary = lazy(() =>
 );
 
 /** Suspense/error fallbacks use stripped plain text (not markdown source). */
-export function EditorialReviewText({ text, inline = false, className = '' }) {
+export function EditorialReviewText({ text, inline = false, className = '', affiliateSubTag = '' }) {
   const plainClass = ['whitespace-pre-wrap', className].filter(Boolean).join(' ');
   const plainText = reviewPlainTextForAccessibility(text);
   const plain = <div className={plainClass}>{plainText}</div>;
@@ -18,7 +18,7 @@ export function EditorialReviewText({ text, inline = false, className = '' }) {
     <ReviewPlainFallbackBoundary text={plainText} className={plainClass}>
       <Suspense fallback={plain}>
         <div className={plainClass}>
-          <ReviewInlineMarkdownBoundary text={text} inline={inline} />
+          <ReviewInlineMarkdownBoundary text={text} inline={inline} affiliateSubTag={affiliateSubTag} />
         </div>
       </Suspense>
     </ReviewPlainFallbackBoundary>

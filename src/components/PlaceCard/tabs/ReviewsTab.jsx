@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useLayoutEffect, useRef, useMemo, useCallback } from 'react';
 import { EditorialReviewText } from './EditorialReviewText.jsx';
 import { ReviewLinkChips } from './ReviewLinkChips.jsx';
+import { contentAffiliateSubTag } from '../../../utils/contentAffiliateHref.js';
 import { createPortal } from 'react-dom';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation, Trans } from 'react-i18next';
@@ -272,6 +273,7 @@ export const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onTog
     }
   };
 
+  const affiliateSubTag = contentAffiliateSubTag('review', review.slug || review.id);
   const usesContentBlocks = hasReviewContentBlocks(review.content_blocks);
   const contentBlocks = usesContentBlocks ? normalizeReviewContentBlocks(review.content_blocks) : [];
   const collapsedPreviewText = getCollapsedPreviewText(review);
@@ -416,6 +418,7 @@ export const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onTog
                   text={collapsedPreviewText}
                   inline
                   className="line-clamp-3"
+                  affiliateSubTag={affiliateSubTag}
                 />
               ) : (
                 <div className="whitespace-pre-wrap line-clamp-3">
@@ -431,6 +434,7 @@ export const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onTog
                         key={`text-${blockIdx}`}
                         text={block.text}
                         className="mt-3 first:mt-0"
+                        affiliateSubTag={affiliateSubTag}
                       />
                     );
                   }
@@ -447,7 +451,13 @@ export const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onTog
                     reviewBodyLinkUrlKeys(contentBlocks),
                   );
                   if (chipItems.length === 0) return null;
-                  return <ReviewLinkChips key={`links-${blockIdx}`} items={chipItems} />;
+                  return (
+                    <ReviewLinkChips
+                      key={`links-${blockIdx}`}
+                      items={chipItems}
+                      affiliateSubTag={affiliateSubTag}
+                    />
+                  );
                 }
                 if (block.type === 'image') {
                   const images = review.images || [];
@@ -462,6 +472,7 @@ export const ReviewItem = ({ review, user, onEdit, onDelete, onImageClick, onTog
               text={review.content}
               inline={!isExpanded}
               className={isExpanded ? '' : 'line-clamp-3'}
+              affiliateSubTag={affiliateSubTag}
             />
           ) : (
             <div className={`whitespace-pre-wrap ${isExpanded ? '' : 'line-clamp-3'}`}>
