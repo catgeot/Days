@@ -9,6 +9,7 @@ test('known shell paths keep pathname', () => {
   assert.equal(resolveLocaleBootPathname('/explore/asia/paradise'), '/explore/asia/paradise');
   assert.equal(resolveLocaleBootPathname('/place/tokyo'), '/place/tokyo');
   assert.equal(resolveLocaleBootPathname('/blog'), '/blog');
+  assert.equal(resolveLocaleBootPathname('/social'), '/social');
 });
 
 test('/reels without registered route normalizes to home', () => {

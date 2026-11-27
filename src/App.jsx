@@ -9,6 +9,7 @@ import { supabase } from './shared/api/supabase';
 import MainLayout from './shared/layout/MainLayout';
 import DashboardLayout from './pages/DailyReport/layout/DailyLayout';
 const Home = lazy(() => import('./pages/Home'));
+const SocialLinksPage = lazy(() => import('./pages/Social/SocialLinksPage.jsx'));
 const PlaceCard = lazy(() => import('./components/PlaceCard/index'));
 import KoreaFestivalHub from './pages/Korea';
 import WorldEventsHub from './pages/WorldEvents';
@@ -271,6 +272,14 @@ function App() {
             <Route path="/auth/update-password" element={<UpdatePassword />} />
             <Route path="/account" element={<AccountProfile />} />
             <Route path="/admin/gallery" element={<GalleryAdminPage />} />
+            <Route
+              path="/social"
+              element={
+                <Suspense fallback={null}>
+                  <SocialLinksPage />
+                </Suspense>
+              }
+            />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </ReportProvider>

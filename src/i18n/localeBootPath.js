@@ -1,6 +1,7 @@
 const EXACT_PATHS = new Set([
   '/',
   '/about',
+  '/social',
   '/qa',
   '/account',
   '/admin/gallery',

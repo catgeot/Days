@@ -42,6 +42,8 @@ export const GATEO_ENV_FLAG_NAMES = {
   HOME_WATCH_CARD: 'VITE_GATEO_HOME_WATCH_CARD',
   /** Last home-watch slot becomes a /reels poster. Default off. */
   SELF_REELS: 'VITE_GATEO_SELF_REELS',
+  /** /social card list. Default off. `?social_links=1` previews the same screen. */
+  SOCIAL_LINKS: 'VITE_GATEO_SOCIAL_LINKS',
   /** Home watch card month title, next-month text switch, and lower placement. Default off. */
   HOME_MONTHLY_SWITCH: 'VITE_GATEO_HOME_MONTHLY_SWITCH',
   /** Overseas airport → lodging pickup row (MyRealTrip / Trip.com). Default off. */
@@ -249,6 +251,33 @@ export function isGateoHomeWatchCardEnabled() {
 /** Self-hosted reels poster on the home watch card. Default off. */
 export function isGateoSelfReelsEnabled() {
   return readGateoEnvFlag(GATEO_ENV_FLAG_NAMES.SELF_REELS);
+}
+
+export const SOCIAL_LINKS_QUERY_PARAM = 'social_links';
+
+/** @param {string | null | undefined} search */
+export function isSocialLinksQueryEnabled(search) {
+  try {
+    const value = new URLSearchParams(String(search || '').replace(/^\?/, '')).get(
+      SOCIAL_LINKS_QUERY_PARAM,
+    );
+    const normalized = String(value || '').trim().toLowerCase();
+    return normalized === '1' || normalized === 'true' || normalized === 'yes';
+  } catch {
+    return false;
+  }
+}
+
+/** Card page. Default off. Env `'1'` or `?social_links=1` turns it on. */
+export function isGateoSocialLinksEnabled(search) {
+  if (readGateoEnvFlag(GATEO_ENV_FLAG_NAMES.SOCIAL_LINKS)) return true;
+  const source =
+    search != null
+      ? search
+      : typeof window !== 'undefined'
+        ? window.location.search
+        : '';
+  return isSocialLinksQueryEnabled(source);
 }
 
 export const HOME_MONTHLY_SWITCH_QUERY_PARAM = 'home_monthly_switch';
