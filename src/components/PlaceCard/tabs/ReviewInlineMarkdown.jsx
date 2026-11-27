@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import remarkCjkFriendly from 'remark-cjk-friendly/parseOnly';
@@ -25,37 +25,60 @@ import {
 const REVIEW_LINK_CLASS =
   'text-blue-600 hover:text-blue-700 underline underline-offset-2 break-words';
 
+function isPlainPrimaryPointer(event) {
+  if (!event || event.button !== 0) return false;
+  if (event.metaKey || event.altKey || event.ctrlKey || event.shiftKey) return false;
+  return true;
+}
+
 function ReviewAnchor({ href, children, affiliateSubTag = '' }) {
   const navigate = useNavigate();
   const props = reviewInlineLinkProps(href);
+  const pressRef = useRef(null);
+  const followedRef = useRef(false);
   if (!props) return <>{children}</>;
   const inAppTo = articleBodyPlaceOrFestivalTo(
     href,
     typeof window !== 'undefined' ? window.location.href : undefined,
   );
   if (inAppTo) {
+    const followInApp = (event) => {
+      event.stopPropagation();
+      if (followedRef.current) {
+        event.preventDefault();
+        return;
+      }
+      if (event.defaultPrevented || !isPlainPrimaryPointer(event)) return;
+      event.preventDefault();
+      followedRef.current = true;
+      const nonce = rememberLogbookReaderOrigin();
+      navigate(inAppTo, {
+        state: nonce ? { [LOGBOOK_READER_ORIGIN_NONCE]: nonce } : undefined,
+      });
+    };
     return (
       <a
         href={props.href}
         className={REVIEW_LINK_CLASS}
-        onClick={(event) => {
-          event.stopPropagation();
-          if (
-            event.defaultPrevented
-            || event.button !== 0
-            || event.metaKey
-            || event.altKey
-            || event.ctrlKey
-            || event.shiftKey
-          ) {
-            return;
-          }
-          event.preventDefault();
-          const nonce = rememberLogbookReaderOrigin();
-          navigate(inAppTo, {
-            state: nonce ? { [LOGBOOK_READER_ORIGIN_NONCE]: nonce } : undefined,
-          });
+        onPointerDown={(event) => {
+          if (!isPlainPrimaryPointer(event)) return;
+          pressRef.current = {
+            id: event.pointerId,
+            x: event.clientX,
+            y: event.clientY,
+          };
         }}
+        onPointerUp={(event) => {
+          const press = pressRef.current;
+          pressRef.current = null;
+          if (!press || press.id !== event.pointerId) return;
+          const moved = Math.hypot(event.clientX - press.x, event.clientY - press.y);
+          if (moved > 8) return;
+          // WebKit drops click after the review deep-link scroll. pointerup still
+          // lands on this anchor; click alone never calls navigate.
+          followInApp(event);
+        }}
+        onClick={followInApp}
       >
         {children}
       </a>

@@ -194,14 +194,43 @@ test.describe('LogBook review detail photo @mocked', () => {
       )
       .toBeTruthy();
     const hero = hwaseongCard.getByTestId('logbook-editorial-review-detail-hero');
-    await expect(hero.locator('.line-clamp-2, .line-clamp-3, .line-clamp-4')).toHaveCount(0);
+    // PR #939 (a42adc4f1): "Reviewer persona tags on editorial review photos
+    // (`가족나들이`, `문턱없이`, …) move from bottom-left to top-right with shared
+    // LogbookOfficialReviewPersonaPhotoBadge. LogBook /blog hub card grid and place
+    // /place/:slug/reviews editorial detail hero both use the overlay; hero drops the
+    // duplicate indigo chip under the photo (date row only)."
+    // The shared badge class is line-clamp-2 so a long persona does not cover the
+    // photo. Caption, credit, and date stay unclamped. Production 1280 hero for this
+    // review shows the full persona (no ellipsis; scrollHeight === clientHeight).
+    // #941 (public dashboard subtitle counts) and #942 (editorial secondary label)
+    // do not touch this hero.
+    const reviewerBadge = hero.getByTestId('logbook-editorial-review-detail-hero-reviewer');
+    await expect(hero.locator('.line-clamp-2, .line-clamp-3, .line-clamp-4')).toHaveCount(1);
+    await expect(hero.locator('.line-clamp-3, .line-clamp-4')).toHaveCount(0);
+    await expect(reviewerBadge).toHaveClass(/\bline-clamp-2\b/);
+    await expect(reviewerBadge).toHaveText('느린산책');
+    // Generic span (no role): Chromium exposes no accessible name. The full
+    // persona is the text content, and it is not ellipsized.
+    const badgeFullyShown = await reviewerBadge.evaluate((el) => {
+      const text = (el.innerText || '').replace(/\s+/g, ' ').trim();
+      return text === '느린산책' && !text.includes('…') && el.scrollHeight <= el.clientHeight + 1;
+    });
+    expect(badgeFullyShown).toBe(true);
     const stacked = await hero.evaluate((el) => {
       const media = el.querySelector('[data-testid="logbook-editorial-review-detail-hero-photo"], [data-testid="logbook-editorial-review-detail-hero-fallback"]');
-      const badge = el.querySelector('.text-indigo-800');
-      if (!media || !badge) return null;
+      const badge = el.querySelector('[data-testid="logbook-editorial-review-detail-hero-reviewer"]');
+      const credit = el.querySelector('[data-testid="logbook-editorial-review-detail-hero-credit"]');
+      if (!media || !badge || !credit) return null;
       const mediaBox = media.getBoundingClientRect();
       const badgeBox = badge.getBoundingClientRect();
-      return badgeBox.top >= mediaBox.bottom - 1;
+      const creditBox = credit.getBoundingClientRect();
+      const overlayTopRight =
+        badgeBox.top >= mediaBox.top - 1 &&
+        badgeBox.bottom <= mediaBox.bottom + 1 &&
+        badgeBox.right <= mediaBox.right + 1 &&
+        badgeBox.left >= mediaBox.left + mediaBox.width / 2;
+      const creditBelow = creditBox.top >= mediaBox.bottom - 1;
+      return overlayTopRight && creditBelow;
     });
     expect(stacked).toBe(true);
     await assertStoredHeroCredit(hwaseongCard);
