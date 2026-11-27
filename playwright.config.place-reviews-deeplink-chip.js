@@ -16,7 +16,7 @@ const previewEnv = {
 
 export default defineConfig({
   testDir: './e2e',
-  testMatch: /place-reviews-deeplink-chip\.spec\.js/,
+  testMatch: /(place-reviews-deeplink-chip|review-affiliate-href)\.spec\.js/,
   fullyParallel: false,
   forbidOnly: Boolean(process.env.CI),
   retries: 0,

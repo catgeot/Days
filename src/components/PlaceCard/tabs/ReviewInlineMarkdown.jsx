@@ -4,6 +4,11 @@ import ReactMarkdown from 'react-markdown';
 import remarkCjkFriendly from 'remark-cjk-friendly/parseOnly';
 import rehypeSanitize from 'rehype-sanitize';
 import { articleBodyPlaceOrFestivalTo } from '../../../shared/navigation/logbookMarkdownHref.js';
+import ContentAffiliateMark from '../../../shared/affiliate/ContentAffiliateMark.jsx';
+import {
+  CONTENT_AFFILIATE_LINK_REL,
+  resolveContentAffiliateLink,
+} from '../../../utils/contentAffiliateHref.js';
 import {
   LOGBOOK_READER_ORIGIN_NONCE,
   rememberLogbookReaderOrigin,
@@ -20,7 +25,7 @@ import {
 const REVIEW_LINK_CLASS =
   'text-blue-600 hover:text-blue-700 underline underline-offset-2 break-words';
 
-function ReviewAnchor({ href, children }) {
+function ReviewAnchor({ href, children, affiliateSubTag = '' }) {
   const navigate = useNavigate();
   const props = reviewInlineLinkProps(href);
   if (!props) return <>{children}</>;
@@ -56,20 +61,25 @@ function ReviewAnchor({ href, children }) {
       </a>
     );
   }
+  const resolved = resolveContentAffiliateLink(props.href, { subTag: affiliateSubTag });
   return (
     <a
       {...props}
+      href={resolved.href}
+      rel={resolved.affiliated ? CONTENT_AFFILIATE_LINK_REL : props.rel}
       className={REVIEW_LINK_CLASS}
+      data-content-affiliate={resolved.partner || undefined}
       onClick={(event) => {
         event.stopPropagation();
       }}
     >
       {children}
+      {resolved.affiliated ? <ContentAffiliateMark /> : null}
     </a>
   );
 }
 
-export default function ReviewInlineMarkdown({ text, inline = false }) {
+export default function ReviewInlineMarkdown({ text, inline = false, affiliateSubTag = '' }) {
   const components = useMemo(
     () => ({
       p: ({ children }) =>
@@ -79,10 +89,14 @@ export default function ReviewInlineMarkdown({ text, inline = false }) {
           <p className="whitespace-pre-wrap">{children}</p>
         ),
       strong: ({ children }) => <strong className="font-bold">{children}</strong>,
-      a: ReviewAnchor,
+      a: ({ href, children }) => (
+        <ReviewAnchor href={href} affiliateSubTag={affiliateSubTag}>
+          {children}
+        </ReviewAnchor>
+      ),
       br: () => <br />,
     }),
-    [inline],
+    [inline, affiliateSubTag],
   );
   const markdown = prepareReviewInlineMarkdown(text);
   if (!markdown) return null;
@@ -125,6 +139,12 @@ export class ReviewInlineMarkdownBoundary extends React.Component {
       );
     }
     const Markdown = this.props.MarkdownComponent || ReviewInlineMarkdown;
-    return <Markdown text={this.props.text} inline={this.props.inline} />;
+    return (
+      <Markdown
+        text={this.props.text}
+        inline={this.props.inline}
+        affiliateSubTag={this.props.affiliateSubTag}
+      />
+    );
   }
 }

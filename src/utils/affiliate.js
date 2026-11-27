@@ -27,6 +27,8 @@ export {
   resolveMrtPackageThemeForLocation,
 } from './mrtPackageLinks.js';
 import { resolveTripcomPartnerLocale, resolveTripcomSiteOrigin, resolveTripcomCurrency } from './tripcomPartnerLocale.js';
+import { TRIPCOM_KR_PARTNER } from './tripcomKrPartner.js';
+import { applyMrtMylinkParams } from './mrtMylinkUrl.js';
 import {
   buildTripcomFlightTicketsHref,
   resolveTripcomFlightTicketsDates,
@@ -43,6 +45,7 @@ import {
 } from './gygAffiliateLinks.js';
 
 export { resolveTripcomPartnerLocale, resolveTripcomSiteOrigin, resolveTripcomCurrency, resolveGygLocale, resolveGygCurrency };
+export { TRIPCOM_KR_PARTNER };
 export {
   GYG_PARTNER_ID,
   GYG_DEFAULT_CMP,
@@ -433,13 +436,7 @@ export const getKlookAirportTransferUrl = () =>
 export function buildMrtMylinkUrl(targetUrl, options = {}) {
   if (!targetUrl) return getMrtHomeAffiliateUrl();
   try {
-    const url = new URL(targetUrl);
-    const mylinkId = String(options.mylinkId ?? MRT_HOME_MYLINK_ID).trim();
-    if (mylinkId) url.searchParams.set('mylink_id', mylinkId);
-    url.searchParams.set('utm_source', 'mktpartner');
-    const utmContent = String(options.utmContent ?? '').trim();
-    if (utmContent) url.searchParams.set('utm_content', utmContent.slice(0, 100));
-    return url.toString();
+    return applyMrtMylinkParams(targetUrl, options);
   } catch {
     return targetUrl;
   }
@@ -1221,12 +1218,6 @@ export function getTripcomHotelErrorCopy() {
  */
 export const PLANNER_TRIPCOM_HOTEL_OVERRIDES = {
   // fukuoka: 'https://kr.trip.com/hotels/list?...',
-};
-
-/** Trip.com KR 제휴 — Alliance / SID */
-export const TRIPCOM_KR_PARTNER = {
-  allianceId: '8182427',
-  sid: '309563143',
 };
 
 /**

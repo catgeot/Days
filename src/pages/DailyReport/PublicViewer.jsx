@@ -12,6 +12,7 @@ import EditorialLogbookBadge from './components/EditorialLogbookBadge';
 import EditorialLogbookImageCredits from './components/EditorialLogbookImageCredits';
 import { contentHasLogbookPhotoPlaceholders } from './utils/logbookMarkdownSnippet';
 import { isEditorialLogbook, isEditorialLogbookPublished, publicLogbookDetailPath } from '../../utils/logbookEditorial';
+import { contentAffiliateSubTag } from '../../utils/contentAffiliateHref.js';
 import { logbookHeroImageUrl, logbookImageUrlList } from '../../utils/logbookImageSrc';
 import LogbookResolvedImage from '../../components/LogbookResolvedImage.jsx';
 import { formatLogbookDisplayDate } from '../../utils/logbookDisplayDate';
@@ -278,6 +279,10 @@ const PublicViewer = () => {
   }
 
   const editorial = isEditorialLogbook(report);
+  const blogAffiliateKey = editorialSlug || (editorial ? report.slug : '');
+  const affiliateSubTag = blogAffiliateKey
+    ? contentAffiliateSubTag('blog', report.slug || editorialSlug || blogAffiliateKey)
+    : '';
   const imageUrls = logbookImageUrlList(report.images);
   const heroImageUrl = logbookHeroImageUrl(report.images, { thumbnail: true });
   const hasPlaceholders = contentHasLogbookPhotoPlaceholders(report.content);
@@ -459,6 +464,7 @@ const PublicViewer = () => {
               showImageOverlay={false}
               showEditorialImageCredits={editorial}
               readerTypography={editorial}
+              affiliateSubTag={affiliateSubTag}
             />
           </div>
 
