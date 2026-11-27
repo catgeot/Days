@@ -26,7 +26,7 @@ const {
   isLivePostedSocialCard,
   normalizeSocialReel,
 } = await import('../../src/pages/Social/socialReels.js');
-const { createSocialReelSession } = await import('../../src/pages/Social/socialReelPlayback.js');
+const { attachMp4Source, createSocialReelSession } = await import('../../src/pages/Social/socialReelPlayback.js');
 const catalog = await import('../../src/pages/Social/data/socialReels.json', { with: { type: 'json' } });
 
 const dom = new JSDOM('<!doctype html><html><head></head><body></body></html>', {
@@ -196,8 +196,8 @@ const orderedReels = [
   },
   {
     campaignId: 'reel-new',
-    kind: 'hls',
-    src: 'https://example.test/duplicate.m3u8',
+    kind: 'mp4',
+    src: 'https://example.test/duplicate.mp4',
     poster: 'https://example.test/duplicate.jpg',
     durationSec: 9,
     credit: '중복',
@@ -337,13 +337,21 @@ after(async () => {
   dom.window.close();
 });
 
-test('shipped reel catalog is empty', () => {
+test('shipped reel catalog is empty and playback stays on public mp4', () => {
   assert.deepEqual(catalog.default.reels, []);
-  const source = fs.readFileSync(
-    fileURLToPath(new URL('../../src/pages/Social/socialReelHls.js', import.meta.url)),
+  const playback = fs.readFileSync(
+    fileURLToPath(new URL('../../src/pages/Social/socialReelPlayback.js', import.meta.url)),
     'utf8',
   );
-  assert.match(source, /import\('hls\.js'\)/);
+  const player = fs.readFileSync(
+    fileURLToPath(new URL('../../src/pages/Social/SocialReelsPlayer.jsx', import.meta.url)),
+    'utf8',
+  );
+  assert.equal(playback.includes('hls.js'), false);
+  assert.equal(player.includes('hls.js'), false);
+  assert.equal(fs.existsSync(fileURLToPath(new URL('../../src/pages/Social/socialReelHls.js', import.meta.url))), false);
+  assert.match(playback, /attachMp4Source/);
+  assert.match(player, /preload="metadata"/);
 });
 
 test('playlist follows card order, keeps the first row, and prefixes 출처', () => {
@@ -351,6 +359,7 @@ test('playlist follows card order, keeps the first row, and prefixes 출처', ()
   assert.equal(formatSocialReelCredit('출처: 이미 있음'), '출처: 이미 있음');
   assert.equal(formatSocialReelCredit(''), '');
   assert.equal(normalizeSocialReel({ campaignId: 'a', kind: 'wav', src: 'https://example.test/a.wav' }), null);
+  assert.equal(normalizeSocialReel({ campaignId: 'a', kind: 'hls', src: 'https://example.test/a.m3u8' }), null);
 
   const playlist = buildSocialReelPlaylist(orderedCards, orderedReels, NOW);
   assert.deepEqual(
@@ -456,6 +465,9 @@ test('player order, credit, place target, poster preload, and one video element'
   assert.equal(document.querySelector('[data-testid="social-reel-mute"]').textContent, '소리 켜기');
   assert.match(node.getAttribute('src'), /new\.mp4$/);
   assert.equal(node.getAttribute('playsinline'), '');
+  assert.equal(node.getAttribute('preload'), 'metadata');
+  assert.equal(node.hasAttribute('autoplay'), true);
+  assert.equal(node.muted, true);
   assert.equal(document.querySelector('[data-testid="social-reel-credit"]').textContent, '출처: 한국관광공사');
   assert.equal(document.querySelector('[data-testid="social-reel-place"]').textContent, '이 여행지 보기');
   assert.equal(document.querySelector('[data-testid="social-reel-place"]').getAttribute('href'), '/place/jeju-new');
@@ -554,27 +566,8 @@ test('capture fixture is ignored unless the flag is on', async () => {
   assert.equal(document.querySelector('[data-testid="social-reel-place"]').getAttribute('href'), '/place/tour-126201');
 });
 
-test('mp4 and native HLS set src; other HLS uses the lazy adapter', async () => {
-  const calls = [];
-  class FakeHls {
-    static isSupported() {
-      return true;
-    }
-    loadSource(src) {
-      calls.push(['load', src]);
-    }
-    attachMedia(media) {
-      calls.push(['media', media]);
-    }
-    detachMedia() {
-      calls.push(['detach']);
-    }
-    destroy() {
-      calls.push(['destroy']);
-    }
-  }
-
-  function fakeVideo(canPlay) {
+test('mp4 assigns the public URL for Range playback and leaves an attach seam', async () => {
+  function fakeVideo() {
     const attrs = {};
     return {
       attrs,
@@ -582,14 +575,12 @@ test('mp4 and native HLS set src; other HLS uses the lazy adapter', async () => 
       muted: false,
       defaultMuted: false,
       playsInline: false,
+      preload: '',
       setAttribute(name, value) {
         attrs[name] = value;
       },
       removeAttribute(name) {
         delete attrs[name];
-      },
-      canPlayType() {
-        return canPlay;
       },
       load() {
         this.loads = (this.loads || 0) + 1;
@@ -597,77 +588,56 @@ test('mp4 and native HLS set src; other HLS uses the lazy adapter', async () => 
     };
   }
 
-  let hlsLoads = 0;
-  const mp4 = fakeVideo('');
-  const mp4Session = createSocialReelSession(mp4, {
-    loadHls: async () => {
-      hlsLoads += 1;
-      return FakeHls;
+  let fetches = 0;
+  const previousFetch = globalThis.fetch;
+  globalThis.fetch = async () => {
+    fetches += 1;
+    throw new Error('reel playback must not download the file');
+  };
+  try {
+    const mp4 = fakeVideo();
+    const direct = attachMp4Source(mp4, { kind: 'mp4', src: 'https://cdn.example.test/a.mp4' });
+    assert.equal(direct.mode, 'mp4');
+    assert.equal(mp4.src, 'https://cdn.example.test/a.mp4');
+    assert.equal(mp4.preload, 'metadata');
+    assert.equal(attachMp4Source(mp4, { kind: 'hls', src: 'https://cdn.example.test/a.m3u8' }), null);
+
+    const session = createSocialReelSession(mp4);
+    const handle = await session.attach(
+      { kind: 'mp4', src: 'https://cdn.example.test/reel.mp4' },
+      { muted: true },
+    );
+    assert.equal(handle.mode, 'mp4');
+    assert.equal(mp4.src, 'https://cdn.example.test/reel.mp4');
+    assert.equal(String(mp4.src).startsWith('blob:'), false);
+    assert.equal(mp4.preload, 'metadata');
+    assert.equal(mp4.attrs.playsinline, '');
+    assert.equal(mp4.attrs['webkit-playsinline'], 'true');
+    assert.equal(mp4.attrs.muted, '');
+    assert.equal(fetches, 0);
+    session.detach();
+    assert.equal(mp4.src, '');
+    assert.ok(mp4.loads >= 1);
+
+    const rejected = await session.attach({ kind: 'hls', src: 'https://cdn.example.test/a.m3u8' });
+    assert.equal(rejected.mode, 'unsupported');
+    assert.equal(mp4.src, '');
+    assert.equal(fetches, 0);
+  } finally {
+    globalThis.fetch = previousFetch;
+  }
+
+  const seamVideo = fakeVideo();
+  const seen = [];
+  const seam = createSocialReelSession(seamVideo, {
+    attachSource(media, reel) {
+      seen.push(reel.src);
+      return attachMp4Source(media, reel);
     },
   });
-  const mp4Handle = await mp4Session.attach(
-    { kind: 'mp4', src: 'https://example.test/a.mp4' },
-    { muted: true },
-  );
-  assert.equal(mp4Handle.mode, 'mp4');
-  assert.equal(mp4.src, 'https://example.test/a.mp4');
-  assert.equal(mp4.attrs.playsinline, '');
-  assert.equal(mp4.attrs['webkit-playsinline'], 'true');
-  assert.equal(mp4.attrs.muted, '');
-  assert.equal(hlsLoads, 0);
-  mp4Session.detach();
-  assert.equal(mp4.attrs.src, undefined);
-  assert.ok(mp4.loads >= 1);
-
-  const native = fakeVideo('maybe');
-  const nativeSession = createSocialReelSession(native, {
-    loadHls: async () => {
-      hlsLoads += 1;
-      return FakeHls;
-    },
-  });
-  const nativeHandle = await nativeSession.attach({
-    kind: 'hls',
-    src: 'https://example.test/a.m3u8',
-  });
-  assert.equal(nativeHandle.mode, 'native-hls');
-  assert.equal(native.src, 'https://example.test/a.m3u8');
-  assert.equal(hlsLoads, 0);
-  nativeSession.detach();
-
-  const mse = fakeVideo('');
-  const mseSession = createSocialReelSession(mse, {
-    loadHls: async () => {
-      hlsLoads += 1;
-      return FakeHls;
-    },
-  });
-  const mseHandle = await mseSession.attach({ kind: 'hls', src: 'https://example.test/b.m3u8' });
-  assert.equal(mseHandle.mode, 'hls.js');
-  assert.equal(mse.src, '');
-  assert.equal(hlsLoads, 1);
-  assert.deepEqual(
-    calls.map((entry) => entry[0]),
-    ['load', 'media'],
-  );
-  assert.equal(calls[1][1], mse);
-  mseSession.detach();
-  assert.deepEqual(
-    calls.map((entry) => entry[0]),
-    ['load', 'media', 'detach', 'destroy'],
-  );
-
-  const unsupported = fakeVideo('');
-  const fallback = createSocialReelSession(unsupported, {
-    loadHls: async () =>
-      class {
-        static isSupported() {
-          return false;
-        }
-      },
-  });
-  const fallbackHandle = await fallback.attach({ kind: 'hls', src: 'https://example.test/c.m3u8' });
-  assert.equal(fallbackHandle.mode, 'native-hls');
-  assert.equal(unsupported.src, 'https://example.test/c.m3u8');
-  fallback.detach();
+  const seamHandle = await seam.attach({ kind: 'mp4', src: 'https://cdn.example.test/seam.mp4' });
+  assert.equal(seamHandle.mode, 'mp4');
+  assert.deepEqual(seen, ['https://cdn.example.test/seam.mp4']);
+  assert.equal(seamVideo.src, 'https://cdn.example.test/seam.mp4');
+  seam.detach();
 });

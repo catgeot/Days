@@ -1,20 +1,8 @@
-import { loadHlsModule } from './socialReelHls.js';
-
-export function videoSupportsNativeHls(video) {
-  if (!video || typeof video.canPlayType !== 'function') return false;
-  try {
-    const apple = video.canPlayType('application/vnd.apple.mpegurl');
-    const legacy = video.canPlayType('application/x-mpegURL');
-    return apple === 'probably' || apple === 'maybe' || legacy === 'probably' || legacy === 'maybe';
-  } catch {
-    return false;
-  }
-}
-
-function applyInlinePlayback(video, muted) {
+export function applyInlinePlayback(video, muted) {
   video.playsInline = true;
   video.setAttribute('playsinline', '');
   video.setAttribute('webkit-playsinline', 'true');
+  video.preload = 'metadata';
   video.muted = muted;
   video.defaultMuted = muted;
   if (muted) video.setAttribute('muted', '');
@@ -23,6 +11,7 @@ function applyInlinePlayback(video, muted) {
 
 function clearMediaElementSource(video) {
   video.removeAttribute('src');
+  video.src = '';
   if (typeof video.load === 'function') video.load();
 }
 
@@ -36,11 +25,25 @@ export function safePlay(video) {
 }
 
 /**
- * One video element. MP4 and native HLS set `src`. Other HLS goes through `loadHls`
- * (default: lazy `hls.js`) and does not replace the element.
+ * Public 720p MP4 URL (Cloudflare R2). Setting `src` lets the browser send Range
+ * requests. `preload=metadata` asks for the header, not the whole file.
+ * Replace this function if a later host needs a different attach step.
  */
+export function attachMp4Source(video, reel) {
+  if (!video || reel?.kind !== 'mp4' || !reel.src) return null;
+  video.preload = 'metadata';
+  video.src = reel.src;
+  return {
+    mode: 'mp4',
+    destroy() {
+      clearMediaElementSource(video);
+    },
+  };
+}
+
+/** One video element. `attachSource` defaults to {@link attachMp4Source}. */
 export function createSocialReelSession(video, options = {}) {
-  const loadHls = options.loadHls || loadHlsModule;
+  const attachSource = options.attachSource || attachMp4Source;
   let generation = 0;
   let current = null;
 
@@ -65,52 +68,18 @@ export function createSocialReelSession(video, options = {}) {
     destroyCurrent();
     if (!video || !reel?.src) return { mode: 'empty' };
     applyInlinePlayback(video, muted);
-
-    if (reel.kind === 'hls' && !videoSupportsNativeHls(video)) {
-      let Hls = null;
-      try {
-        Hls = await loadHls();
-      } catch {
-        Hls = null;
-      }
-      if (token !== generation) return { mode: 'cancelled' };
-      const supported = Hls && (typeof Hls.isSupported !== 'function' || Hls.isSupported());
-      if (supported) {
-        const player = new Hls();
-        player.loadSource(reel.src);
-        player.attachMedia(video);
-        const handle = {
-          mode: 'hls.js',
-          destroy() {
-            try {
-              player.detachMedia?.();
-            } catch {
-              /* ignore */
-            }
-            try {
-              player.destroy?.();
-            } catch {
-              /* ignore */
-            }
-          },
-        };
-        if (token !== generation) {
-          handle.destroy();
-          return { mode: 'cancelled' };
-        }
-        current = handle;
-        return handle;
-      }
-    }
-
     if (token !== generation) return { mode: 'cancelled' };
-    video.src = reel.src;
-    const handle = {
-      mode: reel.kind === 'hls' ? 'native-hls' : 'mp4',
-      destroy() {
-        clearMediaElementSource(video);
-      },
-    };
+    if (reel.kind !== 'mp4') return { mode: 'unsupported' };
+    const handle = attachSource(video, reel);
+    if (!handle) return { mode: 'unsupported' };
+    if (token !== generation) {
+      try {
+        handle.destroy();
+      } catch {
+        /* ignore */
+      }
+      return { mode: 'cancelled' };
+    }
     current = handle;
     return handle;
   }

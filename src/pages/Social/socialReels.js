@@ -1,7 +1,7 @@
 import catalog from './data/socialReels.json';
 import { orderSocialCards, socialTargetHref } from './socialLinksView.js';
 
-const KINDS = new Set(['mp4', 'hls']);
+const KINDS = new Set(['mp4']);
 
 /** @param {unknown} override */
 export function readSocialReelCatalog(override) {

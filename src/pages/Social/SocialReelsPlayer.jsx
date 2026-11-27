@@ -18,7 +18,7 @@ function stepIndex(current, length, delta) {
   return next;
 }
 
-export default function SocialReelsPlayer({ playlist, onClose, loadHls }) {
+export default function SocialReelsPlayer({ playlist, onClose, attachSource }) {
   const [index, setIndex] = useState(0);
   const [muted, setMuted] = useState(true);
   const [reduced, setReduced] = useState(readReducedMotion);
@@ -58,7 +58,7 @@ export default function SocialReelsPlayer({ playlist, onClose, loadHls }) {
   useEffect(() => {
     const video = videoRef.current;
     if (!video || !item?.reel) return undefined;
-    const session = createSocialReelSession(video, loadHls ? { loadHls } : undefined);
+    const session = createSocialReelSession(video, attachSource ? { attachSource } : undefined);
     let cancelled = false;
     session.attach(item.reel, { muted: mutedRef.current }).then(() => {
       if (cancelled || reducedRef.current) return;
@@ -74,7 +74,7 @@ export default function SocialReelsPlayer({ playlist, onClose, loadHls }) {
       video.removeEventListener('ended', onEnded);
       session.detach();
     };
-  }, [item, loadHls]);
+  }, [item, attachSource]);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -142,7 +142,7 @@ export default function SocialReelsPlayer({ playlist, onClose, loadHls }) {
         muted={muted}
         autoPlay={!reduced}
         poster={item.reel.poster || undefined}
-        preload="auto"
+        preload="metadata"
       />
       {nextItem?.reel.poster ? (
         <img
