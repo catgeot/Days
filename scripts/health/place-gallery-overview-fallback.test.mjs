@@ -202,6 +202,7 @@ test('Home gallery PR drift guard; MOONi session wiring line allowlist', () => {
 
   const indexAllow = [
     /^[+-]\s*import \{/,
+    /^[+-].*placeCardOffset: false/,
     /^[+-].*SiteUpdateBanner/,
     /^[+-]\s*import .*tripChatUtils/,
     /^[+-].*resolveCoordinatePlaceIdentity/,

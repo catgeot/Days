@@ -1834,6 +1834,7 @@ function Home() {
       if (hasCoords) {
         moveToLocation(lat, lng, selectedLocation.name, selectedLocation.category || category, {
           location: selectedLocation,
+          placeCardOffset: false,
         });
       }
     }

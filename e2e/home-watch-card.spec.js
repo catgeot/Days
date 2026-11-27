@@ -119,10 +119,13 @@ test.describe('home watch card', () => {
     if (width < 1280) {
       await expectTasteLabelsFit(page);
       await expect(page.locator('html')).toHaveAttribute('data-home-watch-globe-lift', '1');
-      const mapTransform = await page.locator('.gateo-globe-map').first().evaluate(
-        (el) => window.getComputedStyle(el).transform,
-      );
-      expect(mapTransform).not.toBe('none');
+      const mapTop = await page.locator('.gateo-globe-map').first().evaluate((el) => {
+        const cs = window.getComputedStyle(el);
+        return { top: Number.parseFloat(cs.top), transform: cs.transform };
+      });
+      expect(mapTop.transform === 'none' || mapTop.transform === 'matrix(1, 0, 0, 1, 0, 0)').toBe(true);
+      expect(mapTop.top).toBeLessThanOrEqual(-68);
+      expect(mapTop.top).toBeGreaterThanOrEqual(-72);
       const shellTransform = await page.getByTestId('home-globe-shell').evaluate(
         (el) => window.getComputedStyle(el).transform,
       );
