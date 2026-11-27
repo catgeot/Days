@@ -440,8 +440,22 @@ test('playlist follows card order, keeps the first row, and prefixes 출처', ()
   assert.equal(playlist[0].reel.src, 'https://example.test/new.mp4');
   assert.equal(playlist[0].reel.kind, 'mp4');
   assert.equal(playlist[0].href, '/place/jeju-new');
+  assert.equal(playlist[0].placeName, '새 릴스');
   assert.equal(playlist[0].placeLabel, '이 여행지 보기');
   assert.equal(playlist[0].creditText, '출처: 한국관광공사');
+  const named = buildSocialReelPlaylist(
+    [
+      {
+        ...orderedCards[0],
+        title: '카드 제목',
+        targets: [{ type: 'place', slug: 'jeju-new', name: '이름 우선' }],
+      },
+    ],
+    orderedReels,
+    NOW,
+  );
+  assert.equal(named[0].placeName, '이름 우선');
+  assert.equal(named[0].href, '/place/jeju-new');
   assert.equal(playlist[2].href, '/korea?festival=42');
   assert.equal(playlist[2].placeLabel, '이 축제 보기');
   assert.equal(playlist[2].creditText, '출처: 축제 자료');
@@ -530,11 +544,20 @@ test('player order, credit, place target, poster preload, and one video element'
   assert.equal(player().getAttribute('data-campaign'), 'reel-new');
   await openPlayer();
   const node = video();
-  assert.equal(document.querySelectorAll('video').length, 1);
+  assert.equal(document.querySelectorAll('[data-testid="social-reel-video"]').length, 1);
+  assert.equal(document.querySelectorAll('video').length, 2);
+  assert.match(
+    document.querySelector('[data-testid="social-reel-video-preload"]').getAttribute('src'),
+    /old\.mp4$/,
+  );
+  assert.match(document.querySelector('[data-testid="social-reel-track"]').style.transform, /calc\(0%/);
+  assert.match(document.querySelector('[data-testid="social-reel-track"]').style.transition, /transform/);
   assert.equal(player().getAttribute('data-campaign'), 'reel-new');
   assert.equal(node.muted, true);
   assert.equal(document.querySelector('[data-testid="social-reel-mute"]').getAttribute('data-muted'), 'true');
   assert.equal(document.querySelector('[data-testid="social-reel-mute"]').textContent, '소리 켜기');
+  assert.equal(document.querySelector('[data-testid="social-reel-mute"]').getAttribute('aria-label'), '소리 켜기');
+  assert.equal(document.querySelector('[data-testid="social-reel-close"]').getAttribute('aria-label'), '닫기');
   assert.match(node.getAttribute('src'), /new\.mp4$/);
   assert.equal(node.getAttribute('playsinline'), '');
   assert.equal(node.getAttribute('preload'), 'metadata');
@@ -547,8 +570,12 @@ test('player order, credit, place target, poster preload, and one video element'
   assert.match(chrome.className, /28\.125dvh/);
   assert.equal(node.muted, true);
   assert.equal(document.querySelector('[data-testid="social-reel-credit"]').textContent, '출처: 한국관광공사');
+  assert.equal(document.querySelector('[data-testid="social-reel-place-name"]').textContent, '새 릴스');
   assert.equal(document.querySelector('[data-testid="social-reel-place"]').textContent, '이 여행지 보기');
+  assert.doesNotMatch(document.querySelector('[data-testid="social-reel-place"]').className, /\bh-12\b/);
   assert.equal(document.querySelector('[data-testid="social-reel-place"]').getAttribute('href'), '/place/jeju-new');
+  assert.equal(document.querySelector('[data-testid="social-reel-like"]').disabled, true);
+  assert.equal(document.querySelector('[data-testid="social-reel-comment"]').disabled, true);
   assert.equal(
     document.querySelector('[data-testid="social-reel-next-poster"]').getAttribute('src'),
     'https://example.test/old.jpg',
@@ -559,9 +586,15 @@ test('player order, credit, place target, poster preload, and one video element'
     node.dispatchEvent(new window.Event('ended'));
   });
   assert.equal(player().getAttribute('data-campaign'), 'reel-old');
-  assert.equal(document.querySelectorAll('video').length, 1);
-  assert.equal(video(), node);
-  assert.match(node.getAttribute('src'), /old\.mp4$/);
+  assert.equal(document.querySelectorAll('[data-testid="social-reel-video"]').length, 1);
+  assert.equal(document.querySelectorAll('video').length, 3);
+  assert.notEqual(video(), node);
+  assert.equal(node.isConnected, true);
+  assert.equal(node.getAttribute('data-active'), 'false');
+  assert.match(node.getAttribute('src'), /new\.mp4$/);
+  assert.equal(video().getAttribute('data-active'), 'true');
+  assert.match(video().getAttribute('src'), /old\.mp4$/);
+  assert.match(document.querySelector('[data-testid="social-reel-track"]').style.transform, /calc\(-100%/);
   assert.equal(document.querySelector('[data-testid="social-reel-credit"]').textContent, '출처: 옛 자료');
 
   await act(async () => {
@@ -624,6 +657,7 @@ test('reduced motion does not autoplay or advance when the video ends', async ()
   assert.equal(player().getAttribute('data-reduced-motion'), '1');
   assert.equal(video().autoplay, false);
   assert.equal(video().hasAttribute('autoplay'), false);
+  assert.equal(document.querySelector('[data-testid="social-reel-track"]').style.transition, 'none');
   await act(async () => {
     video().dispatchEvent(new window.Event('ended'));
   });
@@ -642,6 +676,145 @@ test('capture fixture is ignored unless the flag is on', async () => {
   await openPlayer();
   assert.equal(player().getAttribute('data-campaign'), 'reel-14');
   assert.equal(document.querySelector('[data-testid="social-reel-place"]').getAttribute('href'), '/place/tour-126201');
+});
+
+function setWidth(width) {
+  Object.defineProperty(window, 'innerWidth', { configurable: true, value: width });
+}
+
+const WHEEL_WAIT_MS = 460;
+
+test('one swipe or wheel moves exactly one reel and back', async () => {
+  setWidth(390);
+  await render('/social?social_reels=1&social_links=1', {
+    cards: orderedCards,
+    now: NOW,
+    reels: orderedReels,
+  });
+  await openPlayer();
+  await pointerSwipe(-2400);
+  assert.equal(player().getAttribute('data-campaign'), 'reel-old');
+  assert.equal(player().getAttribute('data-index'), '1');
+  await pointerSwipe(2400);
+  assert.equal(player().getAttribute('data-campaign'), 'reel-new');
+  await pointerSwipe(-160);
+  await pointerSwipe(-160);
+  assert.equal(player().getAttribute('data-campaign'), 'fest-old');
+
+  setWidth(1280);
+  await render('/social?social_reels=1&social_links=1', {
+    cards: orderedCards,
+    now: NOW,
+    reels: orderedReels,
+  });
+  await openPlayer();
+  await act(async () => {
+    window.dispatchEvent(new window.WheelEvent('wheel', { deltaY: 900, bubbles: true, cancelable: true }));
+    window.dispatchEvent(new window.WheelEvent('wheel', { deltaY: 900, bubbles: true, cancelable: true }));
+  });
+  assert.equal(player().getAttribute('data-campaign'), 'reel-old');
+  await act(async () => {
+    await new Promise((resolve) => setTimeout(resolve, WHEEL_WAIT_MS));
+  });
+  await act(async () => {
+    window.dispatchEvent(new window.WheelEvent('wheel', { deltaY: -40, bubbles: true, cancelable: true }));
+  });
+  assert.equal(player().getAttribute('data-campaign'), 'reel-new');
+
+  setWidth(390);
+  await act(async () => {
+    window.dispatchEvent(new window.WheelEvent('wheel', { deltaY: 400, bubbles: true, cancelable: true }));
+  });
+  assert.equal(player().getAttribute('data-campaign'), 'reel-new');
+});
+
+test('unmuted sound stays on for the next reel and a reopened player', async () => {
+  await render('/social?social_reels=1&social_links=1', {
+    cards: orderedCards,
+    now: NOW,
+    reels: orderedReels,
+  });
+  await openPlayer();
+  assert.equal(video().muted, true);
+  await act(async () => {
+    document.querySelector('[data-testid="social-reel-mute"]').click();
+  });
+  assert.equal(window.sessionStorage.getItem('gateo_social_reel_sound'), 'on');
+  await key('ArrowDown');
+  assert.equal(player().getAttribute('data-campaign'), 'reel-old');
+  assert.equal(video().muted, false);
+  assert.equal(document.querySelector('[data-testid="social-reel-mute"]').textContent, '소리 끄기');
+  assert.equal(document.querySelector('[data-testid="social-reel-mute"]').getAttribute('aria-label'), '소리 끄기');
+  await key('Escape');
+  assert.equal(player(), null);
+  await openPlayer();
+  assert.equal(document.querySelector('[data-testid="social-reel-mute"]').getAttribute('data-muted'), 'false');
+  assert.equal(video().muted, false);
+});
+
+test('share falls back to copying the place URL', async () => {
+  await render('/social?social_reels=1&social_links=1', {
+    cards: orderedCards,
+    now: NOW,
+    reels: orderedReels,
+  });
+  await openPlayer();
+  const nav = window.navigator;
+  const previousShare = nav.share;
+  const previousClipboard = nav.clipboard;
+  const copied = [];
+  const shared = [];
+  try {
+    Object.defineProperty(nav, 'share', {
+      configurable: true,
+      value: async (data) => {
+        shared.push(data);
+      },
+    });
+    Object.defineProperty(nav, 'clipboard', {
+      configurable: true,
+      value: {
+        writeText: async (value) => {
+          copied.push(value);
+        },
+      },
+    });
+    await act(async () => {
+      document.querySelector('[data-testid="social-reel-share"]').click();
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+    assert.equal(copied.length, 0);
+    assert.equal(shared[0].url, 'https://www.gateo.kr/place/jeju-new');
+    assert.equal(document.querySelector('[data-testid="social-reel-toast"]'), null);
+
+    Object.defineProperty(nav, 'share', {
+      configurable: true,
+      value: async () => {
+        const error = new Error('denied');
+        error.name = 'NotAllowedError';
+        throw error;
+      },
+    });
+    await act(async () => {
+      document.querySelector('[data-testid="social-reel-share"]').click();
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+    assert.deepEqual(copied, ['https://www.gateo.kr/place/jeju-new']);
+    assert.equal(document.querySelector('[data-testid="social-reel-toast"]').textContent, '링크를 복사했어요');
+
+    copied.length = 0;
+    Object.defineProperty(nav, 'share', { configurable: true, value: undefined });
+    await key('ArrowDown');
+    await key('ArrowDown');
+    await act(async () => {
+      document.querySelector('[data-testid="social-reel-share"]').click();
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+    assert.equal(copied[0], 'https://www.gateo.kr/korea?festival=42');
+  } finally {
+    Object.defineProperty(nav, 'share', { configurable: true, value: previousShare });
+    Object.defineProperty(nav, 'clipboard', { configurable: true, value: previousClipboard });
+  }
 });
 
 test('mp4 assigns the public URL for Range playback and leaves an attach seam', async () => {

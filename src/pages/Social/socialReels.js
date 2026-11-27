@@ -63,6 +63,13 @@ export function socialReelPlaceLabel(card) {
   return card?.targets?.[0]?.type === 'festival' ? '이 축제 보기' : '이 여행지 보기';
 }
 
+/** First target name, otherwise the card title (the place the reel is about). */
+export function socialReelPlaceName(card) {
+  const named = String(card?.targets?.[0]?.name || '').trim();
+  if (named) return named;
+  return String(card?.title || '').trim();
+}
+
 /** posted-links.md 상태 열이 live인 카드만 릴스에 넣어요. */
 export function isLivePostedSocialCard(card) {
   return String(card?.status || '').trim().toLowerCase() === 'live';
@@ -90,6 +97,7 @@ export function buildSocialReelPlaylist(cards, entries, now = new Date()) {
       reel,
       card,
       href: socialTargetHref(target),
+      placeName: socialReelPlaceName(card),
       placeLabel: socialReelPlaceLabel(card),
       creditText: formatSocialReelCredit(reel.credit),
     });
