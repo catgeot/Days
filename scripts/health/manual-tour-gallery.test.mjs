@@ -8,6 +8,7 @@ import {
   resolveTourGalleryContentId,
 } from '../../src/utils/gateoManualTourContentId.js';
 import { resolveTourApiPlace } from '../../src/utils/tourApiMatch.js';
+import { galleryLoadFailedAfterEmptyFetch } from '../../src/utils/galleryFetchEmptyOutcome.js';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 
@@ -35,17 +36,43 @@ test('resolveTourApiPlace — manual contentId is not an official Tour gallery i
   assert.equal(mapped?.contentId, null);
 });
 
-test('usePlaceGallery wires resolveTourGalleryContentId for official id gate', () => {
+test('(a) manual-style fetch — all sources ok with 0 items → empty copy (loadFailed false)', () => {
+  assert.equal(resolveTourGalleryContentId('990000000002'), null);
+  assert.equal(
+    galleryLoadFailedAfterEmptyFetch({ sourceHadError: false, imageCount: 0 }),
+    false,
+  );
+});
+
+test('(b) any source rejects with 0 photos → loadFailed true', () => {
+  assert.equal(
+    galleryLoadFailedAfterEmptyFetch({ sourceHadError: true, imageCount: 0 }),
+    true,
+  );
+});
+
+test('(c) source rejects but another returns photos → show photos (loadFailed false)', () => {
+  assert.equal(
+    galleryLoadFailedAfterEmptyFetch({ sourceHadError: true, imageCount: 3 }),
+    false,
+  );
+});
+
+test('usePlaceGallery wires error tracking and empty vs network outcome', () => {
   const src = readFileSync(
     join(root, 'src/components/PlaceCard/hooks/usePlaceGallery.js'),
     'utf8',
   );
   assert.match(src, /resolveTourGalleryContentId/);
   assert.match(src, /hasOfficialTourContentId = Boolean\(galleryTourContentId\)/);
-  assert.match(src, /setLoadFailed\(false\)/);
+  assert.match(src, /noteGallerySourceError/);
+  assert.match(src, /galleryLoadFailedAfterEmptyFetch/);
+  assert.match(src, /fetchUnsplashStockForGallery/);
 });
 
 test('fetchTourApiGallery skips manual id detailImage', () => {
   const src = readFileSync(join(root, 'src/utils/fetchTourApiGallery.js'), 'utf8');
   assert.match(src, /resolveTourGalleryContentId\(opts\?\.contentId\)/);
+  assert.match(src, /sourceHadError/);
+  assert.match(src, /galleryFetchOutcome/);
 });
