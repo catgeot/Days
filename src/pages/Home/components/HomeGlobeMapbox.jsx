@@ -200,6 +200,8 @@ const WATER_COLOR_BY_THEME = {
 
 const GLOBE_CLICK_TOLERANCE_PX = 3;
 const DRAG_CLICK_GUARD_MS = 180;
+/** Drag/tap clears autoRotateRef. interactionRef alone does not spin — restart after the gesture. */
+const GLOBE_GESTURE_ROTATE_RESUME_MS = 450;
 const PLACE_LABEL_LAYER_HINTS = [
   'place-label',
   'settlement',
@@ -487,6 +489,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   const rotationFrameRef = useRef(null);
   const rotationTimer = useRef(null);
   const rotateResumeRetryRef = useRef(0);
+  const gestureResumeTimerRef = useRef(null);
   /** 써머리「이 지역 보기」몰입 중 — 자전 금지·exitImmerse 대상 */
   const immerseActiveRef = useRef(false);
   /** @type {React.MutableRefObject<{ iso?: string, iso3166_2?: string, bbox?: number[], settleZoom?: number } | null>} */
@@ -622,15 +625,41 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       || snap.placeCardOpen || !snap.labelsSettled;
     if (hardStop) return;
     if (!(snap.mapMoving || snap.cameraAnimating || snap.globeCameraBusy)) return;
+    // One retry misses a flyTo/inertia that is still moving. Keep waiting while
+    // the only blockers are camera motion, then give up so a stuck isMoving cannot spin forever.
+    let left = 8;
     const token = rotateResumeRetryRef.current + 1;
     rotateResumeRetryRef.current = token;
-    window.setTimeout(() => {
+    const retry = () => {
       if (rotateResumeRetryRef.current !== token) return;
       const live = mapRef.current?.getMap?.();
       if (!live || live._removed) return;
-      if (zoomOk(live)) autoRotateRef.current = true;
-    }, 500);
+      if (zoomOk(live)) {
+        autoRotateRef.current = true;
+        return;
+      }
+      const again = buildRotateResumeSnapshot(live);
+      const blocked = again.pauseRender || again.userPausedRotate || again.interaction
+        || again.tourActive || again.immerseActive || again.flightCinemaActive
+        || again.placeCardOpen || !again.labelsSettled;
+      if (blocked) return;
+      left -= 1;
+      if (left <= 0) return;
+      if (!(again.mapMoving || again.cameraAnimating || again.globeCameraBusy)) return;
+      window.setTimeout(retry, 400);
+    };
+    window.setTimeout(retry, 400);
   }, [buildRotateResumeSnapshot, canResumeRotate]);
+
+  const endUserGesture = useCallback(() => {
+    interactionRef.current = false;
+    if (gestureResumeTimerRef.current) window.clearTimeout(gestureResumeTimerRef.current);
+    gestureResumeTimerRef.current = window.setTimeout(() => {
+      gestureResumeTimerRef.current = null;
+      if (interactionRef.current || userPausedRotateRef.current) return;
+      tryResumeAutoRotate(mapRef.current?.getMap?.());
+    }, GLOBE_GESTURE_ROTATE_RESUME_MS);
+  }, [tryResumeAutoRotate]);
 
   const toggleReachBoundaries = useCallback(() => {
     setReachBoundariesVisible((prev) => {
@@ -1546,6 +1575,17 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   }, [globeTheme, tryRevealGlobeOverlays, beginFirstLabelSettle, pauseRender]);
 
   useEffect(() => {
+    if (pauseRender || !mapReady) return undefined;
+    const timer = window.setTimeout(() => {
+      if (globeLabelsSettledRef.current || firstLabelSettleStartedRef.current) return;
+      const map = mapRef.current?.getMap?.();
+      if (!map || map._removed) return;
+      beginFirstLabelSettle(map);
+    }, 3000);
+    return () => window.clearTimeout(timer);
+  }, [beginFirstLabelSettle, mapReady, pauseRender]);
+
+  useEffect(() => {
     if (import.meta.env.DEV && prevStyleTransitioningRef.current && !isStyleTransitioning) {
       markGlobeLoadPhase('opacity-visible');
     }
@@ -1820,6 +1860,8 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     addRipple(lat, lng, 2000);
     if (!shouldFocus) {
       pendingFocusRef.current = null;
+      // Click ripple does not fly. Leaving autoRotateRef false here froze the globe after every tap.
+      endUserGesture();
       return;
     }
 
@@ -1855,7 +1897,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
         placeCardOffset: options.placeCardOffset,
       };
     }
-  }, [addRipple, executeFocus, globeMode, pivotTourExplore]);
+  }, [addRipple, endUserGesture, executeFocus, globeMode, pivotTourExplore]);
 
   const showMobileActionMessage = useCallback((message) => {
     setMobileActionMessage(message);
@@ -2796,6 +2838,10 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       window.clearTimeout(resumeRotateAfterLabelsTimerRef.current);
       resumeRotateAfterLabelsTimerRef.current = null;
     }
+    if (gestureResumeTimerRef.current) {
+      window.clearTimeout(gestureResumeTimerRef.current);
+      gestureResumeTimerRef.current = null;
+    }
     firstLabelPumpTimersRef.current.forEach((id) => window.clearTimeout(id));
     firstLabelPumpTimersRef.current = [];
     const map = mapRef.current?.getMap?.();
@@ -2936,6 +2982,10 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     } else if (!isMapEventOnGlobe(map, event)) {
       return;
     }
+    if (gestureResumeTimerRef.current) {
+      window.clearTimeout(gestureResumeTimerRef.current);
+      gestureResumeTimerRef.current = null;
+    }
     interactionRef.current = true;
     autoRotateRef.current = false;
   }, []);
@@ -2945,8 +2995,8 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   }, [pauseAutoRotateIfGlobeHit]);
 
   const handleInteractionEnd = useCallback(() => {
-    interactionRef.current = false;
-  }, []);
+    endUserGesture();
+  }, [endUserGesture]);
 
   useEffect(() => () => {
     globeMapAliveRef.current = false;
@@ -2994,8 +3044,13 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       onPointerDown={handleInteractionStart}
       onPointerUp={handleInteractionEnd}
       onPointerCancel={handleInteractionEnd}
-      onPointerLeave={handleInteractionEnd}
-      onWheel={handleInteractionStart}
+      onPointerLeave={() => {
+        interactionRef.current = false;
+      }}
+      onWheel={(event) => {
+        handleInteractionStart(event);
+        endUserGesture();
+      }}
     >
       <div
         className={`gateo-globe-map gateo-mapbox-map absolute inset-0 transition-opacity duration-300 ${
@@ -3169,14 +3224,14 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
           suppressClickUntilRef.current = Date.now() + DRAG_CLICK_GUARD_MS;
         }}
         onDragEnd={() => {
-          interactionRef.current = false;
           suppressClickUntilRef.current = Date.now() + DRAG_CLICK_GUARD_MS;
+          endUserGesture();
         }}
         onZoomStart={(event) => {
           pauseAutoRotateIfGlobeHit(event);
         }}
         onZoomEnd={() => {
-          interactionRef.current = false;
+          endUserGesture();
         }}
         onZoom={() => {
           syncMapZoom();
