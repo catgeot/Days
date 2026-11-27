@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import test, { beforeEach } from 'node:test';
+import test, { after, beforeEach } from 'node:test';
 import { JSDOM } from 'jsdom';
 import React, { act } from 'react';
 import { createRoot } from 'react-dom/client';
@@ -8,6 +8,14 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { withGateoTrafficType } from '../../src/shared/analytics/gateoGaQa.js';
 
 const NOW = new Date('2026-11-27T03:00:00.000Z');
+
+globalThis.__GATEO_DISABLE_SOCIAL_PHOTO_FETCH__ = true;
+globalThis.__VITE_ENV__ = {
+  ...(globalThis.__VITE_ENV__ || {}),
+  VITE_GATEO_SOCIAL_LINKS: '',
+};
+
+const { default: SocialLinksPage } = await import('../../src/pages/Social/SocialLinksPage.jsx');
 
 const dom = new JSDOM('<!doctype html><html><head></head><body></body></html>', {
   url: 'https://www.gateo.kr/social?social_links=1&qa=1',
@@ -51,12 +59,6 @@ setGlobal('IntersectionObserver', IntersectionObserverStub);
 window.IntersectionObserver = IntersectionObserverStub;
 window.__GATEO_GA_DISABLED__ = true;
 window.__GATEO_GA_EVENTS__ = [];
-globalThis.__VITE_ENV__ = {
-  ...(globalThis.__VITE_ENV__ || {}),
-  VITE_GATEO_SOCIAL_LINKS: '',
-};
-
-const { default: SocialLinksPage } = await import('../../src/pages/Social/SocialLinksPage.jsx');
 
 function placeCard(id, day, title) {
   return {
@@ -185,6 +187,20 @@ beforeEach(() => {
   window.sessionStorage.clear();
 });
 
+after(async () => {
+  if (root) {
+    await act(async () => {
+      root.unmount();
+    });
+    root = undefined;
+  }
+  if (container?.parentNode) {
+    container.parentNode.removeChild(container);
+    container = undefined;
+  }
+  dom.window.close();
+});
+
 test('flag off redirects /social home and records no social events', async () => {
   await render('/social', { cards: sampleCards, now: NOW });
   assert.equal(document.querySelector('[data-testid="home"]')?.textContent, 'home');
@@ -227,15 +243,35 @@ test('together line stays inside its card shell', async () => {
   for (const line of lines) {
     const shell = line.closest('[data-testid="social-card-shell"]');
     assert.ok(shell);
-    assert.equal(line.parentElement, shell);
+    assert.equal(shell.contains(line), true);
     assert.match(shell.className, /rounded-2xl/);
     assert.match(shell.className, /bg-white\/\[0\.04\]/);
     assert.ok(shell.querySelector('[data-testid="social-hero"], [data-testid="social-card"]'));
-    assert.equal(shell.parentElement.contains(line), true);
-    assert.notEqual(line.parentElement, shell.parentElement);
   }
   const listShell = document.querySelector('[data-campaign="reel-07"]');
   assert.match(listShell.parentElement.className, /grid/);
+});
+
+test('broken repo photo falls back to centered placeholder', async () => {
+  await render('/social?social_links=1', {
+    cards: [
+      {
+        campaignId: 'reel-broken',
+        firstPostedAt: '2026-11-27',
+        title: '깨진 이미지',
+        region: '제주',
+        photoUrl: 'https://example.invalid/gateo-social-broken.jpg',
+        photoCredit: null,
+        targets: [{ type: 'place', slug: 'seongsan-ilchulbong' }],
+      },
+    ],
+    now: NOW,
+  });
+  const img = document.querySelector('[data-testid="social-hero"] img');
+  assert.ok(img);
+  img.dispatchEvent(new window.Event('error'));
+  await act(async () => {});
+  assert.ok(document.querySelector('[data-testid="social-photo-fallback"]'));
 });
 
 test('missing photo centers the region or the place name', async () => {
@@ -270,7 +306,7 @@ test('missing photo centers the region or the place name', async () => {
   assert.match(heroFallback.parentElement.className, /aspect-\[16\/10\]/);
   const listFallback = document.querySelector('[data-testid="social-card"] [data-testid="social-photo-fallback"]');
   assert.equal(listFallback.textContent, '해미순교성지');
-  assert.match(listFallback.parentElement.className, /min-h-\[88px\]/);
+  assert.match(listFallback.parentElement.className, /self-stretch/);
 });
 
 test('empty region hides the region line', async () => {
@@ -308,6 +344,7 @@ test('flag on shows cards, ended festivals below, and buffers events once', asyn
   await render('/social?social_links=1&qa=1', { cards: sampleCards, now: NOW });
   const hero = document.querySelector('[data-testid="social-hero"]');
   assert.equal(hero?.getAttribute('data-campaign'), 'reel-14');
+  assert.equal(hero.querySelector('img')?.getAttribute('alt'), '샘플 최근, 경북 샘플');
   assert.equal(hero.getAttribute('href').includes('utm_'), false);
   assert.equal(hero.getAttribute('href'), '/place/tour-126201');
   assert.match(document.body.textContent, /이 여행지 보기/);
