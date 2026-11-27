@@ -239,18 +239,19 @@ test.describe('회귀 — 라우팅', () => {
   });
 
   for (const row of [
-    { slug: 'tour-125545', needle: /동구릉|유네스코/ },
-    { slug: 'tour-125548', needle: /홍유릉|조선/ },
+    { tourSlug: 'tour-125545', canonicalSlug: 'donggureung-royal-tombs', needle: /동구릉|유네스코/ },
+    { tourSlug: 'tour-125548', canonicalSlug: 'hongyureung-royal-tombs', needle: /홍유릉|조선/ },
   ]) {
-    test(`${row.slug} 직접·새로고침 @390`, async ({ page }) => {
+    test(`${row.tourSlug} → ${row.canonicalSlug} @390`, async ({ page }) => {
       await page.setViewportSize({ width: 390, height: 844 });
-      await page.goto(`/place/${row.slug}`, { waitUntil: 'domcontentloaded' });
-      await expect(page).toHaveURL(new RegExp(`/place/${row.slug}`));
+      await page.goto(`/place/${row.tourSlug}`, { waitUntil: 'domcontentloaded' });
+      await expect(page).toHaveURL(new RegExp(`/place/${row.canonicalSlug}(?:/|$|\\?)`));
       await expect(page.getByText(row.needle).first()).toBeAttached({ timeout: 90_000 });
-      await clipViewportShot(page, `${row.slug}-open-390.png`, 390);
+      await clipViewportShot(page, `${row.tourSlug}-open-390.png`, 390);
       await page.reload({ waitUntil: 'domcontentloaded' });
+      await expect(page).toHaveURL(new RegExp(`/place/${row.canonicalSlug}(?:/|$|\\?)`));
       await expect(page.getByText(row.needle).first()).toBeAttached({ timeout: 90_000 });
-      await clipViewportShot(page, `${row.slug}-reload-390.png`, 390);
+      await clipViewportShot(page, `${row.tourSlug}-reload-390.png`, 390);
     });
   }
 });

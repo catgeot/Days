@@ -2,6 +2,7 @@ import { TRAVEL_SPOTS } from '../data/travelSpots.js';
 import { mergeCanonicalTravelSpot } from '../../../utils/travelSpotResolve.js';
 import { isDomesticKoreaLocation } from '../../../utils/tourApiMatch.js';
 import { uiPlacePoiCollidesWithCatalogParam } from './explorePlaceSlugGuard.js';
+import { resolveUniqueKoreaScenicPlaceSlugForContentId } from './placeScenicGateway.js';
 
 /** slug·name_en용 — 한글/CJK만 있으면 false (레소토·에스와티니 라벨 등) */
 export function isUrlSafeEnglishLabel(value) {
@@ -70,6 +71,24 @@ export function isTourContentIdEnglishFallback(value) {
 
 export function sanitizeTourContentIdEnglishFallback(value) {
   return isTourContentIdEnglishFallback(value) ? '' : String(value ?? '').trim();
+}
+
+/**
+ * 브라우저 `/place/:slug` 세그먼트가 `tour-{contentId}`일 때만 scenic placeSlug canonical.
+ * 탐색·허브 핀의 getPlaceUrlParam( placeUrlSlug ) 은 변경하지 않는다.
+ * @param {object | null | undefined} loc
+ * @param {string | null | undefined} pathSlug — URL :slug 세그먼트
+ */
+export function resolvePlaceUrlParamForPath(loc, pathSlug) {
+  const pathKey = String(pathSlug ?? '').trim().toLowerCase();
+  const tourMatch = pathKey.match(/^tour-(\d{1,32})$/);
+  if (!tourMatch) return getPlaceUrlParam(loc);
+
+  const scenicCanonicalSlug = resolveUniqueKoreaScenicPlaceSlugForContentId(tourMatch[1]);
+  if (scenicCanonicalSlug && !uiPlacePoiCollidesWithCatalogParam(loc, scenicCanonicalSlug)) {
+    return scenicCanonicalSlug;
+  }
+  return pathKey || getPlaceUrlParam(loc);
 }
 
 /**

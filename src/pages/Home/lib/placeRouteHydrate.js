@@ -16,6 +16,7 @@ import { isSyntheticOrEmptyPlaceDesc } from './placeDescText.js';
 import { readCachedPlaceBySlug, readCachedPlaceLocation } from './placeLocationCache.js';
 import { resolveLegacyMishealPlace } from './legacyMishealPlaceSlugs.js';
 import { resolveExploreAliasPlaceFromSlug } from './koreaPlaceMatchDictionary.js';
+import { resolveKoreaScenicCatalogPlacePinFromTourContentId } from './placeScenicGateway.js';
 import { resolveJoseonRoyalTombsCatalogSlugPin } from './joseonRoyalTombsSearch.js';
 import { isFreeSearchPlaceId } from './freeSearchYouTubeLink.js';
 
@@ -207,6 +208,9 @@ export function resolvePlaceTargetFromSlug(slug, options = {}) {
 
   const tourMatch = normalized.match(/^tour-(\d{1,32})$/);
   if (tourMatch) {
+    const scenicTourPin = resolveKoreaScenicCatalogPlacePinFromTourContentId(tourMatch[1]);
+    if (scenicTourPin) return overlaySessionCuration(scenicTourPin, options);
+
     const cachedTour =
       readCachedPlaceBySlug(normalized) ||
       readCachedPlaceLocation(normalized) ||
