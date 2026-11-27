@@ -295,6 +295,10 @@ test('posted-links.md matches the published file and builds the live cards', () 
   assert.equal(cards.find((card) => card.campaignId === 'reel-08').targets[0].slug, 'hwaseong-fortress');
   assert.equal(cards.find((card) => card.campaignId === 'reel-10').region, '전북 고창');
   assert.equal(cards.find((card) => card.campaignId === 'reel-01').region, '');
+  assert.equal(cards.every((card) => card.status === 'live'), true);
+  for (const unposted of ['reel-12', 'reel-15', 'reel-16']) {
+    assert.equal(cards.some((card) => card.campaignId === unposted), false);
+  }
   const generated = JSON.parse(
     readFileSync(join(root, 'src/pages/Social/data/socialLinks.generated.json'), 'utf8'),
   );

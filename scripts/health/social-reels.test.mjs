@@ -23,6 +23,7 @@ const { default: SocialLinksPage } = await import('../../src/pages/Social/Social
 const {
   buildSocialReelPlaylist,
   formatSocialReelCredit,
+  isLivePostedSocialCard,
   normalizeSocialReel,
 } = await import('../../src/pages/Social/socialReels.js');
 const { createSocialReelSession } = await import('../../src/pages/Social/socialReelPlayback.js');
@@ -71,9 +72,10 @@ window.IntersectionObserver = IntersectionObserverStub;
 window.__GATEO_GA_DISABLED__ = true;
 window.__GATEO_GA_EVENTS__ = [];
 
-function placeCard(id, day, title, slug) {
+function placeCard(id, day, title, slug, status = 'live') {
   return {
     campaignId: id,
+    status,
     firstPostedAt: `2026-11-${String(day).padStart(2, '0')}`,
     title,
     region: '제주 샘플',
@@ -86,6 +88,7 @@ function placeCard(id, day, title, slug) {
 const sampleCards = [
   {
     campaignId: 'reel-14',
+    status: 'live',
     firstPostedAt: '2026-11-27',
     title: '샘플 최근',
     region: '경북 샘플',
@@ -98,6 +101,7 @@ const sampleCards = [
   },
   {
     campaignId: 'fest-9001',
+    status: 'live',
     firstPostedAt: '2026-11-26',
     title: '샘플 종료 축제',
     region: '부산 샘플',
@@ -109,6 +113,7 @@ const sampleCards = [
   },
   {
     campaignId: 'fest-9002',
+    status: 'live',
     firstPostedAt: '2026-11-25',
     title: '샘플 곧 시작',
     region: '부산 샘플',
@@ -120,6 +125,7 @@ const sampleCards = [
   },
   {
     campaignId: 'reel-1',
+    status: 'live',
     firstPostedAt: '2026-11-01',
     title: '샘플 지난 장소',
     region: '제주 샘플',
@@ -145,6 +151,7 @@ const orderedCards = [
   placeCard('reel-old', 2, '옛 릴스', 'busan-old'),
   {
     campaignId: 'fest-old',
+    status: 'live',
     firstPostedAt: '2026-11-01',
     title: '끝난 축제',
     region: '부산 샘플',
@@ -359,6 +366,50 @@ test('playlist follows card order, keeps the first row, and prefixes 출처', ()
   assert.equal(playlist[2].placeLabel, '이 축제 보기');
   assert.equal(playlist[2].creditText, '출처: 축제 자료');
   assert.equal(playlist[0].reel.durationSec, 6);
+});
+
+test('playlist keeps live posted cards and drops unposted reels 12, 15, and 16', () => {
+  const unposted = [
+    placeCard('reel-12', 27, '가야고분군', 'gaya-tombs', 'draft'),
+    placeCard('reel-15', 26, '미게시 15', 'unposted-15', 'unconfirmed'),
+    placeCard('reel-16', 25, '미게시 16', 'unposted-16', 'deleted'),
+    placeCard('reel-11', 18, '상태 없음', 'tour-2615234', ''),
+  ];
+  const live = placeCard('reel-14', 27, '영주 소수서원', 'tour-126201');
+  const reels = [live, ...unposted].map((card) => ({
+    campaignId: card.campaignId,
+    kind: 'mp4',
+    src: `https://example.test/${card.campaignId}.mp4`,
+    poster: `https://example.test/${card.campaignId}.jpg`,
+    durationSec: 4,
+    credit: card.title,
+  }));
+  const playlist = buildSocialReelPlaylist([live, ...unposted], reels, NOW);
+  assert.deepEqual(
+    playlist.map((item) => item.campaignId),
+    ['reel-14'],
+  );
+  assert.equal(isLivePostedSocialCard(live), true);
+  assert.equal(isLivePostedSocialCard(unposted[0]), false);
+
+  const generated = JSON.parse(
+    fs.readFileSync(
+      fileURLToPath(new URL('../../src/pages/Social/data/socialLinks.generated.json', import.meta.url)),
+      'utf8',
+    ),
+  );
+  const published = buildSocialReelPlaylist(
+    generated.cards,
+    reels.filter((reel) => reel.campaignId !== 'reel-11'),
+    NOW,
+  );
+  assert.deepEqual(
+    published.map((item) => item.campaignId),
+    ['reel-14'],
+  );
+  for (const id of ['reel-12', 'reel-15', 'reel-16']) {
+    assert.equal(generated.cards.some((card) => card.campaignId === id), false);
+  }
 });
 
 test('flag off matches the pre-change /social HTML with reel data present', async () => {
