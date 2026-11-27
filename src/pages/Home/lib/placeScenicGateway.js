@@ -3,7 +3,7 @@ import { isExploreRestaurantItem } from '../../../shared/search/tourRestaurantDe
 import heritageJson from '../data/koreaHeritageScenic.json' with { type: 'json' };
 import hubsJson from '../data/cityAttractionHubs.json' with { type: 'json' };
 import { scenicHomePathForHubId } from './koreaThemeCrossLinks.js';
-import { resolveCityAttractionHub } from './cityAttractionHubs.js';
+import { resolveCityAttractionHub, resolveHubPlaceFromSlug } from './cityAttractionHubs.js';
 import {
   isHiddenKoreaScenicPlaceSlug,
   isHiddenKoreaScenicSpotId,
@@ -388,6 +388,87 @@ export function getVisibleKoreaScenicSpotByPlaceSlug(slug) {
   const spot = spotByPlaceSlug.get(key);
   if (!spot || isScenicSpotHidden(spot)) return null;
   return spot;
+}
+
+/** @param {string} contentId */
+export function getVisibleKoreaScenicSpotByContentId(contentId) {
+  const cid = String(contentId ?? '').trim();
+  if (!/^\d{1,32}$/.test(cid)) return null;
+  const candidates = SCENIC_SPOTS.filter((spot) => {
+    if (isScenicSpotHidden(spot)) return false;
+    return String(spot.contentId ?? '').trim() === cid;
+  });
+  if (candidates.length !== 1) return null;
+  const placeSlug = String(candidates[0].placeSlug ?? '').trim().toLowerCase();
+  if (!placeSlug) return null;
+  const conflicting = candidates.filter(
+    (spot) => String(spot.placeSlug ?? '').trim().toLowerCase() !== placeSlug,
+  );
+  if (conflicting.length > 0) return null;
+  return candidates[0];
+}
+
+/**
+ * GATEO 명승 SSOT — Tour contentId → 단일 placeSlug (동일 contentId·다른 placeSlug는 제외).
+ * @param {string} contentId
+ * @returns {string | null}
+ */
+export function resolveUniqueKoreaScenicPlaceSlugForContentId(contentId) {
+  const spot = getVisibleKoreaScenicSpotByContentId(contentId);
+  if (!spot) return null;
+  const placeSlug = String(spot.placeSlug ?? '').trim().toLowerCase();
+  return placeSlug || null;
+}
+
+/**
+ * /place/tour-{contentId} → hub·명승 placeSlug 핀 (TourAPI fetch 전 sync hydrate).
+ * @param {string} contentId
+ */
+export function resolveKoreaScenicCatalogPlacePinFromTourContentId(contentId) {
+  const spot = getVisibleKoreaScenicSpotByContentId(contentId);
+  if (!spot) return null;
+  const placeSlug = String(spot.placeSlug ?? '').trim().toLowerCase();
+  if (!placeSlug) return null;
+
+  const hubPin = resolveHubPlaceFromSlug(placeSlug);
+  if (hubPin) {
+    return {
+      ...hubPin,
+      slug: placeSlug,
+      canonical_slug: placeSlug,
+      contentId: String(contentId).trim(),
+      source: 'hub',
+      imageUrl: spot.imageUrl || hubPin.imageUrl,
+      thumbUrl: spot.imageUrl || hubPin.thumbUrl,
+    };
+  }
+
+  const hub = spot.hubId ? resolveCityAttractionHub(spot.hubId) : null;
+  const lat = Number(spot.lat);
+  const lng = Number(spot.lng);
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+
+  return {
+    id: `scenic-${String(spot.id || placeSlug).trim()}`,
+    slug: placeSlug,
+    canonical_slug: placeSlug,
+    name: spot.attractionName || spot.name,
+    name_en: spot.attractionNameEn || spot.name,
+    name_ko: spot.name,
+    lat,
+    lng,
+    country: hub?.country || '대한민국',
+    country_en: hub?.country_en || 'South Korea',
+    hubId: spot.hubId || hub?.hubId,
+    parentCity: hub?.name,
+    contentId: String(contentId).trim(),
+    source: 'hub',
+    uiPlace: true,
+    type: 'temp-base',
+    imageUrl: spot.imageUrl || null,
+    thumbUrl: spot.imageUrl || null,
+    desc: String(spot.blurb || spot.overview || '').trim(),
+  };
 }
 
 /** @param {object | null | undefined} spot */

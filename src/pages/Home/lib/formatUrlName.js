@@ -2,6 +2,7 @@ import { TRAVEL_SPOTS } from '../data/travelSpots.js';
 import { mergeCanonicalTravelSpot } from '../../../utils/travelSpotResolve.js';
 import { isDomesticKoreaLocation } from '../../../utils/tourApiMatch.js';
 import { uiPlacePoiCollidesWithCatalogParam } from './explorePlaceSlugGuard.js';
+import { resolveUniqueKoreaScenicPlaceSlugForContentId } from './placeScenicGateway.js';
 
 /** slug·name_en용 — 한글/CJK만 있으면 false (레소토·에스와티니 라벨 등) */
 export function isUrlSafeEnglishLabel(value) {
@@ -82,6 +83,10 @@ export function getPlaceUrlParam(loc) {
   const source = String(merged.source ?? '').trim().toLowerCase();
 
   const tourContentParam = koreaTourContentPlaceParam(merged.contentId);
+  const scenicCanonicalSlug = resolveUniqueKoreaScenicPlaceSlugForContentId(merged.contentId);
+  if (scenicCanonicalSlug && !uiPlacePoiCollidesWithCatalogParam(merged, scenicCanonicalSlug)) {
+    return scenicCanonicalSlug;
+  }
   if (tourContentParam && source === 'tourapi') {
     return tourContentParam;
   }
