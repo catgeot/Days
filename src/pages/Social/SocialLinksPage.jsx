@@ -47,17 +47,20 @@ function markCardViewed(campaignId) {
   return true;
 }
 
-function SocialPhoto({ url, region, credit, className }) {
+function SocialPhoto({ url, fallback, credit, className }) {
   const label = credit?.label || '';
   return (
     <div className={`relative overflow-hidden bg-[#2c261f] ${className}`}>
       {url ? (
-        <img src={url} alt="" className="h-full w-full object-cover" />
-      ) : region ? (
-        <div className="flex h-full w-full items-center justify-center px-2 text-center text-xs text-white/80 break-keep">
-          {region}
-        </div>
-      ) : null}
+        <img src={url} alt="" className="absolute inset-0 h-full w-full object-cover" />
+      ) : (
+        <span
+          data-testid="social-photo-fallback"
+          className="absolute inset-0 flex items-center justify-center px-2 text-center text-xs leading-snug text-white/80 break-keep"
+        >
+          {fallback}
+        </span>
+      )}
       {label ? (
         <span className="pointer-events-none absolute bottom-1 left-1 max-w-[calc(100%-8px)] truncate text-[10px] leading-none text-white/80">
           {label}
@@ -92,12 +95,7 @@ function SocialCardLink({ card, index, now, hero, children }) {
   }, [card, index, now]);
 
   return (
-    <div
-      ref={ref}
-      className={`${hero ? '' : 'min-h-[88px] rounded-2xl bg-white/[0.04]'} ${
-        params.placement === 'ended_card' ? 'opacity-60' : ''
-      }`}
-    >
+    <div ref={ref}>
       <Link
         to={href}
         data-testid={hero ? 'social-hero' : 'social-card'}
@@ -127,11 +125,15 @@ function DateLine({ card, now, hero }) {
   );
 }
 
-function TogetherLine({ card, index, now }) {
-  const extras = (card.targets || []).slice(1).filter((target) => target?.name);
+function togetherTargets(card) {
+  return (card.targets || []).slice(1).filter((target) => target?.name);
+}
+
+function TogetherLine({ card, index, now, className = '' }) {
+  const extras = togetherTargets(card);
   if (!extras.length) return null;
   return (
-    <p className="mt-2 break-keep text-[13px] leading-relaxed text-white/75">
+    <p data-testid="social-together" className={`break-keep text-[13px] leading-relaxed text-white/75 ${className}`}>
       같이 나온 곳:{' '}
       {extras.map((target, extraIndex) => (
         <React.Fragment key={`${target.slug || target.id}`}>
@@ -153,13 +155,18 @@ function TogetherLine({ card, index, now }) {
 
 function HeroCard({ card, index, now }) {
   const placeLabel = card.targets[0]?.type === 'festival' ? '이 축제 보기' : '이 여행지 보기';
+  const together = togetherTargets(card).length > 0;
   return (
-    <div>
+    <div
+      data-testid="social-card-shell"
+      data-campaign={card.campaignId}
+      className={together ? 'overflow-hidden rounded-2xl bg-white/[0.04] p-3 lg:p-4' : ''}
+    >
       <SocialCardLink card={card} index={index} now={now} hero>
         <div className="lg:grid lg:grid-cols-2 lg:items-center lg:gap-8">
           <SocialPhoto
             url={card.photoUrl}
-            region={card.region}
+            fallback={card.region || card.title}
             credit={card.photoCredit}
             className="aspect-[16/10] w-full rounded-2xl"
           />
@@ -179,21 +186,28 @@ function HeroCard({ card, index, now }) {
           </div>
         </div>
       </SocialCardLink>
-      <TogetherLine card={card} index={index} now={now} />
+      <TogetherLine card={card} index={index} now={now} className="mt-3" />
     </div>
   );
 }
 
 function ListCard({ card, index, now }) {
+  const ended = socialCardState(card, now) === 'ended';
   return (
-    <div>
+    <div
+      data-testid="social-card-shell"
+      data-campaign={card.campaignId}
+      className={`flex min-h-[88px] flex-col overflow-hidden rounded-2xl bg-white/[0.04] ${
+        ended ? 'opacity-60' : ''
+      }`}
+    >
       <SocialCardLink card={card} index={index} now={now}>
-        <div className="flex min-h-[88px] items-stretch gap-3">
+        <div className="flex min-h-[88px] flex-1 items-stretch gap-3">
           <SocialPhoto
             url={card.photoUrl}
-            region={card.region}
+            fallback={card.region || card.title}
             credit={card.photoCredit}
-            className="w-[104px] shrink-0 self-stretch"
+            className="min-h-[88px] w-[104px] shrink-0 self-stretch"
           />
           <div className="flex min-w-0 flex-1 flex-col justify-center py-2 pr-3">
             <DateLine card={card} now={now} />
@@ -207,7 +221,7 @@ function ListCard({ card, index, now }) {
           </div>
         </div>
       </SocialCardLink>
-      <TogetherLine card={card} index={index} now={now} />
+      <TogetherLine card={card} index={index} now={now} className="px-3 pb-3" />
     </div>
   );
 }

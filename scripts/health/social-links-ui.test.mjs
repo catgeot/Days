@@ -192,6 +192,87 @@ test('flag off redirects /social home and records no social events', async () =>
   assert.deepEqual(events('social_card_view'), []);
 });
 
+test('together line stays inside its card shell', async () => {
+  await render('/social?social_links=1', {
+    cards: [
+      {
+        campaignId: 'reel-14',
+        firstPostedAt: '2026-11-27',
+        title: '샘플 최근',
+        region: '경북 샘플',
+        photoUrl: 'https://tong.visitkorea.or.kr/cms/resource/51/3588851_image2_1.jpg',
+        photoCredit: { kind: 'kto', label: '한국관광공사' },
+        targets: [
+          { type: 'place', slug: 'tour-126201' },
+          { type: 'place', slug: 'tour-127190', name: '화순 고인돌군' },
+        ],
+      },
+      {
+        campaignId: 'reel-07',
+        firstPostedAt: '2026-11-04',
+        title: '국립백두대간수목원',
+        region: '경상',
+        photoUrl: 'https://tong.visitkorea.or.kr/cms/resource/51/3588851_image2_1.jpg',
+        photoCredit: null,
+        targets: [
+          { type: 'place', slug: 'tour-2508220' },
+          { type: 'place', slug: 'gaesimsa', name: '개심사' },
+        ],
+      },
+    ],
+    now: NOW,
+  });
+  const lines = [...document.querySelectorAll('[data-testid="social-together"]')];
+  assert.equal(lines.length, 2);
+  for (const line of lines) {
+    const shell = line.closest('[data-testid="social-card-shell"]');
+    assert.ok(shell);
+    assert.equal(line.parentElement, shell);
+    assert.match(shell.className, /rounded-2xl/);
+    assert.match(shell.className, /bg-white\/\[0\.04\]/);
+    assert.ok(shell.querySelector('[data-testid="social-hero"], [data-testid="social-card"]'));
+    assert.equal(shell.parentElement.contains(line), true);
+    assert.notEqual(line.parentElement, shell.parentElement);
+  }
+  const listShell = document.querySelector('[data-campaign="reel-07"]');
+  assert.match(listShell.parentElement.className, /grid/);
+});
+
+test('missing photo centers the region or the place name', async () => {
+  await render('/social?social_links=1', {
+    cards: [
+      {
+        campaignId: 'reel-13',
+        firstPostedAt: '2026-11-23',
+        title: '순천 선암사',
+        region: '전남 순천',
+        photoUrl: null,
+        photoCredit: null,
+        targets: [{ type: 'place', slug: 'tour-126369' }],
+      },
+      {
+        campaignId: 'reel-03',
+        firstPostedAt: '2026-11-02',
+        title: '해미순교성지',
+        region: '',
+        photoUrl: null,
+        photoCredit: null,
+        targets: [{ type: 'place', slug: 'tour-918805' }],
+      },
+    ],
+    now: NOW,
+  });
+  const heroFallback = document.querySelector('[data-testid="social-hero"] [data-testid="social-photo-fallback"]');
+  assert.equal(heroFallback.textContent, '전남 순천');
+  assert.match(heroFallback.className, /absolute/);
+  assert.match(heroFallback.className, /items-center/);
+  assert.match(heroFallback.className, /justify-center/);
+  assert.match(heroFallback.parentElement.className, /aspect-\[16\/10\]/);
+  const listFallback = document.querySelector('[data-testid="social-card"] [data-testid="social-photo-fallback"]');
+  assert.equal(listFallback.textContent, '해미순교성지');
+  assert.match(listFallback.parentElement.className, /min-h-\[88px\]/);
+});
+
 test('empty region hides the region line', async () => {
   await render('/social?social_links=1', {
     cards: [
