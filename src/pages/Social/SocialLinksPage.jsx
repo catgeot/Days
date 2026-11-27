@@ -6,7 +6,11 @@ import { Link, Navigate, useLocation } from 'react-router-dom';
 import Logo from '../Home/components/Logo';
 import { withGateoTrafficType } from '../../shared/analytics/gateoGaQa.js';
 import { trackEvent } from '../../shared/analytics/trackEvent.js';
-import { isGateoSocialLinksEnabled, isGateoSocialReelsEnabled } from '../../shared/gateoFeatureFlags.js';
+import {
+  isGateoSocialLinksEnabled,
+  isGateoSocialReelsEnabled,
+  isSocialReelsQueryEnabled,
+} from '../../shared/gateoFeatureFlags.js';
 import generated from './data/socialLinks.generated.json';
 import SocialReelsPlayer from './SocialReelsPlayer.jsx';
 import { buildSocialReelPlaylist, readSocialReelCatalog } from './socialReels.js';
@@ -326,10 +330,16 @@ export default function SocialLinksPage({ cards, now, reels }) {
   );
   const { photoForCard, markBroken } = useSocialCardPhotos(socialEnabled ? view.visible : []);
   const reelsEnabled = isGateoSocialReelsEnabled(location.search);
+  const reelQuery = isSocialReelsQueryEnabled(location.search);
   const reelPlaylist = useMemo(() => {
     if (!reelsEnabled) return [];
     return buildSocialReelPlaylist(source, readSocialReelCatalog(reels), clock);
   }, [reelsEnabled, reels, source, clock]);
+
+  useEffect(() => {
+    if (!reelQuery || reelPlaylist.length === 0) return;
+    setReelOpen(true);
+  }, [reelQuery, reelPlaylist.length]);
 
   if (!socialEnabled) {
     return <Navigate to="/" replace />;

@@ -337,21 +337,85 @@ after(async () => {
   dom.window.close();
 });
 
-test('shipped reel catalog is empty and playback stays on public mp4', () => {
-  assert.deepEqual(catalog.default.reels, []);
+const SHIPPED_REEL_IDS = [
+  'reel-14',
+  'reel-13',
+  'reel-10',
+  'reel-11',
+  'reel-09',
+  'reel-06',
+  'reel-08',
+  'reel-07',
+  'reel-05',
+  'reel-03',
+  'reel-04',
+  'reel-02',
+  'reel-01',
+];
+
+test('shipped manifest is the 13 live reels and resolves the R2 base', () => {
   const playback = fs.readFileSync(
     fileURLToPath(new URL('../../src/pages/Social/socialReelPlayback.js', import.meta.url)),
     'utf8',
   );
-  const player = fs.readFileSync(
+  const playerSource = fs.readFileSync(
     fileURLToPath(new URL('../../src/pages/Social/SocialReelsPlayer.jsx', import.meta.url)),
     'utf8',
   );
   assert.equal(playback.includes('hls.js'), false);
-  assert.equal(player.includes('hls.js'), false);
+  assert.equal(playerSource.includes('hls.js'), false);
   assert.equal(fs.existsSync(fileURLToPath(new URL('../../src/pages/Social/socialReelHls.js', import.meta.url))), false);
   assert.match(playback, /attachMp4Source/);
-  assert.match(player, /preload="metadata"/);
+  assert.match(playerSource, /preload="metadata"/);
+
+  assert.deepEqual(
+    catalog.default.reels.map((reel) => reel.campaignId),
+    SHIPPED_REEL_IDS,
+  );
+  for (const id of ['reel-12', 'reel-15', 'reel-16']) {
+    assert.equal(catalog.default.reels.some((reel) => reel.campaignId === id), false);
+  }
+  for (const reel of catalog.default.reels) {
+    assert.equal(reel.kind, 'mp4');
+    assert.match(reel.src, /^site\/reels\/reel-\d+\.mp4$/);
+    assert.match(reel.poster, /^site\/reels\/reel-\d+\.jpg$/);
+  }
+
+  const previousBase = globalThis.__VITE_ENV__.VITE_GATEO_REELS_BASE_URL;
+  try {
+    globalThis.__VITE_ENV__.VITE_GATEO_REELS_BASE_URL = '';
+    const resolved = normalizeSocialReel(catalog.default.reels[0]);
+    assert.equal(
+      resolved.src,
+      'https://pub-aa06dc289a4b4c5a9d8d91c32bd81619.r2.dev/site/reels/reel-14.mp4',
+    );
+    assert.equal(
+      resolved.poster,
+      'https://pub-aa06dc289a4b4c5a9d8d91c32bd81619.r2.dev/site/reels/reel-14.jpg',
+    );
+    globalThis.__VITE_ENV__.VITE_GATEO_REELS_BASE_URL = 'https://media.gateo.kr/';
+    assert.equal(
+      normalizeSocialReel(catalog.default.reels[0]).src,
+      'https://media.gateo.kr/site/reels/reel-14.mp4',
+    );
+  } finally {
+    globalThis.__VITE_ENV__.VITE_GATEO_REELS_BASE_URL = previousBase;
+  }
+
+  const generated = JSON.parse(
+    fs.readFileSync(
+      fileURLToPath(new URL('../../src/pages/Social/data/socialLinks.generated.json', import.meta.url)),
+      'utf8',
+    ),
+  );
+  const playlist = buildSocialReelPlaylist(generated.cards, catalog.default.reels, NOW);
+  assert.deepEqual(
+    playlist.map((item) => item.campaignId),
+    SHIPPED_REEL_IDS,
+  );
+  assert.equal(playlist[0].href, '/place/tour-126201');
+  assert.equal(playlist[0].placeLabel, '이 여행지 보기');
+  assert.match(playlist[0].creditText, /^출처: 국가유산청/);
 });
 
 test('playlist follows card order, keeps the first row, and prefixes 출처', () => {
@@ -437,7 +501,7 @@ test('flag off matches the pre-change /social HTML with reel data present', asyn
 
 test('flag on with an empty catalog keeps the entry hidden', async () => {
   globalThis.__VITE_ENV__.VITE_GATEO_SOCIAL_REELS = '1';
-  await render('/social?social_links=1', { cards: sampleCards, now: NOW });
+  await render('/social?social_links=1', { cards: sampleCards, now: NOW, reels: [] });
   assert.equal(document.querySelector('[data-testid="social-reels-open"]'), null);
   assert.equal(document.querySelector('video'), null);
 
@@ -456,6 +520,7 @@ test('player order, credit, place target, poster preload, and one video element'
     reels: orderedReels,
   });
   assert.equal(document.querySelector('[data-testid="social-reels-open"]').textContent, '지난 릴스 보기');
+  assert.equal(player().getAttribute('data-campaign'), 'reel-new');
   await openPlayer();
   const node = video();
   assert.equal(document.querySelectorAll('video').length, 1);

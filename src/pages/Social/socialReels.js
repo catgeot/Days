@@ -3,6 +3,24 @@ import { orderSocialCards, socialTargetHref } from './socialLinksView.js';
 
 const KINDS = new Set(['mp4']);
 
+/** Public R2 dev host. `VITE_GATEO_REELS_BASE_URL` replaces it (for example media.gateo.kr). */
+export const DEFAULT_SOCIAL_REELS_BASE_URL = 'https://pub-aa06dc289a4b4c5a9d8d91c32bd81619.r2.dev';
+
+export function readSocialReelsBaseUrl() {
+  const raw =
+    import.meta.env?.VITE_GATEO_REELS_BASE_URL ?? globalThis.__VITE_ENV__?.VITE_GATEO_REELS_BASE_URL;
+  const trimmed = String(raw ?? '').trim().replace(/\/+$/, '');
+  return trimmed || DEFAULT_SOCIAL_REELS_BASE_URL;
+}
+
+export function resolveSocialReelUrl(path) {
+  const value = String(path || '').trim();
+  if (!value) return '';
+  if (/^https?:\/\//i.test(value)) return value;
+  const base = readSocialReelsBaseUrl().replace(/\/+$/, '');
+  return `${base}/${value.replace(/^\/+/, '')}`;
+}
+
 /** @param {unknown} override */
 export function readSocialReelCatalog(override) {
   if (Array.isArray(override)) return override;
@@ -23,8 +41,8 @@ export function normalizeSocialReel(entry) {
   return {
     campaignId,
     kind,
-    src,
-    poster: String(entry.poster || '').trim(),
+    src: resolveSocialReelUrl(src),
+    poster: resolveSocialReelUrl(entry.poster),
     durationSec: Number.isFinite(duration) && duration > 0 ? duration : null,
     credit: String(entry.credit || '').trim(),
   };
