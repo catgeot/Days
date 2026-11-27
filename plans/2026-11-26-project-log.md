@@ -16,3 +16,9 @@
 - EN 월간 타일 지명: `buildHomeWatchMonthlyDestinations(..., i18n.language)`.
 - E2E: `home-monthly-mooni-fab-overlap` 코너 매트릭스 · `home-theme-monthly-mobile` EN·코너 캡처.
 - 로컬: overlap 6/6 (chromium+webkit 390), theme monthly mobile PASS, EN destinations PASS; `npm run build` PASS.
+
+## 홈 지구본 자전·카드 리프트 (#947)
+
+- 요약 카드의 Mapbox padding 리프트를 제거했다. 1024px 미만에서는 flyTo 위도만 남쪽으로 옮겨 핀이 카드 위 빈칸에 보이게 하고, 카드를 닫으면 padding 0으로 핀에 다시 맞춘다.
+- «지금 볼 거리» 이동은 transform 대신 top. iOS Safari에서 WebGL 조상 transform이 자전을 멈추던 경로와, 우주로 복귀 때 moveend가 안 오면 회전이 안 돌던 경로를 같이 막았다.
+- 코드 `206551426` · `cursor/globe-card-offset-b479` · PR #947. E2E `e2e/home-globe-rotate-reset.spec.js` (Chromium 390 · WebKit 390 · Chromium 1280) PASS. typecheck 스크립트는 없다.
