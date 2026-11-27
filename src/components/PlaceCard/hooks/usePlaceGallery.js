@@ -40,6 +40,7 @@ import {
   resolveTourApiPlace,
   shouldUseTourApiGalleryForPlace,
 } from '../../../utils/tourApiMatch';
+import { resolveTourGalleryContentId } from '../../../utils/gateoManualTourContentId.js';
 import { lookupKoreaTourAttractionByTitle } from '../../../pages/Home/lib/koreaTourAttractions';
 import {
   lookupLocalScenicMemberOverlayForSpot,
@@ -800,7 +801,8 @@ export const usePlaceGallery = (locationSource, options = {}) => {
         }
       }
     }
-    const hasOfficialTourContentId = Boolean(tourMapping?.contentId);
+    const galleryTourContentId = resolveTourGalleryContentId(tourMapping?.contentId);
+    const hasOfficialTourContentId = Boolean(galleryTourContentId);
 
     const localScenicOverlay = lookupLocalScenicMemberOverlayForSpot(
       typeof tourPlaceWithCategory === 'object' && tourPlaceWithCategory
@@ -1280,10 +1282,10 @@ export const usePlaceGallery = (locationSource, options = {}) => {
             photoKeyword: tourMapping.photoKeyword,
             photoKeywords: tourMapping.photoKeywords,
             title: tourMapping.title,
-            contentId: tourMapping.contentId,
+            contentId: galleryTourContentId,
             page: 1,
             thumbnailOnly,
-            skipProbe: Boolean(tourMapping.contentId),
+            skipProbe: Boolean(galleryTourContentId),
           });
           if (isStale()) return;
           if (tourImages.length > 0) {
@@ -1408,10 +1410,10 @@ export const usePlaceGallery = (locationSource, options = {}) => {
             photoKeyword: tourMapping.photoKeyword,
             photoKeywords: tourMapping.photoKeywords,
             title: tourMapping.title,
-            contentId: tourMapping.contentId,
+            contentId: galleryTourContentId,
             page: 1,
             thumbnailOnly,
-            skipProbe: Boolean(tourMapping.contentId),
+            skipProbe: Boolean(galleryTourContentId),
           });
           if (isStale()) return;
           if (tourImages.length > 0) {
@@ -1515,7 +1517,7 @@ export const usePlaceGallery = (locationSource, options = {}) => {
           finishLoading();
           afterInstantGallery();
         } else {
-          setLoadFailed(true);
+          setLoadFailed(false);
         }
       } else {
         const scenicFallbackUrls = await filterLoadableScenicGalleryUrls(
@@ -1534,10 +1536,10 @@ export const usePlaceGallery = (locationSource, options = {}) => {
           finishLoading();
           writeGallerySwrAt(stablePlaceKey);
         } else {
-          console.warn(`⚠️ 검색 최종 실패. 네트워크 재시도 안내.`);
+          console.warn(`⚠️ Gallery sources completed with no images (empty state).`);
           if (!isStale()) {
             processAndSetImages([]);
-            setLoadFailed(true);
+            setLoadFailed(false);
           }
         }
       }

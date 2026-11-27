@@ -1,6 +1,7 @@
 import travelSpotTourApi from '../pages/Home/data/travelSpotTourApi.json' with { type: 'json' };
 import { inferPlaceMatchCategory, PLACE_MATCH_CATEGORY } from '../pages/Home/lib/placeMatchCategory.js';
 import { coordsInKorea } from '../pages/Home/lib/visitedPlaceSearch.js';
+import { isGateoManualTourContentId } from './gateoManualTourContentId.js';
 
 /**
  * @typedef {{
@@ -164,7 +165,8 @@ export function resolveTourApiPlace(locationOrSlug) {
 
   const slugKey = getTourApiSlugKey(locationOrSlug);
   const explicitId = String(locationOrSlug.contentId || '').trim();
-  const hasExplicitId = /^\d{1,32}$/.test(explicitId);
+  const hasExplicitId =
+    /^\d{1,32}$/.test(explicitId) && !isGateoManualTourContentId(explicitId);
   const bySlug = mappingFromSlug(slugKey);
   if (bySlug) {
     if (hasExplicitId && !bySlug.contentId) {

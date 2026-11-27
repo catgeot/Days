@@ -12,6 +12,7 @@ import {
   TOUR_API_BODY_LOCALE,
   resolveTourApiLocale,
 } from './tourApiProxy';
+import { resolveTourGalleryContentId } from './gateoManualTourContentId.js';
 
 export { scoreTourPhotoTitle, TOURAPI_MIN_KEEP_SCORE } from './tourApiPhotoRank';
 
@@ -303,10 +304,7 @@ async function fetchTourApiGalleryInner(opts) {
         30,
         Math.max(MIN_ROWS, Math.floor(Number(opts?.numOfRows) || DEFAULT_ROWS)),
       );
-  const contentId =
-    opts?.contentId != null && String(opts.contentId).trim() !== ''
-      ? String(opts.contentId).trim()
-      : null;
+  const contentId = resolveTourGalleryContentId(opts?.contentId);
   // 기본은 빠른 URL 프로브(404 제외). skipProbe:true 는 호출측 명시 시에만
   const skipProbe = opts?.skipProbe === true;
 
