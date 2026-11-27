@@ -12,6 +12,7 @@ import {
   TOUR_API_BODY_LOCALE,
   resolveTourApiLocale,
 } from './tourApiProxy';
+import { resolveTourGalleryContentId } from './gateoManualTourContentId.js';
 
 export { scoreTourPhotoTitle, TOURAPI_MIN_KEEP_SCORE } from './tourApiPhotoRank';
 
@@ -287,13 +288,21 @@ export async function filterLoadableTourApiImages(images, opts = {}) {
  * 국내 갤러리 본체 (타임아웃은 fetchTourApiGallery 래퍼).
  * @param {Parameters<typeof fetchTourApiGallery>[0]} opts
  */
+function galleryFetchOutcome(images, sourceHadError) {
+  return { images, sourceHadError: Boolean(sourceHadError) };
+}
+
 async function fetchTourApiGalleryInner(opts) {
   const keyword = String(opts?.photoKeyword || '').trim();
-  if (!keyword) return [];
+  if (!keyword) return galleryFetchOutcome([], false);
 
   const tourLocale = resolveGalleryTourApiLocale(opts);
-  const invokeTourApi = (action, payload) =>
-    invokeTourApiProxy(action, payload, { locale: tourLocale });
+  let sourceHadError = false;
+  const invokeTourApi = async (action, payload) => {
+    const res = await invokeTourApiProxy(action, payload, { locale: tourLocale });
+    if (res == null) sourceHadError = true;
+    return res;
+  };
 
   const placeTitle = String(opts?.title || keyword).trim();
   const page = Math.max(1, Math.floor(Number(opts?.page) || 1));
@@ -303,10 +312,7 @@ async function fetchTourApiGalleryInner(opts) {
         30,
         Math.max(MIN_ROWS, Math.floor(Number(opts?.numOfRows) || DEFAULT_ROWS)),
       );
-  const contentId =
-    opts?.contentId != null && String(opts.contentId).trim() !== ''
-      ? String(opts.contentId).trim()
-      : null;
+  const contentId = resolveTourGalleryContentId(opts?.contentId);
   // 기본은 빠른 URL 프로브(404 제외). skipProbe:true 는 호출측 명시 시에만
   const skipProbe = opts?.skipProbe === true;
 
@@ -459,7 +465,8 @@ async function fetchTourApiGalleryInner(opts) {
   else merged = merged.slice(0, Math.max(PROBE_CANDIDATES, TARGET_GALLERY));
 
   if (skipProbe) {
-    return opts?.thumbnailOnly ? merged.slice(0, 1) : merged.slice(0, TARGET_GALLERY);
+    const images = opts?.thumbnailOnly ? merged.slice(0, 1) : merged.slice(0, TARGET_GALLERY);
+    return galleryFetchOutcome(images, sourceHadError);
   }
 
   const loadable = await filterLoadableTourApiImages(merged, {
@@ -472,9 +479,9 @@ async function fetchTourApiGalleryInner(opts) {
     console.warn(
       `[tourapi] ${merged.length} URL probe miss — empty for stock fallback (${placeTitle || keyword})`,
     );
-    return [];
+    return galleryFetchOutcome([], sourceHadError);
   }
-  return loadable;
+  return galleryFetchOutcome(loadable, sourceHadError);
 }
 
 /**
@@ -498,7 +505,7 @@ export async function fetchTourApiGallery(opts) {
       'fetchTourApiGallery',
     );
   } catch (err) {
-    console.warn('[tourapi] gallery budget exceeded:', err?.message || err);
-    return [];
+    console.warn('[tourapi] gallery fetch failed:', err?.message || err);
+    return galleryFetchOutcome([], true);
   }
 }

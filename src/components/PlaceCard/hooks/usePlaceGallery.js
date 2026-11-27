@@ -40,6 +40,11 @@ import {
   resolveTourApiPlace,
   shouldUseTourApiGalleryForPlace,
 } from '../../../utils/tourApiMatch';
+import { resolveTourGalleryContentId } from '../../../utils/gateoManualTourContentId.js';
+import {
+  fetchUnsplashStockForGallery,
+  galleryLoadFailedAfterEmptyFetch,
+} from '../../../utils/galleryFetchEmptyOutcome.js';
 import { lookupKoreaTourAttractionByTitle } from '../../../pages/Home/lib/koreaTourAttractions';
 import {
   lookupLocalScenicMemberOverlayForSpot,
@@ -295,9 +300,8 @@ function resolvePexelsQueries(primaryQuery, backupQuery, koreanName, spotSlug) {
 }
 
 async function fetchPlaceUnsplash(accessKey, query, page) {
-  const allowedPage = unsplashGallerySearchPage(page);
-  if (!accessKey || !query || !allowedPage) return [];
-  return apiClient.fetchUnsplashImages(accessKey, query, allowedPage);
+  const { images } = await fetchUnsplashStockForGallery(accessKey, query, page);
+  return images;
 }
 
 function mergeGalleryAppend(existing, incoming, max = GALLERY_MAX_IMAGES) {
@@ -800,7 +804,8 @@ export const usePlaceGallery = (locationSource, options = {}) => {
         }
       }
     }
-    const hasOfficialTourContentId = Boolean(tourMapping?.contentId);
+    const galleryTourContentId = resolveTourGalleryContentId(tourMapping?.contentId);
+    const hasOfficialTourContentId = Boolean(galleryTourContentId);
 
     const localScenicOverlay = lookupLocalScenicMemberOverlayForSpot(
       typeof tourPlaceWithCategory === 'object' && tourPlaceWithCategory
@@ -1051,6 +1056,15 @@ export const usePlaceGallery = (locationSource, options = {}) => {
     let tourSeed = [];
     /** sparse/thin DB Tour — live refetch 실패 시 최소 1장 복구(흥정계곡 등) */
     let dbGallerySliceFallback = null;
+    let gallerySourceHadError = false;
+    const noteGallerySourceError = () => {
+      gallerySourceHadError = true;
+    };
+    const fetchUnsplashTracked = async (accessKey, query, page) => {
+      const outcome = await fetchUnsplashStockForGallery(accessKey, query, page);
+      if (outcome.hadError) noteGallerySourceError();
+      return outcome.images;
+    };
 
     const scenicSsotGalleryOnly =
       koreaScenicSpotGallery.length >= 1 &&
@@ -1276,15 +1290,17 @@ export const usePlaceGallery = (locationSource, options = {}) => {
         (hasOfficialTourContentId || tourMapping.curated)
       ) {
         try {
-          const tourImages = await fetchTourApiGallery({
+          const tourFetch = await fetchTourApiGallery({
             photoKeyword: tourMapping.photoKeyword,
             photoKeywords: tourMapping.photoKeywords,
             title: tourMapping.title,
-            contentId: tourMapping.contentId,
+            contentId: galleryTourContentId,
             page: 1,
             thumbnailOnly,
-            skipProbe: Boolean(tourMapping.contentId),
+            skipProbe: Boolean(galleryTourContentId),
           });
+          const tourImages = tourFetch?.images || [];
+          if (tourFetch?.sourceHadError) noteGallerySourceError();
           if (isStale()) return;
           if (tourImages.length > 0) {
             const skipStock = thumbnailOnly || !isSparseTourApiGallery(tourImages);
@@ -1308,6 +1324,7 @@ export const usePlaceGallery = (locationSource, options = {}) => {
             tourSeed = tourImages;
           }
         } catch (tourErr) {
+          noteGallerySourceError();
           console.warn('⚠️ TourAPI gallery miss — fallback Unsplash/Pexels', tourErr);
         }
       }
@@ -1336,17 +1353,17 @@ export const usePlaceGallery = (locationSource, options = {}) => {
       let results = [];
 
       if (unsplashQuery && ACCESS_KEY) {
-        results = await fetchPlaceUnsplash(ACCESS_KEY, unsplashQuery, unsplashPageRef.current);
+        results = await fetchUnsplashTracked(ACCESS_KEY, unsplashQuery, unsplashPageRef.current);
         if (isStale()) return;
 
         if (results.length === 0 && unsplashBackupQuery) {
-          results = await fetchPlaceUnsplash(ACCESS_KEY, unsplashBackupQuery, unsplashPageRef.current);
+          results = await fetchUnsplashTracked(ACCESS_KEY, unsplashBackupQuery, unsplashPageRef.current);
         }
         if (results.length === 0 && spotSlugForDb) {
           const unsplashExtras = GALLERY_UNSPLASH_EXTRA_QUERIES[spotSlugForDb] || [];
           for (const extraQuery of unsplashExtras) {
             if (results.length > 0) break;
-            results = await fetchPlaceUnsplash(
+            results = await fetchUnsplashTracked(
               ACCESS_KEY,
               galleryUnsplashSearchQuery(extraQuery, galleryTarget),
               unsplashPageRef.current,
@@ -1388,6 +1405,7 @@ export const usePlaceGallery = (locationSource, options = {}) => {
             console.log(`✅ Pexels 이미지 ${mergedPexels.length}개 병합 완료. 총 ${results.length}개`);
           }
         } catch (pexelsError) {
+          noteGallerySourceError();
           console.error('⚠️ Pexels API Error:', pexelsError);
         }
       }
@@ -1404,21 +1422,24 @@ export const usePlaceGallery = (locationSource, options = {}) => {
         tourMapping?.photoKeyword
       ) {
         try {
-          const tourImages = await fetchTourApiGallery({
+          const tourFetch = await fetchTourApiGallery({
             photoKeyword: tourMapping.photoKeyword,
             photoKeywords: tourMapping.photoKeywords,
             title: tourMapping.title,
-            contentId: tourMapping.contentId,
+            contentId: galleryTourContentId,
             page: 1,
             thumbnailOnly,
-            skipProbe: Boolean(tourMapping.contentId),
+            skipProbe: Boolean(galleryTourContentId),
           });
+          const tourImages = tourFetch?.images || [];
+          if (tourFetch?.sourceHadError) noteGallerySourceError();
           if (isStale()) return;
           if (tourImages.length > 0) {
             results = tourImages;
             console.log(`✅ TourAPI soft fallback ${tourImages.length}장 (${tourMapping.photoKeyword})`);
           }
         } catch (tourErr) {
+          noteGallerySourceError();
           console.warn('⚠️ TourAPI soft fallback miss', tourErr);
         }
         results = filterGalleryIncomingForSave(results, galleryTarget);
@@ -1442,6 +1463,12 @@ export const usePlaceGallery = (locationSource, options = {}) => {
           /* Tour 선드롭 유지 */
         } else if (!isStale()) {
           processAndSetImages([]);
+          setLoadFailed(
+            galleryLoadFailedAfterEmptyFetch({
+              sourceHadError: gallerySourceHadError,
+              imageCount: 0,
+            }),
+          );
         }
         return;
       }
@@ -1515,7 +1542,12 @@ export const usePlaceGallery = (locationSource, options = {}) => {
           finishLoading();
           afterInstantGallery();
         } else {
-          setLoadFailed(true);
+          setLoadFailed(
+            galleryLoadFailedAfterEmptyFetch({
+              sourceHadError: gallerySourceHadError,
+              imageCount: 0,
+            }),
+          );
         }
       } else {
         const scenicFallbackUrls = await filterLoadableScenicGalleryUrls(
@@ -1534,10 +1566,18 @@ export const usePlaceGallery = (locationSource, options = {}) => {
           finishLoading();
           writeGallerySwrAt(stablePlaceKey);
         } else {
-          console.warn(`⚠️ 검색 최종 실패. 네트워크 재시도 안내.`);
+          const loadFailed = galleryLoadFailedAfterEmptyFetch({
+            sourceHadError: gallerySourceHadError,
+            imageCount: 0,
+          });
+          console.warn(
+            loadFailed
+              ? '⚠️ Gallery sources had errors with no images.'
+              : '⚠️ Gallery sources completed with no images (empty state).',
+          );
           if (!isStale()) {
             processAndSetImages([]);
-            setLoadFailed(true);
+            setLoadFailed(loadFailed);
           }
         }
       }
