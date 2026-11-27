@@ -52,6 +52,8 @@ import {
   shouldApplyHomeWatchGlobeLift,
   shouldHideHomeWatchCard,
   HOME_WATCH_MOBILE_GLOBE_LIFT_PX,
+  homeMapboxCtrlMarginBottomForBand,
+  HOME_MAPBOX_CTRL_BOTTOM_OFFSET_VAR,
 } from '../../src/pages/Home/lib/homeWatchCardModel.js';
 
 const HOME_WATCH_TASTE_MAX_KO = 16;
@@ -400,6 +402,22 @@ test('continue place photo follows the place-card source and falls back when emp
     }),
     /place_stats down/,
   );
+});
+
+test('home Mapbox ctrl margin clears the monthly card band before the About row', () => {
+  const card = { left: 12, right: 378, top: 604, bottom: 700, width: 366, height: 96 };
+  const about = { left: 4, right: 256, top: 745.5, bottom: 769, width: 252, height: 23.5 };
+  const mapBottom = 774;
+  const band = { left: 0, right: 108 };
+  const margin = homeMapboxCtrlMarginBottomForBand({
+    mapBottom,
+    obstacles: [card, about],
+    band,
+  });
+  assert.ok(margin > 150);
+  assert.equal(Math.round(mapBottom - margin), card.top - 8);
+  const css = fs.readFileSync(new URL('../../src/index.css', import.meta.url), 'utf8');
+  assert.match(css, new RegExp(HOME_MAPBOX_CTRL_BOTTOM_OFFSET_VAR));
 });
 
 test('rectsOverlap measures MOONi clearance', () => {

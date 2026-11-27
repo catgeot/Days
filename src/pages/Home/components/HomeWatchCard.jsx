@@ -28,6 +28,7 @@ import {
   resolveHomeWatchReelsPoster,
   shouldHideHomeWatchCard,
   syncHomeWatchGlobeLift,
+  syncHomeMapboxMobileCtrlInset,
 } from '../lib/homeWatchCardModel.js';
 import { readHomeWatchContinueItems } from '../lib/homeWatchContinue.js';
 import {
@@ -382,12 +383,16 @@ const HomeWatchCard = ({
   const shown = enabled && !hidden && !dismissed && slots.length > 0;
 
   useLayoutEffect(() => {
-    const apply = () => syncHomeWatchGlobeLift({ shown, viewportWidth: window.innerWidth });
+    const apply = () => {
+      syncHomeWatchGlobeLift({ shown, viewportWidth: window.innerWidth });
+      syncHomeMapboxMobileCtrlInset({ viewportWidth: window.innerWidth });
+    };
     apply();
     window.addEventListener('resize', apply);
     return () => {
       window.removeEventListener('resize', apply);
       syncHomeWatchGlobeLift({ shown: false });
+      syncHomeMapboxMobileCtrlInset({ viewportWidth: window.innerWidth });
     };
   }, [shown]);
 
@@ -438,6 +443,7 @@ const HomeWatchCard = ({
         }
       }
       card.dataset.monthlyPlaced = '1';
+      syncHomeMapboxMobileCtrlInset({ viewportWidth: window.innerWidth });
     };
     const schedule = () => {
       if (frame) return;
@@ -512,6 +518,12 @@ const HomeWatchCard = ({
     dismissHomeWatchCard();
     setDismissed(true);
     trackEvent('home_watch_card_dismiss', homeWatchDismissParams());
+    window.requestAnimationFrame(() => {
+      syncHomeMapboxMobileCtrlInset({ viewportWidth: window.innerWidth });
+      window.setTimeout(() => {
+        syncHomeMapboxMobileCtrlInset({ viewportWidth: window.innerWidth });
+      }, 400);
+    });
   };
 
   return (

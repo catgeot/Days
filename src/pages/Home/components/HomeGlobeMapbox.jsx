@@ -26,6 +26,10 @@ import {
 import { normalizeLngNear } from '../lib/globeLngUtils';
 import { offsetPlaceCardFlyCenter } from '../lib/homePlaceCardFlyOffset.js';
 import {
+  HOME_MAPBOX_MOBILE_OBSTACLE_SELECTORS,
+  syncHomeMapboxMobileCtrlInset,
+} from '../lib/homeWatchCardModel.js';
+import {
   GLOBE_FACE_REGION_DEFAULT_ZOOM,
   GLOBE_FACE_REGION_FLY_MS,
   GLOBE_FACE_REGION_CAMERA_PADDING_DESKTOP,
@@ -574,6 +578,42 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   const [mapReady, setMapReady] = useState(false);
   const [mapZoom, setMapZoom] = useState(GLOBE_VIEW.default.zoom);
   const [markerZoomEpoch, setMarkerZoomEpoch] = useState(0);
+
+  useLayoutEffect(() => {
+    let frame = 0;
+    const apply = () => syncHomeMapboxMobileCtrlInset({ viewportWidth: window.innerWidth });
+    const schedule = () => {
+      if (frame) return;
+      frame = window.requestAnimationFrame(() => {
+        frame = 0;
+        apply();
+      });
+    };
+    apply();
+    const observer = new ResizeObserver(schedule);
+    observer.observe(document.body);
+    for (const sel of HOME_MAPBOX_MOBILE_OBSTACLE_SELECTORS) {
+      for (const el of document.querySelectorAll(sel)) observer.observe(el);
+    }
+    const mutation = new MutationObserver(schedule);
+    mutation.observe(document.body, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['style', 'data-monthly-placed'],
+    });
+    window.addEventListener('resize', schedule);
+    const mapEl = document.querySelector('.gateo-home-globe-shell .gateo-globe-map');
+    mapEl?.addEventListener('transitionend', schedule);
+    return () => {
+      window.cancelAnimationFrame(frame);
+      observer.disconnect();
+      mutation.disconnect();
+      window.removeEventListener('resize', schedule);
+      mapEl?.removeEventListener('transitionend', schedule);
+    };
+  }, []);
+
   useEffect(() => {
     reachBoundariesVisibleRef.current = reachBoundariesVisible;
   }, [reachBoundariesVisible]);
