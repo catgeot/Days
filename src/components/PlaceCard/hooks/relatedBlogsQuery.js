@@ -78,7 +78,7 @@ export async function fetchEditorialTraveloguesByPlaceSlug(placeSlug) {
     .eq('status', 'published')
     .eq('place_slug', placeSlug)
     .order('date', { ascending: false })
-    .limit(2);
+    .limit(20);
 
   if (error && isReportsMissingColumnError(error)) {
     return [];

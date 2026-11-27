@@ -1,13 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
 import { isPlaceTravelogueCardEnabled } from '../../../utils/placeEditorialTravelogueFlag';
 import {
-  filterEditorialLocationFallback,
-  mergePlaceEditorialTravelogues,
-  placeNameCandidates,
   placeSlugFromLocation,
   selectPlaceEditorialTravelogueCards,
 } from '../../../utils/placeEditorialTravelogue';
-import { fetchEditorialTraveloguesByLocationName, fetchEditorialTraveloguesByPlaceSlug } from './relatedBlogsQuery';
+import { isEditorialLogbookPublished } from '../../../utils/logbookEditorial';
+import { filterPlaceRelatedLogbookRows } from '../../../utils/placeRelatedLogbooks.js';
+import { fetchRelatedBlogRows } from './relatedBlogsQuery';
 import { useVisitStories } from './useVisitStories';
 
 const DISABLED_PLACE_TRAVELOGUES = Object.freeze({
@@ -16,16 +15,18 @@ const DISABLED_PLACE_TRAVELOGUES = Object.freeze({
   isLoading: false,
 });
 
+function placeRelatedQueryName(location) {
+  return String(location?.name || location?.name_ko || location?.name_en || '').trim();
+}
+
 export function usePlaceEditorialTravelogues(location) {
-  // Build-time flag. Off must return before useVisitStories — that hook queries reports and place_reviews, which PlaceVisitStories already does (Cairo).
   if (!isPlaceTravelogueCardEnabled()) return DISABLED_PLACE_TRAVELOGUES;
   return usePlaceEditorialTraveloguesEnabled(location);
 }
 
 function usePlaceEditorialTraveloguesEnabled(location) {
   const placeSlug = placeSlugFromLocation(location);
-  const names = placeNameCandidates(location);
-  const namesKey = names.join('\n');
+  const locationName = placeRelatedQueryName(location);
   const [rows, setRows] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const { stories, isLoading: storiesLoading } = useVisitStories(location);
@@ -36,14 +37,14 @@ function usePlaceEditorialTraveloguesEnabled(location) {
 
     const load = async () => {
       try {
-        const bySlug = await fetchEditorialTraveloguesByPlaceSlug(placeSlug);
-        let locationRows = [];
-        if (bySlug.length < 2 && names.length) {
-          const batches = await Promise.all(names.map((name) => fetchEditorialTraveloguesByLocationName(name)));
-          locationRows = filterEditorialLocationFallback(batches.flat(), { placeSlug, names });
+        if (!locationName) {
+          if (!cancelled) setRows([]);
+          return;
         }
+        const related = await fetchRelatedBlogRows(locationName);
         if (cancelled) return;
-        setRows(mergePlaceEditorialTravelogues(bySlug, locationRows));
+        const matched = filterPlaceRelatedLogbookRows(related, locationName, placeSlug);
+        setRows(matched.filter(isEditorialLogbookPublished));
       } catch (error) {
         console.error('[place-travelogue] fetch failed', error);
         if (!cancelled) setRows([]);
@@ -56,7 +57,7 @@ function usePlaceEditorialTraveloguesEnabled(location) {
     return () => {
       cancelled = true;
     };
-  }, [placeSlug, namesKey]);
+  }, [placeSlug, locationName]);
 
   const items = useMemo(
     () => selectPlaceEditorialTravelogueCards(rows, stories),

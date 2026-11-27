@@ -48,8 +48,9 @@ export function dedupeTraveloguesAgainstVisitStories(items, visitStories) {
   });
 }
 
-export function selectPlaceEditorialTravelogueCards(items, visitStories, max = PLACE_EDITORIAL_TRAVELOGUE_MAX) {
+export function selectPlaceEditorialTravelogueCards(items, visitStories, max = Number.POSITIVE_INFINITY) {
   const deduped = dedupeTraveloguesAgainstVisitStories(items, visitStories);
+  if (!Number.isFinite(max) || max < 0) return deduped;
   return deduped.slice(0, max);
 }
 

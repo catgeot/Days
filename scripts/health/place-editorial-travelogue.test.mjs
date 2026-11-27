@@ -172,7 +172,7 @@ test('flag off: usePlaceEditorialTravelogues does not call useVisitStories', asy
   assert.deepEqual(result, { enabled: false, items: [], isLoading: false });
 });
 
-test('selectPlaceEditorialTravelogueCards applies dedupe then max', () => {
+test('selectPlaceEditorialTravelogueCards applies dedupe then max when capped', () => {
   const items = [
     publishedEditorial({ id: 1, slug: 'one' }),
     publishedEditorial({ id: 2, slug: 'two' }),
@@ -182,4 +182,14 @@ test('selectPlaceEditorialTravelogueCards applies dedupe then max', () => {
   assert.equal(selected.length, 2);
   assert.equal(selected[0].slug, 'one');
   assert.equal(selected[1].slug, 'two');
+});
+
+test('selectPlaceEditorialTravelogueCards lists every linked editorial when uncapped', () => {
+  const items = [
+    publishedEditorial({ id: 1, slug: 'one' }),
+    publishedEditorial({ id: 2, slug: 'two' }),
+    publishedEditorial({ id: 3, slug: 'three' }),
+  ];
+  const selected = selectPlaceEditorialTravelogueCards(items, []);
+  assert.equal(selected.length, 3);
 });
