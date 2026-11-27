@@ -23,6 +23,7 @@ const corsHeaders = {
 const KOR_BASE = "https://apis.data.go.kr/B551011/KorService2";
 const ENG_BASE = "https://apis.data.go.kr/B551011/EngService2";
 const PHOTO_BASE = "https://apis.data.go.kr/B551011/PhotoGalleryService1";
+const WITH_BASE = "https://apis.data.go.kr/B551011/KorWithService2";
 
 type TourApiLocale = "ko" | "en";
 
@@ -52,7 +53,20 @@ function actionsForLocale(locale: TourApiLocale) {
   } as const;
 }
 
-type Action = keyof ReturnType<typeof actionsForLocale>;
+/** KorWithService2 only — not locale-switched to EngService2. */
+const WITH_ACTIONS = {
+  searchKeyword2: { base: WITH_BASE, path: "searchKeyword2" },
+  detailCommon2: { base: WITH_BASE, path: "detailCommon2" },
+  detailWithTour2: { base: WITH_BASE, path: "detailWithTour2" },
+} as const;
+
+type KorAction = keyof ReturnType<typeof actionsForLocale>;
+type WithAction = keyof typeof WITH_ACTIONS;
+type Action = KorAction | WithAction;
+
+function isWithAction(action: string): action is WithAction {
+  return Object.prototype.hasOwnProperty.call(WITH_ACTIONS, action);
+}
 
 /** Composite cache actions — not direct TourAPI paths */
 const CACHE_ACTIONS = new Set(["festivalWindow", "festivalDetail"]);
@@ -90,6 +104,22 @@ function jsonResponse(body: unknown, status = 200) {
     status,
     headers: { ...corsHeaders, "Content-Type": "application/json" },
   });
+}
+
+/** Fetch errors embed the request URL. Never log or return the service key. */
+function redactServiceKey(text: string, serviceKey: string): string {
+  let out = text ?? "";
+  const key = serviceKey.trim();
+  if (key) {
+    out = out.split(key).join("[REDACTED]");
+    try {
+      const encoded = encodeURIComponent(key);
+      if (encoded && encoded !== key) out = out.split(encoded).join("[REDACTED]");
+    } catch {
+      /* key was not encodable */
+    }
+  }
+  return out.replace(/([?&]serviceKey=)[^&\s"']*/gi, "$1[REDACTED]");
 }
 
 function asItemArray(raw: unknown): Record<string, unknown>[] {
@@ -489,6 +519,22 @@ function normalizeItem(
   return out;
 }
 
+function normalizeUpstreamItem(
+  action: Action,
+  item: Record<string, unknown>,
+): Record<string, unknown> {
+  const normalized = normalizeItem(action, item);
+  if (!isWithAction(action)) return normalized;
+  for (const [key, value] of Object.entries(item)) {
+    if (normalized[key] != null) continue;
+    if (value == null || typeof value === "object") continue;
+    const text = String(value).trim();
+    if (!text) continue;
+    normalized[key] = text;
+  }
+  return normalized;
+}
+
 const UPSTREAM_TIMEOUT_MS = 10_000;
 
 async function callTourApi(
@@ -497,7 +543,10 @@ async function callTourApi(
   query: Record<string, string>,
   serviceKey: string,
 ) {
-  const { base, path } = actionsForLocale(locale)[action];
+  const spec = isWithAction(action)
+    ? WITH_ACTIONS[action]
+    : actionsForLocale(locale)[action];
+  const { base, path } = spec;
   const params = new URLSearchParams({
     MobileOS: "ETC",
     MobileApp: "gateo",
@@ -536,6 +585,7 @@ async function callTourApi(
       status: res.status,
       message: resultMsg || `TourAPI HTTP ${res.status}`,
       resultCode,
+      resultMsg,
       items: [] as Record<string, unknown>[],
       rawCount: 0,
     };
@@ -547,6 +597,7 @@ async function callTourApi(
       status: res.status,
       message: resultMsg || `TourAPI resultCode ${resultCode}`,
       resultCode,
+      resultMsg,
       items: [] as Record<string, unknown>[],
       rawCount: 0,
     };
@@ -558,7 +609,8 @@ async function callTourApi(
     status: res.status,
     message: resultMsg || "OK",
     resultCode: resultCode || "0000",
-    items: arr.map((it) => normalizeItem(action, it)),
+    resultMsg,
+    items: arr.map((it) => normalizeUpstreamItem(action, it)),
     rawCount: totalCount,
   };
 }
@@ -656,6 +708,27 @@ function buildUpstreamQuery(
         numOfRows,
         pageNo,
       };
+    case "searchKeyword2": {
+      const q: Record<string, string> = {
+        keyword: guardKeyword(body.keyword),
+        numOfRows,
+        pageNo,
+      };
+      const contentTypeId = optionalCode(body.contentTypeId, "contentTypeId");
+      if (contentTypeId) q.contentTypeId = contentTypeId;
+      return q;
+    }
+    case "detailCommon2":
+    case "detailWithTour2": {
+      const q: Record<string, string> = {
+        contentId: guardContentId(body.contentId),
+        numOfRows,
+        pageNo,
+      };
+      const contentTypeId = optionalCode(body.contentTypeId, "contentTypeId");
+      if (contentTypeId) q.contentTypeId = contentTypeId;
+      return q;
+    }
     default:
       throw new Error("unsupported action");
   }
@@ -1194,15 +1267,17 @@ serve(async (req) => {
     const isCacheAction =
       typeof action === "string" && CACHE_ACTIONS.has(action);
     const locale = parseTourApiLocale(body.locale);
+    const isWith = typeof action === "string" && isWithAction(action);
     const isUpstreamAction =
       typeof action === "string" && action in actionsForLocale(locale);
 
-    if (!isCacheAction && !isUpstreamAction) {
+    if (!isCacheAction && !isUpstreamAction && !isWith) {
       return jsonResponse(
         {
           ok: false,
           error: `action must be one of: ${[
             ...Object.keys(actionsForLocale("ko")),
+            ...Object.keys(WITH_ACTIONS),
             ...CACHE_ACTIONS,
           ].join(", ")}`,
         },
@@ -1241,16 +1316,19 @@ serve(async (req) => {
     try {
       result = await callTourApi(locale, typedAction, query, serviceKey);
     } catch (upstreamErr) {
-      const msg = (upstreamErr as Error)?.message || "upstream fetch failed";
-      const timedOut = /abort|timeout/i.test(msg);
+      const raw = (upstreamErr as Error)?.message || "upstream fetch failed";
+      const safe = redactServiceKey(raw, serviceKey);
+      console.error("[tourapi-proxy] upstream", safe);
+      const timedOut = /abort|timeout/i.test(raw);
       return jsonResponse({
         ok: false,
         action: typedAction,
         status: timedOut ? 504 : 502,
         message: timedOut
           ? `TourAPI upstream timeout (${UPSTREAM_TIMEOUT_MS}ms)`
-          : msg,
+          : safe,
         resultCode: null,
+        resultMsg: null,
         items: [],
         rawCount: 0,
       });
@@ -1261,7 +1339,10 @@ serve(async (req) => {
         ok: false,
         action: typedAction,
         status: result.status,
-        message: result.message,
+        message: redactServiceKey(result.message, serviceKey),
+        resultMsg: result.resultMsg == null
+          ? null
+          : redactServiceKey(result.resultMsg, serviceKey),
         resultCode: result.resultCode,
         items: [],
         rawCount: 0,
@@ -1293,9 +1374,11 @@ serve(async (req) => {
     return jsonResponse(okPayload);
   } catch (error) {
     const err = error as Error;
-    console.error("[tourapi-proxy]", err.message);
+    const serviceKey = Deno.env.get("TOUR_API_SERVICE_KEY")?.trim() ?? "";
+    const safe = redactServiceKey(err.message || "Unknown error", serviceKey);
+    console.error("[tourapi-proxy]", safe);
     return jsonResponse(
-      { ok: false, error: err.message || "Unknown error" },
+      { ok: false, error: safe },
       200,
     );
   }

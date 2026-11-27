@@ -213,6 +213,11 @@ export function mergeIntroSnippetOntoItem(item, snippet) {
  * @param {Record<string, unknown> | null | undefined} item
  * @param {string} contentId
  */
+/**
+ * @param {Record<string, unknown>} item
+ * @param {string} contentId
+ * @returns {Record<string, unknown>}
+ */
 export function applyHomepagePolicyToItem(item, contentId) {
   if (!item) return item;
   const resolved = resolvePublicHomepage(contentId, item.homepage);
