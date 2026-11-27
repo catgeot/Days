@@ -3,8 +3,8 @@ import { orderSocialCards, socialTargetHref } from './socialLinksView.js';
 
 const KINDS = new Set(['mp4']);
 
-/** Public R2 dev host. `VITE_GATEO_REELS_BASE_URL` replaces it (for example media.gateo.kr). */
-export const DEFAULT_SOCIAL_REELS_BASE_URL = 'https://pub-aa06dc289a4b4c5a9d8d91c32bd81619.r2.dev';
+/** Public reel host. `VITE_GATEO_REELS_BASE_URL` replaces it. */
+export const DEFAULT_SOCIAL_REELS_BASE_URL = 'https://reels.findable.kr';
 
 export function readSocialReelsBaseUrl() {
   const raw =

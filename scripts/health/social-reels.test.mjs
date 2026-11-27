@@ -353,7 +353,7 @@ const SHIPPED_REEL_IDS = [
   'reel-01',
 ];
 
-test('shipped manifest is the 13 live reels and resolves the R2 base', () => {
+test('shipped manifest is the 13 live reels and resolves the public base', () => {
   const playback = fs.readFileSync(
     fileURLToPath(new URL('../../src/pages/Social/socialReelPlayback.js', import.meta.url)),
     'utf8',
@@ -364,6 +364,10 @@ test('shipped manifest is the 13 live reels and resolves the R2 base', () => {
   );
   assert.equal(playback.includes('hls.js'), false);
   assert.equal(playerSource.includes('hls.js'), false);
+  assert.equal(/crossorigin/i.test(playback), false);
+  assert.equal(/crossorigin/i.test(playerSource), false);
+  assert.equal(playback.includes('r2.dev'), false);
+  assert.equal(playerSource.includes('r2.dev'), false);
   assert.equal(fs.existsSync(fileURLToPath(new URL('../../src/pages/Social/socialReelHls.js', import.meta.url))), false);
   assert.match(playback, /attachMp4Source/);
   assert.match(playerSource, /preload="metadata"/);
@@ -387,11 +391,11 @@ test('shipped manifest is the 13 live reels and resolves the R2 base', () => {
     const resolved = normalizeSocialReel(catalog.default.reels[0]);
     assert.equal(
       resolved.src,
-      'https://pub-aa06dc289a4b4c5a9d8d91c32bd81619.r2.dev/site/reels/reel-14.mp4',
+      'https://reels.findable.kr/site/reels/reel-14.mp4',
     );
     assert.equal(
       resolved.poster,
-      'https://pub-aa06dc289a4b4c5a9d8d91c32bd81619.r2.dev/site/reels/reel-14.jpg',
+      'https://reels.findable.kr/site/reels/reel-14.jpg',
     );
     globalThis.__VITE_ENV__.VITE_GATEO_REELS_BASE_URL = 'https://media.gateo.kr/';
     assert.equal(
