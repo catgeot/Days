@@ -1,5 +1,7 @@
 import { register } from 'node:module';
 
+globalThis.__GATEO_DISABLE_SOCIAL_PHOTO_FETCH__ = true;
+
 globalThis.__VITE_ENV__ = {
   DEV: false,
   PROD: true,
