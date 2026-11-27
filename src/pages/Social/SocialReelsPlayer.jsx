@@ -130,34 +130,16 @@ export default function SocialReelsPlayer({ playlist, onClose, attachSource }) {
       data-campaign={item.campaignId}
       data-index={safeIndex}
       data-reduced-motion={reduced ? '1' : '0'}
-      className="fixed inset-0 z-[10050] flex flex-col bg-black text-white"
+      className="fixed inset-0 z-[10050] flex flex-col bg-black text-white lg:block"
       onPointerDown={onPointerDown}
       onPointerUp={onPointerUp}
     >
-      <video
-        ref={videoRef}
-        data-testid="social-reel-video"
-        className="absolute inset-0 h-full w-full object-cover"
-        playsInline
-        muted={muted}
-        autoPlay={!reduced}
-        poster={item.reel.poster || undefined}
-        preload="metadata"
-      />
-      {nextItem?.reel.poster ? (
-        <img
-          alt=""
-          src={nextItem.reel.poster}
-          data-testid="social-reel-next-poster"
-          className="pointer-events-none absolute h-px w-px opacity-0"
-        />
-      ) : null}
-      <div className="relative z-10 flex items-start justify-between gap-3 p-4">
+      <div className="relative z-10 flex shrink-0 items-start justify-between gap-3 p-3 lg:pointer-events-none lg:absolute lg:inset-x-0 lg:top-0 lg:p-4">
         <button
           ref={closeRef}
           type="button"
           data-testid="social-reel-close"
-          className="inline-flex h-11 items-center rounded-2xl bg-white px-4 text-sm font-semibold text-black"
+          className="pointer-events-auto inline-flex h-11 items-center rounded-2xl bg-white px-4 text-sm font-semibold text-black"
           onClick={() => onClose?.()}
         >
           닫기
@@ -167,7 +149,7 @@ export default function SocialReelsPlayer({ playlist, onClose, attachSource }) {
           data-testid="social-reel-mute"
           data-muted={muted ? 'true' : 'false'}
           aria-pressed={muted ? 'false' : 'true'}
-          className="inline-flex h-11 items-center rounded-2xl bg-white px-4 text-sm font-semibold text-black"
+          className="pointer-events-auto inline-flex h-11 items-center rounded-2xl bg-white px-4 text-sm font-semibold text-black"
           onClick={() => {
             const video = videoRef.current;
             setMuted((value) => {
@@ -179,7 +161,31 @@ export default function SocialReelsPlayer({ playlist, onClose, attachSource }) {
           {muted ? '소리 켜기' : '소리 끄기'}
         </button>
       </div>
-      <div className="relative z-10 mt-auto bg-gradient-to-t from-black/85 via-black/45 to-transparent px-4 pb-6 pt-16">
+      <div className="relative z-0 min-h-0 flex-1 lg:absolute lg:inset-0">
+        <video
+          ref={videoRef}
+          data-testid="social-reel-video"
+          className="h-full w-full bg-black object-contain"
+          playsInline
+          muted={muted}
+          autoPlay={!reduced}
+          poster={item.reel.poster || undefined}
+          preload="metadata"
+        />
+      </div>
+      {nextItem?.reel.poster ? (
+        <img
+          alt=""
+          src={nextItem.reel.poster}
+          data-testid="social-reel-next-poster"
+          className="pointer-events-none absolute h-px w-px opacity-0"
+        />
+      ) : null}
+      {/* 1280에서는 왼쪽 검은 영역에 둔다. 28.125dvh는 세로를 채운 9:16 폭의 절반이다. */}
+      <div
+        data-testid="social-reel-chrome"
+        className="relative z-10 shrink-0 px-4 pb-4 pt-2 lg:absolute lg:bottom-4 lg:left-4 lg:w-[min(22rem,calc(50%-min(50vw,28.125dvh)-1.5rem))] lg:px-0 lg:pb-0 lg:pt-0"
+      >
         {item.creditText ? (
           <p data-testid="social-reel-credit" className="mb-3 break-keep text-[13px] leading-snug text-white/90">
             {item.creditText}

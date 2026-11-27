@@ -371,6 +371,9 @@ test('shipped manifest is the 13 live reels and resolves the public base', () =>
   assert.equal(fs.existsSync(fileURLToPath(new URL('../../src/pages/Social/socialReelHls.js', import.meta.url))), false);
   assert.match(playback, /attachMp4Source/);
   assert.match(playerSource, /preload="metadata"/);
+  assert.match(playerSource, /object-contain/);
+  assert.equal(playerSource.includes('object-cover'), false);
+  assert.match(playerSource, /28\.125dvh/);
 
   assert.deepEqual(
     catalog.default.reels.map((reel) => reel.campaignId),
@@ -535,7 +538,13 @@ test('player order, credit, place target, poster preload, and one video element'
   assert.match(node.getAttribute('src'), /new\.mp4$/);
   assert.equal(node.getAttribute('playsinline'), '');
   assert.equal(node.getAttribute('preload'), 'metadata');
+  assert.match(node.className, /object-contain/);
+  assert.doesNotMatch(node.className, /object-cover/);
   assert.equal(node.hasAttribute('autoplay'), true);
+  const chrome = document.querySelector('[data-testid="social-reel-chrome"]');
+  assert.equal(chrome.contains(document.querySelector('[data-testid="social-reel-credit"]')), true);
+  assert.equal(chrome.contains(document.querySelector('[data-testid="social-reel-place"]')), true);
+  assert.match(chrome.className, /28\.125dvh/);
   assert.equal(node.muted, true);
   assert.equal(document.querySelector('[data-testid="social-reel-credit"]').textContent, '출처: 한국관광공사');
   assert.equal(document.querySelector('[data-testid="social-reel-place"]').textContent, '이 여행지 보기');
