@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import test, { beforeEach } from 'node:test';
+import test, { after, beforeEach } from 'node:test';
 import { JSDOM } from 'jsdom';
 import React, { act } from 'react';
 import { createRoot } from 'react-dom/client';
@@ -8,6 +8,14 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { withGateoTrafficType } from '../../src/shared/analytics/gateoGaQa.js';
 
 const NOW = new Date('2026-11-27T03:00:00.000Z');
+
+globalThis.__GATEO_DISABLE_SOCIAL_PHOTO_FETCH__ = true;
+globalThis.__VITE_ENV__ = {
+  ...(globalThis.__VITE_ENV__ || {}),
+  VITE_GATEO_SOCIAL_LINKS: '',
+};
+
+const { default: SocialLinksPage } = await import('../../src/pages/Social/SocialLinksPage.jsx');
 
 const dom = new JSDOM('<!doctype html><html><head></head><body></body></html>', {
   url: 'https://www.gateo.kr/social?social_links=1&qa=1',
@@ -50,14 +58,7 @@ class IntersectionObserverStub {
 setGlobal('IntersectionObserver', IntersectionObserverStub);
 window.IntersectionObserver = IntersectionObserverStub;
 window.__GATEO_GA_DISABLED__ = true;
-globalThis.__GATEO_DISABLE_SOCIAL_PHOTO_FETCH__ = true;
 window.__GATEO_GA_EVENTS__ = [];
-globalThis.__VITE_ENV__ = {
-  ...(globalThis.__VITE_ENV__ || {}),
-  VITE_GATEO_SOCIAL_LINKS: '',
-};
-
-const { default: SocialLinksPage } = await import('../../src/pages/Social/SocialLinksPage.jsx');
 
 function placeCard(id, day, title) {
   return {
@@ -184,6 +185,20 @@ beforeEach(() => {
   window.__GATEO_GA_EVENTS__ = [];
   window.__GATEO_SOCIAL_CARD_VIEWS__ = new Set();
   window.sessionStorage.clear();
+});
+
+after(async () => {
+  if (root) {
+    await act(async () => {
+      root.unmount();
+    });
+    root = undefined;
+  }
+  if (container?.parentNode) {
+    container.parentNode.removeChild(container);
+    container = undefined;
+  }
+  dom.window.close();
 });
 
 test('flag off redirects /social home and records no social events', async () => {
@@ -329,6 +344,7 @@ test('flag on shows cards, ended festivals below, and buffers events once', asyn
   await render('/social?social_links=1&qa=1', { cards: sampleCards, now: NOW });
   const hero = document.querySelector('[data-testid="social-hero"]');
   assert.equal(hero?.getAttribute('data-campaign'), 'reel-14');
+  assert.equal(hero.querySelector('img')?.getAttribute('alt'), '샘플 최근, 경북 샘플');
   assert.equal(hero.getAttribute('href').includes('utm_'), false);
   assert.equal(hero.getAttribute('href'), '/place/tour-126201');
   assert.match(document.body.textContent, /이 여행지 보기/);

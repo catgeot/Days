@@ -63,21 +63,24 @@ export function useSocialCardPhotos(cards) {
       attemptedRef.current.add(String(card.campaignId));
     }
 
+    let disposed = false;
     (async () => {
       const updates = {};
       await Promise.all(
         pending.map(async (card) => {
+          if (disposed) return;
           const id = String(card.campaignId);
           const url = await fetchSocialTargetPhotoUrl(card.targets[0]);
           if (url) updates[id] = url;
         }),
       );
-      if (cancelled || !Object.keys(updates).length) return;
+      if (disposed || cancelled || !Object.keys(updates).length) return;
       setRemoteUrls((prev) => ({ ...prev, ...updates }));
     })();
 
     return () => {
       cancelled = true;
+      disposed = true;
     };
   }, [cardsKey, syncKeyed]);
 

@@ -48,19 +48,27 @@ function markCardViewed(campaignId) {
   return true;
 }
 
-function SocialPhoto({ url, fallback, credit, className, onBroken }) {
+function socialPhotoAlt(title, region) {
+  const name = String(title || '').trim();
+  const place = String(region || '').trim();
+  if (name && place) return `${name}, ${place}`;
+  return name || place;
+}
+
+function SocialPhoto({ url, fallback, credit, className, onBroken, alt }) {
   const [failed, setFailed] = useState(false);
   const label = credit?.label || '';
   useEffect(() => {
     setFailed(false);
   }, [url]);
   const showImage = Boolean(url) && !failed;
+  const imageAlt = String(alt || '').trim();
   return (
     <div className={`relative overflow-hidden bg-[#2c261f] ${className}`}>
       {showImage ? (
         <img
           src={url}
-          alt=""
+          alt={imageAlt}
           className="absolute inset-0 h-full w-full object-cover"
           onError={() => {
             setFailed(true);
@@ -182,6 +190,7 @@ function HeroCard({ card, index, now, photo }) {
             url={photo.url}
             fallback={card.region || card.title}
             credit={photo.credit}
+            alt={socialPhotoAlt(card.title, card.region)}
             className="aspect-[16/10] w-full rounded-2xl"
             onBroken={photo.onBroken}
           />
@@ -252,6 +261,7 @@ function ListCard({ card, index, now, photo }) {
               url={photo.url}
               fallback={card.region || card.title}
               credit={photo.credit}
+              alt={socialPhotoAlt(card.title, card.region)}
               className="h-full min-h-full w-full"
               onBroken={photo.onBroken}
             />
@@ -270,6 +280,7 @@ function ListCard({ card, index, now, photo }) {
               url={photo.url}
               fallback={card.region || card.title}
               credit={photo.credit}
+              alt={socialPhotoAlt(card.title, card.region)}
               className="min-h-[88px] w-[104px] shrink-0 self-stretch"
               onBroken={photo.onBroken}
             />

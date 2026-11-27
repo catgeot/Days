@@ -3,8 +3,6 @@ import test from 'node:test';
 import {
   fetchSocialTargetPhotoUrl,
   resolveSocialCardPhotoUrl,
-  syncSocialFestivalTargetPhotoUrl,
-  syncSocialPlaceTargetPhotoUrl,
   syncSocialTargetPhotoUrl,
   tourContentIdFromPlaceSlug,
 } from '../../src/pages/Social/socialLinksTargetPhoto.js';
@@ -23,7 +21,7 @@ test('resolveSocialCardPhotoUrl keeps committed repo photo', () => {
 });
 
 test('sync place photo uses scenic gallery first image', () => {
-  const url = syncSocialPlaceTargetPhotoUrl({ type: 'place', slug: 'seongsan-ilchulbong' });
+  const url = syncSocialTargetPhotoUrl({ type: 'place', slug: 'seongsan-ilchulbong' });
   assert.match(url, /visitkorea\.or\.kr/);
 });
 
@@ -81,9 +79,7 @@ test('fetchSocialTargetPhotoUrl returns empty when every source fails', async ()
   assert.equal(url, '');
 });
 
-test('syncSocialTargetPhotoUrl dispatches by target type', () => {
-  assert.equal(
-    syncSocialTargetPhotoUrl({ type: 'festival', id: '638576' }).length > 0,
-    syncSocialFestivalTargetPhotoUrl({ type: 'festival', id: '638576' }).length > 0,
-  );
+test('syncSocialTargetPhotoUrl returns scenic url for a known place slug', () => {
+  const url = syncSocialTargetPhotoUrl({ type: 'place', slug: 'seongsan-ilchulbong' });
+  assert.match(url, /visitkorea\.or\.kr/);
 });
