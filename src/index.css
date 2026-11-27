@@ -47,24 +47,23 @@ body {
   touch-action: none;
 }
 
-/* 모바일: 「지금 볼 거리」 바가 있을 때만 지구본 맵 레이어를 위로 (지도 도구 툴바 위치 유지) */
+/* 모바일: 「지금 볼 거리」 바가 있을 때만 맵 레이어를 위로 (툴바는 셸 밖이라 유지).
+   transform 금지 — iOS Safari는 WebGL 조상 transform에서 캔버스 갱신(자전)이 멈춘다. */
 .gateo-home-globe-shell .gateo-globe-map {
-  transform: translate3d(0, 0, 0);
-  transition: transform 0.35s ease;
+  top: 0;
+  bottom: auto;
+  height: 100%;
+  transition: top 0.35s ease;
 }
 
 @media (max-width: 1279px) {
   .gateo-home-globe-shell .gateo-globe-map {
     --home-globe-mobile-base-lift: 10px;
-    transform: translate3d(0, calc(-1 * var(--home-globe-mobile-base-lift)), 0);
+    top: calc(-1 * var(--home-globe-mobile-base-lift));
   }
 
   html[data-home-watch-globe-lift='1'] .gateo-home-globe-shell .gateo-globe-map {
-    transform: translate3d(
-      0,
-      calc(-1 * (var(--home-watch-globe-lift, 60px) + var(--home-globe-mobile-base-lift, 10px))),
-      0
-    );
+    top: calc(-1 * (var(--home-watch-globe-lift, 60px) + var(--home-globe-mobile-base-lift, 10px)));
   }
 }
 

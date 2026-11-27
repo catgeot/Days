@@ -97,10 +97,13 @@ test.describe('home theme monthly mobile layout', () => {
     await openMonthlyHome(page);
     const card = await readyMonthlyCard(page);
     await expect(page.locator('html')).toHaveAttribute('data-home-watch-globe-lift', '1');
-    const mapLifted = await page.locator('.gateo-globe-map').first().evaluate(
-      (el) => window.getComputedStyle(el).transform,
-    );
-    expect(mapLifted).not.toBe('none');
+    const mapTop = await page.locator('.gateo-globe-map').first().evaluate((el) => {
+      const cs = window.getComputedStyle(el);
+      return { top: Number.parseFloat(cs.top), transform: cs.transform };
+    });
+    expect(mapTop.transform === 'none' || mapTop.transform === 'matrix(1, 0, 0, 1, 0, 0)').toBe(true);
+    expect(mapTop.top).toBeLessThanOrEqual(-68);
+    expect(mapTop.top).toBeGreaterThanOrEqual(-72);
     const toolbar = page.getByRole('toolbar', { name: '지도 도구' });
     if (await toolbar.count()) {
       const search = page.getByRole('button', { name: /여행지 검색|Search on 3D globe/ }).first();

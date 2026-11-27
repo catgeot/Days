@@ -182,6 +182,7 @@ const HomeGlobeAdapter = forwardRef((props, ref) => {
       clearImmerseState: () => childRef.current?.clearImmerseState?.(),
       isImmersed: () => childRef.current?.isImmersed?.() ?? false,
       getMapView: () => childRef.current?.getMapView?.() ?? null,
+      projectLngLat: (lng, lat) => childRef.current?.projectLngLat?.(lng, lat) ?? null,
       updateLastPinName: (...args) => childRef.current?.updateLastPinName?.(...args),
       triggerRipple: (lat, lng) => childRef.current?.triggerRipple?.(lat, lng),
       resetPins: () => childRef.current?.resetPins?.(),

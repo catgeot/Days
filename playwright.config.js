@@ -138,6 +138,7 @@ export default defineConfig({
         /tour-modal-region-search\.spec\.js/,
         /khao-lak-place-qa\.spec\.js/,
         /mooni-chat-modal-header-chrome\.spec\.js/,
+        /home-globe-rotate-reset\.spec\.js/,
       ],
       use: { ...devices['Desktop Chrome'], viewport: { width: 1280, height: 720 } },
     },

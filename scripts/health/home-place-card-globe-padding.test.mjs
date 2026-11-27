@@ -2,34 +2,45 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import {
-  PLACE_CARD_GLOBE_PAD_FALLBACK,
-  computePlaceCardGlobeFlyPadding,
-} from '../../src/pages/Home/lib/homePlaceCardGlobePadding.js';
+  offsetPlaceCardFlyCenter,
+  placeCardFlyLatitudeOffsetDeg,
+} from '../../src/pages/Home/lib/homePlaceCardFlyOffset.js';
 
-test('place summary fly padding uses bottom inset on mobile', () => {
-  const pad = computePlaceCardGlobeFlyPadding({
+test('place summary fly shifts the camera south on a phone', () => {
+  const jeju = offsetPlaceCardFlyCenter(33.5, 126.5, {
     viewportWidth: 390,
     viewportHeight: 844,
-    cardRect: { top: 470, left: 24, right: 366, bottom: 820, width: 342, height: 350 },
+    zoom: 2.35,
   });
-  assert.equal(pad.bottom, 844 - 470 + 16);
-  assert.ok(pad.top >= 80);
-  assert.equal(pad.left, PLACE_CARD_GLOBE_PAD_FALLBACK.mobile.left);
+  assert.equal(jeju.lng, 126.5);
+  assert.ok(jeju.lat < 33.5 - 8, `expected a clear south shift, got ${jeju.lat}`);
+  assert.ok(jeju.lat > 33.5 - 27);
+  const deg = placeCardFlyLatitudeOffsetDeg({ viewportHeight: 844, zoom: 2.35 });
+  assert.ok(deg >= 10 && deg <= 26);
 });
 
-test('place summary fly padding uses right inset on desktop', () => {
-  const pad = computePlaceCardGlobeFlyPadding({
+test('place summary fly does not shift latitude on desktop', () => {
+  const desktop = offsetPlaceCardFlyCenter(33.5, 126.5, {
     viewportWidth: 1280,
     viewportHeight: 800,
-    cardRect: { top: 520, left: 856, right: 1256, bottom: 768, width: 400, height: 248 },
+    zoom: 2.35,
   });
-  assert.ok(pad.right >= 1280 - 856 + 20);
-  assert.equal(pad.bottom, PLACE_CARD_GLOBE_PAD_FALLBACK.desktop.bottom);
+  assert.deepEqual(desktop, { lat: 33.5, lng: 126.5 });
 });
 
-test('place summary fly padding falls back when the card is not measured', () => {
-  const mobile = computePlaceCardGlobeFlyPadding({ viewportWidth: 390, viewportHeight: 844 });
-  assert.deepEqual(mobile, PLACE_CARD_GLOBE_PAD_FALLBACK.mobile);
-  const desktop = computePlaceCardGlobeFlyPadding({ viewportWidth: 1280, viewportHeight: 800 });
-  assert.deepEqual(desktop, PLACE_CARD_GLOBE_PAD_FALLBACK.desktop);
+test('southern pin still moves up the screen and stays on the globe', () => {
+  const south = offsetPlaceCardFlyCenter(-33.9, 18.4, {
+    viewportWidth: 390,
+    viewportHeight: 844,
+    zoom: 2.35,
+  });
+  assert.ok(south.lat < -33.9);
+  assert.ok(south.lat >= -85);
+  const polar = offsetPlaceCardFlyCenter(-80, 0, {
+    viewportWidth: 390,
+    viewportHeight: 844,
+    zoom: 2.35,
+  });
+  assert.ok(polar.lat >= -85);
+  assert.ok(polar.lat < -80);
 });

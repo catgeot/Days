@@ -24,7 +24,7 @@ import {
   nextOverlayClickGuardUntil,
 } from '../lib/globeOverlayClickGuard';
 import { normalizeLngNear } from '../lib/globeLngUtils';
-import { resolvePlaceCardGlobeFlyPadding } from '../lib/homePlaceCardGlobePadding.js';
+import { offsetPlaceCardFlyCenter } from '../lib/homePlaceCardFlyOffset.js';
 import {
   GLOBE_FACE_REGION_DEFAULT_ZOOM,
   GLOBE_FACE_REGION_FLY_MS,
@@ -260,6 +260,22 @@ function placeLabelPropertyKeysForLocale(locale) {
 const GLOBE_MAP_BTN_BASE =
   'h-11 w-11 rounded-full bg-black/55 border shadow-lg backdrop-blur-sm flex items-center justify-center active:scale-95 hover:bg-black/70 transition-colors shrink-0';
 
+const ZERO_GLOBE_PADDING = { top: 0, bottom: 0, left: 0, right: 0 };
+
+function clearStickyGlobePadding(map) {
+  if (!map || map._removed || typeof map.getPadding !== 'function' || typeof map.setPadding !== 'function') {
+    return;
+  }
+  try {
+    const pad = map.getPadding() || {};
+    const sum = (pad.top || 0) + (pad.bottom || 0) + (pad.left || 0) + (pad.right || 0);
+    if (sum < 0.5) return;
+    map.setPadding(ZERO_GLOBE_PADDING);
+  } catch {
+    // Map may be mid-teardown.
+  }
+}
+
 const GLOBE_VIEW = {
   default: { longitude: 0, latitude: 20, zoom: 1.25, pitch: 0, bearing: 0 },
   flyZoom: 2.35,
@@ -470,6 +486,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   userPausedRotateRef.current = autoRotatePaused;
   const rotationFrameRef = useRef(null);
   const rotationTimer = useRef(null);
+  const rotateResumeRetryRef = useRef(0);
   /** 써머리「이 지역 보기」몰입 중 — 자전 금지·exitImmerse 대상 */
   const immerseActiveRef = useRef(false);
   /** @type {React.MutableRefObject<{ iso?: string, iso3166_2?: string, bbox?: number[], settleZoom?: number } | null>} */
@@ -561,19 +578,26 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     reachBoundariesVisibleRef.current = reachBoundariesVisible;
   }, [reachBoundariesVisible]);
 
-  const buildRotateResumeSnapshot = useCallback((map) => ({
-    pauseRender: pauseRender || !mapLoadedRef.current,
-    userPausedRotate: userPausedRotateRef.current,
-    interaction: interactionRef.current,
-    tourActive: tourActiveRef.current,
-    immerseActive: immerseActiveRef.current,
-    flightCinemaActive: flightCinemaActiveRef.current,
-    cameraAnimating: cameraAnimatingRef.current,
-    globeCameraBusy: map ? isGlobeCameraBusy(map) : false,
-    mapMoving: map && typeof map.isMoving === 'function' ? map.isMoving() : false,
-    labelsSettled: globeLabelsSettledRef.current,
-    placeCardOpen: placeCardOpenRef.current,
-  }), [pauseRender]);
+  const buildRotateResumeSnapshot = useCallback((map) => {
+    const zoomNow = map && typeof map.getZoom === 'function' ? map.getZoom() : null;
+    // Summary card pauses spin only while framed on a place. Space zoom must
+    // still rotate — padding used to leave this gate stuck after 우주로 복귀.
+    const placeCardBlocksRotate = placeCardOpenRef.current
+      && (!Number.isFinite(zoomNow) || zoomNow > GLOBE_VIEW.default.zoom + 0.45);
+    return {
+      pauseRender: pauseRender || !mapLoadedRef.current,
+      userPausedRotate: userPausedRotateRef.current,
+      interaction: interactionRef.current,
+      tourActive: tourActiveRef.current,
+      immerseActive: immerseActiveRef.current,
+      flightCinemaActive: flightCinemaActiveRef.current,
+      cameraAnimating: cameraAnimatingRef.current,
+      globeCameraBusy: map ? isGlobeCameraBusy(map) : false,
+      mapMoving: map && typeof map.isMoving === 'function' ? map.isMoving() : false,
+      labelsSettled: globeLabelsSettledRef.current,
+      placeCardOpen: placeCardBlocksRotate,
+    };
+  }, [pauseRender]);
 
   const canResumeRotate = useCallback(
     (map) => canResumeGlobeAutoRotate(buildRotateResumeSnapshot(map)),
@@ -581,16 +605,32 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   );
 
   const tryResumeAutoRotate = useCallback((map) => {
-    if (!map) return;
-    const zoom = map.getZoom?.();
-    if (
-      canResumeRotate(map)
-      && Number.isFinite(zoom)
-      && zoom <= GLOBE_VIEW.rotateZoomThreshold
-    ) {
+    if (!map || map._removed) return;
+    const zoomOk = (live) => {
+      const zoom = live.getZoom?.();
+      return canResumeRotate(live)
+        && Number.isFinite(zoom)
+        && zoom <= GLOBE_VIEW.rotateZoomThreshold;
+    };
+    if (zoomOk(map)) {
       autoRotateRef.current = true;
+      return;
     }
-  }, [canResumeRotate]);
+    const snap = buildRotateResumeSnapshot(map);
+    const hardStop = snap.pauseRender || snap.userPausedRotate || snap.interaction
+      || snap.tourActive || snap.immerseActive || snap.flightCinemaActive
+      || snap.placeCardOpen || !snap.labelsSettled;
+    if (hardStop) return;
+    if (!(snap.mapMoving || snap.cameraAnimating || snap.globeCameraBusy)) return;
+    const token = rotateResumeRetryRef.current + 1;
+    rotateResumeRetryRef.current = token;
+    window.setTimeout(() => {
+      if (rotateResumeRetryRef.current !== token) return;
+      const live = mapRef.current?.getMap?.();
+      if (!live || live._removed) return;
+      if (zoomOk(live)) autoRotateRef.current = true;
+    }, 500);
+  }, [buildRotateResumeSnapshot, canResumeRotate]);
 
   const toggleReachBoundaries = useCallback(() => {
     setReachBoundariesVisible((prev) => {
@@ -1533,14 +1573,6 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     }, waitMs);
   }, [tryResumeAutoRotate]);
 
-  const resolvePinFocusPadding = useCallback((options = {}) => {
-    if (options.padding) return options.padding;
-    if (options.placeCardPadding === false) return undefined;
-    const usePadding = options.placeCardPadding === true || placeCardOpenRef.current;
-    if (!usePadding) return undefined;
-    return resolvePlaceCardGlobeFlyPadding();
-  }, []);
-
   const executeFocus = useCallback((lat, lng, options = {}) => {
     const map = mapRef.current?.getMap();
     if (!map || pauseRender) return false;
@@ -1551,45 +1583,42 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     const currentCenter = map.getCenter();
     const currentZoom = map.getZoom();
     const normalizedLng = normalizeLngNear(currentCenter.lng, lng);
-    const lngDelta = normalizeLngDelta(currentCenter.lng, lng);
-    const latDelta = Math.abs(currentCenter.lat - lat);
-    const isAlreadyNearTarget = lngDelta < 0.2 && latDelta < 0.2;
     const forceFlyZoom = options?.forceFlyZoom === true;
     const targetZoom = forceFlyZoom
       ? GLOBE_VIEW.flyZoom
       : Math.max(currentZoom, GLOBE_VIEW.flyZoom);
     const flyDuration = GLOBE_VIEW.orientFlyDuration;
-    const padding = resolvePinFocusPadding(options);
+    const aimSouth = options.placeCardOffset === true
+      || (options.placeCardOffset !== false && placeCardOpenRef.current);
+    const cameraCenter = aimSouth
+      ? offsetPlaceCardFlyCenter(lat, normalizedLng, {
+          viewportWidth: window.innerWidth,
+          viewportHeight: window.innerHeight,
+          zoom: targetZoom,
+        })
+      : { lat, lng: normalizedLng };
+    const lngDelta = normalizeLngDelta(currentCenter.lng, cameraCenter.lng);
+    const latDelta = Math.abs(currentCenter.lat - cameraCenter.lat);
+    const isAlreadyNearTarget = lngDelta < 0.2 && latDelta < 0.2;
 
     if (isAlreadyNearTarget && !forceFlyZoom && Math.abs(currentZoom - targetZoom) < 0.05) {
-      if (padding) {
-        try {
-          map.easeTo({
-            center: [normalizedLng, lat],
-            padding,
-            duration: 420,
-            essential: true,
-          });
-        } catch {
-          // fall through
-        }
-      }
+      clearStickyGlobePadding(map);
       flushPendingGateoMarkerSource(map);
       clearGlobeCameraBusy(map);
-      scheduleOrientRotateResume(map, padding ? 420 : 0);
+      scheduleOrientRotateResume(map, 0);
       return true;
     }
 
     try {
       cameraAnimatingRef.current = true;
       const flyOpts = {
-        center: [normalizedLng, lat],
+        center: [cameraCenter.lng, cameraCenter.lat],
         zoom: targetZoom,
         pitch: GLOBE_VIEW.default.pitch,
         duration: flyDuration,
         essential: true,
+        padding: ZERO_GLOBE_PADDING,
       };
-      if (padding) flyOpts.padding = padding;
       map.flyTo(flyOpts);
       map.once('moveend', () => {
         cameraAnimatingRef.current = false;
@@ -1621,16 +1650,22 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
 
     scheduleOrientRotateResume(map, flyDuration);
     return true;
-  }, [applyPlaceLabelVisibility, pauseRender, resolvePinFocusPadding, scheduleOrientRotateResume]);
+  }, [applyPlaceLabelVisibility, pauseRender, scheduleOrientRotateResume]);
 
+  const placeCardWasOpenRef = useRef(placeCardOpen);
   useLayoutEffect(() => {
-    if (!placeCardOpen) return undefined;
+    const wasOpen = placeCardWasOpenRef.current;
+    placeCardWasOpenRef.current = placeCardOpen;
+    if (!placeCardOpen) {
+      if (wasOpen) clearStickyGlobePadding(mapRef.current?.getMap?.());
+      return undefined;
+    }
     const target = lastPinFocusRef.current;
     if (!target) return undefined;
     let inner;
     const outer = requestAnimationFrame(() => {
       inner = requestAnimationFrame(() => {
-        executeFocus(target.lat, target.lng, { placeCardPadding: true });
+        executeFocus(target.lat, target.lng, { placeCardOffset: true });
       });
     });
     return () => {
@@ -1754,7 +1789,9 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
   const applyPendingFocus = useCallback(() => {
     if (!pendingFocusRef.current) return false;
     const pending = pendingFocusRef.current;
-    const applied = executeFocus(pending.lat, pending.lng);
+    const applied = executeFocus(pending.lat, pending.lng, {
+      placeCardOffset: pending.placeCardOffset,
+    });
     if (applied) {
       pendingFocusRef.current = null;
     }
@@ -1767,7 +1804,11 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     if (!map) {
       addRipple(lat, lng, 2000);
       if (shouldFocus) {
-        pendingFocusRef.current = { lat, lng };
+        pendingFocusRef.current = {
+          lat,
+          lng,
+          placeCardOffset: options.placeCardOffset,
+        };
       }
       return;
     }
@@ -1803,9 +1844,16 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       return;
     }
 
-    const applied = executeFocus(lat, lng, { forceFlyZoom: wasImmersed });
+    const applied = executeFocus(lat, lng, {
+      forceFlyZoom: wasImmersed,
+      placeCardOffset: options.placeCardOffset,
+    });
     if (!applied) {
-      pendingFocusRef.current = { lat, lng };
+      pendingFocusRef.current = {
+        lat,
+        lng,
+        placeCardOffset: options.placeCardOffset,
+      };
     }
   }, [addRipple, executeFocus, globeMode, pivotTourExplore]);
 
@@ -2114,6 +2162,7 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
 
   const finalizeSpaceReturn = useCallback(() => {
     interactionRef.current = false;
+    cameraAnimatingRef.current = false;
     immerseActiveRef.current = false;
     autoRotateRef.current = !pauseRender;
     setRipples([]);
@@ -2150,23 +2199,33 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
       bearing: GLOBE_VIEW.default.bearing
     };
 
+    let finished = false;
+    let fallback = 0;
     const finishReturn = () => {
+      if (finished) return;
+      finished = true;
+      window.clearTimeout(fallback);
       map.off('moveend', finishReturn);
+      clearStickyGlobePadding(map);
       finalizeSpaceReturn();
     };
 
     try {
       map.stop();
+      clearStickyGlobePadding(map);
+      fallback = window.setTimeout(finishReturn, 2200);
       map.once('moveend', finishReturn);
       map.flyTo({
         ...returnCamera,
+        padding: ZERO_GLOBE_PADDING,
         duration: 1200,
         essential: true
       });
     } catch {
+      window.clearTimeout(fallback);
       map.off('moveend', finishReturn);
-      map.jumpTo(returnCamera);
-      finalizeSpaceReturn();
+      map.jumpTo({ ...returnCamera, padding: ZERO_GLOBE_PADDING });
+      finishReturn();
     }
   }, [endTour, finalizeSpaceReturn, globeMode, onReturnToSpace]);
 
@@ -2487,17 +2546,29 @@ const HomeGlobeMapbox = React.memo(forwardRef(({
     exitImmerse,
     clearImmerseState,
     isImmersed: () => Boolean(immerseActiveRef.current),
+    projectLngLat: (lng, lat) => {
+      const map = mapRef.current?.getMap();
+      if (!map || map._removed || !Number.isFinite(lng) || !Number.isFinite(lat)) return null;
+      try {
+        const point = map.project([lng, lat]);
+        return { x: point.x, y: point.y };
+      } catch {
+        return null;
+      }
+    },
     getMapView: () => {
       const map = mapRef.current?.getMap();
       if (!map || map._removed) return null;
       try {
         const center = map.getCenter();
         const bounds = map.getBounds();
+        const padding = typeof map.getPadding === 'function' ? map.getPadding() : null;
         return {
           zoom: map.getZoom(),
           pitch: map.getPitch(),
           altitude: null,
           center: { lng: center.lng, lat: center.lat },
+          padding,
           bounds: bounds
             ? [bounds.getWest(), bounds.getSouth(), bounds.getEast(), bounds.getNorth()]
             : null,

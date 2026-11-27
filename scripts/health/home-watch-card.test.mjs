@@ -68,6 +68,11 @@ test('mobile globe lift applies only when the home watch bar is on screen', () =
   const css = fs.readFileSync(new URL('../../src/index.css', import.meta.url), 'utf8');
   assert.match(css, /data-home-watch-globe-lift/);
   assert.match(css, /\.gateo-home-globe-shell \.gateo-globe-map/);
+  assert.match(
+    css,
+    /html\[data-home-watch-globe-lift='1'\] \.gateo-home-globe-shell \.gateo-globe-map \{\s*top:/,
+  );
+  assert.doesNotMatch(css, /\.gateo-home-globe-shell \.gateo-globe-map \{[^}]*transform\s*:/);
   assert.doesNotMatch(css, /data-home-watch-globe-lift[\s\S]{0,120}\.gateo-home-globe-shell \{\s*transform/);
   const home = fs.readFileSync(new URL('../../src/pages/Home/index.jsx', import.meta.url), 'utf8');
   assert.match(home, /gateo-home-globe-shell/);
