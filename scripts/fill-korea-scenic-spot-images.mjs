@@ -257,7 +257,6 @@ const RELATED_IMAGE_CONTENT_IDS = {
   'museom-village': '2961095', // 선비세상 — 무섬마을 Tour type12 부재 시
   buseoksa: '2961095', // 선비세상 — 부석사 Tour type12 부재 시(영주)
   'seonbi-village': '2961095', // 선비세상 — 선비촌 Tour type12 부재 시
-  'sosu-seowon': '2961095', // 선비세상 — 소수서원 Tour type12 부재 시
   'manokjeong-park-changnyeong': '2774931', // 우포출렁다리 — 만옥정공원 Tour 부재 시
   'upo-wetland-changnyeong': '2774931', // 우포출렁다리 — 우포늪 Tour type12 부재 시
   'hawangsan-changnyeong': '2774931', // 우포출렁다리 — 화왕산 Tour type12 부재 시

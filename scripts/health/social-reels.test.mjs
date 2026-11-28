@@ -10,7 +10,7 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { fileURLToPath } from 'node:url';
 
 const NOW = new Date('2026-11-27T03:00:00.000Z');
-const FLAG_OFF_HTML_SHA256 = 'f5fd91180dfb5105dd61cbf449ada0c5f5e4dff4279b0690740663003d3ee485';
+const FLAG_OFF_HTML_SHA256 = '07a6232f076fb7011431fca73c82bb0d3a1140df799a1e365b08611938d85d37';
 
 globalThis.__GATEO_DISABLE_SOCIAL_PHOTO_FETCH__ = true;
 globalThis.__VITE_ENV__ = {
@@ -101,7 +101,7 @@ const sampleCards = [
     firstPostedAt: '2026-11-27',
     title: '샘플 최근',
     region: '경북 샘플',
-    photoUrl: 'https://tong.visitkorea.or.kr/cms/resource/51/3588851_image2_1.jpg',
+    photoUrl: 'https://tong.visitkorea.or.kr/cms/resource/19/4081219_image2_1.jpg',
     photoCredit: { kind: 'kto', label: '한국관광공사' },
     targets: [
       { type: 'place', slug: 'tour-126201' },
@@ -536,7 +536,8 @@ test('flag off matches the pre-change /social HTML with reel data present', asyn
     reels: flagOffReels,
   });
   const html = container.innerHTML;
-  assert.equal(createHash('sha256').update(html).digest('hex'), FLAG_OFF_HTML_SHA256);
+  const htmlSha = createHash('sha256').update(html).digest('hex');
+  assert.equal(htmlSha, FLAG_OFF_HTML_SHA256);
   assert.equal(container.querySelectorAll('button').length, 0);
   assert.equal(document.querySelector('[data-testid="social-reels-open"]'), null);
   assert.equal(document.querySelector('video'), null);
