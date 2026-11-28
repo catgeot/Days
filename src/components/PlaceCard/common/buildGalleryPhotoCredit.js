@@ -60,6 +60,20 @@ export function buildGalleryPhotoCredit(image, locale = 'ko') {
     };
   }
 
+  if (source === 'korea-scenic-ssot' || source === 'local-scenic-official') {
+    const note = String(
+      image?.photo_note || image?.photoNote || image?.alt_description || '',
+    ).trim();
+    if (!note) return null;
+    return {
+      kind: 'kto',
+      authorName: note,
+      photographerHref: null,
+      providerHref: null,
+      providerLabel: note,
+    };
+  }
+
   if (source === 'wikimedia') {
     if (!authorName) return null;
     const filePageHref =

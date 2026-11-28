@@ -230,7 +230,11 @@ const GalleryGridTile = React.memo(function GalleryGridTile({
         size={20}
         aria-hidden
       />
-      {showPhotoCredit || img?.source === 'wikimedia' || String(img?.id || '').startsWith('commons-') ? (
+      {showPhotoCredit ||
+      img?.source === 'wikimedia' ||
+      img?.source === 'korea-scenic-ssot' ||
+      img?.source === 'local-scenic-official' ||
+      String(img?.id || '').startsWith('commons-') ? (
         <GalleryGridPhotoCredit
           image={img}
           location={photoCreditLocation}
