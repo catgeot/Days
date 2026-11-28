@@ -14,6 +14,24 @@
 
 ## 활성 목록
 
+### 홈 바로가기 리뷰 창고
+
+| | |
+|--|--|
+| **상태** | PR 대기 · 기본 OFF · 코드 `a89fdb803` · PR [#928](https://github.com/catgeot/Days/pull/928) |
+| **브랜치** | `cursor/quicklink-review-tab-31b5` |
+| **Preview** | `https://days-git-cursor-quicklink-review-tab-31b5-catgeots-projects.vercel.app/?quicklink_review_tab=1` (SSO. 공유 링크는 PR 본문·일지 세션) |
+| **일지** | [`2026-11-26-project-log.md`](./2026-11-26-project-log.md) |
+| **금지** | 플래그 없이 네 번째 항목을 바꾸기 · `/blog/curation` 라우트·사이트맵·`index.html` 정적 링크 제거 · §10 정렬 변경 |
+
+**다음 제시어**
+
+```
+홈 바로가기 리뷰 창고 #2, Preview 확인 후 main 병합
+```
+
+핀: `plans/2026-11-26-project-log.md` · `plans/feature-handoff-index.md` · PR #928
+
 ### 명승 본문 — 종료
 
 | | |
