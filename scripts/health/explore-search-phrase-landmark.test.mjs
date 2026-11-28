@@ -77,7 +77,9 @@ test('화성행궁 stays the palace, not the city or the fortress', async () => 
   assert.match(choice.title, /화성행궁/);
   assert.doesNotMatch(choice.title, /도시와 명소를 골라주세요/);
   const local = buildLocalSearchSuggestions('화성행궁');
-  assert.equal(local[0].slug, 'hwaseong-haenggung');
+  assert.equal(local[0].slug, 'suwon');
+  assert.ok(local.some((item) => item.slug === 'hwaseong-haenggung'));
+  assert.equal(local.find((item) => item.slug === 'hwaseong-haenggung').name, '화성행궁');
 });
 
 test('other region + landmark queries keep their landmark first', async () => {
@@ -91,7 +93,8 @@ test('other region + landmark queries keep their landmark first', async () => {
     assert.equal(choice.candidates[0].slug, slug, query);
     assert.equal(choice.candidates[0].hubId, hubId, query);
     const local = buildLocalSearchSuggestions(query);
-    assert.equal(local[0].slug, slug, query);
+    assert.equal(local[0].hubId, hubId, query);
+    assert.ok(local.some((item) => item.slug === slug), query);
   }
 
   const haeundae = await buildCuratedEnterDisambiguation('부산 해운대');

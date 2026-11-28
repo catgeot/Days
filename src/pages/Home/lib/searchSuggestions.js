@@ -14,6 +14,7 @@ import {
   resolveCityAttractionHub,
   resolveHubAttraction,
   listFusedRegionLandmarkChoices,
+  isFusedRegionLandmark,
   hubToSuggestion,
   attractionToSuggestion,
   buildHubDisambiguationCandidates,
@@ -362,7 +363,7 @@ export async function collectDistinctMapboxHomonyms(query, ssotCandidates) {
  * hub + 명소 클러스터.
  * - hub exact: includeSettlements → 명소 뒤 정착지 ≤3
  * - 정착지 exact(허브형): preferSettlement → hub → 히트 지역 → 명소 → 형제 지역(전부, 히트 강제)
- * - 명소 exact: preferAttraction, leadWithAttraction이면 명소가 허브보다 앞
+ * - 명소 exact: preferAttraction. 도시명이 붙은 붙여쓴 명소만 허브보다 앞
  * @param {object} hub
  * @param {object[]} out
  * @param {Set<string>} seen
@@ -613,7 +614,10 @@ export function buildLocalSearchSuggestions(query, opts = {}) {
     pushHubAttractionCluster(exactAttraction.hub, out, seen, {
       preferAttraction: exactAttraction.attraction,
       includeSettlements: false,
-      leadWithAttraction: true,
+      leadWithAttraction: isFusedRegionLandmark(
+        exactAttraction.hub,
+        exactAttraction.attraction,
+      ),
     });
   } else if (exactSettlement) {
     const parentHub = resolveCityAttractionHub(exactSettlement.row.hubId);

@@ -182,6 +182,27 @@ export function listFusedRegionLandmarkChoices(query) {
   return hits;
 }
 
+/**
+ * 붙여쓴 이름이 「다른 한국 도시 + 이 도시」인 명소인지.
+ * 「수원화성」= 수원 + 화성. 「경복궁」·「화성행궁」은 해당하지 않는다.
+ * @param {object} hub
+ * @param {object} attraction
+ */
+export function isFusedRegionLandmark(hub, attraction) {
+  if (!hub || !isKoreaHubCountry(hub)) return false;
+  const raw = String(attraction?.name || '').trim();
+  if (!raw || /\s/u.test(raw)) return false;
+  const nameKey = normalizeKey(raw);
+  const prefix = normalizeKey(hub.name);
+  if (!prefix || prefix.length < 2 || !nameKey.startsWith(prefix)) return false;
+  const rest = nameKey.slice(prefix.length);
+  if (rest.length < 2) return false;
+  const other = resolveCityAttractionHub(rest);
+  if (!other || other.hubId === hub.hubId || !isKoreaHubCountry(other)) return false;
+  const primary = [other.name, other.name_en, other.hubId].map(normalizeKey);
+  return primary.includes(rest);
+}
+
 function haversineKm(lat1, lng1, lat2, lng2) {
   const toRad = (d) => (d * Math.PI) / 180;
   const dLat = toRad(lat2 - lat1);
