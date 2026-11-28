@@ -1071,7 +1071,10 @@ export const usePlaceGallery = (locationSource, options = {}) => {
       !(Array.isArray(localScenicOverlay?.galleryUrls) && localScenicOverlay.galleryUrls.length >= 1) &&
       !(Array.isArray(contentThumb?.galleryUrls) && contentThumb.galleryUrls.length >= 1);
 
-    if (!forceRefresh && localScenicOfficialGallery) {
+    const scenicSsotWouldBlockOfficialTour =
+      scenicSsotGalleryOnly && hasOfficialTourContentId;
+
+    if (!forceRefresh && localScenicOfficialGallery && !scenicSsotWouldBlockOfficialTour) {
       let officialUrls = localScenicOfficialGallery;
       if (scenicSsotGalleryOnly) {
         officialUrls = await filterLoadableScenicGalleryUrls(localScenicOfficialGallery);
@@ -1299,10 +1302,29 @@ export const usePlaceGallery = (locationSource, options = {}) => {
             thumbnailOnly,
             skipProbe: Boolean(galleryTourContentId),
           });
-          const tourImages = tourFetch?.images || [];
+          let tourImages = tourFetch?.images || [];
           if (tourFetch?.sourceHadError) noteGallerySourceError();
           if (isStale()) return;
           if (tourImages.length > 0) {
+            if (koreaScenicSpotGallery.length > 0) {
+              const scenicUrls = await filterLoadableScenicGalleryUrls(
+                koreaScenicSpotGallery,
+              );
+              const seen = new Set(
+                tourImages
+                  .map((img) => String(img?.urls?.regular || img?.urls?.small || '').trim())
+                  .filter(Boolean),
+              );
+              const prepend = scenicUrls
+                .filter((url) => !seen.has(url))
+                .map((url, idx) => ({
+                  id: `korea-scenic-ssot-${stablePlaceKey}-prepend-${idx}`,
+                  urls: { small: url, regular: url },
+                  alt_description: koreanName,
+                  source: 'korea-scenic-ssot',
+                }));
+              if (prepend.length > 0) tourImages = [...prepend, ...tourImages];
+            }
             const skipStock = thumbnailOnly || !isSparseTourApiGallery(tourImages);
             processAndSetImages(tourImages);
             saveToSmartCache(CACHE_KEY, allImagesRef.current);
