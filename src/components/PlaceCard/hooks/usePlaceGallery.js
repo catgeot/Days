@@ -50,7 +50,17 @@ import {
   lookupLocalScenicMemberOverlayForSpot,
   lookupLocalScenicPhotoByContentId,
 } from '../../../pages/Home/lib/koreaLocalScenicLists';
+import { getVisibleKoreaScenicSpotByPlaceSlug } from '../../../pages/Home/lib/placeScenicGateway.js';
 import { resolveScenicGalleryUrlsIfEnabled } from '../../../pages/Home/lib/placeScenicPlaceLinksRollout';
+import {
+  buildKoreaScenicSsotGalleryImage,
+  galleryCacheHasScenicSsotUrl,
+  partitionGalleryOfficialBeforeStock,
+  prependScenicSsotHeroes,
+  scenicSsotUrlIsSelfHosted,
+  shouldSuppressKoreanScenicGalleryStock,
+  stripGalleryStockImages,
+} from '../../../utils/galleryKoreanOfficialStock.js';
 import { fetchTourApiGallery } from '../../../utils/fetchTourApiGallery';
 import { isSparseTourApiGallery } from '../../../utils/tourApiPhotoRank';
 import { filterOutSinglePersonPortraits, pickPlaceStatsGalleryRow } from '../../../utils/galleryPortraitFilter';
@@ -192,8 +202,12 @@ function probeLoadableImageUrl(url, timeoutMs = SCENIC_GALLERY_URL_VERIFY_MS) {
 async function filterLoadableScenicGalleryUrls(urls) {
   const list = Array.isArray(urls) ? urls : [];
   if (!list.length) return [];
-  const probed = await Promise.all(list.map((url) => probeLoadableImageUrl(url)));
-  return probed.filter(Boolean);
+  const trusted = list.filter((url) => scenicSsotUrlIsSelfHosted(url));
+  const toProbe = list.filter((url) => !scenicSsotUrlIsSelfHosted(url));
+  const probed = toProbe.length
+    ? (await Promise.all(toProbe.map((url) => probeLoadableImageUrl(url)))).filter(Boolean)
+    : [];
+  return [...trusted, ...probed];
 }
 
 function tourOfficialGalleryFromPin(...locs) {
@@ -270,15 +284,21 @@ function capGalleryImages(images, max = GALLERY_MAX_IMAGES) {
   return list.length <= max ? list : list.slice(0, max);
 }
 
-function needsPexelsBackfill(images, thumbnailOnly) {
-  if (thumbnailOnly) return false;
+function needsPexelsBackfill(images, thumbnailOnly, suppressStock = false) {
+  if (thumbnailOnly || suppressStock) return false;
   if (!Array.isArray(images) || images.length === 0) return false;
   if (galleryRemainingSlots(images) <= 0) return false;
   return !galleryHasPexels(images);
 }
 
-function shouldMergePexelsStock({ thumbnailOnly, forceRefresh, results, existingImages }) {
-  if (thumbnailOnly) return false;
+function shouldMergePexelsStock({
+  thumbnailOnly,
+  forceRefresh,
+  results,
+  existingImages,
+  suppressStock = false,
+}) {
+  if (thumbnailOnly || suppressStock) return false;
   if (galleryRemainingSlots(existingImages) <= 0) return false;
   const existing = Array.isArray(existingImages) ? existingImages : [];
   const batch = Array.isArray(results) ? results : [];
@@ -821,6 +841,9 @@ export const usePlaceGallery = (locationSource, options = {}) => {
         (typeof locationSource === 'object' ? locationSource?.contentId : null),
     );
     const koreaScenicSpotGallery = resolveScenicGalleryUrlsIfEnabled(locationSource);
+    const scenicSpotForGallery = spotSlugForDb
+      ? getVisibleKoreaScenicSpotByPlaceSlug(spotSlugForDb)
+      : null;
     const pinOfficialGallery = tourOfficialGalleryFromPin(
       typeof locationSource === 'object' ? locationSource : null,
       typeof targetSpot === 'object' ? targetSpot : null,
@@ -979,6 +1002,7 @@ export const usePlaceGallery = (locationSource, options = {}) => {
     };
 
     const runStockSwr = async () => {
+      if (suppressKoreanScenicStock(allImagesRef.current)) return;
       if (
         !shouldRunGalleryStockSwr({
           thumbnailOnly,
@@ -1026,11 +1050,12 @@ export const usePlaceGallery = (locationSource, options = {}) => {
     const afterInstantGallery = () => {
       if (joseonTombGallery) return;
       const backfillRunId = runId;
+      const stockSuppressed = suppressKoreanScenicStock(allImagesRef.current);
       const startSwr = () => {
-        if (backfillRunId !== galleryLoadSeqRef.current) return;
+        if (backfillRunId !== galleryLoadSeqRef.current || stockSuppressed) return;
         void runStockSwr();
       };
-      if (needsPexelsBackfill(allImagesRef.current, thumbnailOnly)) {
+      if (needsPexelsBackfill(allImagesRef.current, thumbnailOnly, stockSuppressed)) {
         pexelsPageRef.current += 1;
         void fetchPexelsBatch(
           PEXELS_KEY,
@@ -1074,19 +1099,40 @@ export const usePlaceGallery = (locationSource, options = {}) => {
     const scenicSsotWouldBlockOfficialTour =
       scenicSsotGalleryOnly && hasOfficialTourContentId;
 
+  const applyKoreanScenicGalleryOrdering = (rawImages) => {
+    let next = Array.isArray(rawImages) ? rawImages.filter(Boolean) : [];
+    if (shouldSuppressKoreanScenicGalleryStock(next, allowTourApiGallery)) {
+      next = stripGalleryStockImages(next);
+    }
+    return partitionGalleryOfficialBeforeStock(next);
+  };
+
+  const suppressKoreanScenicStock = (images) =>
+    shouldSuppressKoreanScenicGalleryStock(images, allowTourApiGallery);
+
     if (!forceRefresh && localScenicOfficialGallery && !scenicSsotWouldBlockOfficialTour) {
       let officialUrls = localScenicOfficialGallery;
       if (scenicSsotGalleryOnly) {
         officialUrls = await filterLoadableScenicGalleryUrls(localScenicOfficialGallery);
       }
       if (officialUrls.length >= 1) {
-        const officialImages = officialUrls.map((url, idx) => ({
-          id: `local-scenic-official-${stablePlaceKey}-${idx}`,
-          urls: { small: url, regular: url },
-          alt_description: koreanName,
-          source: scenicSsotGalleryOnly ? 'korea-scenic-ssot' : 'local-scenic-official',
-        }));
-        processAndSetImages(officialImages);
+        const officialImages = officialUrls
+          .map((url, idx) =>
+            buildKoreaScenicSsotGalleryImage(url, {
+              stablePlaceKey,
+              idx,
+              koreanName,
+              scenicSpot: scenicSpotForGallery,
+              idSuffix: scenicSsotGalleryOnly ? '' : '-local',
+            }),
+          )
+          .filter(Boolean)
+          .map((img, idx) =>
+            scenicSsotGalleryOnly
+              ? img
+              : { ...img, id: `local-scenic-official-${stablePlaceKey}-${idx}`, source: 'local-scenic-official' },
+          );
+        processAndSetImages(applyKoreanScenicGalleryOrdering(officialImages));
         saveToSmartCache(CACHE_KEY, allImagesRef.current);
         markFetchDone();
         finishLoading();
@@ -1104,9 +1150,16 @@ export const usePlaceGallery = (locationSource, options = {}) => {
         validCache.length > 0 &&
         hasOfficialTourContentId &&
         !isTourApiDominantGallery(validCache);
-      if (stockCacheBlocksOfficialTour) {
+      const cacheMissingScenicSsotHero =
+        validCache &&
+        validCache.length > 0 &&
+        koreaScenicSpotGallery.length > 0 &&
+        !galleryCacheHasScenicSsotUrl(validCache, koreaScenicSpotGallery);
+      if (stockCacheBlocksOfficialTour || cacheMissingScenicSsotHero) {
         console.warn(
-          '⚠️ session cache stock-only with official Tour contentId — live TourAPI refetch',
+          stockCacheBlocksOfficialTour
+            ? '⚠️ session cache stock-only with official Tour contentId — live TourAPI refetch'
+            : '⚠️ session cache missing scenic SSOT hero — live refetch',
         );
       }
       if (
@@ -1114,10 +1167,18 @@ export const usePlaceGallery = (locationSource, options = {}) => {
         validCache.length > 0 &&
         !isThinStockGallery(validCache) &&
         !isSparseTourApiGallery(validCache) &&
-        !stockCacheBlocksOfficialTour
+        !stockCacheBlocksOfficialTour &&
+        !cacheMissingScenicSsotHero
       ) {
         if (isStale()) return;
-        processAndSetImages(validCache);
+        let cached = prependScenicSsotHeroes(validCache, koreaScenicSpotGallery, {
+          stablePlaceKey,
+          koreanName,
+          scenicSpot: scenicSpotForGallery,
+          idSuffix: '-cache',
+        });
+        cached = applyKoreanScenicGalleryOrdering(cached);
+        processAndSetImages(cached);
         if (allImagesRef.current.length === 0) {
           console.warn('⚠️ session cache all portraits — live Unsplash/Pexels refetch');
         } else {
@@ -1262,7 +1323,14 @@ export const usePlaceGallery = (locationSource, options = {}) => {
                   '⚠️ legacy misheal place_stats stock gallery — prefer TourAPI/stock valley query',
                 );
               } else {
-                processAndSetImages(gallerySlice);
+                let slice = prependScenicSsotHeroes(gallerySlice, koreaScenicSpotGallery, {
+                  stablePlaceKey,
+                  koreanName,
+                  scenicSpot: scenicSpotForGallery,
+                  idSuffix: '-db',
+                });
+                slice = applyKoreanScenicGalleryOrdering(slice);
+                processAndSetImages(slice);
                 if (allImagesRef.current.length === 0) {
                   console.warn(
                     '⚠️ place_stats all portraits — live Unsplash/Pexels refetch',
@@ -1310,22 +1378,18 @@ export const usePlaceGallery = (locationSource, options = {}) => {
               const scenicUrls = await filterLoadableScenicGalleryUrls(
                 koreaScenicSpotGallery,
               );
-              const seen = new Set(
-                tourImages
-                  .map((img) => String(img?.urls?.regular || img?.urls?.small || '').trim())
-                  .filter(Boolean),
-              );
-              const prepend = scenicUrls
-                .filter((url) => !seen.has(url))
-                .map((url, idx) => ({
-                  id: `korea-scenic-ssot-${stablePlaceKey}-prepend-${idx}`,
-                  urls: { small: url, regular: url },
-                  alt_description: koreanName,
-                  source: 'korea-scenic-ssot',
-                }));
-              if (prepend.length > 0) tourImages = [...prepend, ...tourImages];
+              tourImages = prependScenicSsotHeroes(tourImages, scenicUrls, {
+                stablePlaceKey,
+                koreanName,
+                scenicSpot: scenicSpotForGallery,
+                idSuffix: '-prepend',
+              });
             }
-            const skipStock = thumbnailOnly || !isSparseTourApiGallery(tourImages);
+            tourImages = applyKoreanScenicGalleryOrdering(tourImages);
+            const skipStock =
+              thumbnailOnly ||
+              !isSparseTourApiGallery(tourImages) ||
+              suppressKoreanScenicStock(tourImages);
             processAndSetImages(tourImages);
             saveToSmartCache(CACHE_KEY, allImagesRef.current);
             if (skipStock) {
@@ -1374,6 +1438,35 @@ export const usePlaceGallery = (locationSource, options = {}) => {
     try {
       let results = [];
 
+      const mergedOfficialBase = () => [
+        ...(allImagesRef.current || []),
+        ...(tourSeed || []),
+      ];
+      if (
+        !forceRefresh &&
+        !thumbnailOnly &&
+        mergedOfficialBase().length > 0 &&
+        shouldSuppressKoreanScenicGalleryStock(mergedOfficialBase(), allowTourApiGallery)
+      ) {
+        let merged = prependScenicSsotHeroes(mergedOfficialBase(), koreaScenicSpotGallery, {
+          stablePlaceKey,
+          koreanName,
+          scenicSpot: scenicSpotForGallery,
+          idSuffix: '-official-only',
+        });
+        merged = applyKoreanScenicGalleryOrdering(merged);
+        if (isStale()) return;
+        processAndSetImages(merged);
+        saveToSmartCache(CACHE_KEY, allImagesRef.current);
+        if (loadedStatsPlaceIdRef.current || canonicalStatsIdRef.current) {
+          persistGallery('replace', allImagesRef.current);
+        }
+        markFetchDone();
+        finishLoading();
+        writeGallerySwrAt(stablePlaceKey);
+        return;
+      }
+
       if (unsplashQuery && ACCESS_KEY) {
         results = await fetchUnsplashTracked(ACCESS_KEY, unsplashQuery, unsplashPageRef.current);
         if (isStale()) return;
@@ -1398,12 +1491,18 @@ export const usePlaceGallery = (locationSource, options = {}) => {
       }
 
       // 썸네일 모드: Pexels 생략. 갤러리에 Pexels가 없으면 Unsplash 15장 초과여도 Pexels 시도
+      const stockSuppressedForFetch = suppressKoreanScenicStock([
+        ...(allImagesRef.current || []),
+        ...(tourSeed || []),
+        ...results,
+      ]);
       if (
         shouldMergePexelsStock({
           thumbnailOnly,
           forceRefresh,
           results,
           existingImages: allImagesRef.current,
+          suppressStock: stockSuppressedForFetch,
         })
       ) {
         try {
@@ -1527,6 +1626,15 @@ export const usePlaceGallery = (locationSource, options = {}) => {
 
         if (isStale()) return;
 
+        if (!forceRefresh && allowTourApiGallery) {
+          finalResults = prependScenicSsotHeroes(finalResults, koreaScenicSpotGallery, {
+            stablePlaceKey,
+            koreanName,
+            scenicSpot: scenicSpotForGallery,
+            idSuffix: '-merge',
+          });
+          finalResults = applyKoreanScenicGalleryOrdering(finalResults);
+        }
         processAndSetImages(finalResults);
         saveToSmartCache(CACHE_KEY, allImagesRef.current);
 

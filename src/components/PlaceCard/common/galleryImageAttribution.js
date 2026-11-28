@@ -6,6 +6,9 @@ export function getGalleryImageSource(image) {
   if (image.source === 'pexels') return 'pexels';
   if (String(image.id ?? '').startsWith('pexels')) return 'pexels';
   if (image.source === 'wikimedia') return 'wikimedia';
+  if (image.source === 'korea-scenic-ssot' || image.source === 'local-scenic-official') {
+    return image.source;
+  }
   if (String(image.id ?? '').startsWith('commons-')) return 'wikimedia';
   if (String(image.id ?? '').startsWith('fallback')) return 'default';
   return 'unsplash';
