@@ -104,3 +104,90 @@ export function festivalPosterMetaAtIndex(index, imageUrls, imageCaptions, image
     credit: imageCredits[i] || '',
   };
 }
+
+export function normalizeFestivalImageUrl(url) {
+  return String(url || '')
+    .trim()
+    .replace(/^http:\/\//i, 'https://')
+    .replace(/[?#].*$/, '');
+}
+
+/**
+ * OCR-only prior-edition posters (no year in TourAPI metadata). Ordering only.
+ * @type {{ contentId: string, url: string, note?: string }[]}
+ */
+export const FESTIVAL_GALLERY_DEMOTION_ENTRIES = [
+  {
+    contentId: '1095732',
+    url: 'https://tong.visitkorea.or.kr/cms/resource/39/4147239_image2_1.jpg',
+    note:
+      'TourAPI imgname says 2026; CMS asset is the printed 2025 poster (visible in lightbox).',
+  },
+];
+
+const festivalGalleryDemotionUrlsById = (() => {
+  const byFestival = new Map();
+  for (const row of FESTIVAL_GALLERY_DEMOTION_ENTRIES) {
+    const id = String(row?.contentId || '').trim();
+    const url = normalizeFestivalImageUrl(row?.url);
+    if (!id || !url) continue;
+    let set = byFestival.get(id);
+    if (!set) {
+      set = new Set();
+      byFestival.set(id, set);
+    }
+    set.add(url);
+  }
+  return byFestival;
+})();
+
+/**
+ * @param {string} contentId
+ * @param {string} url
+ */
+export function isFestivalGalleryDemotionListed(contentId, url) {
+  const id = String(contentId || '').trim();
+  if (!id) return false;
+  const set = festivalGalleryDemotionUrlsById.get(id);
+  if (!set?.size) return false;
+  return set.has(normalizeFestivalImageUrl(url));
+}
+
+/**
+ * @param {{ url?: string, caption?: string, credit?: string }} slide
+ * @param {number | null | undefined} festivalYear
+ * @param {string} [contentId]
+ */
+export function shouldDemoteFestivalGallerySlide(slide, festivalYear, contentId = '') {
+  if (!slide?.url) return false;
+  if (isFestivalGalleryDemotionListed(contentId, slide.url)) return true;
+  const posterYear = detectPosterEditionYear({
+    url: slide.url,
+    caption: slide.caption || '',
+    credit: slide.credit || '',
+  });
+  return isPriorEditionPoster(posterYear, festivalYear);
+}
+
+/**
+ * Stable partition: non-dated and same-or-later edition first; prior-edition posters last.
+ * @param {{ url: string, caption?: string, credit?: string }[]} slides
+ * @param {{ festivalYear?: number | null, contentId?: string }} [opts]
+ */
+export function reorderFestivalGallerySlides(slides, opts = {}) {
+  const list = Array.isArray(slides) ? slides : [];
+  const festivalYear = opts.festivalYear;
+  const contentId = String(opts.contentId || '').trim();
+  if (!list.length) return [];
+  const leading = [];
+  const trailing = [];
+  for (const slide of list) {
+    if (shouldDemoteFestivalGallerySlide(slide, festivalYear, contentId)) {
+      trailing.push(slide);
+    } else {
+      leading.push(slide);
+    }
+  }
+  if (!trailing.length) return [...list];
+  return [...leading, ...trailing];
+}

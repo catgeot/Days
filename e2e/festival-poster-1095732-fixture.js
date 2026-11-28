@@ -59,7 +59,7 @@ export function buildFestivalPoster1095732Images() {
       {
         contentId: FESTIVAL_POSTER_E2E_ID,
         imgname: '2026 서울빛초롱축제 (6).jpg',
-        imageUrl: `${E2E_IMAGE}/scene.jpg`,
+        imageUrl: 'https://tong.visitkorea.or.kr/cms/resource/39/4147239_image2_1.jpg',
       },
       {
         contentId: FESTIVAL_POSTER_E2E_ID,
@@ -126,14 +126,14 @@ export async function installFestivalPoster1095732Fixtures(target) {
     }
     await jsonFulfill(route, { ok: true, items: [], rawCount: 0 });
   });
-  await target.route(/e2e-static\.gateo\.test/i, (route) =>
-    route.fulfill({
-      status: 200,
-      contentType: 'image/png',
-      body: Buffer.from(
-        'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
-        'base64',
-      ),
-    }),
-  );
+  const stubImage = {
+    status: 200,
+    contentType: 'image/png',
+    body: Buffer.from(
+      'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
+      'base64',
+    ),
+  };
+  await target.route(/e2e-static\.gateo\.test/i, (route) => route.fulfill(stubImage));
+  await target.route(/tong\.visitkorea\.or\.kr/i, (route) => route.fulfill(stubImage));
 }

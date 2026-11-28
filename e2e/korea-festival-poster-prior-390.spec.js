@@ -53,6 +53,14 @@ test.describe('festival poster prior edition — WebKit 390 mocked', () => {
       '0',
     );
 
+    await thumbs.nth(1).click();
+    await expect(thumbs.nth(1)).toHaveAttribute('aria-selected', 'true', { timeout: 10_000 });
+    await expect(sheet.locator('[data-festival-prior-poster]').first()).toHaveAttribute(
+      'data-festival-prior-poster',
+      '0',
+      { timeout: 15_000 },
+    );
+
     expect(buildFestivalPoster1095732Images().items.some((row) => /2025/.test(row.imgname))).toBe(
       true,
     );
