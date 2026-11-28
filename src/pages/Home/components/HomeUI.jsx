@@ -35,6 +35,7 @@ import { CATEGORY_LABELS } from './SearchDiscovery/constants';
 import { getLocalizedPlaceName } from '../../../components/PlaceCard/common/locationDisplay';
 import TrustLinkBar from '../../../shared/layout/TrustLinkBar';
 import HomeWatchCard from './HomeWatchCard';
+import HomeSocialEntryLink from './HomeSocialEntryLink';
 import { REVIEW_HUB_HREF } from '../../../logbookOfficialReviews/logbookReviewHubArrival.js';
 
 const MOBILE_QUICK_LINK_DEFS = [
@@ -425,8 +426,9 @@ const HomeUI = React.memo(({
         ) : null}
 
         {!isTourCinema ? (
-          <div className="md:hidden pointer-events-auto">
+          <div className="md:hidden pointer-events-auto flex flex-col items-start gap-2">
             {renderQuickLinks()}
+            <HomeSocialEntryLink />
           </div>
         ) : null}
 
@@ -466,6 +468,7 @@ const HomeUI = React.memo(({
             {!isTourCinema ? (
               <div className="flex flex-col items-start gap-2 pb-1">
                 {renderQuickLinks()}
+                <HomeSocialEntryLink />
               </div>
             ) : null}
           </div>
