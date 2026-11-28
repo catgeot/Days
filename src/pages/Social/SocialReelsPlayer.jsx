@@ -1,6 +1,17 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { isGateoSocialLikesEnabled } from '../../shared/gateoFeatureFlags.js';
 import { createSocialReelSession, safePlay } from './socialReelPlayback.js';
+import {
+  SOCIAL_REEL_LIKE_FAIL_TOAST,
+  SOCIAL_REEL_LIKE_LOGIN_PROMPT,
+  resolveSocialReelLikeApi,
+  shouldShowSocialReelLikeCount,
+} from './socialReelLikes.js';
+import { splitSocialReelCredit } from './socialReels.js';
+
+const RAIL_BUTTON =
+  'inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-black/55 text-white shadow-[0_2px_8px_rgba(0,0,0,0.55)]';
 
 const SWIPE_PX = 48;
 const WHEEL_LOCK_MS = 420;
@@ -94,24 +105,21 @@ function IconSpeaker({ muted }) {
 
 function IconShare() {
   return (
-    <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" className="h-5 w-5">
+    <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" className="h-5 w-5 drop-shadow-[0_1px_1px_rgba(0,0,0,0.9)]">
       <path d="M12 16V5M8 8.5L12 4.5l4 4M6 20h12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
 
-function IconHeart() {
+function IconHeart({ filled }) {
   return (
-    <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" className="h-5 w-5">
-      <path d="M12 19s-7-4.4-7-9a4 4 0 017-2 4 4 0 017 2c0 4.6-7 9-7 9z" fill="none" stroke="currentColor" strokeWidth="2" />
-    </svg>
-  );
-}
-
-function IconComment() {
-  return (
-    <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" className="h-5 w-5">
-      <path d="M6 16.5l-2 3V7.5A2.5 2.5 0 016.5 5h11A2.5 2.5 0 0120 7.5v6a2.5 2.5 0 01-2.5 2.5H6z" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+    <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" className="h-5 w-5 drop-shadow-[0_1px_1px_rgba(0,0,0,0.9)]">
+      <path
+        d="M12 19s-7-4.4-7-9a4 4 0 017-2 4 4 0 017 2c0 4.6-7 9-7 9z"
+        fill={filled ? 'currentColor' : 'none'}
+        stroke="currentColor"
+        strokeWidth="2"
+      />
     </svg>
   );
 }
@@ -204,12 +212,16 @@ function ReelVideo({ reel, active, muted, reduced, onEnded, videoRef }) {
 }
 
 export default function SocialReelsPlayer({ playlist, onClose }) {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const likesEnabled = isGateoSocialLikesEnabled(location.search);
   const [index, setIndex] = useState(0);
   const [muted, setMuted] = useState(readSessionMuted);
   const [reduced, setReduced] = useState(readReducedMotion);
   const [dragPx, setDragPx] = useState(0);
   const [dragging, setDragging] = useState(false);
   const [toast, setToast] = useState('');
+  const [likeState, setLikeState] = useState({});
   const closeRef = useRef(null);
   const viewportRef = useRef(null);
   const activeVideoRef = useRef(null);
@@ -219,16 +231,57 @@ export default function SocialReelsPlayer({ playlist, onClose }) {
   const reducedRef = useRef(reduced);
   const lengthRef = useRef(playlist.length);
   const indexRef = useRef(0);
+  const likeStateRef = useRef(likeState);
+  const likePendingRef = useRef(new Set());
   const safeIndex = Math.min(index, Math.max(playlist.length - 1, 0));
   const item = playlist[safeIndex] || null;
   const nextItem = playlist[safeIndex + 1] || null;
+  const idsKey = playlist.map((entry) => entry.campaignId).join('\n');
 
   useEffect(() => {
     mutedRef.current = muted;
     reducedRef.current = reduced;
     lengthRef.current = playlist.length;
     indexRef.current = safeIndex;
+    likeStateRef.current = likeState;
   });
+
+  useEffect(() => {
+    if (!likesEnabled) return undefined;
+    let cancelled = false;
+    const ids = idsKey.split('\n').filter(Boolean);
+    (async () => {
+      try {
+        const api = await resolveSocialReelLikeApi();
+        const result = await api.fetchState(ids);
+        if (cancelled) return;
+        if (!result || result.error || result.missing) {
+          if (!likePendingRef.current.size) setLikeState({});
+          return;
+        }
+        setLikeState((current) => {
+          const next = {};
+          for (const id of ids) {
+            if (likePendingRef.current.has(id) && current[id]) {
+              next[id] = current[id];
+              continue;
+            }
+            const count = Number(result.counts?.[id]);
+            next[id] = {
+              count: Number.isFinite(count) ? count : null,
+              liked: Array.isArray(result.mine) && result.mine.includes(id),
+            };
+          }
+          return next;
+        });
+      } catch {
+        if (!cancelled) setLikeState({});
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [likesEnabled, idsKey]);
 
   const go = useCallback((delta) => {
     setDragPx(0);
@@ -342,6 +395,65 @@ export default function SocialReelsPlayer({ playlist, onClose }) {
     if (copied) setToast('링크를 복사했어요');
   }
 
+  async function onLike() {
+    if (!likesEnabled || !item) return;
+    const id = item.campaignId;
+    if (likePendingRef.current.has(id)) return;
+    let api;
+    try {
+      api = await resolveSocialReelLikeApi();
+    } catch {
+      setToast(SOCIAL_REEL_LIKE_FAIL_TOAST);
+      return;
+    }
+    let user = null;
+    try {
+      user = await api.readUser();
+    } catch {
+      user = null;
+    }
+    if (!user) {
+      const ask = typeof window.confirm === 'function' ? window.confirm : null;
+      if (!ask) {
+        setToast('좋아요는 로그인 후 누를 수 있어요');
+        return;
+      }
+      if (ask(SOCIAL_REEL_LIKE_LOGIN_PROMPT)) {
+        const from = `${location.pathname}${location.search}${location.hash}`;
+        navigate('/auth/login', { state: { from } });
+      }
+      return;
+    }
+    const prev = likeStateRef.current[id] || { count: null, liked: false };
+    const nextLiked = !prev.liked;
+    const nextCount = Number.isFinite(prev.count)
+      ? Math.max(0, prev.count + (nextLiked ? 1 : -1))
+      : null;
+    const optimistic = { count: nextCount, liked: nextLiked };
+    likePendingRef.current.add(id);
+    likeStateRef.current = { ...likeStateRef.current, [id]: optimistic };
+    setLikeState((current) => ({ ...current, [id]: optimistic }));
+    let result;
+    try {
+      result = await api.toggle(id, nextLiked);
+    } catch (error) {
+      result = { error };
+    }
+    likePendingRef.current.delete(id);
+    if (!result || result.error || result.missing) {
+      likeStateRef.current = { ...likeStateRef.current, [id]: prev };
+      setLikeState((current) => ({ ...current, [id]: prev }));
+      setToast(SOCIAL_REEL_LIKE_FAIL_TOAST);
+      return;
+    }
+    const applied = {
+      count: Number.isFinite(result.count) ? result.count : nextCount,
+      liked: typeof result.liked === 'boolean' ? result.liked : nextLiked,
+    };
+    likeStateRef.current = { ...likeStateRef.current, [id]: applied };
+    setLikeState((current) => ({ ...current, [id]: applied }));
+  }
+
   function onToggleSound() {
     const next = !mutedRef.current;
     mutedRef.current = next;
@@ -357,6 +469,10 @@ export default function SocialReelsPlayer({ playlist, onClose }) {
 
   const transition = reduced || dragging ? 'none' : `transform ${SLIDE_MS}ms cubic-bezier(0.22, 1, 0.36, 1)`;
   const soundLabel = muted ? '소리 켜기' : '소리 끄기';
+  const likeEntry = (item && likeState[item.campaignId]) || { count: null, liked: false };
+  const showLikeCount = shouldShowSocialReelLikeCount(likeEntry.count);
+  const creditParts = splitSocialReelCredit(item.reel?.credit || item.creditText);
+  const likeLabel = likeEntry.liked ? '좋아요 취소' : '좋아요';
 
   return (
     <div
@@ -443,31 +559,35 @@ export default function SocialReelsPlayer({ playlist, onClose }) {
           type="button"
           data-testid="social-reel-share"
           aria-label="공유하기"
-          className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-black/45 text-white"
+          className={RAIL_BUTTON}
           onClick={onShare}
         >
           <IconShare />
         </button>
-        <button
-          type="button"
-          disabled
-          tabIndex={-1}
-          aria-hidden="true"
-          data-testid="social-reel-like"
-          className="inline-flex h-11 w-11 items-center justify-center rounded-full text-white/35"
-        >
-          <IconHeart />
-        </button>
-        <button
-          type="button"
-          disabled
-          tabIndex={-1}
-          aria-hidden="true"
-          data-testid="social-reel-comment"
-          className="inline-flex h-11 w-11 items-center justify-center rounded-full text-white/35"
-        >
-          <IconComment />
-        </button>
+        {likesEnabled ? (
+          <div className="flex flex-col items-center gap-1">
+            <button
+              type="button"
+              data-testid="social-reel-like"
+              data-liked={likeEntry.liked ? 'true' : 'false'}
+              aria-pressed={likeEntry.liked ? 'true' : 'false'}
+              aria-label={likeLabel}
+              className={RAIL_BUTTON}
+              style={likeEntry.liked ? { color: '#fda4af' } : undefined}
+              onClick={onLike}
+            >
+              <IconHeart filled={likeEntry.liked} />
+            </button>
+            {showLikeCount ? (
+              <span
+                data-testid="social-reel-like-count"
+                className="text-[11px] font-semibold leading-none text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]"
+              >
+                {likeEntry.count}
+              </span>
+            ) : null}
+          </div>
+        ) : null}
       </div>
 
       {/* 1280: half of a full-height 9:16 frame is 28.125dvh, so this block stays in the left gutter. */}
@@ -497,8 +617,19 @@ export default function SocialReelsPlayer({ playlist, onClose }) {
             <p
               data-testid="social-reel-credit"
               title={item.creditText}
-              className="mt-1 truncate text-[11px] leading-snug text-white/75"
-            >{item.creditText}</p>
+              className="mt-1 text-[11px] leading-snug text-white/75"
+            >
+              {creditParts.license ? (
+                <>
+                  <span className="block truncate">{creditParts.source}</span>
+                  <span data-testid="social-reel-credit-license" className="block">
+                    {creditParts.license}
+                  </span>
+                </>
+              ) : (
+                item.creditText
+              )}
+            </p>
           ) : null}
           <p className="mt-2 hidden text-xs text-white/70 xl:block">위아래 키로 옮겨요 · Esc로 닫아요</p>
         </div>

@@ -82,6 +82,25 @@ export function formatSocialReelCredit(credit) {
   return `출처: ${text}`;
 }
 
+const SOCIAL_REEL_LICENSE_RE = /공공누리\s*제\s*\d+\s*유형/;
+
+/** Two-line credit: source, then the license type on its own line so it is not ellipsized. */
+export function splitSocialReelCredit(credit) {
+  const text = formatSocialReelCredit(credit);
+  if (!text) return { source: '', license: '' };
+  const found = text.match(SOCIAL_REEL_LICENSE_RE);
+  if (!found) return { source: text, license: '' };
+  const licenseType = found[0].replace(/\s+/g, ' ').trim();
+  const source = text
+    .replace(/\s*\|\s*라이선스:\s*공공누리\s*제\s*\d+\s*유형/g, '')
+    .replace(/\(\s*공공누리\s*제\s*\d+\s*유형\s*\)/g, '')
+    .replace(/\s*\|\s*\|/g, ' |')
+    .replace(/\s{2,}/g, ' ')
+    .replace(/\s+\|\s*$/g, '')
+    .trim();
+  return { source, license: `라이선스: ${licenseType}` };
+}
+
 /** Card order (active, then ended). Unposted rows and reels without a live card are dropped. */
 export function buildSocialReelPlaylist(cards, entries, now = new Date()) {
   const byId = indexSocialReels(entries);
