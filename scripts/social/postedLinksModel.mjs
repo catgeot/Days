@@ -276,6 +276,9 @@ function photoCreditFor(imageUrl, explicit) {
   if (/visitkorea\.or\.kr/i.test(String(imageUrl || ''))) {
     return { kind: 'kto', label: '한국관광공사' };
   }
+  if (/khs\.go\.kr/i.test(String(imageUrl || ''))) {
+    return { kind: 'text', label: '국가유산청 · 공공누리 제1유형' };
+  }
   return null;
 }
 
@@ -302,6 +305,7 @@ export function enrichSocialCards(cards, catalog = {}) {
       const next = { type: 'place', slug: target.slug };
       if (index > 0 && place?.name) next.name = place.name;
       if (place?.imageUrl) next.imageUrl = place.imageUrl;
+      if (place?.imageCredit) next.imageCredit = place.imageCredit;
       return next;
     });
     const primary = targets[0] || null;

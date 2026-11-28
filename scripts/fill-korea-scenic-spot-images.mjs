@@ -27,6 +27,9 @@ const limitArg = args.find((a) => a.startsWith('--limit='));
 const limit = limitArg ? Number(limitArg.slice('--limit='.length)) || 0 : 0;
 const concurrency = 4;
 
+/** Tour/RELATED 자동 채움 제외 — overrides·국가유산 KOGL 등 수동 SSOT */
+const MANUAL_IMAGE_URL_IDS = new Set(['sosu-seowon']);
+
 function sleep(ms) {
   return new Promise((r) => setTimeout(r, ms));
 }
@@ -257,7 +260,6 @@ const RELATED_IMAGE_CONTENT_IDS = {
   'museom-village': '2961095', // 선비세상 — 무섬마을 Tour type12 부재 시
   buseoksa: '2961095', // 선비세상 — 부석사 Tour type12 부재 시(영주)
   'seonbi-village': '2961095', // 선비세상 — 선비촌 Tour type12 부재 시
-  'sosu-seowon': '2961095', // 선비세상 — 소수서원 Tour type12 부재 시
   'manokjeong-park-changnyeong': '2774931', // 우포출렁다리 — 만옥정공원 Tour 부재 시
   'upo-wetland-changnyeong': '2774931', // 우포출렁다리 — 우포늪 Tour type12 부재 시
   'hawangsan-changnyeong': '2774931', // 우포출렁다리 — 화왕산 Tour type12 부재 시
@@ -331,6 +333,7 @@ async function main() {
     const contentId = String(spot?.contentId || '').trim();
     const relatedOnly = RELATED_IMAGE_CONTENT_IDS[id];
     if (!id) continue;
+    if (MANUAL_IMAGE_URL_IDS.has(id)) continue;
     if (!/^\d{1,32}$/.test(contentId) && !relatedOnly) continue;
     if (!force && toHttps(byId[id] || spot.imageUrl)) continue;
     need.push({

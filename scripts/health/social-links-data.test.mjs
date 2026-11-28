@@ -293,6 +293,15 @@ test('posted-links.md matches the published file and builds the live cards', () 
     ['tour-127240', 'tour-128113', 'tour-990000000002'],
   );
   assert.equal(cards.find((card) => card.campaignId === 'reel-08').targets[0].slug, 'hwaseong-fortress');
+  const reel14 = cards.find((card) => card.campaignId === 'reel-14');
+  assert.equal(reel14?.targets[0]?.slug, 'tour-126201');
+  assert.equal(
+    reel14?.photoUrl,
+    'https://www.khs.go.kr/unisearch/images/treasure/1622186.jpg',
+  );
+  assert.equal(reel14?.photoCredit?.label, '국가유산청 · 공공누리 제1유형');
+  assert.equal(reel14?.photoUrl?.includes('3588851'), false);
+  assert.equal(reel14?.photoUrl?.includes('visitkorea.or.kr'), false);
   assert.equal(cards.find((card) => card.campaignId === 'reel-10').region, '전북 고창');
   assert.equal(cards.find((card) => card.campaignId === 'reel-01').region, '');
   assert.equal(cards.every((card) => card.status === 'live'), true);
