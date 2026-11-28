@@ -184,6 +184,10 @@
         "label": "Review hub"
       }
     },
+    "socialEntry": {
+      "label": "Places from our reels",
+      "aria": "Go to {{label}}"
+    },
     "globe": {
       "themeToggle": "Change globe mood",
       "zenMode": "Zen mode (fullscreen)",

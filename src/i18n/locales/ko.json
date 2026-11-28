@@ -184,6 +184,10 @@
         "label": "리뷰 창고"
       }
     },
+    "socialEntry": {
+      "label": "릴스에 나온 곳",
+      "aria": "{{label}}으로 이동"
+    },
     "globe": {
       "themeToggle": "지구본 무드 변경",
       "zenMode": "Zen Mode (전체화면 힐링)",
