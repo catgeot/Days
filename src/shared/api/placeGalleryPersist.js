@@ -26,6 +26,30 @@ export function resolveGalleryPersistPlaceId(loadedPlaceId, canonicalPlaceId) {
 }
 
 /**
+ * 신고·gallery-moderate body.placeId — place_stats에서 고른 id가 후보 집합과 어긋나면 canonical을 쓰되,
+ * canonical도 후보에 없으면 loaded를 유지(무작정 canonical로 다른 행에 쏘지 않음).
+ */
+export function resolveGalleryPersistPlaceIdForModeration(
+  loadedPlaceId,
+  canonicalPlaceId,
+  dbIdCandidates,
+) {
+  const candidates = Array.isArray(dbIdCandidates)
+    ? dbIdCandidates.map((id) => String(id || '').trim()).filter(Boolean)
+    : [];
+  const loaded = String(loadedPlaceId || '').trim();
+  const canon = String(canonicalPlaceId || '').trim();
+  if (candidates.length === 0) {
+    if (loaded) return loaded;
+    return canon;
+  }
+  if (loaded && candidates.includes(loaded)) return loaded;
+  if (canon && candidates.includes(canon)) return canon;
+  if (loaded) return loaded;
+  return canon;
+}
+
+/**
  * replace: 숨김 필터를 적용하지 않은 storage 전체.
  * merge_keep_hero / append: fresh만. thumb: null.
  * view(숨긴 id를 뺀 목록)를 넘기면 그 사용자의 숨김이 공유 갤러리에 퍼진다.
