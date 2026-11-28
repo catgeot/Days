@@ -297,13 +297,11 @@ test('posted-links.md matches the published file and builds the live cards', () 
   assert.equal(reel14?.targets[0]?.slug, 'tour-126201');
   assert.equal(
     reel14?.photoUrl,
-    'https://tong.visitkorea.or.kr/cms/resource/19/4081219_image2_1.jpg',
+    'https://www.khs.go.kr/unisearch/images/treasure/1622186.jpg',
   );
-  assert.equal(
-    reel14?.photoUrl?.includes('3588851'),
-    false,
-    'reel-14 must not use 선비세상 (2961095) KTO firstimage',
-  );
+  assert.equal(reel14?.photoCredit?.label, '국가유산청 · 공공누리 제1유형');
+  assert.equal(reel14?.photoUrl?.includes('3588851'), false);
+  assert.equal(reel14?.photoUrl?.includes('visitkorea.or.kr'), false);
   assert.equal(cards.find((card) => card.campaignId === 'reel-10').region, '전북 고창');
   assert.equal(cards.find((card) => card.campaignId === 'reel-01').region, '');
   assert.equal(cards.every((card) => card.status === 'live'), true);

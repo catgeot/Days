@@ -27,6 +27,9 @@ const limitArg = args.find((a) => a.startsWith('--limit='));
 const limit = limitArg ? Number(limitArg.slice('--limit='.length)) || 0 : 0;
 const concurrency = 4;
 
+/** Tour/RELATED 자동 채움 제외 — overrides·국가유산 KOGL 등 수동 SSOT */
+const MANUAL_IMAGE_URL_IDS = new Set(['sosu-seowon']);
+
 function sleep(ms) {
   return new Promise((r) => setTimeout(r, ms));
 }
@@ -330,6 +333,7 @@ async function main() {
     const contentId = String(spot?.contentId || '').trim();
     const relatedOnly = RELATED_IMAGE_CONTENT_IDS[id];
     if (!id) continue;
+    if (MANUAL_IMAGE_URL_IDS.has(id)) continue;
     if (!/^\d{1,32}$/.test(contentId) && !relatedOnly) continue;
     if (!force && toHttps(byId[id] || spot.imageUrl)) continue;
     need.push({

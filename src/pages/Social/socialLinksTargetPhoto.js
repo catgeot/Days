@@ -27,6 +27,9 @@ export function socialPhotoCreditFor(imageUrl, explicit) {
   if (/visitkorea\.or\.kr/i.test(String(imageUrl || ''))) {
     return { kind: 'kto', label: '한국관광공사' };
   }
+  if (/khs\.go\.kr/i.test(String(imageUrl || ''))) {
+    return { kind: 'text', label: '국가유산청 · 공공누리 제1유형' };
+  }
   return null;
 }
 
