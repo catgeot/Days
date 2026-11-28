@@ -78,7 +78,7 @@ const sampleCards = [
     firstPostedAt: '2026-11-27',
     title: '샘플 최근',
     region: '경북 샘플',
-    photoUrl: 'https://www.khs.go.kr/unisearch/images/treasure/1622186.jpg',
+    photoUrl: '/site/scenic/sosu-seowon-ganghakdang-kogl-1280.webp',
     photoCredit: { kind: 'text', label: '국가유산청 · 공공누리 제1유형' },
     targets: [
       { type: 'place', slug: 'tour-126201' },
@@ -216,7 +216,7 @@ test('together line stays inside its card shell', async () => {
         firstPostedAt: '2026-11-27',
         title: '샘플 최근',
         region: '경북 샘플',
-        photoUrl: 'https://www.khs.go.kr/unisearch/images/treasure/1622186.jpg',
+        photoUrl: '/site/scenic/sosu-seowon-ganghakdang-kogl-1280.webp',
         photoCredit: { kind: 'kto', label: '한국관광공사' },
         targets: [
           { type: 'place', slug: 'tour-126201' },
@@ -228,7 +228,7 @@ test('together line stays inside its card shell', async () => {
         firstPostedAt: '2026-11-04',
         title: '국립백두대간수목원',
         region: '경상',
-        photoUrl: 'https://www.khs.go.kr/unisearch/images/treasure/1622186.jpg',
+        photoUrl: '/site/scenic/sosu-seowon-ganghakdang-kogl-1280.webp',
         photoCredit: null,
         targets: [
           { type: 'place', slug: 'tour-2508220' },

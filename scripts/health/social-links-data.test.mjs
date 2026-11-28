@@ -297,7 +297,7 @@ test('posted-links.md matches the published file and builds the live cards', () 
   assert.equal(reel14?.targets[0]?.slug, 'tour-126201');
   assert.equal(
     reel14?.photoUrl,
-    'https://www.khs.go.kr/unisearch/images/treasure/1622186.jpg',
+    '/site/scenic/sosu-seowon-ganghakdang-kogl-1280.webp',
   );
   assert.equal(reel14?.photoCredit?.label, '국가유산청 · 공공누리 제1유형');
   assert.equal(reel14?.photoUrl?.includes('3588851'), false);
