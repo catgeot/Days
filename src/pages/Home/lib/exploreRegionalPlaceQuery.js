@@ -46,6 +46,22 @@ function addrMatchesHubHints(item, hubHints) {
   });
 }
 
+/**
+ * 공백을 지운 질의 전체가 명소 정식명·별칭이면 「지역 + 뒤 토큰」으로 쪼개지 않는다.
+ * 「수원 화성」은 수원화성이지, 수원을 버린 화성시가 아니다.
+ * 별칭 canonical이 질의보다 짧으면 지역 꼬리(태안 안면암 → 안면암)라 분리를 유지한다.
+ * @param {string} raw
+ */
+function fullPhraseLandmarkBeatsRegionalSplit(raw) {
+  if (resolveHubAttraction(raw)) return true;
+  const canonical = String(resolveExploreSearchAlias(raw)?.canonical || '').trim();
+  if (!canonical) return false;
+  const queryKey = compactToken(raw);
+  const canonicalKey = compactToken(canonical);
+  if (!queryKey || !canonicalKey || canonicalKey.length < queryKey.length) return false;
+  return Boolean(resolveHubAttraction(canonical));
+}
+
 /** @param {string} placeQuery @param {object | null | undefined} regionHub @param {object | null | undefined} regionSpot */
 function isRegionalPlaceTail(placeQuery, regionHub, regionSpot) {
   const tail = String(placeQuery || '').trim();
@@ -83,6 +99,7 @@ function nameMatchKind(item, placeQuery) {
 export function parseKoreaRegionalExploreQuery(query) {
   const raw = String(query || '').trim();
   if (!raw || !HAS_HANGUL_RE.test(raw)) return null;
+  if (fullPhraseLandmarkBeatsRegionalSplit(raw)) return null;
   const parts = raw.split(/\s+/).filter(Boolean);
   if (parts.length < 2) return null;
 

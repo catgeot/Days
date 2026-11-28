@@ -3463,6 +3463,7 @@
         "name": "수원화성",
         "name_en": "Hwaseong Fortress",
         "kind": "landmark",
+        "aliases": ["수원 화성", "수원화성"],
         "lat": 37.2867876,
         "lng": 127.0114366
       },

@@ -142,6 +142,46 @@ export function resolveHubAttraction(query) {
   return hit;
 }
 
+function isKoreaHubCountry(hub) {
+  const c = String(hub?.country || '').trim();
+  const en = String(hub?.country_en || '').trim().toLowerCase();
+  return c === '대한민국' || c === '한국' || en === 'south korea' || en === 'korea';
+}
+
+/**
+ * 도시명 exact 선택 목록에 넣을, 다른 한국 허브의 붙여쓴 동명 명소.
+ * 「수원」+「화성」=「수원화성」. 띄어쓴 이름(리장 고성)은 도시 목록에 섞지 않는다.
+ * @param {string} query
+ * @returns {{ hub: object, attraction: object }[]}
+ */
+export function listFusedRegionLandmarkChoices(query) {
+  const key = normalizeKey(query);
+  if (!key || key.length < 2) return [];
+  const hub = resolveCityAttractionHub(query);
+  if (!hub || !isKoreaHubCountry(hub)) return [];
+  const primary = [hub.name, hub.name_en, hub.hubId].map(normalizeKey);
+  if (!primary.includes(key)) return [];
+
+  const hits = [];
+  const seen = new Set();
+  for (const other of HUBS) {
+    if (!other || other.hubId === hub.hubId || !isKoreaHubCountry(other)) continue;
+    const prefix = normalizeKey(other.name);
+    if (!prefix || prefix.length < 2) continue;
+    const fused = `${prefix}${key}`;
+    for (const attraction of other.attractions || []) {
+      const raw = String(attraction?.name || '').trim();
+      if (!raw || /\s/u.test(raw)) continue;
+      const nameKey = normalizeKey(raw);
+      if (nameKey !== fused || seen.has(nameKey)) continue;
+      if (isHiddenHubScenicAttraction(other.hubId, attraction.name)) continue;
+      seen.add(nameKey);
+      hits.push({ hub: other, attraction });
+    }
+  }
+  return hits;
+}
+
 function haversineKm(lat1, lng1, lat2, lng2) {
   const toRad = (d) => (d * Math.PI) / 180;
   const dLat = toRad(lat2 - lat1);
