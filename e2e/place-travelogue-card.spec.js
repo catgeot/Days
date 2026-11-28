@@ -19,6 +19,41 @@ test.use({
   deviceScaleFactor: 1,
 });
 
+function decodePostgrestIlikeToken(token) {
+  let raw = String(token || '').trim();
+  if (raw.startsWith('ilike.')) raw = raw.slice(6);
+  else if (raw.startsWith('eq.')) raw = raw.slice(3);
+  if (raw.startsWith('"') && raw.endsWith('"')) raw = raw.slice(1, -1);
+  try {
+    raw = decodeURIComponent(raw);
+  } catch {
+    /* keep raw */
+  }
+  return raw.replace(/\\/g, '').replace(/"/g, '').replace(/%/g, '').trim();
+}
+
+function rowsMatchingLocationNeedle(rows, needle) {
+  if (!needle) return rows;
+  return rows.filter((row) => String(row.location || '').includes(needle));
+}
+
+function rowsMatchingOrLocationIlike(rows, orParam) {
+  const needles = String(orParam || '')
+    .split(',')
+    .filter((part) => part.includes('location.ilike.'))
+    .map((part) => {
+      const marker = 'location.ilike.';
+      const idx = part.indexOf(marker);
+      return decodePostgrestIlikeToken(part.slice(idx + marker.length));
+    })
+    .filter(Boolean);
+  if (!needles.length) return [];
+  return rows.filter((row) => {
+    const loc = String(row.location || '');
+    return needles.some((needle) => loc.includes(needle));
+  });
+}
+
 function fulfillReports(route, rows) {
   const url = new URL(route.request().url());
   if (!url.pathname.includes('/rest/v1/reports')) {
@@ -34,11 +69,23 @@ function fulfillReports(route, rows) {
       body: JSON.stringify(filtered),
     });
   }
-  if (url.searchParams.get('location') || String(url.searchParams.get('or') || '').includes('location.ilike')) {
+  const orParam = url.searchParams.get('or');
+  if (orParam && orParam.includes('location.ilike')) {
+    const filtered = rowsMatchingOrLocationIlike(rows, orParam);
     return route.fulfill({
       status: 200,
       contentType: 'application/json',
-      body: JSON.stringify([]),
+      body: JSON.stringify(filtered),
+    });
+  }
+  const locationParam = url.searchParams.get('location');
+  if (locationParam) {
+    const needle = decodePostgrestIlikeToken(locationParam);
+    const filtered = rowsMatchingLocationNeedle(rows, needle);
+    return route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify(filtered),
     });
   }
   return route.fulfill({
