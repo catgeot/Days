@@ -26,7 +26,7 @@ const {
   formatSocialReelCredit,
   isLivePostedSocialCard,
   normalizeSocialReel,
-  splitSocialReelCredit,
+  splitSocialReelCreditLines,
 } = await import('../../src/pages/Social/socialReels.js');
 const { isGateoSocialLikesEnabled } = await import('../../src/shared/gateoFeatureFlags.js');
 const {
@@ -254,6 +254,13 @@ let renderNonce = 0;
 
 async function render(entry, pageProps) {
   renderNonce += 1;
+  const path = entry.split('?')[0] || '/social';
+  const query = entry.includes('?') ? `?${entry.slice(entry.indexOf('?') + 1)}` : '';
+  try {
+    window.history.replaceState({}, '', `${path}${query}`);
+  } catch {
+    /* jsdom */
+  }
   if (!root) {
     container = document.createElement('div');
     document.body.appendChild(container);
@@ -331,6 +338,7 @@ beforeEach(() => {
   globalThis.__VITE_ENV__.VITE_GATEO_SOCIAL_LIKES = '';
   delete window.__GATEO_SOCIAL_REELS_FIXTURE__;
   delete window.__GATEO_SOCIAL_REEL_LIKE_API__;
+  delete window.__GATEO_SOCIAL_REEL_RPC_AUDIT__;
   setReducedMotion(false);
   window.__GATEO_GA_DISABLED__ = true;
   window.__GATEO_GA_EVENTS__ = [];
@@ -584,7 +592,7 @@ test('player order, credit, place target, poster preload, and one video element'
   assert.equal(chrome.contains(document.querySelector('[data-testid="social-reel-place"]')), true);
   assert.match(chrome.className, /28\.125dvh/);
   assert.equal(node.muted, true);
-  assert.equal(document.querySelector('[data-testid="social-reel-credit"]').textContent, '출처: 한국관광공사');
+  assert.equal(document.querySelector('[data-testid="social-reel-credit-source"]').textContent, '출처: 한국관광공사');
   assert.equal(document.querySelector('[data-testid="social-reel-place-name"]').textContent, '새 릴스');
   assert.equal(document.querySelector('[data-testid="social-reel-place"]').textContent, '이 여행지 보기');
   assert.doesNotMatch(document.querySelector('[data-testid="social-reel-place"]').className, /\bh-12\b/);
@@ -610,7 +618,7 @@ test('player order, credit, place target, poster preload, and one video element'
   assert.equal(video().getAttribute('data-active'), 'true');
   assert.match(video().getAttribute('src'), /old\.mp4$/);
   assert.match(document.querySelector('[data-testid="social-reel-track"]').style.transform, /calc\(-100%/);
-  assert.equal(document.querySelector('[data-testid="social-reel-credit"]').textContent, '출처: 옛 자료');
+  assert.equal(document.querySelector('[data-testid="social-reel-credit-source"]').textContent, '출처: 옛 자료');
 
   await act(async () => {
     document.querySelector('[data-testid="social-reel-mute"]').click();
@@ -843,13 +851,40 @@ test('reel like flag defaults off and the query param turns it on', () => {
   assert.equal(isGateoSocialLikesEnabled(''), false);
   assert.equal(isGateoSocialLikesEnabled('?social_reels=1'), false);
   assert.equal(isGateoSocialLikesEnabled('?social_likes=1'), true);
-  const catalogCredit = splitSocialReelCredit(catalog.default.reels[0].credit);
-  assert.match(catalogCredit.license, /^라이선스: 공공누리 제1유형$/);
-  assert.equal(catalogCredit.source.includes('라이선스'), false);
-  assert.equal(catalogCredit.source.includes('공공누리'), false);
-  const paren = splitSocialReelCredit("국가유산청 '015. 한국의갯벌'(2025)(공공누리 제1유형) | GATEO 편집");
-  assert.equal(paren.license, '라이선스: 공공누리 제1유형');
-  assert.match(paren.source, /한국의갯벌/);
+  const catalogCredit = splitSocialReelCreditLines(catalog.default.reels[0].credit);
+  assert.deepEqual(
+    catalogCredit.map((line) => line.text),
+  [
+    "출처: 국가유산청 '014. 한국의 서원'(2025)",
+    '저작자: 국가유산청',
+    '라이선스: 공공누리 제1유형',
+    'GATEO 편집',
+  ],
+  );
+  const longest = splitSocialReelCreditLines(catalog.default.reels.find((reel) => reel.campaignId === 'reel-13').credit);
+  assert.equal(longest.some((line) => line.testId === 'social-reel-credit-author'), true);
+  const paren = splitSocialReelCreditLines("출처: 국가유산청 '015. 한국의갯벌'(2025)(공공누리 제1유형) | GATEO 편집");
+  assert.equal(paren.find((line) => line.id === 'license')?.text, '라이선스: 공공누리 제1유형');
+  assert.match(paren.find((line) => line.id === 'source')?.text || '', /한국의갯벌/);
+});
+
+test('reels player with likes flag off makes no like RPC audit calls', async () => {
+  window.__GATEO_SOCIAL_REEL_RPC_AUDIT__ = [];
+  await render('/social?social_links=1&social_reels=1', {
+    cards: orderedCards,
+    now: NOW,
+    reels: orderedReels,
+  });
+  await openPlayer();
+  await flushPlayer();
+  assert.deepEqual(window.__GATEO_SOCIAL_REEL_RPC_AUDIT__, []);
+  assert.equal(document.querySelector('[data-testid="social-reel-like"]'), null);
+  const credit = document.querySelector('[data-testid="social-reel-credit"]');
+  assert.ok(credit);
+  assert.doesNotMatch(credit.className, /truncate|line-clamp|text-overflow/);
+  for (const node of credit.querySelectorAll('[data-testid]')) {
+    assert.doesNotMatch(node.className || '', /truncate|line-clamp|text-overflow/);
+  }
 });
 
 function likeApi(spec) {
@@ -916,11 +951,16 @@ test('like count is hidden at 10 and shown at 11, and the comment icon is absent
   assert.match(like.className, /w-11/);
   assert.match(like.className, /bg-black\/55/);
   assert.match(document.querySelector('[data-testid="social-reel-rail"]').className, /gap-3/);
+  assert.equal(document.querySelector('[data-testid="social-reel-credit-author"]').textContent, '저작자: 국가유산청');
   const license = document.querySelector('[data-testid="social-reel-credit-license"]');
   assert.equal(license.textContent, '라이선스: 공공누리 제1유형');
-  assert.doesNotMatch(license.className, /truncate/);
-  assert.equal(license.parentElement.querySelectorAll(':scope > span').length, 2);
-  assert.doesNotMatch(document.querySelector('[data-testid="social-reel-credit"]').className, /truncate/);
+  assert.equal(document.querySelector('[data-testid="social-reel-credit-editorial"]').textContent, 'GATEO 편집');
+  const credit = document.querySelector('[data-testid="social-reel-credit"]');
+  assert.doesNotMatch(credit.className, /truncate|line-clamp|text-overflow/);
+  for (const node of credit.querySelectorAll('[data-testid]')) {
+    assert.doesNotMatch(node.className || '', /truncate|line-clamp|text-overflow/);
+  }
+  assert.match(document.querySelector('[data-testid="social-reel-credit-source"]').textContent, /한국의 서원/);
   assert.equal(calls.some((entry) => entry[0] === 'fetch'), true);
 
   await key('ArrowDown');

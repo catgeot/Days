@@ -41,6 +41,12 @@ function countsFromRows(rows) {
   return counts;
 }
 
+function auditSocialReelLikeRpc(name) {
+  if (typeof window !== 'undefined' && Array.isArray(window.__GATEO_SOCIAL_REEL_RPC_AUDIT__)) {
+    window.__GATEO_SOCIAL_REEL_RPC_AUDIT__.push(name);
+  }
+}
+
 function mineFromRows(rows) {
   const mine = [];
   for (const row of Array.isArray(rows) ? rows : []) {
@@ -53,9 +59,11 @@ function mineFromRows(rows) {
 export function createSocialReelLikeApi(client, readUser) {
   return {
     readUser,
-    async fetchState(reelIds) {
+    async fetchState(reelIds, { enabled = false } = {}) {
+      if (!enabled) return { counts: {}, mine: [] };
       const ids = normalizeSocialReelIds(reelIds);
       if (!ids.length) return { counts: {}, mine: [] };
+      auditSocialReelLikeRpc('get_social_reel_like_counts');
       const countsRes = await client.rpc('get_social_reel_like_counts', { p_reel_ids: ids });
       if (countsRes?.error) {
         return {
@@ -73,6 +81,7 @@ export function createSocialReelLikeApi(client, readUser) {
         user = null;
       }
       if (!user) return { counts, mine: [] };
+      auditSocialReelLikeRpc('get_my_social_reel_likes');
       const mineRes = await client.rpc('get_my_social_reel_likes', { p_reel_ids: ids });
       if (mineRes?.error) {
         return {
@@ -84,9 +93,11 @@ export function createSocialReelLikeApi(client, readUser) {
       }
       return { counts, mine: mineFromRows(mineRes?.data) };
     },
-    async toggle(reelId, desired) {
+    async toggle(reelId, desired, { enabled = false } = {}) {
+      if (!enabled) return { error: { message: 'likes disabled' } };
       const id = String(reelId || '').trim();
       if (!REEL_ID_RE.test(id)) return { error: { message: 'bad reel_id' } };
+      auditSocialReelLikeRpc('toggle_social_reel_like');
       const { data, error } = await client.rpc('toggle_social_reel_like', {
         p_reel_id: id,
         p_desired: Boolean(desired),

@@ -8,7 +8,7 @@ import {
   resolveSocialReelLikeApi,
   shouldShowSocialReelLikeCount,
 } from './socialReelLikes.js';
-import { splitSocialReelCredit } from './socialReels.js';
+import { splitSocialReelCreditLines } from './socialReels.js';
 
 const RAIL_BUTTON =
   'inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-black/55 text-white shadow-[0_2px_8px_rgba(0,0,0,0.55)]';
@@ -253,7 +253,8 @@ export default function SocialReelsPlayer({ playlist, onClose }) {
     (async () => {
       try {
         const api = await resolveSocialReelLikeApi();
-        const result = await api.fetchState(ids);
+        if (!api) return;
+        const result = await api.fetchState(ids, { enabled: likesEnabled });
         if (cancelled) return;
         if (!result || result.error || result.missing) {
           if (!likePendingRef.current.size) setLikeState({});
@@ -406,6 +407,7 @@ export default function SocialReelsPlayer({ playlist, onClose }) {
       setToast(SOCIAL_REEL_LIKE_FAIL_TOAST);
       return;
     }
+    if (!api) return;
     let user = null;
     try {
       user = await api.readUser();
@@ -435,7 +437,7 @@ export default function SocialReelsPlayer({ playlist, onClose }) {
     setLikeState((current) => ({ ...current, [id]: optimistic }));
     let result;
     try {
-      result = await api.toggle(id, nextLiked);
+      result = await api.toggle(id, nextLiked, { enabled: likesEnabled });
     } catch (error) {
       result = { error };
     }
@@ -471,7 +473,7 @@ export default function SocialReelsPlayer({ playlist, onClose }) {
   const soundLabel = muted ? '소리 켜기' : '소리 끄기';
   const likeEntry = (item && likeState[item.campaignId]) || { count: null, liked: false };
   const showLikeCount = shouldShowSocialReelLikeCount(likeEntry.count);
-  const creditParts = splitSocialReelCredit(item.reel?.credit || item.creditText);
+  const creditLines = splitSocialReelCreditLines(item.reel?.credit || item.creditText);
   const likeLabel = likeEntry.liked ? '좋아요 취소' : '좋아요';
 
   return (
@@ -593,17 +595,17 @@ export default function SocialReelsPlayer({ playlist, onClose }) {
       {/* 1280: half of a full-height 9:16 frame is 28.125dvh, so this block stays in the left gutter. */}
       <div
         data-testid="social-reel-chrome"
-        className="absolute inset-x-0 bottom-0 z-20 px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-2 xl:inset-x-auto xl:bottom-4 xl:left-[max(1rem,calc(50%-min(50vw,28.125dvh)-22rem-0.75rem))] xl:w-[min(22rem,calc(50%-min(50vw,28.125dvh)-1.5rem))] xl:px-0 xl:pb-0 xl:pt-0"
+        className="absolute inset-x-0 bottom-0 z-20 px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-3 xl:inset-x-auto xl:bottom-4 xl:left-[max(1rem,calc(50%-min(50vw,28.125dvh)-22rem-0.75rem))] xl:w-[min(22rem,calc(50%-min(50vw,28.125dvh)-1.5rem))] xl:px-0 xl:pb-0 xl:pt-0"
       >
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/80 via-black/35 to-transparent xl:hidden"
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-[min(52%,14rem)] bg-gradient-to-t from-black/90 via-black/55 to-transparent xl:hidden"
         />
         <div className="relative max-w-[calc(100%-3.5rem)] xl:max-w-none">
           {item.placeName ? (
             <p
               data-testid="social-reel-place-name"
-              className="inline-flex max-w-full truncate rounded-full bg-white/15 px-2.5 py-1 text-sm font-semibold text-white"
+              className="inline-flex max-w-full break-keep rounded-full bg-black/45 px-2.5 py-1 text-sm font-semibold text-white shadow-[0_1px_4px_rgba(0,0,0,0.45)]"
             >
               {item.placeName}
             </p>
@@ -611,25 +613,19 @@ export default function SocialReelsPlayer({ playlist, onClose }) {
           <Link
             to={item.href}
             data-testid="social-reel-place"
-            className="mt-1.5 block w-fit text-[13px] font-medium text-white underline decoration-white/50 underline-offset-2"
+            className="mt-2 block w-fit text-[13px] font-medium text-white underline decoration-white/50 underline-offset-2 drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]"
           >{item.placeLabel}</Link>
-          {item.creditText ? (
-            <p
+          {creditLines.length ? (
+            <div
               data-testid="social-reel-credit"
-              title={item.creditText}
-              className="mt-1 text-[11px] leading-snug text-white/75"
+              className="mt-2 space-y-0.5 break-keep text-[11px] leading-snug text-white/85 drop-shadow-[0_1px_2px_rgba(0,0,0,0.85)]"
             >
-              {creditParts.license ? (
-                <>
-                  <span className="block truncate">{creditParts.source}</span>
-                  <span data-testid="social-reel-credit-license" className="block">
-                    {creditParts.license}
-                  </span>
-                </>
-              ) : (
-                item.creditText
-              )}
-            </p>
+              {creditLines.map((line) => (
+                <span key={`${line.testId}:${line.text}`} data-testid={line.testId} className="block">
+                  {line.text}
+                </span>
+              ))}
+            </div>
           ) : null}
           <p className="mt-2 hidden text-xs text-white/70 xl:block">위아래 키로 옮겨요 · Esc로 닫아요</p>
         </div>
