@@ -17,6 +17,7 @@ globalThis.__VITE_ENV__ = {
   ...(globalThis.__VITE_ENV__ || {}),
   VITE_GATEO_SOCIAL_LINKS: '',
   VITE_GATEO_SOCIAL_REELS: '',
+  VITE_GATEO_SOCIAL_LIKES: '',
 };
 
 const { default: SocialLinksPage } = await import('../../src/pages/Social/SocialLinksPage.jsx');
@@ -25,7 +26,15 @@ const {
   formatSocialReelCredit,
   isLivePostedSocialCard,
   normalizeSocialReel,
+  splitSocialReelCreditLines,
 } = await import('../../src/pages/Social/socialReels.js');
+const { isGateoSocialLikesEnabled } = await import('../../src/shared/gateoFeatureFlags.js');
+const {
+  SOCIAL_REEL_LIKE_FAIL_TOAST,
+  SOCIAL_REEL_LIKE_LOGIN_PROMPT,
+  isSocialReelLikeRpcMissing,
+  shouldShowSocialReelLikeCount,
+} = await import('../../src/pages/Social/socialReelLikes.js');
 const { attachMp4Source, createSocialReelSession } = await import('../../src/pages/Social/socialReelPlayback.js');
 const catalog = await import('../../src/pages/Social/data/socialReels.json', { with: { type: 'json' } });
 
@@ -230,6 +239,10 @@ function Harness({ entry, pageProps, nonce }) {
           path: '/korea',
           element: React.createElement('div', { 'data-testid': 'korea' }, 'korea'),
         }),
+        React.createElement(Route, {
+          path: '/auth/login',
+          element: React.createElement('div', { 'data-testid': 'auth-login' }, 'login'),
+        }),
       ),
     ),
   );
@@ -241,6 +254,13 @@ let renderNonce = 0;
 
 async function render(entry, pageProps) {
   renderNonce += 1;
+  const path = entry.split('?')[0] || '/social';
+  const query = entry.includes('?') ? `?${entry.slice(entry.indexOf('?') + 1)}` : '';
+  try {
+    window.history.replaceState({}, '', `${path}${query}`);
+  } catch {
+    /* jsdom */
+  }
   if (!root) {
     container = document.createElement('div');
     document.body.appendChild(container);
@@ -315,7 +335,10 @@ async function key(name) {
 
 beforeEach(() => {
   globalThis.__VITE_ENV__.VITE_GATEO_SOCIAL_REELS = '';
+  globalThis.__VITE_ENV__.VITE_GATEO_SOCIAL_LIKES = '';
   delete window.__GATEO_SOCIAL_REELS_FIXTURE__;
+  delete window.__GATEO_SOCIAL_REEL_LIKE_API__;
+  delete window.__GATEO_SOCIAL_REEL_RPC_AUDIT__;
   setReducedMotion(false);
   window.__GATEO_GA_DISABLED__ = true;
   window.__GATEO_GA_EVENTS__ = [];
@@ -569,13 +592,13 @@ test('player order, credit, place target, poster preload, and one video element'
   assert.equal(chrome.contains(document.querySelector('[data-testid="social-reel-place"]')), true);
   assert.match(chrome.className, /28\.125dvh/);
   assert.equal(node.muted, true);
-  assert.equal(document.querySelector('[data-testid="social-reel-credit"]').textContent, '출처: 한국관광공사');
+  assert.equal(document.querySelector('[data-testid="social-reel-credit-source"]').textContent, '출처: 한국관광공사');
   assert.equal(document.querySelector('[data-testid="social-reel-place-name"]').textContent, '새 릴스');
   assert.equal(document.querySelector('[data-testid="social-reel-place"]').textContent, '이 여행지 보기');
   assert.doesNotMatch(document.querySelector('[data-testid="social-reel-place"]').className, /\bh-12\b/);
   assert.equal(document.querySelector('[data-testid="social-reel-place"]').getAttribute('href'), '/place/jeju-new');
-  assert.equal(document.querySelector('[data-testid="social-reel-like"]').disabled, true);
-  assert.equal(document.querySelector('[data-testid="social-reel-comment"]').disabled, true);
+  assert.equal(document.querySelector('[data-testid="social-reel-like"]'), null);
+  assert.equal(document.querySelector('[data-testid="social-reel-comment"]'), null);
   assert.equal(
     document.querySelector('[data-testid="social-reel-next-poster"]').getAttribute('src'),
     'https://example.test/old.jpg',
@@ -595,7 +618,7 @@ test('player order, credit, place target, poster preload, and one video element'
   assert.equal(video().getAttribute('data-active'), 'true');
   assert.match(video().getAttribute('src'), /old\.mp4$/);
   assert.match(document.querySelector('[data-testid="social-reel-track"]').style.transform, /calc\(-100%/);
-  assert.equal(document.querySelector('[data-testid="social-reel-credit"]').textContent, '출처: 옛 자료');
+  assert.equal(document.querySelector('[data-testid="social-reel-credit-source"]').textContent, '출처: 옛 자료');
 
   await act(async () => {
     document.querySelector('[data-testid="social-reel-mute"]').click();
@@ -814,6 +837,208 @@ test('share falls back to copying the place URL', async () => {
   } finally {
     Object.defineProperty(nav, 'share', { configurable: true, value: previousShare });
     Object.defineProperty(nav, 'clipboard', { configurable: true, value: previousClipboard });
+  }
+});
+
+test('reel like flag defaults off and the query param turns it on', () => {
+  assert.equal(shouldShowSocialReelLikeCount(10), false);
+  assert.equal(shouldShowSocialReelLikeCount(11), true);
+  assert.equal(shouldShowSocialReelLikeCount(0), false);
+  assert.equal(shouldShowSocialReelLikeCount(null), false);
+  assert.equal(isSocialReelLikeRpcMissing({ code: 'PGRST202', message: 'Could not find the function' }), true);
+  assert.equal(isSocialReelLikeRpcMissing({ code: '42883', message: 'function does not exist' }), true);
+  assert.equal(isSocialReelLikeRpcMissing({ message: 'network down' }), false);
+  assert.equal(isGateoSocialLikesEnabled(''), false);
+  assert.equal(isGateoSocialLikesEnabled('?social_reels=1'), false);
+  assert.equal(isGateoSocialLikesEnabled('?social_likes=1'), true);
+  const catalogCredit = splitSocialReelCreditLines(catalog.default.reels[0].credit);
+  assert.deepEqual(
+    catalogCredit.map((line) => line.text),
+  [
+    "출처: 국가유산청 '014. 한국의 서원'(2025)",
+    '저작자: 국가유산청',
+    '라이선스: 공공누리 제1유형',
+    'GATEO 편집',
+  ],
+  );
+  const longest = splitSocialReelCreditLines(catalog.default.reels.find((reel) => reel.campaignId === 'reel-13').credit);
+  assert.equal(longest.some((line) => line.testId === 'social-reel-credit-author'), true);
+  const paren = splitSocialReelCreditLines("출처: 국가유산청 '015. 한국의갯벌'(2025)(공공누리 제1유형) | GATEO 편집");
+  assert.equal(paren.find((line) => line.id === 'license')?.text, '라이선스: 공공누리 제1유형');
+  assert.match(paren.find((line) => line.id === 'source')?.text || '', /한국의갯벌/);
+});
+
+test('reels player with likes flag off makes no like RPC audit calls', async () => {
+  window.__GATEO_SOCIAL_REEL_RPC_AUDIT__ = [];
+  await render('/social?social_links=1&social_reels=1', {
+    cards: orderedCards,
+    now: NOW,
+    reels: orderedReels,
+  });
+  await openPlayer();
+  await flushPlayer();
+  assert.deepEqual(window.__GATEO_SOCIAL_REEL_RPC_AUDIT__, []);
+  assert.equal(document.querySelector('[data-testid="social-reel-like"]'), null);
+  const credit = document.querySelector('[data-testid="social-reel-credit"]');
+  assert.ok(credit);
+  assert.doesNotMatch(credit.className, /truncate|line-clamp|text-overflow/);
+  for (const node of credit.querySelectorAll('[data-testid]')) {
+    assert.doesNotMatch(node.className || '', /truncate|line-clamp|text-overflow/);
+  }
+});
+
+function likeApi(spec) {
+  const calls = [];
+  window.__GATEO_SOCIAL_REEL_LIKE_API__ = {
+    calls,
+    async readUser() {
+      return spec.user ?? null;
+    },
+    async fetchState(ids) {
+      calls.push(['fetch', ids.slice()]);
+      if (spec.fetch) return spec.fetch(ids);
+      return { counts: {}, mine: [] };
+    },
+    async toggle(id, desired) {
+      calls.push(['toggle', id, desired]);
+      if (spec.toggle) return spec.toggle(id, desired);
+      return { error: { message: 'unset' } };
+    },
+  };
+  return calls;
+}
+
+async function flushPlayer() {
+  await act(async () => {
+    await new Promise((resolve) => setTimeout(resolve, 0));
+  });
+}
+
+test('like count is hidden at 10 and shown at 11, and the comment icon is absent', async () => {
+  const calls = likeApi({
+    user: { id: 'user-1' },
+    fetch: () => ({
+      counts: { 'reel-new': 11, 'reel-old': 10, 'fest-old': 0 },
+      mine: ['reel-new'],
+    }),
+  });
+  await render('/social?social_links=1&social_reels=1&social_likes=1', {
+    cards: orderedCards,
+    now: NOW,
+    reels: orderedReels.map((reel) =>
+      reel.campaignId === 'reel-new'
+        ? {
+            ...reel,
+            credit:
+              "출처: 국가유산청 '014. 한국의 서원'(2025) | 저작자: 국가유산청 | 라이선스: 공공누리 제1유형 | GATEO 편집",
+          }
+        : reel,
+    ),
+  });
+  await openPlayer();
+  await flushPlayer();
+  assert.equal(document.querySelector('[data-testid="social-reel-comment"]'), null);
+  const like = document.querySelector('[data-testid="social-reel-like"]');
+  const share = document.querySelector('[data-testid="social-reel-share"]');
+  assert.equal(like.disabled, false);
+  assert.equal(like.getAttribute('aria-pressed'), 'true');
+  assert.match(like.getAttribute('style') || '', /253,\s*164,\s*175/);
+  assert.equal(document.querySelector('[data-testid="social-reel-like-count"]').textContent, '11');
+  assert.match(share.className, /h-11/);
+  assert.match(share.className, /w-11/);
+  assert.match(share.className, /bg-black\/55/);
+  assert.match(like.className, /h-11/);
+  assert.match(like.className, /w-11/);
+  assert.match(like.className, /bg-black\/55/);
+  assert.match(document.querySelector('[data-testid="social-reel-rail"]').className, /gap-3/);
+  assert.equal(document.querySelector('[data-testid="social-reel-credit-author"]').textContent, '저작자: 국가유산청');
+  const license = document.querySelector('[data-testid="social-reel-credit-license"]');
+  assert.equal(license.textContent, '라이선스: 공공누리 제1유형');
+  assert.equal(document.querySelector('[data-testid="social-reel-credit-editorial"]').textContent, 'GATEO 편집');
+  const credit = document.querySelector('[data-testid="social-reel-credit"]');
+  assert.doesNotMatch(credit.className, /truncate|line-clamp|text-overflow/);
+  for (const node of credit.querySelectorAll('[data-testid]')) {
+    assert.doesNotMatch(node.className || '', /truncate|line-clamp|text-overflow/);
+  }
+  assert.match(document.querySelector('[data-testid="social-reel-credit-source"]').textContent, /한국의 서원/);
+  assert.equal(calls.some((entry) => entry[0] === 'fetch'), true);
+
+  await key('ArrowDown');
+  await flushPlayer();
+  assert.equal(player().getAttribute('data-campaign'), 'reel-old');
+  assert.equal(document.querySelector('[data-testid="social-reel-like-count"]'), null);
+  assert.equal(document.querySelector('[data-testid="social-reel-like"]').getAttribute('data-liked'), 'false');
+  assert.equal(document.querySelector('[data-testid="social-reel-comment"]'), null);
+});
+
+test('logged-out like tap prompts login and does not call the RPC', async () => {
+  const calls = likeApi({
+    user: null,
+    fetch: () => ({ counts: { 'reel-new': 12 }, mine: [] }),
+  });
+  const prompts = [];
+  window.confirm = (message) => {
+    prompts.push(message);
+    return true;
+  };
+  await render('/social?social_links=1&social_reels=1&social_likes=1', {
+    cards: orderedCards,
+    now: NOW,
+    reels: orderedReels,
+  });
+  await openPlayer();
+  await flushPlayer();
+  assert.equal(document.querySelector('[data-testid="social-reel-like-count"]').textContent, '12');
+  await act(async () => {
+    document.querySelector('[data-testid="social-reel-like"]').click();
+  });
+  await flushPlayer();
+  assert.deepEqual(prompts, [SOCIAL_REEL_LIKE_LOGIN_PROMPT]);
+  assert.equal(calls.some((entry) => entry[0] === 'toggle'), false);
+  assert.equal(document.querySelector('[data-testid="auth-login"]').textContent, 'login');
+});
+
+test('a failed like rolls back the optimistic heart and shows the toast', async () => {
+  let release;
+  const gate = new Promise((resolve) => {
+    release = resolve;
+  });
+  const errors = [];
+  const originalError = console.error;
+  console.error = (...args) => {
+    errors.push(args.map(String).join(' '));
+  };
+  try {
+    likeApi({
+      user: { id: 'user-1' },
+      fetch: () => ({ counts: { 'reel-new': 11 }, mine: ['reel-new'] }),
+      toggle: () => gate.then(() => ({ error: { code: 'PGRST202', message: 'Could not find the function public.toggle_social_reel_like' } })),
+    });
+    await render('/social?social_links=1&social_reels=1&social_likes=1', {
+      cards: orderedCards,
+      now: NOW,
+      reels: orderedReels,
+    });
+    await openPlayer();
+    await flushPlayer();
+    assert.equal(document.querySelector('[data-testid="social-reel-like-count"]').textContent, '11');
+    await act(async () => {
+      document.querySelector('[data-testid="social-reel-like"]').click();
+    });
+    await flushPlayer();
+    assert.equal(document.querySelector('[data-testid="social-reel-like"]').getAttribute('aria-pressed'), 'false');
+    assert.equal(document.querySelector('[data-testid="social-reel-like-count"]'), null);
+    release();
+    await act(async () => {
+      await gate;
+    });
+    await flushPlayer();
+    assert.equal(document.querySelector('[data-testid="social-reel-like"]').getAttribute('aria-pressed'), 'true');
+    assert.equal(document.querySelector('[data-testid="social-reel-like-count"]').textContent, '11');
+    assert.equal(document.querySelector('[data-testid="social-reel-toast"]').textContent, SOCIAL_REEL_LIKE_FAIL_TOAST);
+    assert.equal(errors.filter((line) => /toggle_social_reel_like|social_reel_like|PGRST202/i.test(line)).length, 0);
+  } finally {
+    console.error = originalError;
   }
 });
 

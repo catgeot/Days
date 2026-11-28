@@ -82,6 +82,46 @@ export function formatSocialReelCredit(credit) {
   return `출처: ${text}`;
 }
 
+const SOCIAL_REEL_LICENSE_INLINE_RE = /\(\s*공공누리\s*제\s*\d+\s*유형\s*\)/;
+
+/**
+ * KOGL attribution lines — 출처, 저작자, 라이선스, GATEO 편집. No ellipsis in the UI; each segment is its own block.
+ * @returns {{ id: string, testId: string, text: string }[]}
+ */
+export function splitSocialReelCreditLines(credit) {
+  const text = formatSocialReelCredit(credit);
+  if (!text) return [];
+
+  const lines = [];
+  let remainder = text;
+  const inlineLicense = remainder.match(SOCIAL_REEL_LICENSE_INLINE_RE);
+  if (inlineLicense) {
+    const licenseType = inlineLicense[0].replace(/[()]/g, '').replace(/\s+/g, ' ').trim();
+    remainder = remainder.replace(inlineLicense[0], '').replace(/\s{2,}/g, ' ').trim();
+    lines.push({
+      id: 'license',
+      testId: 'social-reel-credit-license',
+      text: `라이선스: ${licenseType}`,
+    });
+  }
+
+  for (const part of remainder.split(/\s*\|\s*/).map((chunk) => chunk.trim()).filter(Boolean)) {
+    if (/^저작자:\s*/.test(part)) {
+      lines.push({ id: 'author', testId: 'social-reel-credit-author', text: part });
+    } else if (/^라이선스:\s*/.test(part)) {
+      lines.push({ id: 'license', testId: 'social-reel-credit-license', text: part });
+    } else if (/^GATEO\s*편집/.test(part)) {
+      lines.push({ id: 'editorial', testId: 'social-reel-credit-editorial', text: part });
+    } else {
+      lines.push({ id: 'source', testId: 'social-reel-credit-source', text: part });
+    }
+  }
+
+  const order = { source: 0, author: 1, license: 2, editorial: 3 };
+  lines.sort((a, b) => order[a.id] - order[b.id]);
+  return lines;
+}
+
 /** Card order (active, then ended). Unposted rows and reels without a live card are dropped. */
 export function buildSocialReelPlaylist(cards, entries, now = new Date()) {
   const byId = indexSocialReels(entries);
