@@ -13,6 +13,8 @@ import {
   matchCityAttractionHubsPrefix,
   resolveCityAttractionHub,
   resolveHubAttraction,
+  listFusedRegionLandmarkChoices,
+  isFusedRegionLandmark,
   hubToSuggestion,
   attractionToSuggestion,
   buildHubDisambiguationCandidates,
@@ -361,16 +363,25 @@ export async function collectDistinctMapboxHomonyms(query, ssotCandidates) {
  * hub + 명소 클러스터.
  * - hub exact: includeSettlements → 명소 뒤 정착지 ≤3
  * - 정착지 exact(허브형): preferSettlement → hub → 히트 지역 → 명소 → 형제 지역(전부, 히트 강제)
- * - 명소 exact: preferAttraction, 정착지 비포함
+ * - 명소 exact: preferAttraction. 도시명이 붙은 붙여쓴 명소만 허브보다 앞
  * @param {object} hub
  * @param {object[]} out
  * @param {Set<string>} seen
- * @param {{ preferAttraction?: object, preferSettlement?: object, includeSettlements?: boolean, skipHub?: boolean }} [opts]
+ * @param {{ preferAttraction?: object, preferSettlement?: object, includeSettlements?: boolean, skipHub?: boolean, leadWithAttraction?: boolean }} [opts]
  */
 function pushHubAttractionCluster(hub, out, seen, opts = {}) {
   if (!hub) return;
   const rowStub = { hubId: hub.hubId };
   const preferSettlement = opts.preferSettlement;
+  const preferAttraction = opts.preferAttraction;
+  const preferVisible =
+    preferAttraction &&
+    !isHiddenHubScenicAttraction(hub.hubId, preferAttraction.name);
+  const leadWithAttraction = Boolean(opts.leadWithAttraction && preferVisible && !preferSettlement);
+
+  if (leadWithAttraction) {
+    pushUnique(out, seen, attractionToSuggestion(hub, preferAttraction));
+  }
   if (preferSettlement) {
     pushUnique(out, seen, settlementToSuggestion(rowStub, preferSettlement));
     if (!opts.skipHub) {
@@ -380,11 +391,7 @@ function pushHubAttractionCluster(hub, out, seen, opts = {}) {
     pushUnique(out, seen, hubToSuggestion(hub));
   }
 
-  const preferAttraction = opts.preferAttraction;
-  if (
-    preferAttraction &&
-    !isHiddenHubScenicAttraction(hub.hubId, preferAttraction.name)
-  ) {
+  if (preferVisible && !leadWithAttraction) {
     pushUnique(out, seen, attractionToSuggestion(hub, preferAttraction));
   }
 
@@ -585,6 +592,9 @@ export function buildLocalSearchSuggestions(query, opts = {}) {
   if (exactHub) {
     if (exactHubCityQuery) {
       pushUnique(out, seen, hubToSuggestion(exactHub));
+      for (const fused of listFusedRegionLandmarkChoices(innerQuery)) {
+        pushUnique(out, seen, attractionToSuggestion(fused.hub, fused.attraction));
+      }
       pushLocalScenicMembersFirst(exactHub, out, seen, scenicLists);
       pushHubAttractionCluster(exactHub, out, seen, {
         includeSettlements: true,
@@ -604,6 +614,10 @@ export function buildLocalSearchSuggestions(query, opts = {}) {
     pushHubAttractionCluster(exactAttraction.hub, out, seen, {
       preferAttraction: exactAttraction.attraction,
       includeSettlements: false,
+      leadWithAttraction: isFusedRegionLandmark(
+        exactAttraction.hub,
+        exactAttraction.attraction,
+      ),
     });
   } else if (exactSettlement) {
     const parentHub = resolveCityAttractionHub(exactSettlement.row.hubId);
@@ -934,6 +948,12 @@ export async function buildCuratedEnterDisambiguation(query) {
       candidates,
       listHit ? [listHit.list] : undefined,
     );
+    const fusedLandmarks = listFusedRegionLandmarkChoices(searchQ).map(({ hub, attraction }) =>
+      attractionToSuggestion(hub, attraction),
+    );
+    if (fusedLandmarks.length && candidates.length) {
+      candidates = [candidates[0], ...fusedLandmarks, ...candidates.slice(1)];
+    }
     const titleName = listHit
       ? localScenicListDisplayTitle(listHit.list, hubHit)
       : hubHit.name;

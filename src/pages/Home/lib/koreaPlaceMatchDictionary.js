@@ -657,6 +657,7 @@ function expandScenicNameVariants() {
     ['추자도', ['추자군도', 'chujado', 'chujado island', 'chuja islands']],
     ['용눈이오름', ['용눈이', 'yongnuni oreum', 'yongnuni-oreum', 'yongnuni']],
     ['안면암', ['안면암(태안)', '태안 안면암', 'anmyeonam', 'anmyeonam temple']],
+    ['수원화성', ['수원 화성', '수원화성']],
   ];
   return places.flatMap(([canonical, keys]) => keys.map((key) => [key, { canonical }]));
 }
