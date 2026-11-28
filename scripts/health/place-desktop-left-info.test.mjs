@@ -18,7 +18,7 @@ test('single mount — PlaceGalleryFactsAndStories gates empty wrapper', () => {
     join(root, 'src/components/PlaceCard/common/PlaceGalleryFactsAndStories.jsx'),
     'utf8',
   );
-  assert.match(bundle, /if \(!hasFacts && !showStoriesBlock\) return null/);
+  assert.match(bundle, /if \(!shouldRender\) return null/);
   assert.match(bundle, /PlaceVerifiedFacts/);
   assert.match(bundle, /PlaceVisitStories/);
 });
