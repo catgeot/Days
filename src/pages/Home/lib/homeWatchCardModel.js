@@ -46,6 +46,75 @@ export function syncHomeWatchGlobeLift({
   root.style.removeProperty(HOME_WATCH_GLOBE_LIFT_CSS_VAR);
 }
 
+export const HOME_MAPBOX_CTRL_BOTTOM_OFFSET_VAR = '--home-mapbox-ctrl-bottom-offset';
+export const HOME_MAPBOX_CTRL_BOTTOM_RIGHT_OFFSET_VAR = '--home-mapbox-ctrl-bottom-right-offset';
+export const HOME_MAPBOX_LOGO_CLEARANCE_PX = 8;
+export const HOME_MAPBOX_MOBILE_OBSTACLE_SELECTORS = [
+  '[data-testid="home-watch-card"]',
+  '[data-testid="home-about-row"]',
+  '[data-testid="home-category-bar"]',
+  '[data-testid="mooni-fab-open"]',
+  '[data-testid="home-globe-country-menu"]',
+];
+
+export function horizontalBandOverlaps(band, rect) {
+  if (!band || !rect) return false;
+  return band.left < rect.right && band.right > rect.left;
+}
+
+/** Raise Mapbox logo/attribution inside the map so the control bottom clears obstacle tops in `band`. */
+export function homeMapboxCtrlMarginBottomForBand({
+  mapBottom,
+  obstacles = [],
+  band,
+  gap = HOME_MAPBOX_LOGO_CLEARANCE_PX,
+} = {}) {
+  const bottom = Number(mapBottom);
+  if (!Number.isFinite(bottom) || !band) return null;
+  let ceiling = Number.POSITIVE_INFINITY;
+  for (const rect of obstacles) {
+    if (!rect || rect.width < 1 || rect.height < 1) continue;
+    if (!horizontalBandOverlaps(band, rect)) continue;
+    ceiling = Math.min(ceiling, rect.top);
+  }
+  if (!Number.isFinite(ceiling)) return null;
+  const margin = bottom - (ceiling - gap);
+  return Math.max(HOME_MAPBOX_LOGO_CLEARANCE_PX, Math.ceil(margin));
+}
+
+export function collectHomeMapboxMobileObstacleRects(root = document) {
+  return collectMooniFabObstacleRects(HOME_MAPBOX_MOBILE_OBSTACLE_SELECTORS, root);
+}
+
+export function syncHomeMapboxMobileCtrlInset({
+  viewportWidth = typeof window === 'undefined' ? 390 : window.innerWidth,
+  doc = typeof document === 'undefined' ? null : document,
+} = {}) {
+  if (!doc?.documentElement) return;
+  const root = doc.documentElement;
+  const width = Number(viewportWidth) || 0;
+  if (width >= HOME_WATCH_CARD_LAYOUT.desktop.minWidth) {
+    root.style.removeProperty(HOME_MAPBOX_CTRL_BOTTOM_OFFSET_VAR);
+    root.style.removeProperty(HOME_MAPBOX_CTRL_BOTTOM_RIGHT_OFFSET_VAR);
+    return;
+  }
+  const map = doc.querySelector('.gateo-home-globe-shell .gateo-globe-map');
+  if (!map) return;
+  const mapBottom = map.getBoundingClientRect().bottom;
+  const obstacles = collectHomeMapboxMobileObstacleRects(doc);
+  const leftBand = { left: 0, right: 108 };
+  const rightBand = { left: Math.max(0, width - 152), right: width };
+  const left = homeMapboxCtrlMarginBottomForBand({ mapBottom, obstacles, band: leftBand });
+  const right = homeMapboxCtrlMarginBottomForBand({ mapBottom, obstacles, band: rightBand });
+  if (left != null) root.style.setProperty(HOME_MAPBOX_CTRL_BOTTOM_OFFSET_VAR, `${left}px`);
+  else root.style.removeProperty(HOME_MAPBOX_CTRL_BOTTOM_OFFSET_VAR);
+  if (right != null) {
+    root.style.setProperty(HOME_MAPBOX_CTRL_BOTTOM_RIGHT_OFFSET_VAR, `${right}px`);
+  } else {
+    root.style.removeProperty(HOME_MAPBOX_CTRL_BOTTOM_RIGHT_OFFSET_VAR);
+  }
+}
+
 /**
  * Opaque color behind each caption line (label, name, taste chip, subtitle).
  * The line hugs the text. A full-width slab covered more than half of the 85px tile.

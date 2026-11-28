@@ -65,6 +65,23 @@ body {
   html[data-home-watch-globe-lift='1'] .gateo-home-globe-shell .gateo-globe-map {
     top: calc(-1 * (var(--home-watch-globe-lift, 60px) + var(--home-globe-mobile-base-lift, 10px)));
   }
+
+  .gateo-home-globe-shell .mapboxgl-ctrl-bottom-left,
+  .gateo-home-globe-shell .mapboxgl-ctrl-bottom-right {
+    z-index: 2;
+    pointer-events: auto;
+  }
+
+  .gateo-home-globe-shell .mapboxgl-ctrl-bottom-left {
+    margin-bottom: max(0.25rem, var(--home-mapbox-ctrl-bottom-offset, 0.25rem));
+  }
+
+  .gateo-home-globe-shell .mapboxgl-ctrl-bottom-right {
+    margin-bottom: max(
+      0.25rem,
+      var(--home-mapbox-ctrl-bottom-right-offset, var(--home-mapbox-ctrl-bottom-offset, 0.25rem))
+    );
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
