@@ -10,7 +10,7 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { fileURLToPath } from 'node:url';
 
 const NOW = new Date('2026-11-27T03:00:00.000Z');
-const FLAG_OFF_HTML_SHA256 = 'c22d1679f703f437283ff7dc90e53e8660f270a0e2514d139194c2531212081d';
+const FLAG_OFF_HTML_SHA256 = '1978da6690b0804d699460bfb7f77e8afa620741b1fdd59de28fd4e67f5290d6';
 
 globalThis.__GATEO_DISABLE_SOCIAL_PHOTO_FETCH__ = true;
 globalThis.__VITE_ENV__ = {
@@ -101,7 +101,7 @@ const sampleCards = [
     firstPostedAt: '2026-11-27',
     title: '샘플 최근',
     region: '경북 샘플',
-    photoUrl: 'https://www.khs.go.kr/unisearch/images/treasure/1622186.jpg',
+    photoUrl: '/site/scenic/sosu-seowon-ganghakdang-kogl-1280.webp',
     photoCredit: { kind: 'text', label: '국가유산청 · 공공누리 제1유형' },
     targets: [
       { type: 'place', slug: 'tour-126201' },
