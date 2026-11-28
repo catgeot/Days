@@ -9,22 +9,25 @@ import {
 } from '../../../utils/placeReviewEditorial.js';
 import { useRelatedBlogs } from './useRelatedBlogs';
 
-function reviewPlaceSlug(location) {
+export function reviewPlaceSlug(location) {
   const idStr = location?.id != null ? String(location.id) : '';
   if (idStr.startsWith('search-') || idStr.startsWith('loc-')) return idStr;
   return location?.slug || idStr || '';
 }
 
+export function isVisitStoriesFetchEnabled(location) {
+  return Boolean(reviewPlaceSlug(location));
+}
+
 export function useVisitStories(location) {
   const card = resolveVerifiedFacts(location);
-  const enabled = Boolean(card);
+  const slug = reviewPlaceSlug(location);
+  const enabled = isVisitStoriesFetchEnabled(location);
   const placeName = enabled ? (location?.name || location?.name_en || '') : '';
   const { blogs, isLoading: blogsLoading } = useRelatedBlogs(placeName);
   const [reviews, setReviews] = useState([]);
   const [reviewsLoading, setReviewsLoading] = useState(false);
   const [reviewsRefreshToken, setReviewsRefreshToken] = useState(0);
-
-  const slug = reviewPlaceSlug(location);
 
   useEffect(() => {
     const onRefresh = () => setReviewsRefreshToken((value) => value + 1);
@@ -66,7 +69,7 @@ export function useVisitStories(location) {
   }, [enabled, slug, reviewsRefreshToken]);
 
   const stories = useMemo(() => {
-    if (!enabled) return [];
+    if (!slug) return [];
     const names = [
       location?.name,
       location?.name_en,
@@ -94,7 +97,7 @@ export function useVisitStories(location) {
       })),
     ];
     return selectVisitStories(entries, names);
-  }, [enabled, blogs, reviews, location, card]);
+  }, [slug, enabled, blogs, reviews, location, card]);
 
   return {
     stories,

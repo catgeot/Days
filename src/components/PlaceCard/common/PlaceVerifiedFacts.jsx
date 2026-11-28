@@ -680,8 +680,6 @@ export function PlaceVisitStories({
   const panelId = useId();
   const placeKey = getPlaceStableKey(location) || location?.slug || location?.id || '';
   const [open, setOpen] = usePlaceGallerySectionOpen(PLACE_GALLERY_SECTION.STORIES, placeKey);
-  const card = resolveVerifiedFacts(location);
-  if (!card) return null;
   if (isLoading && !showLoadingShell) return null;
   if (!isLoading && !stories?.length) return null;
   const placePath = buildPlacePath(location?.slug || location?.id);

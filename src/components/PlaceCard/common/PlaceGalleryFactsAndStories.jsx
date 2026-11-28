@@ -4,6 +4,26 @@ import { verifiedFactSlots } from '../../../data/placeVerifiedFacts/localInfoLay
 import { useVisitStories } from '../hooks/useVisitStories';
 import PlaceVerifiedFacts, { PlaceVisitStories } from './PlaceVerifiedFacts';
 
+export function computeGalleryFactsAndStoriesVisibility({
+  hasFacts,
+  stories,
+  isLoading,
+  hasVerifiedFactsCard,
+  storiesLoadingShellInLeftOverview = false,
+}) {
+  const hasStories = Boolean(!isLoading && stories.length > 0);
+  const showStoriesLoadingShell = Boolean(
+    storiesLoadingShellInLeftOverview && hasVerifiedFactsCard && isLoading,
+  );
+  const showStoriesBlock = hasStories || showStoriesLoadingShell;
+  return {
+    hasStories,
+    showStoriesLoadingShell,
+    showStoriesBlock,
+    shouldRender: hasFacts || showStoriesBlock,
+  };
+}
+
 /**
  * Gallery «현지 정보» + «다녀온 이야기» — single mount (no duplicate #facts/#stories).
  * Parent supplies responsive visibility (e.g. lg:hidden vs hidden lg:block).
@@ -20,13 +40,16 @@ export default function PlaceGalleryFactsAndStories({
   const filled = card ? verifiedFactSlots(card) : [];
   const hasFacts = filled.length > 0;
   const { stories, isLoading } = useVisitStories(location);
-  const hasStories = Boolean(card && !isLoading && stories.length > 0);
-  const showStoriesLoadingShell = Boolean(
-    storiesLoadingShellInLeftOverview && card && isLoading,
-  );
-  const showStoriesBlock = hasStories || showStoriesLoadingShell;
+  const { showStoriesBlock, showStoriesLoadingShell, shouldRender } =
+    computeGalleryFactsAndStoriesVisibility({
+      hasFacts,
+      stories,
+      isLoading,
+      hasVerifiedFactsCard: Boolean(card),
+      storiesLoadingShellInLeftOverview,
+    });
 
-  if (!hasFacts && !showStoriesBlock) return null;
+  if (!shouldRender) return null;
 
   const sections = (
     <>
