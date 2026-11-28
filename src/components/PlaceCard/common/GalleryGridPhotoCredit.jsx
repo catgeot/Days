@@ -4,7 +4,7 @@ import { buildGalleryPhotoCredit } from './buildGalleryPhotoCredit';
 import StockPhotoCreditLine from './StockPhotoCreditLine';
 
 const creditShellClass =
-  'pointer-events-none absolute inset-x-0 bottom-0 z-[2] bg-gradient-to-t from-black/80 via-black/45 to-transparent px-2 pb-1.5 pt-6';
+  'pointer-events-none absolute inset-x-0 bottom-0 z-[2] bg-gradient-to-t from-black/75 via-black/40 to-transparent px-2 pb-1.5 pt-5 text-[9px] leading-snug text-white/90 sm:text-[10px]';
 
 function GalleryCreditLink({ href, className, children, location, image, context, title, onClick }) {
   if (!href) {
@@ -42,8 +42,8 @@ export default function GalleryGridPhotoCredit({ image, location, locale }) {
         credit={credit}
         tone="gallery-overlay"
         interactiveLinks={false}
-        allowAuthorWrap={false}
-        rowClassName="min-w-0 max-w-full truncate"
+        allowAuthorWrap
+        rowClassName="min-w-0 max-w-full whitespace-normal"
         LinkComponent={GalleryCreditLink}
         linkExtraProps={{ location, image, context: 'gallery-grid' }}
       />

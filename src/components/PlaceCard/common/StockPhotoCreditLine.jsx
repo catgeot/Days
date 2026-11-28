@@ -96,7 +96,15 @@ export default function StockPhotoCreditLine({
     .filter(Boolean)
     .join(' ');
 
-  const providerClass = [toneLinkClass, 'shrink-0', providerLinkClassName].filter(Boolean).join(' ');
+  const providerWraps =
+    allowAuthorWrap && (tone === 'gallery-overlay' || tone === 'lightbox');
+  const providerClass = [
+    toneLinkClass,
+    providerWraps ? 'min-w-0 break-words' : 'shrink-0',
+    providerLinkClassName,
+  ]
+    .filter(Boolean)
+    .join(' ');
 
   const rowClass = [
     allowAuthorWrap ? 'flex flex-wrap items-center gap-x-0.5' : 'flex min-w-0 items-center gap-x-0.5',
