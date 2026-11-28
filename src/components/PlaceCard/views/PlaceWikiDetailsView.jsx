@@ -648,7 +648,8 @@ const PlaceWikiDetailsView = ({
           credit={lightboxPhotoCredit}
           tone="lightbox"
           interactiveLinks
-          allowAuthorWrap={false}
+          allowAuthorWrap
+          rowClassName="min-w-0 max-w-full whitespace-normal"
           authorLinkClassName={linkClassName}
           providerLinkClassName={linkClassName}
           LinkComponent={WikiGalleryLink}

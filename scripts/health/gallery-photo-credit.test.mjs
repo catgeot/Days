@@ -118,6 +118,46 @@ test('gallery grid credit markup stays non-interactive (tile click safe)', () =>
   assert.match(source, /interactiveLinks=\{false\}/);
 });
 
+const CREDIT_OVERLAY_FILES = [
+  '../../src/components/PlaceCard/common/GalleryGridPhotoCredit.jsx',
+  '../../src/components/PlaceCard/views/PlaceGalleryView.jsx',
+  '../../src/components/PlaceCard/views/PlaceWikiDetailsView.jsx',
+];
+
+test('gallery credit overlays do not use truncation classes', () => {
+  const forbidden =
+    /\btruncate\b|line-clamp-1|text-ellipsis|overflow-hidden[^'"\n]*(?:truncate|ellipsis)|whitespace-nowrap[^'"\n]*ellipsis/;
+  for (const rel of CREDIT_OVERLAY_FILES) {
+    const source = readFileSync(new URL(rel, import.meta.url), 'utf8');
+    const creditSlots = source.split('StockPhotoCreditLine');
+    const gridSlot = creditSlots.slice(1).join('StockPhotoCreditLine').slice(0, 600);
+    const slice =
+      rel.includes('GalleryGridPhotoCredit') ? source : gridSlot.length > 20 ? gridSlot : source;
+    if (rel.includes('GalleryGridPhotoCredit')) {
+      assert.match(source, /allowAuthorWrap/);
+      assert.doesNotMatch(source, forbidden);
+      assert.doesNotMatch(source, /allowAuthorWrap=\{false\}/);
+    } else {
+      assert.doesNotMatch(slice, /allowAuthorWrap=\{false\}/);
+      assert.doesNotMatch(slice, forbidden);
+    }
+  }
+});
+
+test('kto scenic SSOT credit includes full KOGL Type 1 license text', () => {
+  const scenicImg = {
+    id: 'korea-scenic-ssot-sosu-seowon-0',
+    source: 'korea-scenic-ssot',
+    photo_note: '국가유산청 · 공공누리 제1유형',
+    user: { name: '국가유산청 · 공공누리 제1유형' },
+  };
+  const credit = buildGalleryPhotoCredit(scenicImg, 'ko');
+  assert.equal(credit?.kind, 'kto');
+  const plain = formatStockPhotoCreditPlainText(normalizeGalleryPhotoCredit(credit), 'ko');
+  assert.match(plain, /공공누리 제1유형/);
+  assert.doesNotMatch(plain, /공$/);
+});
+
 test('tourapi keeps kto provider label in ko and en', () => {
   const ko = buildGalleryPhotoCredit(tourImg, 'ko');
   const en = buildGalleryPhotoCredit(tourImg, 'en');
