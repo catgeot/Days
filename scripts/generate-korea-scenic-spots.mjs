@@ -158,6 +158,10 @@ function normalizeSpots(src, hubIndex, imageUrlById = {}) {
     }
 
     const imageUrl = toHttps(imageUrlById[id] || raw.imageUrl);
+    const imageCredit =
+      raw.imageCredit != null && String(raw.imageCredit).trim()
+        ? String(raw.imageCredit).trim()
+        : null;
 
     const addr1 = raw.addr1 != null && String(raw.addr1).trim()
       ? String(raw.addr1).trim()
@@ -190,6 +194,7 @@ function normalizeSpots(src, hubIndex, imageUrlById = {}) {
       contentId,
       overview,
       imageUrl,
+      ...(imageCredit ? { imageCredit } : {}),
       ...(addr1 ? { addr1 } : {}),
       ...(homepage ? { homepage } : {}),
       ...(galleryUrls && galleryUrls.length > 0 ? { galleryUrls } : {}),

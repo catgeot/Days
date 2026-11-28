@@ -7262,6 +7262,8 @@ export const KOREA_SCENIC_SPOTS_OVERRIDES = {
       attractionName: '소수서원',
       overview: '소수서원 — 영주 조선 서원. 한국관광공사 TourAPI에 동일 관광지 상세가 없어 GATEO 선정 안내로 소개한다.',
       contentId: '126201',
+      imageUrl: '/site/scenic/sosu-seowon-ganghakdang-kogl-1280.webp',
+      imageCredit: '국가유산청 · 공공누리 제1유형',
     }, // TODO contentId
     {
       order: 6680,
