@@ -181,7 +181,9 @@ import { formatFestivalPhotoCreditLine } from './festivalPhotoCredit.js';
 import {
   detectPosterEditionYear,
   festivalEditionYearFromEventFields,
+  festivalEditionYearFromStart,
   festivalPosterMetaAtIndex,
+  reorderFestivalGallerySlides,
   shouldMarkPriorEditionPosterMeta,
 } from './lib/festivalPosterEdition.js';
 import { resolveFestivalPublicHomepage, preferHttpsFestivalHomepage } from './lib/festivalPublicHomepage.js';
@@ -1414,7 +1416,13 @@ export default function FestivalDetailSheet({
       const introHit = detailData?.intro || pickFirst(detailData) || null;
       const commonHit = detailData?.common || null;
       const infoRows = Array.isArray(detailData?.info) ? detailData.info : [];
+      const festivalYear =
+        festivalEditionYearFromEventFields(introHit)
+        || festivalEditionYearFromEventFields(commonHit)
+        || festivalEditionYearFromEventFields(item)
+        || festivalEditionYearFromStart(item?.eventStartDate);
       let slides = collectFestivalGallerySlides(imageData, seed);
+      slides = reorderFestivalGallerySlides(slides, { festivalYear, contentId });
       const commonHero = toHttps(
         commonHit?.firstimage || commonHit?.firstImage || commonHit?.imageUrl || '',
       );
@@ -1435,6 +1443,7 @@ export default function FestivalDetailSheet({
           credits.push(String(row?.credit || '').trim());
           captions.push(String(row?.title || row?.caption || '').trim());
         }
+        slides = reorderFestivalGallerySlides(slides, { festivalYear, contentId });
       } else {
         captions = slides.map((row) => row.caption);
       }
